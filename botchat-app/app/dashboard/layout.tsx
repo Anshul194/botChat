@@ -1,0 +1,25 @@
+"use client";
+
+import { useState } from "react";
+import Sidebar from "@/components/layout/Sidebar";
+import Topbar from "@/components/layout/Topbar";
+
+export default function DashboardLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+    return (
+        <div className="flex h-screen overflow-hidden" style={{ background: "var(--background)" }}>
+            <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+            <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+                <Topbar onMenuToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+                <main className="flex-1 overflow-y-auto p-6 page-enter">
+                    {children}
+                </main>
+            </div>
+        </div>
+    );
+}
