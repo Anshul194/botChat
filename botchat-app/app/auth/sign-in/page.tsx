@@ -49,7 +49,7 @@ export default function SignInPage() {
             <div
                 className="hidden lg:flex lg:w-[46%] flex-col relative overflow-hidden"
                 style={{
-                    background: "linear-gradient(160deg, var(--brand-blue-dark) 0%, var(--primary) 55%, var(--accent) 100%)",
+                    background: "linear-gradient(160deg, var(--brand-pink-dark) 0%, var(--primary) 55%, var(--accent) 100%)",
                 }}
             >
                 {/* Decorative orbs */}
@@ -183,7 +183,7 @@ export default function SignInPage() {
                                         color: "var(--foreground)",
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.currentTarget.style.borderColor = "rgba(29,110,245,0.35)";
+                                        e.currentTarget.style.borderColor = "rgba(236,72,153,0.35)";
                                         e.currentTarget.style.background = "var(--nav-hover-bg)";
                                     }}
                                     onMouseLeave={(e) => {
@@ -292,7 +292,7 @@ export default function SignInPage() {
                                 <input
                                     id="remember-me"
                                     type="checkbox"
-                                    className="w-4 h-4 rounded accent-blue-600 cursor-pointer"
+                                    className="w-4 h-4 rounded accent-pink-600 cursor-pointer"
                                 />
                                 <label htmlFor="remember-me" className="text-sm cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
                                     Keep me signed in

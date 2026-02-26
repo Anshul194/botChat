@@ -79,9 +79,9 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
                 <div
                     className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200 hover:opacity-80"
                     style={{
-                        background: "rgba(29,110,245,0.10)",
-                        border: "1px solid rgba(29,110,245,0.20)",
-                        color: "var(--brand-blue-light)",
+                        background: "rgba(236,72,153,0.10)",
+                        border: "1px solid rgba(236,72,153,0.20)",
+                        color: "var(--brand-pink-light)",
                     }}
                 >
                     <Sparkles className="w-3.5 h-3.5" />
@@ -94,7 +94,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
                     style={{
                         background: "var(--brand-gradient)",
                         color: "white",
-                        boxShadow: "var(--shadow-blue)",
+                        boxShadow: "var(--shadow-pink)",
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.90")}
                     onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}

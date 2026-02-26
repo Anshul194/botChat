@@ -83,7 +83,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 style={{ borderColor: "var(--sidebar-border)" }}
             >
                 <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 glow-blue-sm"
+                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 glow-pink-sm"
                     style={{ background: "var(--brand-gradient)" }}
                 >
                     <MessageSquare className="w-5 h-5 text-white" />
@@ -104,7 +104,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         style={{
                             background: "var(--brand-gradient)",
                             color: "white",
-                            boxShadow: "var(--shadow-blue)",
+                            boxShadow: "var(--shadow-pink)",
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.90")}
                         onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
@@ -123,7 +123,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         className="w-full flex items-center justify-center p-2.5 rounded-xl transition-all duration-200"
                         style={{
                             background: "var(--brand-gradient)",
-                            boxShadow: "var(--shadow-blue)",
+                            boxShadow: "var(--shadow-pink)",
                         }}
                     >
                         <Plus className="w-4 h-4 text-white" />
@@ -168,9 +168,9 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                                                     <Badge
                                                         className="text-[10px] px-1.5 py-0 h-5 font-semibold border-0"
                                                         style={
-                                                            item.badgeColor === "sky"
-                                                                ? { background: "rgba(56,178,255,0.15)", color: "#38b2ff" }
-                                                                : { background: "rgba(29,110,245,0.15)", color: "var(--brand-blue-light)" }
+                                                            item.badgeColor === "sky" || item.badgeColor === "blue"
+                                                                ? { background: "rgba(236,72,153,0.15)", color: "#ec4899" }
+                                                                : { background: "rgba(168,85,247,0.15)", color: "var(--brand-pink-light)" }
                                                         }
                                                     >
                                                         {item.badge}
@@ -242,7 +242,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 className="absolute -right-3 top-[72px] w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
                 style={{
                     background: "var(--brand-gradient)",
-                    boxShadow: "var(--shadow-blue)",
+                    boxShadow: "var(--shadow-pink)",
                 }}
             >
                 {collapsed ? (

@@ -4,6 +4,10 @@ import { useState } from "react";
 import {
     AreaChart,
     Area,
+    BarChart,
+    Bar,
+    ComposedChart,
+    Line,
     PieChart,
     Pie,
     Cell,
@@ -12,6 +16,7 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
+    Legend,
 } from "recharts";
 import {
     MessageSquare,
@@ -25,7 +30,26 @@ import {
     Facebook,
     Send,
     Clock,
+    MoreVertical,
+    Activity,
+    Target,
+    Shield,
+    Globe,
+    Cpu,
+    CheckCircle2,
+    Wifi,
+    HardDrive,
+    BarChart3,
+    Layers,
+    Workflow,
 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 const areaData = [
     { date: "Mon", messages: 320, replies: 280, leads: 42 },
@@ -49,6 +73,25 @@ const topAutomations = [
     { name: "Pricing FAQ Bot", platform: "both", triggers: 432, rate: "78%", status: "active" },
 ];
 
+const interactionFlowData = [
+    { time: "09:00", active: 120, auto: 80, success: 95 },
+    { time: "12:00", active: 250, auto: 200, success: 180 },
+    { time: "15:00", active: 450, auto: 380, success: 340 },
+    { time: "18:00", active: 380, auto: 320, success: 290 },
+    { time: "21:00", active: 620, auto: 580, success: 520 },
+    { time: "00:00", active: 210, auto: 180, success: 160 },
+];
+
+const hourlyEngagementData = [
+    { hour: "6am", instagram: 45, facebook: 32 },
+    { hour: "9am", instagram: 82, facebook: 54 },
+    { hour: "12pm", instagram: 110, facebook: 88 },
+    { hour: "3pm", instagram: 95, facebook: 72 },
+    { hour: "6pm", instagram: 140, facebook: 110 },
+    { hour: "9pm", instagram: 180, facebook: 145 },
+    { hour: "12am", instagram: 85, facebook: 62 },
+];
+
 const recentConvs = [
     { name: "Sarah J.", msg: "Do you ship internationally?", time: "2m", platform: "instagram", unread: true },
     { name: "Mike C.", msg: "What's your return policy?", time: "8m", platform: "facebook", unread: true },
@@ -56,20 +99,31 @@ const recentConvs = [
     { name: "Alex K.", msg: "Can I get a discount?", time: "1h", platform: "facebook", unread: false },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipProps {
+    active?: boolean;
+    payload?: Array<{
+        name: string;
+        value: number;
+        color: string;
+    }>;
+    label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
     if (active && payload?.length) {
         return (
-            <div className="px-3 py-2 rounded-xl text-sm" style={{
-                background: "var(--popover)",
-                border: "1px solid var(--glass-border)",
-                boxShadow: "var(--shadow-card)",
-            }}>
-                <p className="text-xs mb-1 font-medium" style={{ color: "var(--muted-foreground)" }}>{label}</p>
-                {payload.map((p: any, i: number) => (
-                    <p key={i} className="font-semibold text-xs" style={{ color: p.color }}>
-                        {p.name}: {p.value}
-                    </p>
-                ))}
+            <div className="rounded-xl border bg-card/95 p-3 shadow-xl backdrop-blur-md">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+                <div className="space-y-1.5">
+                    {payload.map((p, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                            <div className="h-2 w-2 rounded-full" style={{ background: p.color }} />
+                            <p className="text-xs font-semibold">
+                                {p.name}: <span className="text-foreground">{p.value}</span>
+                            </p>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -77,226 +131,370 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function DashboardPage() {
-    const [period, setPeriod] = useState<"7d" | "30d" | "90d">("7d");
-
     const stats = [
-        { label: "Total Messages", value: "48,291", change: "+18%", up: true, icon: MessageSquare, color: "#7c3aed" },
-        { label: "Automated Replies", value: "44,180", change: "+22%", up: true, icon: Zap, color: "#06b6d4" },
-        { label: "New Leads", value: "3,847", change: "+31%", up: true, icon: Users, color: "#10b981" },
+        { label: "Total Messages", value: "48,291", change: "+18.2%", up: true, icon: MessageSquare, color: "#ec4899" },
+        { label: "Automated Replies", value: "44,180", change: "+22.4%", up: true, icon: Zap, color: "#a855f7" },
         { label: "Conversion Rate", value: "8.4%", change: "-0.3%", up: false, icon: TrendingUp, color: "#f59e0b" },
+        { label: "New Leads", value: "3,847", change: "+31.0%", up: true, icon: Users, color: "#10b981" },
     ];
 
     return (
-        <div className="space-y-6 max-w-[1400px]">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-8 p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
-            <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>
-                        Good evening, Anshul 👋
+                    <h1 className="text-3xl font-black tracking-tighter sm:text-4xl">
+                        Overview<span className="text-primary">.</span>
                     </h1>
-                    <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-                        Here's what's happening across your accounts
-                    </p>
+                    <p className="text-muted-foreground">Premium analytics for your connected accounts</p>
                 </div>
-                <div className="flex items-center rounded-xl p-1 gap-1" style={{
-                    background: "var(--glass-bg)",
-                    border: "1px solid var(--glass-border)",
-                }}>
-                    {(["7d", "30d", "90d"] as const).map((p) => (
-                        <button
-                            key={p}
-                            onClick={() => setPeriod(p)}
-                            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
-                            style={period === p
-                                ? { background: "var(--brand-gradient)", color: "white" }
-                                : { color: "var(--muted-foreground)" }
-                            }
-                        >{p}</button>
-                    ))}
+
+                <div className="flex items-center gap-3">
+                    <Tabs defaultValue="7d" className="w-[300px]">
+                        <TabsList className="grid w-full grid-cols-3 bg-muted/50 p-1">
+                            <TabsTrigger value="7d" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">7D</TabsTrigger>
+                            <TabsTrigger value="30d" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">30D</TabsTrigger>
+                            <TabsTrigger value="90d" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">90D</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                    <Button variant="outline" size="icon" className="rounded-xl">
+                        <MoreVertical className="h-4 w-4" />
+                    </Button>
                 </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {stats.map((s) => (
-                    <div key={s.label} className="stats-card glass-card rounded-2xl p-5 relative overflow-hidden group">
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `radial-gradient(circle at 0% 100%, ${s.color}15, transparent 60%)` }} />
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${s.color}15` }}>
-                                    <s.icon className="w-5 h-5" style={{ color: s.color }} />
-                                </div>
-                                <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg ${s.up ? "text-green-500" : "text-red-500"}`}
-                                    style={{ background: s.up ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)" }}>
-                                    {s.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                                    {s.change}
-                                </div>
+                    <Card key={s.label} className="group relative overflow-hidden border-none bg-card/50 shadow-premium transition-all hover:translate-y-[-4px] hover:shadow-hover">
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                            style={{ background: `radial-gradient(circle at top right, ${s.color}10, transparent 70%)` }} />
+
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                {s.label}
+                            </CardTitle>
+                            <div className="rounded-xl p-2" style={{ background: `${s.color}15` }}>
+                                <s.icon className="h-4 w-4" style={{ color: s.color }} />
                             </div>
-                            <div className="text-3xl font-bold mb-1" style={{ color: "var(--foreground)" }}>{s.value}</div>
-                            <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>{s.label}</div>
-                        </div>
-                    </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-3xl font-black tracking-tighter">{s.value}</div>
+                            <div className="mt-2 flex items-center gap-1.5">
+                                <Badge variant={s.up ? "default" : "destructive"} className={cn(
+                                    "px-1.5 py-0 text-[10px] font-bold",
+                                    s.up && "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                                )}>
+                                    {s.up ? <ArrowUpRight className="mr-0.5 h-3 w-3" /> : <ArrowDownRight className="mr-0.5 h-3 w-3" />}
+                                    {s.change}
+                                </Badge>
+                                <span className="text-[10px] font-medium text-muted-foreground italic">vs last period</span>
+                            </div>
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                {/* Area Chart */}
-                <div className="xl:col-span-2 glass-card rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-5">
+            {/* Main Content Grid: Advanced Charts */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                {/* Performance Flow (Composed Chart) */}
+                <Card className="col-span-1 border-none bg-card/30 shadow-premium lg:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between">
                         <div>
-                            <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>Message Activity</h2>
-                            <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>Messages received vs automated replies</p>
+                            <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
+                                <Workflow className="h-5 w-5 text-primary" />
+                                Performance Flow
+                            </CardTitle>
+                            <CardDescription>Multi-layered interaction mapping across 24h</CardDescription>
                         </div>
-                        <div className="flex items-center gap-4">
-                            {[{ label: "Messages", color: "#7c3aed" }, { label: "Replies", color: "#06b6d4" }, { label: "Leads", color: "#10b981" }].map((l) => (
-                                <div key={l.label} className="flex items-center gap-1.5">
-                                    <div className="w-2 h-2 rounded-full" style={{ background: l.color }} />
-                                    <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{l.label}</span>
+                        <div className="hidden items-center gap-6 sm:flex">
+                            {[{ name: "Live", color: "#ec4899" }, { name: "Auto", color: "#a855f7" }, { name: "Success", color: "#10b981" }].map((l) => (
+                                <div key={l.name} className="flex items-center gap-2">
+                                    <div className="h-1.5 w-1.5 rounded-full" style={{ background: l.name === "Success" ? "transparent" : l.color, border: l.name === "Success" ? `2px solid ${l.color}` : 'none' }} />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{l.name}</span>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <AreaChart data={areaData} margin={{ left: -20, bottom: 0 }}>
-                            <defs>
-                                {[
-                                    { id: "msg", color: "#7c3aed" },
-                                    { id: "reply", color: "#06b6d4" },
-                                    { id: "leads", color: "#10b981" },
-                                ].map(({ id, color }) => (
-                                    <linearGradient key={id} id={`grad-${id}`} x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor={color} stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor={color} stopOpacity={0} />
-                                    </linearGradient>
-                                ))}
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
-                            <XAxis dataKey="date" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Area type="monotone" dataKey="messages" stroke="#7c3aed" strokeWidth={2} fill="url(#grad-msg)" name="Messages" />
-                            <Area type="monotone" dataKey="replies" stroke="#06b6d4" strokeWidth={2} fill="url(#grad-reply)" name="Replies" />
-                            <Area type="monotone" dataKey="leads" stroke="#10b981" strokeWidth={2} fill="url(#grad-leads)" name="Leads" />
-                        </AreaChart>
-                    </ResponsiveContainer>
-                </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-[380px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <ComposedChart data={interactionFlowData} margin={{ top: 20, right: 20, bottom: 0, left: -20 }}>
+                                    <defs>
+                                        <linearGradient id="flowGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                                    <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Area type="monotone" dataKey="active" fill="url(#flowGrad)" stroke="#ec4899" strokeWidth={3} />
+                                    <Bar dataKey="auto" barSize={30} fill="#a855f7" radius={[6, 6, 0, 0]} opacity={0.4} />
+                                    <Line type="monotone" dataKey="success" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: "hsl(var(--background))" }} />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="grid grid-cols-3 border-t border-border/10 bg-muted/5 p-6">
+                        <div className="text-center">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Flow Velocity</p>
+                            <p className="text-lg font-black text-[#ec4899]">High</p>
+                        </div>
+                        <div className="text-center border-x border-border/10">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Path Success</p>
+                            <p className="text-lg font-black text-emerald-500">92.4%</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Drop-off Rate</p>
+                            <p className="text-lg font-black text-amber-500">4.2%</p>
+                        </div>
+                    </CardFooter>
+                </Card>
 
-                {/* Pie Chart */}
-                <div className="glass-card rounded-2xl p-6">
-                    <h2 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Platform Split</h2>
-                    <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>Message source breakdown</p>
-                    <ResponsiveContainer width="100%" height={160}>
-                        <PieChart>
-                            <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value">
-                                {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                            </Pie>
-                            <Tooltip formatter={(v: any, n: any) => [`${v}%`, n]} contentStyle={{ background: "var(--popover)", border: "1px solid var(--glass-border)", borderRadius: "12px", fontSize: "12px" }} />
-                        </PieChart>
-                    </ResponsiveContainer>
-                    <div className="space-y-2">
-                        {pieData.map((p) => (
-                            <div key={p.name} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: p.color }} />
-                                    <span className="text-sm" style={{ color: "var(--foreground)" }}>{p.name}</span>
-                                </div>
-                                <span className="text-sm font-bold" style={{ color: p.color }}>{p.value}%</span>
+                {/* Engagement Peak (Bar Chart) */}
+                <Card className="border-none bg-card/30 shadow-premium flex flex-col justify-between">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
+                            <BarChart3 className="h-5 w-5 text-indigo-500" />
+                            Channel Impact
+                        </CardTitle>
+                        <CardDescription>Engagement spikes by platform</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 pb-2">
+                        <div className="h-[280px] w-full mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={hourlyEngagementData} layout="vertical" margin={{ left: -10, right: 20 }}>
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="hour" type="category" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 800 }} width={45} />
+                                    <Tooltip cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                                    <Bar dataKey="instagram" stackId="a" fill="#ec4899" radius={[0, 0, 0, 0]} barSize={12} />
+                                    <Bar dataKey="facebook" stackId="a" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={12} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="p-0">
+                        <div className="w-full space-y-3 p-6 pt-2 bg-gradient-to-t from-muted/20 to-transparent rounded-b-3xl">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase text-muted-foreground">IG Saturation</span>
+                                <span className="text-xs font-black text-pink-500">62%</span>
                             </div>
-                        ))}
-                    </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                        {[
-                            { label: "Avg Response", value: "1.2s", color: "#06b6d4" },
-                            { label: "Open Rate", value: "94%", color: "#10b981" },
-                            { label: "Lead Rate", value: "8.4%", color: "#f59e0b" },
-                            { label: "Bot Accuracy", value: "97%", color: "#7c3aed" },
-                        ].map((q) => (
-                            <div key={q.label} className="p-2 rounded-xl text-center" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                                <div className="text-sm font-bold" style={{ color: q.color }}>{q.value}</div>
-                                <div className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{q.label}</div>
+                            <Progress value={62} className="h-1 bg-muted/20" />
+                            <div className="flex items-center justify-between pt-1">
+                                <span className="text-[10px] font-black uppercase text-muted-foreground">FB Reach</span>
+                                <span className="text-xs font-black text-blue-500">38%</span>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                            <Progress value={38} className="h-1 bg-muted/20" />
+                        </div>
+                    </CardFooter>
+                </Card>
             </div>
 
             {/* Bottom Row */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 {/* Top Automations */}
-                <div className="glass-card rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>Top Automations</h2>
-                        <button className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: "var(--glass-bg)", color: "var(--muted-foreground)", border: "1px solid var(--glass-border)" }}>
-                            View All
-                        </button>
-                    </div>
-                    <div className="space-y-3">
+                <Card className="border-none bg-card/30 shadow-premium">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
+                                <Zap className="h-5 w-5 text-yellow-500" />
+                                Elite Flows
+                            </CardTitle>
+                            <CardDescription>Most triggered automation sequences</CardDescription>
+                        </div>
+                        <Button variant="outline" size="sm" className="rounded-xl font-bold">
+                            Flow Lab
+                        </Button>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                         {topAutomations.map((a, i) => (
-                            <div key={a.name} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold text-white" style={{ background: "var(--brand-gradient)" }}>
+                            <div key={a.name} className="flex items-center gap-4 rounded-2xl border border-border/5 bg-muted/10 p-4 transition-all hover:bg-muted/20">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl text-xs font-black text-white shadow-lg"
+                                    style={{ background: "var(--brand-gradient)" }}>
                                     {i + 1}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate" style={{ color: "var(--foreground)" }}>{a.name}</p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        {a.platform === "instagram" && <Instagram className="w-3 h-3" style={{ color: "#ec4899" }} />}
-                                        {a.platform === "facebook" && <Facebook className="w-3 h-3" style={{ color: "#3b82f6" }} />}
-                                        {a.platform === "both" && <><Instagram className="w-3 h-3" style={{ color: "#ec4899" }} /><Facebook className="w-3 h-3" style={{ color: "#3b82f6" }} /></>}
-                                        <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{a.triggers.toLocaleString()} triggers</span>
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="truncate text-sm font-black tracking-tight">{a.name}</h4>
+                                        <Badge variant="outline" className="h-4 px-1 text-[8px] font-bold uppercase tracking-widest">Active</Badge>
+                                    </div>
+                                    <div className="mt-1 flex items-center gap-3">
+                                        <div className="flex items-center gap-1.5 opacity-60">
+                                            {a.platform === "instagram" ? <Instagram className="h-3 w-3 text-pink-500" /> : <Facebook className="h-3 w-3 text-blue-500" />}
+                                            <span className="text-[10px] font-bold uppercase">{a.platform}</span>
+                                        </div>
+                                        <div className="h-1 w-1 rounded-full bg-border" />
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase">{a.triggers.toLocaleString()} hits</span>
                                     </div>
                                 </div>
-                                <div className="text-right flex-shrink-0">
-                                    <div className="text-sm font-bold" style={{ color: "#10b981" }}>{a.rate}</div>
-                                    <div className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>reply rate</div>
+                                <div className="text-right">
+                                    <div className="text-lg font-black tracking-tighter text-emerald-500">{a.rate}</div>
+                                    <div className="text-[10px] font-bold uppercase text-muted-foreground">Success</div>
                                 </div>
                             </div>
                         ))}
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
 
-                {/* Recent Conversations */}
-                <div className="glass-card rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>Recent Conversations</h2>
-                        <button className="text-xs font-medium px-3 py-1.5 rounded-lg" style={{ background: "var(--glass-bg)", color: "var(--muted-foreground)", border: "1px solid var(--glass-border)" }}>
-                            Open Inbox
-                        </button>
-                    </div>
-                    <div className="space-y-2">
+                {/* Recent Inbox */}
+                <Card className="border-none bg-card/30 shadow-premium">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
+                                <Send className="h-5 w-5 text-primary" />
+                                Smart Inbox
+                            </CardTitle>
+                            <CardDescription>High-priority pending conversations</CardDescription>
+                        </div>
+                        <Button className="rounded-xl font-bold shadow-lg shadow-primary/20">
+                            Launch Inbox
+                        </Button>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
                         {recentConvs.map((c) => (
-                            <div key={c.name} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors message-item" style={{ border: "1px solid var(--glass-border)" }}>
-                                <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                                    style={{ background: c.platform === "instagram" ? "linear-gradient(135deg,#ec4899,#7c3aed)" : "linear-gradient(135deg,#3b82f6,#06b6d4)" }}>
-                                    {c.name[0]}
+                            <div key={c.name} className="group flex items-center gap-4 rounded-2xl border border-border/5 bg-muted/10 p-3.5 transition-all hover:bg-primary/5 cursor-pointer">
+                                <div className="relative">
+                                    <Avatar className="h-11 w-11 rounded-2xl border-2 border-background shadow-lg transition-transform group-hover:scale-110">
+                                        <AvatarImage src="" />
+                                        <AvatarFallback className="rounded-2xl bg-primary/10 text-xs font-black text-primary">
+                                            {c.name.split(' ').map(n => n[0]).join('')}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    {c.unread && (
+                                        <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-4 w-4 bg-primary border-2 border-background"></span>
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{c.name}</span>
-                                        <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{c.time}</span>
+                                        <span className="text-sm font-black tracking-tight">{c.name}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase">{c.time} ago</span>
                                     </div>
-                                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--muted-foreground)" }}>{c.msg}</p>
+                                    <p className="truncate text-xs font-medium text-muted-foreground">{c.msg}</p>
                                 </div>
-                                {c.unread && <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#7c3aed" }} />}
+                                <div className="flex flex-col items-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                    {c.platform === "instagram" ? <Instagram className="h-4 w-4 text-pink-500" /> : <Facebook className="h-4 w-4 text-blue-500" />}
+                                    <ArrowUpRight className="h-3 w-3 text-muted-foreground" />
+                                </div>
                             </div>
                         ))}
-                    </div>
-
-                    {/* Quick stats */}
-                    <div className="mt-4 grid grid-cols-3 gap-2">
+                    </CardContent>
+                    <CardFooter className="grid grid-cols-3 gap-3 pt-0">
                         {[
-                            { icon: Clock, label: "Avg Wait", value: "1.2s", color: "#06b6d4" },
-                            { icon: Bot, label: "Bot Rate", value: "94%", color: "#7c3aed" },
-                            { icon: Send, label: "Sent Today", value: "284", color: "#10b981" },
+                            { icon: Clock, label: "Avg Wait", value: "1.2s", color: "#ec4899" },
+                            { icon: Bot, label: "Bot Rate", value: "94%", color: "#a855f7" },
+                            { icon: Activity, label: "Sentiment", value: "97%", color: "#10b981" },
                         ].map((q) => (
-                            <div key={q.label} className="p-2 rounded-xl text-center" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                                <q.icon className="w-4 h-4 mx-auto mb-1" style={{ color: q.color }} />
-                                <div className="text-sm font-bold" style={{ color: q.color }}>{q.value}</div>
-                                <div className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{q.label}</div>
+                            <div key={q.label} className="flex flex-col items-center justify-center rounded-2xl border border-border/5 bg-muted/20 p-3 text-center transition-all hover:bg-muted/40">
+                                <q.icon className="mb-1.5 h-4 w-4" style={{ color: q.color }} />
+                                <div className="text-sm font-black tracking-tighter" style={{ color: q.color }}>{q.value}</div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{q.label}</div>
                             </div>
                         ))}
-                    </div>
-                </div>
+                    </CardFooter>
+                </Card>
+            </div>
+            {/* Final Row: Team & System */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                {/* Team Pulse */}
+                <Card className="border-none bg-card/30 shadow-premium">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
+                            <Users className="h-5 w-5 text-emerald-500" />
+                            Team Pulse
+                        </CardTitle>
+                        <CardDescription>Human agent occupancy and status</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {[
+                            { name: "Anshul Gupta", role: "Super Admin", status: "Available", color: "#10b981", load: 15 },
+                            { name: "Support AI-1", role: "Virtual Agent", status: "Busy", color: "#06b6d4", load: 88 },
+                            { name: "Rahul S.", role: "Lead Dev", status: "Offline", color: "#64748b", load: 0 },
+                        ].map((member) => (
+                            <div key={member.name} className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
+                                        <AvatarFallback className="bg-muted text-[10px] font-bold">{member.name[0]}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-xs font-black leading-none">{member.name}</p>
+                                        <p className="mt-1 text-[10px] font-medium text-muted-foreground">{member.role}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <Badge variant="outline" className="h-4 px-1 text-[8px] font-black uppercase" style={{ color: member.color, borderColor: `${member.color}30` }}>
+                                        {member.status}
+                                    </Badge>
+                                    <div className="mt-1 h-1 w-16 overflow-hidden rounded-full bg-muted/20">
+                                        <div className="h-full" style={{ width: `${member.load}%`, background: member.color }} />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="ghost" className="w-full rounded-xl text-xs font-bold opacity-50 hover:opacity-100">
+                            Manage Team Settings
+                        </Button>
+                    </CardFooter>
+                </Card>
+
+                {/* System Integrity */}
+                <Card className="col-span-1 border-none bg-card/30 shadow-premium lg:col-span-2">
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                            <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
+                                <Shield className="h-5 w-5 text-indigo-500" />
+                                Infrastructure Host
+                            </CardTitle>
+                            <CardDescription>Real-time server health and API uptime</CardDescription>
+                        </div>
+                        <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
+                            <CheckCircle2 className="mr-1 h-3 w-3" />
+                            All Systems Operational
+                        </Badge>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                            {[
+                                { label: "Main Cluster", icon: Cpu, value: "11% Load", color: "#6366f1" },
+                                { label: "Edge Proxy", icon: Globe, value: "14ms Latency", color: "#06b6d4" },
+                                { label: "Database", icon: HardDrive, value: "Healthy", color: "#10b981" },
+                            ].map((s) => (
+                                <div key={s.label} className="flex flex-col items-center justify-center rounded-2xl border border-border/5 bg-muted/10 p-4">
+                                    <div className="mb-3 rounded-full p-3" style={{ background: `${s.color}10` }}>
+                                        <s.icon className="h-5 w-5" style={{ color: s.color }} />
+                                    </div>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{s.label}</p>
+                                    <p className="mt-1 text-sm font-black">{s.value}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 rounded-2xl bg-muted/10 p-6">
+                            <div className="mb-4 flex items-center justify-between">
+                                <span className="text-xs font-black uppercase tracking-tight">API Throughput</span>
+                                <span className="text-xs font-black text-[#ec4899] italic">99.98% Success</span>
+                            </div>
+                            <div className="flex gap-1.5">
+                                {Array.from({ length: 48 }).map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className={cn(
+                                            "h-8 flex-1 rounded-sm transition-all hover:scale-110 cursor-help",
+                                            i === 12 || i === 34 ? "bg-amber-500/50" : "bg-emerald-500/50"
+                                        )}
+                                        title={i === 12 || i === 34 ? "Slight delay detected" : "Perfect performance"}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );

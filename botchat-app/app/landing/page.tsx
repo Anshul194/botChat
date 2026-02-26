@@ -34,43 +34,43 @@ const features = [
         icon: Bot,
         title: "AI-Powered Auto Replies",
         desc: "Let our AI handle conversations intelligently. Train it on your brand voice and watch it engage customers 24/7.",
-        color: "#7c3aed",
-        grad: "from-purple-500 to-pink-500",
+        color: "#ec4899",
+        grad: "from-pink-500 to-purple-500",
     },
     {
         icon: GitBranch,
         title: "Visual Flow Builder",
         desc: "Create complex automation sequences with a drag-and-drop canvas. No coding required.",
-        color: "#06b6d4",
-        grad: "from-cyan-500 to-blue-500",
+        color: "#a855f7",
+        grad: "from-purple-500 to-pink-500",
     },
     {
         icon: MessageSquare,
         title: "Unified Inbox",
         desc: "Manage Instagram DMs and Facebook Messenger conversations in one beautiful interface.",
-        color: "#ec4899",
-        grad: "from-pink-500 to-rose-500",
+        color: "#db2777",
+        grad: "from-pink-600 to-rose-600",
     },
     {
         icon: BarChart2,
         title: "Advanced Analytics",
         desc: "Track engagement, leads, and conversion rates with real-time dashboards and reports.",
-        color: "#10b981",
-        grad: "from-emerald-500 to-teal-500",
+        color: "#d946ef",
+        grad: "from-fuchsia-500 to-pink-500",
     },
     {
         icon: Target,
         title: "Comment → DM Funnels",
         desc: "Turn every comment into a private conversation. Capture leads the moment they engage.",
-        color: "#f59e0b",
-        grad: "from-yellow-500 to-orange-500",
+        color: "#f472b6",
+        grad: "from-pink-400 to-purple-400",
     },
     {
         icon: Shield,
         title: "Meta Compliant",
         desc: "Fully compliant with Instagram and Facebook Platform Policies. Safe, secure, and reliable.",
-        color: "#8b5cf6",
-        grad: "from-violet-500 to-purple-500",
+        color: "#ec4899",
+        grad: "from-pink-500 to-purple-500",
     },
 ];
 
@@ -110,7 +110,7 @@ const plans = [
         price: 29,
         desc: "Perfect for creators",
         features: ["1 IG + 1 FB account", "500 auto-replies/mo", "3 automation flows", "Basic analytics"],
-        color: "#06b6d4",
+        color: "#ec4899",
         cta: "Start Free Trial",
     },
     {
@@ -118,7 +118,7 @@ const plans = [
         price: 79,
         desc: "For growing businesses",
         features: ["3 IG + 3 FB accounts", "Unlimited auto-replies", "Unlimited flows + AI", "Advanced analytics", "A/B testing", "Priority support"],
-        color: "#7c3aed",
+        color: "#a855f7",
         popular: true,
         cta: "Start Free Trial",
     },
@@ -127,7 +127,7 @@ const plans = [
         price: 199,
         desc: "Enterprise power",
         features: ["Unlimited accounts", "Custom AI training", "White-label", "API access", "Dedicated manager", "SLA guarantee"],
-        color: "#f59e0b",
+        color: "#db2777",
         cta: "Contact Sales",
     },
 ];
@@ -223,16 +223,16 @@ export default function LandingPage() {
             {/* Hero Section */}
             <section className="pt-32 pb-24 px-4 md:px-6 text-center relative overflow-hidden">
                 {/* Background orbs */}
-                <div className="absolute top-20 left-1/4 w-80 h-80 rounded-full blur-[120px] opacity-20 pointer-events-none" style={{ background: "#7c3aed" }} />
-                <div className="absolute top-40 right-1/4 w-60 h-60 rounded-full blur-[100px] opacity-15 pointer-events-none" style={{ background: "#ec4899" }} />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-40 blur-[80px] opacity-10 pointer-events-none" style={{ background: "#06b6d4" }} />
+                <div className="absolute top-20 left-1/4 w-80 h-80 rounded-full blur-[120px] opacity-20 pointer-events-none" style={{ background: "#ec4899" }} />
+                <div className="absolute top-40 right-1/4 w-60 h-60 rounded-full blur-[100px] opacity-15 pointer-events-none" style={{ background: "#a855f7" }} />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-40 blur-[80px] opacity-10 pointer-events-none" style={{ background: "#ec4899" }} />
 
                 <div className="relative max-w-5xl mx-auto">
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium" style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.25)", color: "#a855f7" }}>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium" style={{ background: "rgba(236,72,153,0.1)", border: "1px solid rgba(236,72,153,0.25)", color: "#ec4899" }}>
                         <Sparkles className="w-4 h-4" />
                         AI-Powered Instagram & Facebook Automation
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "rgba(124,58,237,0.3)" }}>NEW</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "rgba(236,72,153,0.3)" }}>NEW</span>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-extrabold text-foreground mb-6 leading-tight tracking-tight">
@@ -249,7 +249,7 @@ export default function LandingPage() {
                         <Link
                             href="/dashboard"
                             className="flex items-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold transition-all hover:opacity-90 hover:scale-105"
-                            style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 8px 30px rgba(124,58,237,0.5)" }}
+                            style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 8px 30px rgba(236,72,153,0.5)" }}
                         >
                             Start Free Trial — 14 Days
                             <ArrowRight className="w-5 h-5" />
@@ -279,7 +279,7 @@ export default function LandingPage() {
                                     className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold text-white"
                                     style={{
                                         borderColor: "var(--background)",
-                                        background: `hsl(${240 + i * 30}, 70%, 60%)`,
+                                        background: `hsl(${320 + i * 15}, 70%, 60%)`,
                                         zIndex: 5 - i,
                                     }}
                                 >
@@ -300,7 +300,7 @@ export default function LandingPage() {
                         style={{
                             background: "rgba(255,255,255,0.04)",
                             border: "1px solid rgba(255,255,255,0.08)",
-                            boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(124,58,237,0.15)",
+                            boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(236,72,153,0.15)",
                         }}
                     >
                         <div className="rounded-2xl overflow-hidden" style={{ background: "var(--card)" }}>
@@ -320,10 +320,10 @@ export default function LandingPage() {
                                         <div
                                             key={item}
                                             className="flex items-center gap-2 px-2 py-2 rounded-lg"
-                                            style={i === 0 ? { background: "rgba(124,58,237,0.2)" } : {}}
+                                            style={i === 0 ? { background: "rgba(236,72,153,0.2)" } : {}}
                                         >
-                                            <div className="w-4 h-4 rounded" style={{ background: i === 0 ? "#7c3aed" : "rgba(255,255,255,0.1)" }} />
-                                            <div className="h-2.5 rounded-full flex-1" style={{ background: i === 0 ? "rgba(124,58,237,0.4)" : "rgba(255,255,255,0.08)", width: `${60 + i * 10}%` }} />
+                                            <div className="w-4 h-4 rounded" style={{ background: i === 0 ? "#ec4899" : "rgba(255,255,255,0.1)" }} />
+                                            <div className="h-2.5 rounded-full flex-1" style={{ background: i === 0 ? "rgba(236,72,153,0.4)" : "rgba(255,255,255,0.08)", width: `${60 + i * 10}%` }} />
                                         </div>
                                     ))}
                                 </div>
@@ -343,7 +343,7 @@ export default function LandingPage() {
                                             {/* Mini chart bars */}
                                             <div className="flex items-end gap-1.5 h-full p-4">
                                                 {[40, 70, 50, 90, 65, 80, 55].map((h, i) => (
-                                                    <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i % 2 === 0 ? "#7c3aed" : "#ec4899", opacity: 0.7 }} />
+                                                    <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i % 2 === 0 ? "#ec4899" : "#a855f7", opacity: 0.7 }} />
                                                 ))}
                                             </div>
                                         </div>
@@ -373,7 +373,7 @@ export default function LandingPage() {
                     </div>
                     <div
                         className="absolute -right-4 top-1/4 float-anim px-3 py-2 rounded-xl hidden md:flex items-center gap-2 text-sm font-medium"
-                        style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.3)", color: "#a855f7", backdropFilter: "blur(10px)", animationDelay: "1s" }}
+                        style={{ background: "rgba(236,72,153,0.1)", border: "1px solid rgba(236,72,153,0.3)", color: "#ec4899", backdropFilter: "blur(10px)", animationDelay: "1s" }}
                     >
                         <TrendingUp className="w-4 h-4" />
                         +124 leads today
@@ -397,7 +397,7 @@ export default function LandingPage() {
             <section id="features" className="py-24 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4" style={{ background: "rgba(124,58,237,0.1)", color: "#a855f7", border: "1px solid rgba(124,58,237,0.2)" }}>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4" style={{ background: "rgba(236,72,153,0.1)", color: "#ec4899", border: "1px solid rgba(236,72,153,0.2)" }}>
                             <Zap className="w-3 h-3" />
                             POWERFUL FEATURES
                         </div>
@@ -576,14 +576,14 @@ export default function LandingPage() {
                     <div
                         className="rounded-3xl p-12 relative overflow-hidden"
                         style={{
-                            background: "radial-gradient(ellipse at center, rgba(124,58,237,0.2) 0%, rgba(10,10,15,0.8) 70%)",
-                            border: "1px solid rgba(124,58,237,0.2)",
-                            boxShadow: "0 30px 80px rgba(124,58,237,0.2)",
+                            background: "radial-gradient(ellipse at center, rgba(236,72,153,0.2) 0%, rgba(10,10,15,0.8) 70%)",
+                            border: "1px solid rgba(236,72,153,0.2)",
+                            boxShadow: "0 30px 80px rgba(236,72,153,0.2)",
                         }}
                     >
                         <div className="absolute inset-0 opacity-30" style={{ background: "var(--brand-gradient-soft)" }} />
                         <div className="relative">
-                            <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center" style={{ background: "var(--brand-gradient)", boxShadow: "0 8px 30px rgba(124,58,237,0.5)" }}>
+                            <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center" style={{ background: "var(--brand-gradient)", boxShadow: "0 8px 30px rgba(236,72,153,0.5)" }}>
                                 <Sparkles className="w-8 h-8 text-white" />
                             </div>
                             <h2 className="text-4xl font-bold text-foreground mb-4">Ready to automate?</h2>
@@ -591,7 +591,7 @@ export default function LandingPage() {
                             <Link href="/dashboard">
                                 <button
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-base font-semibold transition-all hover:opacity-90 hover:scale-105"
-                                    style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 8px 30px rgba(124,58,237,0.5)" }}
+                                    style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 8px 30px rgba(236,72,153,0.5)" }}
                                 >
                                     Start Your Free Trial Today
                                     <ArrowRight className="w-5 h-5" />

@@ -73,7 +73,7 @@ export default function SignUpPage() {
     })();
 
     const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][pwdStrength];
-    const strengthColors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
+    const strengthColors = ["", "#ef4444", "#f59e0b", "#ec4899", "#22c55e"];
 
     const features = [
         "Unlimited Instagram & Facebook connections",
@@ -89,7 +89,7 @@ export default function SignUpPage() {
             <div
                 className="hidden lg:flex lg:w-[44%] flex-col relative overflow-hidden"
                 style={{
-                    background: "linear-gradient(155deg, var(--brand-blue-dark) 0%, var(--primary) 50%, var(--accent) 100%)",
+                    background: "linear-gradient(155deg, var(--brand-pink-dark) 0%, var(--primary) 50%, var(--accent) 100%)",
                 }}
             >
                 {/* Decorative elements */}
@@ -158,7 +158,7 @@ export default function SignUpPage() {
                                     key={l}
                                     className="w-8 h-8 rounded-full border-2 border-white/30 flex items-center justify-center text-white font-bold text-xs"
                                     style={{
-                                        background: `hsl(${210 + i * 20}, 80%, ${50 + i * 5}%)`,
+                                        background: `hsl(${320 + i * 15}, 80%, ${50 + i * 5}%)`,
                                         zIndex: 5 - i,
                                     }}
                                 >
@@ -208,7 +208,7 @@ export default function SignUpPage() {
                                         style={{
                                             background: step >= s ? "var(--brand-gradient)" : "var(--muted)",
                                             color: step >= s ? "#fff" : "var(--muted-foreground)",
-                                            boxShadow: step === s ? "var(--glow-blue-sm)" : "none",
+                                            boxShadow: step === s ? "var(--glow-pink-sm)" : "none",
                                         }}
                                     >
                                         {step > s ? <Check className="w-3.5 h-3.5" /> : s}
@@ -252,7 +252,7 @@ export default function SignUpPage() {
                                             className="flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200"
                                             style={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--foreground)" }}
                                             onMouseEnter={(e) => {
-                                                e.currentTarget.style.borderColor = "rgba(29,110,245,0.35)";
+                                                e.currentTarget.style.borderColor = "rgba(236,72,153,0.35)";
                                                 e.currentTarget.style.background = "var(--nav-hover-bg)";
                                             }}
                                             onMouseLeave={(e) => {
@@ -425,7 +425,7 @@ export default function SignUpPage() {
                                             type="checkbox"
                                             checked={form.agree}
                                             onChange={(e) => setField("agree", e.target.checked)}
-                                            className="mt-0.5 w-4 h-4 rounded accent-blue-600 cursor-pointer flex-shrink-0"
+                                            className="mt-0.5 w-4 h-4 rounded accent-pink-600 cursor-pointer flex-shrink-0"
                                         />
                                         <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>
                                             I agree to BotChat&apos;s{" "}
