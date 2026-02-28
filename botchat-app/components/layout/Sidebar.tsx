@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { logoutUser } from "@/store/slices/authSlice";
 import {
     LayoutDashboard,
     MessageSquare,
@@ -19,9 +22,19 @@ import {
     GitBranch,
     Target,
     Inbox,
+    LogOut,
+    AlertCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
 interface SidebarProps {
     collapsed: boolean;
@@ -64,6 +77,24 @@ const navItems = [
 
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     const pathname = usePathname();
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const { user } = useAppSelector((state) => state.auth);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        // Slight physical delay to enforce premium state feedback
+        await new Promise(resolve => setTimeout(resolve, 600));
+        await dispatch(logoutUser());
+        router.push("/auth/sign-in");
+    };
 
     return (
         <aside
@@ -217,24 +248,77 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 </div>
             )}
 
-            {/* User profile */}
+            {/* User profile with Inline Premium Logout */}
             <div
-                className="flex items-center gap-3 p-3 border-t mx-2 mb-2"
+                className={cn(
+                    "flex items-center gap-3 mx-2 mb-2 p-3 border-t rounded-xl transition-colors group",
+                    !collapsed && "hover:bg-muted/40 cursor-pointer"
+                )}
                 style={{ borderColor: "var(--sidebar-border)" }}
             >
                 <div
-                    className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
-                    style={{ background: "var(--brand-gradient)" }}
+                    className={cn(
+                        "w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white transition-transform duration-300",
+                        !collapsed && "group-hover:scale-105"
+                    )}
+                    style={{ background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" }}
                 >
-                    A
+                    {mounted ? (user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "A") : "A"}
                 </div>
                 {!collapsed && (
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground truncate">Anshul</p>
-                        <p className="text-[10px] text-muted-foreground truncate">Pro Plan</p>
-                    </div>
+                    <>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-foreground truncate">{mounted ? (user?.name || "Admin User") : "Admin User"}</p>
+                            <p className="text-[10px] text-muted-foreground truncate capitalize">{mounted ? (user?.role || "Pro Plan") : "Pro Plan"}</p>
+                        </div>
+                        <button
+                            onClick={() => setShowLogoutConfirm(true)}
+                            title="Log out"
+                            className="p-2 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-100 focus:opacity-100"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </button>
+                    </>
                 )}
             </div>
+
+            {/* Logout Confirmation Dialog */}
+            <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+                <DialogContent className="sm:max-w-[360px] p-6 gap-6">
+                    <div className="flex flex-col items-center text-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.1)]">
+                            <LogOut className="w-6 h-6 ml-0.5" />
+                        </div>
+                        <DialogHeader>
+                            <DialogTitle className="text-xl text-center">See you later?</DialogTitle>
+                            <DialogDescription className="text-center pt-1.5">
+                                Are you sure you want to log out of your BotChat workspace? You&apos;ll be required to enter your credentials next time.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-2 pt-2 border-t mt-2">
+                        <button
+                            onClick={() => setShowLogoutConfirm(false)}
+                            disabled={isLoggingOut}
+                            className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors hover:bg-muted"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            disabled={isLoggingOut}
+                            className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 transition-colors flex items-center justify-center"
+                        >
+                            {isLoggingOut ? (
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin-slow" />
+                            ) : (
+                                "Log out"
+                            )}
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Collapse toggle */}
             <button

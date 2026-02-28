@@ -54,6 +54,7 @@ export const loginUser = createAsyncThunk(
 
             const payload = data.data || data;
             const token = payload.token || data.token;
+            const refreshToken = payload.refreshToken || data.refreshToken;
             let user = payload.user || data.user;
 
             if (!user && credentials.email) {
@@ -62,6 +63,7 @@ export const loginUser = createAsyncThunk(
 
             if (typeof window !== 'undefined') {
                 if (token) localStorage.setItem('token', token);
+                if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
                 if (user) localStorage.setItem('user', JSON.stringify(user));
             }
 
@@ -77,12 +79,31 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
-    async (_, { dispatch }) => {
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+    async (_, { dispatch, rejectWithValue }) => {
+        try {
+            let currentRefreshToken = "";
+            if (typeof window !== 'undefined') {
+                currentRefreshToken = localStorage.getItem('refreshToken') || "";
+            }
+
+            // Per API spec
+            await api.post('/auth/logout', { refreshToken: currentRefreshToken });
+
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('user');
+            }
+            return null;
+        } catch (error: any) {
+            // Even if API fails, forcefully clear local storage so the user isn't bricked
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('user');
+            }
+            return rejectWithValue(error.message);
         }
-        return null;
     }
 );
 
