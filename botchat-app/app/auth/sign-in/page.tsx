@@ -5,56 +5,66 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     Eye, EyeOff, Mail, Lock, Zap, MessageSquare,
-    ArrowRight, Github, Chrome,
+    ArrowRight, Github, Chrome, Check, AlertCircle,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch } from "@/store/hooks";
 import { loginUser } from "@/store/slices/authSlice";
-import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SignInPage() {
     const router = useRouter();
     const { theme } = useTheme();
     const dispatch = useAppDispatch();
+
     const [showPwd, setShowPwd] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
+    // Status states for micro feedback
+    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [serverError, setServerError] = useState("");
+
     const validate = () => {
         const e: typeof errors = {};
-        if (!form.email) e.email = "Email is required";
-        else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
-        if (!form.password) e.password = "Password is required";
-        else if (form.password.length < 6) e.password = "Minimum 6 characters";
+        if (!form.email) e.email = "Required";
+        else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Invalid structure";
+        if (!form.password) e.password = "Required";
+        else if (form.password.length < 6) e.password = "Too short";
         setErrors(e);
         return Object.keys(e).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validate()) return;
 
-        setLoading(true);
-        toast.promise(
-            dispatch(loginUser({ email: form.email, password: form.password })).unwrap(),
-            {
-                loading: 'Verifying credentials...',
-                success: (data) => {
-                    const nameStr = data?.user?.name ? `, ${data.user.name}` : '';
-                    router.push("/dashboard");
-                    return `Welcome back${nameStr}!`;
-                },
-                error: (err) => {
-                    setLoading(false);
-                    return err || "Invalid email or password";
-                }
-            }
-        );
+        if (!validate()) {
+            setStatus("error");
+            setTimeout(() => setStatus("idle"), 2000);
+            return;
+        }
+
+        setStatus("loading");
+        setServerError("");
+
+        try {
+            await dispatch(loginUser({ email: form.email, password: form.password })).unwrap();
+
+            // Contextual morph to success
+            setStatus("success");
+
+            // Soft route push
+            setTimeout(() => {
+                router.push("/dashboard");
+            }, 1000);
+        } catch (err: any) {
+            // Inline physical visual rejection
+            setStatus("error");
+            setServerError(err || "Invalid credentials");
+            setTimeout(() => setStatus("idle"), 2500);
+        }
     };
-
-    const isLight = theme === "light";
 
     return (
         <div
@@ -86,9 +96,7 @@ export default function SignInPage() {
                     }}
                 />
 
-                {/* Content */}
                 <div className="relative z-10 flex flex-col h-full p-12">
-                    {/* Logo */}
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center shadow-lg">
                             <MessageSquare className="w-5 h-5 text-white" />
@@ -96,7 +104,6 @@ export default function SignInPage() {
                         <span className="text-white font-bold text-xl tracking-tight">BotChat</span>
                     </div>
 
-                    {/* Main copy */}
                     <div className="flex-1 flex flex-col justify-center mt-16">
                         <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-white/90 text-xs font-semibold w-fit mb-6">
                             <Zap className="w-3.5 h-3.5" />
@@ -111,7 +118,6 @@ export default function SignInPage() {
                             Connect Instagram &amp; Facebook, deploy AI chatbots, and manage all your DMs from one beautiful workspace.
                         </p>
 
-                        {/* Stats */}
                         <div className="grid grid-cols-3 gap-4">
                             {[
                                 { value: "50K+", label: "Businesses" },
@@ -129,7 +135,6 @@ export default function SignInPage() {
                         </div>
                     </div>
 
-                    {/* Testimonial */}
                     <div className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-5">
                         <p className="text-white/85 text-sm leading-relaxed mb-3">
                             &quot;BotChat cut our response time by 80%. The AI flows are incredibly intuitive — our team was up and running in minutes.&quot;
@@ -148,10 +153,9 @@ export default function SignInPage() {
             </div>
 
             {/* ── Right Panel — Form ─────────────────────────────── */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col relative overflow-hidden">
                 {/* Top bar */}
-                <div className="flex items-center justify-between px-6 py-4">
-                    {/* Mobile logo */}
+                <div className="flex items-center justify-between px-6 py-4 absolute top-0 w-full z-10">
                     <div className="lg:hidden flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                             <MessageSquare className="w-4 h-4 text-white" />
@@ -172,19 +176,26 @@ export default function SignInPage() {
                 </div>
 
                 {/* Form area */}
-                <div className="flex-1 flex items-center justify-center px-6 py-8">
-                    <div className="w-full max-w-[420px] slide-up">
-                        {/* Heading */}
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-extrabold mb-2" style={{ color: "var(--foreground)" }}>
+                <div className="flex-1 flex items-center justify-center px-6 py-8 h-full">
+                    <motion.div
+                        className="w-full max-w-[380px] mt-12"
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                        <div className="mb-8 text-center flex flex-col items-center">
+                            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 lg:hidden">
+                                <MessageSquare className="w-6 h-6 text-primary" />
+                            </div>
+                            <h2 className="text-2xl font-bold mb-1.5" style={{ color: "var(--foreground)" }}>
                                 Welcome back
                             </h2>
                             <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                                Sign in to your BotChat workspace
+                                Enter your details to access your workspace
                             </p>
                         </div>
 
-                        {/* Social sign-in */}
+                        {/* Social (De-emphasized contextually) */}
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             {[
                                 { icon: <Chrome className="w-4 h-4" />, label: "Google" },
@@ -192,19 +203,12 @@ export default function SignInPage() {
                             ].map((p) => (
                                 <button
                                     key={p.label}
-                                    className="flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200"
+                                    type="button"
+                                    className="flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200 hover:bg-muted/50"
                                     style={{
                                         background: "var(--card)",
                                         borderColor: "var(--border)",
                                         color: "var(--foreground)",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.borderColor = "rgba(236,72,153,0.35)";
-                                        e.currentTarget.style.background = "var(--nav-hover-bg)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.borderColor = "var(--border)";
-                                        e.currentTarget.style.background = "var(--card)";
                                     }}
                                 >
                                     {p.icon}
@@ -213,142 +217,229 @@ export default function SignInPage() {
                             ))}
                         </div>
 
-                        {/* Divider */}
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex-1 divider" />
+                            <div className="flex-1 divider opacity-50" />
                             <span className="text-xs font-medium px-1" style={{ color: "var(--muted-foreground)" }}>
-                                or continue with email
+                                OR
                             </span>
-                            <div className="flex-1 divider" />
+                            <div className="flex-1 divider opacity-50" />
                         </div>
 
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} noValidate className="space-y-4">
-                            {/* Email */}
-                            <div>
-                                <label className="block text-sm font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>
-                                    Email address
-                                </label>
+                        {/* Form Body - uses animation to physically reject errors */}
+                        <motion.form
+                            onSubmit={handleSubmit}
+                            noValidate
+                            className="space-y-4"
+                            animate={status === "error" ? { x: [-8, 8, -5, 5, 0] } : {}}
+                            transition={{ duration: 0.4 }}
+                        >
+                            <div className="space-y-3.5">
+                                {/* Email Input */}
                                 <div className="relative">
                                     <Mail
-                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-                                        style={{ color: "var(--muted-foreground)" }}
+                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors"
+                                        style={{ color: status === "error" && errors.email ? "var(--destructive)" : "var(--muted-foreground)" }}
                                     />
                                     <input
                                         id="signin-email"
                                         type="email"
                                         autoComplete="email"
-                                        placeholder="you@company.com"
+                                        placeholder="Email address"
                                         value={form.email}
                                         onChange={(e) => {
                                             setForm((f) => ({ ...f, email: e.target.value }));
                                             if (errors.email) setErrors((er) => ({ ...er, email: undefined }));
+                                            if (serverError) setServerError("");
                                         }}
-                                        className="input-field pl-10"
+                                        className="input-field pl-10 h-12 rounded-xl transition-all"
                                         style={{
-                                            borderColor: errors.email ? "var(--destructive)" : undefined,
+                                            background: "var(--background)",
+                                            borderColor: errors.email || (status === "error" && !errors.password) ? "var(--destructive)" : "var(--border)",
+                                            boxShadow: status === "error" && errors.email ? "0 0 0 1px var(--destructive)" : undefined
                                         }}
                                     />
+                                    <AnimatePresence>
+                                        {errors.email && (
+                                            <motion.span
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold"
+                                                style={{ color: "var(--destructive)" }}
+                                            >
+                                                {errors.email}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
-                                {errors.email && (
-                                    <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>{errors.email}</p>
-                                )}
-                            </div>
 
-                            {/* Password */}
-                            <div>
-                                <div className="flex items-center justify-between mb-1.5">
-                                    <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-                                        Password
-                                    </label>
-                                    <Link
-                                        href="/auth/forgot-password"
-                                        className="text-xs font-medium"
-                                        style={{ color: "var(--primary)" }}
-                                    >
-                                        Forgot password?
-                                    </Link>
-                                </div>
+                                {/* Password Input */}
                                 <div className="relative">
                                     <Lock
-                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-                                        style={{ color: "var(--muted-foreground)" }}
+                                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors"
+                                        style={{ color: status === "error" && errors.password ? "var(--destructive)" : "var(--muted-foreground)" }}
                                     />
                                     <input
                                         id="signin-password"
                                         type={showPwd ? "text" : "password"}
                                         autoComplete="current-password"
-                                        placeholder="••••••••"
+                                        placeholder="Password"
                                         value={form.password}
                                         onChange={(e) => {
                                             setForm((f) => ({ ...f, password: e.target.value }));
                                             if (errors.password) setErrors((er) => ({ ...er, password: undefined }));
+                                            if (serverError) setServerError("");
                                         }}
-                                        className="input-field pl-10 pr-11"
+                                        className="input-field pl-10 pr-11 h-12 rounded-xl transition-all"
                                         style={{
-                                            borderColor: errors.password ? "var(--destructive)" : undefined,
+                                            background: "var(--background)",
+                                            borderColor: errors.password ? "var(--destructive)" : "var(--border)",
+                                            boxShadow: status === "error" && errors.password ? "0 0 0 1px var(--destructive)" : undefined
                                         }}
                                     />
+                                    <AnimatePresence>
+                                        {errors.password && !showPwd && (
+                                            <motion.span
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="absolute right-10 top-1/2 -translate-y-1/2 text-xs font-semibold"
+                                                style={{ color: "var(--destructive)" }}
+                                            >
+                                                {errors.password}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
                                     <button
                                         type="button"
-                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors"
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors hover:text-foreground"
                                         onClick={() => setShowPwd(!showPwd)}
                                         style={{ color: "var(--muted-foreground)" }}
                                     >
                                         {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                     </button>
                                 </div>
-                                {errors.password && (
-                                    <p className="mt-1 text-xs" style={{ color: "var(--destructive)" }}>{errors.password}</p>
-                                )}
                             </div>
 
-                            {/* Remember me */}
-                            <div className="flex items-center gap-2">
-                                <input
-                                    id="remember-me"
-                                    type="checkbox"
-                                    className="w-4 h-4 rounded accent-pink-600 cursor-pointer"
-                                />
-                                <label htmlFor="remember-me" className="text-sm cursor-pointer" style={{ color: "var(--muted-foreground)" }}>
-                                    Keep me signed in
+                            <div className="flex items-center justify-between pb-1">
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <div className="relative flex items-center justify-center w-4 h-4 border rounded transition-colors"
+                                        style={{ borderColor: "var(--border)" }}>
+                                        <input
+                                            type="checkbox"
+                                            className="peer absolute inset-0 opacity-0 cursor-pointer"
+                                        />
+                                        <Check className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity z-10" />
+                                        <div className="absolute inset-0 rounded bg-primary scale-0 peer-checked:scale-100 transition-transform origin-center" />
+                                    </div>
+                                    <span className="text-xs transition-colors group-hover:text-foreground" style={{ color: "var(--muted-foreground)" }}>
+                                        Keep me signed in
+                                    </span>
                                 </label>
+                                <Link
+                                    href="/auth/forgot-password"
+                                    className="text-xs font-semibold hover:underline"
+                                    style={{ color: "var(--primary)" }}
+                                >
+                                    Forgot password?
+                                </Link>
                             </div>
 
-                            {/* Submit */}
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="btn-primary w-full py-3 text-base mt-2"
-                            >
-                                {loading ? (
-                                    <span className="flex items-center gap-2">
-                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin-slow" />
-                                        Signing in…
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        Sign in
-                                        <ArrowRight className="w-4 h-4" />
-                                    </span>
+                            {/* Inline Server Error Rejection (Context instead of Notification) */}
+                            <AnimatePresence>
+                                {status === "error" && serverError && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0, y: -10 }}
+                                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                                        exit={{ opacity: 0, height: 0, y: -10 }}
+                                        className="flex items-center justify-center gap-2 text-xs font-medium bg-destructive/10 text-destructive rounded-lg py-2.5 overflow-hidden"
+                                    >
+                                        <AlertCircle className="w-4 h-4" />
+                                        {serverError}
+                                    </motion.div>
                                 )}
-                            </button>
-                        </form>
+                            </AnimatePresence>
 
-                        {/* Mobile sign-up link */}
-                        <p className="mt-6 text-center text-sm lg:hidden" style={{ color: "var(--muted-foreground)" }}>
+                            {/* Main CTA Morphing Physical State */}
+                            <motion.button
+                                type="submit"
+                                disabled={status === "loading" || status === "success"}
+                                className="w-full h-12 rounded-xl flex items-center justify-center font-semibold text-white transition-shadow relative overflow-hidden"
+                                animate={{
+                                    backgroundColor:
+                                        status === "error" ? "var(--destructive)" :
+                                            status === "success" ? "#10b981" : // emerald-500
+                                                "var(--primary)",
+                                    scale: status === "success" ? 1.02 : 1
+                                }}
+                                transition={{ duration: 0.2 }}
+                                style={{
+                                    // Layer gradient on idle/load logic
+                                    background: status === "idle" || status === "loading" ? "var(--brand-gradient)" : undefined,
+                                    opacity: status === "loading" ? 0.9 : 1,
+                                    cursor: status === "success" || status === "loading" ? "default" : "pointer"
+                                }}
+                            >
+                                <AnimatePresence mode="popLayout">
+                                    {status === "idle" && (
+                                        <motion.span
+                                            key="idle"
+                                            initial={{ opacity: 0, y: 10, filter: "blur(2px)" }}
+                                            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                                            exit={{ opacity: 0, y: -10, filter: "blur(2px)" }}
+                                            className="flex items-center gap-2"
+                                        >
+                                            Sign In
+                                            <ArrowRight className="w-4 h-4" />
+                                        </motion.span>
+                                    )}
+                                    {status === "loading" && (
+                                        <motion.div
+                                            key="loading"
+                                            initial={{ opacity: 0, scale: 0.5 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.5 }}
+                                            className="w-5 h-5 border-[2.5px] border-white/30 border-t-white rounded-full spin-slow"
+                                        />
+                                    )}
+                                    {status === "success" && (
+                                        <motion.div
+                                            key="success"
+                                            initial={{ opacity: 0, scale: 0.5 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <Check className="w-5 h-5" strokeWidth={3} />
+                                        </motion.div>
+                                    )}
+                                    {status === "error" && (
+                                        <motion.span
+                                            key="error"
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 10 }}
+                                            className="flex items-center gap-2"
+                                        >
+                                            Failed
+                                        </motion.span>
+                                    )}
+                                </AnimatePresence>
+                            </motion.button>
+                        </motion.form>
+
+                        <p className="mt-8 text-center text-sm lg:hidden" style={{ color: "var(--muted-foreground)" }}>
                             Don&apos;t have an account?{" "}
                             <Link href="/auth/sign-up" className="font-semibold" style={{ color: "var(--primary)" }}>
                                 Sign up free
                             </Link>
                         </p>
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-center gap-4 px-6 py-4">
-                    {["Privacy Policy", "Terms of Service", "Help"].map((t) => (
-                        <Link key={t} href="#" className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                <div className="flex items-center justify-center gap-4 px-6 py-6 absolute bottom-0 w-full text-xs" style={{ color: "var(--muted-foreground)" }}>
+                    {["Privacy", "Terms", "Help"].map((t) => (
+                        <Link key={t} href="#" className="hover:text-foreground transition-colors">
                             {t}
                         </Link>
                     ))}
