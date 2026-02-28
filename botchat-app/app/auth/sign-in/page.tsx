@@ -9,10 +9,14 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
+import { useAppDispatch } from "@/store/hooks";
+import { loginUser } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 
 export default function SignInPage() {
     const router = useRouter();
     const { theme } = useTheme();
+    const dispatch = useAppDispatch();
     const [showPwd, setShowPwd] = useState(false);
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({ email: "", password: "" });
@@ -28,14 +32,26 @@ export default function SignInPage() {
         return Object.keys(e).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
+
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            router.push("/dashboard");
-        }, 1500);
+        toast.promise(
+            dispatch(loginUser({ email: form.email, password: form.password })).unwrap(),
+            {
+                loading: 'Verifying credentials...',
+                success: (data) => {
+                    const nameStr = data?.user?.name ? `, ${data.user.name}` : '';
+                    router.push("/dashboard");
+                    return `Welcome back${nameStr}!`;
+                },
+                error: (err) => {
+                    setLoading(false);
+                    return err || "Invalid email or password";
+                }
+            }
+        );
     };
 
     const isLight = theme === "light";
