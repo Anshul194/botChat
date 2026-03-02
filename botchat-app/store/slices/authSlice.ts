@@ -53,7 +53,8 @@ export const loginUser = createAsyncThunk(
             const data = response.data;
 
             const payload = data.data || data;
-            const token = payload.token || data.token;
+            // Check for both token and accessToken
+            const token = payload.token || data.token || payload.accessToken || data.accessToken;
             const refreshToken = payload.refreshToken || data.refreshToken;
             let user = payload.user || data.user;
 
@@ -145,4 +146,10 @@ const authSlice = createSlice({
 });
 
 export const { clearError, setCredentials } = authSlice.actions;
+
+// Global Role Selectors (using any to avoid circular dependency with store)
+export const selectIsSuperAdmin = (state: any) => state.auth.user?.role === 'SUPER_ADMIN';
+export const selectIsReseller = (state: any) => state.auth.user?.role === 'RESELLER';
+export const selectIsTenant = (state: any) => state.auth.user?.role === 'TENANT';
+
 export default authSlice.reducer;

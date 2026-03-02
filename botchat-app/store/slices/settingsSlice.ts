@@ -22,6 +22,8 @@ export interface GeneralSettings {
     defaultTimezone?: string;
     dateFormat?: string;
     timeFormat?: string;
+    logo?: string;
+    favicon?: string;
 }
 
 export interface EmailProfile {
@@ -104,7 +106,7 @@ export const fetchGeneralSettings = createAsyncThunk(
 
 export const updateGeneralSettings = createAsyncThunk(
     'settings/updateGeneral',
-    async (payload: { scopeType: string; scopeId?: string | null; data: GeneralSettings }, { rejectWithValue }) => {
+    async (payload: FormData | { scopeType: string; scopeId?: string | null; data: GeneralSettings }, { rejectWithValue }) => {
         try {
             const res = await api.post('/settings/general/update', payload);
             return res.data?.data || res.data;
@@ -171,6 +173,23 @@ export const updateAiSettings = createAsyncThunk(
     async (payload: AISettings, { rejectWithValue }) => {
         try {
             const res = await api.post('/settings/ai', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// Asset Upload
+export const uploadFile = createAsyncThunk(
+    'settings/uploadFile',
+    async (file: File, { rejectWithValue }) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
