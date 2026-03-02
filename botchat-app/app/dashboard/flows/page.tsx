@@ -32,36 +32,36 @@ const DS = {
    DATA DEFINITIONS
    ============================================================ */
 const TRIGGERS = [
-  { id: "comment",       icon: "💬", label: "Comment Keyword",  desc: "Triggers when someone comments a word on your post/reel",  color: "#E8450A" },
-  { id: "story_reply",   icon: "📸", label: "Story Reply",       desc: "Triggers when someone replies to your story",              color: "#9333EA" },
-  { id: "dm_keyword",    icon: "✉️",  label: "DM Keyword",        desc: "Triggers when someone DMs a specific keyword",            color: "#0369A1" },
-  { id: "new_follower",  icon: "👤", label: "New Follower",       desc: "Triggers when someone follows your account",              color: "#16A34A" },
-  { id: "story_mention", icon: "📢", label: "Story Mention",      desc: "Triggers when someone @mentions you in their story",      color: "#D97706" },
-  { id: "link_click",    icon: "🔗", label: "Bio Link Click",     desc: "Triggers when someone clicks your bio link button",       color: "#0891B2" },
-  { id: "ad_comment",    icon: "📣", label: "Ad Comment",         desc: "Triggers on comments on your boosted/sponsored posts",    color: "#7C3AED" },
-  { id: "live_mention",  icon: "🔴", label: "Live / Mention",     desc: "Triggers during Instagram Live interactions",             color: "#DC2626" },
+  { id: "comment", icon: "💬", label: "Comment Keyword", desc: "Triggers when someone comments a word on your post/reel", color: "#E8450A" },
+  { id: "story_reply", icon: "📸", label: "Story Reply", desc: "Triggers when someone replies to your story", color: "#9333EA" },
+  { id: "dm_keyword", icon: "✉️", label: "DM Keyword", desc: "Triggers when someone DMs a specific keyword", color: "#0369A1" },
+  { id: "new_follower", icon: "👤", label: "New Follower", desc: "Triggers when someone follows your account", color: "#16A34A" },
+  { id: "story_mention", icon: "📢", label: "Story Mention", desc: "Triggers when someone @mentions you in their story", color: "#D97706" },
+  { id: "link_click", icon: "🔗", label: "Bio Link Click", desc: "Triggers when someone clicks your bio link button", color: "#0891B2" },
+  { id: "ad_comment", icon: "📣", label: "Ad Comment", desc: "Triggers on comments on your boosted/sponsored posts", color: "#7C3AED" },
+  { id: "live_mention", icon: "🔴", label: "Live / Mention", desc: "Triggers during Instagram Live interactions", color: "#DC2626" },
 ];
 
 const ACTIONS = [
-  { id: "message",       icon: "💬", label: "Send Message",     desc: "Text, emojis, personalization variables",     cat: "Messaging" },
-  { id: "quick_reply",   icon: "🎯", label: "Quick Replies",    desc: "Buttons the user taps to reply",              cat: "Messaging" },
-  { id: "send_link",     icon: "🔗", label: "Send Link",        desc: "Share a URL with optional preview button",    cat: "Messaging" },
-  { id: "media",         icon: "🖼️", label: "Send Media",       desc: "Image, GIF, or video message",                cat: "Messaging" },
-  { id: "collect_email", icon: "📧", label: "Collect Email",    desc: "Ask and validate their email address",        cat: "Lead Gen" },
-  { id: "collect_phone", icon: "📱", label: "Collect Phone",    desc: "Ask and validate their phone number",         cat: "Lead Gen" },
-  { id: "ai_reply",      icon: "🤖", label: "AI Auto-Reply",    desc: "GPT-powered smart response",                  cat: "AI" },
-  { id: "ai_classify",   icon: "🧠", label: "AI Classify",      desc: "Detect intent and route accordingly",         cat: "AI" },
-  { id: "condition",     icon: "🔀", label: "If / Else Branch", desc: "Split flow based on any condition",           cat: "Logic" },
-  { id: "delay",         icon: "⏱️", label: "Wait / Delay",     desc: "Pause to appear natural or schedule",        cat: "Logic" },
-  { id: "random_split",  icon: "🎲", label: "Random A/B Split", desc: "Split contacts randomly (A/B test flows)",   cat: "Logic" },
-  { id: "check_tag",     icon: "🏷️", label: "Check Tag",        desc: "Branch if contact has a specific tag",       cat: "Logic" },
-  { id: "follow_gate",   icon: "🔒", label: "Follow Gate",      desc: "Verify they follow you before continuing",   cat: "Safety" },
-  { id: "tag",           icon: "🏷️", label: "Tag Contact",      desc: "Label contact for segmentation",             cat: "CRM" },
-  { id: "set_field",     icon: "📝", label: "Set Custom Field", desc: "Save data to a contact field",               cat: "CRM" },
-  { id: "notify_team",   icon: "🔔", label: "Notify Team",      desc: "Send alert to your team inbox",              cat: "CRM" },
-  { id: "handoff",       icon: "👥", label: "Live Chat Handoff", desc: "Transfer to human agent",                   cat: "CRM" },
-  { id: "zapier",        icon: "⚡", label: "Zapier / Webhook",  desc: "Send data to external app",                  cat: "Integrations" },
-  { id: "end",           icon: "✅", label: "End Flow",          desc: "Mark conversation complete",                 cat: "Logic" },
+  { id: "message", icon: "💬", label: "Send Message", desc: "Text, emojis, personalization variables", cat: "Messaging" },
+  { id: "quick_reply", icon: "🎯", label: "Quick Replies", desc: "Buttons the user taps to reply", cat: "Messaging" },
+  { id: "send_link", icon: "🔗", label: "Send Link", desc: "Share a URL with optional preview button", cat: "Messaging" },
+  { id: "media", icon: "🖼️", label: "Send Media", desc: "Image, GIF, or video message", cat: "Messaging" },
+  { id: "collect_email", icon: "📧", label: "Collect Email", desc: "Ask and validate their email address", cat: "Lead Gen" },
+  { id: "collect_phone", icon: "📱", label: "Collect Phone", desc: "Ask and validate their phone number", cat: "Lead Gen" },
+  { id: "ai_reply", icon: "🤖", label: "AI Auto-Reply", desc: "GPT-powered smart response", cat: "AI" },
+  { id: "ai_classify", icon: "🧠", label: "AI Classify", desc: "Detect intent and route accordingly", cat: "AI" },
+  { id: "condition", icon: "🔀", label: "If / Else Branch", desc: "Split flow based on any condition", cat: "Logic" },
+  { id: "delay", icon: "⏱️", label: "Wait / Delay", desc: "Pause to appear natural or schedule", cat: "Logic" },
+  { id: "random_split", icon: "🎲", label: "Random A/B Split", desc: "Split contacts randomly (A/B test flows)", cat: "Logic" },
+  { id: "check_tag", icon: "🏷️", label: "Check Tag", desc: "Branch if contact has a specific tag", cat: "Logic" },
+  { id: "follow_gate", icon: "🔒", label: "Follow Gate", desc: "Verify they follow you before continuing", cat: "Safety" },
+  { id: "tag", icon: "🏷️", label: "Tag Contact", desc: "Label contact for segmentation", cat: "CRM" },
+  { id: "set_field", icon: "📝", label: "Set Custom Field", desc: "Save data to a contact field", cat: "CRM" },
+  { id: "notify_team", icon: "🔔", label: "Notify Team", desc: "Send alert to your team inbox", cat: "CRM" },
+  { id: "handoff", icon: "👥", label: "Live Chat Handoff", desc: "Transfer to human agent", cat: "CRM" },
+  { id: "zapier", icon: "⚡", label: "Zapier / Webhook", desc: "Send data to external app", cat: "Integrations" },
+  { id: "end", icon: "✅", label: "End Flow", desc: "Mark conversation complete", cat: "Logic" },
 ];
 
 const ACTION_CATS = ["Messaging", "Lead Gen", "AI", "Logic", "Safety", "CRM", "Integrations"];
@@ -71,57 +71,57 @@ const TEMPLATES = [
     id: "lead_magnet", icon: "🎁", name: "Lead Magnet", badge: "Most Popular",
     desc: "Comment → Verify follow → Send freebie → Collect email",
     steps: [
-      { kind: "trigger", type: "comment",       label: "Comment Trigger",   config: { keywords: "FREE, LINK, INFO", postTarget: "any" } },
-      { kind: "action",  type: "message",        label: "Instant Reply",     config: { text: "Hey {first_name}! 🙌 Got your message — sending your freebie right now..." } },
-      { kind: "action",  type: "follow_gate",    label: "Check Follow",      config: { onFail: "ask", askText: "Follow me first to unlock this resource! 🔒" } },
-      { kind: "action",  type: "send_link",      label: "Send Resource",     config: { text: "Here's your free guide! 🎉", url: "https://yoursite.com/freebie", btnLabel: "Get It Free →" } },
-      { kind: "action",  type: "collect_email",  label: "Capture Email",     config: { prompt: "Want weekly tips? Drop your best email 👇", required: true } },
-      { kind: "action",  type: "tag",            label: "Tag as Lead",       config: { tags: "lead, freebie-claimed, nurture-sequence" } },
-      { kind: "action",  type: "zapier",         label: "Add to Klaviyo",    config: { webhook: "", label: "Send to email platform" } },
+      { kind: "trigger", type: "comment", label: "Comment Trigger", config: { keywords: "FREE, LINK, INFO", postTarget: "any" } },
+      { kind: "action", type: "message", label: "Instant Reply", config: { text: "Hey {first_name}! 🙌 Got your message — sending your freebie right now..." } },
+      { kind: "action", type: "follow_gate", label: "Check Follow", config: { onFail: "ask", askText: "Follow me first to unlock this resource! 🔒" } },
+      { kind: "action", type: "send_link", label: "Send Resource", config: { text: "Here's your free guide! 🎉", url: "https://yoursite.com/freebie", btnLabel: "Get It Free →" } },
+      { kind: "action", type: "collect_email", label: "Capture Email", config: { prompt: "Want weekly tips? Drop your best email 👇", required: true } },
+      { kind: "action", type: "tag", label: "Tag as Lead", config: { tags: "lead, freebie-claimed, nurture-sequence" } },
+      { kind: "action", type: "zapier", label: "Add to Klaviyo", config: { webhook: "", label: "Send to email platform" } },
     ]
   },
   {
     id: "story_funnel", icon: "📸", name: "Story Funnel", badge: "High Converting",
     desc: "Story reply → AI qualify → Branch → Close",
     steps: [
-      { kind: "trigger", type: "story_reply",  label: "Story Reply",         config: { keywords: "" } },
-      { kind: "action",  type: "ai_reply",     label: "AI Warm Welcome",     config: { instructions: "Greet them warmly, reference that they replied to a story, and ask what caught their eye. Keep it under 2 sentences, conversational.", tone: "Friendly 😊" } },
-      { kind: "action",  type: "quick_reply",  label: "Qualify Interest",    config: { question: "What best describes you?", options: "Creator|Business Owner|Just browsing" } },
-      { kind: "action",  type: "condition",    label: "High-Intent?",        config: { condType: "reply_contains", condition: "Creator OR Business Owner", onFalse: "end" } },
-      { kind: "action",  type: "send_link",    label: "Send Offer",          config: { text: "Perfect! This was made for you 👇", url: "https://yoursite.com/offer", btnLabel: "See The Offer →" } },
-      { kind: "action",  type: "tag",          label: "Tag Hot Lead",        config: { tags: "hot-lead, story-funnel, high-intent" } },
+      { kind: "trigger", type: "story_reply", label: "Story Reply", config: { keywords: "" } },
+      { kind: "action", type: "ai_reply", label: "AI Warm Welcome", config: { instructions: "Greet them warmly, reference that they replied to a story, and ask what caught their eye. Keep it under 2 sentences, conversational.", tone: "Friendly 😊" } },
+      { kind: "action", type: "quick_reply", label: "Qualify Interest", config: { question: "What best describes you?", options: "Creator|Business Owner|Just browsing" } },
+      { kind: "action", type: "condition", label: "High-Intent?", config: { condType: "reply_contains", condition: "Creator OR Business Owner", onFalse: "end" } },
+      { kind: "action", type: "send_link", label: "Send Offer", config: { text: "Perfect! This was made for you 👇", url: "https://yoursite.com/offer", btnLabel: "See The Offer →" } },
+      { kind: "action", type: "tag", label: "Tag Hot Lead", config: { tags: "hot-lead, story-funnel, high-intent" } },
     ]
   },
   {
     id: "welcome_flow", icon: "👋", name: "New Follower Welcome", badge: "Evergreen",
     desc: "Follow → Delay → Welcome DM → Nurture",
     steps: [
-      { kind: "trigger", type: "new_follower", label: "New Follower",         config: {} },
-      { kind: "action",  type: "delay",        label: "Wait 3 minutes",       config: { duration: "3", unit: "minutes" } },
-      { kind: "action",  type: "message",      label: "Welcome Message",      config: { text: "Welcome {first_name}! 🎉 So glad you're here. I'm {your_name} — I share [what you do].\n\nHere's something to get you started 👇" } },
-      { kind: "action",  type: "send_link",    label: "Share Best Content",   config: { text: "Start here 🚀", url: "https://yoursite.com/start", btnLabel: "Start Here →" } },
-      { kind: "action",  type: "quick_reply",  label: "Engage Question",      config: { question: "What brought you here?", options: "Your content|A friend shared|Just found you" } },
-      { kind: "action",  type: "tag",          label: "Tag New Follower",     config: { tags: "new-follower, welcome-sent" } },
+      { kind: "trigger", type: "new_follower", label: "New Follower", config: {} },
+      { kind: "action", type: "delay", label: "Wait 3 minutes", config: { duration: "3", unit: "minutes" } },
+      { kind: "action", type: "message", label: "Welcome Message", config: { text: "Welcome {first_name}! 🎉 So glad you're here. I'm {your_name} — I share [what you do].\n\nHere's something to get you started 👇" } },
+      { kind: "action", type: "send_link", label: "Share Best Content", config: { text: "Start here 🚀", url: "https://yoursite.com/start", btnLabel: "Start Here →" } },
+      { kind: "action", type: "quick_reply", label: "Engage Question", config: { question: "What brought you here?", options: "Your content|A friend shared|Just found you" } },
+      { kind: "action", type: "tag", label: "Tag New Follower", config: { tags: "new-follower, welcome-sent" } },
     ]
   },
   {
     id: "faq_bot", icon: "🤖", name: "AI FAQ Bot", badge: "Set & Forget",
     desc: "DM keyword → AI answers → Escalate if needed",
     steps: [
-      { kind: "trigger", type: "dm_keyword",   label: "Any DM",               config: { keywords: "", matchAll: true } },
-      { kind: "action",  type: "ai_reply",     label: "AI Answer",            config: { instructions: "You are a helpful assistant for [Brand Name]. Answer the user's question about our products/services. If you don't know, say you'll connect them with the team. Keep answers under 3 sentences.", tone: "Professional 💼" } },
-      { kind: "action",  type: "condition",    label: "Needs Human?",         config: { condType: "reply_contains", condition: "speak to human OR talk to someone", onFalse: "end" } },
-      { kind: "action",  type: "handoff",      label: "Live Chat Handoff",    config: { message: "Connecting you with our team now! 👥" } },
+      { kind: "trigger", type: "dm_keyword", label: "Any DM", config: { keywords: "", matchAll: true } },
+      { kind: "action", type: "ai_reply", label: "AI Answer", config: { instructions: "You are a helpful assistant for [Brand Name]. Answer the user's question about our products/services. If you don't know, say you'll connect them with the team. Keep answers under 3 sentences.", tone: "Professional 💼" } },
+      { kind: "action", type: "condition", label: "Needs Human?", config: { condType: "reply_contains", condition: "speak to human OR talk to someone", onFalse: "end" } },
+      { kind: "action", type: "handoff", label: "Live Chat Handoff", config: { message: "Connecting you with our team now! 👥" } },
     ]
   },
 ];
 
 const VARS = [
   { v: "{first_name}", label: "First Name" },
-  { v: "{last_name}",  label: "Last Name" },
-  { v: "{username}",   label: "@Username" },
-  { v: "{post_url}",   label: "Post URL" },
-  { v: "{story_url}",  label: "Story URL" },
+  { v: "{last_name}", label: "Last Name" },
+  { v: "{username}", label: "@Username" },
+  { v: "{post_url}", label: "Post URL" },
+  { v: "{story_url}", label: "Story URL" },
 ];
 
 /* ============================================================
@@ -129,10 +129,10 @@ const VARS = [
    ============================================================ */
 let _id = 200;
 const uid = () => `s${++_id}`;
-const getTriggerDef = (id) => TRIGGERS.find(t => t.id === id) || TRIGGERS[0];
-const getActionDef  = (id) => ACTIONS.find(a => a.id === id)  || ACTIONS[0];
-const getDef = (kind, type) => kind === "trigger" ? getTriggerDef(type) : getActionDef(type);
-const getColor = (kind, type) => kind === "trigger" ? getTriggerDef(type).color : "#1C1917";
+const getTriggerDef = (id: string) => TRIGGERS.find(t => t.id === id) || TRIGGERS[0];
+const getActionDef = (id: string) => ACTIONS.find(a => a.id === id) || ACTIONS[0];
+const getDef = (kind: string, type: string) => kind === "trigger" ? getTriggerDef(type) : getActionDef(type);
+const getColor = (kind: string, type: string) => kind === "trigger" ? getTriggerDef(type).color : "#1C1917";
 
 /* ============================================================
    MINI COMPONENTS
@@ -265,8 +265,8 @@ function TriggerFields({ step, update }) {
         <div>
           <Label>Apply to</Label>
           <Select value={c.postTarget || "any"} onChange={e => set({ postTarget: e.target.value })} options={[
-            { value: "any",      label: "Any post or Reel" },
-            { value: "latest",   label: "Latest post only" },
+            { value: "any", label: "Any post or Reel" },
+            { value: "latest", label: "Latest post only" },
             { value: "specific", label: "Specific post URL" },
             { value: "all_reels", label: "All Reels" },
           ]} />
@@ -362,9 +362,9 @@ function QuickReplyFields({ step, update }) {
       <div>
         <Label>If user doesn't tap</Label>
         <Select value={c.noReply || "wait"} onChange={e => set({ noReply: e.target.value })} options={[
-          { value: "wait",     label: "Wait indefinitely" },
+          { value: "wait", label: "Wait indefinitely" },
           { value: "followup", label: "Send follow-up after 24h" },
-          { value: "end",      label: "End flow" },
+          { value: "end", label: "End flow" },
         ]} />
       </div>
     </div>
@@ -449,13 +449,13 @@ function ConditionFields({ step, update }) {
       <div>
         <Label>Check type</Label>
         <Select value={c.condType || "reply_contains"} onChange={e => set({ condType: e.target.value })} options={[
-          { value: "reply_contains",  label: "Last reply contains keyword" },
-          { value: "has_tag",         label: "Contact has tag" },
-          { value: "field_equals",    label: "Custom field equals value" },
+          { value: "reply_contains", label: "Last reply contains keyword" },
+          { value: "has_tag", label: "Contact has tag" },
+          { value: "field_equals", label: "Custom field equals value" },
           { value: "email_collected", label: "Email was collected" },
-          { value: "is_follower",     label: "User is a follower" },
-          { value: "link_clicked",    label: "Link was clicked" },
-          { value: "button_tapped",   label: "Button was tapped" },
+          { value: "is_follower", label: "User is a follower" },
+          { value: "link_clicked", label: "Link was clicked" },
+          { value: "button_tapped", label: "Button was tapped" },
         ]} />
       </div>
       {["reply_contains", "has_tag", "field_equals"].includes(c.condType || "reply_contains") && (
@@ -472,8 +472,8 @@ function ConditionFields({ step, update }) {
         <div style={{ background: "#FFF1F0", border: "1.5px solid #FCA5A5", borderRadius: DS.radiusSm, padding: "10px 12px" }}>
           <div style={{ fontSize: 10.5, fontWeight: 800, color: "#DC2626", marginBottom: 3 }}>✗ IF FALSE</div>
           <Select value={c.onFalse || "end"} onChange={e => set({ onFalse: e.target.value })} style={{ padding: "4px 8px", fontSize: 11 }} options={[
-            { value: "end",          label: "End flow" },
-            { value: "skip_to_end",  label: "Skip to end step" },
+            { value: "end", label: "End flow" },
+            { value: "skip_to_end", label: "Skip to end step" },
           ]} />
         </div>
       </div>
@@ -492,7 +492,7 @@ function DelayFields({ step, update }) {
           <Input type="number" value={c.duration} onChange={e => set({ duration: e.target.value })} placeholder="5" style={{ flex: 1 }} />
           <Select value={c.unit || "minutes"} onChange={e => set({ unit: e.target.value })} style={{ flex: 1 }} options={[
             { value: "seconds", label: "Seconds" }, { value: "minutes", label: "Minutes" },
-            { value: "hours",   label: "Hours"   }, { value: "days",    label: "Days"    },
+            { value: "hours", label: "Hours" }, { value: "days", label: "Days" },
           ]} />
         </div>
       </div>
@@ -556,9 +556,9 @@ function FollowGateFields({ step, update }) {
       <div>
         <Label>If they don't follow</Label>
         <Select value={c.onFail || "ask"} onChange={e => set({ onFail: e.target.value })} options={[
-          { value: "ask",  label: "Ask them to follow first" },
+          { value: "ask", label: "Ask them to follow first" },
           { value: "skip", label: "Skip gate, continue anyway" },
-          { value: "end",  label: "End the flow" },
+          { value: "end", label: "End the flow" },
         ]} />
       </div>
       {c.onFail === "ask" && (
@@ -586,18 +586,18 @@ function HandoffFields({ step, update }) {
       <div>
         <Label>Assign to</Label>
         <Select value={c.assignTo || "any"} onChange={e => set({ assignTo: e.target.value })} options={[
-          { value: "any",   label: "Any available agent" },
-          { value: "team",  label: "Sales team" },
+          { value: "any", label: "Any available agent" },
+          { value: "team", label: "Sales team" },
           { value: "owner", label: "Account owner only" },
         ]} />
       </div>
       <div>
         <Label>Notify via</Label>
         <Select value={c.notifyVia || "email"} onChange={e => set({ notifyVia: e.target.value })} options={[
-          { value: "email",  label: "Email notification" },
-          { value: "slack",  label: "Slack message" },
-          { value: "sms",    label: "SMS alert" },
-          { value: "none",   label: "No notification" },
+          { value: "email", label: "Email notification" },
+          { value: "slack", label: "Slack message" },
+          { value: "sms", label: "SMS alert" },
+          { value: "none", label: "No notification" },
         ]} />
       </div>
     </div>
@@ -642,10 +642,10 @@ function EndFields({ step, update }) {
       <div>
         <Label>Mark as</Label>
         <Select value={c.outcome || "completed"} onChange={e => set({ outcome: e.target.value })} options={[
-          { value: "completed",  label: "✅ Completed" },
-          { value: "converted",  label: "💰 Converted" },
+          { value: "completed", label: "✅ Completed" },
+          { value: "converted", label: "💰 Converted" },
           { value: "unqualified", label: "✗ Unqualified" },
-          { value: "escalated",  label: "👥 Escalated to human" },
+          { value: "escalated", label: "👥 Escalated to human" },
         ]} />
       </div>
     </div>
@@ -710,8 +710,8 @@ function CheckTagFields({ step, update }) {
       <div>
         <Label>If tag NOT found</Label>
         <Select value={c.onMissing || "end"} onChange={e => set({ onMissing: e.target.value })} options={[
-          { value: "end",   label: "End flow" },
-          { value: "skip",  label: "Skip to last step" },
+          { value: "end", label: "End flow" },
+          { value: "skip", label: "Skip to last step" },
         ]} />
       </div>
     </div>
@@ -747,8 +747,8 @@ function NotifyTeamFields({ step, update }) {
       <div>
         <Label>Send via</Label>
         <Select value={c.via || "email"} onChange={e => set({ via: e.target.value })} options={[
-          { value: "email",  label: "Email" }, { value: "slack", label: "Slack" },
-          { value: "sms",    label: "SMS"   }, { value: "push",  label: "Push notification" },
+          { value: "email", label: "Email" }, { value: "slack", label: "Slack" },
+          { value: "sms", label: "SMS" }, { value: "push", label: "Push notification" },
         ]} />
       </div>
     </div>
@@ -865,7 +865,7 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
           {/* Controls */}
           <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
             {!isFirst && <IconBtn onClick={e => { e.stopPropagation(); onMoveUp(); }} title="Move up">↑</IconBtn>}
-            {!isLast  && <IconBtn onClick={e => { e.stopPropagation(); onMoveDown(); }} title="Move down">↓</IconBtn>}
+            {!isLast && <IconBtn onClick={e => { e.stopPropagation(); onMoveDown(); }} title="Move down">↓</IconBtn>}
             <IconBtn onClick={e => { e.stopPropagation(); onDup(); }} title="Duplicate">⊕</IconBtn>
             <IconBtn onClick={e => { e.stopPropagation(); onDelete(); }} danger title="Delete">✕</IconBtn>
           </div>
@@ -1154,8 +1154,8 @@ function PhonePreview({ steps }) {
   const scrollRef = useRef(null);
   useEffect(() => { scrollRef.current?.scrollTo({ top: 9999, behavior: "smooth" }); }, [msgs.length]);
 
-  const botMsgs   = steps.filter(s => ["message","quick_reply","send_link","ai_reply","media"].includes(s.type)).length;
-  const hasEmail  = steps.some(s => s.type === "collect_email");
+  const botMsgs = steps.filter(s => ["message", "quick_reply", "send_link", "ai_reply", "media"].includes(s.type)).length;
+  const hasEmail = steps.some(s => s.type === "collect_email");
   const hasTrigger = steps.some(s => s.kind === "trigger");
 
   return (
@@ -1211,10 +1211,10 @@ function PhonePreview({ steps }) {
       {/* Stats */}
       <div style={{ marginTop: 14, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
         {[
-          { label: "Total Steps",   val: steps.length,  ok: steps.length > 0  },
-          { label: "Has Trigger",   val: hasTrigger ? "✓ Yes" : "✗ No", ok: hasTrigger },
-          { label: "Bot Messages",  val: botMsgs,       ok: botMsgs > 0       },
-          { label: "Collects Email", val: hasEmail ? "✓" : "—", ok: hasEmail   },
+          { label: "Total Steps", val: steps.length, ok: steps.length > 0 },
+          { label: "Has Trigger", val: hasTrigger ? "✓ Yes" : "✗ No", ok: hasTrigger },
+          { label: "Bot Messages", val: botMsgs, ok: botMsgs > 0 },
+          { label: "Collects Email", val: hasEmail ? "✓" : "—", ok: hasEmail },
         ].map(s => (
           <div key={s.label} style={{ background: DS.card, borderRadius: DS.radiusSm, padding: "8px 10px", border: `1.5px solid ${DS.border}`, textAlign: "center" }}>
             <div style={{ fontSize: 15, fontWeight: 900, color: s.ok ? DS.accent : DS.ink3, letterSpacing: "-0.02em" }}>{s.val}</div>
@@ -1228,9 +1228,9 @@ function PhonePreview({ steps }) {
         <div style={{ marginTop: 10, width: "100%", background: DS.card, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, padding: "11px 12px" }}>
           <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.ink3, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>Flow Health</div>
           {[
-            { ok: hasTrigger,           msg: hasTrigger ? "Trigger configured" : "Missing trigger" },
-            { ok: botMsgs > 0,          msg: botMsgs > 0 ? "Has message steps" : "No message steps" },
-            { ok: !steps.some(s => s.kind === "action" && !s.config?.text && !s.config?.question && !s.config?.url && !s.config?.duration && !s.config?.tag && !s.config?.tags && !s.config?.instructions && !["follow_gate","end","random_split","check_tag","handoff","notify_team","set_field","ai_classify"].includes(s.type)), msg: "All steps configured" },
+            { ok: hasTrigger, msg: hasTrigger ? "Trigger configured" : "Missing trigger" },
+            { ok: botMsgs > 0, msg: botMsgs > 0 ? "Has message steps" : "No message steps" },
+            { ok: !steps.some(s => s.kind === "action" && !s.config?.text && !s.config?.question && !s.config?.url && !s.config?.duration && !s.config?.tag && !s.config?.tags && !s.config?.instructions && !["follow_gate", "end", "random_split", "check_tag", "handoff", "notify_team", "set_field", "ai_classify"].includes(s.type)), msg: "All steps configured" },
           ].map((h, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: i < 2 ? 5 : 0 }}>
               <span style={{ fontSize: 12 }}>{h.ok ? "✅" : "⚠️"}</span>
@@ -1254,11 +1254,11 @@ function SettingsPanel({ settings, setSettings }) {
       <div style={{ background: DS.card, borderRadius: DS.radius, border: `1.5px solid ${DS.border}`, overflow: "hidden" }}>
         <div style={{ padding: "12px 14px", borderBottom: `1px solid ${DS.border}`, fontSize: 12, fontWeight: 800, color: DS.ink2, textTransform: "uppercase", letterSpacing: "0.07em" }}>⚙️ Behavior</div>
         <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
-          <Toggle on={settings.allowRepeat}     onChange={() => set({ allowRepeat: !settings.allowRepeat })} label="Allow same person to re-trigger" />
-          <Toggle on={settings.followGlobal}    onChange={() => set({ followGlobal: !settings.followGlobal })} label="🔒 Global follow gate — followers only" />
-          <Toggle on={settings.autoLikeAll}     onChange={() => set({ autoLikeAll: !settings.autoLikeAll })} label="Auto-like all trigger comments" />
-          <Toggle on={settings.skipWeekends}    onChange={() => set({ skipWeekends: !settings.skipWeekends })} label="Skip weekends" />
-          <Toggle on={settings.rewindEnabled}   onChange={() => set({ rewindEnabled: !settings.rewindEnabled })} label="⏪ Rewind — re-send unclaimed DMs" />
+          <Toggle on={settings.allowRepeat} onChange={() => set({ allowRepeat: !settings.allowRepeat })} label="Allow same person to re-trigger" />
+          <Toggle on={settings.followGlobal} onChange={() => set({ followGlobal: !settings.followGlobal })} label="🔒 Global follow gate — followers only" />
+          <Toggle on={settings.autoLikeAll} onChange={() => set({ autoLikeAll: !settings.autoLikeAll })} label="Auto-like all trigger comments" />
+          <Toggle on={settings.skipWeekends} onChange={() => set({ skipWeekends: !settings.skipWeekends })} label="Skip weekends" />
+          <Toggle on={settings.rewindEnabled} onChange={() => set({ rewindEnabled: !settings.rewindEnabled })} label="⏪ Rewind — re-send unclaimed DMs" />
           <Toggle on={settings.sendbackEnabled} onChange={() => set({ sendbackEnabled: !settings.sendbackEnabled })} label="📤 SendBack — catch missed comments" />
         </div>
       </div>
@@ -1297,12 +1297,12 @@ function SettingsPanel({ settings, setSettings }) {
           <div>
             <Label>Timezone</Label>
             <Select value={settings.tz || "America/New_York"} onChange={e => set({ tz: e.target.value })} options={[
-              { value: "America/New_York",    label: "Eastern (ET)" },
-              { value: "America/Chicago",     label: "Central (CT)" },
+              { value: "America/New_York", label: "Eastern (ET)" },
+              { value: "America/Chicago", label: "Central (CT)" },
               { value: "America/Los_Angeles", label: "Pacific (PT)" },
-              { value: "Europe/London",       label: "London (GMT)" },
-              { value: "Asia/Kolkata",        label: "India (IST)" },
-              { value: "Asia/Dubai",          label: "Dubai (GST)" },
+              { value: "Europe/London", label: "London (GMT)" },
+              { value: "Asia/Kolkata", label: "India (IST)" },
+              { value: "Asia/Dubai", label: "Dubai (GST)" },
             ]} />
           </div>
         </div>
@@ -1329,12 +1329,12 @@ function SettingsPanel({ settings, setSettings }) {
    ============================================================ */
 function AnalyticsPanel() {
   const stats = [
-    { label: "Triggered", val: "3,241",  sub: "+12% this week", color: DS.accent },
-    { label: "DMs Sent",  val: "3,108",  sub: "95.9% delivery",  color: DS.blue  },
-    { label: "Opened",    val: "2,640",  sub: "85% open rate",   color: DS.green },
-    { label: "Converted", val: "619",    sub: "19.1% conversion", color: "#9333EA" },
-    { label: "Emails Captured", val: "412", sub: "+47 today",  color: DS.amber  },
-    { label: "Links Clicked", val: "1,032", sub: "33% CTR",    color: "#0891B2" },
+    { label: "Triggered", val: "3,241", sub: "+12% this week", color: DS.accent },
+    { label: "DMs Sent", val: "3,108", sub: "95.9% delivery", color: DS.blue },
+    { label: "Opened", val: "2,640", sub: "85% open rate", color: DS.green },
+    { label: "Converted", val: "619", sub: "19.1% conversion", color: "#9333EA" },
+    { label: "Emails Captured", val: "412", sub: "+47 today", color: DS.amber },
+    { label: "Links Clicked", val: "1,032", sub: "33% CTR", color: "#0891B2" },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1351,7 +1351,7 @@ function AnalyticsPanel() {
         <div style={{ fontSize: 13, fontWeight: 800, color: DS.ink, marginBottom: 14 }}>Triggered over last 7 days</div>
         <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 80 }}>
           {[320, 480, 390, 620, 540, 710, 580].map((v, i) => {
-            const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+            const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
             const pct = (v / 750) * 100;
             return (
               <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
@@ -1364,7 +1364,7 @@ function AnalyticsPanel() {
       </div>
       <div style={{ background: DS.card, borderRadius: DS.radius, border: `1.5px solid ${DS.border}`, padding: "16px 18px" }}>
         <div style={{ fontSize: 13, fontWeight: 800, color: DS.ink, marginBottom: 12 }}>Top trigger keywords</div>
-        {[{ kw: "FREE",    cnt: 1243, pct: 85 }, { kw: "LINK",   cnt: 890, pct: 61 }, { kw: "INFO", cnt: 712, pct: 49 }, { kw: "DETAILS", cnt: 396, pct: 27 }].map(k => (
+        {[{ kw: "FREE", cnt: 1243, pct: 85 }, { kw: "LINK", cnt: 890, pct: 61 }, { kw: "INFO", cnt: 712, pct: 49 }, { kw: "DETAILS", cnt: 396, pct: 27 }].map(k => (
           <div key={k.kw} style={{ marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 12, fontWeight: 600, color: DS.ink }}>
               <span>"{k.kw}"</span><span style={{ color: DS.ink3 }}>{k.cnt.toLocaleString()} triggers</span>
@@ -1402,8 +1402,8 @@ export default function InstaDMBuilder() {
       const n = [...s]; n.splice(idx + 1, 0, copy); return n;
     });
   }, []);
-  const moveUp   = useCallback((i) => setSteps(s => { const a = [...s]; [a[i-1],a[i]] = [a[i],a[i-1]]; return a; }), []);
-  const moveDown = useCallback((i) => setSteps(s => { const a = [...s]; [a[i],a[i+1]] = [a[i+1],a[i]]; return a; }), []);
+  const moveUp = useCallback((i) => setSteps(s => { const a = [...s];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return a; }), []);
+  const moveDown = useCallback((i) => setSteps(s => { const a = [...s];[a[i], a[i + 1]] = [a[i + 1], a[i]]; return a; }), []);
 
   const addTrigger = (type) => {
     const def = getTriggerDef(type);
