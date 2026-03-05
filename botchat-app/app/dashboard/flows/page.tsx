@@ -1434,65 +1434,108 @@ export default function InstaDMBuilder() {
         ::-webkit-scrollbar-thumb { background: ${DS.border}; border-radius: 99px; }
         input[type=range] { -webkit-appearance: none; height: 5px; border-radius: 99px; background: ${DS.border}; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: ${DS.accent}; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+
+        /* Responsive utility for flows layout */
+        .instdm-body { width: 100%; max-width: 1080px; margin: 0 auto; padding: 22px 18px; display: flex; gap: 22px; align-items: flex-start; }
+        .instdm-left { flex: 1; min-width: 0; }
+        .instdm-preview { width: 320px; flex-shrink: 0; }
+        .preview-bubble { max-width: 220px; }
+
+        /* Tablet: stack vertically earlier and use full width */
+        @media (max-width: 1024px) {
+          .instdm-body { flex-direction: column; padding: 16px; max-width: 100%; width: 100%; }
+          .instdm-left { width: 100%; }
+          .instdm-preview { width: 100%; margin-top: 14px; }
+          .preview-bubble { max-width: 70%; }
+          /* make header actions wrap */
+          header, .instdm-body > .instdm-left { min-width: 0; }
+        }
+
+        /* Mobile: ensure preview fills viewport width and UI scales */
+        @media (max-width: 520px) {
+          .instdm-body { padding: 12px; gap: 12px; }
+          .instdm-left { width: 100%; }
+          .instdm-preview { width: 100%; margin-top: 12px; }
+          .preview-bubble { max-width: 78%; }
+          .phone-container { width: 100% !important; }
+          .instdm-body, .instdm-left, .instdm-preview { box-sizing: border-box; }
+        }
+
+        /* Very small screens: tighten spacing */
+        @media (max-width: 360px) {
+          .instdm-body { padding: 8px; }
+          .preview-bubble { max-width: 80%; }
+        }
+
+        /* Flow header responsive */
+        .flow-hdr { background: ${DS.card}; border-bottom: 1.5px solid ${DS.border}; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); }
+        .flow-hdr-r1 { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+        .flow-hdr-r2 { display: flex; align-items: center; gap: 6px; }
+        .ftab-label { display: inline; }
+        .btn-text { display: inline; }
+        @media (max-width: 600px) {
+          .flow-hdr { padding: 8px 10px; gap: 6px; }
+          .ftab-label { display: none; }
+          .flow-hdr-r2 { width: 100%; justify-content: flex-end; }
+          .btn-text { display: none; }
+        }
       `}</style>
 
       {showTemplates && <TemplateModal onSelect={t => { setSteps((t.steps || []).map(s => ({ ...s, id: uid() }))); setExpandedId(null); }} onClose={() => setShowTemplates(false)} />}
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
-      <div style={{ background: DS.card, borderBottom: `1.5px solid ${DS.border}`, padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 100, backdropFilter: "blur(8px)" }}>
-        {/* Logo */}
-        <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>⚡</div>
-
-        {/* Flow name */}
-        <input value={flowName} onChange={e => setFlowName(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", fontSize: 15, fontWeight: 800, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.02em", minWidth: 0 }} />
-
-        {/* Tabs */}
-        <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}` }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
-              padding: "5px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit",
-              background: tab === t.id ? DS.card : "transparent",
-              color: tab === t.id ? DS.ink : DS.ink3,
-              boxShadow: tab === t.id ? DS.shadow : "none",
-              transition: "all 0.15s",
-            }}>{t.icon} {t.label}</button>
-          ))}
+      <div className="flow-hdr">
+        {/* Row 1: Logo + name + tabs */}
+        <div className="flow-hdr-r1">
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚡</div>
+          <input value={flowName} onChange={e => setFlowName(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, fontWeight: 800, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.02em", minWidth: 0 }} />
+          <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
+            {TABS.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                padding: "5px 9px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit",
+                background: tab === t.id ? DS.card : "transparent",
+                color: tab === t.id ? DS.ink : DS.ink3,
+                boxShadow: tab === t.id ? DS.shadow : "none",
+                transition: "all 0.15s", display: "flex", alignItems: "center", gap: 3,
+              }}>{t.icon}<span className="ftab-label"> {t.label}</span></button>
+            ))}
+          </div>
         </div>
 
-        {/* Right actions */}
-        <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
-          <SmallBtn onClick={() => setShowTemplates(true)} icon="📋">Templates</SmallBtn>
+        {/* Row 2: Action buttons */}
+        <div className="flow-hdr-r2">
+          <SmallBtn onClick={() => setShowTemplates(true)} icon="📋"><span className="btn-text">Templates</span></SmallBtn>
 
           <button onClick={() => setIsLive(!isLive)} style={{
-            padding: "6px 13px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
+            padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
             background: isLive ? DS.greenSoft : DS.bg, color: isLive ? DS.green : DS.ink3, cursor: "pointer", fontFamily: "inherit",
-            display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s",
+            display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s",
           }}>
             <span style={{ width: 7, height: 7, borderRadius: "50%", background: isLive ? DS.green : DS.ink3, display: "inline-block", boxShadow: isLive ? `0 0 6px ${DS.green}` : "none", transition: "all 0.2s" }} />
             {isLive ? "Live" : "Draft"}
           </button>
 
           <button onClick={handleSave} style={{
-            padding: "6px 13px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${saved ? DS.green : DS.border}`,
+            padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${saved ? DS.green : DS.border}`,
             background: saved ? DS.greenSoft : DS.bg, color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
-          }}>{saved ? "✓ Saved!" : "💾 Save"}</button>
+          }}>{saved ? "✓" : "💾"}<span className="btn-text"> {saved ? "Saved!" : "Save"}</span></button>
 
           <button onClick={() => hasTrigger && setIsLive(true)} style={{
-            padding: "7px 18px", borderRadius: 20, fontSize: 13, fontWeight: 800, border: "none", fontFamily: "inherit",
+            padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 800, border: "none", fontFamily: "inherit",
             background: hasTrigger ? `linear-gradient(135deg,${DS.accent},#F97316)` : DS.border,
             color: hasTrigger ? "#fff" : DS.ink3, cursor: hasTrigger ? "pointer" : "not-allowed",
             boxShadow: hasTrigger ? "0 4px 16px rgba(232,69,10,0.3)" : "none", transition: "all 0.2s",
           }} title={!hasTrigger ? "Add a trigger first" : "Publish flow"}>
-            ▶ Publish
+            ▶<span className="btn-text"> Publish</span>
           </button>
         </div>
       </div>
 
       {/* ── BODY ────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1080, margin: "0 auto", padding: "22px 18px", display: "flex", gap: 22, alignItems: "flex-start" }}>
+      <div className="instdm-body" style={{ maxWidth: 1080 }}>
 
         {/* ── LEFT: FLOW / SETTINGS / ANALYTICS ─── */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="instdm-left" style={{ flex: 1 }}>
 
           {tab === "flow" && (
             <>
@@ -1567,7 +1610,9 @@ export default function InstaDMBuilder() {
         </div>
 
         {/* ── RIGHT: PHONE PREVIEW ─── */}
-        <PhonePreview steps={steps} />
+        <div className="instdm-preview">
+          <PhonePreview steps={steps} />
+        </div>
       </div>
     </div>
   );

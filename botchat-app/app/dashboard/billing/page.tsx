@@ -39,7 +39,7 @@ export default function BillingPage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
 
     return (
-        <div className="space-y-6 max-w-[1400px]">
+        <div className="space-y-6 max-w-[1400px] p-4 sm:p-6">
             {/* Header */}
             <div>
                 <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Billing & Plans</h1>

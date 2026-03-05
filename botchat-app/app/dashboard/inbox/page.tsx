@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
     Search, Instagram, Facebook, Send, Bot, MoreVertical,
-    Tag, Phone, Clock, User, Zap, ChevronRight, Smile,
+    Tag, Phone, Clock, User, Zap, ChevronRight, Smile, ArrowLeft,
 } from "lucide-react";
 
 const convs = [
@@ -35,15 +35,33 @@ export default function InboxPage() {
     const [active, setActive] = useState(convs[0]);
     const [input, setInput] = useState("");
     const [filter, setFilter] = useState<"all" | "instagram" | "facebook">("all");
+    // Mobile: "list" shows conversation list, "chat" shows chat panel
+    const [mobileView, setMobileView] = useState<"list" | "chat">("list");
 
     const msgs = msgMap[active.id] || [{ text: active.msg, from: "user" as const, time: "now" }];
     const filtered = convs.filter((c) => filter === "all" || c.platform === filter);
 
-    return (
-        <div className="flex h-full gap-0 rounded-2xl overflow-hidden" style={{ height: "calc(100vh - 128px)", border: "1px solid var(--glass-border)" }}>
+    const handleSelectConv = (c: typeof convs[0]) => {
+        setActive(c);
+        setMobileView("chat"); // On mobile, switch to chat view
+    };
 
+    return (
+        <div
+            className="flex h-full gap-0 rounded-2xl overflow-hidden"
+            style={{ height: "calc(100vh - 128px)", border: "1px solid var(--glass-border)" }}
+        >
             {/* ── Conversation List ── */}
-            <div className="w-[300px] flex flex-col flex-shrink-0 border-r" style={{ background: "var(--card)", borderColor: "var(--glass-border)" }}>
+            {/* On mobile: show only when mobileView === "list" | On desktop: always show */}
+            <div
+                className={[
+                    "flex flex-col flex-shrink-0 border-r",
+                    // Mobile: full width when visible, hidden when chat active
+                    "w-full md:w-[300px]",
+                    mobileView === "chat" ? "hidden md:flex" : "flex",
+                ].join(" ")}
+                style={{ background: "var(--card)", borderColor: "var(--glass-border)" }}
+            >
                 <div className="p-4 border-b" style={{ borderColor: "var(--glass-border)" }}>
                     <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--foreground)" }}>Inbox</h2>
                     {/* Platform filter */}
@@ -69,7 +87,7 @@ export default function InboxPage() {
 
                 <div className="flex-1 overflow-y-auto">
                     {filtered.map((c) => (
-                        <div key={c.id} onClick={() => setActive(c)}
+                        <div key={c.id} onClick={() => handleSelectConv(c)}
                             className="flex items-start gap-3 px-3 py-3 cursor-pointer border-b transition-all"
                             style={{
                                 background: active.id === c.id ? "var(--nav-active-bg)" : "transparent",
@@ -108,17 +126,34 @@ export default function InboxPage() {
                                     </div>
                                 )}
                             </div>
+                            {/* Arrow hint on mobile */}
+                            <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 md:hidden" style={{ color: "var(--muted-foreground)" }} />
                         </div>
                     ))}
                 </div>
             </div>
 
             {/* ── Chat Area ── */}
-            <div className="flex-1 flex flex-col min-w-0" style={{ background: "var(--background)" }}>
+            {/* On mobile: show only when mobileView === "chat" | On desktop: always show */}
+            <div
+                className={[
+                    "flex-1 flex flex-col min-w-0",
+                    mobileView === "list" ? "hidden md:flex" : "flex",
+                ].join(" ")}
+                style={{ background: "var(--background)" }}
+            >
                 {/* Chat Header */}
-                <div className="flex items-center justify-between px-5 py-3 border-b flex-shrink-0" style={{ borderColor: "var(--glass-border)", background: "var(--card)" }}>
+                <div className="flex items-center justify-between px-4 py-3 border-b flex-shrink-0" style={{ borderColor: "var(--glass-border)", background: "var(--card)" }}>
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                        {/* Back button — mobile only */}
+                        <button
+                            className="md:hidden p-1.5 rounded-lg mr-1 hover:opacity-70 transition-opacity"
+                            style={{ background: "var(--glass-bg)" }}
+                            onClick={() => setMobileView("list")}
+                        >
+                            <ArrowLeft className="w-4 h-4" style={{ color: "var(--foreground)" }} />
+                        </button>
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
                             style={{ background: active.platform === "instagram" ? "linear-gradient(135deg,#ec4899,#7c3aed)" : "linear-gradient(135deg,#3b82f6,#06b6d4)" }}>
                             {active.name[0]}
                         </div>
@@ -135,7 +170,7 @@ export default function InboxPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
+                        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
                             style={{ background: "rgba(124,58,237,0.1)", color: "#a855f7", border: "1px solid rgba(124,58,237,0.2)" }}>
                             <Bot className="w-3.5 h-3.5" />Auto-Reply ON
                         </div>
@@ -146,7 +181,7 @@ export default function InboxPage() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
                     {msgs.map((m, i) => (
                         <div key={i} className={`flex ${m.from === "bot" ? "justify-start" : "justify-end"}`}>
                             {m.from === "bot" && (
@@ -155,7 +190,7 @@ export default function InboxPage() {
                                     <Bot className="w-3.5 h-3.5 text-white" />
                                 </div>
                             )}
-                            <div className="max-w-[70%]">
+                            <div className="max-w-[80%] sm:max-w-[70%]">
                                 <div className={`px-4 py-2.5 text-sm ${m.from === "bot" ? "msg-bubble-in" : "msg-bubble-out"}`}>
                                     {m.text}
                                 </div>
@@ -170,7 +205,7 @@ export default function InboxPage() {
                 </div>
 
                 {/* Quick Replies */}
-                <div className="px-5 pb-2 flex gap-2 overflow-x-auto flex-wrap">
+                <div className="px-4 pb-2 flex gap-2 overflow-x-auto">
                     {quickReplies.map((q) => (
                         <button key={q} onClick={() => setInput(q)}
                             className="text-[11px] px-3 py-1.5 rounded-full whitespace-nowrap hover:opacity-80 transition-opacity flex-shrink-0"
@@ -181,7 +216,7 @@ export default function InboxPage() {
                 </div>
 
                 {/* Input */}
-                <div className="px-5 pb-4">
+                <div className="px-4 pb-4">
                     <div className="flex items-center gap-2 rounded-2xl px-4 py-3" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
                         <button className="p-1.5 hover:opacity-70"><Smile className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} /></button>
                         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..."
@@ -197,7 +232,7 @@ export default function InboxPage() {
                 </div>
             </div>
 
-            {/* ── Contact Info Panel ── */}
+            {/* ── Contact Info Panel — desktop xl only ── */}
             <div className="w-[220px] flex-shrink-0 border-l p-4 hidden xl:flex flex-col gap-4 overflow-y-auto"
                 style={{ background: "var(--card)", borderColor: "var(--glass-border)" }}>
                 <div className="text-center pt-2">

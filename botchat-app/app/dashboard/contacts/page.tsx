@@ -34,7 +34,7 @@ export default function ContactsPage() {
     });
 
     return (
-        <div className="space-y-6 max-w-[1400px]">
+        <div className="space-y-6 max-w-[1400px] p-4 sm:p-6">
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>

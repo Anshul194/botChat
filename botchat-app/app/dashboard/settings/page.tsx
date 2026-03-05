@@ -321,16 +321,16 @@ export default function SettingsPage() {
 
 
     return (
-        <div className="max-w-[1200px] w-full">
+        <div className="max-w-[1200px] w-full p-4 sm:p-6">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>Workspace Settings</h1>
+            <div className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>Workspace Settings</h1>
                 <p className="text-sm mt-1.5" style={{ color: "var(--muted-foreground)" }}>Connect third-party apps and manage your core configuration.</p>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 pb-12">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-12 pb-12">
                 {/* Vertical Navigation Sidebar */}
-                <div className="w-full md:w-64 flex-shrink-0 space-y-8">
+                <div className="w-full md:w-64 flex-shrink-0 space-y-6 md:space-y-8">
                     {navigationGroups.map((group) => (
                         <div key={group.title}>
                             <h4 className="text-xs font-semibold mb-3 px-3 uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>

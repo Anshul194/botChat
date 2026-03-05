@@ -16,7 +16,7 @@ import {
     DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 
-interface SidebarProps { collapsed: boolean; onToggle: () => void; }
+interface SidebarProps { collapsed: boolean; onToggle: () => void; onClose?: () => void; }
 
 const navGroups = [
     {
@@ -52,7 +52,7 @@ const navGroups = [
     },
 ];
 
-export default function Sidebar({ collapsed }: SidebarProps) {
+export default function Sidebar({ collapsed, onClose }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
     const dispatch = useAppDispatch();
@@ -166,6 +166,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                                         <Link
                                             key={item.href}
                                             href={item.href}
+                                            onClick={onClose}
                                             title={collapsed ? item.label : undefined}
                                             className={cn(
                                                 "flex items-center gap-3 px-3 py-2.5 rounded-full text-sm transition-all duration-200 group",

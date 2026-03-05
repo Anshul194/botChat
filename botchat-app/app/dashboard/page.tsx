@@ -139,18 +139,18 @@ export default function DashboardPage() {
     ];
 
     return (
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-8 p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tighter sm:text-4xl">
+                    <h1 className="text-2xl font-black tracking-tighter sm:text-3xl md:text-4xl">
                         Overview<span className="text-primary">.</span>
                     </h1>
-                    <p className="text-muted-foreground">Premium analytics for your connected accounts</p>
+                    <p className="text-muted-foreground text-sm">Premium analytics for your connected accounts</p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Tabs defaultValue="7d" className="w-[300px]">
+                <div className="flex items-center gap-3 flex-wrap">
+                    <Tabs defaultValue="7d" className="w-full sm:w-[300px]">
                         <TabsList className="grid w-full grid-cols-3 bg-muted/50 p-1">
                             <TabsTrigger value="7d" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">7D</TabsTrigger>
                             <TabsTrigger value="30d" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">30D</TabsTrigger>

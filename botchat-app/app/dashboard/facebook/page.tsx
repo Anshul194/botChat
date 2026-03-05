@@ -18,7 +18,7 @@ const stats = [
 
 export default function FacebookPage() {
     return (
-        <div className="space-y-6 max-w-[900px]">
+        <div className="space-y-6 max-w-[900px] p-4 sm:p-6">
             <div>
                 <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Facebook Connection</h1>
                 <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>Manage your Facebook Page and Messenger integration</p>

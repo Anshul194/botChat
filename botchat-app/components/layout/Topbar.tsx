@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
     Bell, Search, ChevronDown, Sparkles, Zap, X,
     MessageSquare, TrendingUp, AlertTriangle, CheckCircle2,
-    ArrowUpRight, Settings, PanelLeftClose, PanelLeftOpen,
+    ArrowUpRight, Settings, PanelLeftClose, PanelLeftOpen, Menu,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
@@ -15,6 +15,7 @@ interface TopbarProps {
     onMenuToggle: () => void;
     collapsed: boolean;
     onToggleSidebar: () => void;
+    mobileSidebarOpen?: boolean;
 }
 
 const NOTIFS = [
@@ -38,7 +39,7 @@ const PAGE_MAP: Record<string, string> = {
     "/dashboard/billing": "Billing",
 };
 
-export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar }: TopbarProps) {
+export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobileSidebarOpen }: TopbarProps) {
     const { theme } = useTheme();
     const pathname = usePathname();
     const isLight = theme === "light";
@@ -86,10 +87,26 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar }: Top
             <div className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none"
                 style={{ background: "linear-gradient(90deg,rgba(108,92,231,0.7),rgba(236,72,153,0.45),transparent 65%)" }} />
 
-            {/* ── Sidebar toggle (inside topbar, no bleed) ── */}
+            {/* ── Mobile hamburger (only on small screens) ── */}
+            <button
+                onClick={onMenuToggle}
+                className="md:hidden w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
+                style={{
+                    background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)",
+                    border: `1px solid ${isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.09)"}`,
+                    color: "var(--muted-foreground)",
+                }}
+                title="Toggle menu"
+            >
+                {mobileSidebarOpen
+                    ? <X className="w-[15px] h-[15px]" />
+                    : <Menu className="w-[15px] h-[15px]" />}
+            </button>
+
+            {/* ── Sidebar toggle (desktop only) ── */}
             <button
                 onClick={onToggleSidebar}
-                className="w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
+                className="hidden md:flex w-9 h-9 items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
                 style={{
                     background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)",
                     border: `1px solid ${isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.09)"}`,
@@ -106,10 +123,10 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar }: Top
             <div className="w-px h-5 flex-shrink-0"
                 style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
 
-            {/* ── Breadcrumb ── */}
-            <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
-                <span className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>BotChat</span>
-                <span style={{ color: "var(--muted-foreground)", opacity: 0.35, fontSize: 13 }}>/</span>
+            {/* ── Breadcrumb — page name visible on mobile too ── */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span className="hidden sm:inline text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>BotChat</span>
+                <span className="hidden sm:inline" style={{ color: "var(--muted-foreground)", opacity: 0.35, fontSize: 13 }}>/</span>
                 <span className="text-[13px] font-black tracking-tight" style={{ color: "var(--foreground)" }}>{page}</span>
             </div>
 
@@ -117,8 +134,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar }: Top
             <div className="hidden sm:block w-px h-5 flex-shrink-0"
                 style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
 
-            {/* ── Search pill (center, flexible) ── */}
-            <div className="flex-1 max-w-[460px]">
+            {/* ── Search pill — hidden on mobile, shown on sm+ ── */}
+            <div className="hidden sm:flex flex-1 max-w-[460px]">
                 <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-full cursor-pointer group transition-all duration-200"
                     style={{
                         background: isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.05)",
@@ -189,7 +206,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar }: Top
 
                     {/* Notif dropdown */}
                     {notifOpen && (
-                        <div className="absolute right-0 top-[calc(100%+10px)] w-[340px] rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                        <div className="absolute right-0 top-[calc(100%+10px)] w-[calc(100vw-2rem)] sm:w-[340px] max-w-[340px] rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                             style={{ background: isLight ? "rgba(255,255,255,0.98)" : "rgba(12,16,28,0.98)", border: `1px solid ${isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.07)"}`, backdropFilter: "blur(20px)" }}>
                             <div className="flex items-center justify-between px-4 py-3"
                                 style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.05)"}` }}>
