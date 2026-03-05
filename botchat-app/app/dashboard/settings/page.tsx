@@ -320,6 +320,8 @@ export default function SettingsPage() {
     };
 
 
+    const [mobileSettingsView, setMobileSettingsView] = useState<"nav" | "content">("nav");
+
     return (
         <div className="max-w-[1200px] w-full p-4 sm:p-6">
             {/* Header */}
@@ -329,8 +331,11 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 md:gap-12 pb-12">
-                {/* Vertical Navigation Sidebar */}
-                <div className="w-full md:w-64 flex-shrink-0 space-y-6 md:space-y-8">
+                {/* Vertical Navigation Sidebar — full screen on mobile when nav view */}
+                <div className={[
+                    "w-full md:w-64 flex-shrink-0 space-y-6 md:space-y-8",
+                    mobileSettingsView === "content" ? "hidden md:block" : "block",
+                ].join(" ")}>
                     {navigationGroups.map((group) => (
                         <div key={group.title}>
                             <h4 className="text-xs font-semibold mb-3 px-3 uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
@@ -340,14 +345,16 @@ export default function SettingsPage() {
                                 {group.items.map(({ id, label, Icon }) => (
                                     <button
                                         key={id}
-                                        onClick={() => setTab(id)}
-                                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all"
+                                        onClick={() => { setTab(id); setMobileSettingsView("content"); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
                                         style={tab === id
                                             ? { background: "var(--nav-hover-bg)", color: "var(--foreground)", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }
                                             : { color: "var(--muted-foreground)", background: "transparent" }}
                                     >
                                         <Icon className="w-4 h-4" style={tab === id ? { color: "var(--brand-purple)" } : {}} />
-                                        {label}
+                                        <span className="flex-1 text-left">{label}</span>
+                                        {/* Arrow hint on mobile */}
+                                        <svg className="w-4 h-4 md:hidden opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                                     </button>
                                 ))}
                             </div>
@@ -355,8 +362,20 @@ export default function SettingsPage() {
                     ))}
                 </div>
 
-                {/* Main Content Pane */}
-                <div className="flex-1 min-w-0 slide-up">
+                {/* Main Content Pane — full screen on mobile when content view */}
+                <div className={[
+                    "flex-1 min-w-0 slide-up",
+                    mobileSettingsView === "nav" ? "hidden md:block" : "block",
+                ].join(" ")}>
+                    {/* Mobile back button */}
+                    <button
+                        className="md:hidden flex items-center gap-2 mb-4 text-sm font-medium hover:opacity-70 transition-opacity"
+                        style={{ color: "var(--muted-foreground)" }}
+                        onClick={() => setMobileSettingsView("nav")}
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                        Back to Settings
+                    </button>
 
                     {/* Profile */}
                     {tab === "profile" && (
