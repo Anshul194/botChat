@@ -10,9 +10,9 @@ const DS = {
   card: "var(--card)",
   ink: "var(--foreground)",
   ink2: "var(--muted-foreground)",
-  ink3: "var(--muted)",
+  ink3: "var(--muted-foreground)",  // was var(--muted) = near-white in light mode!
   border: "var(--border)",
-  borderHover: "rgba(0,0,0,0.06)",
+  borderHover: "var(--border)",
   accent: "var(--primary)",
   accentSoft: "rgba(236,72,153,0.08)",
   accentBorder: "rgba(236,72,153,0.16)",
@@ -209,7 +209,7 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
       display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: DS.radiusSm,
       border: `1.5px solid ${danger && hov ? "#FCA5A5" : DS.border}`,
-      background: danger && hov ? "#FFF1F0" : hov ? DS.bg : "#fff",
+      background: danger && hov ? "#FFF1F0" : hov ? DS.bg : DS.card,
       color: danger ? (hov ? "#DC2626" : DS.ink3) : DS.ink2,
       cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: "inherit",
       transition: "all 0.12s", ...extra,
@@ -238,7 +238,7 @@ function TriggerFields({ step, update }) {
             return (
               <button key={t.id} onClick={() => update({ ...step, type: t.id, label: t.label })} style={{
                 display: "flex", alignItems: "flex-start", gap: 9, padding: "10px 11px", borderRadius: DS.radiusSm,
-                border: `1.5px solid ${sel ? t.color : DS.border}`, background: sel ? `${t.color}0D` : "#fff",
+                border: `1.5px solid ${sel ? t.color : DS.border}`, background: sel ? `${t.color}0D` : DS.card,
                 cursor: "pointer", textAlign: "left", fontFamily: "inherit", transition: "all 0.12s",
               }}>
                 <span style={{ fontSize: 18, lineHeight: 1.2 }}>{t.icon}</span>
@@ -822,7 +822,7 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
       <div style={{
         background: DS.card, borderRadius: DS.radius, overflow: "hidden", position: "relative", zIndex: 1,
         border: expanded ? `2px solid ${color}` : `1.5px solid ${DS.border}`,
-        boxShadow: expanded ? `0 0 0 4px ${isTrigger ? def.color + "18" : "#1C191710"}, ${DS.shadowHover}` : DS.shadowCard,
+        boxShadow: expanded ? `0 0 0 4px ${isTrigger ? def.color + "18" : "rgba(0,0,0,0.07)"}, ${DS.shadowHover}` : DS.shadowCard,
         transition: "border-color 0.15s, box-shadow 0.15s",
       }}>
         {isTrigger && <div style={{ height: 3, background: `linear-gradient(90deg,${def.color},${def.color}66)` }} />}
@@ -840,7 +840,7 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
           {/* Icon */}
           <div style={{
             width: 38, height: 38, borderRadius: 11, flexShrink: 0,
-            background: isTrigger ? `${def.color}15` : "#F7F4EF",
+            background: isTrigger ? `${def.color}15` : DS.bg,
             border: `1.5px solid ${isTrigger ? def.color + "30" : DS.border}`,
             display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
           }}>{def.icon}</div>
@@ -944,11 +944,11 @@ function AddActionPicker({ onAdd }) {
               {filtered.map(a => (
                 <button key={a.id} onClick={() => { onAdd(a.id); setOpen(false); }} style={{
                   display: "flex", alignItems: "flex-start", gap: 9, padding: "10px 11px", borderRadius: DS.radiusSm,
-                  border: `1.5px solid ${DS.border}`, background: "#fff", cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                  border: `1.5px solid ${DS.border}`, background: DS.card, cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                   transition: "all 0.12s",
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accentBorder; e.currentTarget.style.background = DS.accentSoft; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "#fff"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = DS.card; }}
                 >
                   <span style={{ fontSize: 18, lineHeight: 1.2, flexShrink: 0 }}>{a.icon}</span>
                   <div>
@@ -1022,11 +1022,11 @@ function TemplateModal({ onSelect, onClose }) {
           {TEMPLATES.map(t => (
             <button key={t.id} onClick={() => { onSelect(t); onClose(); }} style={{
               display: "flex", alignItems: "center", gap: 16, padding: "16px 18px",
-              borderRadius: DS.radius, border: `1.5px solid ${DS.border}`, background: "#fff",
+              borderRadius: DS.radius, border: `1.5px solid ${DS.border}`, background: DS.card,
               cursor: "pointer", textAlign: "left", fontFamily: "inherit", transition: "all 0.15s",
             }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accentBorder; e.currentTarget.style.background = DS.accentSoft; e.currentTarget.style.boxShadow = DS.shadowHover; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "none"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = DS.card; e.currentTarget.style.boxShadow = "none"; }}
             >
               <span style={{ fontSize: 34, flexShrink: 0 }}>{t.icon}</span>
               <div style={{ flex: 1 }}>
@@ -1125,7 +1125,7 @@ function PreviewBubble({ msg }) {
       )}
       <div style={{ maxWidth: 220 }}>
         <div style={{
-          background: isUser ? DS.ink : "#fff", color: isUser ? "#fff" : DS.ink,
+          background: isUser ? DS.ink : DS.card, color: isUser ? "#fff" : DS.ink,
           borderRadius: isUser ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
           padding: msg.isMedia ? "4px" : "8px 11px", fontSize: 12.5, lineHeight: 1.5,
           boxShadow: isUser ? "none" : "0 1px 4px rgba(0,0,0,0.07)",
@@ -1133,7 +1133,7 @@ function PreviewBubble({ msg }) {
           {msg.isMedia ? <div style={{ width: 140, height: 90, borderRadius: 10, background: "linear-gradient(135deg,#E7E2DA,#C9C2B8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>🖼️</div> : msg.text}
         </div>
         {msg.link && (
-          <div style={{ marginTop: 5, background: "#F7F4EF", border: `1.5px solid ${DS.border}`, borderRadius: 10, padding: "7px 10px", display: "flex", alignItems: "center", gap: 5 }}>
+          <div style={{ marginTop: 5, background: DS.bg, border: `1.5px solid ${DS.border}`, borderRadius: 10, padding: "7px 10px", display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{ fontSize: 11 }}>🔗</span>
             <span style={{ fontSize: 11.5, color: DS.accent, fontWeight: 700 }}>{msg.link.label}</span>
           </div>
