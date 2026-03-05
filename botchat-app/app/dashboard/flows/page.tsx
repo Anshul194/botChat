@@ -2,28 +2,28 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
 /* ============================================================
-   DESIGN SYSTEM — warm ink + cream + coral accent, editorial
+   DESIGN SYSTEM — use site CSS vars so preview matches site theme
    ============================================================ */
 const DS = {
-  bg: "#F7F4EF",
-  card: "#FFFFFF",
-  ink: "#1C1917",
-  ink2: "#57534E",
-  ink3: "#A8A29E",
-  border: "#E7E2DA",
-  borderHover: "#C9C2B8",
-  accent: "#E8450A",
-  accentSoft: "#FFF0EB",
-  accentBorder: "#F8C4B0",
-  green: "#16A34A",
-  greenSoft: "#F0FDF4",
-  amber: "#D97706",
-  amberSoft: "#FFFBEB",
-  blue: "#0369A1",
-  blueSoft: "#F0F9FF",
-  shadow: "0 1px 3px rgba(28,25,23,0.06), 0 4px 12px rgba(28,25,23,0.04)",
-  shadowHover: "0 2px 8px rgba(28,25,23,0.1), 0 8px 24px rgba(28,25,23,0.06)",
-  shadowCard: "0 0 0 1.5px #E7E2DA, 0 2px 12px rgba(28,25,23,0.06)",
+  bg: "var(--background)",
+  card: "var(--card)",
+  ink: "var(--foreground)",
+  ink2: "var(--muted-foreground)",
+  ink3: "var(--muted)",
+  border: "var(--border)",
+  borderHover: "rgba(0,0,0,0.06)",
+  accent: "var(--primary)",
+  accentSoft: "rgba(236,72,153,0.08)",
+  accentBorder: "rgba(236,72,153,0.16)",
+  green: "var(--chart-3)",
+  greenSoft: "rgba(16,185,129,0.06)",
+  amber: "var(--chart-4)",
+  amberSoft: "rgba(245,158,11,0.06)",
+  blue: "var(--chart-1)",
+  blueSoft: "rgba(29,110,245,0.06)",
+  shadow: "0 1px 3px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.04)",
+  shadowHover: "0 6px 20px rgba(0,0,0,0.08)",
+  shadowCard: "0 0 0 1.5px var(--border), 0 2px 12px rgba(0,0,0,0.06)",
   radius: 14,
   radiusSm: 9,
 };
@@ -1120,9 +1120,9 @@ function PreviewBubble({ msg }) {
   return (
     <div style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", marginBottom: 7, gap: 6, alignItems: "flex-end" }}>
       {!isUser && (
-        <div style={{ width: 22, height: 22, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0, marginBottom: 2 }}>🤖</div>
+        <div style={{ width: 26, height: 26, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, marginBottom: 2 }}>🤖</div>
       )}
-      <div style={{ maxWidth: 175 }}>
+      <div style={{ maxWidth: 220 }}>
         <div style={{
           background: isUser ? DS.ink : "#fff", color: isUser ? "#fff" : DS.ink,
           borderRadius: isUser ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
@@ -1159,57 +1159,57 @@ function PhonePreview({ steps }) {
   const hasTrigger = steps.some(s => s.kind === "trigger");
 
   return (
-    <div style={{ width: 248, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
       {/* Label */}
-      <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.ink3, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Live Preview</div>
+      <div style={{ fontSize: 11, fontWeight: 800, color: DS.ink3, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Live Preview</div>
 
       {/* Phone */}
       <div style={{
-        width: 248, borderRadius: 40, background: "#18181B",
-        padding: "8px 7px 14px",
-        boxShadow: "0 24px 70px rgba(0,0,0,0.28), inset 0 0 0 1px rgba(255,255,255,0.07)",
+        width: 320, borderRadius: 44, background: "#18181B",
+        padding: "10px 9px 18px",
+        boxShadow: "0 32px 90px rgba(0,0,0,0.32), inset 0 0 0 1px rgba(255,255,255,0.07)",
       }}>
         {/* Notch */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
-          <div style={{ width: 60, height: 5, borderRadius: 99, background: "#2D2D36" }} />
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
+          <div style={{ width: 80, height: 6, borderRadius: 99, background: "#2D2D36" }} />
         </div>
         {/* Screen */}
-        <div style={{ borderRadius: 32, overflow: "hidden", background: "#F1F5F9" }}>
+        <div style={{ borderRadius: 36, overflow: "hidden", background: "#F1F5F9" }}>
           {/* IG DM header */}
-          <div style={{ background: "#fff", padding: "10px 14px", borderBottom: "1px solid #E2E8F0", display: "flex", alignItems: "center", gap: 9 }}>
-            <div style={{ width: 34, height: 34, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, padding: 2, flexShrink: 0 }}>
-              <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>🤖</div>
+          <div style={{ background: "#fff", padding: "12px 16px", borderBottom: "1px solid #E2E8F0", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, padding: 3, flexShrink: 0 }}>
+              <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🤖</div>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 800, color: "#18181B" }}>AutoBot</div>
-              <div style={{ fontSize: 10, color: DS.green }}>● Active now</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: "#18181B" }}>AutoBot</div>
+              <div style={{ fontSize: 11, color: DS.green }}>● Active now</div>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <span style={{ fontSize: 15 }}>📞</span>
-              <span style={{ fontSize: 15 }}>📹</span>
+            <div style={{ display: "flex", gap: 10 }}>
+              <span style={{ fontSize: 16 }}>📞</span>
+              <span style={{ fontSize: 16 }}>📹</span>
             </div>
           </div>
           {/* Messages */}
-          <div ref={scrollRef} style={{ padding: "12px 10px", minHeight: 240, maxHeight: 300, overflowY: "auto" }}>
+          <div ref={scrollRef} style={{ padding: "14px 12px", minHeight: 300, maxHeight: 420, overflowY: "auto" }}>
             {msgs.length === 0
-              ? <div style={{ textAlign: "center", paddingTop: 55, color: DS.ink3, fontSize: 12 }}><div style={{ fontSize: 28, marginBottom: 8 }}>👆</div>Add steps to preview</div>
+              ? <div style={{ textAlign: "center", paddingTop: 70, color: DS.ink3, fontSize: 13 }}><div style={{ fontSize: 34, marginBottom: 10 }}>👆</div>Add steps to preview</div>
               : msgs.map((m, i) => <PreviewBubble key={i} msg={m} />)
             }
           </div>
           {/* Input */}
-          <div style={{ background: "#fff", padding: "8px 10px", display: "flex", gap: 7, alignItems: "center", borderTop: "1px solid #E2E8F0" }}>
-            <div style={{ flex: 1, background: "#F1F5F9", borderRadius: 18, height: 30, display: "flex", alignItems: "center", paddingLeft: 11, fontSize: 11.5, color: "#94A3B8" }}>Message…</div>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff" }}>▶</div>
+          <div style={{ background: "#fff", padding: "10px 12px", display: "flex", gap: 10, alignItems: "center", borderTop: "1px solid #E2E8F0" }}>
+            <div style={{ flex: 1, background: "#F1F5F9", borderRadius: 20, height: 36, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 13, color: "#94A3B8" }}>Message…</div>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#fff" }}>▶</div>
           </div>
         </div>
         {/* Home bar */}
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
-          <div style={{ width: 72, height: 4, borderRadius: 99, background: "#2D2D36" }} />
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
+          <div style={{ width: 100, height: 6, borderRadius: 99, background: "#2D2D36" }} />
         </div>
       </div>
 
       {/* Stats */}
-      <div style={{ marginTop: 14, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+      <div style={{ marginTop: 16, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         {[
           { label: "Total Steps", val: steps.length, ok: steps.length > 0 },
           { label: "Has Trigger", val: hasTrigger ? "✓ Yes" : "✗ No", ok: hasTrigger },
