@@ -162,6 +162,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 group: "ADMINISTRATION", color: "#6366f1",
                                 items: [
                                     { label: "User Management", icon: Users, href: "/dashboard/users", badge: null },
+                                    { label: "Plan Management", icon: CreditCard, href: "/dashboard/plans", badge: null },
                                 ],
                             }
                         ];
