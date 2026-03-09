@@ -6,12 +6,23 @@ export interface Plan {
     name: string;
     price: number;
     duration: number;
-    durationtype: string;
-    max_users: number;
-    max_roles: number;
-    max_documents: number;
-    max_blogs: number;
-    active_status: boolean;
+    duration_type: string;
+    description: string;
+    status: boolean;
+    is_highlighted: boolean;
+    discount: number;
+    discount_terms: string;
+    discount_start: string;
+    discount_end: string;
+    discount_timezone: string;
+    discount_status: boolean;
+    apply_to_other_packages: string;
+    features: {
+        [key: string]: string;
+    };
+    feature_types: {
+        [key: string]: string;
+    };
     created_at: string;
     updated_at: string;
 }
