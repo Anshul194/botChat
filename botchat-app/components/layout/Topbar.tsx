@@ -52,9 +52,14 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
     const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [pulse, setPulse] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const notifRef = useRef<HTMLDivElement>(null);
     const profileRef = useRef<HTMLDivElement>(null);
     const page = PAGE_MAP[pathname] ?? "Dashboard";
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleLogout = async () => {
         await dispatch(logoutUser());
@@ -283,13 +288,13 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     >
                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-black text-white"
                             style={{ background: "var(--brand-gradient)", boxShadow: "0 2px 10px rgba(108,92,231,0.4)" }}>
-                            {user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
+                            {mounted ? (user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A') : 'A'}
                         </div>
                         <div className="hidden md:block text-left ml-0.5">
-                            <p className="text-[13px] font-black leading-none" style={{ color: "var(--foreground)" }}>{user?.name?.split(' ')[0] || 'User'}</p>
+                            <p className="text-[13px] font-black leading-none" style={{ color: "var(--foreground)" }}>{mounted ? (user?.name?.split(' ')[0] || 'User') : 'User'}</p>
                             <div className="flex items-center gap-1 mt-0.5">
                                 <span className="w-1 h-1 rounded-full bg-emerald-500" />
-                                <p className="text-[9px] font-bold" style={{ color: "var(--muted-foreground)" }}>{user?.type || 'Pro Plan'}</p>
+                                <p className="text-[9px] font-bold" style={{ color: "var(--muted-foreground)" }}>{mounted ? (user?.type || 'Pro Plan') : 'Pro Plan'}</p>
                             </div>
                         </div>
                         <ChevronDown className="w-3 h-3 hidden md:block ml-0.5 transition-transform duration-200 flex-shrink-0"
@@ -304,11 +309,11 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-white"
                                         style={{ background: "var(--brand-gradient)" }}>
-                                        {user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
+                                        {mounted ? (user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A') : 'A'}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[13px] font-black truncate">{user?.name || 'User'}</p>
-                                        <p className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>{user?.type || 'Member'} · {user?.role?.replace('_', ' ') || 'User'}</p>
+                                        <p className="text-[13px] font-black truncate">{mounted ? (user?.name || 'User') : 'User'}</p>
+                                        <p className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>{mounted ? (user?.type || 'Member') : 'Member'} · {mounted ? (user?.role?.replace('_', ' ') || 'User') : 'User'}</p>
                                     </div>
                                 </div>
                             </div>

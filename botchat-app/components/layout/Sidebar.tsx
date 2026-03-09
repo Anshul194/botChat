@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { logoutUser } from "@/store/slices/authSlice";
+import { logoutUser, fetchMe } from "@/store/slices/authSlice";
+import { useMemo } from "react";
 import {
     LayoutDashboard, MessageSquare, Zap, BarChart3, Users, Settings,
     Instagram, Facebook, Plus, Sparkles, CreditCard, GitBranch,
@@ -52,7 +53,7 @@ const navGroups = [
     },
 ];
 
-export default function Sidebar({ collapsed, onClose }: SidebarProps) {
+export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
     const dispatch = useAppDispatch();
@@ -61,6 +62,15 @@ export default function Sidebar({ collapsed, onClose }: SidebarProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [glowColor, setGlowColor] = useState("#6C5CE7");
+
+    const adminGroups = [
+        {
+            group: "ADMINISTRATION", color: "#6366f1",
+            items: [
+                { label: "User Management", icon: Users, href: "/dashboard/users", badge: null },
+            ],
+        }
+    ];
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -146,71 +156,109 @@ export default function Sidebar({ collapsed, onClose }: SidebarProps) {
 
                 {/* ── Nav ── */}
                 <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4 scrollbar-none">
-                    {navGroups.map(group => (
-                        <div key={group.group}>
-                            {!collapsed ? (
-                                <div className="flex items-center gap-2 px-2 mb-2">
-                                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: group.color }} />
-                                    <span className="text-[9px] font-black tracking-[0.15em] uppercase" style={{ color: `${group.color}AA` }}>
-                                        {group.group}
-                                    </span>
+                    {(() => {
+                        const adminGroups = [
+                            {
+                                group: "ADMINISTRATION", color: "#6366f1",
+                                items: [
+                                    { label: "User Management", icon: Users, href: "/dashboard/users", badge: null },
+                                ],
+                            }
+                        ];
+
+                        // Redundant check: Redux -> LocalStorage -> Type Match
+                        const isSuperAdminUser = (() => {
+                            if (!mounted) return false;
+
+                            // 1. Check Redux State
+                            if (user?.role?.toUpperCase() === 'SUPER_ADMIN' ||
+                                user?.type?.toLowerCase().includes('admin') ||
+                                (Array.isArray(user?.roles) && user?.roles.some(r => String(r).toLowerCase().includes('admin')))) {
+                                return true;
+                            }
+
+                            // 2. Direct LocalStorage fallback (Resilience for first-mount)
+                            if (typeof window !== 'undefined') {
+                                try {
+                                    const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+                                    if (localUser?.role?.toUpperCase() === 'SUPER_ADMIN' ||
+                                        localUser?.type?.toLowerCase().includes('admin') ||
+                                        (Array.isArray(localUser?.roles) && localUser?.roles.some((r: any) => String(r).toLowerCase().includes('admin')))) {
+                                        return true;
+                                    }
+                                } catch (e) { }
+                            }
+                            return false;
+                        })();
+
+                        const displayGroups = isSuperAdminUser ? [...navGroups, ...adminGroups] : navGroups;
+
+                        return displayGroups.map(group => (
+                            <div key={group.group}>
+                                {!collapsed ? (
+                                    <div className="flex items-center gap-2 px-2 mb-2">
+                                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: group.color }} />
+                                        <span className="text-[9px] font-black tracking-[0.15em] uppercase" style={{ color: `${group.color}AA` }}>
+                                            {group.group}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="h-px mx-2 mb-2 rounded-full" style={{ background: `${group.color}25` }} />
+                                )}
+
+                                <div className="space-y-0.5">
+                                    {group.items.map(item => {
+                                        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                onClick={onClose}
+                                                title={collapsed ? item.label : undefined}
+                                                className={cn(
+                                                    "flex items-center gap-3 px-3 py-2.5 rounded-full text-sm transition-all duration-200 group",
+                                                    isActive ? "font-bold" : "text-muted-foreground",
+                                                    collapsed && "justify-center px-2"
+                                                )}
+                                                style={isActive ? {
+                                                    background: `${group.color}18`,
+                                                    color: group.color,
+                                                    boxShadow: `0 0 0 1px ${group.color}22, 0 2px 10px ${group.color}15`,
+                                                } : undefined}
+                                                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = `${group.color}0D`; }}
+                                                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                                            >
+                                                {/* Circular icon */}
+                                                <div className={cn(
+                                                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200",
+                                                    isActive ? "" : "group-hover:scale-110"
+                                                )}
+                                                    style={{
+                                                        background: isActive ? group.color : `${group.color}18`,
+                                                        boxShadow: isActive ? `0 0 12px ${group.color}55` : "none",
+                                                    }}>
+                                                    <item.icon className="w-[15px] h-[15px]"
+                                                        style={{ color: isActive ? "white" : group.color }} />
+                                                </div>
+
+                                                {!collapsed && (
+                                                    <>
+                                                        <span className="flex-1 truncate">{item.label}</span>
+                                                        {item.badge && (
+                                                            <span className="text-[9px] font-black px-2 py-0.5 rounded-full"
+                                                                style={{ background: `${group.color}20`, color: group.color, border: `1px solid ${group.color}30` }}>
+                                                                {item.badge}
+                                                            </span>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
-                            ) : (
-                                <div className="h-px mx-2 mb-2 rounded-full" style={{ background: `${group.color}25` }} />
-                            )}
-
-                            <div className="space-y-0.5">
-                                {group.items.map(item => {
-                                    const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-                                    return (
-                                        <Link
-                                            key={item.href}
-                                            href={item.href}
-                                            onClick={onClose}
-                                            title={collapsed ? item.label : undefined}
-                                            className={cn(
-                                                "flex items-center gap-3 px-3 py-2.5 rounded-full text-sm transition-all duration-200 group",
-                                                isActive ? "font-bold" : "text-muted-foreground",
-                                                collapsed && "justify-center px-2"
-                                            )}
-                                            style={isActive ? {
-                                                background: `${group.color}18`,
-                                                color: group.color,
-                                                boxShadow: `0 0 0 1px ${group.color}22, 0 2px 10px ${group.color}15`,
-                                            } : undefined}
-                                            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = `${group.color}0D`; }}
-                                            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
-                                        >
-                                            {/* Circular icon */}
-                                            <div className={cn(
-                                                "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200",
-                                                isActive ? "" : "group-hover:scale-110"
-                                            )}
-                                                style={{
-                                                    background: isActive ? group.color : `${group.color}18`,
-                                                    boxShadow: isActive ? `0 0 12px ${group.color}55` : "none",
-                                                }}>
-                                                <item.icon className="w-[15px] h-[15px]"
-                                                    style={{ color: isActive ? "white" : group.color }} />
-                                            </div>
-
-                                            {!collapsed && (
-                                                <>
-                                                    <span className="flex-1 truncate">{item.label}</span>
-                                                    {item.badge && (
-                                                        <span className="text-[9px] font-black px-2 py-0.5 rounded-full"
-                                                            style={{ background: `${group.color}20`, color: group.color, border: `1px solid ${group.color}30` }}>
-                                                            {item.badge}
-                                                        </span>
-                                                    )}
-                                                </>
-                                            )}
-                                        </Link>
-                                    );
-                                })}
                             </div>
-                        </div>
-                    ))}
+                        ));
+                    })()}
                 </nav>
 
                 {/* ── Connected accounts ── */}
@@ -255,7 +303,7 @@ export default function Sidebar({ collapsed, onClose }: SidebarProps) {
                                     {mounted ? (user?.name || "Admin User") : "Admin User"}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground mt-0.5 truncate capitalize">
-                                    {mounted ? (user?.role || "Pro Plan") : "Pro Plan"}
+                                    {mounted ? (user?.type || user?.role || "Pro Plan") : "Pro Plan"}
                                 </p>
                             </div>
                             <button
