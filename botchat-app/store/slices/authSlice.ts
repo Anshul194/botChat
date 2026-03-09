@@ -2,10 +2,15 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../lib/api';
 
 export interface User {
-    id: string;
+    id: number;
+    name: string;
     email: string;
-    role: string;
-    name?: string;
+    type: string;
+    phone?: string;
+    country?: string;
+    avatar?: string;
+    roles?: string | string[];
+    role?: string; // Normalized role: SUPER_ADMIN, RESELLER, TENANT
 }
 
 export interface AuthState {
@@ -50,58 +55,81 @@ export const loginUser = createAsyncThunk(
     async (credentials: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/login', credentials);
-            const data = response.data;
 
-            const payload = data.data || data;
-            // Check for both token and accessToken
-            const token = payload.token || data.token || payload.accessToken || data.accessToken;
-            const refreshToken = payload.refreshToken || data.refreshToken;
-            let user = payload.user || data.user;
-
-            if (!user && credentials.email) {
-                user = { email: credentials.email, role: 'admin' };
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Login failed.');
             }
+
+            const { token, user } = response.data.data;
+
+            // Normalize role for existing selectors
+            const normalizedUser = {
+                ...user,
+                role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
+                    user.type === 'Reseller' ? 'RESELLER' :
+                        user.type === 'Tenant' ? 'TENANT' : user.type
+            };
 
             if (typeof window !== 'undefined') {
                 if (token) localStorage.setItem('token', token);
-                if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
-                if (user) localStorage.setItem('user', JSON.stringify(user));
+                if (normalizedUser) localStorage.setItem('user', JSON.stringify(normalizedUser));
             }
 
-            return { token, user };
+            return { token, user: normalizedUser };
         } catch (error: any) {
-            if (error.response && error.response.data) {
-                return rejectWithValue(error.response.data.message || 'Login failed.');
+            const message = error.response?.data?.message || error.message || 'Login failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const fetchMe = createAsyncThunk(
+    'auth/fetchMe',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/auth/me');
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Failed to fetch user.');
             }
-            return rejectWithValue(error.message);
+
+            const user = response.data.data;
+            const normalizedUser = {
+                ...user,
+                role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
+                    user.type === 'Reseller' ? 'RESELLER' :
+                        user.type === 'Tenant' ? 'TENANT' : user.type
+            };
+
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('user', JSON.stringify(normalizedUser));
+            }
+
+            return normalizedUser;
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Failed to fetch user.';
+            return rejectWithValue(message);
         }
     }
 );
 
 export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
-    async (_, { dispatch, rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
-            let currentRefreshToken = "";
-            if (typeof window !== 'undefined') {
-                currentRefreshToken = localStorage.getItem('refreshToken') || "";
-            }
-
-            // Per API spec
-            await api.post('/auth/logout', { refreshToken: currentRefreshToken });
+            // Per production request: using DELETE for logout
+            await api.delete('/auth/logout').catch(() => { });
 
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('token');
-                localStorage.removeItem('refreshToken');
                 localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
             }
             return null;
         } catch (error: any) {
-            // Even if API fails, forcefully clear local storage so the user isn't bricked
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('token');
-                localStorage.removeItem('refreshToken');
                 localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
             }
             return rejectWithValue(error.message);
         }
@@ -141,6 +169,23 @@ const authSlice = createSlice({
                 state.user = null;
                 state.token = null;
                 state.isAuthenticated = false;
+            })
+            .addCase(fetchMe.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchMe.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.user = action.payload;
+                state.isAuthenticated = true;
+            })
+            .addCase(fetchMe.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+                // If fetching me fails, it might mean the token is invalid
+                state.isAuthenticated = false;
+                state.user = null;
+                state.token = null;
             });
     },
 });

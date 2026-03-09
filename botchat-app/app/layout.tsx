@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
+import AuthProvider from "@/components/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -55,10 +56,12 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} antialiased`}>
         <ReduxProvider>
-          <ThemeProvider>
-            {children}
-            <Toaster position="top-right" richColors />
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              {children}
+              <Toaster position="top-right" richColors />
+            </ThemeProvider>
+          </AuthProvider>
         </ReduxProvider>
       </body>
     </html>

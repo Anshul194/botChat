@@ -392,10 +392,10 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <InputField label="First Name" defaultValue="Anshul" />
-                                    <InputField label="Last Name" defaultValue="" />
-                                    <InputField label="Email" type="email" defaultValue="anshul@example.com" />
-                                    <InputField label="Phone" type="tel" placeholder="+91 00000 00000" />
+                                    <InputField label="Full Name" value={user?.name || ""} />
+                                    <InputField label="Account Type" value={user?.type || ""} />
+                                    <InputField label="Email" type="email" value={user?.email || ""} />
+                                    <InputField label="Phone" type="tel" value={user?.phone || ""} placeholder="+91 00000 00000" />
                                     <div className="md:col-span-2">
                                         <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>Bio</label>
                                         <textarea rows={3} placeholder="Tell us about yourself..."

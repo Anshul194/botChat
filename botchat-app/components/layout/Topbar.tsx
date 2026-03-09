@@ -8,7 +8,10 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { logoutUser, fetchMe } from "@/store/slices/authSlice";
 import { cn } from "@/lib/utils";
 
 interface TopbarProps {
@@ -41,6 +44,9 @@ const PAGE_MAP: Record<string, string> = {
 
 export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobileSidebarOpen }: TopbarProps) {
     const { theme } = useTheme();
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const { user } = useAppSelector((state) => state.auth);
     const pathname = usePathname();
     const isLight = theme === "light";
     const [notifOpen, setNotifOpen] = useState(false);
@@ -49,6 +55,11 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
     const notifRef = useRef<HTMLDivElement>(null);
     const profileRef = useRef<HTMLDivElement>(null);
     const page = PAGE_MAP[pathname] ?? "Dashboard";
+
+    const handleLogout = async () => {
+        await dispatch(logoutUser());
+        router.push("/auth/sign-in");
+    };
 
     useEffect(() => {
         const t = setInterval(() => setPulse(p => !p), 1800);
@@ -272,13 +283,13 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     >
                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-black text-white"
                             style={{ background: "var(--brand-gradient)", boxShadow: "0 2px 10px rgba(108,92,231,0.4)" }}>
-                            A
+                            {user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
                         </div>
                         <div className="hidden md:block text-left ml-0.5">
-                            <p className="text-[13px] font-black leading-none" style={{ color: "var(--foreground)" }}>Anshul</p>
+                            <p className="text-[13px] font-black leading-none" style={{ color: "var(--foreground)" }}>{user?.name?.split(' ')[0] || 'User'}</p>
                             <div className="flex items-center gap-1 mt-0.5">
                                 <span className="w-1 h-1 rounded-full bg-emerald-500" />
-                                <p className="text-[9px] font-bold" style={{ color: "var(--muted-foreground)" }}>Pro Plan</p>
+                                <p className="text-[9px] font-bold" style={{ color: "var(--muted-foreground)" }}>{user?.type || 'Pro Plan'}</p>
                             </div>
                         </div>
                         <ChevronDown className="w-3 h-3 hidden md:block ml-0.5 transition-transform duration-200 flex-shrink-0"
@@ -292,28 +303,36 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                             <div className="p-4" style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.06)"}` }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-white"
-                                        style={{ background: "var(--brand-gradient)" }}>A</div>
-                                    <div>
-                                        <p className="text-[13px] font-black">Anshul Gupta</p>
-                                        <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Super Admin · Pro Plan</p>
+                                        style={{ background: "var(--brand-gradient)" }}>
+                                        {user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[13px] font-black truncate">{user?.name || 'User'}</p>
+                                        <p className="text-[10px] truncate" style={{ color: "var(--muted-foreground)" }}>{user?.type || 'Member'} · {user?.role?.replace('_', ' ') || 'User'}</p>
                                     </div>
                                 </div>
                             </div>
                             {[
-                                { label: "Profile Settings", color: "#6C5CE7" },
-                                { label: "Workspace", color: "#10b981" },
-                                { label: "Billing & Plan", color: "#f59e0b" },
+                                { label: "Profile Settings", color: "#6C5CE7", href: "/dashboard/settings", action: () => dispatch(fetchMe()) },
+                                { label: "Workspace", color: "#10b981", href: "/dashboard/settings" },
+                                { label: "Billing & Plan", color: "#f59e0b", href: "/dashboard/billing" },
                             ].map(item => (
-                                <button key={item.label}
+                                <Link key={item.label}
+                                    href={item.href}
+                                    onClick={() => {
+                                        setProfileOpen(false);
+                                        if ('action' in item) (item as any).action();
+                                    }}
                                     className="w-full text-left px-4 py-3 text-[12px] font-semibold transition-colors flex items-center gap-2.5"
                                     style={{ color: "var(--foreground)", borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)"}` }}
                                     onMouseEnter={e => (e.currentTarget.style.background = `${item.color}0D`)}
                                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                                     <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
                                     {item.label}
-                                </button>
+                                </Link>
                             ))}
                             <button className="w-full text-left px-4 py-3 text-[12px] font-bold text-rose-500 transition-colors"
+                                onClick={handleLogout}
                                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(239,68,68,0.07)")}
                                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                                 Sign out
