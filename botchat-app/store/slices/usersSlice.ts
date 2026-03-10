@@ -83,6 +83,30 @@ export const toggleUserStatus = createAsyncThunk(
     }
 );
 
+export const createUser = createAsyncThunk(
+    'users/createUser',
+    async (userData: {
+        name: string;
+        email: string;
+        password: string;
+        domains: string;
+        country_code: string;
+        dial_code: string;
+        phone: string;
+        plan_id: number;
+    }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/users', userData);
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to create user');
+        }
+    }
+);
+
 const usersSlice = createSlice({
     name: 'users',
     initialState,
@@ -108,6 +132,10 @@ const usersSlice = createSlice({
             })
             .addCase(fetchUserById.fulfilled, (state, action) => {
                 state.selectedUser = action.payload;
+            })
+            .addCase(createUser.fulfilled, (state, action) => {
+                state.users.unshift(action.payload);
+                state.total += 1;
             })
             .addCase(toggleUserStatus.fulfilled, (state, action) => {
                 const user = state.users.find(u => u.id === action.payload.id);

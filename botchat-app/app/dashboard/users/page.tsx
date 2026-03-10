@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchUsers, toggleUserStatus, fetchUserById } from "@/store/slices/usersSlice";
+import { fetchUsers, toggleUserStatus, fetchUserById, createUser } from "@/store/slices/usersSlice";
+import { fetchPlans } from "@/store/slices/plansSlice";
 import { Users, Search, Filter, MoreVertical, Shield, UserCheck, UserMinus, Mail } from "lucide-react";
-import { Phone, Globe, Calendar, ArrowUpRight, Loader2, CheckCircle2, XCircle, ChevronRight } from "lucide-react";
-import { Settings, AlertCircle, Trash2, UserPlus, Info } from "lucide-react";
+import { Phone, Globe, Calendar, ArrowUpRight, Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, UserPlus, ChevronDown } from "lucide-react";
 import {
     AnimatePresence,
     motion
@@ -23,6 +24,7 @@ import {
     Dialog, DialogContent, DialogDescription,
     DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -30,10 +32,26 @@ import { format } from "date-fns";
 export default function UserManagementPage() {
     const dispatch = useAppDispatch();
     const { users, isLoading, selectedUser } = useAppSelector((state) => state.users);
+    const { plans } = useAppSelector((state) => state.plans);
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [isFetchingDetail, setIsFetchingDetail] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    // Add User Dialog
+    const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+    const [isAddingUser, setIsAddingUser] = useState(false);
+    const [addUserForm, setAddUserForm] = useState({
+        name: "",
+        email: "",
+        password: "",
+        domains: "",
+        country_code: "US",
+        dial_code: "+1",
+        phone: "",
+        plan_id: "",
+    });
 
     // Confirmation States
     const [confirmState, setConfirmState] = useState<{
@@ -50,8 +68,37 @@ export default function UserManagementPage() {
 
     useEffect(() => {
         dispatch(fetchUsers());
+        dispatch(fetchPlans());
         document.title = "User Management | BotChat Admin";
     }, [dispatch]);
+
+    const handleAddUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!addUserForm.name || !addUserForm.email || !addUserForm.password || !addUserForm.plan_id) {
+            toast.error("Please fill in all required fields.");
+            return;
+        }
+        setIsAddingUser(true);
+        try {
+            await dispatch(createUser({
+                name: addUserForm.name,
+                email: addUserForm.email,
+                password: addUserForm.password,
+                domains: addUserForm.domains,
+                country_code: addUserForm.country_code,
+                dial_code: addUserForm.dial_code,
+                phone: addUserForm.phone,
+                plan_id: Number(addUserForm.plan_id),
+            })).unwrap();
+            toast.success("User created successfully!");
+            setIsAddUserOpen(false);
+            setAddUserForm({ name: "", email: "", password: "", domains: "", country_code: "US", dial_code: "+1", phone: "", plan_id: "" });
+        } catch (error: any) {
+            toast.error(error || "Failed to create user.");
+        } finally {
+            setIsAddingUser(false);
+        }
+    };
 
     const handleToggleStatus = async () => {
         if (!confirmState.userId) return;
@@ -98,6 +145,7 @@ export default function UserManagementPage() {
         return matchesSearch && matchesFilter;
     });
 
+
     return (
         <div className="mx-auto flex max-w-[1400px] flex-col gap-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header Area */}
@@ -110,8 +158,11 @@ export default function UserManagementPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button className="rounded-xl font-bold shadow-lg shadow-primary/20">
-                        <Users className="mr-2 h-4 w-4" />
+                    <Button
+                        className="rounded-xl font-bold shadow-lg shadow-primary/20"
+                        onClick={() => setIsAddUserOpen(true)}
+                    >
+                        <UserPlus className="mr-2 h-4 w-4" />
                         Add New User
                     </Button>
                 </div>
@@ -311,7 +362,7 @@ export default function UserManagementPage() {
                                                             <ArrowUpRight className="h-3.5 w-3.5" /> View Details
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem className="gap-2">
-                                                            <Settings className="h-3.5 w-3.5" /> Edit Permissions
+                                                            <Shield className="h-3.5 w-3.5" /> Edit Permissions
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem className="gap-2 text-rose-500 focus:text-rose-500 focus:bg-rose-500/10" onClick={(e: React.MouseEvent) => triggerConfirm(e, user)}>
@@ -475,6 +526,180 @@ export default function UserManagementPage() {
                             </Button>
                         </div>
                     </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Add New User Dialog ── */}
+            <Dialog open={isAddUserOpen} onOpenChange={(open) => {
+                setIsAddUserOpen(open);
+                if (!open) setShowPassword(false);
+            }}>
+                <DialogContent className="sm:max-w-[520px] rounded-3xl border-none bg-background shadow-2xl p-0 overflow-hidden">
+                    <DialogHeader className="px-8 pt-8 pb-4">
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                <UserPlus className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-lg font-black tracking-tight">Add New User</DialogTitle>
+                                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                                    Create a new user account and assign a subscription plan.
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <form onSubmit={handleAddUser}>
+                        <div className="px-8 pb-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                            {/* Name */}
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                    Full Name <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    placeholder="John Doe"
+                                    value={addUserForm.name}
+                                    onChange={e => setAddUserForm(f => ({ ...f, name: e.target.value }))}
+                                    className="rounded-xl bg-muted/30 border-none h-10"
+                                    required
+                                />
+                            </div>
+
+                            {/* Email */}
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                    Email Address <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    type="email"
+                                    placeholder="johndoe@example.com"
+                                    value={addUserForm.email}
+                                    onChange={e => setAddUserForm(f => ({ ...f, email: e.target.value }))}
+                                    className="rounded-xl bg-muted/30 border-none h-10"
+                                    required
+                                />
+                            </div>
+
+                            {/* Password */}
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                    Password <span className="text-destructive">*</span>
+                                </Label>
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Min. 8 characters"
+                                        value={addUserForm.password}
+                                        onChange={e => setAddUserForm(f => ({ ...f, password: e.target.value }))}
+                                        className="rounded-xl bg-muted/30 border-none h-10 pr-10"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(v => !v)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Domain */}
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                    Domain / Username
+                                </Label>
+                                <Input
+                                    placeholder="johndoe"
+                                    value={addUserForm.domains}
+                                    onChange={e => setAddUserForm(f => ({ ...f, domains: e.target.value }))}
+                                    className="rounded-xl bg-muted/30 border-none h-10"
+                                />
+                            </div>
+
+                            {/* Phone with dial code + country */}
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Country</Label>
+                                    <Input
+                                        placeholder="US"
+                                        value={addUserForm.country_code}
+                                        onChange={e => setAddUserForm(f => ({ ...f, country_code: e.target.value.toUpperCase().slice(0, 2) }))}
+                                        className="rounded-xl bg-muted/30 border-none h-10 text-center font-bold uppercase"
+                                        maxLength={2}
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Dial Code</Label>
+                                    <Input
+                                        placeholder="+1"
+                                        value={addUserForm.dial_code}
+                                        onChange={e => setAddUserForm(f => ({ ...f, dial_code: e.target.value }))}
+                                        className="rounded-xl bg-muted/30 border-none h-10 text-center font-bold"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Phone</Label>
+                                    <Input
+                                        type="tel"
+                                        placeholder="5559876543"
+                                        value={addUserForm.phone}
+                                        onChange={e => setAddUserForm(f => ({ ...f, phone: e.target.value }))}
+                                        className="rounded-xl bg-muted/30 border-none h-10"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Plan Dropdown */}
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                    Subscription Plan <span className="text-destructive">*</span>
+                                </Label>
+                                <div className="relative">
+                                    <select
+                                        value={addUserForm.plan_id}
+                                        onChange={e => setAddUserForm(f => ({ ...f, plan_id: e.target.value }))}
+                                        className="w-full rounded-xl bg-muted/30 border-none h-10 px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                                        required
+                                    >
+                                        <option value="">Select a plan...</option>
+                                        {plans.map(plan => (
+                                            <option key={plan.id} value={plan.id}>
+                                                {plan.name} — ${plan.price} / {plan.duration} {plan.duration_type}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                                </div>
+                                {plans.length === 0 && (
+                                    <p className="text-[11px] text-amber-500">No plans found. Please create a plan first.</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="px-8 py-5 border-t border-border bg-muted/20 flex gap-3">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="flex-1 rounded-xl font-bold"
+                                onClick={() => setIsAddUserOpen(false)}
+                                disabled={isAddingUser}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="flex-1 rounded-xl font-black gap-2 shadow-lg shadow-primary/20"
+                                disabled={isAddingUser}
+                            >
+                                {isAddingUser ? (
+                                    <><Loader2 className="h-4 w-4 animate-spin" /> Creating...</>
+                                ) : (
+                                    <><UserPlus className="h-4 w-4" /> Create User</>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
                 </DialogContent>
             </Dialog>
         </div>

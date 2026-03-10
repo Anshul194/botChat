@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://botchat.rv777.cloud/api/v1',
+    baseURL: 'https://botchat.divyangtechlabs.com/api/v1',
     timeout: 10000,
 });
 
