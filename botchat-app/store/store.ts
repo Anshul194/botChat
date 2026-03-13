@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import settingsReducer from './slices/settingsSlice';
 import usersReducer from './slices/usersSlice';
 import plansReducer from './slices/plansSlice';
+import modulesReducer from './slices/modulesSlice';
 
 export const store = configureStore({
     reducer: {
@@ -10,8 +11,10 @@ export const store = configureStore({
         settings: settingsReducer,
         users: usersReducer,
         plans: plansReducer,
+        modules: modulesReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
+
 });
 
 export type RootState = ReturnType<typeof store.getState>;

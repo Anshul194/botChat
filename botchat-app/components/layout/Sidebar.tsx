@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import {
     LayoutDashboard, MessageSquare, Zap, BarChart3, Users, Settings,
     Instagram, Facebook, Plus, Sparkles, CreditCard, GitBranch,
-    Target, Inbox, LogOut,
+    Target, Inbox, LogOut, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -68,6 +68,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
             group: "ADMINISTRATION", color: "#6366f1",
             items: [
                 { label: "User Management", icon: Users, href: "/dashboard/users", badge: null },
+                { label: "Plan Management", icon: CreditCard, href: "/dashboard/plans", badge: null },
+                { label: "Modules", icon: Layers, href: "/dashboard/modules", badge: null },
             ],
         }
     ];
@@ -163,6 +165,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 items: [
                                     { label: "User Management", icon: Users, href: "/dashboard/users", badge: null },
                                     { label: "Plan Management", icon: CreditCard, href: "/dashboard/plans", badge: null },
+                                    { label: "Modules", icon: Layers, href: "/dashboard/modules", badge: null },
                                 ],
                             }
                         ];
