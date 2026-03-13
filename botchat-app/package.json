@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:admin": "dotenv -e .env.admin -- next dev --port 3000",
+    "dev:reseller": "dotenv -e .env.reseller -- next dev --port 3001",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -35,6 +37,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "shadcn": "^3.8.5",
