@@ -60,14 +60,18 @@ export const loginUser = createAsyncThunk(
                 return rejectWithValue(response.data.message || 'Login failed.');
             }
 
-            const { token, user } = response.data.data;
+            const data = response.data.data;
+            const token = data.token;
+            // Handle both flat and nested user objects
+            const user = data.user || data;
 
             // Normalize role for existing selectors
             const normalizedUser = {
                 ...user,
                 role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
                     user.type === 'Reseller' ? 'RESELLER' :
-                        user.type === 'Tenant' ? 'TENANT' : user.type
+                        user.type === 'Tenant' ? 'TENANT' :
+                            user.type === 'Admin' ? 'SUPER_ADMIN' : user.type
             };
 
             if (typeof window !== 'undefined') {
@@ -92,12 +96,16 @@ export const fetchMe = createAsyncThunk(
                 return rejectWithValue(response.data.message || 'Failed to fetch user.');
             }
 
-            const user = response.data.data;
+            const data = response.data.data;
+            // Handle both flat and nested user objects
+            const user = data.user || data;
+
             const normalizedUser = {
                 ...user,
                 role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
                     user.type === 'Reseller' ? 'RESELLER' :
-                        user.type === 'Tenant' ? 'TENANT' : user.type
+                        user.type === 'Tenant' ? 'TENANT' :
+                            user.type === 'Admin' ? 'SUPER_ADMIN' : user.type
             };
 
             if (typeof window !== 'undefined') {

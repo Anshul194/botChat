@@ -6,13 +6,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     Eye, EyeOff, Mail, Lock, Zap, MessageSquare,
-    ArrowRight, Chrome, Check, AlertCircle,
+    ArrowRight, Chrome, Check, AlertCircle, Facebook,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch } from "@/store/hooks";
-import { loginUser } from "@/store/slices/authSlice";
+import { loginUser, fetchMe } from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function SignInPage() {
     const router = useRouter();
@@ -25,6 +28,7 @@ export default function SignInPage() {
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [serverError, setServerError] = useState("");
+    const [socialLoading, setSocialLoading] = useState<string | null>(null);
 
     const validate = () => {
         const e: typeof errors = {};
@@ -49,6 +53,88 @@ export default function SignInPage() {
             setStatus("error");
             setServerError(err || "Invalid credentials. Please try again.");
             setTimeout(() => setStatus("idle"), 2500);
+        }
+    };
+
+    const handleSocialLogin = async (platform: string) => {
+        if (socialLoading) return;
+        setSocialLoading(platform);
+
+        // 1. Create a professional centered popup
+        const width = 600;
+        const height = 750;
+        const left = window.screenX + (window.innerWidth - width) / 2;
+        const top = window.screenY + (window.innerHeight - height) / 2;
+        
+        const popup = window.open(
+            'about:blank',
+            `social-auth-${platform}`,
+            `width=${width},height=${height},left=${left},top=${top},status=no,menubar=no,toolbar=no`
+        );
+
+        if (!popup) {
+            toast.error("Popup blocked! Please allow popups for this site.");
+            setSocialLoading(null);
+            return;
+        }
+
+        try {
+            // 2. Get the official OAuth redirect URL from your backend
+            const response = await api.get(`/auth/social/${platform}`);
+            
+            if (response.data.success && response.data.data.redirect_url) {
+                // Point the popup to Facebook/Google
+                popup.location.href = response.data.data.redirect_url;
+
+                // 3. Monitor the popup and session
+                const pollTimer = setInterval(async () => {
+                    // If user manually closes the popup, check if they actually logged in
+                    if (popup.closed) {
+                        clearInterval(pollTimer);
+                        setSocialLoading(null);
+                        
+                        // Attempt to fetch the session (works if backend set cookies or if we can poll API)
+                        const result = await dispatch(fetchMe());
+                        if (fetchMe.fulfilled.match(result)) {
+                            toast.success(`Welcome back!`, {
+                                description: "You've successfully connected your account."
+                            });
+                            router.push('/dashboard');
+                        }
+                        return;
+                    }
+
+                    try {
+                        // If same-domain (Production), we can try to auto-detect the JSON content
+                        // and close the window automatically for the user.
+                        if (popup.location.href.includes('/callback')) {
+                            const bodyText = popup.document.body.innerText;
+                            if (bodyText.includes('"success":true')) {
+                                clearInterval(pollTimer);
+                                const data = JSON.parse(bodyText);
+                                if (data.data?.token) {
+                                    localStorage.setItem('token', data.data.token);
+                                    await dispatch(fetchMe());
+                                    popup.close();
+                                    router.push('/dashboard');
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Ignore cross-origin errors during the OAuth redirect phases
+                    }
+                }, 1000);
+
+            } else {
+                popup.close();
+                toast.error(`Failed to initialize ${platform} login`);
+                setSocialLoading(null);
+            }
+        } catch (err: any) {
+            popup.close();
+            console.error(`${platform} Login Error:`, err);
+            toast.error(err.response?.data?.message || `Error connecting to ${platform}`);
+            setSocialLoading(null);
         }
     };
 
@@ -171,23 +257,49 @@ export default function SignInPage() {
                         </div>
 
                         {/* Social buttons */}
-                        <div className="grid grid-cols-2 gap-3 mb-6">
+                        <div className="flex flex-col gap-2.5 mb-8">
                             {[
-                                { icon: <Chrome className="w-4 h-4" />, label: "Google" },
-                                { icon: <span className="text-sm font-mono font-bold">GH</span>, label: "GitHub" },
+                                {
+                                    id: 'google',
+                                    label: 'Continue with Google',
+                                    icon: (
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+                                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84z" fill="#EA4335" />
+                                        </svg>
+                                    ),
+                                },
+                                {
+                                    id: 'facebook',
+                                    label: 'Continue with Facebook',
+                                    icon: (
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2" />
+                                        </svg>
+                                    ),
+                                },
                             ].map((p) => (
                                 <button
-                                    key={p.label}
+                                    key={p.id}
                                     type="button"
-                                    className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
+                                    onClick={() => handleSocialLogin(p.id)}
+                                    disabled={!!socialLoading}
+                                    className="relative flex items-center gap-3 w-full px-[18px] h-12 rounded-xl text-sm font-medium transition-all"
                                     style={{
-                                        background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
-                                        border: `1px solid ${isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}`,
-                                        color: isLight ? "#1e1b4b" : "#e2e8f0",
+                                        background: isLight ? '#ffffff' : 'rgba(255,255,255,0.05)',
+                                        border: `0.5px solid ${isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.12)'}`,
+                                        color: isLight ? '#1e1b4b' : '#f1f5f9',
                                     }}
                                 >
-                                    {p.icon}
-                                    {p.label}
+                                    <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                                        {socialLoading === p.id
+                                            ? <div className="w-4 h-4 border-2 border-pink-500/30 border-t-pink-500 rounded-full animate-spin" />
+                                            : p.icon}
+                                    </span>
+                                    <span className="flex-1 text-center">{p.label}</span>
+                                    <span className="w-5" />
                                 </button>
                             ))}
                         </div>
