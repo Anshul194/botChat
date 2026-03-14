@@ -37,7 +37,7 @@ export default function FacebookPage() {
     const [isConnecting, setIsConnecting] = useState(false);
     const [confirmModal, setConfirmModal] = useState<{
         show: boolean;
-        type: 'enable' | 'disable' | 'disconnect';
+        type: 'enable' | 'disable' | 'disconnect' | 'disconnect-account';
         pageId: string | number;
         pageName: string;
     } | null>(null);
@@ -123,6 +123,8 @@ export default function FacebookPage() {
             if (type === 'enable') endpoint = `/social/facebook-connect/page/${pageId}/enable`;
             else if (type === 'disable') endpoint = `/social/facebook-connect/page/${pageId}/disable`;
             else if (type === 'disconnect') endpoint = `/social/facebook-connect/page/${pageId}/disconnect`;
+            else if (type === 'disconnect-account') endpoint = `/social/facebook-connect/account/${pageId}/disconnect`;
+            
             const response = await api.post(endpoint);
             if (response.data.is_success || response.data.success) {
                 toast.success(response.data.message || "Success");
@@ -203,7 +205,12 @@ export default function FacebookPage() {
                                     Active
                                 </div>
                             </div>
-                            <button className="p-1.5 text-neutral-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                            <button 
+                                onClick={() => setConfirmModal({ show: true, type: 'disconnect-account', pageId: acc.id, pageName: acc.name })}
+                                className="p-1.5 text-neutral-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                                <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                         </div>
                     )) : <div className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest p-2">Sync Account to begin</div>}
                 </div>
