@@ -1,33 +1,59 @@
 // @ts-nocheck
 "use client";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, createContext, useContext } from "react";
 
 /* ============================================================
    DESIGN SYSTEM — use site CSS vars so preview matches site theme
    ============================================================ */
-const DS = {
-  bg: "var(--background)",
-  card: "var(--card)",
-  ink: "var(--foreground)",
-  ink2: "var(--muted-foreground)",
-  ink3: "var(--muted-foreground)",  // was var(--muted) = near-white in light mode!
-  border: "var(--border)",
-  borderHover: "var(--border)",
-  accent: "var(--primary)",
-  accentSoft: "rgba(236,72,153,0.08)",
-  accentBorder: "rgba(236,72,153,0.16)",
-  green: "var(--chart-3)",
-  greenSoft: "rgba(16,185,129,0.06)",
-  amber: "var(--chart-4)",
-  amberSoft: "rgba(245,158,11,0.06)",
-  blue: "var(--chart-1)",
-  blueSoft: "rgba(29,110,245,0.06)",
-  shadow: "0 1px 3px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.04)",
-  shadowHover: "0 6px 20px rgba(0,0,0,0.08)",
-  shadowCard: "0 0 0 1.5px var(--border), 0 2px 12px rgba(0,0,0,0.06)",
-  radius: 14,
-  radiusSm: 9,
+const PLATFORMS = {
+  instagram: {
+    name: "Instagram",
+    accent: "#E1306C",
+    accentSoft: "rgba(225,48,108,0.08)",
+    accentBorder: "rgba(225,48,108,0.16)",
+    gradient: "linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)",
+    icon: "📸",
+  },
+  facebook: {
+    name: "Facebook",
+    accent: "#1877F2",
+    accentSoft: "rgba(24,119,242,0.08)",
+    accentBorder: "rgba(24,119,242,0.16)",
+    gradient: "linear-gradient(135deg, #1877F2, #3B5998)",
+    icon: "👤",
+  },
 };
+
+const getDS = (platform) => {
+  const p = PLATFORMS[platform] || PLATFORMS.instagram;
+  return {
+    bg: "var(--background)",
+    card: "var(--card)",
+    ink: "var(--foreground)",
+    ink2: "var(--muted-foreground)",
+    ink3: "var(--muted-foreground)",
+    border: "var(--border)",
+    borderHover: "var(--border)",
+    accent: p.accent,
+    accentSoft: p.accentSoft,
+    accentBorder: p.accentBorder,
+    gradient: p.gradient,
+    green: "var(--chart-3)",
+    greenSoft: "rgba(16,185,129,0.06)",
+    amber: "var(--chart-4)",
+    amberSoft: "rgba(245,158,11,0.06)",
+    blue: "var(--chart-1)",
+    blueSoft: "rgba(29,110,245,0.06)",
+    shadow: "0 1px 3px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.04)",
+    shadowHover: "0 6px 20px rgba(0,0,0,0.08)",
+    shadowCard: "0 0 0 1.5px var(--border), 0 2px 12px rgba(0,0,0,0.06)",
+    radius: 14,
+    radiusSm: 9,
+  };
+};
+
+const DSContext = createContext(null);
+const useDS = () => useContext(DSContext);
 
 /* ============================================================
    DATA DEFINITIONS
@@ -139,6 +165,7 @@ const getColor = (kind: string, type: string) => kind === "trigger" ? getTrigger
    MINI COMPONENTS
    ============================================================ */
 function Label({ children, hint }) {
+  const DS = useDS();
   return (
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
       <span style={{ fontSize: 11, fontWeight: 700, color: DS.ink3, letterSpacing: "0.08em", textTransform: "uppercase" }}>{children}</span>
@@ -148,6 +175,7 @@ function Label({ children, hint }) {
 }
 
 function Input({ value, onChange, placeholder, multiline, rows = 3, type = "text", style: extra = {} }) {
+  const DS = useDS();
   const base = {
     width: "100%", padding: "9px 12px", borderRadius: DS.radiusSm,
     border: `1.5px solid ${DS.border}`, fontSize: 13, fontFamily: "inherit",
@@ -164,6 +192,7 @@ function Input({ value, onChange, placeholder, multiline, rows = 3, type = "text
 }
 
 function Select({ value, onChange, options, style: extra = {} }) {
+  const DS = useDS();
   return (
     <select value={value} onChange={onChange} style={{
       width: "100%", padding: "9px 12px", borderRadius: DS.radiusSm,
@@ -176,6 +205,7 @@ function Select({ value, onChange, options, style: extra = {} }) {
 }
 
 function Toggle({ on, onChange, label }) {
+  const DS = useDS();
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: DS.radiusSm, background: DS.bg, border: `1.5px solid ${DS.border}` }}>
       <span style={{ fontSize: 13, color: DS.ink2, fontWeight: 500 }}>{label}</span>
@@ -187,6 +217,7 @@ function Toggle({ on, onChange, label }) {
 }
 
 function VarPills({ onInsert }) {
+  const DS = useDS();
   return (
     <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 5 }}>
       {VARS.map(v => (
@@ -199,11 +230,13 @@ function VarPills({ onInsert }) {
   );
 }
 
-function Tag({ children, color = DS.accent, bg = DS.accentSoft }) {
-  return <span style={{ fontSize: 10.5, fontWeight: 700, color, background: bg, border: `1px solid ${color}30`, borderRadius: 99, padding: "2px 8px" }}>{children}</span>;
+function Tag({ children, color, bg }) {
+  const DS = useDS();
+  return <span style={{ fontSize: 10.5, fontWeight: 700, color: color || DS.accent, background: bg || DS.accentSoft, border: `1px solid ${color || DS.accent}30`, borderRadius: 99, padding: "2px 8px" }}>{children}</span>;
 }
 
 function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
+  const DS = useDS();
   const [hov, setHov] = useState(false);
   return (
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
@@ -226,6 +259,7 @@ function TriggerFields({ step, update }) {
   const def = getTriggerDef(step.type);
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -314,6 +348,7 @@ function MessageFields({ step, update }) {
     set({ text: val.slice(0, s) + v + val.slice(e) });
     setTimeout(() => el.setSelectionRange(s + v.length, s + v.length), 0);
   };
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -343,6 +378,7 @@ function QuickReplyFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const opts = (c.options || "").split("|").map(o => o.trim()).filter(Boolean);
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -375,6 +411,7 @@ function QuickReplyFields({ step, update }) {
 function SendLinkFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -405,6 +442,7 @@ function AIReplyFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const tones = ["Friendly 😊", "Professional 💼", "Casual 😎", "Enthusiastic 🎉", "Empathetic 💙"];
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -445,6 +483,7 @@ function AIReplyFields({ step, update }) {
 function ConditionFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -485,6 +524,7 @@ function ConditionFields({ step, update }) {
 function DelayFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -508,6 +548,7 @@ function TagFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const tags = (c.tags || "").split(",").map(t => t.trim()).filter(Boolean);
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -530,6 +571,7 @@ function TagFields({ step, update }) {
 function CollectEmailFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -552,6 +594,7 @@ function CollectEmailFields({ step, update }) {
 function FollowGateFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -578,6 +621,7 @@ function FollowGateFields({ step, update }) {
 function HandoffFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -608,6 +652,7 @@ function HandoffFields({ step, update }) {
 function ZapierFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -634,6 +679,7 @@ function ZapierFields({ step, update }) {
 function EndFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -656,6 +702,7 @@ function EndFields({ step, update }) {
 function RandomSplitFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -759,6 +806,7 @@ function NotifyTeamFields({ step, update }) {
 function AIClassifyFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
@@ -778,6 +826,7 @@ function AIClassifyFields({ step, update }) {
 
 function StepFields({ step, update }) {
   const props = { step, update };
+  const DS = useDS(); // Added useDS here
   if (step.kind === "trigger") return <TriggerFields {...props} />;
   const map = {
     message: MessageFields, quick_reply: QuickReplyFields, send_link: SendLinkFields,
@@ -795,6 +844,7 @@ function StepFields({ step, update }) {
    STEP CARD
    ============================================================ */
 function StepSummary({ step }) {
+  const DS = useDS();
   const c = step.config || {};
   if (step.kind === "trigger") {
     const def = getTriggerDef(step.type);
@@ -806,6 +856,7 @@ function StepSummary({ step }) {
 }
 
 function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown }) {
+  const DS = useDS();
   const def = getDef(step.kind, step.type);
   const color = step.kind === "trigger" ? def.color : DS.ink;
   const isFirst = index === 0, isLast = index === total - 1;
@@ -884,6 +935,7 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
 }
 
 function IconBtn({ children, onClick, danger, title }) {
+  const DS = useDS();
   const [hov, setHov] = useState(false);
   return (
     <button onClick={onClick} title={title}
@@ -902,6 +954,7 @@ function IconBtn({ children, onClick, danger, title }) {
    ADD ACTION PICKER
    ============================================================ */
 function AddActionPicker({ onAdd }) {
+  const DS = useDS();
   const [open, setOpen] = useState(false);
   const [cat, setCat] = useState("Messaging");
   const filtered = ACTIONS.filter(a => a.cat === cat);
@@ -969,6 +1022,7 @@ function AddActionPicker({ onAdd }) {
    TRIGGER EMPTY STATE
    ============================================================ */
 function TriggerEmptyState({ onAdd }) {
+  const DS = useDS();
   return (
     <div style={{ borderRadius: DS.radius, border: `2px dashed ${DS.accentBorder}`, background: DS.accentSoft, padding: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -1003,6 +1057,7 @@ function TriggerEmptyState({ onAdd }) {
    TEMPLATE MODAL
    ============================================================ */
 function TemplateModal({ onSelect, onClose }) {
+  const DS = useDS();
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(28,25,23,0.5)", backdropFilter: "blur(6px)" }} />
@@ -1112,6 +1167,7 @@ function buildPreviewMsgs(steps) {
 }
 
 function PreviewBubble({ msg }) {
+  const DS = useDS();
   if (msg.type === "sys") return (
     <div style={{ textAlign: "center", margin: "6px 0" }}>
       <span style={{ fontSize: 10, color: "#94A3B8", background: "#F1F5F9", borderRadius: 99, padding: "3px 10px", lineHeight: 1.5 }}>{msg.text}</span>
@@ -1150,96 +1206,197 @@ function PreviewBubble({ msg }) {
   );
 }
 
-function PhonePreview({ steps }) {
+function PhonePreview({ steps, platform }) {
+  const DS = useDS();
   const msgs = buildPreviewMsgs(steps);
   const scrollRef = useRef(null);
   useEffect(() => { scrollRef.current?.scrollTo({ top: 9999, behavior: "smooth" }); }, [msgs.length]);
 
   const botMsgs = steps.filter(s => ["message", "quick_reply", "send_link", "ai_reply", "media"].includes(s.type)).length;
-  const hasEmail = steps.some(s => s.type === "collect_email");
-  const hasTrigger = steps.some(s => s.kind === "trigger");
+  const isFB = platform === 'facebook';
+
+  // Native Icon SVGs
+  const Icons = {
+    IG_CAM: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+    IG_VIDEO: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>,
+    IG_MIC: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>,
+    IG_IMG: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
+    IG_HEART: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>,
+    FB_PLUS: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>,
+    FB_THUMB: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>,
+    FB_PHONE: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.149 15.149 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>,
+    ARROW_LEFT: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+  };
 
   return (
-    <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div style={{ width: 340, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
       {/* Label */}
-      <div style={{ fontSize: 11, fontWeight: 800, color: DS.ink3, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Live Preview</div>
+      <div style={{ fontSize: 11, fontWeight: 800, color: DS.ink3, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: DS.green, boxShadow: `0 0 8px ${DS.green}` }} />
+        {isFB ? 'Messenger' : 'Instagram'} Preview
+      </div>
 
-      {/* Phone */}
+      {/* Phone: iPhone 17 Pro Style */}
       <div style={{
-        width: 320, borderRadius: 44, background: "#18181B",
-        padding: "10px 9px 18px",
-        boxShadow: "0 32px 90px rgba(0,0,0,0.32), inset 0 0 0 1px rgba(255,255,255,0.07)",
+        width: 310, height: 630, borderRadius: 54, background: "#000",
+        padding: "8px", 
+        boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.15)",
+        position: "relative",
+        border: "1.5px solid #3F3F46", 
       }}>
-        {/* Notch */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
-          <div style={{ width: 80, height: 6, borderRadius: 99, background: "#2D2D36" }} />
+        {/* Buttons on Side */}
+        <div style={{ position: "absolute", left: -2, top: 120, width: 3, height: 60, background: "#27272A", borderRadius: "2px 0 0 2px" }} />
+        <div style={{ position: "absolute", right: -2, top: 180, width: 3, height: 100, background: "#27272A", borderRadius: "0 2px 2px 0" }} />
+
+        {/* Dynamic Island */}
+        <div style={{ 
+          display: "flex", justifyContent: "center", position: "absolute", top: 18, left: 0, right: 0, zIndex: 50,
+        }}>
+          <div style={{
+            width: 80, height: 24, borderRadius: 20, background: "#000",
+            display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 8px",
+          }}>
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#111", border: "2px solid #222" }} />
+          </div>
         </div>
+
         {/* Screen */}
-        <div style={{ borderRadius: 36, overflow: "hidden", background: "#F1F5F9" }}>
-          {/* IG DM header */}
-          <div style={{ background: "#fff", padding: "12px 16px", borderBottom: "1px solid #E2E8F0", display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, padding: 3, flexShrink: 0 }}>
-              <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🤖</div>
+        <div style={{ borderRadius: 48, overflow: "hidden", background: "#fff", height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+          
+          {/* Header */}
+          <div style={{
+            background: isFB ? "#fff" : "rgba(255,255,255,0.92)", 
+            backdropFilter: isFB ? "none" : "blur(20px)",
+            padding: "42px 14px 10px", 
+            borderBottom: `0.5px solid ${isFB ? "#E2E8F0" : "#DBDBDB"}`,
+            display: "flex", alignItems: "center", gap: 10, zIndex: 40
+          }}>
+            {/* Back Arrow */}
+            <div style={{ color: isFB ? "#0084FF" : "#000", cursor: "pointer" }}>
+              <Icons.ARROW_LEFT />
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: "#18181B" }}>AutoBot</div>
-              <div style={{ fontSize: 11, color: DS.green }}>● Active now</div>
+            
+            <div style={{
+              width: 34, height: 34, borderRadius: "50%",
+              background: isFB ? "#0084FF" : "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
+              padding: isFB ? 0 : 1.5, flexShrink: 0
+            }}>
+              <div style={{
+                width: "100%", height: "100%", borderRadius: "50%", background: isFB ? "transparent" : "#fff",
+                display: "flex", alignItems: "center", justifyContent: "center"
+              }}>
+                <span style={{ fontSize: 16 }}>🤖</span>
+              </div>
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <span style={{ fontSize: 16 }}>📞</span>
-              <span style={{ fontSize: 16 }}>📹</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {isFB ? "Messenger Bot" : "bot_assistant"}
+                {!isFB && <svg width="12" height="12" viewBox="0 0 24 24" fill={DS.accent} style={{ marginLeft: 3 }}><path d="M12 2L14.4 9.6H22L15.8 14.2L18.2 21.8L12 17.2L5.8 21.8L8.2 14.2L2 9.6H9.6L12 2Z"/></svg>}
+              </div>
+              <div style={{ fontSize: 10.5, color: "#65676B", marginTop: -1 }}>{isFB ? "Active Now" : "Active 5m ago"}</div>
+            </div>
+            <div style={{ display: "flex", gap: 18, alignItems: "center", color: isFB ? "#0084FF" : "#262626" }}>
+              {isFB ? <Icons.FB_PHONE /> : <Icons.IG_CAM />}
+              <Icons.IG_VIDEO />
+              {isFB && <div style={{ width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: "2px solid #0084FF", fontWeight: 900, fontSize: 10 }}>i</div>}
             </div>
           </div>
-          {/* Messages */}
-          <div ref={scrollRef} style={{ padding: "14px 12px", minHeight: 300, maxHeight: 420, overflowY: "auto" }}>
+
+          {/* Chat Messages */}
+          <div ref={scrollRef} style={{ padding: "12px", flex: 1, overflowY: "auto", background: "#fff" }}>
             {msgs.length === 0
-              ? <div style={{ textAlign: "center", paddingTop: 70, color: DS.ink3, fontSize: 13 }}><div style={{ fontSize: 34, marginBottom: 10 }}>👆</div>Add steps to preview</div>
-              : msgs.map((m, i) => <PreviewBubble key={i} msg={m} />)
+              ? (
+                <div style={{ textAlign: "center", paddingTop: 120 }}>
+                  <div style={{ width: 80, height: 80, borderRadius: "50%", border: `1.5px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, opacity: 0.5 }}>🤖</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#262626" }}>No messages yet</div>
+                  <div style={{ fontSize: 11, color: "#8E8E8E", marginTop: 4 }}>Add steps to start testing your bot!</div>
+                </div>
+              )
+              : msgs.map((m, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: m.type === "user" ? "flex-end" : "flex-start", marginBottom: 6, gap: 8, alignItems: "flex-end" }}>
+                  {m.type === "bot" && (
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", border: "0.5px solid #DBDBDB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, marginBottom: 2, background: isFB ? "#F0F2F5" : "#fff" }}>
+                      🤖
+                    </div>
+                  )}
+                  {m.type === "sys" ? (
+                    <div style={{ textAlign: "center", width: "100%", margin: "14px 0" }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: "#8E9196", letterSpacing: "0.05em", textTransform: "uppercase" }}>{m.text}</span>
+                    </div>
+                  ) : (
+                    <div style={{ maxWidth: "78%" }}>
+                      <div style={{
+                        background: m.type === "user" ? (isFB ? "#0084FF" : DS.gradient) : (isFB ? "#F0F2F5" : "#EFEFEF"),
+                        color: m.type === "user" ? "#fff" : "#000",
+                        borderRadius: m.type === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+                        padding: m.isMedia ? "4px" : "10px 14px", fontSize: 13.5, lineHeight: 1.4,
+                      }}>
+                        {m.isMedia ? <div style={{ width: 180, height: 120, borderRadius: 14, background: "#D1D5DB" }} /> : m.text}
+                      </div>
+                      {m.link && (
+                        <div style={{ 
+                          marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`, 
+                          borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
+                          color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                        }}>
+                          {m.link.label}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))
             }
           </div>
-          {/* Input */}
-          <div style={{ background: "#fff", padding: "10px 12px", display: "flex", gap: 10, alignItems: "center", borderTop: "1px solid #E2E8F0" }}>
-            <div style={{ flex: 1, background: "#F1F5F9", borderRadius: 20, height: 36, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 13, color: "#94A3B8" }}>Message…</div>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#fff" }}>▶</div>
+
+          {/* PLATFORM SPECIFIC INPUT BAR */}
+          <div style={{ 
+            background: "#fff", padding: "8px 12px 34px", 
+            borderTop: `0.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
+            display: "flex", gap: 14, alignItems: "center" 
+          }}>
+            {isFB ? (
+              <>
+                <div style={{ color: "#0084FF" }}><Icons.FB_PLUS /></div>
+                <div style={{ color: "#0084FF" }}><Icons.IG_CAM /></div>
+                <div style={{ color: "#0084FF" }}><Icons.IG_IMG /></div>
+                <div style={{ color: "#0084FF" }}><Icons.IG_MIC /></div>
+                <div style={{ flex: 1, background: "#F0F2F5", borderRadius: 20, height: 36, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 15, color: "#8E9196" }}>Aa</div>
+                <div style={{ color: "#0084FF" }}><Icons.FB_THUMB /></div>
+              </>
+            ) : (
+              <>
+                <div style={{ width: 34, height: 34, borderRadius: "50%", background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}><Icons.IG_CAM /></div>
+                <div style={{ flex: 1, border: "1px solid #DBDBDB", borderRadius: 22, height: 38, display: "flex", alignItems: "center", paddingLeft: 16, fontSize: 14, color: "#8E8E8E" }}>Message...</div>
+                <div style={{ color: "#262626" }}><Icons.IG_MIC /></div>
+                <div style={{ color: "#262626" }}><Icons.IG_IMG /></div>
+                <div style={{ color: "#ED4956" }}><Icons.IG_HEART /></div>
+              </>
+            )}
           </div>
         </div>
-        {/* Home bar */}
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
-          <div style={{ width: 100, height: 6, borderRadius: 99, background: "#2D2D36" }} />
+
+        {/* Home Indicator */}
+        <div style={{ display: "flex", justifyContent: "center", position: "absolute", bottom: 10, left: 0, right: 0, zIndex: 100 }}>
+          <div style={{ width: 120, height: 5, borderRadius: 10, background: "#000", opacity: 0.9 }} />
         </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ marginTop: 16, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+      {/* Modern Stats Grid */}
+      <div style={{ marginTop: 24, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {[
-          { label: "Total Steps", val: steps.length, ok: steps.length > 0 },
-          { label: "Has Trigger", val: hasTrigger ? "✓ Yes" : "✗ No", ok: hasTrigger },
-          { label: "Bot Messages", val: botMsgs, ok: botMsgs > 0 },
-          { label: "Collects Email", val: hasEmail ? "✓" : "—", ok: hasEmail },
+          { label: "Steps", val: steps.length, icon: "🌳" },
+          { label: "Messages", val: botMsgs, icon: "📩" },
         ].map(s => (
-          <div key={s.label} style={{ background: DS.card, borderRadius: DS.radiusSm, padding: "8px 10px", border: `1.5px solid ${DS.border}`, textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 900, color: s.ok ? DS.accent : DS.ink3, letterSpacing: "-0.02em" }}>{s.val}</div>
-            <div style={{ fontSize: 10, color: DS.ink3, fontWeight: 600, marginTop: 1 }}>{s.label}</div>
+          <div key={s.label} style={{ background: DS.card, borderRadius: 16, padding: "12px", border: `1.5px solid ${DS.border}`, display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{s.icon}</div>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 900, color: DS.ink }}>{s.val}</div>
+              <div style={{ fontSize: 10, color: DS.ink3, fontWeight: 700, textTransform: "uppercase" }}>{s.label}</div>
+            </div>
           </div>
         ))}
       </div>
-
-      {/* Flow health */}
-      {steps.length > 0 && (
-        <div style={{ marginTop: 10, width: "100%", background: DS.card, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, padding: "11px 12px" }}>
-          <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.ink3, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>Flow Health</div>
-          {[
-            { ok: hasTrigger, msg: hasTrigger ? "Trigger configured" : "Missing trigger" },
-            { ok: botMsgs > 0, msg: botMsgs > 0 ? "Has message steps" : "No message steps" },
-            { ok: !steps.some(s => s.kind === "action" && !s.config?.text && !s.config?.question && !s.config?.url && !s.config?.duration && !s.config?.tag && !s.config?.tags && !s.config?.instructions && !["follow_gate", "end", "random_split", "check_tag", "handoff", "notify_team", "set_field", "ai_classify"].includes(s.type)), msg: "All steps configured" },
-          ].map((h, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: i < 2 ? 5 : 0 }}>
-              <span style={{ fontSize: 12 }}>{h.ok ? "✅" : "⚠️"}</span>
-              <span style={{ fontSize: 11.5, color: h.ok ? DS.green : DS.amber, fontWeight: 600 }}>{h.msg}</span>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -1249,6 +1406,7 @@ function PhonePreview({ steps }) {
    ============================================================ */
 function SettingsPanel({ settings, setSettings }) {
   const set = patch => setSettings(s => ({ ...s, ...patch }));
+  const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {/* Behavior */}
@@ -1329,6 +1487,7 @@ function SettingsPanel({ settings, setSettings }) {
    ANALYTICS PANEL
    ============================================================ */
 function AnalyticsPanel() {
+  const DS = useDS();
   const stats = [
     { label: "Triggered", val: "3,241", sub: "+12% this week", color: DS.accent },
     { label: "DMs Sent", val: "3,108", sub: "95.9% delivery", color: DS.blue },
@@ -1383,7 +1542,10 @@ function AnalyticsPanel() {
 /* ============================================================
    MAIN APP
    ============================================================ */
-export default function InstaDMBuilder() {
+export default function FlowBuilder() {
+  const [platform, setPlatform] = useState("instagram");
+  const DS = getDS(platform);
+
   const [steps, setSteps] = useState(() => TEMPLATES[0].steps.map(s => ({ ...s, id: uid() })));
   const [expandedId, setExpandedId] = useState(null);
   const [flowName, setFlowName] = useState("Story Reply Lead Funnel");
@@ -1425,7 +1587,8 @@ export default function InstaDMBuilder() {
   const TABS = [{ id: "flow", icon: "📋", label: "Flow" }, { id: "settings", icon: "⚙️", label: "Settings" }, { id: "analytics", icon: "📊", label: "Analytics" }];
 
   return (
-    <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Sora', 'DM Sans', -apple-system, sans-serif" }}>
+    <DSContext.Provider value={DS}>
+      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Sora', 'DM Sans', -apple-system, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
@@ -1488,8 +1651,25 @@ export default function InstaDMBuilder() {
       <div className="flow-hdr">
         {/* Row 1: Logo + name + tabs */}
         <div className="flow-hdr-r1">
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚡</div>
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚡</div>
           <input value={flowName} onChange={e => setFlowName(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, fontWeight: 800, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.02em", minWidth: 0 }} />
+
+          {/* Platform Switcher */}
+          <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
+            {Object.entries(PLATFORMS).map(([id, p]) => (
+              <button key={id} onClick={() => setPlatform(id)} style={{
+                padding: "5px 12px", borderRadius: 8, fontSize: 11.5, fontWeight: 800, border: "none", cursor: "pointer", fontFamily: "inherit",
+                background: platform === id ? DS.card : "transparent",
+                color: platform === id ? DS.accent : DS.ink3,
+                boxShadow: platform === id ? DS.shadow : "none",
+                transition: "all 0.15s", display: "flex", alignItems: "center", gap: 5,
+              }}>
+                <span style={{fontSize: 14}}>{p.icon}</span>
+                <span className="btn-text" style={{fontSize: 10.5}}>{p.name}</span>
+              </button>
+            ))}
+          </div>
+
           <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
             {TABS.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
@@ -1595,9 +1775,9 @@ export default function InstaDMBuilder() {
                       <div style={{ fontSize: 13.5, fontWeight: 700, color: DS.ink2 }}>Choose a trigger to get started</div>
                       <div style={{ fontSize: 12, marginTop: 4 }}>Or pick a ready-made template above</div>
                       <button onClick={() => setShowTemplates(true)} style={{
-                        marginTop: 14, padding: "9px 22px", borderRadius: 20, background: `linear-gradient(135deg,${DS.accent},#F97316)`,
+                        marginTop: 14, padding: "9px 22px", borderRadius: 20, background: DS.gradient,
                         color: "#fff", border: "none", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit",
-                        boxShadow: "0 4px 16px rgba(232,69,10,0.25)",
+                        boxShadow: `0 4px 16px ${DS.accent}40`,
                       }}>Browse Templates →</button>
                     </div>
                   )
@@ -1612,9 +1792,10 @@ export default function InstaDMBuilder() {
 
         {/* ── RIGHT: PHONE PREVIEW ─── */}
         <div className="instdm-preview">
-          <PhonePreview steps={steps} />
+          <PhonePreview steps={steps} platform={platform} />
         </div>
       </div>
     </div>
-  );
+  </DSContext.Provider>
+);
 }
