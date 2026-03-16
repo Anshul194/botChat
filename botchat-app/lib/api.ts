@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { resolveApiBaseUrl, resolveXHost } from './config';
 
 // Determine base URL based on host
 const getBaseURL = () => {
