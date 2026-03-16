@@ -32,25 +32,23 @@ const DEV_DOMAIN = process.env.NEXT_PUBLIC_DEV_DOMAIN || '';
  */
 export function getTenantDomain(): string {
     if (typeof window === 'undefined') {
-        // SSR — resolve from env
-        return DEV_DOMAIN;
+        // SSR — resolve from env or default
+        return DEV_DOMAIN || 'botchat.divyangtechlabs.com';
     }
 
     const hostname = window.location.hostname;
-    const isLocal = hostname === 'localhost' || hostname.endsWith('.vercel.app');
 
-    if (isLocal) {
-        if (!DEV_DOMAIN) {
-            console.warn(
-                '[BotChat] NEXT_PUBLIC_DEV_DOMAIN is not set in .env.local.\n' +
-                'Set it to the domain you want to simulate (e.g. pos.divyangtechlabs.com).'
-            );
-        }
-        return DEV_DOMAIN;
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Conditional Logic (Mirrors api.ts)
+    // ─────────────────────────────────────────────────────────────────────────────
+    
+    // If agency subdomain or agency localhost, use reseller domain
+    if (hostname.includes('agency.metadm.chat') || hostname.includes('agency.localhost')) {
+        return 'pos.divyangtechlabs.com';
     }
 
-    // Production — the actual running domain IS the tenant domain
-    return hostname;
+    // Default to central API domain for metadm.chat or localhost
+    return 'botchat.divyangtechlabs.com';
 }
 
 /**
