@@ -21,31 +21,10 @@ export interface AuthState {
     error: string | null;
 }
 
-const getInitialToken = () => {
-    if (typeof window !== 'undefined') {
-        return localStorage.getItem('token') || null;
-    }
-    return null;
-};
-
-const getInitialUser = (): User | null => {
-    if (typeof window !== 'undefined') {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            try {
-                return JSON.parse(userStr);
-            } catch (e) {
-                return null;
-            }
-        }
-    }
-    return null;
-};
-
 const initialState: AuthState = {
-    user: getInitialUser(),
-    token: getInitialToken(),
-    isAuthenticated: !!getInitialToken(),
+    user: null,
+    token: null,
+    isAuthenticated: false,
     isLoading: false,
     error: null,
 };
