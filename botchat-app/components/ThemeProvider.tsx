@@ -10,7 +10,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-    theme: "light",
+    theme: "dark",
     toggleTheme: () => { },
 });
 
@@ -19,30 +19,23 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setTheme] = useState<Theme>("light");
+    const [theme, setTheme] = useState<Theme>("dark");
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        // Read the theme that was already applied by the inline script in layout
+        const current = document.documentElement.classList.contains("light") ? "light" : "dark";
+        setTheme(current);
         setMounted(true);
-        const stored = (localStorage.getItem("botchat-theme") as Theme) || "light";
-        setTheme(stored);
-        applyTheme(stored);
     }, []);
-
-    function applyTheme(t: Theme) {
-        const root = document.documentElement;
-        root.classList.remove("dark", "light");
-        root.classList.add(t);
-    }
 
     function toggleTheme() {
         const next: Theme = theme === "dark" ? "light" : "dark";
         setTheme(next);
-        applyTheme(next);
+        document.documentElement.classList.remove("dark", "light");
+        document.documentElement.classList.add(next);
         localStorage.setItem("botchat-theme", next);
     }
-
-    if (!mounted) return <>{children}</>;
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>

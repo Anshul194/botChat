@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home2/divyangt/public_html/metadm.chat
+    - /bin/cp -r botchat/out/* $DEPLOYPATH
