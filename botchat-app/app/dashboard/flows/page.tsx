@@ -1,6 +1,18 @@
 // @ts-nocheck
 "use client";
-import { useState, useRef, useEffect, useCallback, createContext, useContext } from "react";
+import { useState, useRef, useEffect, useCallback, createContext, useContext, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { 
+  MessageSquare, MousePointer2, Link, Image as ImageIcon, Layers, 
+  Keyboard, Mail, Phone, Bot, Brain, GitBranch, Timer, Shuffle, 
+  Tag as TagIcon, ShieldCheck, UserCog, Bell, Users, Zap, 
+  ExternalLink, Table, CheckCircle2, Search, Wand2, Plus, Trash2, 
+  Copy, MoreVertical, GripHorizontal, ChevronRight, Share,
+  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play, 
+  Sparkle, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File
+} from "lucide-react";
 
 /* ============================================================
    DESIGN SYSTEM — use site CSS vars so preview matches site theme
@@ -58,89 +70,15 @@ const useDS = () => useContext(DSContext);
 /* ============================================================
    DATA DEFINITIONS
    ============================================================ */
-const TRIGGERS = [
-  { id: "comment", icon: "💬", label: "Comment Keyword", desc: "Triggers when someone comments a word on your post/reel", color: "#E8450A" },
-  { id: "story_reply", icon: "📸", label: "Story Reply", desc: "Triggers when someone replies to your story", color: "#9333EA" },
-  { id: "dm_keyword", icon: "✉️", label: "DM Keyword", desc: "Triggers when someone DMs a specific keyword", color: "#0369A1" },
-  { id: "new_follower", icon: "👤", label: "New Follower", desc: "Triggers when someone follows your account", color: "#16A34A" },
-  { id: "story_mention", icon: "📢", label: "Story Mention", desc: "Triggers when someone @mentions you in their story", color: "#D97706" },
-  { id: "link_click", icon: "🔗", label: "Bio Link Click", desc: "Triggers when someone clicks your bio link button", color: "#0891B2" },
-  { id: "ad_comment", icon: "📣", label: "Ad Comment", desc: "Triggers on comments on your boosted/sponsored posts", color: "#7C3AED" },
-  { id: "live_mention", icon: "🔴", label: "Live / Mention", desc: "Triggers during Instagram Live interactions", color: "#DC2626" },
-];
-
 const ACTIONS = [
-  { id: "message", icon: "💬", label: "Send Message", desc: "Text, emojis, personalization variables", cat: "Messaging" },
-  { id: "quick_reply", icon: "🎯", label: "Quick Replies", desc: "Buttons the user taps to reply", cat: "Messaging" },
-  { id: "send_link", icon: "🔗", label: "Send Link", desc: "Share a URL with optional preview button", cat: "Messaging" },
-  { id: "media", icon: "🖼️", label: "Send Media", desc: "Image, GIF, or video message", cat: "Messaging" },
-  { id: "collect_email", icon: "📧", label: "Collect Email", desc: "Ask and validate their email address", cat: "Lead Gen" },
-  { id: "collect_phone", icon: "📱", label: "Collect Phone", desc: "Ask and validate their phone number", cat: "Lead Gen" },
-  { id: "ai_reply", icon: "🤖", label: "AI Auto-Reply", desc: "GPT-powered smart response", cat: "AI" },
-  { id: "ai_classify", icon: "🧠", label: "AI Classify", desc: "Detect intent and route accordingly", cat: "AI" },
-  { id: "condition", icon: "🔀", label: "If / Else Branch", desc: "Split flow based on any condition", cat: "Logic" },
-  { id: "delay", icon: "⏱️", label: "Wait / Delay", desc: "Pause to appear natural or schedule", cat: "Logic" },
-  { id: "random_split", icon: "🎲", label: "Random A/B Split", desc: "Split contacts randomly (A/B test flows)", cat: "Logic" },
-  { id: "check_tag", icon: "🏷️", label: "Check Tag", desc: "Branch if contact has a specific tag", cat: "Logic" },
-  { id: "follow_gate", icon: "🔒", label: "Follow Gate", desc: "Verify they follow you before continuing", cat: "Safety" },
-  { id: "tag", icon: "🏷️", label: "Tag Contact", desc: "Label contact for segmentation", cat: "CRM" },
-  { id: "set_field", icon: "📝", label: "Set Custom Field", desc: "Save data to a contact field", cat: "CRM" },
-  { id: "notify_team", icon: "🔔", label: "Notify Team", desc: "Send alert to your team inbox", cat: "CRM" },
-  { id: "handoff", icon: "👥", label: "Live Chat Handoff", desc: "Transfer to human agent", cat: "CRM" },
-  { id: "zapier", icon: "⚡", label: "Zapier / Webhook", desc: "Send data to external app", cat: "Integrations" },
-  { id: "end", icon: "✅", label: "End Flow", desc: "Mark conversation complete", cat: "Logic" },
-];
-
-const ACTION_CATS = ["Messaging", "Lead Gen", "AI", "Logic", "Safety", "CRM", "Integrations"];
-
-const TEMPLATES = [
-  {
-    id: "lead_magnet", icon: "🎁", name: "Lead Magnet", badge: "Most Popular",
-    desc: "Comment → Verify follow → Send freebie → Collect email",
-    steps: [
-      { kind: "trigger", type: "comment", label: "Comment Trigger", config: { keywords: "FREE, LINK, INFO", postTarget: "any" } },
-      { kind: "action", type: "message", label: "Instant Reply", config: { text: "Hey {first_name}! 🙌 Got your message — sending your freebie right now..." } },
-      { kind: "action", type: "follow_gate", label: "Check Follow", config: { onFail: "ask", askText: "Follow me first to unlock this resource! 🔒" } },
-      { kind: "action", type: "send_link", label: "Send Resource", config: { text: "Here's your free guide! 🎉", url: "https://yoursite.com/freebie", btnLabel: "Get It Free →" } },
-      { kind: "action", type: "collect_email", label: "Capture Email", config: { prompt: "Want weekly tips? Drop your best email 👇", required: true } },
-      { kind: "action", type: "tag", label: "Tag as Lead", config: { tags: "lead, freebie-claimed, nurture-sequence" } },
-      { kind: "action", type: "zapier", label: "Add to Klaviyo", config: { webhook: "", label: "Send to email platform" } },
-    ]
-  },
-  {
-    id: "story_funnel", icon: "📸", name: "Story Funnel", badge: "High Converting",
-    desc: "Story reply → AI qualify → Branch → Close",
-    steps: [
-      { kind: "trigger", type: "story_reply", label: "Story Reply", config: { keywords: "" } },
-      { kind: "action", type: "ai_reply", label: "AI Warm Welcome", config: { instructions: "Greet them warmly, reference that they replied to a story, and ask what caught their eye. Keep it under 2 sentences, conversational.", tone: "Friendly 😊" } },
-      { kind: "action", type: "quick_reply", label: "Qualify Interest", config: { question: "What best describes you?", options: "Creator|Business Owner|Just browsing" } },
-      { kind: "action", type: "condition", label: "High-Intent?", config: { condType: "reply_contains", condition: "Creator OR Business Owner", onFalse: "end" } },
-      { kind: "action", type: "send_link", label: "Send Offer", config: { text: "Perfect! This was made for you 👇", url: "https://yoursite.com/offer", btnLabel: "See The Offer →" } },
-      { kind: "action", type: "tag", label: "Tag Hot Lead", config: { tags: "hot-lead, story-funnel, high-intent" } },
-    ]
-  },
-  {
-    id: "welcome_flow", icon: "👋", name: "New Follower Welcome", badge: "Evergreen",
-    desc: "Follow → Delay → Welcome DM → Nurture",
-    steps: [
-      { kind: "trigger", type: "new_follower", label: "New Follower", config: {} },
-      { kind: "action", type: "delay", label: "Wait 3 minutes", config: { duration: "3", unit: "minutes" } },
-      { kind: "action", type: "message", label: "Welcome Message", config: { text: "Welcome {first_name}! 🎉 So glad you're here. I'm {your_name} — I share [what you do].\n\nHere's something to get you started 👇" } },
-      { kind: "action", type: "send_link", label: "Share Best Content", config: { text: "Start here 🚀", url: "https://yoursite.com/start", btnLabel: "Start Here →" } },
-      { kind: "action", type: "quick_reply", label: "Engage Question", config: { question: "What brought you here?", options: "Your content|A friend shared|Just found you" } },
-      { kind: "action", type: "tag", label: "Tag New Follower", config: { tags: "new-follower, welcome-sent" } },
-    ]
-  },
-  {
-    id: "faq_bot", icon: "🤖", name: "AI FAQ Bot", badge: "Set & Forget",
-    desc: "DM keyword → AI answers → Escalate if needed",
-    steps: [
-      { kind: "trigger", type: "dm_keyword", label: "Any DM", config: { keywords: "", matchAll: true } },
-      { kind: "action", type: "ai_reply", label: "AI Answer", config: { instructions: "You are a helpful assistant for [Brand Name]. Answer the user's question about our products/services. If you don't know, say you'll connect them with the team. Keep answers under 3 sentences.", tone: "Professional 💼" } },
-      { kind: "action", type: "condition", label: "Needs Human?", config: { condType: "reply_contains", condition: "speak to human OR talk to someone", onFalse: "end" } },
-      { kind: "action", type: "handoff", label: "Live Chat Handoff", config: { message: "Connecting you with our team now! 👥" } },
-    ]
-  },
+  { id: "message", icon: MessageSquare, label: "Message", desc: "Send a text message" },
+  { id: "image", icon: ImageIcon, label: "Image", desc: "Send an image" },
+  { id: "video", icon: Play, label: "Video", desc: "Send a video" },
+  { id: "audio", icon: Mic, label: "Audio", desc: "Send audio" },
+  { id: "file", icon: File, label: "File", desc: "Send a document" },
+  { id: "carousel", icon: Layers, label: "Carousel", desc: "Horizontal scrolling cards" },
+  { id: "user_input", icon: Keyboard, label: "User Input", desc: "Ask question and save response" },
+  { id: "condition", icon: GitBranch, label: "Condition", desc: "Logic branching" },
 ];
 
 const VARS = [
@@ -156,10 +94,9 @@ const VARS = [
    ============================================================ */
 let _id = 200;
 const uid = () => `s${++_id}`;
-const getTriggerDef = (id: string) => TRIGGERS.find(t => t.id === id) || TRIGGERS[0];
 const getActionDef = (id: string) => ACTIONS.find(a => a.id === id) || ACTIONS[0];
-const getDef = (kind: string, type: string) => kind === "trigger" ? getTriggerDef(type) : getActionDef(type);
-const getColor = (kind: string, type: string) => kind === "trigger" ? getTriggerDef(type).color : "#1C1917";
+const getDef = (kind: string, type: string) => getActionDef(type);
+const getColor = (kind: string, type: string) => "#1C1917";
 
 /* ============================================================
    MINI COMPONENTS
@@ -247,7 +184,11 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
       cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: "inherit",
       transition: "all 0.12s", ...extra,
     }}>
-      {icon && <span>{icon}</span>}{children}
+      {icon && (
+        <span style={{ display: "flex", alignItems: "center" }}>
+          {typeof icon === 'string' ? icon : <icon size={12} />}
+        </span>
+      )}{children}
     </button>
   );
 }
@@ -255,86 +196,6 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
 /* ============================================================
    FORM FIELDS PER STEP TYPE
    ============================================================ */
-function TriggerFields({ step, update }) {
-  const def = getTriggerDef(step.type);
-  const c = step.config || {};
-  const set = patch => update({ ...step, config: { ...c, ...patch } });
-  const DS = useDS();
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {/* Trigger picker grid */}
-      <div>
-        <Label>Trigger type</Label>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-          {TRIGGERS.map(t => {
-            const sel = step.type === t.id;
-            return (
-              <button key={t.id} onClick={() => update({ ...step, type: t.id, label: t.label })} style={{
-                display: "flex", alignItems: "flex-start", gap: 9, padding: "10px 11px", borderRadius: DS.radiusSm,
-                border: `1.5px solid ${sel ? t.color : DS.border}`, background: sel ? `${t.color}0D` : DS.card,
-                cursor: "pointer", textAlign: "left", fontFamily: "inherit", transition: "all 0.12s",
-              }}>
-                <span style={{ fontSize: 18, lineHeight: 1.2 }}>{t.icon}</span>
-                <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 700, color: sel ? t.color : DS.ink, lineHeight: 1.2 }}>{t.label}</div>
-                  <div style={{ fontSize: 10.5, color: DS.ink3, marginTop: 2, lineHeight: 1.3 }}>{t.desc}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {["comment", "dm_keyword", "ad_comment"].includes(step.type) && (
-        <div>
-          <Label hint="comma-separated">Keywords</Label>
-          <Input value={c.keywords} onChange={e => set({ keywords: e.target.value })} placeholder="FREE, LINK, INFO, DETAILS" />
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
-            <Toggle on={c.matchAll} onChange={() => set({ matchAll: !c.matchAll })} label="Trigger on ANY message (no keyword required)" />
-          </div>
-        </div>
-      )}
-
-      {step.type === "comment" && (
-        <div>
-          <Label>Apply to</Label>
-          <Select value={c.postTarget || "any"} onChange={e => set({ postTarget: e.target.value })} options={[
-            { value: "any", label: "Any post or Reel" },
-            { value: "latest", label: "Latest post only" },
-            { value: "specific", label: "Specific post URL" },
-            { value: "all_reels", label: "All Reels" },
-          ]} />
-          {c.postTarget === "specific" && (
-            <Input style={{ marginTop: 8 }} value={c.postUrl} onChange={e => set({ postUrl: e.target.value })} placeholder="https://instagram.com/p/..." />
-          )}
-        </div>
-      )}
-
-      {step.type === "story_reply" && (
-        <div>
-          <Label>Reply must contain (optional)</Label>
-          <Input value={c.keywords} onChange={e => set({ keywords: e.target.value })} placeholder="Leave empty to match all story replies" />
-        </div>
-      )}
-
-      {["comment", "dm_keyword", "ad_comment", "story_reply"].includes(step.type) && (
-        <div>
-          <Label>Also auto-like their comment?</Label>
-          <Toggle on={c.autoLike} onChange={() => set({ autoLike: !c.autoLike })} label="Auto-like comment when triggered" />
-        </div>
-      )}
-
-      {["comment", "dm_keyword"].includes(step.type) && (
-        <div>
-          <Label>Public comment reply (optional)</Label>
-          <Input value={c.publicReply} onChange={e => set({ publicReply: e.target.value })} placeholder="Check your DMs! 📩" />
-          <div style={{ fontSize: 11, color: DS.ink3, marginTop: 4 }}>Visible reply posted under their comment</div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function MessageFields({ step, update }) {
   const c = step.config || {};
@@ -480,41 +341,301 @@ function AIReplyFields({ step, update }) {
   );
 }
 
-function ConditionFields({ step, update }) {
+function ConditionFields({ step, update, allSteps }) {
+  const c = step.config || {};
+  const rules = c.rules || [{ field_type: "system", field_name: "first_name", operator: "equals", value: "" }];
+  const match_type = c.match_type || "all";
+  const DS = useDS();
+
+  const set = patch => update({ ...step, config: { ...c, ...patch } });
+
+  const updateRule = (idx, patch) => {
+    const newRules = [...rules];
+    newRules[idx] = { ...newRules[idx], ...patch };
+    set({ rules: newRules });
+  };
+
+  const addRule = () => set({ rules: [...rules, { field_type: "system", field_name: "first_name", operator: "equals", value: "" }] });
+  const removeRule = (idx) => set({ rules: rules.filter((_, i) => i !== idx) });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div>
+        <Label>Match Type</Label>
+        <Select value={match_type} onChange={e => set({ match_type: e.target.value })} options={[
+          { value: "all", label: "All conditions must be met (AND)" },
+          { value: "any", label: "Any condition can be met (OR)" },
+        ]} />
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {rules.map((rule, i) => (
+          <div key={i} style={{ padding: 12, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, background: DS.bg, position: "relative" }}>
+            <div style={{ position: "absolute", top: 8, right: 8 }}>
+              <button onClick={() => removeRule(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 14 }}>✕</button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div>
+                <Label>Field Type</Label>
+                <div style={{ display: "flex", gap: 4 }}>
+                  {["system", "custom"].map(t => (
+                    <button key={t} onClick={() => updateRule(i, { field_type: t })} style={{
+                      flex: 1, padding: "5px", fontSize: 11, fontWeight: 700, borderRadius: 6, cursor: "pointer",
+                      border: `1.5px solid ${rule.field_type === t ? DS.accent : DS.border}`,
+                      background: rule.field_type === t ? DS.accentSoft : "#fff",
+                      color: rule.field_type === t ? DS.accent : DS.ink3,
+                    }}>{t.toUpperCase()}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>Field Name</Label>
+                {rule.field_type === "system" ? (
+                  <Select value={rule.field_name} onChange={e => updateRule(i, { field_name: e.target.value })} options={[
+                    { value: "first_name", label: "First Name" },
+                    { value: "last_name", label: "Last Name" },
+                    { value: "username", label: "Username" },
+                    { value: "email", label: "Email" },
+                    { value: "phone", label: "Phone" },
+                  ]} />
+                ) : (
+                  <Input value={rule.field_name} onChange={e => updateRule(i, { field_name: e.target.value })} placeholder="custom_field_key" />
+                )}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <Label>Operator</Label>
+                  <Select value={rule.operator} onChange={e => updateRule(i, { operator: e.target.value })} options={[
+                    { value: "=", label: "Equals (=)" },
+                    { value: "!=", label: "Not Equals (!=)" },
+                    { value: "contains", label: "Contains" },
+                    { value: "starts_with", label: "Starts With" },
+                    { value: "ends_with", label: "Ends With" },
+                    { value: "exists", label: "Has Value" },
+                    { value: "greater_than", label: "Greater Than (>)" },
+                    { value: "less_than", label: "Less Than (<)" },
+                  ]} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Label>Value</Label>
+                  <Input value={rule.value} onChange={e => updateRule(i, { value: e.target.value })} placeholder="Target value" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <SmallBtn onClick={addRule}>+ Add Rule</SmallBtn>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 6 }}>
+        <div style={{ background: DS.greenSoft, border: `1.5px solid #86EFAC`, borderRadius: DS.radiusSm, padding: "10px 12px" }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.green, marginBottom: 3 }}>✅ IF TRUE</div>
+          <Label>Then go to</Label>
+          <Select value={c.true_step_id || ""} onChange={e => set({ true_step_id: e.target.value })} options={[
+            { value: "", label: "Next step" },
+            ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type }))
+          ]} style={{ padding: "4px 8px", fontSize: 11 }} />
+        </div>
+        <div style={{ background: "#FFF1F0", border: "1.5px solid #FCA5A5", borderRadius: DS.radiusSm, padding: "10px 12px" }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: "#DC2626", marginBottom: 3 }}>✗ IF FALSE</div>
+          <Label>Then go to</Label>
+          <Select value={c.false_step_id || "end"} onChange={e => set({ false_step_id: e.target.value })} options={[
+            { value: "end", label: "End flow" },
+            ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type }))
+          ]} style={{ padding: "4px 8px", fontSize: 11 }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CarouselFields({ step, update, allSteps }) {
+  const c = step.config || {};
+  const items = c.carousel || [{ title: "", subtitle: "", image_url: "", buttons: [] }];
+  const DS = useDS();
+
+  const set = patch => update({ ...step, config: { ...c, ...patch } });
+
+  const updateItem = (idx, patch) => {
+    const newItems = [...items];
+    newItems[idx] = { ...newItems[idx], ...patch };
+    set({ carousel: newItems });
+  };
+
+  const addItem = () => set({ carousel: [...items, { title: "", subtitle: "", image_url: "", buttons: [] }] });
+  const removeItem = (idx) => set({ carousel: items.filter((_, i) => i !== idx) });
+
+  const addButton = (iIdx) => {
+    const newItems = [...items];
+    newItems[iIdx].buttons = [...(newItems[iIdx].buttons || []), { label: "New Button", action_type: "url", action_value: "" }];
+    set({ carousel: newItems });
+  };
+
+  const updateButton = (iIdx, bIdx, patch) => {
+    const newItems = [...items];
+    newItems[iIdx].buttons[bIdx] = { ...newItems[iIdx].buttons[bIdx], ...patch };
+    set({ carousel: newItems });
+  };
+
+  const removeButton = (iIdx, bIdx) => {
+    const newItems = [...items];
+    newItems[iIdx].buttons = newItems[iIdx].buttons.filter((_, i) => i !== bIdx);
+    set({ carousel: newItems });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", overflowX: "auto", gap: 12, paddingBottom: 10, paddingRight: 10 }}>
+        {items.map((item, i) => (
+          <div key={i} style={{ minWidth: 240, background: DS.card, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius, padding: 14, flexShrink: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink3 }}>CARD #{i+1}</span>
+              {items.length > 1 && <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer" }}>✕</button>}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <Label>Image URL</Label>
+              <Input value={item.image_url} onChange={e => updateItem(i, { image_url: e.target.value })} placeholder="https://..." />
+              <Label>Title</Label>
+              <Input value={item.title} onChange={e => updateItem(i, { title: e.target.value })} placeholder="Card Title" />
+              <Label>Subtitle</Label>
+              <Input value={item.subtitle} onChange={e => updateItem(i, { subtitle: e.target.value })} placeholder="Card Subtitle" />
+              <Label>Destination URL (Card click)</Label>
+              <Input value={item.destination_url} onChange={e => updateItem(i, { destination_url: e.target.value })} placeholder="https://..." />
+              
+              <div style={{ marginTop: 6 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <Label>Buttons</Label>
+                  {(item.buttons?.length || 0) < 3 && <button onClick={() => addButton(i)} style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: DS.accentSoft, color: DS.accent, border: "none", cursor: "pointer", fontWeight: 700 }}>+ ADD</button>}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {item.buttons?.map((btn, bi) => (
+                    <div key={bi} style={{ background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 8, padding: 8 }}>
+                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                         <input value={btn.label} onChange={e => updateButton(i, bi, { label: e.target.value })} style={{ border: "none", background: "transparent", fontSize: 11, fontWeight: 700, width: "100%", outline: "none" }} />
+                         <button onClick={() => removeButton(i, bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 10 }}>✕</button>
+                       </div>
+                       <div style={{ display: "flex", gap: 4 }}>
+                         <Select value={btn.action_type} onChange={e => updateButton(i, bi, { action_type: e.target.value })} options={[
+                           { value: "url", label: "Open URL" },
+                           { value: "postback", label: "Postback" },
+                         ]} style={{ padding: "3px 6px", fontSize: 10, height: 24 }} />
+                         <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Value" style={{ padding: "3px 6px", fontSize: 10, height: 24 }} />
+                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <button onClick={addItem} style={{ minWidth: 100, border: `2px dashed ${DS.border}`, borderRadius: DS.radius, background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 24 }}>+</button>
+      </div>
+    </div>
+  );
+}
+
+function UserInputFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const DS = useDS();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
-        <Label>Check type</Label>
-        <Select value={c.condType || "reply_contains"} onChange={e => set({ condType: e.target.value })} options={[
-          { value: "reply_contains", label: "Last reply contains keyword" },
-          { value: "has_tag", label: "Contact has tag" },
-          { value: "field_equals", label: "Custom field equals value" },
-          { value: "email_collected", label: "Email was collected" },
-          { value: "is_follower", label: "User is a follower" },
-          { value: "link_clicked", label: "Link was clicked" },
-          { value: "button_tapped", label: "Button was tapped" },
+        <Label>Question</Label>
+        <Input value={c.question} onChange={e => set({ question: e.target.value })} placeholder="What is your favorite color?" />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div>
+          <Label>Validation Type</Label>
+          <Select value={c.validation || "any"} onChange={e => set({ validation: e.target.value })} options={[
+            { value: "any", label: "Any Text" },
+            { value: "email", label: "Email" },
+            { value: "phone", label: "Phone Number" },
+            { value: "number", label: "Number" },
+            { value: "date", label: "Date" },
+          ]} />
+        </div>
+        <div>
+          <Label>Save to field</Label>
+          <Input value={c.save_to} onChange={e => set({ save_to: e.target.value })} placeholder="custom_field_key" />
+        </div>
+      </div>
+      <div>
+        <Label>Retry Message (if invalid)</Label>
+        <Input value={c.retry_message} onChange={e => set({ retry_message: e.target.value })} placeholder="Invalid input, please try again" />
+      </div>
+    </div>
+  );
+}
+
+function HTTPAPIFields({ step, update }) {
+  const c = step.config || {};
+  const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div>
+        <Label>Request method</Label>
+        <Select value={c.method || "POST"} onChange={e => set({ method: e.target.value })} options={[
+          { value: "GET", label: "GET" }, { value: "POST", label: "POST" }, { value: "PUT", label: "PUT" }, { value: "DELETE", label: "DELETE" },
         ]} />
       </div>
-      {["reply_contains", "has_tag", "field_equals"].includes(c.condType || "reply_contains") && (
-        <div>
-          <Label>{c.condType === "has_tag" ? "Tag name" : c.condType === "field_equals" ? "Field = Value" : "Keyword(s)"}</Label>
-          <Input value={c.condition} onChange={e => set({ condition: e.target.value })} placeholder={c.condType === "field_equals" ? "field_name = value" : "keyword1 OR keyword2"} />
-        </div>
-      )}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-        <div style={{ background: DS.greenSoft, border: `1.5px solid #86EFAC`, borderRadius: DS.radiusSm, padding: "10px 12px" }}>
-          <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.green, marginBottom: 3 }}>✅ IF TRUE</div>
-          <div style={{ fontSize: 12, color: DS.ink2 }}>Continues to next step</div>
-        </div>
-        <div style={{ background: "#FFF1F0", border: "1.5px solid #FCA5A5", borderRadius: DS.radiusSm, padding: "10px 12px" }}>
-          <div style={{ fontSize: 10.5, fontWeight: 800, color: "#DC2626", marginBottom: 3 }}>✗ IF FALSE</div>
-          <Select value={c.onFalse || "end"} onChange={e => set({ onFalse: e.target.value })} style={{ padding: "4px 8px", fontSize: 11 }} options={[
-            { value: "end", label: "End flow" },
-            { value: "skip_to_end", label: "Skip to end step" },
-          ]} />
+      <div>
+        <Label>API URL</Label>
+        <Input value={c.url} onChange={e => set({ url: e.target.value })} placeholder="https://api.yourservice.com/v1/collect" />
+      </div>
+      <div>
+        <Label>Headers (JSON)</Label>
+        <Input multiline rows={2} value={c.headers} onChange={e => set({ headers: e.target.value })} placeholder='{"Authorization": "Bearer token", "Content-Type": "application/json"}' />
+      </div>
+      <div>
+        <Label>Request Body (JSON)</Label>
+        <Input multiline rows={3} value={c.body} onChange={e => set({ body: e.target.value })} placeholder='{"user_id": "{username}", "event": "flow_triggered"}' />
+      </div>
+    </div>
+  );
+}
+
+function GoogleSheetsFields({ step, update }) {
+  const c = step.config || {};
+  const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const DS = useDS();
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ background: DS.accentSoft, padding: 12, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.accentBorder}`, display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 20 }}>📊</span>
+        <div style={{ fontSize: 12, fontWeight: 700, color: DS.accent }}>Connected to Google Account: anshul@example.com</div>
+      </div>
+      <div>
+        <Label>Select Spreadsheet</Label>
+        <Select value={c.spreadsheet_id} onChange={e => set({ spreadsheet_id: e.target.value })} options={[
+          { value: "s1", label: "Lead Tracking 2024" },
+          { value: "s2", label: "Customer Feedback" },
+          { value: "s3", label: "Order List" },
+        ]} />
+      </div>
+      <div>
+        <Label>Worksheet</Label>
+        <Select value={c.worksheet} onChange={e => set({ worksheet: e.target.value })} options={[
+          { value: "Sheet1", label: "Sheet1" },
+          { value: "responses", label: "Responses" },
+        ]} />
+      </div>
+      <div>
+        <Label>Column Mapping (Values to send)</Label>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+             <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>A: Date</span>
+             <Input value="{date}" disabled style={{ flex: 1, background: DS.bg }} />
+           </div>
+           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+             <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>B: Name</span>
+             <Input value="{first_name}" disabled style={{ flex: 1, background: DS.bg }} />
+           </div>
+           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+             <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>C: Answer</span>
+             <Input value={c.col3 || "{last_reply}"} onChange={e => set({ col3: e.target.value })} style={{ flex: 1 }} />
+           </div>
         </div>
       </div>
     </div>
@@ -725,23 +846,26 @@ function RandomSplitFields({ step, update }) {
 function MediaFields({ step, update }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const typeMap = {
+    image: { label: "Image URL", icon: "🖼️" },
+    video: { label: "Video URL", icon: "📹" },
+    audio: { label: "Audio URL", icon: "🎵" },
+    file: { label: "File URL", icon: "📁" }
+  };
+  const info = typeMap[step.type] || typeMap.image;
+  
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
-        <Label>Media type</Label>
-        <Select value={c.mediaType || "image"} onChange={e => set({ mediaType: e.target.value })} options={[
-          { value: "image", label: "🖼️ Image" }, { value: "gif", label: "🎞️ GIF" },
-          { value: "video", label: "📹 Video (Reel/short)" },
-        ]} />
+        <Label>{info.label}</Label>
+        <Input value={c.url} onChange={e => set({ url: e.target.value })} placeholder={`https://yourcdn.com/${step.type}...`} />
       </div>
-      <div>
-        <Label>Media URL</Label>
-        <Input value={c.url} onChange={e => set({ url: e.target.value })} placeholder="https://yourcdn.com/image.jpg" />
-      </div>
-      <div>
-        <Label>Caption (optional)</Label>
-        <Input value={c.caption} onChange={e => set({ caption: e.target.value })} placeholder="Check this out! 👀" />
-      </div>
+      {(step.type === "image" || step.type === "video") && (
+        <div>
+          <Label>Caption (optional)</Label>
+          <Input value={c.caption} onChange={e => set({ caption: e.target.value })} placeholder="Check this out! 👀" />
+        </div>
+      )}
     </div>
   );
 }
@@ -824,17 +948,14 @@ function AIClassifyFields({ step, update }) {
   );
 }
 
-function StepFields({ step, update }) {
-  const props = { step, update };
+function StepFields({ step, update, allSteps }) {
+  const props = { step, update, allSteps };
   const DS = useDS(); // Added useDS here
-  if (step.kind === "trigger") return <TriggerFields {...props} />;
+  if (step.kind === "trigger") return <div style={{ fontSize: 12, color: DS.ink3 }}>Click to configure trigger</div>;
   const map = {
-    message: MessageFields, quick_reply: QuickReplyFields, send_link: SendLinkFields,
-    media: MediaFields, collect_email: CollectEmailFields, collect_phone: CollectEmailFields,
-    ai_reply: AIReplyFields, ai_classify: AIClassifyFields, condition: ConditionFields,
-    delay: DelayFields, random_split: RandomSplitFields, check_tag: CheckTagFields,
-    follow_gate: FollowGateFields, tag: TagFields, set_field: SetFieldFields,
-    notify_team: NotifyTeamFields, handoff: HandoffFields, zapier: ZapierFields, end: EndFields,
+    message: MessageFields, 
+    image: MediaFields, video: MediaFields, audio: MediaFields, file: MediaFields,
+    carousel: CarouselFields, user_input: UserInputFields, condition: ConditionFields,
   };
   const Comp = map[step.type];
   return Comp ? <Comp {...props} /> : <div style={{ fontSize: 12, color: DS.ink3 }}>Configure this step</div>;
@@ -846,16 +967,21 @@ function StepFields({ step, update }) {
 function StepSummary({ step }) {
   const DS = useDS();
   const c = step.config || {};
-  if (step.kind === "trigger") {
-    const def = getTriggerDef(step.type);
-    return <span style={{ color: def.color }}>{def.label}{c.keywords ? ` — "${c.keywords.split(",")[0].trim()}"` : ""}</span>;
-  }
-  const m = { message: c.text?.slice(0, 40), quick_reply: c.question?.slice(0, 40), send_link: c.url, collect_email: c.prompt?.slice(0, 40), ai_reply: c.instructions?.slice(0, 40), condition: c.condition, delay: c.duration ? `${c.duration} ${c.unit || "min"}` : null, tag: c.tags?.slice(0, 40), follow_gate: `If not follower: ${c.onFail || "ask"}`, end: c.note || "Flow ends" };
+  const m = { 
+    message: c.text?.slice(0, 40), 
+    image: c.url?.slice(0, 40),
+    video: c.url?.slice(0, 40),
+    audio: c.url?.slice(0, 40),
+    file: c.url?.slice(0, 40),
+    carousel: `${(c.carousel || []).length} cards`, 
+    user_input: c.question?.slice(0, 40),
+    condition: (c.rules || []).map(r => r.field_name).join(", "), 
+  };
   const txt = m[step.type];
   return <span style={{ color: DS.ink3 }}>{txt ? (txt.length > 40 ? txt.slice(0, 40) + "…" : txt) : "Click to configure"}</span>;
 }
 
-function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown }) {
+function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown }) {
   const DS = useDS();
   const def = getDef(step.kind, step.type);
   const color = step.kind === "trigger" ? def.color : DS.ink;
@@ -872,29 +998,30 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
       )}
       <div style={{
         background: DS.card, borderRadius: DS.radius, overflow: "hidden", position: "relative", zIndex: 1,
-        border: expanded ? `2px solid ${color}` : `1.5px solid ${DS.border}`,
-        boxShadow: expanded ? `0 0 0 4px ${isTrigger ? def.color + "18" : "rgba(0,0,0,0.07)"}, ${DS.shadowHover}` : DS.shadowCard,
-        transition: "border-color 0.15s, box-shadow 0.15s",
+        border: expanded ? `2px solid ${DS.ink}` : `1.5px solid ${DS.border}`,
+        boxShadow: expanded ? `0 0 0 4px rgba(0,0,0,0.07), ${DS.shadowHover}` : DS.shadowCard,
+        transition: "all 0.15s",
       }}>
-        {isTrigger && <div style={{ height: 3, background: `linear-gradient(90deg,${def.color},${def.color}66)` }} />}
-
         {/* HEADER */}
         <div onClick={onToggle} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", cursor: "pointer", userSelect: "none" }}>
           {/* Step number */}
           <div style={{
             width: 22, height: 22, borderRadius: 7, fontSize: 11, fontWeight: 800, flexShrink: 0, transition: "all 0.15s",
-            background: expanded ? (isTrigger ? def.color : DS.ink) : DS.bg,
+            background: expanded ? DS.ink : DS.bg,
             color: expanded ? "#fff" : DS.ink3,
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>{index + 1}</div>
 
           {/* Icon */}
-          <div style={{
-            width: 38, height: 38, borderRadius: 11, flexShrink: 0,
-            background: isTrigger ? `${def.color}15` : DS.bg,
-            border: `1.5px solid ${isTrigger ? def.color + "30" : DS.border}`,
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-          }}>{def.icon}</div>
+            <div style={{
+              width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+              background: DS.bg,
+              border: `1.5px solid ${DS.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: DS.ink
+            }}>
+              {typeof def.icon === 'string' ? def.icon : <def.icon size={20} />}
+            </div>
 
           {/* Name & summary */}
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -905,7 +1032,6 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
                 onChange={e => onUpdate({ ...step, label: e.target.value })}
                 style={{ border: "none", background: "transparent", fontSize: 13.5, fontWeight: 700, color: DS.ink, outline: "none", fontFamily: "inherit", minWidth: 0, flex: 1 }}
               />
-              {isTrigger && <Tag>{def.label}</Tag>}
             </div>
             {!expanded && (
               <div style={{ fontSize: 12, marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -926,7 +1052,7 @@ function StepCard({ step, index, total, expanded, onToggle, onUpdate, onDelete, 
         {/* EXPANDED BODY */}
         {expanded && (
           <div style={{ borderTop: `1px solid ${DS.border}`, padding: "16px 16px 18px" }}>
-            <StepFields step={step} update={onUpdate} />
+            <StepFields step={step} update={onUpdate} allSteps={allSteps} />
           </div>
         )}
       </div>
@@ -956,160 +1082,64 @@ function IconBtn({ children, onClick, danger, title }) {
 function AddActionPicker({ onAdd }) {
   const DS = useDS();
   const [open, setOpen] = useState(false);
-  const [cat, setCat] = useState("Messaging");
-  const filtered = ACTIONS.filter(a => a.cat === cat);
   return (
     <div style={{ position: "relative" }}>
-      <button onClick={() => setOpen(!open)} style={{
-        width: "100%", padding: 12, borderRadius: DS.radius, cursor: "pointer",
-        border: `2px dashed ${open ? DS.accent : DS.border}`, background: open ? DS.accentSoft : "transparent",
-        color: DS.accent, fontSize: 13, fontWeight: 700, fontFamily: "inherit",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.15s",
+      <button onClick={() => setOpen(true)} style={{
+        width: "100%", padding: 16, borderRadius: 20, cursor: "pointer",
+        border: `2px solid ${DS.accent}`, background: DS.accentSoft,
+        color: DS.accent, fontSize: 15, fontWeight: 800, fontFamily: "inherit",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s",
+        boxShadow: "0 4px 12px rgba(6,182,212,0.15)",
       }}
-        onMouseEnter={e => { if (!open) { e.currentTarget.style.borderColor = DS.accentBorder; e.currentTarget.style.background = DS.accentSoft; } }}
-        onMouseLeave={e => { if (!open) { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "transparent"; } }}
+        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(6,182,212,0.25)"; }}
+        onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(6,182,212,0.15)"; }}
       >
-        <span style={{ fontSize: 17, lineHeight: 1 }}>+</span> Add Action Step
+        <Plus size={20} strokeWidth={3} /> Add New Step
       </button>
 
       {open && (
-        <>
-          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 98 }} />
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div onClick={() => setOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)" }} />
           <div style={{
-            position: "absolute", bottom: "calc(100% + 8px)", left: 0, right: 0, zIndex: 99,
-            background: DS.card, borderRadius: DS.radius, border: `1.5px solid ${DS.border}`,
-            boxShadow: "0 12px 40px rgba(28,25,23,0.14)", overflow: "hidden",
+            position: "relative", width: 480, maxWidth: "100%", background: "#fff", borderRadius: 32, 
+            boxShadow: "0 40px 100px -20px rgba(0,0,0,0.35)", overflow: "hidden", border: "1px solid rgba(0,0,0,0.05)"
           }}>
-            {/* Category tabs */}
-            <div style={{ display: "flex", borderBottom: `1px solid ${DS.border}`, padding: "8px 8px 0", gap: 2, overflowX: "auto" }}>
-              {ACTION_CATS.map(c => (
-                <button key={c} onClick={() => setCat(c)} style={{
-                  padding: "6px 12px", borderRadius: "8px 8px 0 0", fontSize: 11.5, fontWeight: 700,
-                  border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-                  background: cat === c ? DS.accentSoft : "transparent",
-                  color: cat === c ? DS.accent : DS.ink3,
-                  borderBottom: cat === c ? `2px solid ${DS.accent}` : "2px solid transparent",
-                }}>{c}</button>
-              ))}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 28px", borderBottom: `1px solid ${DS.border}` }}>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 900, color: DS.ink, letterSpacing: "-0.02em" }}>Choose Step Type</div>
+                <div style={{ fontSize: 12, color: DS.ink3, marginTop: 2 }}>Select the next action for your flow</div>
+              </div>
+              <button onClick={() => setOpen(false)} style={{ border: "none", background: DS.bg, width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: DS.ink3 }}><X size={18} /></button>
             </div>
-            {/* Items */}
-            <div style={{ padding: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-              {filtered.map(a => (
+            
+            <div style={{ padding: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              {ACTIONS.map(a => (
                 <button key={a.id} onClick={() => { onAdd(a.id); setOpen(false); }} style={{
-                  display: "flex", alignItems: "flex-start", gap: 9, padding: "10px 11px", borderRadius: DS.radiusSm,
-                  border: `1.5px solid ${DS.border}`, background: DS.card, cursor: "pointer", textAlign: "left", fontFamily: "inherit",
-                  transition: "all 0.12s",
+                  display: "flex", alignItems: "center", gap: 14, height: 64, padding: "0 18px", borderRadius: 20,
+                  border: `1.5px solid ${DS.border}`, background: "#fff", cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                  transition: "all 0.15s",
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accentBorder; e.currentTarget.style.background = DS.accentSoft; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = DS.card; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.background = DS.accentSoft; e.currentTarget.style.transform = "scale(1.02)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "#fff"; e.currentTarget.style.transform = "none"; }}
                 >
-                  <span style={{ fontSize: 18, lineHeight: 1.2, flexShrink: 0 }}>{a.icon}</span>
-                  <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, color: DS.ink }}>{a.label}</div>
-                    <div style={{ fontSize: 10.5, color: DS.ink3, marginTop: 1 }}>{a.desc}</div>
+                  <div style={{ width: 36, height: 36, borderRadius: 12, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink }}>
+                    <a.icon size={20} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: DS.ink }}>{a.label}</div>
+                    <div style={{ fontSize: 10, color: DS.ink3, marginTop: 1 }}>{a.desc.slice(0, 24)}...</div>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 }
 
-/* ============================================================
-   TRIGGER EMPTY STATE
-   ============================================================ */
-function TriggerEmptyState({ onAdd }) {
-  const DS = useDS();
-  return (
-    <div style={{ borderRadius: DS.radius, border: `2px dashed ${DS.accentBorder}`, background: DS.accentSoft, padding: 18 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <span style={{ fontSize: 22 }}>⚡</span>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: DS.accent }}>Set your trigger</div>
-          <div style={{ fontSize: 12, color: DS.ink2, marginTop: 1 }}>What starts this automation?</div>
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-        {TRIGGERS.slice(0, 6).map(t => (
-          <button key={t.id} onClick={() => onAdd(t.id)} style={{
-            display: "flex", alignItems: "center", gap: 8, padding: "9px 11px", borderRadius: DS.radiusSm,
-            border: `1.5px solid ${t.color}25`, background: `${t.color}0A`, cursor: "pointer", textAlign: "left", fontFamily: "inherit", transition: "all 0.12s",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = `${t.color}18`; e.currentTarget.style.borderColor = `${t.color}60`; }}
-            onMouseLeave={e => { e.currentTarget.style.background = `${t.color}0A`; e.currentTarget.style.borderColor = `${t.color}25`; }}
-          >
-            <span style={{ fontSize: 16 }}>{t.icon}</span>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: t.color }}>{t.label}</div>
-              <div style={{ fontSize: 10, color: DS.ink3 }}>{t.desc.slice(0, 28)}…</div>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   TEMPLATE MODAL
-   ============================================================ */
-function TemplateModal({ onSelect, onClose }) {
-  const DS = useDS();
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(28,25,23,0.5)", backdropFilter: "blur(6px)" }} />
-      <div style={{
-        background: DS.card, borderRadius: DS.radius + 4, padding: 28, width: 560, maxWidth: "92vw",
-        zIndex: 301, boxShadow: "0 24px 80px rgba(28,25,23,0.22)",
-        maxHeight: "88vh", overflowY: "auto",
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 900, color: DS.ink, letterSpacing: "-0.02em" }}>Start from a template</div>
-            <div style={{ fontSize: 12.5, color: DS.ink3, marginTop: 3 }}>Proven flows used by 10,000+ creators</div>
-          </div>
-          <IconBtn onClick={onClose}>✕</IconBtn>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {TEMPLATES.map(t => (
-            <button key={t.id} onClick={() => { onSelect(t); onClose(); }} style={{
-              display: "flex", alignItems: "center", gap: 16, padding: "16px 18px",
-              borderRadius: DS.radius, border: `1.5px solid ${DS.border}`, background: DS.card,
-              cursor: "pointer", textAlign: "left", fontFamily: "inherit", transition: "all 0.15s",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accentBorder; e.currentTarget.style.background = DS.accentSoft; e.currentTarget.style.boxShadow = DS.shadowHover; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = DS.card; e.currentTarget.style.boxShadow = "none"; }}
-            >
-              <span style={{ fontSize: 34, flexShrink: 0 }}>{t.icon}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: DS.ink }}>{t.name}</div>
-                  <Tag>{t.badge}</Tag>
-                </div>
-                <div style={{ fontSize: 12.5, color: DS.ink2 }}>{t.desc}</div>
-                <div style={{ fontSize: 11, color: DS.ink3, marginTop: 4 }}>{t.steps.length} steps</div>
-              </div>
-              <span style={{ fontSize: 18, color: DS.ink3, flexShrink: 0 }}>→</span>
-            </button>
-          ))}
-          <button onClick={() => { onSelect({ steps: [] }); onClose(); }} style={{
-            padding: "14px", borderRadius: DS.radius, border: `2px dashed ${DS.border}`,
-            background: "transparent", cursor: "pointer", fontSize: 13, fontWeight: 700, color: DS.ink3, fontFamily: "inherit",
-            transition: "all 0.15s",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = DS.ink3; e.currentTarget.style.color = DS.ink; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.color = DS.ink3; }}
-          >
-            Start from Scratch
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+// buildPreviewMsgs already updated
 
 /* ============================================================
    PHONE PREVIEW
@@ -1118,104 +1148,47 @@ function buildPreviewMsgs(steps) {
   const out = [];
   steps.forEach(s => {
     const c = s.config || {};
-    if (s.kind === "trigger") {
-      const def = getTriggerDef(s.type);
-      out.push({ type: "sys", text: `Triggered: ${def.label}` });
-      if (c.keywords) out.push({ type: "user", text: c.keywords.split(",")[0].trim() });
-      else if (s.type === "story_reply") out.push({ type: "user", text: "↩️ Replied to your story" });
-      else if (s.type === "new_follower") out.push({ type: "sys", text: "Alex just followed you" });
-    } else if (s.type === "message") {
-      if (c.text) out.push({ type: "bot", text: c.text.replace(/{first_name}/g, "Alex").replace(/{username}/g, "@alex") });
-    } else if (s.type === "quick_reply") {
-      const opts = (c.options || "").split("|").map(o => o.trim()).filter(Boolean);
-      out.push({ type: "bot", text: c.question || "Which option?", opts });
-    } else if (s.type === "send_link") {
-      out.push({ type: "bot", text: c.text || "Here you go! 👇", link: { label: c.btnLabel || "Open Link →", url: c.url } });
-    } else if (s.type === "ai_reply") {
-      out.push({ type: "bot", text: `🤖 ${c.instructions ? c.instructions.slice(0, 52) + "…" : "AI crafting a response…"}` });
-    } else if (s.type === "collect_email") {
-      out.push({ type: "bot", text: c.prompt || "Can I get your email? 📩" });
-      out.push({ type: "user", text: "alex@example.com" });
-    } else if (s.type === "collect_phone") {
-      out.push({ type: "bot", text: c.prompt || "What's your phone number? 📱" });
-      out.push({ type: "user", text: "+1 555 0192" });
-    } else if (s.type === "delay") {
-      out.push({ type: "sys", text: `⏱ Wait ${c.duration || "?"} ${c.unit || "min"}` });
-    } else if (s.type === "follow_gate") {
-      out.push({ type: "sys", text: "🔒 Checking follower status…" });
+    if (s.type === "message") {
+      out.push({ type: "bot", text: c.text });
+    } else if (s.type === "image") {
+      out.push({ type: "bot", text: c.caption || "Image", image: c.url, isMedia: true });
+    } else if (s.type === "video") {
+      out.push({ type: "bot", text: c.caption || "Video", video: c.url, isMedia: true });
+    } else if (s.type === "audio") {
+      out.push({ type: "bot", text: "🎵 Audio Message", audio: c.url });
+    } else if (s.type === "file") {
+      out.push({ type: "bot", text: "📁 Document Attachment", file: c.url });
+    } else if (s.type === "carousel") {
+      out.push({ type: "bot", carousel: c.carousel || [] });
+    } else if (s.type === "user_input") {
+      out.push({ type: "bot", text: c.question || "Tell me more?" });
+      out.push({ type: "user", text: "[User Response]" });
     } else if (s.type === "condition") {
-      out.push({ type: "sys", text: `🔀 Check: ${c.condition || "condition"}` });
-    } else if (s.type === "tag") {
-      out.push({ type: "sys", text: `🏷️ Tagged: ${c.tags || "contact"}` });
-    } else if (s.type === "handoff") {
-      out.push({ type: "bot", text: c.message || "Connecting you with our team! 👥" });
-      out.push({ type: "sys", text: "Transferred to live agent" });
-    } else if (s.type === "media") {
-      out.push({ type: "bot", text: c.caption || "📷 [Image/GIF]", isMedia: true });
-    } else if (s.type === "zapier") {
-      out.push({ type: "sys", text: `⚡ Sent to ${c.integrationLabel || c.label || "Zapier"}` });
-    } else if (s.type === "random_split") {
-      out.push({ type: "sys", text: `🎲 A/B Split (${c.ratioA || 50}% / ${100 - (parseInt(c.ratioA) || 50)}%)` });
-    } else if (s.type === "end") {
-      if (c.note) out.push({ type: "bot", text: c.note });
-      out.push({ type: "sys", text: `✅ Flow complete${c.outcome ? ` — ${c.outcome}` : ""}` });
-    } else if (s.type === "notify_team") {
-      out.push({ type: "sys", text: `🔔 Team notified via ${c.via || "email"}` });
+      const rs = c.rules || [];
+      const ruleText = rs.map(r => `${r.field_name} ${r.operator} ${r.value}`).join(c.match_type === 'all' ? ' AND ' : ' OR ');
+      out.push({ type: "sys", text: `Check: ${ruleText || "condition"}` });
+      out.push({ type: "sys", text: "↳ (True Branch)" });
     }
   });
   return out;
 }
 
-function PreviewBubble({ msg }) {
-  const DS = useDS();
-  if (msg.type === "sys") return (
-    <div style={{ textAlign: "center", margin: "6px 0" }}>
-      <span style={{ fontSize: 10, color: "#94A3B8", background: "#F1F5F9", borderRadius: 99, padding: "3px 10px", lineHeight: 1.5 }}>{msg.text}</span>
-    </div>
-  );
-  const isUser = msg.type === "user";
-  return (
-    <div style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", marginBottom: 7, gap: 6, alignItems: "flex-end" }}>
-      {!isUser && (
-        <div style={{ width: 26, height: 26, borderRadius: "50%", background: `linear-gradient(135deg,${DS.accent},#F97316)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, marginBottom: 2 }}>🤖</div>
-      )}
-      <div style={{ maxWidth: 220 }}>
-        <div style={{
-          background: isUser ? DS.ink : DS.card, color: isUser ? "#fff" : DS.ink,
-          borderRadius: isUser ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-          padding: msg.isMedia ? "4px" : "8px 11px", fontSize: 12.5, lineHeight: 1.5,
-          boxShadow: isUser ? "none" : "0 1px 4px rgba(0,0,0,0.07)",
-        }}>
-          {msg.isMedia ? <div style={{ width: 140, height: 90, borderRadius: 10, background: "linear-gradient(135deg,#E7E2DA,#C9C2B8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>🖼️</div> : msg.text}
-        </div>
-        {msg.link && (
-          <div style={{ marginTop: 5, background: DS.bg, border: `1.5px solid ${DS.border}`, borderRadius: 10, padding: "7px 10px", display: "flex", alignItems: "center", gap: 5 }}>
-            <span style={{ fontSize: 11 }}>🔗</span>
-            <span style={{ fontSize: 11.5, color: DS.accent, fontWeight: 700 }}>{msg.link.label}</span>
-          </div>
-        )}
-        {msg.opts && msg.opts.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 6 }}>
-            {msg.opts.map((o, i) => (
-              <div key={i} style={{ background: "#fff", border: `1.5px solid ${DS.accentBorder}`, color: DS.accent, borderRadius: 20, padding: "5px 11px", fontSize: 11.5, fontWeight: 700, textAlign: "center" }}>{o}</div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+// PreviewBubble removed
 
 function PhonePreview({ steps, platform }) {
+  const isFB = platform === "facebook";
   const DS = useDS();
   const msgs = buildPreviewMsgs(steps);
   const scrollRef = useRef(null);
-  useEffect(() => { scrollRef.current?.scrollTo({ top: 9999, behavior: "smooth" }); }, [msgs.length]);
+  
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [msgs.length]);
 
-  const botMsgs = steps.filter(s => ["message", "quick_reply", "send_link", "ai_reply", "media"].includes(s.type)).length;
-  const isFB = platform === 'facebook';
+  const botMsgs = msgs.filter(m => m.type === "bot").length;
 
-  // Native Icon SVGs
   const Icons = {
     IG_CAM: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
     IG_VIDEO: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>,
@@ -1236,7 +1209,7 @@ function PhonePreview({ steps, platform }) {
         {isFB ? 'Messenger' : 'Instagram'} Preview
       </div>
 
-      {/* Phone: iPhone 17 Pro Style */}
+      {/* Phone */}
       <div style={{
         width: 310, height: 630, borderRadius: 54, background: "#000",
         padding: "8px", 
@@ -1249,9 +1222,7 @@ function PhonePreview({ steps, platform }) {
         <div style={{ position: "absolute", right: -2, top: 180, width: 3, height: 100, background: "#27272A", borderRadius: "0 2px 2px 0" }} />
 
         {/* Dynamic Island */}
-        <div style={{ 
-          display: "flex", justifyContent: "center", position: "absolute", top: 18, left: 0, right: 0, zIndex: 50,
-        }}>
+        <div style={{ display: "flex", justifyContent: "center", position: "absolute", top: 18, left: 0, right: 0, zIndex: 50 }}>
           <div style={{
             width: 80, height: 24, borderRadius: 20, background: "#000",
             display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 8px",
@@ -1319,7 +1290,24 @@ function PhonePreview({ steps, platform }) {
                       🤖
                     </div>
                   )}
-                  {m.type === "sys" ? (
+                  {m.carousel ? (
+                    <div style={{ display: "flex", overflowX: "auto", gap: 8, paddingBottom: 8, width: "100%", scrollSnapType: "x mandatory" }}>
+                      {m.carousel.map((card, ci) => (
+                        <div key={ci} style={{ minWidth: 200, maxWidth: 220, background: "#fff", border: `1px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
+                           {card.image_url && <div style={{ height: 100, background: "#F3F4F6", backgroundImage: `url(${card.image_url})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
+                           <div style={{ padding: 10 }}>
+                             <div style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{card.title || "Card Title"}</div>
+                             <div style={{ fontSize: 11, color: "#65676B", marginTop: 2 }}>{card.subtitle || "Card description"}</div>
+                           </div>
+                           {(card.buttons || []).slice(0, 3).map((b, bi) => (
+                             <div key={bi} style={{ borderTop: `1px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, padding: "10px", textAlign: "center", color: isFB ? "#0084FF" : DS.accent, fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                               {b.label}
+                             </div>
+                           ))}
+                        </div>
+                      ))}
+                    </div>
+                  ) : m.type === "sys" ? (
                     <div style={{ textAlign: "center", width: "100%", margin: "14px 0" }}>
                       <span style={{ fontSize: 10, fontWeight: 800, color: "#8E9196", letterSpacing: "0.05em", textTransform: "uppercase" }}>{m.text}</span>
                     </div>
@@ -1329,9 +1317,12 @@ function PhonePreview({ steps, platform }) {
                         background: m.type === "user" ? (isFB ? "#0084FF" : DS.gradient) : (isFB ? "#F0F2F5" : "#EFEFEF"),
                         color: m.type === "user" ? "#fff" : "#000",
                         borderRadius: m.type === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-                        padding: m.isMedia ? "4px" : "10px 14px", fontSize: 13.5, lineHeight: 1.4,
+                        padding: (m.image || m.video) ? "4px" : "10px 14px", fontSize: 13.5, lineHeight: 1.4,
+                        overflow: "hidden"
                       }}>
-                        {m.isMedia ? <div style={{ width: 180, height: 120, borderRadius: 14, background: "#D1D5DB" }} /> : m.text}
+                        {m.image ? <img src={m.image} style={{ width: "100%", borderRadius: 14, display: "block" }} alt="" /> :
+                         m.video ? <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#000", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center" }}><Play size={24} color="#fff" /></div> :
+                         m.text}
                       </div>
                       {m.link && (
                         <div style={{ 
@@ -1542,19 +1533,62 @@ function AnalyticsPanel() {
 /* ============================================================
    MAIN APP
    ============================================================ */
-export default function FlowBuilder() {
-  const [platform, setPlatform] = useState("instagram");
+
+export default function FlowBuilderPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading Flow Builder...</div>}>
+            <FlowBuilder />
+        </Suspense>
+    );
+}
+
+function FlowBuilder() {
+  const searchParams = useSearchParams();
+  const replyId = searchParams.get("id");
+  const platformParam = searchParams.get("platform") || "instagram";
+
+  const [platform, setPlatform] = useState(platformParam);
   const DS = getDS(platform);
 
-  const [steps, setSteps] = useState(() => TEMPLATES[0].steps.map(s => ({ ...s, id: uid() })));
+  const [steps, setSteps] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
-  const [flowName, setFlowName] = useState("Story Reply Lead Funnel");
+  const [flowName, setFlowName] = useState("New Flow");
   const [isLive, setIsLive] = useState(false);
   const [tab, setTab] = useState("flow"); // flow | settings | analytics
   const [showTemplates, setShowTemplates] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({ dmLimit: 30, slowMode: true, humanize: true });
   const bottomRef = useRef(null);
+
+  // Fetch Flow Data if ID exists
+  useEffect(() => {
+    if (replyId) {
+      const fetchFlow = async () => {
+        try {
+          const endpoint = platform === "facebook" 
+            ? `/facebook/bot-replies/${replyId}` 
+            : `/instagram/bot-replies/${replyId}`;
+            
+          const response = await api.get(endpoint);
+          const data = response.data.data;
+          if (data) {
+            setFlowName(data.name || "Untitled Flow");
+            if (data.flow_data) {
+              const parsedSteps = typeof data.flow_data === 'string' 
+                ? JSON.parse(data.flow_data) 
+                : data.flow_data;
+              setSteps(parsedSteps.map(s => ({ ...s, id: s.id || uid() })));
+            }
+          }
+        } catch (error) {
+            console.error("Error fetching flow:", error);
+            toast.error("Failed to load flow data");
+        }
+      };
+      fetchFlow();
+    }
+  }, [replyId, platform]);
 
   const updateStep = useCallback((id, data) => setSteps(s => s.map(x => x.id === id ? data : x)), []);
   const deleteStep = useCallback((id) => { setSteps(s => s.filter(x => x.id !== id)); setExpandedId(p => p === id ? null : p); }, []);
@@ -1568,13 +1602,7 @@ export default function FlowBuilder() {
   const moveUp = useCallback((i) => setSteps(s => { const a = [...s];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return a; }), []);
   const moveDown = useCallback((i) => setSteps(s => { const a = [...s];[a[i], a[i + 1]] = [a[i + 1], a[i]]; return a; }), []);
 
-  const addTrigger = (type) => {
-    const def = getTriggerDef(type);
-    const id = uid();
-    setSteps(s => [{ id, kind: "trigger", type, label: def.label, config: {} }, ...s.filter(x => x.kind !== "trigger")]);
-    setExpandedId(id);
-  };
-  const addAction = (type) => {
+  const addStep = (type) => {
     const def = getActionDef(type);
     const id = uid();
     setSteps(s => [...s, { id, kind: "action", type, label: def.label, config: {} }]);
@@ -1582,8 +1610,39 @@ export default function FlowBuilder() {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
   };
 
-  const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2200); };
-  const hasTrigger = steps.some(s => s.kind === "trigger");
+  const handleSave = async (forceStatus = null) => {
+    if (!replyId) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2200);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const endpoint = platform === "facebook" 
+        ? `/facebook/bot-replies/${replyId}` 
+        : `/instagram/bot-replies/${replyId}`;
+
+      const finalStatus = forceStatus !== null 
+        ? (forceStatus ? 'published' : 'draft')
+        : (isLive ? 'published' : 'draft');
+
+      await api.patch(endpoint, {
+        name: flowName,
+        flow_data: JSON.stringify(steps),
+        status: finalStatus
+      });
+      
+      setSaved(true);
+      toast.success(`Flow ${finalStatus === 'published' ? 'published' : 'saved'} successfully`);
+      setTimeout(() => setSaved(false), 2200);
+    } catch (error) {
+      console.error("Save Error:", error);
+      toast.error("Failed to save flow");
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const TABS = [{ id: "flow", icon: "📋", label: "Flow" }, { id: "settings", icon: "⚙️", label: "Settings" }, { id: "analytics", icon: "📊", label: "Analytics" }];
 
   return (
@@ -1603,16 +1662,13 @@ export default function FlowBuilder() {
         .instdm-body { width: 100%; max-width: 1080px; margin: 0 auto; padding: 22px 18px; display: flex; gap: 22px; align-items: flex-start; }
         .instdm-left { flex: 1; min-width: 0; }
         .instdm-preview { width: 320px; flex-shrink: 0; }
-        .preview-bubble { max-width: 220px; }
 
         /* Tablet: stack vertically earlier and use full width */
         @media (max-width: 1024px) {
           .instdm-body { flex-direction: column; padding: 16px; max-width: 100%; width: 100%; }
           .instdm-left { width: 100%; }
           .instdm-preview { width: 100%; margin-top: 14px; }
-          .preview-bubble { max-width: 70%; }
           /* make header actions wrap */
-          header, .instdm-body > .instdm-left { min-width: 0; }
         }
 
         /* Mobile: ensure preview fills viewport width and UI scales */
@@ -1620,15 +1676,12 @@ export default function FlowBuilder() {
           .instdm-body { padding: 12px; gap: 12px; }
           .instdm-left { width: 100%; }
           .instdm-preview { width: 100%; margin-top: 12px; }
-          .preview-bubble { max-width: 78%; }
-          .phone-container { width: 100% !important; }
           .instdm-body, .instdm-left, .instdm-preview { box-sizing: border-box; }
         }
 
         /* Very small screens: tighten spacing */
         @media (max-width: 360px) {
           .instdm-body { padding: 8px; }
-          .preview-bubble { max-width: 80%; }
         }
 
         /* Flow header responsive */
@@ -1645,7 +1698,6 @@ export default function FlowBuilder() {
         }
       `}</style>
 
-      {showTemplates && <TemplateModal onSelect={t => { setSteps((t.steps || []).map(s => ({ ...s, id: uid() }))); setExpandedId(null); }} onClose={() => setShowTemplates(false)} />}
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
       <div className="flow-hdr">
@@ -1685,7 +1737,6 @@ export default function FlowBuilder() {
 
         {/* Row 2: Action buttons */}
         <div className="flow-hdr-r2">
-          <SmallBtn onClick={() => setShowTemplates(true)} icon="📋"><span className="btn-text">Templates</span></SmallBtn>
 
           <button onClick={() => setIsLive(!isLive)} style={{
             padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
@@ -1701,13 +1752,13 @@ export default function FlowBuilder() {
             background: saved ? DS.greenSoft : DS.bg, color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
           }}>{saved ? "✓" : "💾"}<span className="btn-text"> {saved ? "Saved!" : "Save"}</span></button>
 
-          <button onClick={() => hasTrigger && setIsLive(true)} style={{
+          <button onClick={() => { handleSave(true); }} style={{
             padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 800, border: "none", fontFamily: "inherit",
-            background: hasTrigger ? `linear-gradient(135deg,${DS.accent},#F97316)` : DS.border,
-            color: hasTrigger ? "#fff" : DS.ink3, cursor: hasTrigger ? "pointer" : "not-allowed",
-            boxShadow: hasTrigger ? "0 4px 16px rgba(232,69,10,0.3)" : "none", transition: "all 0.2s",
-          }} title={!hasTrigger ? "Add a trigger first" : "Publish flow"}>
-            ▶<span className="btn-text"> Publish</span>
+            background: `linear-gradient(135deg,${DS.accent},#F97316)`,
+            color: "#fff", cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(232,69,10,0.3)", transition: "all 0.2s",
+          }} title="Publish flow">
+            <Play size={12} style={{ marginRight: 4 }} /><span className="btn-text"> {isSaving ? "Publishing..." : "Publish"}</span>
           </button>
         </div>
       </div>
@@ -1719,71 +1770,21 @@ export default function FlowBuilder() {
         <div className="instdm-left" style={{ flex: 1 }}>
 
           {tab === "flow" && (
-            <>
-              {/* Trigger section */}
-              <div style={{ marginBottom: 18 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontSize: 10.5, fontWeight: 800, color: DS.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>⚡ Trigger</span>
-                  {!hasTrigger && <Tag>Required</Tag>}
-                </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {/* Step list */}
+              {steps.map((s, gi) => (
+                <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
+                  expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                  onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
+                  onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
+                />
+              ))}
 
-                {hasTrigger
-                  ? steps.filter(s => s.kind === "trigger").map(s => {
-                    const gi = steps.indexOf(s);
-                    return (
-                      <StepCard key={s.id} step={s} index={gi} total={steps.length}
-                        expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
-                        onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
-                        onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
-                      />
-                    );
-                  })
-                  : <TriggerEmptyState onAdd={addTrigger} />
-                }
-              </div>
-
-              {/* Divider */}
-              {hasTrigger && (
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-                  <div style={{ height: 1, flex: 1, background: DS.border }} />
-                  <span style={{ fontSize: 10.5, fontWeight: 800, color: DS.ink3, letterSpacing: "0.1em", textTransform: "uppercase" }}>💬 Actions</span>
-                  <div style={{ height: 1, flex: 1, background: DS.border }} />
-                </div>
-              )}
-
-              {/* Action steps */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {steps.filter(s => s.kind === "action").map(s => {
-                  const gi = steps.indexOf(s);
-                  return (
-                    <StepCard key={s.id} step={s} index={gi} total={steps.length}
-                      expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
-                      onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
-                      onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Add + empty */}
+              {/* Add step */}
               <div style={{ marginTop: 16 }} ref={bottomRef}>
-                {hasTrigger
-                  ? <AddActionPicker onAdd={addAction} />
-                  : (
-                    <div style={{ textAlign: "center", paddingTop: 28, color: DS.ink3 }}>
-                      <div style={{ fontSize: 32, marginBottom: 8 }}>✦</div>
-                      <div style={{ fontSize: 13.5, fontWeight: 700, color: DS.ink2 }}>Choose a trigger to get started</div>
-                      <div style={{ fontSize: 12, marginTop: 4 }}>Or pick a ready-made template above</div>
-                      <button onClick={() => setShowTemplates(true)} style={{
-                        marginTop: 14, padding: "9px 22px", borderRadius: 20, background: DS.gradient,
-                        color: "#fff", border: "none", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit",
-                        boxShadow: `0 4px 16px ${DS.accent}40`,
-                      }}>Browse Templates →</button>
-                    </div>
-                  )
-                }
+                <AddActionPicker onAdd={addStep} />
               </div>
-            </>
+            </div>
           )}
 
           {tab === "settings" && <SettingsPanel settings={settings} setSettings={setSettings} />}

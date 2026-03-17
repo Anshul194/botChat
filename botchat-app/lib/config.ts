@@ -36,12 +36,16 @@ export function getTenantDomain(): string {
         return DEV_DOMAIN || 'botchat.divyangtechlabs.com';
     }
 
+    if (DEV_DOMAIN) {
+        return DEV_DOMAIN;
+    }
+
     const hostname = window.location.hostname;
 
     // ─────────────────────────────────────────────────────────────────────────────
     // Conditional Logic (Mirrors api.ts)
     // ─────────────────────────────────────────────────────────────────────────────
-    
+
     // If agency subdomain or agency localhost, use reseller domain
     if (hostname.includes('agency.metadm.chat') || hostname.includes('agency.localhost')) {
         return 'pos.divyangtechlabs.com';
