@@ -2295,7 +2295,22 @@ function FlowBuilder() {
         settings_json: step.config
       };
 
-      await api.post(endpoint, payload);
+      const isNew = String(step.id).startsWith("s_");
+      
+      let response;
+      if (isNew) {
+        response = await api.post(endpoint, payload);
+        if (response.data?.data?.id) {
+            updateStep(step.id, { ...step, id: response.data.data.id });
+        }
+      } else {
+        // Use PATCH as per Postman request: /api/v1/{platform}/bot-replies/steps/{stepId}
+        const patchEndpoint = platform === "facebook"
+          ? `/facebook/bot-replies/steps/${step.id}`
+          : `/instagram/bot-replies/steps/${step.id}`;
+        response = await api.patch(patchEndpoint, payload);
+      }
+
       toast.success("Step saved successfully");
     } catch (err) {
       console.error("Step Save Error:", err);
