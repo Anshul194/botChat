@@ -3,7 +3,7 @@ import { resolveApiBaseUrl, resolveXHost } from './config';
 
 const api = axios.create({
     baseURL: resolveApiBaseUrl(),
-    timeout: 480000,
+    timeout: 3600000,
 });
 
 api.interceptors.request.use(
