@@ -2222,7 +2222,33 @@ function FlowBuilder() {
   }, [replyId, platform]);
 
   const updateStep = useCallback((id, data) => setSteps(s => s.map(x => x.id === id ? data : x)), []);
-  const deleteStep = useCallback((id) => { setSteps(s => s.filter(x => x.id !== id)); setExpandedId(p => p === id ? null : p); }, []);
+  const deleteStep = useCallback(async (id) => {
+    const stepToDelete = steps.find(s => s.id === id);
+    if (!stepToDelete) return;
+
+    if (!window.confirm(`Are you sure you want to delete step "${stepToDelete.label || stepToDelete.type}"?`)) return;
+
+    const isNew = String(id).startsWith("s_");
+    
+    try {
+      if (!isNew) {
+        const endpoint = platform === "facebook"
+          ? `/facebook/bot-replies/steps/${id}`
+          : `/instagram/bot-replies/steps/${id}`;
+        
+        const toastId = toast.loading("Deleting step...");
+        await api.delete(endpoint);
+        toast.dismiss(toastId);
+      }
+      
+      setSteps(s => s.filter(x => x.id !== id));
+      setExpandedId(p => p === id ? null : p);
+      toast.success("Step deleted successfully");
+    } catch (err) {
+      console.error("Delete Step Error:", err);
+      toast.error("Failed to delete step");
+    }
+  }, [steps, platform]);
   const dupStep = useCallback((id) => {
     setSteps(s => {
       const idx = s.findIndex(x => x.id === id);
