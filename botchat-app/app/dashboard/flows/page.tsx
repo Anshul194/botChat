@@ -102,7 +102,7 @@ const ensureUrl = (url: string) => {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//") || url.startsWith("data:")) return url;
   // If it's a relative path starting with /, we might need to handle it, but for now assuming host-first
-  if (url.startsWith("/")) return url; 
+  if (url.startsWith("/")) return url;
   return `https://${url}`;
 };
 
@@ -211,7 +211,7 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   const [saving, setSaving] = useState(false);
   const textRef = useRef(null);
   const DS = useDS();
-  
+
   const buttons = c.buttons || [];
 
   const insertVar = v => {
@@ -267,28 +267,28 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
             <button onClick={addButton} style={{ fontSize: 11, fontWeight: 800, color: DS.accent, border: "none", background: "transparent", cursor: "pointer" }}>+ ADD BUTTON</button>
           )}
         </div>
-        
+
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {buttons.map((btn, i) => (
             <div key={i} style={{ background: DS.bg, border: `1.5px solid ${DS.border}`, borderRadius: DS.radiusSm, padding: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                 <span style={{ fontSize: 10, fontWeight: 800, color: DS.ink3 }}>BUTTON #{i+1}</span>
-                 <button onClick={() => removeButton(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 10 }}>✕ REMOVE</button>
+                <span style={{ fontSize: 10, fontWeight: 800, color: DS.ink3 }}>BUTTON #{i + 1}</span>
+                <button onClick={() => removeButton(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 10 }}>✕ REMOVE</button>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <div style={{ display: "flex", gap: 8 }}>
-                   <div style={{ flex: 1 }}>
-                     <Label>Title</Label>
-                     <Input value={btn.label} onChange={e => updateButton(i, { label: e.target.value })} placeholder="Button label" />
-                   </div>
-                   <div style={{ flex: 1 }}>
-                     <Label>Action</Label>
-                     <Select value={btn.action_type} onChange={e => updateButton(i, { action_type: e.target.value })} options={[
-                       { value: "send_message", label: "Send Message" },
-                       { value: "open_url", label: "Open URL" },
-                       { value: "postback_action", label: "Trigger Action" },
-                     ]} />
-                   </div>
+                  <div style={{ flex: 1 }}>
+                    <Label>Title</Label>
+                    <Input value={btn.label} onChange={e => updateButton(i, { label: e.target.value })} placeholder="Button label" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Label>Action</Label>
+                    <Select value={btn.action_type} onChange={e => updateButton(i, { action_type: e.target.value })} options={[
+                      { value: "send_message", label: "Send Message" },
+                      { value: "open_url", label: "Open URL" },
+                      { value: "postback_action", label: "Trigger Action" },
+                    ]} />
+                  </div>
                 </div>
 
                 {btn.action_type === "send_message" && (
@@ -338,14 +338,14 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         </div>
       </div>
 
-      <button 
+      <button
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-            width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
-            fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
-            transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            opacity: saving ? 0.7 : 1
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
         }}
       >
         {saving ? "Updating..." : <><Save size={14} /> Update Message Step</>}
@@ -460,13 +460,31 @@ function AIReplyFields({ step, update }) {
   );
 }
 
-function ConditionFields({ step, update, allSteps, onSave }) {
+function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   const c = step.config || {};
   const rules = c.rules || [{ field_type: "system", field_name: "first_name", operator: "equals", value: "" }];
   const match_type = c.match_type || "all";
   const DS = useDS();
 
+  const [saving, setSaving] = useState(false);
+
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+
+  const onUpdateSave = async () => {
+    setSaving(true);
+    try {
+      if (onSaveStep) {
+        await onSaveStep(step);
+      } else {
+        await new Promise(r => setTimeout(r, 600));
+      }
+      toast.success("Condition updated successfully");
+    } catch (e) {
+      toast.error("Failed to update condition");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const updateRule = (idx, patch) => {
     const newRules = [...rules];
@@ -550,20 +568,63 @@ function ConditionFields({ step, update, allSteps, onSave }) {
         <div style={{ background: DS.greenSoft, border: `1.5px solid #86EFAC`, borderRadius: DS.radiusSm, padding: "10px 12px" }}>
           <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.green, marginBottom: 3 }}>✅ IF TRUE</div>
           <Label>Then go to</Label>
-          <Select value={c.true_step_id || ""} onChange={e => set({ true_step_id: e.target.value })} options={[
-            { value: "", label: "Next step" },
-            ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type }))
-          ]} style={{ padding: "4px 8px", fontSize: 11 }} />
+          <Select 
+            value={c.true_step_id || ""} 
+            onChange={e => {
+              const val = e.target.value;
+              if (val.startsWith("NEW_")) {
+                const newId = onAddStep(val.replace("NEW_", ""));
+                set({ true_step_id: newId });
+              } else {
+                set({ true_step_id: val });
+              }
+            }} 
+            options={[
+              { value: "", label: "Next step" },
+              ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+              { value: "SEP", label: "--- Create New ---", disabled: true },
+              ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+            ]} 
+            style={{ padding: "4px 8px", fontSize: 11 }} 
+          />
         </div>
         <div style={{ background: "#FFF1F0", border: "1.5px solid #FCA5A5", borderRadius: DS.radiusSm, padding: "10px 12px" }}>
           <div style={{ fontSize: 10.5, fontWeight: 800, color: "#DC2626", marginBottom: 3 }}>✗ IF FALSE</div>
           <Label>Then go to</Label>
-          <Select value={c.false_step_id || "end"} onChange={e => set({ false_step_id: e.target.value })} options={[
-            { value: "end", label: "End flow" },
-            ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type }))
-          ]} style={{ padding: "4px 8px", fontSize: 11 }} />
+          <Select 
+            value={c.false_step_id || "end"} 
+            onChange={e => {
+              const val = e.target.value;
+              if (val.startsWith("NEW_")) {
+                const newId = onAddStep(val.replace("NEW_", ""));
+                set({ false_step_id: newId });
+              } else {
+                set({ false_step_id: val });
+              }
+            }} 
+            options={[
+              { value: "end", label: "End flow" },
+              ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+              { value: "SEP", label: "--- Create New ---", disabled: true },
+              ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+            ]} 
+            style={{ padding: "4px 8px", fontSize: 11 }} 
+          />
         </div>
       </div>
+
+      <button
+        onClick={onUpdateSave}
+        disabled={saving}
+        style={{
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
+        }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update Condition Step</>}
+      </button>
     </div>
   );
 }
@@ -658,23 +719,23 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
       />
       <div style={{ display: "flex", overflowX: "auto", gap: 14, paddingBottom: 12, scrollbarWidth: "thin" }}>
         {items.map((item, i) => (
-          <div key={i} style={{ 
-            minWidth: 280, 
-            background: "#fff", 
-            border: `1.5px solid ${DS.border}`, 
-            borderRadius: 20, 
-            padding: 18, 
+          <div key={i} style={{
+            minWidth: 280,
+            background: "#fff",
+            border: `1.5px solid ${DS.border}`,
+            borderRadius: 20,
+            padding: 18,
             flexShrink: 0,
             boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
             transition: "all 0.2s"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-              <div style={{ 
-                background: DS.bg, 
-                padding: "4px 10px", 
-                borderRadius: 8, 
-                fontSize: 10, 
-                fontWeight: 900, 
+              <div style={{
+                background: DS.bg,
+                padding: "4px 10px",
+                borderRadius: 8,
+                fontSize: 10,
+                fontWeight: 900,
                 color: DS.ink3,
                 letterSpacing: "0.05em"
               }}>CARD #{i + 1}</div>
@@ -682,7 +743,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                 <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#EF4444", cursor: "pointer", fontSize: 10, fontWeight: 800, padding: 4 }}>✕ REMOVE</button>
               )}
             </div>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div>
                 <Label>Image URL</Label>
@@ -723,7 +784,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                     <button onClick={() => addButton(i)} style={{ fontSize: 10, padding: "4px 10px", borderRadius: 8, background: DS.accent, color: "#fff", border: "none", cursor: "pointer", fontWeight: 800 }}>+ ADD</button>
                   )}
                 </div>
-                
+
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {item.buttons?.map((btn, bi) => (
                     <div key={bi} style={{ background: "#fff", border: `1px solid ${DS.border}`, borderRadius: 12, padding: 12, boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
@@ -731,36 +792,36 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                         <input value={btn.label} onChange={e => updateButton(i, bi, { label: e.target.value })} style={{ border: "none", background: "transparent", fontSize: 12, fontWeight: 800, width: "100%", outline: "none", color: DS.ink }} placeholder="Btn Label" />
                         <button onClick={() => removeButton(i, bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 14, padding: 4 }}>✕</button>
                       </div>
-                      
+
                       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                         <Select value={btn.action_type} onChange={e => updateButton(i, bi, { action_type: e.target.value })} options={[
-                           { value: "send_message", label: "Send Message" },
-                           { value: "open_url", label: "Open URL" },
-                           { value: "postback_action", label: "Trigger Action" },
-                         ]} style={{ height: 32, fontSize: 11 }} />
-                         
-                         {btn.action_type === "send_message" && (
-                           <Select value={btn.action_value} onChange={e => {
-                             const val = e.target.value;
-                             if (val.startsWith("NEW_")) {
-                               const newId = onAddStep(val.replace("NEW_", ""));
-                               updateButton(i, bi, { action_value: newId });
-                             } else {
-                               updateButton(i, bi, { action_value: val });
-                             }
-                           }} options={[
-                             { value: "", label: "Select Next Step..." },
-                             ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
-                             { value: "SEP", label: "--- Create New ---", disabled: true },
-                             ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
-                           ]} style={{ height: 32, fontSize: 11 }} />
-                         )}
-                         {btn.action_type === "open_url" && (
-                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="https://..." style={{ height: 32, fontSize: 11 }} />
-                         )}
-                         {btn.action_type === "postback_action" && (
-                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Trigger keyword" style={{ height: 32, fontSize: 11 }} />
-                         )}
+                        <Select value={btn.action_type} onChange={e => updateButton(i, bi, { action_type: e.target.value })} options={[
+                          { value: "send_message", label: "Send Message" },
+                          { value: "open_url", label: "Open URL" },
+                          { value: "postback_action", label: "Trigger Action" },
+                        ]} style={{ height: 32, fontSize: 11 }} />
+
+                        {btn.action_type === "send_message" && (
+                          <Select value={btn.action_value} onChange={e => {
+                            const val = e.target.value;
+                            if (val.startsWith("NEW_")) {
+                              const newId = onAddStep(val.replace("NEW_", ""));
+                              updateButton(i, bi, { action_value: newId });
+                            } else {
+                              updateButton(i, bi, { action_value: val });
+                            }
+                          }} options={[
+                            { value: "", label: "Select Next Step..." },
+                            ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+                            { value: "SEP", label: "--- Create New ---", disabled: true },
+                            ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+                          ]} style={{ height: 32, fontSize: 11 }} />
+                        )}
+                        {btn.action_type === "open_url" && (
+                          <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="https://..." style={{ height: 32, fontSize: 11 }} />
+                        )}
+                        {btn.action_type === "postback_action" && (
+                          <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Trigger keyword" style={{ height: 32, fontSize: 11 }} />
+                        )}
                       </div>
                     </div>
                   ))}
@@ -772,14 +833,14 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         <button onClick={addItem} style={{ minWidth: 80, border: `2px dashed ${DS.border}`, borderRadius: 20, background: DS.bg, color: DS.ink3, cursor: "pointer", fontSize: 32, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = DS.accent} onMouseLeave={e => e.currentTarget.style.borderColor = DS.border}>+</button>
       </div>
 
-      <button 
+      <button
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-            width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
-            fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
-            transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            opacity: saving ? 0.7 : 1
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
         }}
       >
         {saving ? "Updating..." : <><Save size={14} /> Update Carousel Step</>}
@@ -788,36 +849,202 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   );
 }
 
-function UserInputFields({ step, update, onSave }) {
+function UserInputFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const DS = useDS();
+  const [saving, setSaving] = useState(false);
+
+  const onUpdateSave = async () => {
+    setSaving(true);
+    try {
+      if (onSaveStep) {
+        await onSaveStep(step);
+      } else {
+        await new Promise(r => setTimeout(r, 600));
+      }
+      toast.success("User input updated successfully");
+    } catch (e) {
+      toast.error("Failed to update step");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateBtn = (bi, patch) => {
+    const btns = [...(c.buttons || [])];
+    btns[bi] = { ...btns[bi], ...patch };
+    set({ buttons: btns });
+  };
+  const addBtn = () => set({ buttons: [...(c.buttons || []), { label: "New Button", action_type: "send_message", action_value: "" }] });
+  const remBtn = (bi) => set({ buttons: (c.buttons || []).filter((_, i) => i !== bi) });
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div>
-        <Label>Question</Label>
-        <Input value={c.question} onChange={e => set({ question: e.target.value })} placeholder="What is your favorite color?" />
+        <Label>Question to ask user</Label>
+        <Input 
+          multiline 
+          rows={3} 
+          value={c.question || ""} 
+          onChange={e => set({ question: e.target.value })} 
+          placeholder="e.g. What is your phone number?" 
+        />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>
-          <Label>Validation Type</Label>
-          <Select value={c.validation || "any"} onChange={e => set({ validation: e.target.value })} options={[
-            { value: "any", label: "Any Text" },
-            { value: "email", label: "Email" },
-            { value: "phone", label: "Phone Number" },
-            { value: "number", label: "Number" },
-            { value: "date", label: "Date" },
-          ]} />
+          <Label>Input Type</Label>
+          <Select 
+            value={c.input_type || "text"} 
+            onChange={e => set({ input_type: e.target.value })} 
+            options={[
+              { value: "text", label: "Free Text" },
+              { value: "email", label: "Email" },
+              { value: "phone", label: "Phone" },
+              { value: "number", label: "Number" },
+              { value: "custom", label: "Custom Regex" },
+            ]} 
+          />
         </div>
         <div>
-          <Label>Save to field</Label>
-          <Input value={c.save_to} onChange={e => set({ save_to: e.target.value })} placeholder="custom_field_key" />
+          <Label>Validation Rule</Label>
+          <Select 
+            value={c.validation || "text"} 
+            onChange={e => set({ validation: e.target.value })} 
+            options={[
+              { value: "text", label: "No Validation" },
+              { value: "email", label: "Check Email Format" },
+              { value: "phone", label: "Check Phone Format" },
+              { value: "number", label: "Check is Numeric" },
+            ]} 
+          />
         </div>
       </div>
+
+      <div>
+        <Label>Save to Field (Name)</Label>
+        <Input 
+          value={c.save_to || ""} 
+          onChange={e => set({ save_to: e.target.value })} 
+          placeholder="e.g. email, favorite_food" 
+        />
+        <div style={{ fontSize: 10, color: DS.ink3, marginTop: 4 }}>
+          System fields: email, phone. Others will be saved as custom fields.
+        </div>
+      </div>
+
       <div>
         <Label>Retry Message (if invalid)</Label>
-        <Input value={c.retry_message} onChange={e => set({ retry_message: e.target.value })} placeholder="Invalid input, please try again" />
+        <Input 
+          value={c.retry_message || ""} 
+          onChange={e => set({ retry_message: e.target.value })} 
+          placeholder="e.g. That doesn't look like a valid email. Please try again." 
+        />
       </div>
+
+      <div>
+        <Label>Next Step after valid input</Label>
+        <Select 
+          value={c.next_step_id || "end"} 
+          onChange={e => {
+            const val = e.target.value;
+            if (val.startsWith("NEW_")) {
+              const newId = onAddStep(val.replace("NEW_", ""));
+              set({ next_step_id: newId });
+            } else {
+              set({ next_step_id: val });
+            }
+          }} 
+          options={[
+            { value: "end", label: "End Flow" },
+            ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+            { value: "SEP", label: "--- Create New ---", disabled: true },
+            ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+          ]} 
+        />
+      </div>
+
+      <div style={{ marginTop: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <Label style={{ margin: 0 }}>Quick Replies ({c.buttons?.length || 0}/10)</Label>
+          {(c.buttons?.length || 0) < 10 && (
+            <button onClick={addBtn} style={{ fontSize: 10, padding: "4px 10px", borderRadius: 8, background: DS.accent, color: "#fff", border: "none", cursor: "pointer", fontWeight: 800 }}>+ ADD</button>
+          )}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {(c.buttons || []).map((btn, bi) => (
+            <div key={bi} style={{ background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 12, padding: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "center" }}>
+                <input 
+                  value={btn.label} 
+                  onChange={e => updateBtn(bi, { label: e.target.value })} 
+                  style={{ border: "none", background: "transparent", fontSize: 12, fontWeight: 800, width: "100%", outline: "none", color: DS.ink }} 
+                  placeholder="Button Label" 
+                />
+                <button onClick={() => remBtn(bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 14 }}>✕</button>
+              </div>
+              <Select 
+                value={btn.action_value} 
+                onChange={e => {
+                  const val = e.target.value;
+                  if (val.startsWith("NEW_")) {
+                    const newId = onAddStep(val.replace("NEW_", ""));
+                    updateBtn(bi, { action_value: newId });
+                  } else {
+                    updateBtn(bi, { action_value: val });
+                  }
+                }} 
+                options={[
+                  { value: "", label: "Link to step..." },
+                  ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+                  { value: "SEP", label: "--- Create New ---", disabled: true },
+                  ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+                ]} 
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", background: DS.bg, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 16 }}>⚡</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: DS.ink }}>Typing Indicator</span>
+        </div>
+        <Toggle on={c.typing} onChange={() => set({ typing: !c.typing })} />
+      </div>
+
+      <div style={{ display: "flex", border: `1.5px solid ${DS.border}`, borderRadius: DS.radiusSm, overflow: "hidden", height: 38 }}>
+        <div style={{ display: "flex", alignItems: "center", padding: "0 14px", background: DS.bg, borderRight: `1.5px solid ${DS.border}`, fontSize: 12, fontWeight: 700, color: DS.ink3 }}>Delay</div>
+        <input
+          type="number"
+          value={c.delaySec || ""}
+          onChange={e => set({ delaySec: e.target.value })}
+          placeholder="Sec"
+          style={{ flex: 1, border: "none", background: "transparent", padding: "0 12px", fontSize: 13, color: DS.ink, outline: "none", borderRight: `1.5px solid ${DS.border}` }}
+        />
+        <input
+          type="number"
+          value={c.delayMin || ""}
+          onChange={e => set({ delayMin: e.target.value })}
+          placeholder="Min"
+          style={{ flex: 1, border: "none", background: "transparent", padding: "0 12px", fontSize: 13, color: DS.ink, outline: "none" }}
+        />
+      </div>
+
+      <button
+        onClick={onUpdateSave}
+        disabled={saving}
+        style={{
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
+        }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update User Input Step</>}
+      </button>
     </div>
   );
 }
@@ -1274,15 +1501,15 @@ function TriggerActionFields({ step, update, onSaveStep }) {
         <Label>Postback Payload</Label>
         <Input value={c.payload} onChange={e => set({ payload: e.target.value })} placeholder="trigger_funnel_a" />
       </div>
-      
-      <button 
+
+      <button
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-            width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
-            fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
-            transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            opacity: saving ? 0.7 : 1
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
         }}
       >
         {saving ? "Updating..." : <><Save size={14} /> Update Trigger Step</>}
@@ -1742,11 +1969,11 @@ function PhonePreview({ steps, platform }) {
                         )}
                         {!m.isMedia && m.text}
                       </div>
-                      
+
                       {/* Message Buttons */}
                       {(m.buttons || []).map((b, bi) => (
-                        <div key={bi} style={{ 
-                          marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`, 
+                        <div key={bi} style={{
+                          marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
                           borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
                           color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
                         }}>
@@ -2005,7 +2232,7 @@ function FlowBuilder() {
           if (data) {
             setFlowName(data.name || "Untitled Flow");
             setIsLive(data.status === 'published');
-            
+
             let rawSteps = [];
             if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {
               // Priority: New steps array from backend
@@ -2022,7 +2249,7 @@ function FlowBuilder() {
                 ? JSON.parse(data.flow_data)
                 : data.flow_data;
             }
-            
+
             setSteps(rawSteps.map(s => ({ ...s, id: s.id || uid() })));
           }
         } catch (error) {
