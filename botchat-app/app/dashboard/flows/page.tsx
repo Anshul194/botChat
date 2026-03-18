@@ -573,6 +573,8 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   const items = c.carousel || [{ title: "", subtitle: "", image_url: "", buttons: [] }];
   const DS = useDS();
   const [saving, setSaving] = useState(false);
+  const [activeCardIdx, setActiveCardIdx] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const set = patch => update({ ...step, config: { ...c, ...patch } });
 
@@ -615,48 +617,127 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
     toast.success("Carousel step updated");
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || activeCardIdx === null) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'image');
+
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await api.post('/facebook/bot-replies/media/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          const uploadedUrl = response.data.url || response.data.data?.url || response.data;
+          updateItem(activeCardIdx, { image_url: uploadedUrl });
+          resolve(file.name);
+        } catch (err) {
+          console.error("Upload Error:", err);
+          reject(err);
+        }
+      }),
+      {
+        loading: `Uploading ${file.name}...`,
+        success: (name) => `Successfully uploaded ${name}`,
+        error: 'Upload failed',
+      }
+    );
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <div style={{ display: "flex", overflowX: "auto", gap: 12, paddingBottom: 10 }}>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        style={{ display: "none" }}
+        accept="image/*"
+      />
+      <div style={{ display: "flex", overflowX: "auto", gap: 14, paddingBottom: 12, scrollbarWidth: "thin" }}>
         {items.map((item, i) => (
-          <div key={i} style={{ minWidth: 260, background: DS.card, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius, padding: 14, flexShrink: 0 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink3 }}>CARD #{i + 1}</span>
-              {items.length > 1 && <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>✕ REMOVE</button>}
+          <div key={i} style={{ 
+            minWidth: 280, 
+            background: "#fff", 
+            border: `1.5px solid ${DS.border}`, 
+            borderRadius: 20, 
+            padding: 18, 
+            flexShrink: 0,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
+            transition: "all 0.2s"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <div style={{ 
+                background: DS.bg, 
+                padding: "4px 10px", 
+                borderRadius: 8, 
+                fontSize: 10, 
+                fontWeight: 900, 
+                color: DS.ink3,
+                letterSpacing: "0.05em"
+              }}>CARD #{i + 1}</div>
+              {items.length > 1 && (
+                <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#EF4444", cursor: "pointer", fontSize: 10, fontWeight: 800, padding: 4 }}>✕ REMOVE</button>
+              )}
             </div>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <Label>Image URL</Label>
-              <Input value={item.image_url} onChange={e => updateItem(i, { image_url: e.target.value })} placeholder="https://..." />
-              <Label>Title</Label>
-              <Input value={item.title} onChange={e => updateItem(i, { title: e.target.value })} placeholder="Card Title" />
-              <Label>Subtitle</Label>
-              <Input value={item.subtitle} onChange={e => updateItem(i, { subtitle: e.target.value })} placeholder="Card Subtitle" />
-              <Label>Destination (Card click)</Label>
-              <Input value={item.destination_url} onChange={e => updateItem(i, { destination_url: e.target.value })} placeholder="https://..." />
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div>
+                <Label>Image URL</Label>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <Input value={item.image_url} onChange={e => updateItem(i, { image_url: e.target.value })} placeholder="https://..." style={{ flex: 1 }} />
+                  <button
+                    type="button"
+                    onClick={() => { setActiveCardIdx(i); setTimeout(() => fileInputRef.current?.click(), 10); }}
+                    style={{
+                      padding: "0 12px", borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`,
+                      background: DS.bg, color: DS.ink, fontSize: 11, fontWeight: 700,
+                      display: "flex", alignItems: "center", gap: 4, cursor: "pointer", whiteSpace: "nowrap"
+                    }}>
+                    <Upload size={14} />
+                  </button>
+                </div>
+              </div>
 
-              <div style={{ marginTop: 6 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <Label>Buttons ({item.buttons?.length || 0}/3)</Label>
+              <div>
+                <Label>Title</Label>
+                <Input value={item.title} onChange={e => updateItem(i, { title: e.target.value })} placeholder="Card Title" />
+              </div>
+
+              <div>
+                <Label>Subtitle</Label>
+                <Input value={item.subtitle} onChange={e => updateItem(i, { subtitle: e.target.value })} placeholder="Card Subtitle" />
+              </div>
+
+              <div>
+                <Label>Destination (Card click)</Label>
+                <Input value={item.destination_url} onChange={e => updateItem(i, { destination_url: e.target.value })} placeholder="https://..." />
+              </div>
+
+              <div style={{ marginTop: 8, background: DS.bg, padding: 12, borderRadius: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <Label style={{ margin: 0 }}>Buttons ({item.buttons?.length || 0}/3)</Label>
                   {(item.buttons?.length || 0) < 3 && (
-                    <button onClick={() => addButton(i)} style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: DS.accentSoft, color: DS.accent, border: "none", cursor: "pointer", fontWeight: 700 }}>+ ADD</button>
+                    <button onClick={() => addButton(i)} style={{ fontSize: 10, padding: "4px 10px", borderRadius: 8, background: DS.accent, color: "#fff", border: "none", cursor: "pointer", fontWeight: 800 }}>+ ADD</button>
                   )}
                 </div>
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {item.buttons?.map((btn, bi) => (
-                    <div key={bi} style={{ background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 8, padding: 10 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                        <input value={btn.label} onChange={e => updateButton(i, bi, { label: e.target.value })} style={{ border: "none", background: "transparent", fontSize: 11, fontWeight: 700, width: "100%", outline: "none", color: DS.ink }} />
-                        <button onClick={() => removeButton(i, bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 10 }}>✕</button>
+                    <div key={bi} style={{ background: "#fff", border: `1px solid ${DS.border}`, borderRadius: 12, padding: 12, boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, alignItems: "center" }}>
+                        <input value={btn.label} onChange={e => updateButton(i, bi, { label: e.target.value })} style={{ border: "none", background: "transparent", fontSize: 12, fontWeight: 800, width: "100%", outline: "none", color: DS.ink }} placeholder="Btn Label" />
+                        <button onClick={() => removeButton(i, bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 14, padding: 4 }}>✕</button>
                       </div>
                       
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                          <Select value={btn.action_type} onChange={e => updateButton(i, bi, { action_type: e.target.value })} options={[
                            { value: "send_message", label: "Send Message" },
                            { value: "open_url", label: "Open URL" },
                            { value: "postback_action", label: "Trigger Action" },
-                         ]} style={{ height: 30, fontSize: 11 }} />
+                         ]} style={{ height: 32, fontSize: 11 }} />
                          
                          {btn.action_type === "send_message" && (
                            <Select value={btn.action_value} onChange={e => {
@@ -672,13 +753,13 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                              ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
                              { value: "SEP", label: "--- Create New ---", disabled: true },
                              ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
-                           ]} style={{ height: 30, fontSize: 11 }} />
+                           ]} style={{ height: 32, fontSize: 11 }} />
                          )}
                          {btn.action_type === "open_url" && (
-                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="https://..." style={{ height: 30, fontSize: 11 }} />
+                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="https://..." style={{ height: 32, fontSize: 11 }} />
                          )}
                          {btn.action_type === "postback_action" && (
-                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Trigger keyword" style={{ height: 30, fontSize: 11 }} />
+                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Trigger keyword" style={{ height: 32, fontSize: 11 }} />
                          )}
                       </div>
                     </div>
@@ -688,7 +769,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
             </div>
           </div>
         ))}
-        <button onClick={addItem} style={{ minWidth: 60, border: `2px dashed ${DS.border}`, borderRadius: DS.radius, background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+        <button onClick={addItem} style={{ minWidth: 80, border: `2px dashed ${DS.border}`, borderRadius: 20, background: DS.bg, color: DS.ink3, cursor: "pointer", fontSize: 32, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = DS.accent} onMouseLeave={e => e.currentTarget.style.borderColor = DS.border}>+</button>
       </div>
 
       <button 
