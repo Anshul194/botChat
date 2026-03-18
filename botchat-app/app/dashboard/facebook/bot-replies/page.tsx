@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { 
-    Plus, Search, MessageSquare, Play, Pause, Trash2, Copy, 
-    CheckCircle2, Target, Bot, MousePointerClick, 
-    Menu as MenuIcon, Settings2, Sparkles, Box
+import {
+    Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
+    CheckCircle2, Target, Bot, MousePointerClick,
+    Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -31,6 +31,13 @@ interface FacebookPage {
     is_enabled: boolean;
 }
 
+interface ActionData {
+    type: string;
+    label: string;
+    automation_id: number | null;
+    status: 'published' | 'draft' | null;
+}
+
 const MENUS = [
     { id: 'bot_reply', label: 'Bot Replies', icon: MessageSquare },
     { id: 'ai_agent', label: 'AI Agent', icon: Bot },
@@ -45,20 +52,25 @@ export default function BotRepliesPage() {
     const [replies, setReplies] = useState<BotReply[]>([]);
     const [pages, setPages] = useState<FacebookPage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     const [selectedPage, setSelectedPage] = useState<FacebookPage | null>(null);
     const [activeMenu, setActiveMenu] = useState<MenuId>('bot_reply');
-    
+
     const [searchQuery, setSearchQuery] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
-    
+
     const [newReply, setNewReply] = useState({
         name: "",
         facebook_page_id: "",
         trigger_type: "exact",
         trigger_value: ""
     });
+
+    const [actions, setActions] = useState<ActionData[]>([]);
+    const [isActionsLoading, setIsActionsLoading] = useState(false);
+    const [showActionModal, setShowActionModal] = useState(false);
+    const [selectedActionType, setSelectedActionType] = useState<string | null>(null);
 
     const fetchReplies = async () => {
         setIsLoading(true);
@@ -92,10 +104,31 @@ export default function BotRepliesPage() {
         }
     };
 
+    const fetchActions = async () => {
+        if (!selectedPage) return;
+        setIsActionsLoading(true);
+        try {
+            const response = await api.get(`/facebook/actions?page_id=${selectedPage.page_id}`);
+            if (response.data.success || response.data.is_success) {
+                setActions(response.data.data || []);
+            }
+        } catch (error) {
+            console.error("Fetch Actions Error:", error);
+        } finally {
+            setIsActionsLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchReplies();
         fetchPages();
     }, []);
+
+    useEffect(() => {
+        if (activeMenu === 'action_buttons') {
+            fetchActions();
+        }
+    }, [activeMenu, selectedPage]);
 
     const handleCreate = async () => {
         const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
@@ -146,17 +179,50 @@ export default function BotRepliesPage() {
         }
     };
 
+    const handleActionToggle = async (action: ActionData) => {
+        if (!action.automation_id) return;
+        try {
+            const newStatus = action.status === 'published' ? 'draft' : 'publish';
+            await api.patch(`/facebook/bot-replies/${action.automation_id}/${newStatus}`);
+            toast.success(`Action status updated`);
+            fetchActions();
+        } catch (error) {
+            toast.error("Failed to toggle action");
+        }
+    };
+
+    const handleActionDelete = async (action: ActionData) => {
+        if (!action.automation_id) return;
+        if (!confirm("Are you sure? This will unmap the action.")) return;
+        try {
+            await api.delete(`/facebook/actions/${action.automation_id}`);
+            toast.success("Action unmapped");
+            fetchActions();
+        } catch (error) {
+            toast.error("Failed to remove mapping");
+        }
+    };
+
+    const handleConfigureAction = async (type: string) => {
+        setSelectedActionType(type);
+        setShowActionModal(true);
+    };
+
+    const goToFlow = (replyId: number) => {
+        router.push(`/dashboard/flows?id=${replyId}&platform=facebook`);
+    };
+
     const filteredReplies = useMemo(() => {
-        return replies.filter(r => 
+        return replies.filter(r =>
             r.facebook_page_id === selectedPage?.page_id &&
             (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            r.trigger_value.toLowerCase().includes(searchQuery.toLowerCase()))
+                r.trigger_value.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     }, [replies, selectedPage, searchQuery]);
 
     return (
         <div className="min-h-screen bg-transparent p-4 sm:p-6 lg:p-8 font-sans pb-24 max-w-7xl mx-auto">
-            
+
             {/* 1. PAGES SELECTOR (Modern Subtle Bar) */}
             <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-2 mb-8 shadow-sm flex items-center">
                 <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 flex flex-shrink-0 items-center justify-center mr-3 ml-1">
@@ -172,7 +238,7 @@ export default function BotRepliesPage() {
                             }}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                selectedPage?.page_id === page.page_id 
+                                selectedPage?.page_id === page.page_id
                                     ? "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 shadow-sm"
                                     : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                             )}
@@ -193,17 +259,17 @@ export default function BotRepliesPage() {
                         onClick={() => setActiveMenu(menu.id)}
                         className={cn(
                             "pb-4 px-2 text-[15px] font-semibold flex items-center gap-2 transition-all relative whitespace-nowrap",
-                            activeMenu === menu.id 
-                                ? "text-purple-600 dark:text-purple-400" 
+                            activeMenu === menu.id
+                                ? "text-purple-600 dark:text-purple-400"
                                 : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
                         )}
                     >
                         <menu.icon className="w-4 h-4" />
                         {menu.label}
                         {activeMenu === menu.id && (
-                            <motion.div 
+                            <motion.div
                                 layoutId="activeTabIndicator"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 dark:bg-purple-500 rounded-t-full" 
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 dark:bg-purple-500 rounded-t-full"
                             />
                         )}
                     </button>
@@ -213,10 +279,10 @@ export default function BotRepliesPage() {
             {/* 3. MAIN WORKSPACE */}
             <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm">
                 <AnimatePresence mode="wait">
-                    
+
                     {/* BOT REPLIES CONTENT */}
                     {activeMenu === 'bot_reply' && (
-                        <motion.div 
+                        <motion.div
                             key="bot_reply"
                             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
                             transition={{ duration: 0.2 }}
@@ -225,15 +291,15 @@ export default function BotRepliesPage() {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                                 <div className="relative w-full max-w-sm">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         placeholder="Search replies..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white focus:border-purple-300 dark:focus:border-purple-500/30 text-sm outline-none transition-all placeholder:text-neutral-400"
                                     />
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => setShowCreateModal(true)}
                                     className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
                                 >
@@ -250,7 +316,7 @@ export default function BotRepliesPage() {
                             ) : filteredReplies.length > 0 ? (
                                 <div className="space-y-3">
                                     {filteredReplies.map((reply) => (
-                                        <div 
+                                        <div
                                             key={reply.id}
                                             className="group bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-purple-200 dark:hover:border-purple-900/50 hover:bg-purple-50/30 dark:hover:bg-purple-900/10"
                                         >
@@ -277,19 +343,19 @@ export default function BotRepliesPage() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2 w-full sm:w-auto">
-                                                <button 
+                                                <button
                                                     onClick={() => window.location.href = `/dashboard/flows?id=${reply.id}&platform=facebook`}
                                                     className="flex-1 sm:flex-none py-2 px-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow-sm active:scale-95 transition-all text-center whitespace-nowrap"
                                                 >
                                                     Edit Flow
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => handleToggleStatus(reply)}
                                                     className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
                                                 >
                                                     {reply.status === 'published' ? <Pause className="w-4 h-4 text-amber-500" /> : <Play className="w-4 h-4 text-emerald-500" />}
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => handleDelete(reply.id)}
                                                     className="p-2.5 rounded-lg border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
                                                 >
@@ -306,7 +372,7 @@ export default function BotRepliesPage() {
                                     </div>
                                     <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Start Building Flows</h3>
                                     <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6">Create your first automated response trigger to engage your page audience 24/7.</p>
-                                    <button 
+                                    <button
                                         onClick={() => setShowCreateModal(true)}
                                         className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:scale-105 transition-transform"
                                     >
@@ -319,18 +385,154 @@ export default function BotRepliesPage() {
 
                     {/* OTHER TABS (Simplified placeholders) */}
                     {activeMenu === 'action_buttons' && (
-                        <motion.div key="action" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                            <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Messenger Action Buttons</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {["Get Started", "No Match", "Location Reply", "Unsubscribe", "Resubscribe", "Chat with Human", "Chat with Bot"].map((btn, i) => (
-                                    <div key={i} className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 hover:border-purple-300 dark:hover:border-purple-800 transition-colors cursor-pointer group">
-                                        <h3 className="font-bold text-neutral-900 dark:text-white text-[15px]">{btn}</h3>
-                                        <div className="mt-3 flex items-center text-[12px] font-semibold text-purple-600 transition-all">
-                                            <Settings2 className="w-4 h-4 mr-1.5" /> Configure Endpoint
-                                        </div>
-                                    </div>
-                                ))}
+                        <motion.div key="action" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pb-12">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-800 pb-6">
+                                <div>
+                                    <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight uppercase">Identity Shortcuts</h2>
+                                    <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] mt-1">Connect system events to custom automation layers</p>
+                                </div>
+                                <button
+                                    onClick={fetchActions}
+                                    className="self-start sm:self-center p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
+                                >
+                                    <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
+                                </button>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {actions.map((item) => {
+                                    const isMapped = !!item.automation_id;
+                                    const isLive = item.status === 'published';
+
+                                    return (
+                                        <div key={item.type} className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[32px] p-6 transition-all hover:border-purple-200 dark:hover:border-purple-500/30 hover:shadow-[0_20px_50px_-20px_rgba(168,85,247,0.15)] flex flex-col h-full">
+                                            <div className="flex items-start justify-between mb-8">
+                                                <div className={cn(
+                                                    "w-14 h-14 rounded-[22px] flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm",
+                                                    isMapped ? "bg-purple-50 text-purple-600 dark:bg-purple-950/40" : "bg-neutral-50 text-neutral-400 dark:bg-neutral-800/40"
+                                                )}>
+                                                    <MousePointerClick className="w-7 h-7" />
+                                                </div>
+
+                                                {isMapped && (
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleActionToggle(item)}
+                                                            className={cn(
+                                                                "p-2.5 rounded-xl border transition-all active:scale-90",
+                                                                isLive ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                            )}
+                                                            title={isLive ? "Pause Action" : "Resume Action"}
+                                                        >
+                                                            {isLive ? <Pause size={15} /> : <Play size={15} />}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleActionDelete(item)}
+                                                            className="p-2.5 rounded-xl border bg-red-50 text-red-500 border-red-100 hover:bg-red-100 transition-all active:scale-90"
+                                                            title="Unmap Action"
+                                                        >
+                                                            <Trash2 size={15} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <h3 className="font-black text-neutral-900 dark:text-white text-lg leading-none uppercase tracking-tight">{item.label}</h3>
+                                                    {isMapped && (
+                                                        <div className={cn(
+                                                            "w-1.5 h-1.5 rounded-full",
+                                                            isLive ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" : "bg-neutral-300"
+                                                        )} />
+                                                    )}
+                                                </div>
+                                                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed max-w-[90%]">
+                                                    {isMapped
+                                                        ? `Currently mapped to an active flow layer. Click below to modify logic.`
+                                                        : `This action is currently using the system default response.`}
+                                                </p>
+                                            </div>
+
+                                            <div className="mt-8">
+                                                {isMapped ? (
+                                                    <button
+                                                        onClick={() => goToFlow(item.automation_id!)}
+                                                        className="w-full py-4 rounded-2xl bg-white dark:bg-neutral-800 border-2 border-purple-100 dark:border-purple-900/10 text-purple-600 dark:text-purple-400 text-[11px] font-black uppercase tracking-[0.15em] shadow-sm hover:shadow-md hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <Box size={14} /> Open Flow Logic
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleConfigureAction(item.type)}
+                                                        className="w-full py-4 rounded-2xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-[11px] font-black uppercase tracking-[0.15em] shadow-xl shadow-neutral-950/10 hover:shadow-purple-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <Plus size={14} strokeWidth={3} /> Create Custom Layer
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Action Management Modal */}
+                            {showActionModal && (
+                                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                                    <div className="absolute inset-0 bg-white/60 dark:bg-neutral-950/60 backdrop-blur-md" onClick={() => setShowActionModal(false)} />
+                                    <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-[40px] p-10 w-full max-w-xl shadow-2xl">
+                                        <div className="mb-8">
+                                            <div className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-600 mb-2">Configure Action</div>
+                                            <h3 className="text-3xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">Select Target Flow</h3>
+                                            <p className="text-xs text-neutral-400 mt-2 font-medium">Choose a custom automated response to trigger for this system event.</p>
+                                        </div>
+
+                                        <div className="space-y-3 max-h-[350px] overflow-y-auto pr-3 custom-scrollbar px-1">
+                                            {replies.filter(r => r.facebook_page_id === selectedPage?.page_id).length > 0 ? (
+                                                replies.filter(r => r.facebook_page_id === selectedPage?.page_id).map(r => (
+                                                    <button
+                                                        key={r.id}
+                                                        onClick={async () => {
+                                                            try {
+                                                                await api.post(`/facebook/actions/${selectedActionType}`, { bot_reply_id: r.id, facebook_page_id: selectedPage?.page_id });
+                                                                toast.success("Action mapped!");
+                                                                setShowActionModal(false);
+                                                                fetchActions();
+                                                            } catch (e) { toast.error("Mapping failed"); }
+                                                        }}
+                                                        className="w-full group p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 hover:border-purple-300 dark:hover:border-purple-700/50 hover:bg-white dark:hover:bg-neutral-900 transition-all flex items-center justify-between shadow-sm"
+                                                    >
+                                                        <div>
+                                                            <div className="font-black text-neutral-900 dark:text-white uppercase tracking-tight text-[15px]">{r.name}</div>
+                                                            <div className="flex items-center gap-2 mt-1">
+                                                                <span className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded", r.status === 'published' ? "bg-emerald-50 text-emerald-600" : "bg-neutral-100 text-neutral-400")}>{r.status}</span>
+                                                                <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest leading-none">• {r.trigger_type}</span>
+                                                            </div>
+                                                        </div>
+                                                        <ChevronRight className="w-5 h-5 text-neutral-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                                                    </button>
+                                                ))
+                                            ) : (
+                                                <div className="text-center py-8">
+                                                    <div className="text-xs text-neutral-400 font-medium italic">No suitable flows found for this page.</div>
+                                                </div>
+                                            )}
+
+                                            <button
+                                                onClick={() => { setShowActionModal(false); setShowCreateModal(true); }}
+                                                className="w-full p-6 rounded-3xl border-2 border-dashed border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:text-purple-600 hover:border-purple-300 hover:bg-purple-50/10 transition-all font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3"
+                                            >
+                                                <div className="w-8 h-8 rounded-full bg-neutral-50 dark:bg-neutral-800 flex items-center justify-center"><Plus size={18} strokeWidth={3} /></div>
+                                                Build New Target Flow
+                                            </button>
+                                        </div>
+
+                                        <div className="mt-10">
+                                            <button onClick={() => setShowActionModal(false)} className="w-full py-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all">Go Back</button>
+                                        </div>
+                                    </motion.div>
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
@@ -356,14 +558,14 @@ export default function BotRepliesPage() {
             <AnimatePresence>
                 {showCreateModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm"
                             onClick={() => setShowCreateModal(false)}
                         />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 10 }} 
-                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
                             className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
                         >
@@ -371,19 +573,19 @@ export default function BotRepliesPage() {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Internal Name</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         placeholder="e.g. Sales Inquiry"
                                         value={newReply.name}
-                                        onChange={(e) => setNewReply({...newReply, name: e.target.value})}
+                                        onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
                                         className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Trigger Operator</label>
-                                    <select 
+                                    <select
                                         value={newReply.trigger_type}
-                                        onChange={(e) => setNewReply({...newReply, trigger_type: e.target.value})}
+                                        onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
                                         className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-purple-500 appearance-none transition-all cursor-pointer"
                                     >
                                         <option value="exact">Exact Match</option>
@@ -395,23 +597,23 @@ export default function BotRepliesPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Keywords</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "price, cost, fee"}
                                         value={newReply.trigger_value}
-                                        onChange={(e) => setNewReply({...newReply, trigger_value: e.target.value})}
+                                        onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
                                         className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-purple-500 transition-all disabled:opacity-50"
                                         disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
                                     />
                                 </div>
                                 <div className="pt-4 flex gap-3">
-                                    <button 
+                                    <button
                                         onClick={() => setShowCreateModal(false)}
                                         className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
                                     >
                                         Cancel
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={handleCreate}
                                         disabled={isCreating}
                                         className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
