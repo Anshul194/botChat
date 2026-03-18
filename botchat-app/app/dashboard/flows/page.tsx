@@ -4,14 +4,14 @@ import { useState, useRef, useEffect, useCallback, createContext, useContext, Su
 import { useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 import { toast } from "sonner";
-import { 
-  MessageSquare, MousePointer2, Link, Image as ImageIcon, Layers, 
-  Keyboard, Mail, Phone, Bot, Brain, GitBranch, Timer, Shuffle, 
-  Tag as TagIcon, ShieldCheck, UserCog, Bell, Users, Zap, 
-  ExternalLink, Table, CheckCircle2, Search, Wand2, Plus, Trash2, 
+import {
+  MessageSquare, MousePointer2, Link, Image as ImageIcon, Layers,
+  Keyboard, Mail, Phone, Bot, Brain, GitBranch, Timer, Shuffle,
+  Tag as TagIcon, ShieldCheck, UserCog, Bell, Users, Zap,
+  ExternalLink, Table, CheckCircle2, Search, Wand2, Plus, Trash2,
   Copy, MoreVertical, GripHorizontal, ChevronRight, Share,
-  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play, 
-  Sparkle, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File
+  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play,
+  Sparkle, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload
 } from "lucide-react";
 
 /* ============================================================
@@ -79,6 +79,7 @@ const ACTIONS = [
   { id: "carousel", icon: Layers, label: "Carousel", desc: "Horizontal scrolling cards" },
   { id: "user_input", icon: Keyboard, label: "User Input", desc: "Ask question and save response" },
   { id: "condition", icon: GitBranch, label: "Condition", desc: "Logic branching" },
+  { id: "trigger_action", icon: Zap, label: "Trigger Action", desc: "Fire a postback payload" },
 ];
 
 const VARS = [
@@ -92,11 +93,18 @@ const VARS = [
 /* ============================================================
    UTILITIES
    ============================================================ */
-let _id = 200;
-const uid = () => `s${++_id}`;
+const uid = () => `s_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 const getActionDef = (id: string) => ACTIONS.find(a => a.id === id) || ACTIONS[0];
 const getDef = (kind: string, type: string) => getActionDef(type);
 const getColor = (kind: string, type: string) => "#1C1917";
+
+const ensureUrl = (url: string) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//") || url.startsWith("data:")) return url;
+  // If it's a relative path starting with /, we might need to handle it, but for now assuming host-first
+  if (url.startsWith("/")) return url; 
+  return `https://${url}`;
+};
 
 /* ============================================================
    MINI COMPONENTS
@@ -197,10 +205,15 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
    FORM FIELDS PER STEP TYPE
    ============================================================ */
 
-function MessageFields({ step, update }) {
+function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const [saving, setSaving] = useState(false);
   const textRef = useRef(null);
+  const DS = useDS();
+  
+  const buttons = c.buttons || [];
+
   const insertVar = v => {
     const el = textRef.current;
     if (!el) { set({ text: (c.text || "") + v }); return; }
@@ -209,28 +222,134 @@ function MessageFields({ step, update }) {
     set({ text: val.slice(0, s) + v + val.slice(e) });
     setTimeout(() => el.setSelectionRange(s + v.length, s + v.length), 0);
   };
-  const DS = useDS();
+
+  const addButton = () => {
+    if (buttons.length >= 3) return;
+    set({ buttons: [...buttons, { label: "New Button", action_type: "send_message", action_value: "" }] });
+  };
+
+  const updateButton = (idx, patch) => {
+    const nb = [...buttons];
+    nb[idx] = { ...nb[idx], ...patch };
+    set({ buttons: nb });
+  };
+
+  const removeButton = (idx) => {
+    set({ buttons: buttons.filter((_, i) => i !== idx) });
+  };
+
+  const onUpdateSave = async () => {
+    setSaving(true);
+    if (onSaveStep) {
+      await onSaveStep(step);
+    } else {
+      await new Promise(r => setTimeout(r, 600));
+    }
+    setSaving(false);
+    toast.success("Message step updated");
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       <div>
         <Label>Message text</Label>
         <textarea ref={textRef} value={c.text || ""} onChange={e => set({ text: e.target.value })}
           placeholder="Hey {first_name}! 👋 ..." rows={4}
           style={{ width: "100%", padding: "9px 12px", borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, fontSize: 13, fontFamily: "inherit", background: DS.bg, color: DS.ink, outline: "none", boxSizing: "border-box", resize: "vertical" }}
-          onFocus={e => { e.target.style.borderColor = DS.accent; e.target.style.boxShadow = `0 0 0 3px ${DS.accentSoft}`; }}
-          onBlur={e => { e.target.style.borderColor = DS.border; e.target.style.boxShadow = "none"; }}
         />
         <VarPills onInsert={insertVar} />
       </div>
+
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <Label>Buttons ({buttons.length}/3)</Label>
+          {buttons.length < 3 && (
+            <button onClick={addButton} style={{ fontSize: 11, fontWeight: 800, color: DS.accent, border: "none", background: "transparent", cursor: "pointer" }}>+ ADD BUTTON</button>
+          )}
+        </div>
+        
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {buttons.map((btn, i) => (
+            <div key={i} style={{ background: DS.bg, border: `1.5px solid ${DS.border}`, borderRadius: DS.radiusSm, padding: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                 <span style={{ fontSize: 10, fontWeight: 800, color: DS.ink3 }}>BUTTON #{i+1}</span>
+                 <button onClick={() => removeButton(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 10 }}>✕ REMOVE</button>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", gap: 8 }}>
+                   <div style={{ flex: 1 }}>
+                     <Label>Title</Label>
+                     <Input value={btn.label} onChange={e => updateButton(i, { label: e.target.value })} placeholder="Button label" />
+                   </div>
+                   <div style={{ flex: 1 }}>
+                     <Label>Action</Label>
+                     <Select value={btn.action_type} onChange={e => updateButton(i, { action_type: e.target.value })} options={[
+                       { value: "send_message", label: "Send Message" },
+                       { value: "open_url", label: "Open URL" },
+                       { value: "postback_action", label: "Trigger Action" },
+                     ]} />
+                   </div>
+                </div>
+
+                {btn.action_type === "send_message" && (
+                  <div>
+                    <Label>Next Step</Label>
+                    <Select value={btn.action_value} onChange={e => {
+                      const val = e.target.value;
+                      if (val.startsWith("NEW_")) {
+                        const newId = onAddStep(val.replace("NEW_", ""));
+                        updateButton(i, { action_value: newId });
+                      } else {
+                        updateButton(i, { action_value: val });
+                      }
+                    }} options={[
+                      { value: "", label: "Select a step..." },
+                      ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+                      { value: "SEP", label: "--- Create New ---", disabled: true },
+                      ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+                    ]} />
+                  </div>
+                )}
+                {btn.action_type === "open_url" && (
+                  <div>
+                    <Label>URL</Label>
+                    <Input value={btn.action_value} onChange={e => updateButton(i, { action_value: e.target.value })} placeholder="https://..." />
+                  </div>
+                )}
+                {btn.action_type === "postback_action" && (
+                  <div>
+                    <Label>Trigger Action (Payload)</Label>
+                    <Input value={btn.action_value} onChange={e => updateButton(i, { action_value: e.target.value })} placeholder="trigger_action_key" />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div>
         <Label>Delay before sending</Label>
         <div style={{ display: "flex", gap: 8 }}>
-          <Input type="number" value={c.delayVal} onChange={e => set({ delayVal: e.target.value })} placeholder="0" style={{ flex: 1 }} />
+          <Input type="number" value={c.delayVal || ""} onChange={e => set({ delayVal: e.target.value })} placeholder="0" style={{ flex: 1 }} />
           <Select value={c.delayUnit || "seconds"} onChange={e => set({ delayUnit: e.target.value })} style={{ flex: 1 }} options={[
             { value: "seconds", label: "Seconds" }, { value: "minutes", label: "Minutes" },
           ]} />
         </div>
       </div>
+
+      <button 
+        onClick={onUpdateSave}
+        disabled={saving}
+        style={{
+            width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+            fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+            transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            opacity: saving ? 0.7 : 1
+        }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update Message Step</>}
+      </button>
     </div>
   );
 }
@@ -341,7 +460,7 @@ function AIReplyFields({ step, update }) {
   );
 }
 
-function ConditionFields({ step, update, allSteps }) {
+function ConditionFields({ step, update, allSteps, onSave }) {
   const c = step.config || {};
   const rules = c.rules || [{ field_type: "system", field_name: "first_name", operator: "equals", value: "" }];
   const match_type = c.match_type || "all";
@@ -449,10 +568,11 @@ function ConditionFields({ step, update, allSteps }) {
   );
 }
 
-function CarouselFields({ step, update, allSteps }) {
+function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   const c = step.config || {};
   const items = c.carousel || [{ title: "", subtitle: "", image_url: "", buttons: [] }];
   const DS = useDS();
+  const [saving, setSaving] = useState(false);
 
   const set = patch => update({ ...step, config: { ...c, ...patch } });
 
@@ -467,7 +587,8 @@ function CarouselFields({ step, update, allSteps }) {
 
   const addButton = (iIdx) => {
     const newItems = [...items];
-    newItems[iIdx].buttons = [...(newItems[iIdx].buttons || []), { label: "New Button", action_type: "url", action_value: "" }];
+    if ((newItems[iIdx].buttons?.length || 0) >= 3) return;
+    newItems[iIdx].buttons = [...(newItems[iIdx].buttons || []), { label: "New Button", action_type: "send_message", action_value: "" }];
     set({ carousel: newItems });
   };
 
@@ -483,15 +604,27 @@ function CarouselFields({ step, update, allSteps }) {
     set({ carousel: newItems });
   };
 
+  const onUpdateSave = async () => {
+    setSaving(true);
+    if (onSaveStep) {
+      await onSaveStep(step);
+    } else {
+      await new Promise(r => setTimeout(r, 600));
+    }
+    setSaving(false);
+    toast.success("Carousel step updated");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <div style={{ display: "flex", overflowX: "auto", gap: 12, paddingBottom: 10, paddingRight: 10 }}>
+      <div style={{ display: "flex", overflowX: "auto", gap: 12, paddingBottom: 10 }}>
         {items.map((item, i) => (
-          <div key={i} style={{ minWidth: 240, background: DS.card, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius, padding: 14, flexShrink: 0 }}>
+          <div key={i} style={{ minWidth: 260, background: DS.card, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius, padding: 14, flexShrink: 0 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink3 }}>CARD #{i+1}</span>
-              {items.length > 1 && <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer" }}>✕</button>}
+              <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink3 }}>CARD #{i + 1}</span>
+              {items.length > 1 && <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>✕ REMOVE</button>}
             </div>
+            
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <Label>Image URL</Label>
               <Input value={item.image_url} onChange={e => updateItem(i, { image_url: e.target.value })} placeholder="https://..." />
@@ -499,28 +632,55 @@ function CarouselFields({ step, update, allSteps }) {
               <Input value={item.title} onChange={e => updateItem(i, { title: e.target.value })} placeholder="Card Title" />
               <Label>Subtitle</Label>
               <Input value={item.subtitle} onChange={e => updateItem(i, { subtitle: e.target.value })} placeholder="Card Subtitle" />
-              <Label>Destination URL (Card click)</Label>
+              <Label>Destination (Card click)</Label>
               <Input value={item.destination_url} onChange={e => updateItem(i, { destination_url: e.target.value })} placeholder="https://..." />
-              
+
               <div style={{ marginTop: 6 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <Label>Buttons</Label>
-                  {(item.buttons?.length || 0) < 3 && <button onClick={() => addButton(i)} style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: DS.accentSoft, color: DS.accent, border: "none", cursor: "pointer", fontWeight: 700 }}>+ ADD</button>}
+                  <Label>Buttons ({item.buttons?.length || 0}/3)</Label>
+                  {(item.buttons?.length || 0) < 3 && (
+                    <button onClick={() => addButton(i)} style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: DS.accentSoft, color: DS.accent, border: "none", cursor: "pointer", fontWeight: 700 }}>+ ADD</button>
+                  )}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {item.buttons?.map((btn, bi) => (
-                    <div key={bi} style={{ background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 8, padding: 8 }}>
-                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                         <input value={btn.label} onChange={e => updateButton(i, bi, { label: e.target.value })} style={{ border: "none", background: "transparent", fontSize: 11, fontWeight: 700, width: "100%", outline: "none" }} />
-                         <button onClick={() => removeButton(i, bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 10 }}>✕</button>
-                       </div>
-                       <div style={{ display: "flex", gap: 4 }}>
+                    <div key={bi} style={{ background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 8, padding: 10 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <input value={btn.label} onChange={e => updateButton(i, bi, { label: e.target.value })} style={{ border: "none", background: "transparent", fontSize: 11, fontWeight: 700, width: "100%", outline: "none", color: DS.ink }} />
+                        <button onClick={() => removeButton(i, bi)} style={{ border: "none", background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 10 }}>✕</button>
+                      </div>
+                      
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                          <Select value={btn.action_type} onChange={e => updateButton(i, bi, { action_type: e.target.value })} options={[
-                           { value: "url", label: "Open URL" },
-                           { value: "postback", label: "Postback" },
-                         ]} style={{ padding: "3px 6px", fontSize: 10, height: 24 }} />
-                         <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Value" style={{ padding: "3px 6px", fontSize: 10, height: 24 }} />
-                       </div>
+                           { value: "send_message", label: "Send Message" },
+                           { value: "open_url", label: "Open URL" },
+                           { value: "postback_action", label: "Trigger Action" },
+                         ]} style={{ height: 30, fontSize: 11 }} />
+                         
+                         {btn.action_type === "send_message" && (
+                           <Select value={btn.action_value} onChange={e => {
+                             const val = e.target.value;
+                             if (val.startsWith("NEW_")) {
+                               const newId = onAddStep(val.replace("NEW_", ""));
+                               updateButton(i, bi, { action_value: newId });
+                             } else {
+                               updateButton(i, bi, { action_value: val });
+                             }
+                           }} options={[
+                             { value: "", label: "Select Next Step..." },
+                             ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+                             { value: "SEP", label: "--- Create New ---", disabled: true },
+                             ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+                           ]} style={{ height: 30, fontSize: 11 }} />
+                         )}
+                         {btn.action_type === "open_url" && (
+                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="https://..." style={{ height: 30, fontSize: 11 }} />
+                         )}
+                         {btn.action_type === "postback_action" && (
+                           <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="Trigger keyword" style={{ height: 30, fontSize: 11 }} />
+                         )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -528,13 +688,26 @@ function CarouselFields({ step, update, allSteps }) {
             </div>
           </div>
         ))}
-        <button onClick={addItem} style={{ minWidth: 100, border: `2px dashed ${DS.border}`, borderRadius: DS.radius, background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 24 }}>+</button>
+        <button onClick={addItem} style={{ minWidth: 60, border: `2px dashed ${DS.border}`, borderRadius: DS.radius, background: "transparent", color: DS.ink3, cursor: "pointer", fontSize: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
       </div>
+
+      <button 
+        onClick={onUpdateSave}
+        disabled={saving}
+        style={{
+            width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+            fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+            transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            opacity: saving ? 0.7 : 1
+        }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update Carousel Step</>}
+      </button>
     </div>
   );
 }
 
-function UserInputFields({ step, update }) {
+function UserInputFields({ step, update, onSave }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const DS = useDS();
@@ -624,18 +797,18 @@ function GoogleSheetsFields({ step, update }) {
       <div>
         <Label>Column Mapping (Values to send)</Label>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-             <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>A: Date</span>
-             <Input value="{date}" disabled style={{ flex: 1, background: DS.bg }} />
-           </div>
-           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-             <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>B: Name</span>
-             <Input value="{first_name}" disabled style={{ flex: 1, background: DS.bg }} />
-           </div>
-           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-             <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>C: Answer</span>
-             <Input value={c.col3 || "{last_reply}"} onChange={e => set({ col3: e.target.value })} style={{ flex: 1 }} />
-           </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>A: Date</span>
+            <Input value="{date}" disabled style={{ flex: 1, background: DS.bg }} />
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>B: Name</span>
+            <Input value="{first_name}" disabled style={{ flex: 1, background: DS.bg }} />
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, width: 80 }}>C: Answer</span>
+            <Input value={c.col3 || "{last_reply}"} onChange={e => set({ col3: e.target.value })} style={{ flex: 1 }} />
+          </div>
         </div>
       </div>
     </div>
@@ -843,29 +1016,132 @@ function RandomSplitFields({ step, update }) {
   );
 }
 
-function MediaFields({ step, update }) {
+function MediaFields({ step, update, onSaveStep }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
-  const typeMap = {
-    image: { label: "Image URL", icon: "🖼️" },
-    video: { label: "Video URL", icon: "📹" },
-    audio: { label: "Audio URL", icon: "🎵" },
-    file: { label: "File URL", icon: "📁" }
+  const DS = useDS();
+  const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const info = {
+    image: { label: "Image URL", icon: ImageIcon },
+    video: { label: "Video URL", icon: Play },
+    audio: { label: "Audio URL", icon: Mic },
+    file: { label: "File URL", icon: File }
+  }[step.type] || { label: "Media URL", icon: ImageIcon };
+
+  const onLocalSave = async () => {
+    setSaving(true);
+    if (onSaveStep) {
+      await onSaveStep(step);
+    } else {
+      await new Promise(r => setTimeout(r, 600));
+    }
+    setSaving(false);
+    toast.success(`${step.type.charAt(0).toUpperCase() + step.type.slice(1)} step updated`);
   };
-  const info = typeMap[step.type] || typeMap.image;
-  
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', step.type);
+
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          const response = await api.post('/facebook/bot-replies/media/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          const uploadedUrl = response.data.url || response.data.data?.url || response.data;
+          set({ url: uploadedUrl });
+          resolve(file.name);
+        } catch (err) {
+          console.error("Upload Error:", err);
+          reject(err);
+        }
+      }),
+      {
+        loading: `Uploading ${file.name}...`,
+        success: (name) => `Successfully uploaded ${name}`,
+        error: 'Upload failed',
+      }
+    );
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        style={{ display: "none" }}
+        accept={step.type === 'image' ? 'image/*' : step.type === 'video' ? 'video/*' : step.type === 'audio' ? 'audio/*' : '*'}
+      />
       <div>
         <Label>{info.label}</Label>
-        <Input value={c.url} onChange={e => set({ url: e.target.value })} placeholder={`https://yourcdn.com/${step.type}...`} />
-      </div>
-      {(step.type === "image" || step.type === "video") && (
-        <div>
-          <Label>Caption (optional)</Label>
-          <Input value={c.caption} onChange={e => set({ caption: e.target.value })} placeholder="Check this out! 👀" />
+        <div style={{ display: "flex", gap: 8 }}>
+          <Input
+            value={c.url || ""}
+            onChange={e => set({ url: e.target.value })}
+            placeholder="https://..."
+            style={{ flex: 1 }}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              padding: "0 16px", borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`,
+              background: DS.bg, color: DS.ink, fontSize: 13, fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 6, cursor: "pointer", whiteSpace: "nowrap"
+            }}>
+            <Upload size={16} /> Upload
+          </button>
         </div>
-      )}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", background: DS.bg, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 16 }}>⚡</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: DS.ink }}>Typing Indicator</span>
+        </div>
+        <Toggle on={c.typing} onChange={() => set({ typing: !c.typing })} />
+      </div>
+
+      <div style={{ display: "flex", border: `1.5px solid ${DS.border}`, borderRadius: DS.radiusSm, overflow: "hidden", height: 38 }}>
+        <div style={{ display: "flex", alignItems: "center", padding: "0 14px", background: DS.bg, borderRight: `1.5px solid ${DS.border}`, fontSize: 12, fontWeight: 700, color: DS.ink3 }}>Delay</div>
+        <input
+          type="number"
+          value={c.delaySec || ""}
+          onChange={e => set({ delaySec: e.target.value })}
+          placeholder="Sec"
+          style={{ flex: 1, border: "none", background: "transparent", padding: "0 12px", fontSize: 13, color: DS.ink, outline: "none", borderRight: `1.5px solid ${DS.border}` }}
+        />
+        <input
+          type="number"
+          value={c.delayMin || ""}
+          onChange={e => set({ delayMin: e.target.value })}
+          placeholder="Min"
+          style={{ flex: 1, border: "none", background: "transparent", padding: "0 12px", fontSize: 13, color: DS.ink, outline: "none" }}
+        />
+      </div>
+
+      <button
+        onClick={onLocalSave}
+        disabled={saving}
+        style={{
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
+        }}
+        onMouseEnter={e => { if (!saving) e.currentTarget.style.opacity = "0.9"; }}
+        onMouseLeave={e => { if (!saving) e.currentTarget.style.opacity = "1"; }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update Media Step</>}
+      </button>
     </div>
   );
 }
@@ -886,6 +1162,50 @@ function CheckTagFields({ step, update }) {
           { value: "skip", label: "Skip to last step" },
         ]} />
       </div>
+    </div>
+  );
+}
+
+function TriggerActionFields({ step, update, onSaveStep }) {
+  const c = step.config || {};
+  const set = patch => update({ ...step, config: { ...c, ...patch } });
+  const [saving, setSaving] = useState(false);
+  const DS = useDS();
+
+  const onUpdateSave = async () => {
+    setSaving(true);
+    if (onSaveStep) {
+      await onSaveStep(step);
+    } else {
+      await new Promise(r => setTimeout(r, 600));
+    }
+    setSaving(false);
+    toast.success("Trigger action step updated");
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div>
+        <Label>Action Label (Internal)</Label>
+        <Input value={c.label} onChange={e => set({ label: e.target.value })} placeholder="User joined funnel" />
+      </div>
+      <div>
+        <Label>Postback Payload</Label>
+        <Input value={c.payload} onChange={e => set({ payload: e.target.value })} placeholder="trigger_funnel_a" />
+      </div>
+      
+      <button 
+        onClick={onUpdateSave}
+        disabled={saving}
+        style={{
+            width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+            fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+            transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            opacity: saving ? 0.7 : 1
+        }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update Trigger Step</>}
+      </button>
     </div>
   );
 }
@@ -948,14 +1268,15 @@ function AIClassifyFields({ step, update }) {
   );
 }
 
-function StepFields({ step, update, allSteps }) {
-  const props = { step, update, allSteps };
-  const DS = useDS(); // Added useDS here
+function StepFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+  const props = { step, update, allSteps, onSaveStep, onAddStep };
+  const DS = useDS();
   if (step.kind === "trigger") return <div style={{ fontSize: 12, color: DS.ink3 }}>Click to configure trigger</div>;
   const map = {
-    message: MessageFields, 
+    message: MessageFields,
     image: MediaFields, video: MediaFields, audio: MediaFields, file: MediaFields,
     carousel: CarouselFields, user_input: UserInputFields, condition: ConditionFields,
+    trigger_action: TriggerActionFields,
   };
   const Comp = map[step.type];
   return Comp ? <Comp {...props} /> : <div style={{ fontSize: 12, color: DS.ink3 }}>Configure this step</div>;
@@ -967,21 +1288,21 @@ function StepFields({ step, update, allSteps }) {
 function StepSummary({ step }) {
   const DS = useDS();
   const c = step.config || {};
-  const m = { 
-    message: c.text?.slice(0, 40), 
+  const m = {
+    message: c.text?.slice(0, 40),
     image: c.url?.slice(0, 40),
     video: c.url?.slice(0, 40),
     audio: c.url?.slice(0, 40),
     file: c.url?.slice(0, 40),
-    carousel: `${(c.carousel || []).length} cards`, 
+    carousel: `${(c.carousel || []).length} cards`,
     user_input: c.question?.slice(0, 40),
-    condition: (c.rules || []).map(r => r.field_name).join(", "), 
+    condition: (c.rules || []).map(r => r.field_name).join(", "),
   };
   const txt = m[step.type];
   return <span style={{ color: DS.ink3 }}>{txt ? (txt.length > 40 ? txt.slice(0, 40) + "…" : txt) : "Click to configure"}</span>;
 }
 
-function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown }) {
+function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown, onSaveStep, onAddStep }) {
   const DS = useDS();
   const def = getDef(step.kind, step.type);
   const color = step.kind === "trigger" ? def.color : DS.ink;
@@ -1013,15 +1334,15 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
           }}>{index + 1}</div>
 
           {/* Icon */}
-            <div style={{
-              width: 38, height: 38, borderRadius: 11, flexShrink: 0,
-              background: DS.bg,
-              border: `1.5px solid ${DS.border}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: DS.ink
-            }}>
-              {typeof def.icon === 'string' ? def.icon : <def.icon size={20} />}
-            </div>
+          <div style={{
+            width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+            background: DS.bg,
+            border: `1.5px solid ${DS.border}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: DS.ink
+          }}>
+            {typeof def.icon === 'string' ? def.icon : <def.icon size={20} />}
+          </div>
 
           {/* Name & summary */}
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -1052,7 +1373,7 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
         {/* EXPANDED BODY */}
         {expanded && (
           <div style={{ borderTop: `1px solid ${DS.border}`, padding: "16px 16px 18px" }}>
-            <StepFields step={step} update={onUpdate} allSteps={allSteps} />
+            <StepFields step={step} update={onUpdate} allSteps={allSteps} onSaveStep={onSaveStep} onAddStep={onAddStep} />
           </div>
         )}
       </div>
@@ -1101,7 +1422,7 @@ function AddActionPicker({ onAdd }) {
         <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <div onClick={() => setOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)" }} />
           <div style={{
-            position: "relative", width: 480, maxWidth: "100%", background: "#fff", borderRadius: 32, 
+            position: "relative", width: 480, maxWidth: "100%", background: "#fff", borderRadius: 32,
             boxShadow: "0 40px 100px -20px rgba(0,0,0,0.35)", overflow: "hidden", border: "1px solid rgba(0,0,0,0.05)"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 28px", borderBottom: `1px solid ${DS.border}` }}>
@@ -1111,7 +1432,7 @@ function AddActionPicker({ onAdd }) {
               </div>
               <button onClick={() => setOpen(false)} style={{ border: "none", background: DS.bg, width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: DS.ink3 }}><X size={18} /></button>
             </div>
-            
+
             <div style={{ padding: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               {ACTIONS.map(a => (
                 <button key={a.id} onClick={() => { onAdd(a.id); setOpen(false); }} style={{
@@ -1149,17 +1470,18 @@ function buildPreviewMsgs(steps) {
   steps.forEach(s => {
     const c = s.config || {};
     if (s.type === "message") {
-      out.push({ type: "bot", text: c.text });
+      out.push({ type: "bot", text: c.text, buttons: c.buttons || [] });
     } else if (s.type === "image") {
       out.push({ type: "bot", text: c.caption || "Image", image: c.url, isMedia: true });
     } else if (s.type === "video") {
       out.push({ type: "bot", text: c.caption || "Video", video: c.url, isMedia: true });
     } else if (s.type === "audio") {
-      out.push({ type: "bot", text: "🎵 Audio Message", audio: c.url });
+      out.push({ type: "bot", text: "🎵 Audio Message", audio: c.url, isMedia: true });
     } else if (s.type === "file") {
       out.push({ type: "bot", text: "📁 Document Attachment", file: c.url });
     } else if (s.type === "carousel") {
-      out.push({ type: "bot", carousel: c.carousel || [] });
+      // Handle both local "carousel" array and potentially API returned items if mapped differently
+      out.push({ type: "bot", carousel: c.carousel || c.carousel_items || [] });
     } else if (s.type === "user_input") {
       out.push({ type: "bot", text: c.question || "Tell me more?" });
       out.push({ type: "user", text: "[User Response]" });
@@ -1180,7 +1502,7 @@ function PhonePreview({ steps, platform }) {
   const DS = useDS();
   const msgs = buildPreviewMsgs(steps);
   const scrollRef = useRef(null);
-  
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -1190,15 +1512,15 @@ function PhonePreview({ steps, platform }) {
   const botMsgs = msgs.filter(m => m.type === "bot").length;
 
   const Icons = {
-    IG_CAM: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
-    IG_VIDEO: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>,
-    IG_MIC: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>,
-    IG_IMG: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
-    IG_HEART: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>,
-    FB_PLUS: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>,
-    FB_THUMB: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>,
-    FB_PHONE: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.149 15.149 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>,
-    ARROW_LEFT: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+    IG_CAM: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>,
+    IG_VIDEO: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>,
+    IG_MIC: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" /></svg>,
+    IG_IMG: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>,
+    IG_HEART: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>,
+    FB_PLUS: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>,
+    FB_THUMB: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" /></svg>,
+    FB_PHONE: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.149 15.149 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" /></svg>,
+    ARROW_LEFT: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>,
   };
 
   return (
@@ -1212,10 +1534,10 @@ function PhonePreview({ steps, platform }) {
       {/* Phone */}
       <div style={{
         width: 310, height: 630, borderRadius: 54, background: "#000",
-        padding: "8px", 
+        padding: "8px",
         boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.15)",
         position: "relative",
-        border: "1.5px solid #3F3F46", 
+        border: "1.5px solid #3F3F46",
       }}>
         {/* Buttons on Side */}
         <div style={{ position: "absolute", left: -2, top: 120, width: 3, height: 60, background: "#27272A", borderRadius: "2px 0 0 2px" }} />
@@ -1233,12 +1555,12 @@ function PhonePreview({ steps, platform }) {
 
         {/* Screen */}
         <div style={{ borderRadius: 48, overflow: "hidden", background: "#fff", height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
-          
+
           {/* Header */}
           <div style={{
-            background: isFB ? "#fff" : "rgba(255,255,255,0.92)", 
+            background: isFB ? "#fff" : "rgba(255,255,255,0.92)",
             backdropFilter: isFB ? "none" : "blur(20px)",
-            padding: "42px 14px 10px", 
+            padding: "42px 14px 10px",
             borderBottom: `0.5px solid ${isFB ? "#E2E8F0" : "#DBDBDB"}`,
             display: "flex", alignItems: "center", gap: 10, zIndex: 40
           }}>
@@ -1246,7 +1568,7 @@ function PhonePreview({ steps, platform }) {
             <div style={{ color: isFB ? "#0084FF" : "#000", cursor: "pointer" }}>
               <Icons.ARROW_LEFT />
             </div>
-            
+
             <div style={{
               width: 34, height: 34, borderRadius: "50%",
               background: isFB ? "#0084FF" : "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
@@ -1262,7 +1584,7 @@ function PhonePreview({ steps, platform }) {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 13.5, fontWeight: 700, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {isFB ? "Messenger Bot" : "bot_assistant"}
-                {!isFB && <svg width="12" height="12" viewBox="0 0 24 24" fill={DS.accent} style={{ marginLeft: 3 }}><path d="M12 2L14.4 9.6H22L15.8 14.2L18.2 21.8L12 17.2L5.8 21.8L8.2 14.2L2 9.6H9.6L12 2Z"/></svg>}
+                {!isFB && <svg width="12" height="12" viewBox="0 0 24 24" fill={DS.accent} style={{ marginLeft: 3 }}><path d="M12 2L14.4 9.6H22L15.8 14.2L18.2 21.8L12 17.2L5.8 21.8L8.2 14.2L2 9.6H9.6L12 2Z" /></svg>}
               </div>
               <div style={{ fontSize: 10.5, color: "#65676B", marginTop: -1 }}>{isFB ? "Active Now" : "Active 5m ago"}</div>
             </div>
@@ -1294,16 +1616,16 @@ function PhonePreview({ steps, platform }) {
                     <div style={{ display: "flex", overflowX: "auto", gap: 8, paddingBottom: 8, width: "100%", scrollSnapType: "x mandatory" }}>
                       {m.carousel.map((card, ci) => (
                         <div key={ci} style={{ minWidth: 200, maxWidth: 220, background: "#fff", border: `1px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
-                           {card.image_url && <div style={{ height: 100, background: "#F3F4F6", backgroundImage: `url(${card.image_url})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
-                           <div style={{ padding: 10 }}>
-                             <div style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{card.title || "Card Title"}</div>
-                             <div style={{ fontSize: 11, color: "#65676B", marginTop: 2 }}>{card.subtitle || "Card description"}</div>
-                           </div>
-                           {(card.buttons || []).slice(0, 3).map((b, bi) => (
-                             <div key={bi} style={{ borderTop: `1px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, padding: "10px", textAlign: "center", color: isFB ? "#0084FF" : DS.accent, fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                               {b.label}
-                             </div>
-                           ))}
+                          {card.image_url && <div style={{ height: 100, background: "#F3F4F6", backgroundImage: `url(${ensureUrl(card.image_url)})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
+                          <div style={{ padding: 10 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{card.title || "Card Title"}</div>
+                            <div style={{ fontSize: 11, color: "#65676B", marginTop: 2 }}>{card.subtitle || "Card description"}</div>
+                          </div>
+                          {(card.buttons || []).slice(0, 3).map((b, bi) => (
+                            <div key={bi} style={{ borderTop: `1px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, padding: "10px", textAlign: "center", color: isFB ? "#0084FF" : DS.accent, fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
+                              {b.label}
+                            </div>
+                          ))}
                         </div>
                       ))}
                     </div>
@@ -1317,16 +1639,43 @@ function PhonePreview({ steps, platform }) {
                         background: m.type === "user" ? (isFB ? "#0084FF" : DS.gradient) : (isFB ? "#F0F2F5" : "#EFEFEF"),
                         color: m.type === "user" ? "#fff" : "#000",
                         borderRadius: m.type === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-                        padding: (m.image || m.video) ? "4px" : "10px 14px", fontSize: 13.5, lineHeight: 1.4,
+                        padding: m.isMedia ? "4px" : "10px 14px", fontSize: 13.5, lineHeight: 1.4,
                         overflow: "hidden"
                       }}>
-                        {m.image ? <img src={m.image} style={{ width: "100%", borderRadius: 14, display: "block" }} alt="" /> :
-                         m.video ? <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#000", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center" }}><Play size={24} color="#fff" /></div> :
-                         m.text}
+                        {m.image && <img src={ensureUrl(m.image)} style={{ width: "100%", borderRadius: 14, display: "block" }} alt="" />}
+                        {m.video && <video src={ensureUrl(m.video)} controls style={{ width: "100%", borderRadius: 14, display: "block", background: "#000", aspectRatio: "16/9" }} />}
+                        {m.audio && (
+                          <div style={{ padding: "4px 8px" }}>
+                            <div style={{ fontSize: 11, marginBottom: 4, fontWeight: 600, color: m.type === "user" ? "#fff" : "#65676B" }}>Audio Message</div>
+                            <audio src={ensureUrl(m.audio)} controls style={{ width: "100%", height: 40, display: "block", outline: "none" }} />
+                          </div>
+                        )}
+                        {m.file && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 12, border: "1px solid #E2E8F0" }}>
+                            <File size={20} color={DS.accent} />
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: "#000" }}>Document File</span>
+                              <span style={{ fontSize: 9, color: DS.ink3 }}>Click to download</span>
+                            </div>
+                          </div>
+                        )}
+                        {!m.isMedia && m.text}
                       </div>
-                      {m.link && (
-                        <div style={{ 
+                      
+                      {/* Message Buttons */}
+                      {(m.buttons || []).map((b, bi) => (
+                        <div key={bi} style={{ 
                           marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`, 
+                          borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
+                          color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
+                        }}>
+                          {b.label}
+                        </div>
+                      ))}
+
+                      {m.link && (
+                        <div style={{
+                          marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
                           borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
                           color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
                         }}>
@@ -1341,10 +1690,10 @@ function PhonePreview({ steps, platform }) {
           </div>
 
           {/* PLATFORM SPECIFIC INPUT BAR */}
-          <div style={{ 
-            background: "#fff", padding: "8px 12px 34px", 
+          <div style={{
+            background: "#fff", padding: "8px 12px 34px",
             borderTop: `0.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
-            display: "flex", gap: 14, alignItems: "center" 
+            display: "flex", gap: 14, alignItems: "center"
           }}>
             {isFB ? (
               <>
@@ -1535,11 +1884,11 @@ function AnalyticsPanel() {
    ============================================================ */
 
 export default function FlowBuilderPage() {
-    return (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading Flow Builder...</div>}>
-            <FlowBuilder />
-        </Suspense>
-    );
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading Flow Builder...</div>}>
+      <FlowBuilder />
+    </Suspense>
+  );
 }
 
 function FlowBuilder() {
@@ -1566,24 +1915,38 @@ function FlowBuilder() {
     if (replyId) {
       const fetchFlow = async () => {
         try {
-          const endpoint = platform === "facebook" 
-            ? `/facebook/bot-replies/${replyId}` 
+          const endpoint = platform === "facebook"
+            ? `/facebook/bot-replies/${replyId}`
             : `/instagram/bot-replies/${replyId}`;
-            
+
           const response = await api.get(endpoint);
           const data = response.data.data;
           if (data) {
             setFlowName(data.name || "Untitled Flow");
-            if (data.flow_data) {
-              const parsedSteps = typeof data.flow_data === 'string' 
-                ? JSON.parse(data.flow_data) 
+            setIsLive(data.status === 'published');
+            
+            let rawSteps = [];
+            if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {
+              // Priority: New steps array from backend
+              rawSteps = data.steps.map(s => ({
+                id: s.id,
+                type: s.step_type === "text" ? "message" : s.step_type,
+                label: s.title || s.step_type,
+                config: s.settings_json || {},
+                kind: (s.step_type === "condition" || s.step_type === "trigger") ? s.step_type : "action"
+              }));
+            } else if (data.flow_data) {
+              // Fallback: Old flow_data JSON string
+              rawSteps = typeof data.flow_data === 'string'
+                ? JSON.parse(data.flow_data)
                 : data.flow_data;
-              setSteps(parsedSteps.map(s => ({ ...s, id: s.id || uid() })));
             }
+            
+            setSteps(rawSteps.map(s => ({ ...s, id: s.id || uid() })));
           }
         } catch (error) {
-            console.error("Error fetching flow:", error);
-            toast.error("Failed to load flow data");
+          console.error("Error fetching flow:", error);
+          toast.error("Failed to load flow data");
         }
       };
       fetchFlow();
@@ -1602,12 +1965,34 @@ function FlowBuilder() {
   const moveUp = useCallback((i) => setSteps(s => { const a = [...s];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return a; }), []);
   const moveDown = useCallback((i) => setSteps(s => { const a = [...s];[a[i], a[i + 1]] = [a[i + 1], a[i]]; return a; }), []);
 
-  const addStep = (type) => {
+  const addStep = useCallback((type) => {
     const def = getActionDef(type);
     const id = uid();
     setSteps(s => [...s, { id, kind: "action", type, label: def.label, config: {} }]);
     setExpandedId(id);
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
+    return id;
+  }, []);
+
+  const handleStepSave = async (step) => {
+    if (!replyId) return;
+    try {
+      const endpoint = platform === "facebook"
+        ? `/facebook/bot-replies/${replyId}/steps`
+        : `/instagram/bot-replies/${replyId}/steps`;
+
+      const payload = {
+        step_type: step.type === "message" ? "text" : step.type,
+        title: step.label || step.type,
+        settings_json: step.config
+      };
+
+      await api.post(endpoint, payload);
+      toast.success("Step saved successfully");
+    } catch (err) {
+      console.error("Step Save Error:", err);
+      toast.error("Failed to save step data");
+    }
   };
 
   const handleSave = async (forceStatus = null) => {
@@ -1619,11 +2004,11 @@ function FlowBuilder() {
 
     setIsSaving(true);
     try {
-      const endpoint = platform === "facebook" 
-        ? `/facebook/bot-replies/${replyId}` 
+      const endpoint = platform === "facebook"
+        ? `/facebook/bot-replies/${replyId}`
         : `/instagram/bot-replies/${replyId}`;
 
-      const finalStatus = forceStatus !== null 
+      const finalStatus = forceStatus !== null
         ? (forceStatus ? 'published' : 'draft')
         : (isLive ? 'published' : 'draft');
 
@@ -1632,7 +2017,7 @@ function FlowBuilder() {
         flow_data: JSON.stringify(steps),
         status: finalStatus
       });
-      
+
       setSaved(true);
       toast.success(`Flow ${finalStatus === 'published' ? 'published' : 'saved'} successfully`);
       setTimeout(() => setSaved(false), 2200);
@@ -1648,7 +2033,7 @@ function FlowBuilder() {
   return (
     <DSContext.Provider value={DS}>
       <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Sora', 'DM Sans', -apple-system, sans-serif" }}>
-      <style>{`
+        <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; }
@@ -1699,104 +2084,105 @@ function FlowBuilder() {
       `}</style>
 
 
-      {/* ── HEADER ─────────────────────────────────────────────── */}
-      <div className="flow-hdr">
-        {/* Row 1: Logo + name + tabs */}
-        <div className="flow-hdr-r1">
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚡</div>
-          <input value={flowName} onChange={e => setFlowName(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, fontWeight: 800, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.02em", minWidth: 0 }} />
+        {/* ── HEADER ─────────────────────────────────────────────── */}
+        <div className="flow-hdr">
+          {/* Row 1: Logo + name + tabs */}
+          <div className="flow-hdr-r1">
+            <div style={{ width: 32, height: 32, borderRadius: 9, background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚡</div>
+            <input value={flowName} onChange={e => setFlowName(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, fontWeight: 800, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.02em", minWidth: 0 }} />
 
-          {/* Platform Switcher */}
-          <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
-            {Object.entries(PLATFORMS).map(([id, p]) => (
-              <button key={id} onClick={() => setPlatform(id)} style={{
-                padding: "5px 12px", borderRadius: 8, fontSize: 11.5, fontWeight: 800, border: "none", cursor: "pointer", fontFamily: "inherit",
-                background: platform === id ? DS.card : "transparent",
-                color: platform === id ? DS.accent : DS.ink3,
-                boxShadow: platform === id ? DS.shadow : "none",
-                transition: "all 0.15s", display: "flex", alignItems: "center", gap: 5,
-              }}>
-                <span style={{fontSize: 14}}>{p.icon}</span>
-                <span className="btn-text" style={{fontSize: 10.5}}>{p.name}</span>
-              </button>
-            ))}
-          </div>
-
-          <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
-            {TABS.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{
-                padding: "5px 9px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit",
-                background: tab === t.id ? DS.card : "transparent",
-                color: tab === t.id ? DS.ink : DS.ink3,
-                boxShadow: tab === t.id ? DS.shadow : "none",
-                transition: "all 0.15s", display: "flex", alignItems: "center", gap: 3,
-              }}>{t.icon}<span className="ftab-label"> {t.label}</span></button>
-            ))}
-          </div>
-        </div>
-
-        {/* Row 2: Action buttons */}
-        <div className="flow-hdr-r2">
-
-          <button onClick={() => setIsLive(!isLive)} style={{
-            padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
-            background: isLive ? DS.greenSoft : DS.bg, color: isLive ? DS.green : DS.ink3, cursor: "pointer", fontFamily: "inherit",
-            display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s",
-          }}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: isLive ? DS.green : DS.ink3, display: "inline-block", boxShadow: isLive ? `0 0 6px ${DS.green}` : "none", transition: "all 0.2s" }} />
-            {isLive ? "Live" : "Draft"}
-          </button>
-
-          <button onClick={handleSave} style={{
-            padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${saved ? DS.green : DS.border}`,
-            background: saved ? DS.greenSoft : DS.bg, color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
-          }}>{saved ? "✓" : "💾"}<span className="btn-text"> {saved ? "Saved!" : "Save"}</span></button>
-
-          <button onClick={() => { handleSave(true); }} style={{
-            padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 800, border: "none", fontFamily: "inherit",
-            background: `linear-gradient(135deg,${DS.accent},#F97316)`,
-            color: "#fff", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(232,69,10,0.3)", transition: "all 0.2s",
-          }} title="Publish flow">
-            <Play size={12} style={{ marginRight: 4 }} /><span className="btn-text"> {isSaving ? "Publishing..." : "Publish"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── BODY ────────────────────────────────────────────────── */}
-      <div className="instdm-body" style={{ maxWidth: 1080 }}>
-
-        {/* ── LEFT: FLOW / SETTINGS / ANALYTICS ─── */}
-        <div className="instdm-left" style={{ flex: 1 }}>
-
-          {tab === "flow" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {/* Step list */}
-              {steps.map((s, gi) => (
-                <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
-                  expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
-                  onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
-                  onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
-                />
+            {/* Platform Switcher */}
+            <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
+              {Object.entries(PLATFORMS).map(([id, p]) => (
+                <button key={id} onClick={() => setPlatform(id)} style={{
+                  padding: "5px 12px", borderRadius: 8, fontSize: 11.5, fontWeight: 800, border: "none", cursor: "pointer", fontFamily: "inherit",
+                  background: platform === id ? DS.card : "transparent",
+                  color: platform === id ? DS.accent : DS.ink3,
+                  boxShadow: platform === id ? DS.shadow : "none",
+                  transition: "all 0.15s", display: "flex", alignItems: "center", gap: 5,
+                }}>
+                  <span style={{ fontSize: 14 }}>{p.icon}</span>
+                  <span className="btn-text" style={{ fontSize: 10.5 }}>{p.name}</span>
+                </button>
               ))}
-
-              {/* Add step */}
-              <div style={{ marginTop: 16 }} ref={bottomRef}>
-                <AddActionPicker onAdd={addStep} />
-              </div>
             </div>
-          )}
 
-          {tab === "settings" && <SettingsPanel settings={settings} setSettings={setSettings} />}
-          {tab === "analytics" && <AnalyticsPanel />}
+            <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
+              {TABS.map(t => (
+                <button key={t.id} onClick={() => setTab(t.id)} style={{
+                  padding: "5px 9px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit",
+                  background: tab === t.id ? DS.card : "transparent",
+                  color: tab === t.id ? DS.ink : DS.ink3,
+                  boxShadow: tab === t.id ? DS.shadow : "none",
+                  transition: "all 0.15s", display: "flex", alignItems: "center", gap: 3,
+                }}>{t.icon}<span className="ftab-label"> {t.label}</span></button>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Action buttons */}
+          <div className="flow-hdr-r2">
+
+            <button onClick={() => setIsLive(!isLive)} style={{
+              padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
+              background: isLive ? DS.greenSoft : DS.bg, color: isLive ? DS.green : DS.ink3, cursor: "pointer", fontFamily: "inherit",
+              display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s",
+            }}>
+              <span style={{ width: 7, height: 7, borderRadius: "50%", background: isLive ? DS.green : DS.ink3, display: "inline-block", boxShadow: isLive ? `0 0 6px ${DS.green}` : "none", transition: "all 0.2s" }} />
+              {isLive ? "Live" : "Draft"}
+            </button>
+
+            <button onClick={handleSave} style={{
+              padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${saved ? DS.green : DS.border}`,
+              background: saved ? DS.greenSoft : DS.bg, color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+            }}>{saved ? "✓" : "💾"}<span className="btn-text"> {saved ? "Saved!" : "Save"}</span></button>
+
+            <button onClick={() => { handleSave(true); }} style={{
+              padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 800, border: "none", fontFamily: "inherit",
+              background: `linear-gradient(135deg,${DS.accent},#F97316)`,
+              color: "#fff", cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(232,69,10,0.3)", transition: "all 0.2s",
+            }} title="Publish flow">
+              <Play size={12} style={{ marginRight: 4 }} /><span className="btn-text"> {isSaving ? "Publishing..." : "Publish"}</span>
+            </button>
+          </div>
         </div>
 
-        {/* ── RIGHT: PHONE PREVIEW ─── */}
-        <div className="instdm-preview">
-          <PhonePreview steps={steps} platform={platform} />
+        {/* ── BODY ────────────────────────────────────────────────── */}
+        <div className="instdm-body" style={{ maxWidth: 1080 }}>
+
+          {/* ── LEFT: FLOW / SETTINGS / ANALYTICS ─── */}
+          <div className="instdm-left" style={{ flex: 1 }}>
+
+            {tab === "flow" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {/* Step list */}
+                {steps.map((s, gi) => (
+                  <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
+                    expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                    onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
+                    onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
+                    onSaveStep={handleStepSave} onAddStep={addStep}
+                  />
+                ))}
+
+                {/* Add step */}
+                <div style={{ marginTop: 16 }} ref={bottomRef}>
+                  <AddActionPicker onAdd={addStep} />
+                </div>
+              </div>
+            )}
+
+            {tab === "settings" && <SettingsPanel settings={settings} setSettings={setSettings} />}
+            {tab === "analytics" && <AnalyticsPanel />}
+          </div>
+
+          {/* ── RIGHT: PHONE PREVIEW ─── */}
+          <div className="instdm-preview">
+            <PhonePreview steps={steps} platform={platform} />
+          </div>
         </div>
       </div>
-    </div>
-  </DSContext.Provider>
-);
+    </DSContext.Provider>
+  );
 }
