@@ -1,649 +1,304 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useTheme } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { motion } from "framer-motion";
 import {
-    MessageSquare,
-    Zap,
-    BarChart2,
-    Bot,
-    Users,
-    Instagram,
-    Facebook,
-    ArrowRight,
-    Check,
-    Star,
-    GitBranch,
-    Shield,
-    Globe,
-    ChevronRight,
-    Play,
-    Sparkles,
-    TrendingUp,
-    Clock,
-    Target,
-    ChevronDown,
-    Menu,
-    X,
+  Sparkles, Zap, ArrowRight, Play
 } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
-const features = [
-    {
-        icon: Bot,
-        title: "AI-Powered Auto Replies",
-        desc: "Let our AI handle conversations intelligently. Train it on your brand voice and watch it engage customers 24/7.",
-        color: "#ec4899",
-        grad: "from-pink-500 to-purple-500",
-    },
-    {
-        icon: GitBranch,
-        title: "Visual Flow Builder",
-        desc: "Create complex automation sequences with a drag-and-drop canvas. No coding required.",
-        color: "#a855f7",
-        grad: "from-purple-500 to-pink-500",
-    },
-    {
-        icon: MessageSquare,
-        title: "Unified Inbox",
-        desc: "Manage Instagram DMs and Facebook Messenger conversations in one beautiful interface.",
-        color: "#db2777",
-        grad: "from-pink-600 to-rose-600",
-    },
-    {
-        icon: BarChart2,
-        title: "Advanced Analytics",
-        desc: "Track engagement, leads, and conversion rates with real-time dashboards and reports.",
-        color: "#d946ef",
-        grad: "from-fuchsia-500 to-pink-500",
-    },
-    {
-        icon: Target,
-        title: "Comment → DM Funnels",
-        desc: "Turn every comment into a private conversation. Capture leads the moment they engage.",
-        color: "#f472b6",
-        grad: "from-pink-400 to-purple-400",
-    },
-    {
-        icon: Shield,
-        title: "Meta Compliant",
-        desc: "Fully compliant with Instagram and Facebook Platform Policies. Safe, secure, and reliable.",
-        color: "#ec4899",
-        grad: "from-pink-500 to-purple-500",
-    },
-];
+gsap.registerPlugin(useGSAP);
 
-const testimonials = [
-    {
-        name: "Aryan Mehta",
-        role: "E-commerce Founder",
-        company: "StyleCart",
-        text: "BotChat tripled our Instagram DM response rate. We're converting 3x more leads now without any extra effort. Absolute game-changer!",
-        avatar: "AM",
-        grad: "from-pink-500 to-orange-400",
-        stars: 5,
-    },
-    {
-        name: "Priya Singh",
-        role: "Marketing Director",
-        company: "GrowthAgency",
-        text: "The flow builder is insane. We built a whole lead nurturing sequence in 20 minutes. Our clients love the results.",
-        avatar: "PS",
-        grad: "from-purple-500 to-cyan-400",
-        stars: 5,
-    },
-    {
-        name: "James Wilson",
-        role: "Content Creator",
-        company: "1.2M followers",
-        text: "Finally an automation tool that doesn't feel spammy. The AI replies are incredibly natural and my engagement has gone through the roof.",
-        avatar: "JW",
-        grad: "from-blue-500 to-green-400",
-        stars: 5,
-    },
-];
+/* ─── Sub-components ─────────────────────────────────────── */
+function GradientMesh() {
+  const glowRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
-const plans = [
-    {
-        name: "Starter",
-        price: 29,
-        desc: "Perfect for creators",
-        features: ["1 IG + 1 FB account", "500 auto-replies/mo", "3 automation flows", "Basic analytics"],
-        color: "#ec4899",
-        cta: "Start Free Trial",
-    },
-    {
-        name: "Pro",
-        price: 79,
-        desc: "For growing businesses",
-        features: ["3 IG + 3 FB accounts", "Unlimited auto-replies", "Unlimited flows + AI", "Advanced analytics", "A/B testing", "Priority support"],
-        color: "#a855f7",
-        popular: true,
-        cta: "Start Free Trial",
-    },
-    {
-        name: "Business",
-        price: 199,
-        desc: "Enterprise power",
-        features: ["Unlimited accounts", "Custom AI training", "White-label", "API access", "Dedicated manager", "SLA guarantee"],
-        color: "#db2777",
-        cta: "Contact Sales",
-    },
-];
+  useEffect(() => {
+    setMounted(true);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (glowRef.current) {
+        gsap.to(glowRef.current, {
+          x: e.clientX,
+          y: e.clientY,
+          xPercent: -50,
+          yPercent: -50,
+          duration: 0.8,
+          ease: "power2.out"
+        });
+      }
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
-const stats = [
-    { value: "10M+", label: "Messages Automated" },
-    { value: "50K+", label: "Active Businesses" },
-    { value: "94%", label: "Average Open Rate" },
-    { value: "3.8x", label: "Average ROI Increase" },
-];
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes panGrid {
+          0% { background-position: 0px 0px; }
+          100% { background-position: 80px 80px; }
+        }
+        @keyframes floatUp {
+          0% { transform: translateY(110vh) translateX(0); opacity: 0; }
+          20% { opacity: 0.8; }
+          80% { opacity: 0.8; }
+          100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
+        }
+        .animated-grid {
+          animation: panGrid 4s linear infinite;
+        }
+        .particle {
+          position: absolute;
+          border-radius: 50%;
+          animation: floatUp linear infinite;
+        }
+      `}} />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[#040008] overflow-hidden">
+        
+        {/* Extremely visible Panning Grid Effect */}
+        <div className="absolute inset-0 opacity-30 animated-grid" 
+          style={{ 
+            backgroundImage: "linear-gradient(to right, rgba(255,45,120,0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(168,85,247,0.5) 1px, transparent 1px)", 
+            backgroundSize: "80px 80px" 
+          }} 
+        />
+             
+        {/* Trendy Floating Dust Particles via Pure CSS */}
+        {mounted && Array.from({ length: 40 }).map((_, i) => {
+           const size = Math.random() * 4 + 3;
+           return (
+            <div
+              key={i}
+              className="particle mix-blend-screen"
+              style={{
+                left: `${Math.random() * 100}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                background: Math.random() > 0.5 ? "#FF2D78" : "#8A2BE2",
+                boxShadow: `0 0 ${size * 3}px ${Math.random() > 0.5 ? "#FF2D78" : "#8A2BE2"}`,
+                animationDuration: `${Math.random() * 10 + 10}s`,
+                animationDelay: `-${Math.random() * 20}s`
+              }}
+            />
+          )
+        })}
 
-const faqs = [
-    { q: "Is BotChat compliant with Meta's policies?", a: "Yes! We are fully compliant with Instagram Messaging API and Facebook Messenger Platform policies. All permissions are properly requested following Meta's guidelines." },
-    { q: "How long does it take to set up?", a: "Most users are up and running in under 10 minutes. Our onboarding wizard guides you through connecting your accounts and creating your first automation." },
-    { q: "Can I try before I buy?", a: "Absolutely! We offer a 14-day free trial on all plans with no credit card required. You get full access to all features during the trial." },
-    { q: "What platforms are supported?", a: "We support Instagram Business Accounts and Facebook Pages. Both platforms are fully integrated for a seamless unified experience." },
-];
+        {/* Fade the grid & particles out towards edges so text remains readable */}
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 30%, #040008 85%)" }} />
+
+        {/* Dynamic Floating Orbs / Bubbles */}
+        <motion.div animate={{ x: [0, 100, -50, 0], y: [0, -80, 50, 0], scale: [1, 1.2, 0.8, 1] }} 
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[10%] left-[10%] w-[550px] h-[550px] rounded-full opacity-40 mix-blend-screen"
+          style={{ background: "radial-gradient(circle, #E1306C 0%, transparent 60%)", filter: "blur(80px)" }} />
+          
+        <motion.div animate={{ x: [0, -100, 60, 0], y: [0, 100, -60, 0], scale: [1, 0.8, 1.3, 1] }} 
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute bottom-[10%] right-[10%] w-[650px] h-[650px] rounded-full opacity-35 mix-blend-screen"
+          style={{ background: "radial-gradient(circle, #FF2D78 0%, transparent 60%)", filter: "blur(90px)" }} />
+
+        {/* Interactive Mouse Glow */}
+        {mounted && (
+          <div 
+            ref={glowRef}
+            className="absolute top-0 left-0 w-[450px] h-[450px] rounded-full opacity-60 mix-blend-screen hidden lg:block"
+            style={{ background: "radial-gradient(circle, #FF6FA1 0%, transparent 60%)", filter: "blur(80px)" }} 
+          />
+        )}
+
+      </div>
+    </>
+  );
+}
+
+function HeroVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
+
+  return (
+    <div className="hero-video-wrapper relative w-full h-[380px] md:h-[480px] lg:h-[540px] opacity-0 transform translate-x-12">
+      {/* Sleek, professional glass border frame */}
+      <div className="relative rounded-3xl h-full border border-white/10"
+        style={{ background: "rgba(20,20,25,0.6)", backdropFilter: "blur(20px)", boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}>
+        
+        <div className="relative rounded-3xl overflow-hidden flex flex-col h-full bg-[#0d0d12]">
+          {/* Subtle Chrome bar */}
+          <div className="flex items-center justify-between px-5 py-3 border-b shrink-0"
+            style={{ borderColor: "rgba(255,255,255,0.05)", background: "rgba(0,0,0,0.3)" }}>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-white/10 hover:bg-red-400 transition-colors" />
+              <div className="w-3 h-3 rounded-full bg-white/10 hover:bg-yellow-400 transition-colors" />
+              <div className="w-3 h-3 rounded-full bg-white/10 hover:bg-green-400 transition-colors" />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5"
+              style={{ background: "rgba(255,255,255,0.02)" }}>
+              <div className="w-2 h-2 rounded-full live-dot bg-[#FF2D78]" />
+              <span className="text-xs font-medium text-white/50">replyrush.ai</span>
+            </div>
+            <span className="text-[10px] font-bold tracking-widest px-3 py-1 rounded-full text-white/70"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
+              ⚡ 2FAST
+            </span>
+          </div>
+
+          {/* Actual Video */}
+          <div className="relative flex-1 overflow-hidden group">
+            <video
+              ref={videoRef}
+              src="/hero-video.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+            />
+            {/* Subtle dark tint */}
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 100%)" }} />
+            
+            {/* Professional LIVE Badge */}
+            <div className="absolute top-4 right-4">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+                style={{ background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(12px)" }}>
+                <div className="w-2 h-2 rounded-full pulse-ring bg-[#FF2D78]" />
+                <span className="text-[10px] font-semibold tracking-wide text-white">LIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
-    const [openFaq, setOpenFaq] = useState<number | null>(null);
-    const [mobileMenu, setMobileMenu] = useState(false);
-    const { theme } = useTheme();
-    const isLight = theme === "light";
+  const containerRef = useRef<HTMLDivElement>(null);
 
-    return (
-        <div className="min-h-screen" style={{ background: "var(--background)" }}>
-            {/* Navigation */}
-            <nav
-                className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between transition-all duration-300"
-                style={{
-                    background: isLight ? "rgba(255,255,255,0.85)" : "rgba(10,10,15,0.85)",
-                    backdropFilter: "blur(20px)",
-                    WebkitBackdropFilter: "blur(20px)",
-                    borderBottom: "1px solid var(--glass-border)",
-                }}
-            >
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
-                        <MessageSquare className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-bold text-lg gradient-text">BotChat</span>
-                </div>
-
-                <div className="hidden md:flex items-center gap-6">
-                    {["Features", "Pricing", "Testimonials", "FAQ"].map((item) => (
-                        <a key={item} href={`#${item.toLowerCase()}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                            {item}
-                        </a>
-                    ))}
-                </div>
-
-                <div className="hidden md:flex items-center gap-3">
-                    <ThemeToggle />
-                    <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        Sign In
-                    </Link>
-                    <Link
-                        href="/dashboard"
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-                        style={{ background: "var(--brand-gradient)", color: "white" }}
-                    >
-                        Start Free Trial
-                        <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                </div>
-
-                <div className="md:hidden flex items-center gap-2">
-                    <ThemeToggle />
-                    <button onClick={() => setMobileMenu(!mobileMenu)}>
-                        {mobileMenu ? <X className="w-5 h-5" style={{ color: "var(--foreground)" }} /> : <Menu className="w-5 h-5" style={{ color: "var(--foreground)" }} />}
-                    </button>
-                </div>
-            </nav>
-
-            {/* Mobile Menu */}
-            {mobileMenu && (
-                <div className="fixed inset-0 z-40 pt-16 transition-all duration-300" style={{ background: isLight ? "rgba(248,248,252,0.98)" : "rgba(10,10,15,0.97)", backdropFilter: "blur(20px)" }}>
-                    <div className="p-6 space-y-4">
-                        {["Features", "Pricing", "Testimonials", "FAQ"].map((item) => (
-                            <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMobileMenu(false)} className="block text-lg font-medium text-foreground py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-                                {item}
-                            </a>
-                        ))}
-                        <Link href="/dashboard" className="block" onClick={() => setMobileMenu(false)}>
-                            <button className="w-full py-3 rounded-xl text-sm font-semibold" style={{ background: "var(--brand-gradient)", color: "white" }}>
-                                Start Free Trial
-                            </button>
-                        </Link>
-                    </div>
-                </div>
-            )}
-
-            {/* Hero Section */}
-            <section className="pt-32 pb-24 px-4 md:px-6 text-center relative overflow-hidden">
-                {/* Background orbs */}
-                <div className="absolute top-20 left-1/4 w-80 h-80 rounded-full blur-[120px] opacity-20 pointer-events-none" style={{ background: "#ec4899" }} />
-                <div className="absolute top-40 right-1/4 w-60 h-60 rounded-full blur-[100px] opacity-15 pointer-events-none" style={{ background: "#a855f7" }} />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-40 blur-[80px] opacity-10 pointer-events-none" style={{ background: "#ec4899" }} />
-
-                <div className="relative max-w-5xl mx-auto">
-                    {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium" style={{ background: "rgba(236,72,153,0.1)", border: "1px solid rgba(236,72,153,0.25)", color: "#ec4899" }}>
-                        <Sparkles className="w-4 h-4" />
-                        AI-Powered Instagram & Facebook Automation
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "rgba(236,72,153,0.3)" }}>NEW</span>
-                    </div>
-
-                    <h1 className="text-5xl md:text-7xl font-extrabold text-foreground mb-6 leading-tight tracking-tight">
-                        Automate Your <br />
-                        <span className="gradient-text">Social Media DMs</span> <br />
-                        at Scale
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                        Turn Instagram comments and Facebook messages into revenue. BotChat automates your DMs with AI, captures leads, and nurtures customers — all on autopilot.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-                        <Link
-                            href="/dashboard"
-                            className="flex items-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold transition-all hover:opacity-90 hover:scale-105"
-                            style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 8px 30px rgba(236,72,153,0.5)" }}
-                        >
-                            Start Free Trial — 14 Days
-                            <ArrowRight className="w-5 h-5" />
-                        </Link>
-                        <Link
-                            href="/dashboard"
-                            className="flex items-center gap-2 px-7 py-4 rounded-2xl text-base font-semibold transition-all"
-                            style={{
-                                background: isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)",
-                                color: "var(--foreground)",
-                                border: "1px solid var(--glass-border)",
-                            }}
-                        >
-                            <Play className="w-4 h-4" />
-                            Watch Demo
-                        </Link>
-                    </div>
-
-                    <p className="text-xs text-muted-foreground">No credit card required · Setup in 5 minutes · Cancel anytime</p>
-
-                    {/* Social proof */}
-                    <div className="flex items-center justify-center gap-3 mt-8">
-                        <div className="flex -space-x-2">
-                            {["AM", "PS", "JW", "KR", "MB"].map((a, i) => (
-                                <div
-                                    key={a}
-                                    className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold text-white"
-                                    style={{
-                                        borderColor: "var(--background)",
-                                        background: `hsl(${320 + i * 15}, 70%, 60%)`,
-                                        zIndex: 5 - i,
-                                    }}
-                                >
-                                    {a}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                            <span className="text-foreground font-semibold">50,000+</span> businesses already automating
-                        </div>
-                    </div>
-                </div>
-
-                {/* Hero Dashboard Preview */}
-                <div className="relative max-w-5xl mx-auto mt-16">
-                    <div
-                        className="rounded-3xl overflow-hidden p-2"
-                        style={{
-                            background: "rgba(255,255,255,0.04)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            boxShadow: "0 40px 80px rgba(0,0,0,0.6), 0 0 100px rgba(236,72,153,0.15)",
-                        }}
-                    >
-                        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--card)" }}>
-                            {/* Mock dashboard header */}
-                            <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                                <div className="w-3 h-3 rounded-full bg-red-400" />
-                                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                                <div className="w-3 h-3 rounded-full bg-green-400" />
-                                <div className="flex-1 mx-4 h-6 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }} />
-                            </div>
-
-                            {/* Mock content */}
-                            <div className="flex h-64">
-                                {/* Mock sidebar */}
-                                <div className="w-48 border-r p-3 space-y-2" style={{ borderColor: "rgba(255,255,255,0.05)", background: "var(--sidebar)" }}>
-                                    {["Dashboard", "Inbox", "Automations", "Analytics"].map((item, i) => (
-                                        <div
-                                            key={item}
-                                            className="flex items-center gap-2 px-2 py-2 rounded-lg"
-                                            style={i === 0 ? { background: "rgba(236,72,153,0.2)" } : {}}
-                                        >
-                                            <div className="w-4 h-4 rounded" style={{ background: i === 0 ? "#ec4899" : "rgba(255,255,255,0.1)" }} />
-                                            <div className="h-2.5 rounded-full flex-1" style={{ background: i === 0 ? "rgba(236,72,153,0.4)" : "rgba(255,255,255,0.08)", width: `${60 + i * 10}%` }} />
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Mock main */}
-                                <div className="flex-1 p-4 space-y-3">
-                                    <div className="grid grid-cols-4 gap-3">
-                                        {["#7c3aed", "#06b6d4", "#10b981", "#f59e0b"].map((color) => (
-                                            <div key={color} className="h-16 rounded-xl p-3 flex flex-col justify-between" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                                                <div className="w-6 h-6 rounded-lg" style={{ background: `${color}20` }} />
-                                                <div className="h-4 rounded-full w-full" style={{ background: "rgba(255,255,255,0.08)" }} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-3">
-                                        <div className="col-span-2 h-28 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                                            {/* Mini chart bars */}
-                                            <div className="flex items-end gap-1.5 h-full p-4">
-                                                {[40, 70, 50, 90, 65, 80, 55].map((h, i) => (
-                                                    <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i % 2 === 0 ? "#ec4899" : "#a855f7", opacity: 0.7 }} />
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="h-28 rounded-xl p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                                            <div className="space-y-2">
-                                                {[1, 2, 3].map(i => (
-                                                    <div key={i} className="flex gap-2 items-center">
-                                                        <div className="w-5 h-5 rounded-full" style={{ background: `hsl(${230 + i * 30}, 70%, 60%)` }} />
-                                                        <div className="flex-1 h-2 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Floating badges */}
-                    <div
-                        className="absolute -left-4 top-1/3 float-anim px-3 py-2 rounded-xl hidden md:flex items-center gap-2 text-sm font-medium"
-                        style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", color: "#10b981", backdropFilter: "blur(10px)" }}
-                    >
-                        <Bot className="w-4 h-4" />
-                        AI replied in 1.2s
-                    </div>
-                    <div
-                        className="absolute -right-4 top-1/4 float-anim px-3 py-2 rounded-xl hidden md:flex items-center gap-2 text-sm font-medium"
-                        style={{ background: "rgba(236,72,153,0.1)", border: "1px solid rgba(236,72,153,0.3)", color: "#ec4899", backdropFilter: "blur(10px)", animationDelay: "1s" }}
-                    >
-                        <TrendingUp className="w-4 h-4" />
-                        +124 leads today
-                    </div>
-                </div>
-            </section>
-
-            {/* Stats */}
-            <section className="py-16 px-6 border-y" style={{ borderColor: "var(--glass-border)", background: isLight ? "rgba(0,0,0,0.02)" : "rgba(255,255,255,0.01)" }}>
-                <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {stats.map((s) => (
-                        <div key={s.label} className="text-center">
-                            <div className="text-4xl font-extrabold gradient-text mb-2">{s.value}</div>
-                            <div className="text-sm text-muted-foreground">{s.label}</div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Features */}
-            <section id="features" className="py-24 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-4" style={{ background: "rgba(236,72,153,0.1)", color: "#ec4899", border: "1px solid rgba(236,72,153,0.2)" }}>
-                            <Zap className="w-3 h-3" />
-                            POWERFUL FEATURES
-                        </div>
-                        <h2 className="text-4xl font-bold text-foreground mb-4">Everything you need to automate</h2>
-                        <p className="text-muted-foreground text-lg max-w-xl mx-auto">A complete platform for Instagram and Facebook automation that actually drives results</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {features.map((feat, i) => (
-                            <div
-                                key={feat.title}
-                                className="glass-card rounded-2xl p-6 group hover:border-opacity-50 transition-all duration-300 hover:translate-y-[-4px]"
-                                style={{ "--hover-color": feat.color } as React.CSSProperties}
-                            >
-                                <div
-                                    className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${feat.grad} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-                                >
-                                    <feat.icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="font-bold text-foreground text-lg mb-2">{feat.title}</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed">{feat.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* How it works */}
-            <section className="py-24 px-6" style={{ background: isLight ? "rgba(0,0,0,0.02)" : "rgba(255,255,255,0.01)" }}>
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-foreground mb-4">Up and running in 5 minutes</h2>
-                        <p className="text-muted-foreground text-lg">No technical skills required</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-                        {/* Connecting line */}
-                        <div className="absolute top-10 left-1/4 right-1/4 h-0.5 hidden md:block" style={{ background: "linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent)" }} />
-
-                        {[
-                            { step: "01", title: "Connect Your Accounts", desc: "Link your Instagram Business Account and Facebook Page via secure OAuth in seconds.", icon: Instagram, color: "#ec4899" },
-                            { step: "02", title: "Build Your Flow", desc: "Use our visual drag-and-drop builder to create automation sequences. Choose from 20+ templates.", icon: GitBranch, color: "#7c3aed" },
-                            { step: "03", title: "Watch Leads Roll In", desc: "Activate your automation and watch your DMs handle themselves while you focus on growth.", icon: TrendingUp, color: "#10b981" },
-                        ].map((step) => (
-                            <div key={step.step} className="text-center glass-card rounded-2xl p-8 relative">
-                                <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: `${step.color}15`, border: `2px solid ${step.color}30` }}>
-                                    <step.icon className="w-8 h-8" style={{ color: step.color }} />
-                                </div>
-                                <div className="absolute top-4 right-4 text-xs font-bold opacity-20" style={{ color: step.color }}>{step.step}</div>
-                                <h3 className="font-bold text-foreground text-lg mb-3">{step.title}</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Testimonials */}
-            <section id="testimonials" className="py-24 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-foreground mb-4">Loved by 50,000+ businesses</h2>
-                        <p className="text-muted-foreground text-lg">Real results from real customers</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        {testimonials.map((t, i) => (
-                            <div key={t.name} className="glass-card rounded-2xl p-6 relative" style={i === 1 ? { border: "1px solid rgba(124,58,237,0.3)" } : {}}>
-                                {i === 1 && (
-                                    <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: "var(--brand-gradient)" }} />
-                                )}
-                                <div className="flex items-center gap-1 mb-4">
-                                    {[...Array(t.stars)].map((_, j) => (
-                                        <Star key={j} className="w-4 h-4 fill-current" style={{ color: "#f59e0b" }} />
-                                    ))}
-                                </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed mb-5">&ldquo;{t.text}&rdquo;</p>
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.grad} flex items-center justify-center text-xs font-bold text-white`}>{t.avatar}</div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                                        <p className="text-xs text-muted-foreground">{t.role} · {t.company}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Pricing */}
-            <section id="pricing" className="py-24 px-6" style={{ background: isLight ? "rgba(0,0,0,0.02)" : "rgba(255,255,255,0.01)" }}>
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-foreground mb-4">Simple, transparent pricing</h2>
-                        <p className="text-muted-foreground text-lg">14-day free trial · No credit card required · Cancel anytime</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        {plans.map((plan) => (
-                            <div
-                                key={plan.name}
-                                className="glass-card rounded-2xl p-7 relative overflow-hidden"
-                                style={plan.popular ? { border: `1px solid ${plan.color}40`, boxShadow: `0 20px 60px ${plan.color}15` } : {}}
-                            >
-                                {plan.popular && (
-                                    <>
-                                        <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: "var(--brand-gradient)" }} />
-                                        <div className="absolute top-5 right-5 text-[10px] font-bold px-2 py-1 rounded-full" style={{ background: "var(--brand-gradient)", color: "white" }}>POPULAR</div>
-                                    </>
-                                )}
-
-                                <h3 className="text-xl font-bold text-foreground mb-1">{plan.name}</h3>
-                                <p className="text-xs text-muted-foreground mb-4">{plan.desc}</p>
-
-                                <div className="flex items-end gap-1 mb-6">
-                                    <span className="text-4xl font-extrabold text-foreground">${plan.price}</span>
-                                    <span className="text-muted-foreground mb-1">/month</span>
-                                </div>
-
-                                <div className="space-y-2.5 mb-7">
-                                    {plan.features.map((f) => (
-                                        <div key={f} className="flex items-center gap-2">
-                                            <Check className="w-4 h-4 flex-shrink-0" style={{ color: plan.color }} />
-                                            <span className="text-sm text-muted-foreground">{f}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <Link href="/dashboard">
-                                    <button
-                                        className="w-full py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-                                        style={plan.popular ? { background: "var(--brand-gradient)", color: "white" } : { background: `${plan.color}15`, color: plan.color, border: `1px solid ${plan.color}30` }}
-                                    >
-                                        {plan.cta}
-                                    </button>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* FAQ */}
-            <section id="faq" className="py-24 px-6">
-                <div className="max-w-3xl mx-auto">
-                    <div className="text-center mb-14">
-                        <h2 className="text-4xl font-bold text-foreground mb-4">Frequently asked questions</h2>
-                    </div>
-
-                    <div className="space-y-3">
-                        {faqs.map((faq, i) => (
-                            <div
-                                key={i}
-                                className="glass-card rounded-2xl overflow-hidden cursor-pointer"
-                                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                            >
-                                <div className="flex items-center justify-between px-5 py-4">
-                                    <span className="text-sm font-semibold text-foreground">{faq.q}</span>
-                                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
-                                </div>
-                                {openFaq === i && (
-                                    <div className="px-5 pb-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                                        <p className="text-sm text-muted-foreground leading-relaxed pt-3">{faq.a}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA */}
-            <section className="py-24 px-6">
-                <div className="max-w-3xl mx-auto text-center">
-                    <div
-                        className="rounded-3xl p-12 relative overflow-hidden"
-                        style={{
-                            background: "radial-gradient(ellipse at center, rgba(236,72,153,0.2) 0%, rgba(10,10,15,0.8) 70%)",
-                            border: "1px solid rgba(236,72,153,0.2)",
-                            boxShadow: "0 30px 80px rgba(236,72,153,0.2)",
-                        }}
-                    >
-                        <div className="absolute inset-0 opacity-30" style={{ background: "var(--brand-gradient-soft)" }} />
-                        <div className="relative">
-                            <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center" style={{ background: "var(--brand-gradient)", boxShadow: "0 8px 30px rgba(236,72,153,0.5)" }}>
-                                <Sparkles className="w-8 h-8 text-white" />
-                            </div>
-                            <h2 className="text-4xl font-bold text-foreground mb-4">Ready to automate?</h2>
-                            <p className="text-muted-foreground text-lg mb-8">Join 50,000+ businesses using BotChat to grow on autopilot</p>
-                            <Link href="/dashboard">
-                                <button
-                                    className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-base font-semibold transition-all hover:opacity-90 hover:scale-105"
-                                    style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 8px 30px rgba(236,72,153,0.5)" }}
-                                >
-                                    Start Your Free Trial Today
-                                    <ArrowRight className="w-5 h-5" />
-                                </button>
-                            </Link>
-                            <p className="text-xs text-muted-foreground mt-4">14 days free · No credit card needed · Setup in 5 min</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <footer className="border-t py-12 px-6" style={{ borderColor: "var(--glass-border)" }}>
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-                        <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
-                                    <MessageSquare className="w-3.5 h-3.5 text-white" />
-                                </div>
-                                <span className="font-bold gradient-text">BotChat</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed">AI-powered Instagram & Facebook automation for modern businesses.</p>
-                        </div>
-                        {[
-                            { title: "Product", links: ["Features", "Pricing", "Flow Builder", "Analytics", "Changelog"] },
-                            { title: "Company", links: ["About", "Blog", "Careers", "Contact", "Partners"] },
-                            { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Data Deletion", "Cookie Policy"] },
-                        ].map((col) => (
-                            <div key={col.title}>
-                                <h4 className="font-semibold text-foreground text-sm mb-4">{col.title}</h4>
-                                <ul className="space-y-2.5">
-                                    {col.links.map((link) => (
-                                        <li key={link}>
-                                            <a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">{link}</a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t" style={{ borderColor: "var(--glass-border)" }}>
-                        <p className="text-xs text-muted-foreground">© 2025 BotChat. All rights reserved. Meta compliant platform.</p>
-                        <div className="flex items-center gap-4">
-                            {["Instagram", "Facebook", "Twitter", "LinkedIn"].map((s) => (
-                                <a key={s} href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">{s}</a>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
+  useGSAP(() => {
+    // Reveal text elements sequentially with a stagger
+    gsap.fromTo(
+      ".hero-text-elem",
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: "power4.out", delay: 0.2 }
     );
+    
+    // Slide in the video from the right
+    gsap.to(".hero-video-wrapper", {
+      opacity: 1,
+      x: 0,
+      duration: 1.4,
+      ease: "power3.out",
+      delay: 0.6
+    });
+
+    // Infinite live dot pulse
+    gsap.to(".live-dot", {
+      scale: 1.5,
+      opacity: 0.5,
+      repeat: -1,
+      yoyo: true,
+      duration: 0.8,
+      ease: "power1.inOut"
+    });
+
+    gsap.to(".pulse-ring", {
+      boxShadow: "0 0 0 3px rgba(255,45,120,0.5)",
+      repeat: -1,
+      yoyo: true,
+      duration: 0.6
+    });
+
+  }, { scope: containerRef });
+
+  return (
+    <div ref={containerRef} className="min-h-screen overflow-hidden w-full relative" style={{ color: "#f0e0f0" }}>
+      <GradientMesh />
+
+      {/* NAV */}
+      <nav className="fixed top-0 inset-x-0 z-50 px-6 py-4 flex items-center justify-between"
+        style={{ background: "rgba(10,0,16,0.6)", backdropFilter: "blur(24px)", borderBottom: "1px solid rgba(255,45,120,0.1)" }}>
+        <div className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-extrabold text-xl tracking-tight" style={{ background: "linear-gradient(135deg, #FF2D78, #FFB6C8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ReplyRush</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard" className="hidden sm:block text-sm font-semibold transition-colors hover:text-[#FF2D78]" style={{ color: "rgba(255,210,230,0.7)" }}>Sign In</Link>
+          <Link href="/dashboard" className="px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-105"
+            style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 0 16px rgba(255,45,120,0.4)" }}>
+            Start Free
+          </Link>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section className="relative pt-32 pb-20 px-6 min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          
+          {/* LEFT: Stunning Interactive Text */}
+          <div className="order-1 text-left relative z-10 pt-10 lg:pt-0 pl-1 lg:pl-4">
+            <div className="hero-text-elem inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-6 border"
+              style={{ background: "rgba(255,45,120,0.08)", borderColor: "rgba(255,45,120,0.25)", color: "#FF6FA1", boxShadow: "0 0 30px rgba(255,45,120,0.15)" }}>
+              <Zap className="w-4 h-4" /> AI-Powered Platform
+            </div>
+
+            <h1 className="hero-text-elem text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1] mb-6 whitespace-nowrap lg:whitespace-normal">
+              <span className="block text-white">Reply to Every</span>
+              <span className="block text-white">Comment.</span>
+              <span className="block mt-1 pb-1 text-[#FFB6C8]" style={{ background: "linear-gradient(135deg, #FF80AB 0%, #FFB6C8 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                Instantly. With AI.
+              </span>
+            </h1>
+
+            <p className="hero-text-elem text-base sm:text-lg md:text-xl max-w-xl mb-10 leading-relaxed text-white/60">
+              Deploy ultra-human replies across Instagram, Twitter, and LinkedIn in seconds. Stop losing engagement, start scaling your brand.
+            </p>
+
+            <div className="hero-text-elem flex flex-col sm:flex-row items-center gap-5 mb-8">
+              <Link href="/dashboard"
+                className="group flex items-center justify-center w-full sm:w-auto gap-2.5 px-8 py-4 rounded-2xl text-lg font-black text-white transition-all transform hover:-translate-y-1 hover:shadow-lg"
+                style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 10px 30px rgba(255,45,120,0.35)" }}>
+                Start Free Trial <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <button className="group flex items-center justify-center w-full sm:w-auto gap-2.5 px-8 py-4 rounded-2xl text-lg font-bold transition-all transform hover:-translate-y-1"
+                style={{ background: "rgba(255,45,120,0.05)", border: "1px solid rgba(255,45,120,0.3)", color: "#FFB6C8" }}>
+                <Play className="w-5 h-5 fill-current transition-transform group-hover:scale-110" /> Watch Promo
+              </button>
+            </div>
+
+            <div className="hero-text-elem flex items-center gap-4">
+              <div className="flex -space-x-2">
+                {["AR", "PS", "JW"].map((a, i) => (
+                  <div key={a} className="w-10 h-10 rounded-full border-[3px] flex items-center justify-center text-xs font-bold text-white relative hover:scale-110 hover:-translate-y-1 transition-transform cursor-pointer"
+                    style={{ background: `hsl(${330 + i * 15}, 85%, 60%)`, borderColor: "#0a0010", zIndex: 10 - i, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}>
+                    {a}
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm font-semibold" style={{ color: "rgba(255,180,200,0.55)" }}>
+                <span className="text-[#FF2D78] text-base font-black">60,000+</span> creators growing fast.
+                <br/><span className="text-xs opacity-70">No credit card required.</span>
+              </p>
+            </div>
+          </div>
+
+          {/* RIGHT: Video */}
+          <div className="order-2 relative z-10 w-full lg:-mr-10">
+            <HeroVideo />
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  );
 }
