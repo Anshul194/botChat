@@ -1,0 +1,426 @@
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import {
+    Plus, Trash2, Save, RefreshCw, ChevronDown, ChevronRight,
+    Link2, MousePointerClick, Layers, Info, Trash, Check, X
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+interface PersistentMenuItem {
+    id?: string;
+    title: string;
+    type: "web_url" | "postback" | "nested";
+    url?: string;
+    payload?: string;
+    call_to_actions?: PersistentMenuItem[];
+}
+
+interface PersistentMenuProps {
+    pageId: string;
+    actions: any[];
+}
+
+export default function PersistentMenu({ pageId, actions }: PersistentMenuProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const [composerInputDisabled, setComposerInputDisabled] = useState(false);
+    const [items, setItems] = useState<PersistentMenuItem[]>([]);
+
+    const fetchMenu = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get(`/facebook/persistent-menu/${pageId}`);
+            if (response.data.success || response.data.is_success) {
+                const data = response.data.data;
+                if (data) {
+                  setComposerInputDisabled(data.composer_input_disabled || false);
+                  setItems(data.items || []);
+                } else {
+                  setItems([]);
+                }
+            }
+        } catch (error) {
+            console.error("Fetch Menu Error:", error);
+            // Ignore 404/not found errors usually means no menu set
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (pageId) fetchMenu();
+    }, [pageId]);
+
+    const handleAddItem = (parentIndex?: number) => {
+        const newItem: PersistentMenuItem = {
+            title: "",
+            type: "web_url",
+            url: ""
+        };
+
+        if (parentIndex !== undefined) {
+            const newItems = [...items];
+            if (!newItems[parentIndex].call_to_actions) {
+                newItems[parentIndex].call_to_actions = [];
+            }
+            if (newItems[parentIndex].call_to_actions!.length >= 5) {
+                toast.error("Max 5 items allowed in nested menu");
+                return;
+            }
+            newItems[parentIndex].call_to_actions!.push(newItem);
+            setItems(newItems);
+        } else {
+            if (items.length >= 3) {
+                toast.error("Max 3 items allowed in top-level menu");
+                return;
+            }
+            setItems([...items, newItem]);
+        }
+    };
+
+    const handleRemoveItem = (index: number, subIndex?: number) => {
+        if (subIndex !== undefined) {
+            const newItems = [...items];
+            newItems[index].call_to_actions?.splice(subIndex, 1);
+            setItems(newItems);
+        } else {
+            const newItems = [...items];
+            newItems.splice(index, 1);
+            setItems(newItems);
+        }
+    };
+
+    const handleUpdateItem = (index: number, subIndex: number | undefined, data: Partial<PersistentMenuItem>) => {
+        const newItems = [...items];
+        if (subIndex !== undefined) {
+            const item = newItems[index].call_to_actions![subIndex];
+            newItems[index].call_to_actions![subIndex] = { ...item, ...data };
+            
+            // Clear incompatible fields when type changes
+            if (data.type) {
+                if (data.type === 'web_url') delete newItems[index].call_to_actions![subIndex].payload;
+                if (data.type === 'postback') delete newItems[index].call_to_actions![subIndex].url;
+            }
+        } else {
+            const item = newItems[index];
+            newItems[index] = { ...item, ...data };
+            
+            // Clear incompatible fields
+            if (data.type) {
+                if (data.type === 'web_url') {
+                   delete newItems[index].payload;
+                   delete newItems[index].call_to_actions;
+                }
+                if (data.type === 'postback') {
+                   delete newItems[index].url;
+                   delete newItems[index].call_to_actions;
+                }
+                if (data.type === 'nested') {
+                   delete newItems[index].url;
+                   delete newItems[index].payload;
+                   if (!newItems[index].call_to_actions) newItems[index].call_to_actions = [];
+                }
+            }
+        }
+        setItems(newItems);
+    };
+
+    const handleSave = async () => {
+        // Validation
+        const validateItems = (itemList: PersistentMenuItem[]): string | null => {
+            for (const item of itemList) {
+                if (!item.title) return "All items must have a title";
+                if (item.type === 'web_url' && !item.url) return `Item "${item.title}" must have a URL`;
+                if (item.type === 'postback' && !item.payload) return `Item "${item.title}" must have a payload`;
+                if (item.type === 'nested') {
+                  if (!item.call_to_actions || item.call_to_actions.length === 0) return `Nested item "${item.title}" must have sub-items`;
+                  const subError: string | null = validateItems(item.call_to_actions);
+                  if (subError) return subError;
+                }
+            }
+            return null;
+        };
+
+        const error = validateItems(items);
+        if (error) {
+            toast.error(error);
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const response = await api.post('/facebook/persistent-menu/save', {
+                facebook_page_id: pageId,
+                composer_input_disabled: composerInputDisabled,
+                items: items
+            });
+            if (response.data.success || response.data.is_success) {
+                toast.success("Persistent menu saved locally");
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to save menu");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleSync = async () => {
+        setIsSyncing(true);
+        try {
+            const response = await api.post(`/facebook/persistent-menu/sync/${pageId}`);
+            if (response.data.success || response.data.is_success) {
+                toast.success("Persistent menu synced to Facebook!");
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to sync with Meta");
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!confirm("Remove persistent menu from Facebook?")) return;
+        setIsDeleting(true);
+        try {
+            const response = await api.delete(`/facebook/persistent-menu/${pageId}`);
+            if (response.data.success || response.data.is_success) {
+                toast.success("Persistent menu removed");
+                setItems([]);
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to delete");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const MenuItemForm = ({ item, index, subIndex }: { item: PersistentMenuItem, index: number, subIndex?: number }) => {
+        return (
+            <div className={cn(
+                "p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm relative group/item",
+                subIndex !== undefined ? "ml-6 mt-3" : "mt-4"
+            )}>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 space-y-3">
+                        <div className="flex flex-col gap-1">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Title (Max 30)</label>
+                            <input
+                                type="text"
+                                maxLength={30}
+                                placeholder="Menu Item Label"
+                                value={item.title}
+                                onChange={(e) => handleUpdateItem(index, subIndex, { title: e.target.value })}
+                                className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-purple-300 dark:focus:border-purple-500/30 transition-all font-semibold"
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Type</label>
+                            <select
+                                value={item.type}
+                                onChange={(e) => handleUpdateItem(index, subIndex, { type: e.target.value as any })}
+                                className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-purple-300 dark:focus:border-purple-500/30 transition-all font-semibold appearance-none"
+                            >
+                                <option value="web_url">Web URL</option>
+                                <option value="postback">Postback</option>
+                                {subIndex === undefined && <option value="nested">Nested Menu</option>}
+                            </select>
+                        </div>
+
+                        {item.type === 'web_url' && (
+                            <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">URL</label>
+                                <div className="relative">
+                                    <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                    <input
+                                        type="url"
+                                        placeholder="https://example.com"
+                                        value={item.url || ""}
+                                        onChange={(e) => handleUpdateItem(index, subIndex, { url: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-purple-300 dark:focus:border-purple-500/30 transition-all font-medium"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {item.type === 'postback' && (
+                            <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Postback Payload / Bot Flow</label>
+                                <div className="relative">
+                                    <MousePointerClick className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                    <select
+                                        value={item.payload || ""}
+                                        onChange={(e) => handleUpdateItem(index, subIndex, { payload: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-purple-300 dark:focus:border-purple-500/30 transition-all font-semibold appearance-none"
+                                    >
+                                        <option value="" disabled>Select Bot Flow</option>
+                                        {actions.map((a: any) => (
+                                            <option key={a.type} value={a.type}>{a.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex sm:flex-col justify-end gap-2 pt-2 sm:pt-6">
+                        <button
+                            onClick={() => handleRemoveItem(index, subIndex)}
+                            className="p-2.5 rounded-xl border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-300 hover:text-red-500 transition-all"
+                        >
+                            <Trash2 size={18} />
+                        </button>
+                    </div>
+                </div>
+
+                {item.type === 'nested' && (
+                    <div className="mt-4 pt-4 border-t border-neutral-50 dark:border-neutral-800/50">
+                        <div className="flex items-center justify-between mb-2">
+                             <div className="flex items-center gap-2">
+                                 <Layers className="w-3.5 h-3.5 text-purple-500" />
+                                 <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.call_to_actions?.length || 0}/5)</span>
+                             </div>
+                             <button
+                                onClick={() => handleAddItem(index)}
+                                className="px-3 py-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase tracking-widest hover:bg-purple-100 transition-all flex items-center gap-1.5"
+                             >
+                                <Plus className="w-3 h-3" /> Add Sub
+                             </button>
+                        </div>
+                        
+                        {item.call_to_actions?.map((subItem, si) => (
+                            <MenuItemForm key={si} item={subItem} index={index} subIndex={si} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div className="w-full space-y-6 pb-12 animate-in fade-in duration-500">
+            {/* Header Controls */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm">
+                <div>
+                    <h2 className="text-2xl font-black text-purple-900 dark:text-purple-100 uppercase tracking-tight">Persistent Menu Settings</h2>
+                    <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-widest mt-1">Configure the permanent menu visible in Messenger</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                     <button
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="px-5 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-red-500 hover:bg-red-50 transition-all text-[11px] font-black uppercase tracking-widest flex items-center gap-2"
+                    >
+                        {isDeleting ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Trash className="w-3 h-3" />}
+                        Delete
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="px-5 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border-2 border-purple-100 dark:border-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm"
+                    >
+                        {isSaving ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                        Save Local
+                    </button>
+                    <button
+                        onClick={handleSync}
+                        disabled={isSyncing}
+                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20 active:scale-95 transition-all"
+                    >
+                        {isSyncing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                        Sync to Facebook
+                    </button>
+                </div>
+            </div>
+
+            {/* Compact Configuration Tile */}
+            <div className="flex flex-wrap gap-4">
+                <div className={cn(
+                    "w-full max-w-sm p-5 rounded-3xl border transition-all flex flex-col gap-4 shadow-sm",
+                    composerInputDisabled 
+                        ? "bg-purple-50/50 border-purple-200 dark:bg-purple-950/10 dark:border-purple-900/40" 
+                        : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800"
+                )}>
+                    <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className={cn(
+                                "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
+                                composerInputDisabled ? "bg-purple-100 text-purple-600 dark:bg-purple-900/50" : "bg-neutral-50 text-neutral-400 dark:bg-neutral-800"
+                            )}>
+                                <Info className="w-5 h-5" />
+                            </div>
+                            <span className="text-xs font-black text-purple-900 dark:text-purple-100 uppercase tracking-widest leading-none">Composer Lock</span>
+                        </div>
+                        
+                        <button 
+                             onClick={() => setComposerInputDisabled(!composerInputDisabled)}
+                             className={cn(
+                                 "w-12 h-6 rounded-full relative transition-all duration-300",
+                                 composerInputDisabled ? "bg-purple-600" : "bg-neutral-200 dark:bg-neutral-800"
+                             )}
+                        >
+                             <div className={cn(
+                                 "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm",
+                                 composerInputDisabled ? "left-7" : "left-1"
+                             )} />
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-[13px] font-bold text-neutral-800 dark:text-neutral-200 mb-1">Disable Chat Composer?</h4>
+                        <p className="text-[10px] text-neutral-500 font-medium leading-relaxed">If enabled, users can only interact via menu buttons. Keyboard input will be disabled in the chat bar.</p>
+                    </div>
+                </div>
+
+                <div className="flex-1 min-w-[300px] flex items-center justify-between px-2 bg-neutral-50/30 dark:bg-neutral-900/30 border border-dashed border-neutral-100 dark:border-neutral-800 rounded-3xl p-5">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-purple-600" />
+                            <h3 className="text-xs font-black text-purple-900 dark:text-purple-100 uppercase tracking-[0.2em]">Menu Items ({items.length}/3)</h3>
+                        </div>
+                        <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-widest">Main persistent menu navigation</p>
+                    </div>
+                    <button
+                        onClick={() => handleAddItem()}
+                        disabled={items.length >= 3}
+                        className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 shadow-xl shadow-purple-500/20 disabled:opacity-50"
+                    >
+                        <Plus size={14} strokeWidth={3} /> Add Item
+                    </button>
+                </div>
+            </div>
+
+                    <div className="space-y-4">
+                        <AnimatePresence>
+                            {items.length === 0 ? (
+                                <motion.div 
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                    className="py-12 border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[32px] text-center"
+                                >
+                                    <p className="text-xs text-neutral-400 font-medium italic">No menu items configured yet.</p>
+                                </motion.div>
+                            ) : (
+                                items.map((item, idx) => (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                    >
+                                        <MenuItemForm item={item} index={idx} />
+                                    </motion.div>
+                                ))
+                            )}
+                        </AnimatePresence>
+                    </div>
+        </div>
+    );
+}
+

@@ -11,6 +11,7 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import PersistentMenu from "./PersistentMenu";
 
 interface BotReply {
     id: number;
@@ -125,7 +126,7 @@ export default function BotRepliesPage() {
     }, []);
 
     useEffect(() => {
-        if (activeMenu === 'action_buttons') {
+        if (activeMenu === 'action_buttons' || activeMenu === 'persistent_menu') {
             fetchActions();
         }
     }, [activeMenu, selectedPage]);
@@ -221,7 +222,7 @@ export default function BotRepliesPage() {
     }, [replies, selectedPage, searchQuery]);
 
     return (
-        <div className="min-h-screen bg-transparent p-4 sm:p-6 lg:p-8 font-sans pb-24 max-w-7xl mx-auto">
+        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full">
 
             {/* 1. PAGES SELECTOR (Modern Subtle Bar) */}
             <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-2 mb-8 shadow-sm flex items-center">
@@ -544,11 +545,12 @@ export default function BotRepliesPage() {
                         </motion.div>
                     )}
 
-                    {activeMenu === 'persistent_menu' && (
-                        <motion.div key="menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-16 text-center">
-                            <MenuIcon className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Persistent Menu</h3>
-                            <p className="text-sm text-neutral-500 max-w-sm mt-2 font-medium mx-auto">Design the permanent hamburger menu that displays inside Messenger.</p>
+                    {activeMenu === 'persistent_menu' && selectedPage && (
+                        <motion.div key="menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                            <PersistentMenu 
+                                pageId={selectedPage.page_id} 
+                                actions={actions}
+                            />
                         </motion.div>
                     )}
                 </AnimatePresence>
