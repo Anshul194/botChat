@@ -43,7 +43,7 @@ export default function Navbar() {
             className={`font-extrabold text-lg tracking-tight transition-colors ${isScrolled ? "text-gray-900" : "text-white"
               }`}
           >
-            BotAI
+            botChat
           </span>
         </div>
 
@@ -76,7 +76,7 @@ export default function Navbar() {
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[#FF2D78] to-[#E1306C]" />
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
-            <span className="relative z-10 text-sm font-black text-white">Start Free</span>
+            <span className="relative z-10 text-sm font-black text-white px-2">Let’s Start</span>
           </Link>
         </div>
 

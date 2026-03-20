@@ -427,35 +427,34 @@ export default function Hero() {
 
           {/* Headline */}
           <h1 className="hero-text-elem font-display leading-[1.06] tracking-tight"
-            style={{ fontSize: "clamp(2.6rem, 6vw, 4.6rem)" }}>
-            <span className="block text-white">Reply to Every</span>
-            <span className="block text-white">Comment.</span>
-            <span className="shimmer-text block mt-1">Instantly. With AI.</span>
+            style={{ fontSize: "clamp(2.6rem, 5.5vw, 4.2rem)" }}>
+            <span className="block text-white uppercase tracking-tighter">DM Automation for</span>
+            <span className="shimmer-text block mt-1">Instagram & Facebook</span>
           </h1>
 
           {/* Body */}
           <p className="hero-text-elem text-base md:text-lg leading-relaxed max-w-md"
-            style={{ color: "rgba(240,220,240,.5)", fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}>
-            Deploy ultra-human replies across Instagram, Twitter, and LinkedIn in seconds.
-            Stop losing engagement — start scaling your brand automatically.
+            style={{ color: "rgba(240,220,240,.6)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}>
+            The ultimate tool to <span className="text-white font-medium">convert comments &rarr; customers</span>. 
+            Automate your growth and never miss a lead again.
           </p>
 
           {/* CTAs */}
           <div className="hero-text-elem flex flex-col sm:flex-row gap-4">
             <Link href="/dashboard"
-              className="cta-primary group flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-white"
+              className="cta-primary group flex items-center justify-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold text-white transition-all duration-300"
               style={{ fontFamily: "'Syne', sans-serif", letterSpacing: ".02em" }}>
-              Start Free Trial
+              Let’s Start
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
 
             <button
-              className="group flex items-center justify-center gap-2.5 px-7 py-4 rounded-2xl text-base font-semibold transition-all duration-200 hover:-translate-y-1"
+              className="group flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all duration-200 hover:-translate-y-1"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                background: "rgba(255,45,120,.06)",
-                border: "1px solid rgba(255,45,120,.25)",
-                color: "#ffb6c8"
+                background: "rgba(255,255,255,.03)",
+                border: "1px solid rgba(255,255,255,.1)",
+                color: "#fff"
               }}>
               <Play className="w-4 h-4 fill-current transition-transform group-hover:scale-110" />
               Watch Demo
@@ -479,9 +478,9 @@ export default function Hero() {
               ))}
             </div>
             <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              <span className="text-white font-bold text-base" style={{ fontFamily: "'Syne', sans-serif" }}>60,000+</span>
-              <span className="text-sm" style={{ color: "rgba(255,180,200,.5)" }}> creators growing fast</span>
-              <div className="text-xs mt-0.5" style={{ color: "rgba(255,160,190,.35)" }}>No credit card required.</div>
+              <span className="text-white font-bold text-base" style={{ fontFamily: "'Syne', sans-serif" }}>11,000+</span>
+              <span className="text-sm" style={{ color: "rgba(255,255,255,.6)" }}> creators trust us</span>
+              <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,.35)" }}>25M+ DMs sent & counting.</div>
             </div>
           </div>
         </div>
@@ -490,15 +489,15 @@ export default function Hero() {
         <div className="hero-right order-2 relative">
 
           {/* Floating stat cards */}
-          <StatChip value="2.4M" label="Replies sent today"
+          <StatChip value="25M+" label="Total DMs Sent"
             className="absolute -top-5 -left-6 z-20 hidden md:block" delay={1.2} />
-          <StatChip value="98.7%" label="Positive sentiment"
+          <StatChip value="11K+" label="Active Creators"
             className="absolute -bottom-4 -left-4 z-20 hidden md:block" delay={1.4} />
 
           {/* Floating notifications */}
-          <NotifCard icon="💬" text="247 new comments" sub="Auto-replying now" delay={1.6}
+          <NotifCard icon="💬" text="New Comment" sub="Converted to Customer" delay={1.6}
             className={`absolute -right-4 top-12 z-20 hidden lg:flex w-56`} />
-          <NotifCard icon="⚡" text="Reply sent in 0.3s" sub="priya.writes · LinkedIn" delay={1.9}
+          <NotifCard icon="⚡" text="250% Growth" sub="Instagram Automation" delay={1.9}
             className={`absolute -right-4 bottom-16 z-20 hidden lg:flex w-56`} />
 
           {/* Visual Carousel Stage */}
