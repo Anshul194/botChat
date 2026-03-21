@@ -9,9 +9,10 @@ import TrendyStacks from "./components/TrendyStacks";
 import CreatorProof from "./components/CreatorProof";
 import Testimonials from "./components/Testimonials";
 import Pricing from "./components/Pricing";
-import Blogs from "./components/Blogs";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
+import GrowthSections from "./components/GrowthSections";
+import TrustAndFinalCTA from "./components/TrustAndFinalCTA";
 
 export default function LandingPage() {
   return (
@@ -28,6 +29,7 @@ export default function LandingPage() {
         <FeaturesOverview />
         <MotiveSection />
         <Features />
+        <GrowthSections />
         <TrendyStacks />
         <CreatorProof />
 
@@ -35,9 +37,9 @@ export default function LandingPage() {
 
         <Pricing />
 
-        <Blogs />
-
         <FAQ />
+
+        <TrustAndFinalCTA />
 
         <Footer />
       </div>
