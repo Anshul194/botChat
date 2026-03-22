@@ -34,6 +34,7 @@ const navGroups = [
         items: [
             { label: "Instagram", icon: Instagram, href: "/dashboard/instagram", badge: null },
             { label: "Facebook", icon: Facebook, href: "/dashboard/facebook", badge: null },
+            { label: "Comment Manager", icon: MessageSquare, href: "/dashboard/facebook/comment-manager", badge: "Live" },
             { label: "Bot Replies", icon: MessageSquare, href: "/dashboard/facebook/bot-replies", badge: "New" },
         ],
     },
