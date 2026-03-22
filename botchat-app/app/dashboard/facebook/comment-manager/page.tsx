@@ -20,6 +20,7 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+// ── Types ──────────────────────────────────────────────────────────────────────
 interface FacebookPage {
     id: number;
     page_id: string;
@@ -29,18 +30,39 @@ interface FacebookPage {
     picture?: string;
 }
 
-const POSTS = [
-    { id: "1569215103205765_12345678", user: "duny post", time: "3/18/2025 11:23 PM", text: "New campaign launch! Check out our latest features.", stats: { reply: 12, comment: 84 }, thumbnail: "https://picsum.photos/seed/d1/100/100" },
-    { id: "1569215103205765_87654321", user: "@ek_saro_vidhar", time: "1/22/2025 10:22 AM", text: "Follow our daily automation success stories #realestate #success", stats: { reply: 4, comment: 22 }, thumbnail: "https://picsum.photos/seed/d2/100/100" },
-    { id: "1569215103205765_11223344", user: "@ek_saro_vidhar", time: "1/22/2025 10:22 AM", text: "Daily thought: Automation is the key to scaling your business.", stats: { reply: 45, comment: 310 }, thumbnail: "https://picsum.photos/seed/d3/100/100" },
-];
+interface FacebookPost {
+    id: string;
+    user?: string;
+    time?: string;
+    text: string;
+    thumbnail: string;
+    stats?: {
+        reply: number;
+        comment: number;
+    };
+    status?: {
+        reply?: string | null;
+        comment?: string | null;
+    };
+}
 
 export default function CommentManager() {
     const router = useRouter();
     const [pages, setPages] = useState<FacebookPage[]>([]);
     const [selectedPage, setSelectedPage] = useState<FacebookPage | null>(null);
+    const [posts, setPosts] = useState<FacebookPost[]>([]);
+    const [pageStats, setPageStats] = useState({
+        auto_reply_count: 0,
+        auto_comment_count: 0,
+        has_full_page_reply: false
+    });
     const [isLoading, setIsLoading] = useState(true);
+    const [isPostsLoading, setIsPostsLoading] = useState(false);
+    const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+
+    const loaderRef = useRef<HTMLDivElement>(null);
+    const [hasMore, setHasMore] = useState(true);
 
     // ── Manage Templates popup ────────────────────────────────────────────────
     const [showTemplateMenu, setShowTemplateMenu] = useState(false);
@@ -83,9 +105,79 @@ export default function CommentManager() {
         }
     };
 
+    const fetchPosts = async (isAppend = false) => {
+        if (!selectedPage) return;
+        
+        if (isAppend) setIsMoreLoading(true);
+        else setIsPostsLoading(true);
+
+        try {
+            const pageIdForApi = selectedPage.page_id || String(selectedPage.id);
+            const response = await api.get(`/facebook/comment-manager/posts/${pageIdForApi}`);
+            
+            const data = response.data || {};
+            const fetchedPosts = Array.isArray(data.posts) ? data.posts : [];
+            
+            if (data.stats) {
+                setPageStats(data.stats);
+            }
+
+            const mapped = fetchedPosts.map((p: any) => ({
+                id: p.id,
+                user: p.user || selectedPage.page_name,
+                time: p.created_time ? new Date(p.created_time).toLocaleString() : new Date().toLocaleString(),
+                text: p.message || p.message_short || "View Post Interaction",
+                thumbnail: p.full_picture || "https://picsum.photos/seed/" + p.id + "/200/200",
+                stats: {
+                    reply: p.auto_reply_enabled ? 1 : 0,
+                    comment: p.auto_comment_enabled ? 1 : 0
+                },
+                status: {
+                    reply: p.post_auto_reply_status,
+                    comment: p.post_auto_comment_status
+                }
+            }));
+
+            if (isAppend) {
+                setPosts(prev => [...prev, ...mapped]);
+                // In a real scenario, check if pagination has more
+                if (mapped.length === 0) setHasMore(false);
+            } else {
+                setPosts(mapped);
+                setHasMore(mapped.length > 0);
+            }
+
+        } catch (error) {
+            console.error("Fetch Posts Error:", error);
+        } finally {
+            setIsPostsLoading(false);
+            setIsMoreLoading(false);
+        }
+    };
+
+    // Intersection Observer for Infinite Scroll
+    useEffect(() => {
+        if (!loaderRef.current || isPostsLoading) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !isMoreLoading && hasMore) {
+                fetchPosts(true);
+            }
+        }, { threshold: 0.1 });
+
+        observer.observe(loaderRef.current);
+        return () => observer.disconnect();
+    }, [loaderRef, isMoreLoading, hasMore, isPostsLoading, selectedPage]);
+
     useEffect(() => {
         fetchPages();
     }, []);
+
+    useEffect(() => {
+        if (selectedPage) {
+            fetchPosts();
+        }
+    }, [selectedPage]);
 
     return (
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] p-4 lg:p-8 font-sans transition-all duration-300">
@@ -133,8 +225,8 @@ export default function CommentManager() {
                     </div>
 
                     <div className="flex items-center gap-3 pl-6 border-l border-slate-100 dark:border-slate-800">
-                        <button 
-                            onClick={fetchPages} 
+                        <button
+                            onClick={fetchPages}
                             disabled={isLoading}
                             className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-primary transition-all border border-slate-100 dark:border-slate-700 active:scale-95"
                         >
@@ -239,11 +331,11 @@ export default function CommentManager() {
                             {/* Enabled Stats Grid */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                                    <p className="text-3xl font-bold text-primary">1</p>
+                                    <p className="text-3xl font-bold text-primary">{pageStats.auto_reply_count}</p>
                                     <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Replies</p>
                                 </div>
                                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                                    <p className="text-3xl font-bold text-blue-500">1</p>
+                                    <p className="text-3xl font-bold text-blue-500">{pageStats.auto_comment_count}</p>
                                     <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Comments</p>
                                 </div>
                             </div>
@@ -294,35 +386,73 @@ export default function CommentManager() {
                             </header>
 
                             <div className="space-y-4">
-                                {POSTS.map(post => (
-                                    <div key={post.id} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30">
-                                        <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 animate-pulse bg-slate-200 dark:bg-slate-800">
-                                            <img src={post.thumbnail} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <h4 className="text-[14px] font-bold text-slate-800 dark:text-white">{post.user}</h4>
-                                                        <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
+                                {isPostsLoading ? (
+                                    [1, 2, 3].map(i => (
+                                        <div key={i} className="h-24 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl animate-pulse" />
+                                    ))
+                                ) : posts.length > 0 ? (
+                                    posts.map(post => (
+                                        <div key={post.id} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30">
+                                            <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800">
+                                                <img src={post.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            </div>
+                                            <div className="flex-1 min-w-0 flex flex-col justify-between">
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate">{post.user}</h4>
+                                                            <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            {/* Reply Status Tag */}
+                                                            {post.status?.reply && (
+                                                                <span className={cn(
+                                                                    "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
+                                                                    post.status.reply === "active" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                                                                )}>
+                                                                    Reply {post.status.reply}
+                                                                </span>
+                                                            )}
+                                                            {/* Comment Status Tag */}
+                                                            {post.status?.comment && (
+                                                                <span className={cn(
+                                                                    "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
+                                                                    post.status.comment === "active" ? "bg-blue-500/10 text-blue-600" : "bg-slate-100 text-slate-400"
+                                                                )}>
+                                                                    Comment {post.status.comment}
+                                                                </span>
+                                                            )}
+                                                            <button className="p-1.5 rounded-lg text-slate-300 hover:text-slate-600 transition-colors">
+                                                                <Settings className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 text-[9px] font-bold uppercase">Reply ON</span>
-                                                        <button className="p-1.5 rounded-lg text-slate-300 hover:text-slate-600 transition-colors">
-                                                            <Settings className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
+                                                    <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 italic">"{post.text}"</p>
                                                 </div>
-                                                <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 italic">"{post.text}"</p>
                                             </div>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div className="py-20 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                                        <Box className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                                        <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">No Interaction Active</p>
                                     </div>
-                                ))}
+                                )}
 
-                                <button className="w-full border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center group hover:bg-slate-50 transition-all">
-                                    <Plus className="w-6 h-6 text-slate-300 group-hover:text-primary mx-auto mb-1" />
-                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Load More Interaction History</p>
-                                </button>
+                                {/* Infinite Scroll Trigger */}
+                                <div ref={loaderRef} className={cn(
+                                    "w-full h-24 flex items-center justify-center transition-opacity duration-300",
+                                    (isMoreLoading || (hasMore && posts.length > 0)) ? "opacity-100" : "opacity-0 pointer-events-none"
+                                )}>
+                                    {isMoreLoading && (
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+                                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+                                            <div className="w-2 h-2 rounded-full bg-primary animate-bounce" />
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Syncing History...</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </section>
                     </main>
@@ -391,53 +521,6 @@ export default function CommentManager() {
                 )}
             </AnimatePresence>
 
-            {/* ── Reply Template Coming Soon popup ── */}
-            <AnimatePresence>
-                {activeTemplateView === "reply" && (
-                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-                            onClick={() => setActiveTemplateView(null)}
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-                            className="relative z-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 w-full max-w-sm shadow-2xl text-center"
-                        >
-                            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
-                                <FileText className="w-7 h-7 text-blue-500" />
-                            </div>
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase">Reply Templates</h3>
-                            <p className="text-sm text-slate-400 mt-2 mb-6">Coming soon — auto-reply message presets.</p>
-                            <button onClick={() => setActiveTemplateView(null)} className="px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm">Close</button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* ── Custom Fields Coming Soon popup ── */}
-            <AnimatePresence>
-                {activeTemplateView === "custom" && (
-                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-                            onClick={() => setActiveTemplateView(null)}
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-                            className="relative z-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 w-full max-w-sm shadow-2xl text-center"
-                        >
-                            <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-                                <SlidersHorizontal className="w-7 h-7 text-emerald-500" />
-                            </div>
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase">Custom Fields</h3>
-                            <p className="text-sm text-slate-400 mt-2 mb-6">Coming soon — dynamic variable management.</p>
-                            <button onClick={() => setActiveTemplateView(null)} className="px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-sm">Close</button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
         </div>
     );
 }
