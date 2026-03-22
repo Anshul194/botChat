@@ -309,14 +309,7 @@ function RightPanel({ stage }: { stage: number }) {
   ];
 
   return (
-    <div style={{
-      width: 252, flexShrink: 0, height: "100vh",
-      display: "flex", flexDirection: "column", justifyContent: "center",
-      padding: "36px 24px",
-      background: "rgba(255,255,255,0.72)",
-      backdropFilter: "blur(20px)",
-      borderLeft: "1.5px solid rgba(232,23,93,0.10)",
-    }}>
+    <div className="w-full lg:w-[252px] h-auto lg:h-[100vh] shrink-0 flex flex-col justify-center px-6 lg:px-6 py-6 lg:py-10 bg-white/70 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-rose-500/10">
       {/* Badge */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -439,6 +432,7 @@ function RightPanel({ stage }: { stage: number }) {
 
 export default function ChatOrbitSection() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const orbitRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [bubbleStyles, setBubbleStyles] = useState<BubbleStyle[]>(
     MESSAGES.map(() => ({ opacity: 0, transform: "translate(0px,0px)" }))
@@ -452,8 +446,13 @@ export default function ChatOrbitSection() {
   );
 
   const compute = useCallback((p: number) => {
-    const orbitCx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
+    let orbitCx = window.innerWidth / 2;
+    let cy = window.innerHeight / 2;
+    
+    if (orbitRef.current) {
+        orbitCx = orbitRef.current.clientWidth / 2;
+        cy = orbitRef.current.clientHeight / 2;
+    }
 
     const styles = MESSAGES.map((m, i) => {
       const entryStart = 0.05 + i * 0.055;
@@ -511,12 +510,12 @@ export default function ChatOrbitSection() {
 
   return (
     <div ref={wrapRef} style={{ position: "relative", height: "500vh" }}>
-      <div style={{
-        position: "sticky", top: 0, height: "100vh", overflow: "hidden",
-        // White + pink gradient background
-        background: "linear-gradient(135deg, #fff5f8 0%, #fff 35%, #fce7f3 65%, #fdf2f8 100%)",
-        display: "flex",
-      }}>
+      <div 
+        className="sticky top-0 h-[100dvh] w-full flex flex-col lg:flex-row overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #fff5f8 0%, #fff 35%, #fce7f3 65%, #fdf2f8 100%)",
+        }}
+      >
         {/* Subtle pattern blobs */}
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
           <div style={{ position: "absolute", top: "-10%", left: "25%", width: 560, height: 560, borderRadius: "50%", background: "radial-gradient(circle, rgba(232,23,93,0.07) 0%, transparent 70%)" }} />
@@ -525,12 +524,12 @@ export default function ChatOrbitSection() {
         </div>
 
         {/* LEFT — Sidebar */}
-        <div style={{ position: "relative", zIndex: 10, flexShrink: 0 }}>
+        <div className="hidden lg:block relative z-10 shrink-0">
           <Sidebar />
         </div>
 
         {/* CENTER — Orbit */}
-        <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        <div ref={orbitRef} className="flex-1 w-full relative overflow-hidden min-h-[50vh] lg:min-h-screen">
           {/* Rings */}
           {[320, 220].map((size, ri) => (
             <div key={size} style={{
@@ -647,7 +646,7 @@ export default function ChatOrbitSection() {
         </div>
 
         {/* RIGHT — Explainer */}
-        <div style={{ position: "relative", zIndex: 10, flexShrink: 0 }}>
+        <div className="relative z-10 shrink-0 w-full lg:w-auto overflow-y-auto">
           <RightPanel stage={currentStage} />
         </div>
       </div>
