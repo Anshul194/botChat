@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import GrowthSections from "./components/GrowthSections";
 import TrustAndFinalCTA from "./components/TrustAndFinalCTA";
 import PerformanceChart from "./components/PerformanceChart";
+import StepsSection from "./components/StepsSection";
 
 export default function LandingPage() {
   return (
@@ -24,17 +25,20 @@ export default function LandingPage() {
       {/* HERO: The main entry point */}
       <Hero />
 
+
       {/* SUBSEQUENT SECTIONS: White backgrounds */}
       <div className="relative z-10 bg-white">
         {/* Social Proof handled inside Hero/CreatorProof */}
 
         <FeaturesOverview />
-        <ScrollWritingSection />
-        <PerformanceChart />
+
         <MotiveSection />
         <Features />
+        <ScrollWritingSection />
+        <PerformanceChart />
         <GrowthSections />
         <TrendyStacks />
+
         <CreatorProof />
 
         <Testimonials />
