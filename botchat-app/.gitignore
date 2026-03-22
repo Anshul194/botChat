@@ -15,7 +15,9 @@
 
 # next.js
 /.next/
-#/out/
+/out/
+build_output.log
+*.log
 
 # production
 /build

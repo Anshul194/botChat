@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import FeaturesOverview from "./components/FeaturesOverview";
 import MotiveSection from "./components/MotiveSection";
 import Features from "./components/Features";
+import ScrollWritingSection from "./components/ScrollWritingSection";
 import TrendyStacks from "./components/TrendyStacks";
 import CreatorProof from "./components/CreatorProof";
 import Testimonials from "./components/Testimonials";
@@ -27,6 +28,7 @@ export default function LandingPage() {
         {/* Social Proof handled inside Hero/CreatorProof */}
 
         <FeaturesOverview />
+        <ScrollWritingSection />
         <MotiveSection />
         <Features />
         <GrowthSections />

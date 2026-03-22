@@ -64,7 +64,7 @@ const FLOW = [
 
 export default function MotiveSection() {
   const [active, setActive] = useState("ig");
-  const ch = CHANNELS.find((c) => c.id === active);
+  const ch = CHANNELS.find((c) => c.id === active) || CHANNELS[0];
 
   return (
     <section
