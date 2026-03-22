@@ -65,7 +65,7 @@ export default function SignInPage() {
         const height = 750;
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
-        
+
         const popup = window.open(
             'about:blank',
             `social-auth-${platform}`,
@@ -81,7 +81,7 @@ export default function SignInPage() {
         try {
             // 2. Get the official OAuth redirect URL from your backend
             const response = await api.get(`/auth/social/${platform}`);
-            
+
             if (response.data.success && response.data.data.redirect_url) {
                 // Point the popup to Facebook/Google
                 popup.location.href = response.data.data.redirect_url;
@@ -92,7 +92,7 @@ export default function SignInPage() {
                     if (popup.closed) {
                         clearInterval(pollTimer);
                         setSocialLoading(null);
-                        
+
                         // Attempt to fetch the session (works if backend set cookies or if we can poll API)
                         const result = await dispatch(fetchMe());
                         if (fetchMe.fulfilled.match(result)) {
@@ -478,6 +478,69 @@ export default function SignInPage() {
                                     )}
                                 </AnimatePresence>
                             </motion.button>
+
+                            {/* 🚀 QUICK DEMO LOGINS */}
+                            <div className="pt-2">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex-1 h-px" style={{ background: isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }} />
+                                    <span className="text-[10px] font-bold px-1 uppercase tracking-widest text-[#ec4899]">Demo Access</span>
+                                    <div className="flex-1 h-px" style={{ background: isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            setForm({ email: "tenant1@example.com", password: "admin@1232" });
+                                            setErrors({});
+                                            setStatus("loading");
+                                            setServerError("");
+                                            try {
+                                                await dispatch(loginUser({ email: "tenant1@example.com", password: "admin@1232" })).unwrap();
+                                                setStatus("success");
+                                                setTimeout(() => router.push("/dashboard"), 1000);
+                                            } catch (err: any) {
+                                                setStatus("error");
+                                                setServerError(err?.message || err || "Invalid credentials. Please try again.");
+                                                setTimeout(() => setStatus("idle"), 2500);
+                                            }
+                                        }}
+                                        className="h-10 rounded-xl text-xs font-bold transition-all border hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:border-[#ec4899]/30"
+                                        style={{
+                                            background: isLight ? "#f8fafc" : "rgba(255,255,255,0.02)",
+                                            borderColor: isLight ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.08)",
+                                            color: isLight ? "#475569" : "#94a3b8"
+                                        }}
+                                    >
+                                        Reseller Login
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            setForm({ email: "superadmin@example.com", password: "admin@1232" });
+                                            setErrors({});
+                                            setStatus("loading");
+                                            setServerError("");
+                                            try {
+                                                await dispatch(loginUser({ email: "superadmin@example.com", password: "admin@1232" })).unwrap();
+                                                setStatus("success");
+                                                setTimeout(() => router.push("/dashboard"), 1000);
+                                            } catch (err: any) {
+                                                setStatus("error");
+                                                setServerError(err?.message || err || "Invalid credentials. Please try again.");
+                                                setTimeout(() => setStatus("idle"), 2500);
+                                            }
+                                        }}
+                                        className="h-10 rounded-xl text-xs font-bold transition-all border hover:bg-[#a855f7]/10 hover:text-[#a855f7] hover:border-[#a855f7]/30"
+                                        style={{
+                                            background: isLight ? "#f8fafc" : "rgba(255,255,255,0.02)",
+                                            borderColor: isLight ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.08)",
+                                            color: isLight ? "#475569" : "#94a3b8"
+                                        }}
+                                    >
+                                        Admin Login
+                                    </button>
+                                </div>
+                            </div>
                         </motion.form>
 
                         {/* Mobile signup link */}
