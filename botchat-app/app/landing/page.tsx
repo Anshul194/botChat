@@ -14,6 +14,7 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import GrowthSections from "./components/GrowthSections";
 import TrustAndFinalCTA from "./components/TrustAndFinalCTA";
+import PerformanceChart from "./components/PerformanceChart";
 
 export default function LandingPage() {
   return (
@@ -29,6 +30,7 @@ export default function LandingPage() {
 
         <FeaturesOverview />
         <ScrollWritingSection />
+        <PerformanceChart />
         <MotiveSection />
         <Features />
         <GrowthSections />

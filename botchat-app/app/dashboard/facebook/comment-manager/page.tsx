@@ -11,8 +11,9 @@ import {
     FileText, PieChart, Users, Settings,
     MoreVertical, Info, RefreshCw, Box,
     Trash2, Pause, Play, FileJson, Megaphone,
-    ArrowRight, X, AlertCircle, ChevronDown,
-    Tag, SlidersHorizontal
+    ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal,
+    ShieldAlert, EyeOff, Scissors, Edit3, Image as ImageIcon, Video, Upload,
+    Save, Ban
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -60,6 +61,7 @@ export default function CommentManager() {
     const [isPostsLoading, setIsPostsLoading] = useState(false);
     const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+    const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
 
     const loaderRef = useRef<HTMLDivElement>(null);
     const [hasMore, setHasMore] = useState(true);
@@ -107,17 +109,17 @@ export default function CommentManager() {
 
     const fetchPosts = async (isAppend = false) => {
         if (!selectedPage) return;
-        
+
         if (isAppend) setIsMoreLoading(true);
         else setIsPostsLoading(true);
 
         try {
             const pageIdForApi = selectedPage.page_id || String(selectedPage.id);
             const response = await api.get(`/facebook/comment-manager/posts/${pageIdForApi}`);
-            
+
             const data = response.data || {};
             const fetchedPosts = Array.isArray(data.posts) ? data.posts : [];
-            
+
             if (data.stats) {
                 setPageStats(data.stats);
             }
@@ -349,8 +351,11 @@ export default function CommentManager() {
                                     <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase">Full Page Campaign</h3>
                                     <p className="text-[11px] text-slate-500">Configure global override logic for entire page activity</p>
                                 </div>
-                                <button className="w-full py-2.5 rounded-xl bg-primary text-white font-bold text-[12px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                                    Edit Global Reply
+                                <button
+                                    onClick={() => setIsCampaignModalOpen(true)}
+                                    className="w-full py-2.5 rounded-xl bg-primary text-white font-bold text-[12px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                >
+                                    {pageStats.has_full_page_reply ? "Edit Global Reply" : "Enable Full Page Reply"}
                                 </button>
                             </div>
 
@@ -521,6 +526,327 @@ export default function CommentManager() {
                 )}
             </AnimatePresence>
 
+            <AnimatePresence>
+                {isCampaignModalOpen && (
+                    <FullPageCampaignModal
+                        page={selectedPage!}
+                        hasCampaign={pageStats.has_full_page_reply}
+                        onClose={() => setIsCampaignModalOpen(false)}
+                        onSaved={() => {
+                            setIsCampaignModalOpen(false);
+                            fetchPosts(); // Refresh stats
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+// ── Full Page Campaign Modal ──────────────────────────────────────────────────
+function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
+    page: FacebookPage,
+    hasCampaign: boolean,
+    onClose: () => void,
+    onSaved: () => void
+}) {
+    const [isSaving, setIsSaving] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(false);
+    const [campaignId, setCampaignId] = useState<number | null>(null);
+    const [form, setForm] = useState({
+        name: "",
+        hide_comment: false,
+        delete_comment: false,
+        offensive_keywords: "",
+        multiple_reply_enabled: false,
+        comment_reply_enabled: true,
+        hide_after_reply: false,
+        reply_type: "generic", // generic or filtering
+        message: "",
+        image: "",
+        video: "",
+        private_template_id: "",
+        filters: [] as { keywords: string, message: string }[]
+    });
+
+    useEffect(() => {
+        const fetchCampaign = async () => {
+            setIsLoadingData(true);
+            try {
+                const res = await api.get("/facebook/report/full-page-reply");
+                const currentId = String(page.page_id || page.id);
+
+                // Find campaign for THIS specific page within the report data array
+                const campaignData = (res.data?.data || []).find((c: any) => String(c.page_id) === currentId);
+
+                if (campaignData) {
+                    const c = campaignData;
+                    setCampaignId(c.id);
+                    setForm({
+                        name: c.name || "",
+                        hide_comment: c.hide_comment === "1" || !!c.hide_comment,
+                        delete_comment: c.delete_comment === "1" || !!c.delete_comment,
+                        offensive_keywords: c.offensive_keywords || "",
+                        multiple_reply_enabled: c.multiple_reply_enabled === "1" || !!c.multiple_reply_enabled,
+                        comment_reply_enabled: c.comment_reply_enabled !== "0" && c.comment_reply_enabled !== false,
+                        hide_after_reply: c.hide_after_reply === "1" || !!c.hide_after_reply,
+                        reply_type: c.reply_type === "filter" ? "filtering" : "generic",
+                        message: c.message || "",
+                        image: c.image || "",
+                        video: c.video || "",
+                        private_template_id: c.private_template_id || "",
+                        filters: Array.isArray(c.filters) ? c.filters : []
+                    });
+                }
+            } catch (err) {
+                console.error("Global campaign sync error");
+            } finally { setIsLoadingData(false); }
+        };
+        fetchCampaign();
+    }, [page.page_id, page.id]);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const payload = {
+                facebook_page_id: page.page_id || page.id,
+                ...form
+            };
+            if (campaignId) {
+                await api.put(`/facebook/full-page-reply/${campaignId}`, payload);
+            } else {
+                await api.post("/facebook/full-page-reply", payload);
+            }
+            toast.success("Campaign synced successfully!");
+            onSaved();
+        } catch (err: any) {
+            toast.error(err?.response?.data?.message || "Operation failed");
+        } finally { setIsSaving(false); }
+    };
+
+    const addFilter = () => setForm({ ...form, filters: [...form.filters, { keywords: "", message: "" }] });
+
+    const Toggle = ({ active, label, onClick }: any) => (
+        <div className="flex items-center justify-between py-2">
+            <span className="text-[12px] font-bold text-slate-600 tracking-tight">{label}</span>
+            <div className="flex items-center gap-3">
+                <div
+                    onClick={onClick}
+                    className={cn(
+                        "w-10 h-5 rounded-full relative transition-all duration-300 cursor-pointer",
+                        active ? "bg-indigo-600" : "bg-slate-200"
+                    )}
+                >
+                    <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-md", active ? "left-5.5" : "left-0.5")} />
+                </div>
+                <span className="text-[9px] font-black text-slate-400 w-6 uppercase tracking-widest">{active ? "YES" : "NO"}</span>
+            </div>
+        </div>
+    );
+
+    if (isLoadingData) return (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+            <RefreshCw className="w-10 h-10 text-white animate-spin" />
+        </div>
+    );
+
+    return (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                className="relative z-10 w-full max-w-3xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+                <div className="px-10 py-6 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10">
+                    <h2 className="text-[15px] font-black text-slate-800 uppercase tracking-tight">
+                        Enable / Edit Full Page Reply for: <span className="text-indigo-600 ml-1">{page.page_name}</span>
+                    </h2>
+                    <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-indigo-500 hover:bg-slate-50 transition-all">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="p-8 space-y-8 overflow-y-auto no-scrollbar">
+                    {/* Campaign Name */}
+                    <div className="p-8 rounded-[32px] border border-slate-100 bg-white shadow-sm space-y-3">
+                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Auto Reply Campaign Name <span className="text-indigo-500">*</span></label>
+                        <input
+                            type="text"
+                            value={form.name}
+                            onChange={v => setForm({ ...form, name: v.target.value })}
+                            placeholder="Write your auto reply campaign name here"
+                            className="w-full px-7 py-4 rounded-2xl bg-slate-50/50 border border-slate-100 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 outline-none transition-all font-bold text-slate-600"
+                        />
+                    </div>
+
+                    {/* Offensive Filtering */}
+                    <div className="p-8 rounded-[32px] border border-slate-100 bg-white shadow-sm space-y-6">
+                        <div className="flex items-center gap-2 text-indigo-500">
+                            <ShieldAlert className="w-4 h-4" />
+                            <h3 className="text-[12px] font-black uppercase tracking-widest">Offensive Comments Settings</h3>
+                        </div>
+                        <div className="flex gap-10 border-b border-slate-50 pb-6">
+                            <Toggle label="Hide Comment" active={form.hide_comment} onClick={() => setForm({ ...form, hide_comment: !form.hide_comment })} />
+                            <Toggle label="Delete Comment" active={form.delete_comment} onClick={() => setForm({ ...form, delete_comment: !form.delete_comment })} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase">Offensive Keywords (comma separated)</label>
+                                <textarea
+                                    rows={3}
+                                    value={form.offensive_keywords}
+                                    onChange={e => setForm({ ...form, offensive_keywords: e.target.value })}
+                                    placeholder="keyword1, keyword2..."
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-300 transition-all text-[13px] font-medium"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase text-right block">Private Reply Template</label>
+                                <select className="w-full h-12 px-5 rounded-xl bg-slate-50 border border-slate-100 outline-none text-[13px] font-bold text-slate-600 focus:border-indigo-300">
+                                    <option>Select...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Logic Toggles */}
+                    <div className="p-8 rounded-[32px] border border-slate-100 bg-slate-50/30 space-y-4">
+                        <Toggle label="Do you want to send reply message to a user multiple times?" active={form.multiple_reply_enabled} onClick={() => setForm({ ...form, multiple_reply_enabled: !form.multiple_reply_enabled })} />
+                        <Toggle label="Do you want to enable comment reply?" active={form.comment_reply_enabled} onClick={() => setForm({ ...form, comment_reply_enabled: !form.comment_reply_enabled })} />
+                        <Toggle label="Do you want to hide comments after comment reply?" active={form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
+                    </div>
+
+                    {/* Reply Type Selection */}
+                    <div className="flex gap-4 p-2 bg-slate-50/50 rounded-2xl border border-slate-100">
+                        <button
+                            onClick={() => setForm({ ...form, reply_type: "generic" })}
+                            className={cn(
+                                "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                                form.reply_type === "generic" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "text-slate-400 hover:text-slate-600"
+                            )}>Generic Message for All</button>
+                        <button
+                            onClick={() => setForm({ ...form, reply_type: "filtering" })}
+                            className={cn(
+                                "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                                form.reply_type === "filtering" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "text-slate-400 hover:text-slate-600"
+                            )}>Send Message by Filtering Word/Sentence</button>
+                    </div>
+
+                    {form.reply_type === "filtering" && (
+                        <div className="space-y-4">
+                            {form.filters.map((f, i) => (
+                                <div key={i} className="p-8 rounded-[36px] border border-slate-100 bg-white shadow-sm space-y-6">
+                                    <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                                        <div className="flex items-center gap-2 text-indigo-600">
+                                            <Filter className="w-4 h-4" />
+                                            <h3 className="text-[12px] font-black uppercase tracking-widest">Filter Rule #{i + 1}</h3>
+                                        </div>
+                                        <button onClick={() => setForm({ ...form, filters: form.filters.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-indigo-500 transition-colors">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Filter Words (comma separated)</label>
+                                            <input
+                                                type="text"
+                                                value={f.keywords}
+                                                onChange={e => {
+                                                    const newFilters = [...form.filters];
+                                                    newFilters[i].keywords = e.target.value;
+                                                    setForm({ ...form, filters: newFilters });
+                                                }}
+                                                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-400 font-medium"
+                                                placeholder="Example: price, cost, how much"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reply Message</label>
+                                            <textarea
+                                                rows={2}
+                                                value={f.message}
+                                                onChange={e => {
+                                                    const newFilters = [...form.filters];
+                                                    newFilters[i].message = e.target.value;
+                                                    setForm({ ...form, filters: newFilters });
+                                                }}
+                                                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-400 font-medium"
+                                                placeholder="Write your automated reply..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button
+                                onClick={addFilter}
+                                className="w-full py-4 rounded-[24px] border-2 border-dashed border-slate-200 text-slate-400 font-black text-[12px] uppercase tracking-widest hover:border-indigo-200 hover:text-indigo-600 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Plus className="w-4 h-4" /> Add More Filtering
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Generic Response Builder */}
+                    <div className="p-8 rounded-[36px] border border-slate-100 bg-white shadow-sm space-y-6">
+                        <div className="flex items-center gap-2 text-indigo-600 border-b border-slate-50 pb-4">
+                            <MessageSquare className="w-4 h-4" />
+                            <h3 className="text-[12px] font-black uppercase tracking-widest">Message for Comment Reply</h3>
+                        </div>
+
+                        <textarea
+                            rows={4}
+                            value={form.message}
+                            onChange={e => setForm({ ...form, message: e.target.value })}
+                            placeholder="Type your message here..."
+                            className="w-full p-6 rounded-3xl bg-slate-50/50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-400 transition-all font-medium text-[15px]"
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <UploadBox label="Image for Comment Reply" icon={ImageIcon} />
+                            <UploadBox label="Video for Comment Reply" icon={Video} />
+                        </div>
+
+                        <div className="space-y-3 pt-4 border-t border-slate-50">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <ArrowRight className="w-3.5 h-3.5" /> Select Private Message Template (Fallback)
+                            </label>
+                            <select className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 outline-none font-bold text-slate-600 focus:border-indigo-400 appearance-none">
+                                <option>Select Template...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="px-10 py-8 bg-slate-50/50 border-t border-slate-100 flex gap-4">
+                    <button onClick={onClose} className="flex-1 py-4.5 rounded-[22px] bg-white border border-slate-200 text-slate-500 font-bold text-[13px] uppercase tracking-[0.2em] shadow-sm active:scale-95 transition-all">Discard</button>
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="flex-[1.5] py-4.5 bg-indigo-600 text-white font-black text-[13px] rounded-[22px] shadow-2xl shadow-indigo-100 hover:translate-y-[-2px] active:translate-y-[0px] transition-all flex items-center justify-center gap-3 uppercase tracking-[0.2em] disabled:opacity-50"
+                    >
+                        {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-5 h-5" />}
+                        {hasCampaign ? "Update Campaign" : "Enable Global Activity"}
+                    </button>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
+
+function UploadBox({ label, icon: Icon }: any) {
+    return (
+        <div className="p-5 rounded-[24px] border border-slate-100 bg-slate-50/30 group">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">{label}</span>
+            <div className="flex items-center gap-3">
+                <button className="h-11 px-5 rounded-xl bg-indigo-600 text-white flex items-center gap-2 text-[11px] font-black uppercase tracking-tight shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                    <Upload className="w-3.5 h-3.5" /> Upload
+                </button>
+                <div className="flex-1 h-11 px-4 rounded-xl border border-slate-100 bg-white flex items-center">
+                    <span className="text-[11px] font-bold text-slate-300 truncate italic">Put URL or click upload</span>
+                </div>
+            </div>
         </div>
     );
 }
