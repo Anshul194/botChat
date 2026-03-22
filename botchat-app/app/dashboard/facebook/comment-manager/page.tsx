@@ -210,6 +210,8 @@ export default function CommentManager() {
                                                             setShowTemplateMenu(false);
                                                             if (opt.id === "comment") {
                                                                 router.push("/dashboard/facebook/comment-templates");
+                                                            } else if (opt.id === "reply") {
+                                                                router.push("/dashboard/facebook/reply-templates");
                                                             } else {
                                                                 setActiveTemplateView(opt.id);
                                                             }
