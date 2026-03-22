@@ -1,265 +1,166 @@
 "use client";
 
-import { Bot, BrainCircuit, CheckCircle2, CirclePlay, Clock3, Layers, Link2, Rocket, Users } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { Sparkles, ArrowRight, Zap, Rocket, ShieldCheck } from "lucide-react";
 
-const logos = ["Notion", "Shopify", "HubSpot", "Meta", "Zapier", "Stripe"];
-
-const workflowSteps = [
+const NARRATIVE = [
   {
-    title: "Connect your channels",
-    description: "Link Instagram, Facebook, and website chat in less than 5 minutes.",
-    icon: Link2,
+    tag: "The Foundation",
+    icon: <Zap size={14} fill="currentColor" />,
+    text: "The most advanced AI Engine for creators."
   },
   {
-    title: "Pick a template",
-    description: "Start from pre-built flows for sales, support, launches, and lead capture.",
-    icon: Layers,
+    tag: "Velocity",
+    icon: <Rocket size={14} fill="currentColor" />,
+    text: "Automate your inbox, skyrocket your sales."
   },
   {
-    title: "Go live and optimize",
-    description: "AI improves replies, routing, and timing based on real conversation outcomes.",
-    icon: Rocket,
-  },
+    tag: "Authority",
+    icon: <ShieldCheck size={14} fill="currentColor" />,
+    text: "Built for makers who value their time."
+  }
 ];
 
-const useCases = [
-  "Lead qualification for service businesses",
-  "24/7 support for ecommerce brands",
-  "Appointment booking for coaches and clinics",
-  "Comment-to-DM funnels for creators",
-  "Product recommendations and upsell flows",
-  "Event registrations and reminder campaigns",
-];
+interface CharProps {
+  char: string;
+  index: number;
+  displayLength: MotionValue<number>;
+}
 
-const templates = [
-  "Welcome + lead magnet delivery",
-  "Abandoned DM follow-up sequence",
-  "Product FAQ and smart routing",
-  "Launch day waitlist collector",
-  "Creator collaboration intake",
-  "Booking and payment confirmation",
-];
-
-const comparisons = [
-  {
-    metric: "Setup time",
-    botchat: "10-20 min",
-    others: "2-5 days",
-  },
-  {
-    metric: "Automation quality",
-    botchat: "Context-aware AI",
-    others: "Keyword rules only",
-  },
-  {
-    metric: "Lead capture",
-    botchat: "Built-in forms + sync",
-    others: "Third-party tools",
-  },
-  {
-    metric: "Team visibility",
-    botchat: "Shared inbox + analytics",
-    others: "Limited or add-on",
-  },
-];
-
-const integrations = [
-  "Instagram",
-  "Facebook",
-  "WhatsApp",
-  "Zapier",
-  "HubSpot",
-  "Google Sheets",
-  "Stripe",
-  "Slack",
-];
+function Char({ char, index, displayLength }: CharProps) {
+  const opacity = useTransform(displayLength, [index - 0.5, index], [0, 1]);
+  return (
+    <motion.span style={{ opacity, display: "inline-block" }}>
+      {char === " " ? "\u00A0" : char}
+    </motion.span>
+  );
+}
 
 export default function GrowthSections() {
+  const [mounted, setMounted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  // TEXT 1: 0.05 -> 0.3
+  const displayLength1 = useTransform(scrollYProgress, [0.05, 0.25], [0, NARRATIVE[0].text.length]);
+  const opacity1 = useTransform(scrollYProgress, [0.05, 0.1, 0.3, 0.35], [0, 1, 1, 0]);
+  const y1 = useTransform(scrollYProgress, [0.05, 0.3, 0.35], [20, 0, -20]);
+
+  // TEXT 2: 0.38 -> 0.65
+  const displayLength2 = useTransform(scrollYProgress, [0.4, 0.6], [0, NARRATIVE[1].text.length]);
+  const opacity2 = useTransform(scrollYProgress, [0.38, 0.43, 0.65, 0.7], [0, 1, 1, 0]);
+  const y2 = useTransform(scrollYProgress, [0.38, 0.65, 0.7], [20, 0, -20]);
+
+  // TEXT 3: 0.73 -> 1.0
+  const displayLength3 = useTransform(scrollYProgress, [0.75, 0.95], [0, NARRATIVE[2].text.length]);
+  const opacity3 = useTransform(scrollYProgress, [0.73, 0.78], [0, 1]);
+  const y3 = useTransform(scrollYProgress, [0.73, 0.78], [20, 0]);
+
+  // BUTTON
+  const btnOpacity = useTransform(scrollYProgress, [0.96, 1], [0, 1]);
+  const btnScale = useTransform(scrollYProgress, [0.96, 1], [0.9, 1]);
+
+  if (!mounted) return <div ref={containerRef} className="h-[500vh] bg-white" />;
+
   return (
-    <>
-      <section className="border-y border-rose-100 bg-rose-50/60 py-10">
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-[1.4fr_2fr] md:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">Social proof</p>
-            <h3 className="mt-2 text-3xl font-bold text-slate-900 font-display">Trusted by teams shipping faster conversations</h3>
-            <p className="mt-3 text-slate-600 font-body">48,000+ active users · 120M+ automated replies delivered</p>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {logos.map((logo) => (
-              <div key={logo} className="rounded-2xl border border-rose-100 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm">
-                {logo}
-              </div>
-            ))}
-          </div>
+    <div ref={containerRef} className="relative bg-white antialiased">
+      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-6 overflow-hidden">
+        
+        {/* Soft Ambient Glows */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[60vh] h-[60vh] bg-pink-50/50 blur-[120px] rounded-full -translate-y-1/3 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-[50vh] h-[50vh] bg-indigo-50/50 blur-[120px] rounded-full translate-y-1/3 -translate-x-1/3" />
         </div>
-      </section>
 
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">How it works</p>
-            <h2 className="mt-3 text-4xl font-bold text-slate-900 font-display">Three steps to launch your AI chat engine</h2>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {workflowSteps.map((step, index) => (
-              <div key={step.title} className="rounded-3xl border border-slate-100 bg-white p-7 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600">
-                    <step.icon className="h-5 w-5" />
-                  </span>
-                  <span className="text-sm font-semibold text-slate-400">0{index + 1}</span>
+        <div className="relative z-10 w-full max-w-5xl flex flex-col items-center text-center">
+          
+          {/* TEXT BLOCK 1 */}
+          <motion.div 
+            style={{ opacity: opacity1, y: y1 }}
+            className="absolute inset-0 flex flex-col items-center justify-center space-y-6 pointer-events-none"
+          >
+             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-black tracking-widest uppercase">
+               {NARRATIVE[0].icon} {NARRATIVE[0].tag}
+             </div>
+             <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
+               {NARRATIVE[0].text.split("").map((char, i) => (
+                  <Char key={`${i}-t1-${char}`} char={char} index={i} displayLength={displayLength1} />
+               ))}
+               <motion.span 
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  className="inline-block w-[2px] h-[30px] md:h-[45px] lg:h-[60px] bg-pink-500 ml-2 align-middle"
+               />
+             </h2>
+          </motion.div>
+
+          {/* TEXT BLOCK 2 */}
+          <motion.div 
+            style={{ opacity: opacity2, y: y2 }}
+            className="absolute inset-0 flex flex-col items-center justify-center space-y-6 pointer-events-none"
+          >
+             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-black tracking-widest uppercase">
+               {NARRATIVE[1].icon} {NARRATIVE[1].tag}
+             </div>
+             <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
+               {NARRATIVE[1].text.split("").map((char, i) => (
+                  <Char key={`${i}-t2-${char}`} char={char} index={i} displayLength={displayLength2} />
+               ))}
+               <motion.span 
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity }}
+                  className="inline-block w-[2px] h-[30px] md:h-[45px] lg:h-[60px] bg-pink-500 ml-2 align-middle"
+               />
+             </h2>
+          </motion.div>
+
+          {/* TEXT BLOCK 3 */}
+          <motion.div 
+            style={{ opacity: opacity3, y: y3 }}
+            className="absolute inset-0 flex flex-col items-center justify-center space-y-12"
+          >
+             <div className="flex flex-col items-center space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-black tracking-widest uppercase">
+                  {NARRATIVE[2].icon} {NARRATIVE[2].tag}
                 </div>
-                <h3 className="mt-5 text-xl font-bold text-slate-900 font-display">{step.title}</h3>
-                <p className="mt-2 text-slate-600 font-body">{step.description}</p>
-              </div>
-            ))}
-          </div>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
+                  {NARRATIVE[2].text.split("").map((char, i) => (
+                    <Char key={`${i}-t3-${char}`} char={char} index={i} displayLength={displayLength3} />
+                  ))}
+                  <motion.span 
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.8, repeat: Infinity }}
+                    className="inline-block w-[2px] h-[30px] md:h-[45px] lg:h-[60px] bg-pink-500 ml-2 align-middle"
+                  />
+                </h2>
+             </div>
+
+             <motion.div 
+               style={{ opacity: btnOpacity, scale: btnScale }}
+               className="pt-4"
+             >
+                <button className="group relative inline-flex items-center gap-4 bg-[#e8175d] text-white px-8 py-4 rounded-[20px] text-lg font-bold tracking-tight hover:bg-[#1a1235] transition-all duration-500 shadow-[0_15px_30px_-5px_rgba(232,23,93,0.3)]">
+                   Get Started Personally
+                   <div className="p-1 rounded-lg bg-white/20 group-hover:bg-[#e8175d] transition-colors">
+                      <ArrowRight size={18} />
+                   </div>
+                </button>
+             </motion.div>
+          </motion.div>
+
         </div>
-      </section>
+      </div>
 
-      <section className="bg-slate-50 py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-100">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">Use cases</p>
-              <h3 className="mt-3 text-3xl font-bold text-slate-900 font-display">Built for growth, support, and conversion</h3>
-              <div className="mt-6 space-y-3">
-                {useCases.map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-500" />
-                    <p className="text-slate-700 font-body">{item}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-slate-900 p-8 text-slate-100 shadow-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-300">Templates / pre-built flows</p>
-              <h3 className="mt-3 text-3xl font-bold font-display">Launch proven journeys instantly</h3>
-              <div className="mt-6 space-y-3">
-                {templates.map((item) => (
-                  <div key={item} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                    <Bot className="mt-0.5 h-5 w-5 text-rose-300" />
-                    <p className="font-body text-slate-200">{item}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="rounded-3xl bg-gradient-to-br from-rose-50 via-white to-orange-50 p-8 ring-1 ring-rose-100">
-            <p className="inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
-              <BrainCircuit className="h-4 w-4" /> AI feature highlight
-            </p>
-            <h3 className="mt-4 text-3xl font-bold text-slate-900 font-display">Intent-aware AI that responds like your best rep</h3>
-            <p className="mt-4 text-slate-700 font-body">BotChat does more than match keywords. It scores intent, references previous conversation context, and selects the right path dynamically.</p>
-            <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-rose-100 bg-white p-5">
-                <Clock3 className="h-5 w-5 text-rose-600" />
-                <p className="mt-2 text-sm font-semibold text-slate-900">Response time</p>
-                <p className="text-2xl font-bold text-slate-900">&lt; 2 sec</p>
-              </div>
-              <div className="rounded-2xl border border-rose-100 bg-white p-5">
-                <Users className="h-5 w-5 text-rose-600" />
-                <p className="mt-2 text-sm font-semibold text-slate-900">Intent recognition</p>
-                <p className="text-2xl font-bold text-slate-900">94%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-slate-950 py-24 text-white">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-300">Comparison section</p>
-              <h3 className="mt-3 text-3xl font-bold font-display">Why teams switch from legacy chatbot tools</h3>
-              <div className="mt-8 overflow-hidden rounded-3xl border border-white/10">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-white/5 text-slate-300">
-                    <tr>
-                      <th className="px-4 py-3">Metric</th>
-                      <th className="px-4 py-3">BotChat</th>
-                      <th className="px-4 py-3">Others</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {comparisons.map((row) => (
-                      <tr key={row.metric} className="border-t border-white/10">
-                        <td className="px-4 py-3 text-slate-200">{row.metric}</td>
-                        <td className="px-4 py-3 font-semibold text-emerald-300">{row.botchat}</td>
-                        <td className="px-4 py-3 text-slate-400">{row.others}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-emerald-300/25 bg-emerald-300/10 p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-300">Results / ROI stats</p>
-              <h3 className="mt-3 text-3xl font-bold font-display">Measured impact in the first 60 days</h3>
-              <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.14em] text-slate-300">Lead conversion</p>
-                  <p className="mt-2 text-3xl font-bold text-white">+37%</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.14em] text-slate-300">Agent workload</p>
-                  <p className="mt-2 text-3xl font-bold text-white">-52%</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.14em] text-slate-300">Reply speed</p>
-                  <p className="mt-2 text-3xl font-bold text-white">4.8x</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.14em] text-slate-300">Attributed revenue</p>
-                  <p className="mt-2 text-3xl font-bold text-white">$180k+</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <p className="text-center text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">Integrations</p>
-          <h3 className="mt-3 text-center text-3xl font-bold text-slate-900 font-display">Works with your existing stack</h3>
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {integrations.map((item) => (
-              <div key={item} className="rounded-2xl border border-slate-200 bg-white px-4 py-5 text-center text-sm font-semibold text-slate-700 shadow-sm">
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-slate-50 py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">Demo / video</p>
-            <h3 className="mt-3 text-2xl font-bold text-slate-900 font-display">See it in 90 seconds</h3>
-            <p className="mt-3 text-slate-600 font-body">Quick walkthrough of setup, live replies, analytics, and optimization loops.</p>
-            <a
-              href="#"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
-            >
-              <CirclePlay className="h-4 w-4" />
-              Watch product demo
-            </a>
-            <div className="mt-8 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
-              Replace this card with embedded product video or Loom preview.
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+      <div className="h-[500vh]" />
+    </div>
   );
 }
