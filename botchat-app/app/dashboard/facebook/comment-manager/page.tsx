@@ -180,7 +180,7 @@ export default function CommentManager() {
                                             >
                                                 {[
                                                     {
-                                                        id: "comment" as const,
+                                                        id: "comment",
                                                         label: "Comment Template",
                                                         icon: MessageSquare,
                                                         desc: "Preset comment sets",
@@ -188,7 +188,7 @@ export default function CommentManager() {
                                                         bg: "bg-purple-50 dark:bg-purple-500/10",
                                                     },
                                                     {
-                                                        id: "reply" as const,
+                                                        id: "reply",
                                                         label: "Reply Template",
                                                         icon: FileText,
                                                         desc: "Auto-reply messages",
@@ -196,7 +196,7 @@ export default function CommentManager() {
                                                         bg: "bg-blue-50 dark:bg-blue-500/10",
                                                     },
                                                     {
-                                                        id: "custom" as const,
+                                                        id: "custom",
                                                         label: "Custom Fields",
                                                         icon: SlidersHorizontal,
                                                         desc: "Dynamic variables",
@@ -212,8 +212,10 @@ export default function CommentManager() {
                                                                 router.push("/dashboard/facebook/comment-templates");
                                                             } else if (opt.id === "reply") {
                                                                 router.push("/dashboard/facebook/reply-templates");
+                                                            } else if (opt.id === "custom") {
+                                                                router.push("/dashboard/facebook/custom-fields");
                                                             } else {
-                                                                setActiveTemplateView(opt.id);
+                                                                setActiveTemplateView(opt.id as "custom");
                                                             }
                                                         }}
                                                         className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left group border-b border-slate-50 dark:border-slate-800 last:border-0"
