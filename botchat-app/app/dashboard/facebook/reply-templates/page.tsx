@@ -136,7 +136,7 @@ function CapsuleSwitch({ active }: { active: boolean }) {
 
 // ── Template Modal ─────────────────────────────────────────────────────────────
 
-function TemplateFormModal({ mode, initial, onClose, onSaved }:{
+export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
   mode:"create"|"edit"; initial:ReplyTemplate|null; onClose:()=>void; onSaved:()=>void;
 }) {
   const [form, setForm] = useState<ReplyTemplate>({

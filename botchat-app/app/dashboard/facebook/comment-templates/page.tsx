@@ -213,7 +213,7 @@ function MessageRow({ value, index, onChange, onRemove, showRemove, recent, addR
 }
 
 // ── Template Form Modal ────────────────────────────────────────────────────────
-function TemplateFormModal({ mode, initial, onClose, onSaved }:{
+export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
   mode:"create"|"edit"; initial:CommentTemplate|null; onClose:()=>void; onSaved:()=>void;
 }) {
   const [formName, setFormName] = useState(initial?.name??"");

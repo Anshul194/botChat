@@ -13,10 +13,12 @@ import {
     Trash2, Pause, Play, FileJson, Megaphone,
     ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal,
     ShieldAlert, EyeOff, Scissors, Edit3, Image as ImageIcon, Video, Upload,
-    Save, Ban
+    Save, Ban, Copy
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { TemplateFormModal } from "../reply-templates/page";
+import { TemplateFormModal as CommentTemplateFormModal } from "../comment-templates/page";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -62,7 +64,14 @@ export default function CommentManager() {
     const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [isIdModalOpen, setIsIdModalOpen] = useState(false);
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
+    const [manualPostId, setManualPostId] = useState("");
+    const [isCheckingId, setIsCheckingId] = useState(false);
+    const [checkData, setCheckData] = useState<any>(null);
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+    // Popup states for directly editing comment/reply campaigns
+    const [isReplyPopupOpen, setIsReplyPopupOpen] = useState(false);
+    const [isCommentPopupOpen, setIsCommentPopupOpen] = useState(false);
 
     const loaderRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -166,6 +175,32 @@ export default function CommentManager() {
         } finally {
             setIsPostsLoading(false);
             setIsMoreLoading(false);
+        }
+    };
+
+    const handleCheckPostId = async () => {
+        if (!manualPostId.trim()) {
+            toast.error("Please enter a Post ID");
+            return;
+        }
+        setIsCheckingId(true);
+        try {
+            const response = await api.post("/facebook/check-post-campaign", {
+                post_id: manualPostId.trim()
+            });
+
+            if (response.data.success || response.data.is_success) {
+                toast.success("Post ID checked successfully!");
+                setCheckData(response.data.data);
+                fetchPosts(); // Refresh background grid
+            } else {
+                toast.error(response.data.message || "Failed to sync Post ID");
+            }
+        } catch (err: any) {
+            console.error("Check Post ID Error:", err);
+            toast.error(err.response?.data?.message || "Error validating Post ID");
+        } finally {
+            setIsCheckingId(false);
         }
     };
 
@@ -418,8 +453,21 @@ export default function CommentManager() {
                                                     <div className="flex items-center justify-between">
                                                         <div>
                                                             <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate">{post.user}</h4>
-                                                            <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
+                                                            <div className="flex items-center gap-2 mt-0.5">
+                                                                <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                                                                    <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">ID: {post.id}</span>
+                                                                    <button 
+                                                                        onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
+                                                                        className="hover:text-indigo-900 dark:hover:text-indigo-200 transition-colors active:scale-95"
+                                                                        title="Copy ID"
+                                                                    >
+                                                                        <Copy className="w-3 h-3" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
+
                                                         <div className="flex items-center gap-2">
                                                             {/* Reply Status Tag */}
                                                             {post.status?.reply && (
@@ -459,7 +507,7 @@ export default function CommentManager() {
                                                                             {/* Auto Reply Section */}
                                                                             {post.status?.reply ? (
                                                                                 <>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                    <button onClick={() => setIsReplyPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                         <Edit3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                                     </button>
@@ -479,7 +527,7 @@ export default function CommentManager() {
                                                                                     </button>
                                                                                 </>
                                                                             ) : (
-                                                                                <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
+                                                                                <button onClick={() => setIsReplyPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
                                                                                     <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                                                                     <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply Campaign</span>
                                                                                 </button>
@@ -488,7 +536,7 @@ export default function CommentManager() {
                                                                             {/* Auto Comment Section */}
                                                                             {post.status?.comment ? (
                                                                                 <>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
+                                                                                    <button onClick={() => setIsCommentPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
                                                                                         <Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
                                                                                     </button>
@@ -508,7 +556,7 @@ export default function CommentManager() {
                                                                                     </button>
                                                                                 </>
                                                                             ) : (
-                                                                                <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
+                                                                                <button onClick={() => setIsCommentPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
                                                                                     <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                                                                     <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable auto comment</span>
                                                                                 </button>
@@ -570,7 +618,7 @@ export default function CommentManager() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setIsIdModalOpen(false)}
+                            onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
                             className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
                         />
                         <motion.div
@@ -582,7 +630,7 @@ export default function CommentManager() {
                             <div className="p-6 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight">Post ID Reconciliation</h3>
-                                    <button onClick={() => setIsIdModalOpen(false)} className="text-slate-400 hover:text-rose-500">
+                                    <button onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }} className="text-slate-400 hover:text-rose-500">
                                         <X className="w-5 h-5" />
                                     </button>
                                 </div>
@@ -596,27 +644,107 @@ export default function CommentManager() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Manual Post ID</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Example: 15692151032057..."
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                                        />
+                                {checkData ? (
+                                    <div className="space-y-4">
+                                        {/* Auto Reply Box */}
+                                        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
+                                                    <Megaphone className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-[13px] font-bold text-slate-800 dark:text-white">Auto Reply Campaign</h4>
+                                                    <p className="text-[10px] font-semibold text-slate-400">
+                                                        {checkData.reply_exists ? "Currently Active or Configured" : "No campaign attached"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {checkData.reply_exists ? (
+                                                <button 
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }} 
+                                                    className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors"
+                                                >
+                                                    Edit Reply
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }}
+                                                    className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+                                                >
+                                                    Enable Auto Reply
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* Auto Comment Box */}
+                                        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                                                    <MessageSquare className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-[13px] font-bold text-slate-800 dark:text-white">Auto Comment Campaign</h4>
+                                                    <p className="text-[10px] font-semibold text-slate-400">
+                                                        {checkData.comment_exists ? "Currently Active or Configured" : "No campaign attached"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {checkData.comment_exists ? (
+                                                <button 
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsCommentPopupOpen(true); }}
+                                                    className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors"
+                                                >
+                                                    Edit Comment
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsCommentPopupOpen(true); }}
+                                                    className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+                                                >
+                                                    Enable Auto Comment
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        <div className="pt-2">
+                                            <button 
+                                                onClick={() => setCheckData(null)}
+                                                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-200 transition-all"
+                                            >
+                                                Check Another Post ID
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-3 pt-2">
-                                        <button
-                                            onClick={() => setIsIdModalOpen(false)}
-                                            className="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-200 transition-all"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button className="flex-[1.5] py-3 rounded-xl bg-primary text-white font-bold text-[13px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                                            Sync Interaction ID
-                                        </button>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Manual Post ID</label>
+                                            <input
+                                                type="text"
+                                                value={manualPostId}
+                                                onChange={(e) => setManualPostId(e.target.value)}
+                                                placeholder="Example: 15692151032057..."
+                                                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                            />
+                                        </div>
+                                        <div className="flex gap-3 pt-2">
+                                            <button
+                                                onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
+                                                className="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-200 transition-all"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button 
+                                                onClick={handleCheckPostId}
+                                                disabled={isCheckingId}
+                                                className="flex-[1.5] flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-[13px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100"
+                                            >
+                                                {isCheckingId ? <RefreshCw className="w-4 h-4 animate-spin" /> : null}
+                                                {isCheckingId ? "Syncing..." : "Sync Interaction ID"}
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </motion.div>
                     </div>
@@ -634,6 +762,32 @@ export default function CommentManager() {
                             fetchPosts(); // Refresh stats
                         }}
                     />
+                )}
+            </AnimatePresence>
+
+            {/* ── Additional Modals ── */}
+            <AnimatePresence>
+                {isReplyPopupOpen && (
+                    <div className="relative z-[200]">
+                        <TemplateFormModal 
+                            mode="create" 
+                            initial={null} 
+                            onClose={() => setIsReplyPopupOpen(false)} 
+                            onSaved={() => { setIsReplyPopupOpen(false); fetchPosts(); }} 
+                        />
+                    </div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {isCommentPopupOpen && (
+                    <div className="relative z-[200]">
+                        <CommentTemplateFormModal 
+                            mode="create" 
+                            initial={null} 
+                            onClose={() => setIsCommentPopupOpen(false)} 
+                            onSaved={() => { setIsCommentPopupOpen(false); fetchPosts(); }} 
+                        />
+                    </div>
                 )}
             </AnimatePresence>
         </div>

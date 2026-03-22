@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 interface CommentTemplate {
     id: number;
-    name: string;
+    name: string
     comments: string[];
     created_at?: string;
     updated_at?: string;
@@ -22,19 +22,21 @@ interface CommentTemplate {
 
 interface Props {
     onClose: () => void;
+    defaultView?: "list" | "create" | "edit";
+    selectedTemplate?: any;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function CommentTemplates({ onClose }: Props) {
+export default function CommentTemplates({ onClose, defaultView = "list", selectedTemplate = null }: Props) {
     // list
     const [templates, setTemplates] = useState<CommentTemplate[]>([]);
     const [isListLoading, setIsListLoading] = useState(true);
 
     // view / edit / create state
     type View = "list" | "create" | "edit";
-    const [view, setView] = useState<View>("list");
-    const [selected, setSelected] = useState<CommentTemplate | null>(null);
+    const [view, setView] = useState<View>(defaultView);
+    const [selected, setSelected] = useState<CommentTemplate | null>(selectedTemplate);
 
     // form
     const [formName, setFormName] = useState("");
