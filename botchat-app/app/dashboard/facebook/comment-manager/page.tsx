@@ -13,7 +13,7 @@ import {
     Trash2, Pause, Play, FileJson, Megaphone,
     ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal,
     ShieldAlert, EyeOff, Scissors, Edit3, Image as ImageIcon, Video, Upload,
-    Save, Ban, Copy
+    Save, Ban, Copy, Check, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -768,28 +768,186 @@ export default function CommentManager() {
             {/* ── Additional Modals ── */}
             <AnimatePresence>
                 {isReplyPopupOpen && (
-                    <div className="relative z-[200]">
-                        <TemplateFormModal 
-                            mode="create" 
-                            initial={null} 
-                            onClose={() => setIsReplyPopupOpen(false)} 
-                            onSaved={() => { setIsReplyPopupOpen(false); fetchPosts(); }} 
-                        />
-                    </div>
+                    <ReplyCampaignAssignWrapper 
+                        onClose={() => setIsReplyPopupOpen(false)} 
+                        fetchPosts={fetchPosts} 
+                    />
                 )}
             </AnimatePresence>
             <AnimatePresence>
                 {isCommentPopupOpen && (
-                    <div className="relative z-[200]">
-                        <CommentTemplateFormModal 
-                            mode="create" 
-                            initial={null} 
-                            onClose={() => setIsCommentPopupOpen(false)} 
-                            onSaved={() => { setIsCommentPopupOpen(false); fetchPosts(); }} 
-                        />
-                    </div>
+                    <CommentCampaignAssignWrapper 
+                        onClose={() => setIsCommentPopupOpen(false)} 
+                        fetchPosts={fetchPosts} 
+                    />
                 )}
             </AnimatePresence>
+        </div>
+    );
+}
+
+// ── Assigned Campaign Wrapper Modals ───────────────────────────────────────
+
+function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => void; fetchPosts: () => void }) {
+    const [useSaved, setUseSaved] = useState(true);
+    const [dropdownTemplates, setDropdownTemplates] = useState<any[]>([]);
+    const [selectedTemplateId, setSelectedTemplateId] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        api.get("/facebook/auto-reply-template").then(res => {
+            setDropdownTemplates(Array.isArray(res.data?.data) ? res.data.data : res.data || []);
+        }).finally(() => setIsLoading(false));
+    }, []);
+
+    const handleSubmit = async () => {
+        if (!selectedTemplateId) { toast.error("Please select a template"); return; }
+        setIsSaving(true);
+        try {
+            // TODO: Wire up to the post auto reply save API
+            toast.success("Template assigned successfully (Mock)");
+            fetchPosts();
+            onClose();
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || "Failed to assign template");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (!useSaved) {
+        return (
+            <div className="relative z-[200]">
+                <TemplateFormModal mode="create" initial={null} onClose={() => setUseSaved(true)} onSaved={() => { onClose(); fetchPosts(); }} />
+            </div>
+        );
+    }
+
+    return (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
+                        <Megaphone className="w-5 h-5" />
+                        <h2 className="text-[14px] font-bold text-slate-800 dark:text-white">Please give the following information for post auto reply</h2>
+                    </div>
+                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><X className="w-5 h-5" /></button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="flex items-center gap-2">
+                           <Tag className="w-4 h-4 text-slate-400" />
+                           <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
+                        </div>
+                        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
+                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
+                             <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-indigo-600" : "bg-slate-300")}>
+                               <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
+                             </div>
+                        </div>
+                    </div>
+
+                    <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-indigo-500" /> Auto Reply Template
+                        </label>
+                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-indigo-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
+                            <option value="">{isLoading ? "Loading templates..." : "Please select a template"}</option>
+                            {dropdownTemplates.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4"/> Cancel</button>
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-indigo-700 transition-all">
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Check className="w-4 h-4"/>} Submit
+                    </button>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
+
+function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => void; fetchPosts: () => void }) {
+    const [useSaved, setUseSaved] = useState(true);
+    const [dropdownTemplates, setDropdownTemplates] = useState<any[]>([]);
+    const [selectedTemplateId, setSelectedTemplateId] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        api.get("/facebook/comment-template").then(res => {
+            let data = res.data;
+            if(data?.data) data = data.data;
+            setDropdownTemplates(Array.isArray(data) ? data : []);
+        }).finally(() => setIsLoading(false));
+    }, []);
+
+    const handleSubmit = async () => {
+        if (!selectedTemplateId) { toast.error("Please select a template"); return; }
+        setIsSaving(true);
+        try {
+            // TODO: Wire up to the post auto comment save API
+            toast.success("Comment template assigned successfully (Mock)");
+            fetchPosts();
+            onClose();
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || "Failed to assign template");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (!useSaved) {
+        return (
+            <div className="relative z-[200]">
+                <CommentTemplateFormModal mode="create" initial={null} onClose={() => setUseSaved(true)} onSaved={() => { onClose(); fetchPosts(); }} />
+            </div>
+        );
+    }
+
+    return (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400">
+                        <MessageSquare className="w-5 h-5" />
+                        <h2 className="text-[14px] font-bold text-slate-800 dark:text-white">Please give the following information for post auto comment</h2>
+                    </div>
+                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><X className="w-5 h-5" /></button>
+                </div>
+                <div className="p-6 space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <div className="flex items-center gap-2">
+                           <Tag className="w-4 h-4 text-slate-400" />
+                           <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
+                        </div>
+                        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
+                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
+                             <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-blue-600" : "bg-slate-300")}>
+                               <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
+                             </div>
+                        </div>
+                    </div>
+
+                    <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-blue-500" /> Auto Comment Template
+                        </label>
+                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
+                            <option value="">{isLoading ? "Loading templates..." : "Please select a template"}</option>
+                            {dropdownTemplates.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    </div>
+                </div>
+                <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4"/> Cancel</button>
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-blue-700 transition-all">
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Check className="w-4 h-4"/>} Submit
+                    </button>
+                </div>
+            </motion.div>
         </div>
     );
 }
