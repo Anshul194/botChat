@@ -62,8 +62,20 @@ export default function CommentManager() {
     const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [isIdModalOpen, setIsIdModalOpen] = useState(false);
     const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
+    const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
     const loaderRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setActiveDropdown(null);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
     const [hasMore, setHasMore] = useState(true);
 
     // ── Manage Templates popup ────────────────────────────────────────────────
@@ -427,9 +439,94 @@ export default function CommentManager() {
                                                                     Comment {post.status.comment}
                                                                 </span>
                                                             )}
-                                                            <button className="p-1.5 rounded-lg text-slate-300 hover:text-slate-600 transition-colors">
-                                                                <Settings className="w-4 h-4" />
-                                                            </button>
+                                                            <div className="relative">
+                                                                <button 
+                                                                    onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === post.id ? null : post.id); }}
+                                                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                                                                >
+                                                                    <Settings className="w-4 h-4" />
+                                                                </button>
+                                                                <AnimatePresence>
+                                                                    {activeDropdown === post.id && (
+                                                                        <motion.div
+                                                                            ref={dropdownRef}
+                                                                            initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                                                                            transition={{ duration: 0.15 }}
+                                                                            className="absolute right-0 top-full mt-2 w-[260px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 py-2 overflow-hidden flex flex-col"
+                                                                        >
+                                                                            {/* Auto Reply Section */}
+                                                                            {post.status?.reply ? (
+                                                                                <>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                        <Edit3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
+                                                                                    </button>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                        <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
+                                                                                    </button>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                        {post.status.reply === "paused" ? <Play className="w-4 h-4 text-amber-600 dark:text-amber-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">
+                                                                                            {post.status.reply === "paused" ? "Resume auto reply campaign" : "Pause auto reply campaign"}
+                                                                                        </span>
+                                                                                    </button>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800">
+                                                                                        <Trash2 className="w-4 h-4 text-rose-500" />
+                                                                                        <span className="text-[12px] font-bold text-rose-600 dark:text-rose-400">Delete auto reply</span>
+                                                                                    </button>
+                                                                                </>
+                                                                            ) : (
+                                                                                <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
+                                                                                    <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                                                                    <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply Campaign</span>
+                                                                                </button>
+                                                                            )}
+
+                                                                            {/* Auto Comment Section */}
+                                                                            {post.status?.comment ? (
+                                                                                <>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
+                                                                                        <Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
+                                                                                    </button>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                        <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto comment report</span>
+                                                                                    </button>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                        {post.status.comment === "paused" ? <Play className="w-4 h-4 text-amber-600 dark:text-amber-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">
+                                                                                            {post.status.comment === "paused" ? "Resume auto comment campaign" : "Pause auto comment campaign"}
+                                                                                        </span>
+                                                                                    </button>
+                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800">
+                                                                                        <Trash2 className="w-4 h-4 text-rose-500" />
+                                                                                        <span className="text-[12px] font-bold text-rose-600 dark:text-rose-400">Delete auto comment</span>
+                                                                                    </button>
+                                                                                </>
+                                                                            ) : (
+                                                                                <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
+                                                                                    <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                                                                    <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable auto comment</span>
+                                                                                </button>
+                                                                            )}
+
+                                                                            {/* Default Actions */}
+                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
+                                                                                <List className="w-4 h-4 text-slate-400" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
+                                                                            </button>
+                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                <Edit3 className="w-4 h-4 text-slate-400" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
+                                                                            </button>
+                                                                        </motion.div>
+                                                                    )}
+                                                                </AnimatePresence>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 italic">"{post.text}"</p>

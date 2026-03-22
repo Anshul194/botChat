@@ -50,10 +50,10 @@ export default function TrustAndFinalCTA() {
 
         <div className="fixed bottom-4 left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-4xl -translate-x-1/2 rounded-2xl border border-rose-300 bg-slate-900/95 px-4 py-3 text-white shadow-2xl backdrop-blur md:flex md:items-center md:justify-between md:px-6">
           <p className="text-sm font-medium">
-            <span className="font-semibold text-rose-300">Bold CTA:</span> Start your free BotChat workspace in 2 minutes.
+            <span className="font-semibold text-rose-300"></span> Start your free BotChat workspace in 2 minutes.
           </p>
           <a href="/auth/sign-up" className="mt-3 inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-400 md:mt-0">
-            Create workspace
+            Get Started
             <Sparkles className="h-4 w-4" />
           </a>
         </div>
