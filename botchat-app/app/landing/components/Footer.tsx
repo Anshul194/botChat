@@ -1,83 +1,124 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { motion } from "framer-motion";
+import { Sparkles, Instagram, Twitter, Linkedin, Facebook, ArrowRight, MessageCircle, ShieldCheck, Mail } from "lucide-react";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="py-24 bg-white border-t border-gray-100 overflow-hidden relative">
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-pink-500/5 blur-[120px] rounded-full pointer-events-none" />
+    <footer className="relative bg-[#0a0a0b] text-white pt-24 pb-12 overflow-hidden antialiased">
       
+      {/* 🌫️ AMBIENT BACKGROUND GLOWS */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-pink-500/10 blur-[140px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20 px-4">
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2.5 mb-8">
-              <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#FF2D78] to-[#E1306C] shadow-lg shadow-pink-500/20">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-extrabold text-2xl tracking-tighter text-gray-900 font-display">botChat</span>
+        
+        {/* TOP SECTION: Main Navigation & Brand */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-24 mb-24 pr-4">
+          
+          {/* BRAND COLUMN */}
+          <div className="lg:col-span-4 space-y-10">
+            <div className="flex items-center gap-3">
+               <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#e8175d] to-[#ff2d78] shadow-[0_8px_25px_-5px_rgba(232,23,93,0.4)]">
+                 <Sparkles className="w-6 h-6 text-white" />
+               </div>
+               <span className="text-2xl font-bold tracking-tighter">botChat<span className="text-pink-500">.</span></span>
             </div>
-            <p className="text-gray-500 text-sm leading-relaxed max-w-xs font-body">
-              Converting every <span className="text-black font-medium">comment into a customer</span>. 
-              The most trusted DM automation for scaling creators.
+            
+            <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-sm">
+              The world's most advanced <span className="text-white hover:text-pink-400 cursor-default transition-colors duration-300">automation engine</span> for social growth and precision conversion.
             </p>
+
+            <div className="flex items-center gap-4">
+               {[
+                 { icon: <Instagram size={18} />, href: "#" },
+                 { icon: <Twitter size={18} />, href: "#" },
+                 { icon: <Facebook size={18} />, href: "#" },
+                 { icon: <Linkedin size={18} />, href: "#" }
+               ].map((social, i) => (
+                 <Link 
+                   key={i} href={social.href}
+                   className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0a0a0b] hover:scale-110 transition-all duration-300"
+                 >
+                   {social.icon}
+                 </Link>
+               ))}
+            </div>
           </div>
 
-          <div>
-            <h4 className="text-gray-900 font-bold mb-8 font-display">Platform</h4>
-            <ul className="space-y-4 font-body">
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Features</Link></li>
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Pricing</Link></li>
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Security</Link></li>
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">API Docs</Link></li>
-            </ul>
-          </div>
+          {/* LINK COLUMNS */}
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-8">
+               
+               <div className="space-y-8">
+                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-pink-500">Solutions</h4>
+                  <ul className="space-y-4">
+                    {['Comment Strikers', 'DM Funnels', 'Data Mining', 'AI Automation'].map((link) => (
+                      <li key={link}>
+                        <Link href="#" className="text-slate-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center gap-2 group">
+                          <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 text-pink-500">—</span>
+                          {link}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+               </div>
 
-          <div>
-            <h4 className="text-gray-900 font-bold mb-8 font-display">Resources</h4>
-            <ul className="space-y-4 font-body">
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Creators Blog</Link></li>
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Case Studies</Link></li>
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Help Center</Link></li>
-              <li><Link href="#" className="text-gray-500 hover:text-[#FF2D78] transition-all text-sm hover:pl-2">Guides</Link></li>
-            </ul>
-          </div>
+               <div className="space-y-8">
+                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-slate-500">Resources</h4>
+                  <ul className="space-y-4">
+                    {['Documentation', 'API Status', 'Security Hub', 'Terms Registry'].map((link) => (
+                      <li key={link}>
+                        <Link href="#" className="text-slate-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center gap-2 group">
+                          <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 text-pink-500">—</span>
+                          {link}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+               </div>
 
-          <div>
-            <h4 className="text-gray-900 font-bold mb-8 font-display">Contact Us</h4>
-            <div className="space-y-6 font-body">
-              <Link href="mailto:hello@botchat.ai" className="flex items-center gap-3 group">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#FF2D78]/10 group-hover:text-[#FF2D78] transition-all">
-                  <Github className="w-5 h-5" /> {/* Using GitHub icon as placeholder for mail if needed, but let's just use Text */}
-                </div>
-                <div>
-                  <div className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Email Support</div>
-                  <div className="text-sm text-gray-900 font-medium">hello@botchat.ai</div>
-                </div>
-              </Link>
-              <Link href="https://instagram.com/botchat.ai" className="flex items-center gap-3 group">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#E1306C]/10 group-hover:text-[#E1306C] transition-all">
-                  <Instagram className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">DM Us</div>
-                  <div className="text-sm text-gray-900 font-medium">@botchat.ai</div>
-                </div>
-              </Link>
+               <div className="col-span-2 md:col-span-1 space-y-8">
+                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-500">Status</h4>
+                  <div className="p-6 rounded-[32px] bg-white/[0.03] border border-white/[0.05] space-y-4 relative overflow-hidden group hover:border-pink-500/30 transition-all duration-500">
+                     <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                        <span className="text-xs font-bold text-white tracking-widest uppercase">System Operational</span>
+                     </div>
+                     <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest">
+                       All official APIs running at peak speed.
+                     </p>
+                     <button className="flex items-center gap-2 text-pink-500 text-[10px] font-bold uppercase tracking-widest group-hover:gap-3 transition-all duration-300">
+                        View Status <ArrowRight size={12} />
+                     </button>
+                  </div>
+               </div>
+
             </div>
           </div>
         </div>
 
-        <div className="pt-10 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8 px-4">
-          <p className="text-gray-400 text-[11px] font-body">
-            © 2026 botChat Lab. All rights reserved. <span className="text-gray-300">|</span> Built for the next billion creators.
-          </p>
-          <div className="flex gap-8 text-[11px] text-gray-400 font-bold uppercase tracking-widest font-display">
-            <Link href="#" className="hover:text-black transition-colors">Privacy</Link>
-            <Link href="#" className="hover:text-black transition-colors">Terms</Link>
-            <Link href="#" className="hover:text-black transition-colors">Cookies</Link>
+        {/* BOTTOM SECTION: Legal & Local */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-12 pl-2">
+          
+          <div className="flex flex-col md:flex-row items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            <p>© {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
+            <div className="flex gap-8">
+               <Link href="#" className="hover:text-white transition-colors">Privacy Privacy</Link>
+               <Link href="#" className="hover:text-white transition-colors">Legal Terms</Link>
+            </div>
           </div>
+
+          <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.05] text-slate-400 hover:text-white transition-colors duration-300 group cursor-default">
+             <ShieldCheck size={14} className="group-hover:text-pink-500 transition-colors" />
+             <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
+          </div>
+
         </div>
+
       </div>
     </footer>
   );
