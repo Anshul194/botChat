@@ -12,6 +12,8 @@ import {
     Target, Inbox, LogOut, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import api from "@/lib/api";
+import { toast } from "sonner";
 import {
     Dialog, DialogContent, DialogDescription,
     DialogHeader, DialogTitle, DialogFooter,
@@ -88,6 +90,22 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
             }
         }
     }, [pathname]);
+
+    const handleInstagramConnect = async () => {
+        const toastId = toast.loading("Connecting Instagram...");
+        try {
+            const response = await api.get('/social/instagram-connect/redirect');
+            if (response.data?.is_success && response.data?.data?.url) {
+                toast.success("Redirecting...", { id: toastId });
+                window.location.href = response.data.data.url;
+            } else {
+                throw new Error("Failed to get redirect URL");
+            }
+        } catch (err: any) {
+            console.error("IG Connect Error:", err);
+            toast.error(err.response?.data?.message || "Could not connect Instagram", { id: toastId });
+        }
+    };
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
@@ -202,11 +220,20 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         return displayGroups.map(group => (
                             <div key={group.group}>
                                 {!collapsed ? (
-                                    <div className="flex items-center gap-2 px-2 mb-2">
-                                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: group.color }} />
-                                        <span className="text-[9px] font-black tracking-[0.15em] uppercase" style={{ color: `${group.color}AA` }}>
-                                            {group.group}
-                                        </span>
+                                    <div className="flex items-center justify-between px-2 mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full" style={{ background: group.color }} />
+                                            <span className="text-[9px] font-black tracking-[0.15em] uppercase" style={{ color: `${group.color}AA` }}>
+                                                {group.group}
+                                            </span>
+                                        </div>
+                                        {group.group === "PLATFORMS" && (
+                                            <button 
+                                                onClick={handleInstagramConnect}
+                                                className="text-[9px] font-black text-pink-500 hover:text-pink-600 transition-colors">
+                                                + CONNECT
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="h-px mx-2 mb-2 rounded-full" style={{ background: `${group.color}25` }} />

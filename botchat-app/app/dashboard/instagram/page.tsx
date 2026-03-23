@@ -1,6 +1,9 @@
 "use client";
 
-import { Instagram, Check, X, RefreshCw, Webhook, Plus, ExternalLink, Shield, Users, MessageSquare, TrendingUp } from "lucide-react";
+import { Instagram, Check, X, RefreshCw, Webhook, Plus, ExternalLink, Shield, Users, MessageSquare, TrendingUp, Loader2 } from "lucide-react";
+import { useState } from "react";
+import api from "@/lib/api";
+import { toast } from "sonner";
 
 const permissions = [
     { name: "instagram_business_basic", granted: true },
@@ -17,6 +20,31 @@ const stats = [
 ];
 
 export default function InstagramPage() {
+    const [connecting, setConnecting] = useState(false);
+
+    const handleInstagramConnect = async () => {
+        if (connecting) return;
+        setConnecting(true);
+        const toastId = toast.loading("Initializing Instagram connection...");
+
+        try {
+            // Call the specific API for redirect
+            const response = await api.get('/social/instagram-connect/redirect');
+
+            if (response.data?.is_success && response.data?.data?.url) {
+                toast.success("Redirecting to Facebook...", { id: toastId });
+                // Redirect user to the OAuth URL
+                window.location.href = response.data.data.url;
+            } else {
+                throw new Error("Failed to get redirect URL");
+            }
+        } catch (err: any) {
+            console.error("IG Connect Error:", err);
+            toast.error(err.response?.data?.message || "Could not start Instagram connection", { id: toastId });
+            setConnecting(false);
+        }
+    };
+
     return (
         <div className="space-y-6 max-w-[900px] p-4 sm:p-6">
             <div>
@@ -146,8 +174,12 @@ export default function InstagramPage() {
                 </div>
                 <p className="text-sm font-semibold mb-1" style={{ color: "var(--foreground)" }}>Connect Another Account</p>
                 <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>Your Pro plan supports up to 3 Instagram accounts</p>
-                <button className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+                <button 
+                    onClick={handleInstagramConnect}
+                    disabled={connecting}
+                    className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 mx-auto"
                     style={{ background: "linear-gradient(135deg,#ec4899,#7c3aed)", color: "white" }}>
+                    {connecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                     Connect Instagram
                 </button>
             </div>
