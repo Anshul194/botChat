@@ -520,7 +520,11 @@ export default function InstagramBotRepliesPage() {
                     )}
 
                     {activeMenu === 'persistent_menu' && selectedAccount && (
-                        <PersistentMenu instagramId={selectedAccount.page?.page_id || ""} actions={actions} />
+                        <PersistentMenu 
+                            instagramId={selectedAccount.instagram_id} 
+                            pageId={selectedAccount.page?.page_id || ""} 
+                            actions={actions} 
+                        />
                     )}
 
                     {activeMenu === 'ai_agent' && (

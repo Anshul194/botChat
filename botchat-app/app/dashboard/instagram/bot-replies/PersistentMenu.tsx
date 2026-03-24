@@ -13,18 +13,19 @@ import { cn } from "@/lib/utils";
 interface PersistentMenuItem {
     id?: string;
     title: string;
-    type: "web_url" | "postback" | "nested";
+    type: "url" | "postback" | "nested";
     url?: string;
     payload?: string;
-    call_to_actions?: PersistentMenuItem[];
+    children?: PersistentMenuItem[];
 }
 
 interface PersistentMenuProps {
     instagramId: string;
+    pageId: string;
     actions: any[];
 }
 
-export default function PersistentMenu({ instagramId, actions }: PersistentMenuProps) {
+export default function PersistentMenu({ instagramId, pageId, actions }: PersistentMenuProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -41,7 +42,7 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
                 const data = response.data.data;
                 if (data) {
                   setComposerInputDisabled(data.composer_input_disabled || false);
-                  setItems(data.items || []);
+                  setItems(data.menu || []);
                 } else {
                   setItems([]);
                 }
@@ -60,20 +61,20 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
     const handleAddItem = (parentIndex?: number) => {
         const newItem: PersistentMenuItem = {
             title: "",
-            type: "web_url",
+            type: "url",
             url: ""
         };
 
         if (parentIndex !== undefined) {
             const newItems = [...items];
-            if (!newItems[parentIndex].call_to_actions) {
-                newItems[parentIndex].call_to_actions = [];
+            if (!newItems[parentIndex].children) {
+                newItems[parentIndex].children = [];
             }
-            if (newItems[parentIndex].call_to_actions!.length >= 5) {
+            if (newItems[parentIndex].children!.length >= 5) {
                 toast.error("Max 5 items allowed in nested menu");
                 return;
             }
-            newItems[parentIndex].call_to_actions!.push(newItem);
+            newItems[parentIndex].children!.push(newItem);
             setItems(newItems);
         } else {
             if (items.length >= 3) {
@@ -87,7 +88,7 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
     const handleRemoveItem = (index: number, subIndex?: number) => {
         if (subIndex !== undefined) {
             const newItems = [...items];
-            newItems[index].call_to_actions?.splice(subIndex, 1);
+            newItems[index].children?.splice(subIndex, 1);
             setItems(newItems);
         } else {
             const newItems = [...items];
@@ -99,30 +100,30 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
     const handleUpdateItem = (index: number, subIndex: number | undefined, data: Partial<PersistentMenuItem>) => {
         const newItems = [...items];
         if (subIndex !== undefined) {
-            const item = newItems[index].call_to_actions![subIndex];
-            newItems[index].call_to_actions![subIndex] = { ...item, ...data };
+            const item = newItems[index].children![subIndex];
+            newItems[index].children![subIndex] = { ...item, ...data };
             
             if (data.type) {
-                if (data.type === 'web_url') delete newItems[index].call_to_actions![subIndex].payload;
-                if (data.type === 'postback') delete newItems[index].call_to_actions![subIndex].url;
+                if (data.type === 'url') delete newItems[index].children![subIndex].payload;
+                if (data.type === 'postback') delete newItems[index].children![subIndex].url;
             }
         } else {
             const item = newItems[index];
             newItems[index] = { ...item, ...data };
             
             if (data.type) {
-                if (data.type === 'web_url') {
+                if (data.type === 'url') {
                    delete newItems[index].payload;
-                   delete newItems[index].call_to_actions;
+                   delete newItems[index].children;
                 }
                 if (data.type === 'postback') {
                    delete newItems[index].url;
-                   delete newItems[index].call_to_actions;
+                   delete newItems[index].children;
                 }
                 if (data.type === 'nested') {
                    delete newItems[index].url;
                    delete newItems[index].payload;
-                   if (!newItems[index].call_to_actions) newItems[index].call_to_actions = [];
+                   if (!newItems[index].children) newItems[index].children = [];
                 }
             }
         }
@@ -133,11 +134,11 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
         const validateItems = (itemList: PersistentMenuItem[]): string | null => {
             for (const item of itemList) {
                 if (!item.title) return "All items must have a title";
-                if (item.type === 'web_url' && !item.url) return `Item "${item.title}" must have a URL`;
+                if (item.type === 'url' && !item.url) return `Item "${item.title}" must have a URL`;
                 if (item.type === 'postback' && !item.payload) return `Item "${item.title}" must have a payload`;
                 if (item.type === 'nested') {
-                  if (!item.call_to_actions || item.call_to_actions.length === 0) return `Nested item "${item.title}" must have sub-items`;
-                  const subError: string | null = validateItems(item.call_to_actions);
+                  if (!item.children || item.children.length === 0) return `Nested item "${item.title}" must have sub-items`;
+                  const subError: string | null = validateItems(item.children);
                   if (subError) return subError;
                 }
             }
@@ -153,9 +154,11 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
         setIsSaving(true);
         try {
             await api.post('/instagram/persistent-menu/save', {
-                page_id: instagramId,
+                instagram_id: instagramId,
+                facebook_page_id: pageId,
+                locale: "default",
                 composer_input_disabled: composerInputDisabled,
-                items: items
+                menu: items
             });
             toast.success("Persistent menu saved locally");
         } catch (error: any) {
@@ -218,13 +221,13 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
                                 onChange={(e) => handleUpdateItem(index, subIndex, { type: e.target.value as any })}
                                 className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
                             >
-                                <option value="web_url">Web URL</option>
+                                <option value="url">Web URL</option>
                                 <option value="postback">Postback</option>
                                 {subIndex === undefined && <option value="nested">Nested Menu</option>}
                             </select>
                         </div>
 
-                        {item.type === 'web_url' && (
+                        {item.type === 'url' && (
                             <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">URL</label>
                                 <div className="relative">
@@ -275,7 +278,7 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
                         <div className="flex items-center justify-between mb-2">
                              <div className="flex items-center gap-2">
                                  <Layers className="w-3.5 h-3.5 text-pink-500" />
-                                 <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.call_to_actions?.length || 0}/5)</span>
+                                 <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
                              </div>
                              <button
                                 onClick={() => handleAddItem(index)}
@@ -285,7 +288,7 @@ export default function PersistentMenu({ instagramId, actions }: PersistentMenuP
                              </button>
                         </div>
                         
-                        {item.call_to_actions?.map((subItem, si) => (
+                        {item.children?.map((subItem, si) => (
                             <MenuItemForm key={si} item={subItem} index={index} subIndex={si} />
                         ))}
                     </div>
