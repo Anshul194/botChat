@@ -41,10 +41,10 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
             if (response.data.success || response.data.is_success) {
                 const data = response.data.data;
                 if (data) {
-                  setComposerInputDisabled(data.composer_input_disabled || false);
-                  setItems(data.menu || []);
+                    setComposerInputDisabled(data.composer_input_disabled || false);
+                    setItems(data.menu || []);
                 } else {
-                  setItems([]);
+                    setItems([]);
                 }
             }
         } catch (error) {
@@ -102,7 +102,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
         if (subIndex !== undefined) {
             const item = newItems[index].children![subIndex];
             newItems[index].children![subIndex] = { ...item, ...data };
-            
+
             if (data.type) {
                 if (data.type === 'url') delete newItems[index].children![subIndex].payload;
                 if (data.type === 'postback') delete newItems[index].children![subIndex].url;
@@ -110,20 +110,20 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
         } else {
             const item = newItems[index];
             newItems[index] = { ...item, ...data };
-            
+
             if (data.type) {
                 if (data.type === 'url') {
-                   delete newItems[index].payload;
-                   delete newItems[index].children;
+                    delete newItems[index].payload;
+                    delete newItems[index].children;
                 }
                 if (data.type === 'postback') {
-                   delete newItems[index].url;
-                   delete newItems[index].children;
+                    delete newItems[index].url;
+                    delete newItems[index].children;
                 }
                 if (data.type === 'nested') {
-                   delete newItems[index].url;
-                   delete newItems[index].payload;
-                   if (!newItems[index].children) newItems[index].children = [];
+                    delete newItems[index].url;
+                    delete newItems[index].payload;
+                    if (!newItems[index].children) newItems[index].children = [];
                 }
             }
         }
@@ -137,9 +137,9 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                 if (item.type === 'url' && !item.url) return `Item "${item.title}" must have a URL`;
                 if (item.type === 'postback' && !item.payload) return `Item "${item.title}" must have a payload`;
                 if (item.type === 'nested') {
-                  if (!item.children || item.children.length === 0) return `Nested item "${item.title}" must have sub-items`;
-                  const subError: string | null = validateItems(item.children);
-                  if (subError) return subError;
+                    if (!item.children || item.children.length === 0) return `Nested item "${item.title}" must have sub-items`;
+                    const subError: string | null = validateItems(item.children);
+                    if (subError) return subError;
                 }
             }
             return null;
@@ -276,18 +276,18 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                 {item.type === 'nested' && (
                     <div className="mt-4 pt-4 border-t border-neutral-50 dark:border-neutral-800/50">
                         <div className="flex items-center justify-between mb-2">
-                             <div className="flex items-center gap-2">
-                                 <Layers className="w-3.5 h-3.5 text-pink-500" />
-                                 <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
-                             </div>
-                             <button
+                            <div className="flex items-center gap-2">
+                                <Layers className="w-3.5 h-3.5 text-pink-500" />
+                                <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
+                            </div>
+                            <button
                                 onClick={() => handleAddItem(index)}
                                 className="px-3 py-1.5 rounded-lg bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 text-[10px] font-black uppercase tracking-widest hover:bg-pink-100 transition-all flex items-center gap-1.5"
-                             >
+                            >
                                 <Plus className="w-3 h-3" /> Add Sub
-                             </button>
+                            </button>
                         </div>
-                        
+
                         {item.children?.map((subItem, si) => (
                             <MenuItemForm key={si} item={subItem} index={index} subIndex={si} />
                         ))}
@@ -306,7 +306,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-widest mt-1">Configure the permanent menu visible in Instagram DMs</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                     <button
+                    <button
                         onClick={handleDelete}
                         disabled={isDeleting}
                         className="px-5 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-red-500 hover:bg-red-50 transition-all text-[11px] font-black uppercase tracking-widest flex items-center gap-2"
@@ -337,8 +337,8 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
             <div className="flex flex-wrap gap-4">
                 <div className={cn(
                     "w-full max-w-sm p-5 rounded-3xl border transition-all flex flex-col gap-4 shadow-sm",
-                    composerInputDisabled 
-                        ? "bg-pink-50/50 border-pink-200 dark:bg-pink-950/10 dark:border-pink-900/40" 
+                    composerInputDisabled
+                        ? "bg-pink-50/50 border-pink-200 dark:bg-pink-950/10 dark:border-pink-900/40"
                         : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800"
                 )}>
                     <div className="flex items-start justify-between">
@@ -351,21 +351,21 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                             </div>
                             <span className="text-xs font-black text-pink-900 dark:text-pink-100 uppercase tracking-widest leading-none">Composer Lock</span>
                         </div>
-                        
-                        <button 
-                             onClick={() => setComposerInputDisabled(!composerInputDisabled)}
-                             className={cn(
-                                 "w-12 h-6 rounded-full relative transition-all duration-300",
-                                 composerInputDisabled ? "bg-pink-600" : "bg-neutral-200 dark:bg-neutral-800"
-                             )}
+
+                        <button
+                            onClick={() => setComposerInputDisabled(!composerInputDisabled)}
+                            className={cn(
+                                "w-12 h-6 rounded-full relative transition-all duration-300",
+                                composerInputDisabled ? "bg-pink-600" : "bg-neutral-200 dark:bg-neutral-800"
+                            )}
                         >
-                             <div className={cn(
-                                 "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm",
-                                 composerInputDisabled ? "left-7" : "left-1"
-                             )} />
+                            <div className={cn(
+                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm",
+                                composerInputDisabled ? "left-7" : "left-1"
+                            )} />
                         </button>
                     </div>
-                    
+
                     <div>
                         <h4 className="text-[13px] font-bold text-neutral-800 dark:text-neutral-200 mb-1">Disable Chat Composer?</h4>
                         <p className="text-[10px] text-neutral-500 font-medium leading-relaxed">If enabled, users can only interact via menu buttons. Keyboard input will be disabled in the IG DM bar.</p>
@@ -393,7 +393,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
             <div className="space-y-4">
                 <AnimatePresence>
                     {items.length === 0 ? (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                             className="py-12 border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[32px] text-center"
                         >

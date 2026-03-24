@@ -16,12 +16,14 @@ import {
     Save, Ban, Copy, Check, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { TemplateFormModal } from "../reply-templates/page";
-import { TemplateFormModal as CommentTemplateFormModal } from "../comment-templates/page";
+import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
+import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
+import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
+import { PostCommentModal } from "../../components/modals/PostCommentModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface FacebookPage {
@@ -72,6 +74,14 @@ export default function CommentManager() {
     // Popup states for directly editing comment/reply campaigns
     const [isReplyPopupOpen, setIsReplyPopupOpen] = useState(false);
     const [isCommentPopupOpen, setIsCommentPopupOpen] = useState(false);
+
+    // Auto Comment Modal
+    const [showAutoCommentModal, setShowAutoCommentModal] = useState(false);
+    const [selectedPostForAuto, setSelectedPostForAuto] = useState<FacebookPost | null>(null);
+
+    // Leave a Comment Now Modal
+    const [showCommentNowModal, setShowCommentNowModal] = useState(false);
+    const [selectedPostForComment, setSelectedPostForComment] = useState<FacebookPost | null>(null);
 
     const loaderRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -204,20 +214,7 @@ export default function CommentManager() {
         }
     };
 
-    // Intersection Observer for Infinite Scroll
-    useEffect(() => {
-        if (!loaderRef.current || isPostsLoading) return;
-
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !isMoreLoading && hasMore) {
-                fetchPosts(true);
-            }
-        }, { threshold: 0.1 });
-
-        observer.observe(loaderRef.current);
-        return () => observer.disconnect();
-    }, [loaderRef, isMoreLoading, hasMore, isPostsLoading, selectedPage]);
-
+    // ── Effects ──
     useEffect(() => {
         fetchPages();
     }, []);
@@ -457,7 +454,7 @@ export default function CommentManager() {
                                                                 <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
                                                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
                                                                     <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">ID: {post.id}</span>
-                                                                    <button 
+                                                                    <button
                                                                         onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
                                                                         className="hover:text-indigo-900 dark:hover:text-indigo-200 transition-colors active:scale-95"
                                                                         title="Copy ID"
@@ -487,13 +484,14 @@ export default function CommentManager() {
                                                                     Comment {post.status.comment}
                                                                 </span>
                                                             )}
-                                                            <div className="relative">
-                                                                <button 
-                                                                    onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === post.id ? null : post.id); }}
-                                                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                                                            <div className="relative" ref={dropdownRef}>
+                                                                <button
+                                                                    onClick={() => setActiveDropdown(activeDropdown === post.id ? null : post.id)}
+                                                                    className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary transition-all border border-transparent hover:border-pink-100 group/btn"
                                                                 >
-                                                                    <Settings className="w-4 h-4" />
+                                                                    <Settings2 size={16} className={cn("transition-transform duration-300", activeDropdown === post.id && "rotate-90 text-primary")} />
                                                                 </button>
+
                                                                 <AnimatePresence>
                                                                     {activeDropdown === post.id && (
                                                                         <motion.div
@@ -536,7 +534,7 @@ export default function CommentManager() {
                                                                             {/* Auto Comment Section */}
                                                                             {post.status?.comment ? (
                                                                                 <>
-                                                                                    <button onClick={() => setIsCommentPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
+                                                                                    <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
                                                                                         <Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
                                                                                     </button>
@@ -556,18 +554,24 @@ export default function CommentManager() {
                                                                                     </button>
                                                                                 </>
                                                                             ) : (
-                                                                                <button onClick={() => setIsCommentPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
+                                                                                <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
                                                                                     <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                                                                     <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable auto comment</span>
                                                                                 </button>
                                                                             )}
 
                                                                             {/* Default Actions */}
-                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
-                                                                                <List className="w-4 h-4 text-slate-400" />
+                                                                            <button
+                                                                                onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1"
+                                                                            >
+                                                                                <MessageSquare className="w-4 h-4 text-slate-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
                                                                             </button>
-                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                            <button
+                                                                                onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                            >
                                                                                 <Edit3 className="w-4 h-4 text-slate-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
                                                                             </button>
@@ -660,14 +664,14 @@ export default function CommentManager() {
                                                 </div>
                                             </div>
                                             {checkData.reply_exists ? (
-                                                <button 
-                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }} 
+                                                <button
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }}
                                                     className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors"
                                                 >
                                                     Edit Reply
                                                 </button>
                                             ) : (
-                                                <button 
+                                                <button
                                                     onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }}
                                                     className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
                                                 >
@@ -690,15 +694,25 @@ export default function CommentManager() {
                                                 </div>
                                             </div>
                                             {checkData.comment_exists ? (
-                                                <button 
-                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsCommentPopupOpen(true); }}
-                                                    className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors"
+                                                <button
+                                                    onClick={() => {
+                                                        setIsIdModalOpen(false);
+                                                        setTimeout(() => setCheckData(null), 200);
+                                                        setSelectedPostForAuto({ id: manualPostId } as any);
+                                                        setShowAutoCommentModal(true);
+                                                    }}
+                                                    className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-all"
                                                 >
                                                     Edit Comment
                                                 </button>
                                             ) : (
-                                                <button 
-                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsCommentPopupOpen(true); }}
+                                                <button
+                                                    onClick={() => {
+                                                        setIsIdModalOpen(false);
+                                                        setTimeout(() => setCheckData(null), 200);
+                                                        setSelectedPostForAuto({ id: manualPostId } as any);
+                                                        setShowAutoCommentModal(true);
+                                                    }}
                                                     className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
                                                 >
                                                     Enable Auto Comment
@@ -707,7 +721,7 @@ export default function CommentManager() {
                                         </div>
 
                                         <div className="pt-2">
-                                            <button 
+                                            <button
                                                 onClick={() => setCheckData(null)}
                                                 className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-200 transition-all"
                                             >
@@ -734,7 +748,7 @@ export default function CommentManager() {
                                             >
                                                 Cancel
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={handleCheckPostId}
                                                 disabled={isCheckingId}
                                                 className="flex-[1.5] flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-[13px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100"
@@ -765,22 +779,35 @@ export default function CommentManager() {
                 )}
             </AnimatePresence>
 
-            {/* ── Additional Modals ── */}
             <AnimatePresence>
                 {isReplyPopupOpen && (
-                    <ReplyCampaignAssignWrapper 
-                        onClose={() => setIsReplyPopupOpen(false)} 
-                        fetchPosts={fetchPosts} 
+                    <ReplyTemplateModal
+                        isOpen={isReplyPopupOpen}
+                        onClose={() => setIsReplyPopupOpen(false)}
+                        onSaved={fetchPosts}
+                        editingTemplate={null}
+                        platform="facebook"
                     />
                 )}
             </AnimatePresence>
+
             <AnimatePresence>
-                {isCommentPopupOpen && (
-                    <CommentCampaignAssignWrapper 
-                        onClose={() => setIsCommentPopupOpen(false)} 
-                        fetchPosts={fetchPosts} 
-                    />
-                )}
+                <PostAutoCommentModal
+                    isOpen={showAutoCommentModal}
+                    onClose={() => setShowAutoCommentModal(false)}
+                    onSaved={fetchPosts}
+                    platform="facebook"
+                    postId={selectedPostForAuto?.id || ""}
+                    pageId={selectedPage?.page_id || ""}
+                />
+
+                <PostCommentModal
+                    isOpen={showCommentNowModal}
+                    onClose={() => setShowCommentNowModal(false)}
+                    platform="facebook"
+                    postId={selectedPostForComment?.id || ""}
+                    pageId={selectedPage?.page_id || ""}
+                />
             </AnimatePresence>
         </div>
     );
@@ -818,9 +845,13 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
 
     if (!useSaved) {
         return (
-            <div className="relative z-[200]">
-                <TemplateFormModal mode="create" initial={null} onClose={() => setUseSaved(true)} onSaved={() => { onClose(); fetchPosts(); }} />
-            </div>
+            <ReplyTemplateModal
+                isOpen={true}
+                onClose={() => setUseSaved(true)}
+                onSaved={() => { onClose(); fetchPosts(); }}
+                editingTemplate={null}
+                platform="facebook"
+            />
         );
     }
 
@@ -837,14 +868,14 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
                 <div className="p-6 space-y-4">
                     <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                         <div className="flex items-center gap-2">
-                           <Tag className="w-4 h-4 text-slate-400" />
-                           <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
+                            <Tag className="w-4 h-4 text-slate-400" />
+                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
-                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
-                             <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-indigo-600" : "bg-slate-300")}>
-                               <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
-                             </div>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
+                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-indigo-600" : "bg-slate-300")}>
+                                <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
+                            </div>
                         </div>
                     </div>
 
@@ -859,9 +890,9 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
                     </div>
                 </div>
                 <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4"/> Cancel</button>
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
                     <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-indigo-700 transition-all">
-                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Check className="w-4 h-4"/>} Submit
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
             </motion.div>
@@ -879,7 +910,7 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
     useEffect(() => {
         api.get("/facebook/comment-template").then(res => {
             let data = res.data;
-            if(data?.data) data = data.data;
+            if (data?.data) data = data.data;
             setDropdownTemplates(Array.isArray(data) ? data : []);
         }).finally(() => setIsLoading(false));
     }, []);
@@ -901,9 +932,13 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
 
     if (!useSaved) {
         return (
-            <div className="relative z-[200]">
-                <CommentTemplateFormModal mode="create" initial={null} onClose={() => setUseSaved(true)} onSaved={() => { onClose(); fetchPosts(); }} />
-            </div>
+            <CommentTemplateModal
+                isOpen={true}
+                onClose={() => setUseSaved(true)}
+                onSaved={() => { onClose(); fetchPosts(); }}
+                editingTemplate={null}
+                platform="facebook"
+            />
         );
     }
 
@@ -920,14 +955,14 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
                 <div className="p-6 space-y-4">
                     <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                         <div className="flex items-center gap-2">
-                           <Tag className="w-4 h-4 text-slate-400" />
-                           <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
+                            <Tag className="w-4 h-4 text-slate-400" />
+                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
-                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
-                             <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-blue-600" : "bg-slate-300")}>
-                               <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
-                             </div>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
+                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-blue-600" : "bg-slate-300")}>
+                                <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
+                            </div>
                         </div>
                     </div>
 
@@ -942,9 +977,9 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
                     </div>
                 </div>
                 <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4"/> Cancel</button>
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
                     <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-blue-700 transition-all">
-                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Check className="w-4 h-4"/>} Submit
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
             </motion.div>
