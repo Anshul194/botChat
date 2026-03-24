@@ -2,6 +2,7 @@
 "use client";
 import { useState, useRef, useEffect, useCallback, createContext, useContext, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import {
@@ -225,7 +226,7 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
 
   const addButton = () => {
     if (buttons.length >= 3) return;
-    set({ buttons: [...buttons, { label: "New Button", action_type: "send_message", action_value: "" }] });
+    set({ buttons: [...buttons, { title: "New Button", action_type: "send_message", action_value: "" }] });
   };
 
   const updateButton = (idx, patch) => {
@@ -279,7 +280,7 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                 <div style={{ display: "flex", gap: 8 }}>
                   <div style={{ flex: 1 }}>
                     <Label>Title</Label>
-                    <Input value={btn.label} onChange={e => updateButton(i, { label: e.target.value })} placeholder="Button label" />
+                    <Input value={btn.title} onChange={e => updateButton(i, { title: e.target.value })} placeholder="Button title" />
                   </div>
                   <div style={{ flex: 1 }}>
                     <Label>Action</Label>
@@ -403,8 +404,8 @@ function SendLinkFields({ step, update }) {
         <Input value={c.url} onChange={e => set({ url: e.target.value })} placeholder="https://yoursite.com/offer" />
       </div>
       <div>
-        <Label>Button label (optional)</Label>
-        <Input value={c.btnLabel} onChange={e => set({ btnLabel: e.target.value })} placeholder="Get It Now →" />
+        <Label>Button title (optional)</Label>
+        <Input value={c.btnTitle} onChange={e => set({ btnTitle: e.target.value })} placeholder="Get It Now →" />
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         <div style={{ flex: 1 }}>
@@ -1890,7 +1891,7 @@ function PhonePreview({ steps, platform }) {
                           </div>
                           {(card.buttons || []).slice(0, 3).map((b, bi) => (
                             <div key={bi} style={{ borderTop: `1px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, padding: "10px", textAlign: "center", color: isFB ? "#0084FF" : DS.accent, fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                              {b.label}
+                              {b.title || b.label}
                             </div>
                           ))}
                         </div>
@@ -1936,7 +1937,7 @@ function PhonePreview({ steps, platform }) {
                           borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
                           color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
                         }}>
-                          {b.label}
+                          {b.title || b.label}
                         </div>
                       ))}
 
@@ -1946,7 +1947,7 @@ function PhonePreview({ steps, platform }) {
                           borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
                           color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
                         }}>
-                          {m.link.label}
+                          {m.link.title || m.link.btnTitle || m.link.label || m.link.btnLabel}
                         </div>
                       )}
                     </div>
@@ -2176,6 +2177,7 @@ function FlowBuilder() {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({ dmLimit: 30, slowMode: true, humanize: true });
+  const [stepToDeleteId, setStepToDeleteId] = useState(null);
   const bottomRef = useRef(null);
 
   // Fetch Flow Data if ID exists
@@ -2222,14 +2224,16 @@ function FlowBuilder() {
   }, [replyId, platform]);
 
   const updateStep = useCallback((id, data) => setSteps(s => s.map(x => x.id === id ? data : x)), []);
-  const deleteStep = useCallback(async (id) => {
-    const stepToDelete = steps.find(s => s.id === id);
-    if (!stepToDelete) return;
+  const deleteStep = useCallback((id) => {
+    setStepToDeleteId(id);
+  }, []);
 
-    if (!window.confirm(`Are you sure you want to delete step "${stepToDelete.label || stepToDelete.type}"?`)) return;
-
-    const isNew = String(id).startsWith("s_");
+  const confirmDelete = async () => {
+    if (!stepToDeleteId) return;
+    const id = stepToDeleteId;
+    setStepToDeleteId(null);
     
+    const isNew = String(id).startsWith("s_");
     try {
       if (!isNew) {
         const endpoint = platform === "facebook"
@@ -2248,7 +2252,7 @@ function FlowBuilder() {
       console.error("Delete Step Error:", err);
       toast.error("Failed to delete step");
     }
-  }, [steps, platform]);
+  };
   const dupStep = useCallback((id) => {
     setSteps(s => {
       const idx = s.findIndex(x => x.id === id);
@@ -2256,8 +2260,44 @@ function FlowBuilder() {
       const n = [...s]; n.splice(idx + 1, 0, copy); return n;
     });
   }, []);
-  const moveUp = useCallback((i) => setSteps(s => { const a = [...s];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return a; }), []);
-  const moveDown = useCallback((i) => setSteps(s => { const a = [...s];[a[i], a[i + 1]] = [a[i + 1], a[i]]; return a; }), []);
+  const handleReorder = useCallback(async (newSteps) => {
+    if (!replyId) return;
+    const orders = {};
+    newSteps.forEach((s, idx) => {
+      // Only include saved steps (numeric IDs)
+      if (!String(s.id).startsWith("s_")) {
+        orders[s.id] = idx + 1;
+      }
+    });
+
+    if (Object.keys(orders).length === 0) return;
+
+    try {
+      const endpoint = platform === "facebook"
+        ? `/facebook/bot-replies/steps/reorder`
+        : `/instagram/bot-replies/steps/reorder`;
+      await api.patch(endpoint, { orders });
+    } catch (err) {
+      console.error("Reorder Error:", err);
+      toast.error("Failed to sync step order");
+    }
+  }, [replyId, platform]);
+
+  const moveUp = useCallback((i) => {
+    const a = [...steps];
+    if (i <= 0) return;
+    [a[i - 1], a[i]] = [a[i], a[i - 1]];
+    setSteps(a);
+    handleReorder(a);
+  }, [steps, handleReorder]);
+
+  const moveDown = useCallback((i) => {
+    const a = [...steps];
+    if (i >= a.length - 1) return;
+    [a[i], a[i + 1]] = [a[i + 1], a[i]];
+    setSteps(a);
+    handleReorder(a);
+  }, [steps, handleReorder]);
 
   const handleStepSave = useCallback(async (step) => {
     if (!replyId) return;
@@ -2268,11 +2308,16 @@ function FlowBuilder() {
 
       const payload = {
         step_type: step.type === "message" ? "text" : step.type,
-        title: step.label || step.type,
+        title: step.label || step.title || step.type,
         settings_json: step.type === "carousel" ? [] : step.config,
         bot_reply_id: parseInt(replyId),
         id: String(step.id).startsWith("s_") ? undefined : step.id,
-        buttons: step.config?.buttons || [],
+        buttons: (step.config?.buttons || []).map(b => ({
+          title: b.title || b.label || "Click Here",
+          action_type: b.action_type || "send_message",
+          action_value: b.action_value || "",
+          next_step_id: b.action_type === "send_message" ? String(b.action_value) : undefined
+        })),
         quick_replies: step.config?.quick_replies || [],
         carousel_items: step.type === "carousel" ? (step.config?.carousel_items || []).map(item => ({
           ...item,
@@ -2280,7 +2325,8 @@ function FlowBuilder() {
           buttons: (item.buttons || []).map(b => ({
             title: b.title || b.label || "Click Here",
             action_type: b.action_type || "open_url",
-            action_value: b.action_value || "https://"
+            action_value: b.action_value || "https://",
+            next_step_id: b.action_type === "send_message" ? String(b.action_value) : undefined
           }))
         })) : [],
         condition: step.type === "condition" ? step.config : null,
@@ -2518,6 +2564,26 @@ function FlowBuilder() {
           </div>
         </div>
       </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <AnimatePresence>
+        {stepToDeleteId && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStepToDeleteId(null)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }} />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} style={{ position: "relative", width: "100%", maxWidth: 380, background: DS.card, borderRadius: 28, padding: 32, border: `1.5px solid ${DS.border}`, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+              <div style={{ width: 64, height: 64, borderRadius: 20, background: "rgba(239, 68, 68, 0.08)", border: "1.5px solid rgba(239, 68, 68, 0.12)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                <Trash2 color="#EF4444" size={28} />
+              </div>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: DS.ink, textAlign: "center", marginBottom: 12, letterSpacing: "-0.02em" }}>Delete Action?</h3>
+              <p style={{ fontSize: 13.5, color: DS.ink2, textAlign: "center", marginBottom: 28, lineHeight: 1.5, fontWeight: 500 }}>Confirm you want to delete this action. This operation cannot be reversed.</p>
+              <div style={{ display: "flex", gap: 12 }}>
+                <button onClick={() => setStepToDeleteId(null)} style={{ flex: 1, padding: "12px", borderRadius: 16, background: DS.bg, border: `1.5px solid ${DS.border}`, color: DS.ink2, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}>Cancel</button>
+                <button onClick={confirmDelete} style={{ flex: 1, padding: "12px", borderRadius: 16, background: "#EF4444", border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 12px rgba(239,68,68,0.2)" }}>Delete</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </DSContext.Provider>
   );
 }
