@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             {/* ── Main area ─ topbar + page content ── */}
-            <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <div className="flex flex-col flex-1 min-w-0 relative">
                 <Topbar
                     onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
                     collapsed={sidebarCollapsed}

@@ -91,7 +91,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
     return (
         <header
-            className="h-[60px] flex items-center px-4 gap-3 flex-shrink-0 relative"
+            className="h-[60px] flex items-center px-4 gap-3 flex-shrink-0 relative z-[100]"
             style={{
                 background: isLight ? "rgba(255,255,255,0.94)" : "rgba(9,11,20,0.95)",
                 backdropFilter: "blur(24px)",
@@ -303,7 +303,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
                     {/* Profile dropdown */}
                     {profileOpen && (
-                        <div className="absolute right-0 top-[calc(100%+10px)] w-56 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                        <div className="absolute right-0 top-[calc(100%+10px)] w-64 rounded-2xl shadow-2xl overflow-hidden z-[200] animate-in fade-in slide-in-from-top-2 duration-150"
                             style={{ background: isLight ? "rgba(255,255,255,0.98)" : "rgba(12,16,28,0.98)", border: `1px solid ${isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.07)"}`, backdropFilter: "blur(20px)" }}>
                             <div className="p-4" style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.06)"}` }}>
                                 <div className="flex items-center gap-3">

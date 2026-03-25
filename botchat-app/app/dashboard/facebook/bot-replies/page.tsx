@@ -547,8 +547,8 @@ export default function BotRepliesPage() {
 
                     {activeMenu === 'persistent_menu' && selectedPage && (
                         <motion.div key="menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            <PersistentMenu 
-                                pageId={selectedPage.page_id} 
+                            <PersistentMenu
+                                pageId={selectedPage.page_id}
                                 actions={actions}
                             />
                         </motion.div>
@@ -574,7 +574,7 @@ export default function BotRepliesPage() {
                             <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">New Automation for {selectedPage?.page_name}</h3>
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Internal Name</label>
+                                    <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Automation Name</label>
                                     <input
                                         type="text"
                                         placeholder="e.g. Sales Inquiry"
