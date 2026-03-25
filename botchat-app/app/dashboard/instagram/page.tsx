@@ -103,7 +103,21 @@ export default function InstagramPage() {
             const redirectUrl = response.data.data?.url || response.data.data?.redirect_url;
 
             if (redirectUrl) {
-                popup.location.href = redirectUrl;
+                // Attach the JWT token and frontend origin to the popup URL to prevent the backend from 
+                // rejecting the browser navigation as an "Unauthenticated" request and redirecting to sign-in.
+                const token = localStorage.getItem('token')?.replace(/^"(.*)"$/, '$1');
+                const origin = window.location.origin;
+                
+                let finalUrl = redirectUrl;
+                if (token && !finalUrl.includes('instagram.com') && !finalUrl.includes('facebook.com')) {
+                    const params = new URLSearchParams();
+                    params.append('token', token);
+                    params.append('origin', origin);
+                    
+                    finalUrl += (finalUrl.includes('?') ? '&' : '?') + params.toString();
+                }
+
+                popup.location.href = finalUrl;
 
                 const pollTimer = setInterval(() => {
                     if (popup.closed) {
