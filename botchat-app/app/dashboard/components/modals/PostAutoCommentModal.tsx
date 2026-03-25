@@ -64,19 +64,25 @@ export function PostAutoCommentModal({
         try {
             // Usually we'd have a 'get single' or check if campaign exists in status
             const endpoint = platform === "facebook"
-                ? `/facebook/comment-manager/post/${postId}`
+                ? `/facebook/post-auto-comment/${postId}`
                 : `/instagram/comment-manager/post/${postId}`;
-            const res = await api.get(endpoint);
+            const res = await api.put(`${endpoint}?page_id=${pageId}`);
             const data = res.data?.data;
-            if (data?.auto_comment_campaign) {
-                const c = data.auto_comment_campaign;
+            if (data) {
+                const c = data;
                 setExistingCampaignId(c.id);
                 setName(c.campaign_name || "");
                 setTemplateId(c.template_id || "");
                 setSelectionMode(c.comment_type || "random");
                 setScheduleType(c.schedule_type || "periodic");
                 setStatus(c.status || "active");
-                // Optional: set time windows if they exist in API response
+                
+                // Set times - slice to H:i format
+                if (c.start_time) setStartTime(c.start_time.slice(0, 5));
+                if (c.end_time) setEndTime(c.end_time.slice(0, 5));
+                if (c.comment_between_start) setBetweenStart(c.comment_between_start.slice(0, 5));
+                if (c.comment_between_end) setBetweenEnd(c.comment_between_end.slice(0, 5));
+                if (c.timezone) setTimezone(c.timezone);
             } else {
                 setExistingCampaignId(null);
             }
@@ -91,7 +97,7 @@ export function PostAutoCommentModal({
         setIsLoading(true);
         try {
             const endpoint = platform === "facebook" ? "/facebook/comment-template" : "/instagram/comment-template";
-            const res = await api.get(endpoint);
+            const res = await api.get(`${endpoint}?page_id=${pageId}`);
             if (res.data.success || res.data.is_success) {
                 setTemplates(res.data.data || []);
             }
@@ -130,15 +136,15 @@ export function PostAutoCommentModal({
 
             let res;
             if (existingCampaignId) {
-                // UPDATE
-                res = await api.put(`${endpoint}/${postId}`, payload);
+                // Update existing campaign
+                res = await api.put(`${endpoint}/${postId}?page_id=${pageId}`, payload);
             } else {
-                // CREATE
-                res = await api.post(endpoint, payload);
+                // Create new campaign
+                res = await api.post(`${endpoint}?page_id=${pageId}`, payload);
             }
 
             if (res.data.success || res.data.is_success) {
-                toast.success(existingCampaignId ? "Campaign updated!" : "Campaign saved!");
+                toast.success(existingCampaignId ? "Campaign updated!" : "Campaign enabled!");
                 onSaved();
                 onClose();
             }
@@ -277,7 +283,7 @@ export function PostAutoCommentModal({
                             <div className="flex flex-col gap-2">
                                 {[
                                     { id: 'random', label: 'Random', desc: 'Pick a random message each time' },
-                                    { id: 'serial', label: 'Serially', desc: 'Cycle through messages in order' }
+                                    { id: 'serial', label: 'Serial', desc: 'Cycle through messages in order' }
                                 ].map(opt => (
                                     <button
                                         key={opt.id}

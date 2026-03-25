@@ -23,6 +23,8 @@ import { useRouter } from "next/navigation";
 import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
 import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
+import { PostAutoReplyModal } from "../../components/modals/PostAutoReplyModal";
+import { CommentReportModal } from "../../components/modals/CommentReportModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -78,6 +80,31 @@ export default function CommentManager() {
     // Auto Comment Modal
     const [showAutoCommentModal, setShowAutoCommentModal] = useState(false);
     const [selectedPostForAuto, setSelectedPostForAuto] = useState<FacebookPost | null>(null);
+
+    // Auto Reply Modal
+    const [showAutoReplyModal, setShowAutoReplyModal] = useState(false);
+    const [selectedPostForReply, setSelectedPostForReply] = useState<FacebookPost | null>(null);
+
+    // Report Modal
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [selectedPostForReport, setSelectedPostForReport] = useState<FacebookPost | null>(null);
+
+    // Status Toggle Confirmation
+    const [statusConfirm, setStatusConfirm] = useState<{
+        isOpen: boolean;
+        post: FacebookPost | null;
+        type: "comment" | "reply";
+        action: "active" | "paused";
+    }>({ isOpen: false, post: null, type: "comment", action: "paused" });
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+    // Deletion Modal
+    const [deleteConfirm, setDeleteConfirm] = useState<{
+        isOpen: boolean;
+        post: FacebookPost | null;
+        type: "comment" | "reply";
+    }>({ isOpen: false, post: null, type: "comment" });
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Leave a Comment Now Modal
     const [showCommentNowModal, setShowCommentNowModal] = useState(false);
@@ -135,6 +162,46 @@ export default function CommentManager() {
             toast.error("Failed to load pages");
         } finally {
             setIsLoading(false);
+        }
+    };
+    const handleToggleStatus = async () => {
+        const { post, type, action } = statusConfirm;
+        if (!post) return;
+        
+        setIsUpdatingStatus(true);
+        try {
+            const endpoint = `/facebook/post-auto-${type}/${post.id}/status`;
+            
+            const res = await api.patch(endpoint, { status: action });
+            if (res.data.success || res.data.is_success) {
+                toast.success(`Campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
+                setStatusConfirm({ ...statusConfirm, isOpen: false });
+                fetchPosts();
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Status update failed");
+        } finally {
+            setIsUpdatingStatus(false);
+        }
+    };
+
+    const handleDeleteCampaign = async () => {
+        const { post, type } = deleteConfirm;
+        if (!post) return;
+        
+        setIsDeleting(true);
+        try {
+            const endpoint = `/facebook/post-auto-${type}/${post.id}`;
+            const res = await api.delete(endpoint);
+            if (res.data.success || res.data.is_success) {
+                toast.success(`Automated ${type} lifecycle deleted!`);
+                setDeleteConfirm({ ...deleteConfirm, isOpen: false });
+                fetchPosts();
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Deletion failed");
+        } finally {
+            setIsDeleting(true);
         }
     };
 
@@ -505,7 +572,7 @@ export default function CommentManager() {
                                                                             {/* Auto Reply Section */}
                                                                             {post.status?.reply ? (
                                                                                 <>
-                                                                                    <button onClick={() => setIsReplyPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                    <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                         <Edit3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                                     </button>
@@ -513,22 +580,43 @@ export default function CommentManager() {
                                                                                         <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
                                                                                     </button>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
-                                                                                        {post.status.reply === "paused" ? <Play className="w-4 h-4 text-amber-600 dark:text-amber-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
+                                                                                    <button 
+                                                                                        onClick={() => {
+                                                                                            setStatusConfirm({
+                                                                                                isOpen: true,
+                                                                                                post: post,
+                                                                                                type: "reply",
+                                                                                                action: (post.status?.reply === "paused") ? "active" : "paused"
+                                                                                            });
+                                                                                            setActiveDropdown(null);
+                                                                                        }}
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                                    >
+                                                                                        {post.status.reply === "paused" ? <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">
-                                                                                            {post.status.reply === "paused" ? "Resume auto reply campaign" : "Pause auto reply campaign"}
+                                                                                            {post.status.reply === "paused" ? "Resume Campaign" : "Pause Campaign"}
                                                                                         </span>
                                                                                     </button>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800">
+                                                                                    <button 
+                                                                                        onClick={() => {
+                                                                                            setDeleteConfirm({
+                                                                                                isOpen: true,
+                                                                                                post: post,
+                                                                                                type: "reply"
+                                                                                            });
+                                                                                            setActiveDropdown(null);
+                                                                                        }}
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800"
+                                                                                    >
                                                                                         <Trash2 className="w-4 h-4 text-rose-500" />
                                                                                         <span className="text-[12px] font-bold text-rose-600 dark:text-rose-400">Delete auto reply</span>
                                                                                     </button>
                                                                                 </>
                                                                             ) : (
-                                                                                <button onClick={() => setIsReplyPopupOpen(true)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
-                                                                                    <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                                                                    <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply Campaign</span>
-                                                                                </button>
+                                                                                    <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
+                                                                                        <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply Campaign</span>
+                                                                                    </button>
                                                                             )}
 
                                                                             {/* Auto Comment Section */}
@@ -538,17 +626,38 @@ export default function CommentManager() {
                                                                                         <Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
                                                                                     </button>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                    <button onClick={() => { setSelectedPostForReport(post); setShowReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                         <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto comment report</span>
                                                                                     </button>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
-                                                                                        {post.status.comment === "paused" ? <Play className="w-4 h-4 text-amber-600 dark:text-amber-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
+                                                                                    <button 
+                                                                                        onClick={() => {
+                                                                                            setStatusConfirm({
+                                                                                                isOpen: true,
+                                                                                                post: post,
+                                                                                                type: "comment",
+                                                                                                action: (post.status?.comment === "paused") ? "active" : "paused"
+                                                                                            });
+                                                                                            setActiveDropdown(null);
+                                                                                        }}
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                                    >
+                                                                                        {post.status.comment === "paused" ? <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">
-                                                                                            {post.status.comment === "paused" ? "Resume auto comment campaign" : "Pause auto comment campaign"}
+                                                                                            {post.status.comment === "paused" ? "Resume Campaign" : "Pause Campaign"}
                                                                                         </span>
                                                                                     </button>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800">
+                                                                                    <button 
+                                                                                        onClick={() => {
+                                                                                            setDeleteConfirm({
+                                                                                                isOpen: true,
+                                                                                                post: post,
+                                                                                                type: "comment"
+                                                                                            });
+                                                                                            setActiveDropdown(null);
+                                                                                        }}
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800"
+                                                                                    >
                                                                                         <Trash2 className="w-4 h-4 text-rose-500" />
                                                                                         <span className="text-[12px] font-bold text-rose-600 dark:text-rose-400">Delete auto comment</span>
                                                                                     </button>
@@ -665,14 +774,14 @@ export default function CommentManager() {
                                             </div>
                                             {checkData.reply_exists ? (
                                                 <button
-                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }}
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: manualPostId } as any); setShowAutoReplyModal(true); }}
                                                     className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors"
                                                 >
                                                     Edit Reply
                                                 </button>
                                             ) : (
                                                 <button
-                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setIsReplyPopupOpen(true); }}
+                                                    onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: manualPostId } as any); setShowAutoReplyModal(true); }}
                                                     className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
                                                 >
                                                     Enable Auto Reply
@@ -801,6 +910,23 @@ export default function CommentManager() {
                     pageId={selectedPage?.page_id || ""}
                 />
 
+                <PostAutoReplyModal
+                    isOpen={showAutoReplyModal}
+                    onClose={() => setShowAutoReplyModal(false)}
+                    onSaved={fetchPosts}
+                    platform="facebook"
+                    postId={selectedPostForReply?.id || ""}
+                    pageId={selectedPage?.page_id || ""}
+                />
+
+                <CommentReportModal
+                    isOpen={showReportModal}
+                    onClose={() => setShowReportModal(false)}
+                    platform="facebook"
+                    postId={selectedPostForReport?.id || ""}
+                    pageId={selectedPage?.page_id || ""}
+                />
+
                 <PostCommentModal
                     isOpen={showCommentNowModal}
                     onClose={() => setShowCommentNowModal(false)}
@@ -808,6 +934,90 @@ export default function CommentManager() {
                     postId={selectedPostForComment?.id || ""}
                     pageId={selectedPage?.page_id || ""}
                 />
+
+                {/* Status Toggle Modal */}
+                <AnimatePresence>
+                    {statusConfirm.isOpen && (
+                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-[32px] w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                                <div className="p-8 text-center space-y-6">
+                                    <div className={cn(
+                                        "w-20 h-20 rounded-[28px] mx-auto flex items-center justify-center shadow-lg",
+                                        statusConfirm.action === "paused" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
+                                    )}>
+                                        {statusConfirm.action === "paused" ? <Pause size={32} /> : <Play size={32} />}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                                            {statusConfirm.action === "paused" ? "Pause Campaign?" : "Resume Campaign?"}
+                                        </h3>
+                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                            Are you sure you want to {statusConfirm.action} this automated {statusConfirm.type} lifecycle?
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-3 pt-4">
+                                        <button 
+                                            onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
+                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        >
+                                            No, Cancel
+                                        </button>
+                                        <button 
+                                            onClick={handleToggleStatus}
+                                            disabled={isUpdatingStatus}
+                                            className={cn(
+                                                "flex-[2] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
+                                                statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
+                                            )}
+                                        >
+                                            {isUpdatingStatus ? "Updating..." : `Yes, ${statusConfirm.action} it`}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Deletion Confirmation Modal */}
+                <AnimatePresence>
+                    {deleteConfirm.isOpen && (
+                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-[32px] w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                                <div className="p-8 text-center space-y-6">
+                                    <div className="w-20 h-20 rounded-[28px] mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
+                                        <Trash2 size={32} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                                            Delete Campaign?
+                                        </h3>
+                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                            Are you absolutely sure you want to delete this automated {deleteConfirm.type} lifecycle? This action is irreversible.
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-3 pt-4">
+                                        <button 
+                                            onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
+                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        >
+                                            No, Keep it
+                                        </button>
+                                        <button 
+                                            onClick={handleDeleteCampaign}
+                                            disabled={isDeleting}
+                                            className="flex-[2] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white shadow-xl bg-rose-500 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </AnimatePresence>
         </div>
     );
