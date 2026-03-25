@@ -31,7 +31,7 @@ const DEV_DOMAIN = process.env.NEXT_PUBLIC_DEV_DOMAIN || 'pos.divyangtechlabs.co
  * - Production: reads window.location.hostname
  */
 export function getTenantDomain(): string {
-    
+
     if (typeof window === 'undefined') {
         // SSR — resolve from env or default
         return DEV_DOMAIN || 'pos.divyangtechlabs.com';

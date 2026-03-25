@@ -11,7 +11,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         // Only access localStorage on client after mount
         const token = localStorage.getItem('token');
         const userStr = localStorage.getItem('user');
-        
+
         if (token && userStr) {
             try {
                 const user = JSON.parse(userStr);
