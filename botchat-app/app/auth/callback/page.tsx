@@ -15,17 +15,31 @@ function CallbackContent() {
         const token = searchParams.get('token');
         const error = searchParams.get('error');
 
+        // Check if we are currently inside a popup window
+        const isPopup = window.opener && window.opener !== window;
+
         if (error) {
             toast.error(error || 'Authentication failed');
-            router.push('/auth/sign-in');
+            if (isPopup) {
+                window.close();
+            } else {
+                router.push('/auth/sign-in');
+            }
             return;
         }
 
         if (token) {
-            // Save token to localStorage
+            // Save token to localStorage so the main window can pick it up
             localStorage.setItem('token', token);
             
-            // Dispatch credentials to redux (we'll fetch user details next)
+            if (isPopup) {
+                // If it's a popup, just close it. The parent window's pollTimer will 
+                // detect the closure, check localStorage, fetch user, and navigate to dashboard.
+                window.close();
+                return; // Stop execution here
+            }
+
+            // Fallback for non-popup flow (e.g., standard browser redirect)
             dispatch(fetchMe()).then((action) => {
                 if (fetchMe.fulfilled.match(action)) {
                     const user = action.payload;
@@ -43,8 +57,11 @@ function CallbackContent() {
             });
         } else {
             // No token found, redirect back
-            // toast.error('No authentication token found');
-            router.push('/auth/sign-in');
+            if (isPopup) {
+                window.close();
+            } else {
+                router.push('/auth/sign-in');
+            }
         }
     }, [router, searchParams, dispatch]);
 
