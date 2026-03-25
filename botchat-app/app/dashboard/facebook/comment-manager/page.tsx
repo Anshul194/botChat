@@ -13,7 +13,7 @@ import {
     Trash2, Pause, Play, FileJson, Megaphone,
     ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal,
     ShieldAlert, EyeOff, Scissors, Edit3, Image as ImageIcon, Video, Upload,
-    Save, Ban, Copy, Check, Loader2
+    Save, Ban, Copy, Check, Loader2, ClipboardList
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,7 @@ import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
 import { PostAutoReplyModal } from "../../components/modals/PostAutoReplyModal";
 import { CommentReportModal } from "../../components/modals/CommentReportModal";
+import { CampaignReportModal } from "../../components/modals/CampaignReportModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -89,6 +90,10 @@ export default function CommentManager() {
     const [showReportModal, setShowReportModal] = useState(false);
     const [selectedPostForReport, setSelectedPostForReport] = useState<FacebookPost | null>(null);
 
+    // Global Reporting Modal
+    const [showCampaignReportModal, setShowCampaignReportModal] = useState(false);
+    const [activeReportType, setActiveReportType] = useState<"auto-reply" | "auto-comment" | "full-page-reply">("auto-reply");
+
     // Status Toggle Confirmation
     const [statusConfirm, setStatusConfirm] = useState<{
         isOpen: boolean;
@@ -109,6 +114,10 @@ export default function CommentManager() {
     // Leave a Comment Now Modal
     const [showCommentNowModal, setShowCommentNowModal] = useState(false);
     const [selectedPostForComment, setSelectedPostForComment] = useState<FacebookPost | null>(null);
+
+    // Reporting Dropdown
+    const [showReportDropdown, setShowReportDropdown] = useState(false);
+    const reportDropdownRef = useRef<HTMLDivElement>(null);
 
     const loaderRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -136,6 +145,9 @@ export default function CommentManager() {
         const handler = (e: MouseEvent) => {
             if (templateMenuRef.current && !templateMenuRef.current.contains(e.target as Node)) {
                 setShowTemplateMenu(false);
+            }
+            if (reportDropdownRef.current && !reportDropdownRef.current.contains(e.target as Node)) {
+                setShowReportDropdown(false);
             }
         };
         document.addEventListener("mousedown", handler);
@@ -203,6 +215,12 @@ export default function CommentManager() {
         } finally {
             setIsDeleting(true);
         }
+    };
+
+    const handleFetchReport = async (type: "auto-reply" | "auto-comment" | "full-page-reply") => {
+        setShowReportDropdown(false);
+        setActiveReportType(type);
+        setShowCampaignReportModal(true);
     };
 
     const fetchPosts = async (isAppend = false) => {
@@ -470,9 +488,48 @@ export default function CommentManager() {
                                 </button>
                             </div>
 
-                            <button className="w-full py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[12px] flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
-                                <PieChart className="w-4 h-4" /> View Detailed Reports
-                            </button>
+
+                            <div className="relative" ref={reportDropdownRef}>
+                                <button 
+                                    onClick={() => setShowReportDropdown(!showReportDropdown)}
+                                    className="w-full py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[12px] flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 shadow-sm uppercase tracking-wider"
+                                >
+                                    <ClipboardList className="w-4 h-4" /> 
+                                    See Campaign Reports 
+                                    <ChevronDown className={cn("w-4 h-4 transition-transform", showReportDropdown && "rotate-180")} />
+                                </button>
+
+                                <AnimatePresence>
+                                    {showReportDropdown && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute bottom-full left-0 right-0 mb-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[60] py-2"
+                                        >
+                                            {[
+                                                { id: "auto-reply", label: "Auto Reply Report", icon: Megaphone, color: "text-indigo-500" },
+                                                { id: "auto-comment", label: "Auto Comment Report", icon: MessageSquare, color: "text-blue-500" },
+                                                { id: "full-page-reply", label: "Full Page Reply Report", icon: Layers, color: "text-primary" }
+                                            ].map((report) => (
+                                                <button
+                                                    key={report.id}
+                                                    onClick={() => handleFetchReport(report.id as any)}
+                                                    className="w-full flex items-center gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-left group"
+                                                >
+                                                    <div className={cn("w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-white dark:group-hover:bg-slate-700 shadow-sm transition-all", report.color)}>
+                                                        <report.icon className="w-5 h-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[13px] font-bold text-slate-800 dark:text-slate-200">{report.label}</p>
+                                                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Sync latest analytics</p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </aside>
 
@@ -924,6 +981,14 @@ export default function CommentManager() {
                     onClose={() => setShowReportModal(false)}
                     platform="facebook"
                     postId={selectedPostForReport?.id || ""}
+                    pageId={selectedPage?.page_id || ""}
+                />
+
+                <CampaignReportModal
+                    isOpen={showCampaignReportModal}
+                    onClose={() => setShowCampaignReportModal(false)}
+                    reportType={activeReportType}
+                    platform="facebook"
                     pageId={selectedPage?.page_id || ""}
                 />
 
