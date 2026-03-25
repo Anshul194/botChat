@@ -292,8 +292,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
       });
 
       const config = { headers: { "Content-Type": "multipart/form-data" } };
-      if (mode === "create") await api.post("/facebook/auto-reply-template", fd, config);
-      else await api.put(`/facebook/auto-reply-template/${form.id}`, fd, config);
+      if (mode === "create") {
+        await api.post("/facebook/auto-reply-template", fd, config);
+      } else {
+        // Laravel doesn't support PUT with multipart/form-data — spoof via _method
+        fd.append("_method", "PUT");
+        await api.post(`/facebook/auto-reply-template/${form.id}`, fd, config);
+      }
 
       toast.success("Saved successfully!");
       onSaved();

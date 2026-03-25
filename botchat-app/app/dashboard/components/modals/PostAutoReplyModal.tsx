@@ -133,7 +133,6 @@ export function PostAutoReplyModal({
     const [isFetchingConfig, setIsFetchingConfig] = useState(false);
     const [existingCampaignId, setExistingCampaignId] = useState<number | null>(null);
 
-    // Form Data - Alinged with User's Postman Example
     const [form, setForm] = useState({
         name: "",
         reply_type: "generic", // "generic" or "filter"
@@ -141,7 +140,8 @@ export function PostAutoReplyModal({
         comment_reply_enabled: true,
         hide_after_reply: false,
         message: "",
-        private_template_id: "" as string | number | null,
+        template_id: "" as string | number | null,       // used in template mode
+        private_template_id: "" as string | number | null, // used in generic mode
         save_as_template: false,
         use_template: false,
         offensive: {
@@ -166,28 +166,30 @@ export function PostAutoReplyModal({
     const fetchCampaignConfig = async () => {
         setIsFetchingConfig(true);
         try {
-            const endpoint = platform === "facebook" ? `/facebook/post-auto-reply/${postId}` : `/instagram/post-auto-reply/${postId}`;
-            const res = await api.put(`${endpoint}?page_id=${pageId}`);
+            const endpoint = platform === "facebook" ? `/facebook/post-auto-reply` : `/instagram/post-auto-reply`;
+            const res = await api.get(`${endpoint}?page_id=${pageId}&post_id=${postId}`);
             const data = res.data?.data;
 
             if (data) {
                 setExistingCampaignId(data.id);
                 setStatus(data.status || "active");
 
-                if (data.use_template || data.private_template_id) {
+                if (data.use_template || data.template_id) {
                     setView("template");
-                    setForm(f => ({ ...f, private_template_id: data.private_template_id }));
+                    setForm(f => ({ ...f, template_id: data.template_id }));
                 } else {
                     setView("custom");
                 }
 
-                setForm({
+                setForm(f => ({
+                    ...f,
                     name: data.campaign_name || data.name || "",
                     reply_type: data.reply_type || "generic",
                     message: data.message || "",
                     multiple_reply_enabled: data.multiple_reply_enabled === "1" || !!data.multiple_reply_enabled,
                     comment_reply_enabled: data.comment_reply_enabled !== "0" && data.comment_reply_enabled !== false,
                     hide_after_reply: data.hide_after_reply === "1" || !!data.hide_after_reply,
+                    template_id: data.template_id || null,
                     private_template_id: data.private_template_id || null,
                     save_as_template: false,
                     use_template: !!data.use_template,
@@ -197,7 +199,7 @@ export function PostAutoReplyModal({
                         offensive_keywords: data.offensive?.offensive_keywords || "",
                         private_reply_template_id: data.offensive?.private_reply_template_id || null
                     }
-                });
+                }));
 
                 if (Array.isArray(data.rules)) {
                     setFilterRules(data.rules.map((r: any) => ({
@@ -229,43 +231,54 @@ export function PostAutoReplyModal({
 
     const handleSave = async () => {
         if (!form.name && view === "custom") { toast.error("Campaign name is required"); return; }
-        if (!form.private_template_id && view === "template") { toast.error("Please select a template"); return; }
+        if (!form.template_id && view === "template") { toast.error("Please select a template"); return; }
 
         setIsSaving(true);
         try {
             const endpoint = platform === "facebook" ? "/facebook/post-auto-reply" : "/instagram/post-auto-reply";
 
-            // Construct Payload Exactly as User's Example
-            const payload = {
+            const payload: any = {
                 post_id: postId,
-                facebook_page_id: pageId, // or instagram_account_id if needed, but example used facebook_page_id
+                facebook_page_id: pageId,
                 ...(platform === "instagram" && { instagram_account_id: pageId }),
-                use_template: view === "template",
+                use_template: view === "template" ? 1 : 0,
                 name: form.name || "My Auto Reply",
                 reply_type: form.reply_type,
-                multiple_reply_enabled: form.multiple_reply_enabled,
-                comment_reply_enabled: form.comment_reply_enabled,
-                hide_after_reply: form.hide_after_reply,
-                message: form.message,
-                private_template_id: form.private_template_id,
-                save_as_template: form.save_as_template,
-                offensive: form.offensive,
-                rules: filterRules.map(({ keyword, match_type, message, image, video, private_template_id }) => ({
+                multiple_reply_enabled: form.multiple_reply_enabled ? 1 : 0,
+                comment_reply_enabled: form.comment_reply_enabled ? 1 : 0,
+                hide_after_reply: form.hide_after_reply ? 1 : 0,
+                save_as_template: form.save_as_template ? 1 : 0,
+                offensive: {
+                    offensive_keywords: form.offensive.offensive_keywords ?? "",
+                    private_reply_template_id: form.offensive.private_reply_template_id ?? "",
+                    hide_comment: form.offensive.hide_comment ? 1 : 0,
+                    delete_comment: form.offensive.delete_comment ? 1 : 0,
+                },
+            };
+
+            if (view === "template") {
+                // Template mode: pass template_id and use_template:1
+                payload.template_id = String(form.template_id);
+            } else {
+                // Custom mode: pass message, private_template_id, rules
+                payload.message = form.message;
+                payload.image = "";
+                payload.video = "";
+                payload.private_template_id = form.private_template_id ?? "";
+                payload.rules = filterRules.map(({ keyword, match_type, message, image, video, private_template_id }) => ({
                     keyword,
                     match_type,
                     message,
-                    image,
-                    video,
-                    private_template_id
-                }))
-            };
+                    image: image ?? "",
+                    video: video ?? "",
+                    private_template_id: private_template_id ?? ""
+                }));
+            }
 
             let res;
             if (existingCampaignId) {
-                // PUT for edit
                 res = await api.put(`${endpoint}/${postId}?page_id=${pageId}`, payload);
             } else {
-                // POST for create
                 res = await api.post(`${endpoint}?page_id=${pageId}`, payload);
             }
 
@@ -406,8 +419,8 @@ export function PostAutoReplyModal({
                                         <Field label="Choose Preset">
                                             <div className="relative">
                                                 <select
-                                                    value={form.private_template_id ?? ""}
-                                                    onChange={(e) => setForm({ ...form, private_template_id: e.target.value })}
+                                                    value={form.template_id ?? ""}
+                                                    onChange={(e) => setForm({ ...form, template_id: e.target.value })}
                                                     className="w-full px-5 py-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800 border-none outline-none focus:ring-2 focus:ring-primary/20 text-[14px] font-semibold appearance-none cursor-pointer pr-12 dark:text-white"
                                                 >
                                                     <option value="" disabled>{isLoadingTemplates ? "Connecting..." : "Select from library"}</option>
@@ -416,7 +429,7 @@ export function PostAutoReplyModal({
                                                 <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                                             </div>
                                         </Field>
-                                        <button onClick={handleSave} disabled={isSaving || !form.private_template_id} className="w-full py-4 rounded-xl bg-primary text-white font-bold text-[13px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                        <button onClick={handleSave} disabled={isSaving || !form.template_id} className="w-full py-4 rounded-xl bg-primary text-white font-bold text-[13px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                                             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Deploy Campaign"}
                                         </button>
                                     </div>
