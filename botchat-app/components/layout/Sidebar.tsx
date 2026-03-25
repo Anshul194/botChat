@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser } from "@/store/slices/authSlice";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
     ChevronDown, ChevronRight, LayoutDashboard, Inbox, Zap, GitBranch,
     Instagram, Facebook, MessageSquare, BarChart3, Users, Target,
@@ -130,7 +130,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
         router.replace("/auth/sign-in");
     };
 
-    const sidebarVariants = {
+    const sidebarVariants: Variants = {
         expanded: { width: "16rem", transition: { type: "spring", stiffness: 300, damping: 30 } },
         collapsed: { width: "4rem", transition: { type: "spring", stiffness: 300, damping: 30 } }
     };

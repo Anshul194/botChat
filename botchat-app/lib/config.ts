@@ -27,36 +27,48 @@ const DEV_DOMAIN = process.env.NEXT_PUBLIC_DEV_DOMAIN || 'pos.divyangtechlabs.co
 
 /**
  * Returns the active tenant domain.
- * - Local/Vercel: reads NEXT_PUBLIC_DEV_DOMAIN
+ * - Local/Vercel: reads NEXT_PUBLIC_DEV_DOMAIN if set
  * - Production: reads window.location.hostname
  */
 export function getTenantDomain(): string {
     
     if (typeof window === 'undefined') {
         // SSR — resolve from env or default
-        return DEV_DOMAIN || 'pos.divyangtechlabs.com';
-    }
-
-    console.log('Resolving tenant domain for hostname:', window.location.hostname);
-    console.log('Using DEV_DOMAIN:', DEV_DOMAIN);
-
-    if (DEV_DOMAIN) {
-        return DEV_DOMAIN;
+        return process.env.NEXT_PUBLIC_DEV_DOMAIN || 'botchat.divyangtechlabs.com';
     }
 
     const hostname = window.location.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('localhost:');
+    
+    // Explicitly log for debugging on live
+    console.log('[Config] Current hostname:', hostname);
 
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Conditional Logic (Mirrors api.ts)
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    // If agency subdomain or agency localhost, use reseller domain
-    if (hostname.includes('agency.metadm.chat') || hostname.includes('agency.localhost') || hostname.includes('localhost:3002')) {
+    // 1. PRIORITY: Conditional Logic for specific staging/local domains (User requested)
+    // These always map to the reseller domain 'pos.divyangtechlabs.com'
+    if (hostname.includes('agency.metadm.chat') || 
+        hostname.includes('agency.localhost') || 
+        hostname.includes('localhost:3001') || 
+        hostname.includes('localhost:3002')) {
+        console.log('[Config] Special tenant domain detected:', hostname);
         return 'pos.divyangtechlabs.com';
     }
 
-    // Default to central API domain for metadm.chat or localhost
-    return 'botchat.divyangtechlabs.com';
+    // 2. If we have an explicit DEV_DOMAIN set in ENV and we are on localhost, use it
+    if (isLocalhost && process.env.NEXT_PUBLIC_DEV_DOMAIN) {
+        console.log('[Config] Localhost detected, using ENV domain:', process.env.NEXT_PUBLIC_DEV_DOMAIN);
+        return process.env.NEXT_PUBLIC_DEV_DOMAIN;
+    }
+
+    // 3. In Production, ALWAYS use the current hostname if it's not localhost
+    if (!isLocalhost && hostname) {
+        console.log('[Config] Production detected, using hostname as tenant:', hostname);
+        return hostname;
+    }
+
+    // 4. Fallback default
+    const fallback = process.env.NEXT_PUBLIC_DEV_DOMAIN || 'botchat.divyangtechlabs.com';
+    console.log('[Config] Falling back to:', fallback);
+    return fallback;
 }
 
 /**
