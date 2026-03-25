@@ -321,7 +321,7 @@ export default function CommentManager() {
                             <Layers className="w-6 h-6" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none">Comment Hub</h1>
+                            <h1 className="text-lg font-semibold text-slate-900 dark:text-white uppercase tracking-tight leading-none">Comment Hub</h1>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Asset Directory</p>
                         </div>
                     </div>
@@ -383,7 +383,7 @@ export default function CommentManager() {
                                 <div className="relative" ref={templateMenuRef}>
                                     <button
                                         onClick={() => setShowTemplateMenu(v => !v)}
-                                        className="flex items-center gap-1.5 text-[12px] font-bold text-primary hover:text-purple-700 dark:hover:text-purple-300 transition-colors group"
+                                        className="flex items-center gap-1.5 text-[12px] font-bold text-primary hover:text-pink-700 dark:hover:text-pink-300 transition-colors group"
                                     >
                                         Manage Templates
                                         <ChevronDown className={cn(
@@ -407,16 +407,16 @@ export default function CommentManager() {
                                                         label: "Comment Template",
                                                         icon: MessageSquare,
                                                         desc: "Preset comment sets",
-                                                        color: "text-purple-600",
-                                                        bg: "bg-purple-50 dark:bg-purple-500/10",
+                                                        color: "text-pink-600",
+                                                        bg: "bg-pink-50 dark:bg-pink-500/10",
                                                     },
                                                     {
                                                         id: "reply",
                                                         label: "Reply Template",
                                                         icon: FileText,
                                                         desc: "Auto-reply messages",
-                                                        color: "text-blue-600",
-                                                        bg: "bg-blue-50 dark:bg-blue-500/10",
+                                                        color: "text-pink-600",
+                                                        bg: "bg-pink-50 dark:bg-pink-500/10",
                                                     },
                                                     {
                                                         id: "custom",
@@ -466,7 +466,7 @@ export default function CommentManager() {
                                     <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Replies</p>
                                 </div>
                                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                                    <p className="text-3xl font-bold text-blue-500">{pageStats.auto_comment_count}</p>
+                                    <p className="text-3xl font-bold text-pink-500">{pageStats.auto_comment_count}</p>
                                     <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Comments</p>
                                 </div>
                             </div>
@@ -508,8 +508,8 @@ export default function CommentManager() {
                                             className="absolute bottom-full left-0 right-0 mb-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[60] py-2"
                                         >
                                             {[
-                                                { id: "auto-reply", label: "Auto Reply Report", icon: Megaphone, color: "text-indigo-500" },
-                                                { id: "auto-comment", label: "Auto Comment Report", icon: MessageSquare, color: "text-blue-500" },
+                                                { id: "auto-reply", label: "Auto Reply Report", icon: Megaphone, color: "text-pink-500" },
+                                                { id: "auto-comment", label: "Auto Comment Report", icon: MessageSquare, color: "text-pink-500" },
                                                 { id: "full-page-reply", label: "Full Page Reply Report", icon: Layers, color: "text-primary" }
                                             ].map((report) => (
                                                 <button
@@ -576,11 +576,11 @@ export default function CommentManager() {
                                                             <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate">{post.user}</h4>
                                                             <div className="flex items-center gap-2 mt-0.5">
                                                                 <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
-                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
                                                                     <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">ID: {post.id}</span>
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
-                                                                        className="hover:text-indigo-900 dark:hover:text-indigo-200 transition-colors active:scale-95"
+                                                                        className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95"
                                                                         title="Copy ID"
                                                                     >
                                                                         <Copy className="w-3 h-3" />
@@ -603,7 +603,7 @@ export default function CommentManager() {
                                                             {post.status?.comment && (
                                                                 <span className={cn(
                                                                     "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
-                                                                    post.status.comment === "active" ? "bg-blue-500/10 text-blue-600" : "bg-slate-100 text-slate-400"
+                                                                    post.status.comment === "active" ? "bg-pink-500/10 text-pink-600" : "bg-slate-100 text-slate-400"
                                                                 )}>
                                                                     Comment {post.status.comment}
                                                                 </span>
@@ -630,7 +630,7 @@ export default function CommentManager() {
                                                                             {post.status?.reply ? (
                                                                                 <>
                                                                                     <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
-                                                                                        <Edit3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                                                                        <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                                     </button>
                                                                                     <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
@@ -671,7 +671,7 @@ export default function CommentManager() {
                                                                                 </>
                                                                             ) : (
                                                                                     <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
-                                                                                        <Megaphone className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                                                                        <Megaphone className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply Campaign</span>
                                                                                     </button>
                                                                             )}
@@ -680,7 +680,7 @@ export default function CommentManager() {
                                                                             {post.status?.comment ? (
                                                                                 <>
                                                                                     <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
-                                                                                        <Edit3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                                                                        <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
                                                                                     </button>
                                                                                     <button onClick={() => { setSelectedPostForReport(post); setShowReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
@@ -721,7 +721,7 @@ export default function CommentManager() {
                                                                                 </>
                                                                             ) : (
                                                                                 <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
-                                                                                    <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                                                                    <MessageSquare className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                     <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable auto comment</span>
                                                                                 </button>
                                                                             )}
@@ -769,7 +769,7 @@ export default function CommentManager() {
                                             <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
                                             <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
                                             <div className="w-2 h-2 rounded-full bg-primary animate-bounce" />
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Syncing History...</p>
+                                            <p className="text-[10px] font-medium text-slate-500 ml-2">Syncing History...</p>
                                         </div>
                                     )}
                                 </div>
@@ -819,7 +819,7 @@ export default function CommentManager() {
                                         {/* Auto Reply Box */}
                                         <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600 flex items-center justify-center">
                                                     <Megaphone className="w-5 h-5" />
                                                 </div>
                                                 <div>
@@ -849,7 +849,7 @@ export default function CommentManager() {
                                         {/* Auto Comment Box */}
                                         <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600 flex items-center justify-center">
                                                     <MessageSquare className="w-5 h-5" />
                                                 </div>
                                                 <div>
@@ -1005,16 +1005,16 @@ export default function CommentManager() {
                     {statusConfirm.isOpen && (
                         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
-                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-[32px] w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
                                 <div className="p-8 text-center space-y-6">
                                     <div className={cn(
-                                        "w-20 h-20 rounded-[28px] mx-auto flex items-center justify-center shadow-lg",
+                                        "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg",
                                         statusConfirm.action === "paused" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
                                     )}>
                                         {statusConfirm.action === "paused" ? <Pause size={32} /> : <Play size={32} />}
                                     </div>
                                     <div className="space-y-2">
-                                        <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
                                             {statusConfirm.action === "paused" ? "Pause Campaign?" : "Resume Campaign?"}
                                         </h3>
                                         <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
@@ -1024,7 +1024,7 @@ export default function CommentManager() {
                                     <div className="flex gap-3 pt-4">
                                         <button 
                                             onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
-                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
                                         >
                                             No, Cancel
                                         </button>
@@ -1032,7 +1032,7 @@ export default function CommentManager() {
                                             onClick={handleToggleStatus}
                                             disabled={isUpdatingStatus}
                                             className={cn(
-                                                "flex-[2] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
+                                                "flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
                                                 statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
                                             )}
                                         >
@@ -1050,13 +1050,13 @@ export default function CommentManager() {
                     {deleteConfirm.isOpen && (
                         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
-                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-[32px] w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
                                 <div className="p-8 text-center space-y-6">
-                                    <div className="w-20 h-20 rounded-[28px] mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
+                                    <div className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
                                         <Trash2 size={32} />
                                     </div>
                                     <div className="space-y-2">
-                                        <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
                                             Delete Campaign?
                                         </h3>
                                         <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
@@ -1066,14 +1066,14 @@ export default function CommentManager() {
                                     <div className="flex gap-3 pt-4">
                                         <button 
                                             onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
-                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
                                         >
                                             No, Keep it
                                         </button>
                                         <button 
                                             onClick={handleDeleteCampaign}
                                             disabled={isDeleting}
-                                            className="flex-[2] py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-white shadow-xl bg-rose-500 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                            className="flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-rose-500 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
                                         >
                                             {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
                                         </button>
@@ -1132,9 +1132,9 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
+                    <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
                         <Megaphone className="w-5 h-5" />
                         <h2 className="text-[14px] font-bold text-slate-800 dark:text-white">Please give the following information for post auto reply</h2>
                     </div>
@@ -1147,8 +1147,8 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
                             <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
-                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
-                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-indigo-600" : "bg-slate-300")}>
+                            <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
+                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-pink-600" : "bg-slate-300")}>
                                 <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
                             </div>
                         </div>
@@ -1156,9 +1156,9 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
 
                     <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                         <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-indigo-500" /> Auto Reply Template
+                            <Layers className="w-4 h-4 text-pink-500" /> Auto Reply Template
                         </label>
-                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-indigo-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
+                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
                             <option value="">{isLoading ? "Loading templates..." : "Please select a template"}</option>
                             {dropdownTemplates.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
@@ -1166,7 +1166,7 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
                 </div>
                 <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
                     <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
-                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-indigo-700 transition-all">
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-pink-600 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
@@ -1219,9 +1219,9 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400">
+                    <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
                         <MessageSquare className="w-5 h-5" />
                         <h2 className="text-[14px] font-bold text-slate-800 dark:text-white">Please give the following information for post auto comment</h2>
                     </div>
@@ -1234,8 +1234,8 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
                             <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
-                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
-                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-blue-600" : "bg-slate-300")}>
+                            <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
+                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-pink-600" : "bg-slate-300")}>
                                 <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
                             </div>
                         </div>
@@ -1243,9 +1243,9 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
 
                     <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                         <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-blue-500" /> Auto Comment Template
+                            <Layers className="w-4 h-4 text-pink-500" /> Auto Comment Template
                         </label>
-                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
+                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
                             <option value="">{isLoading ? "Loading templates..." : "Please select a template"}</option>
                             {dropdownTemplates.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
@@ -1253,7 +1253,7 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
                 </div>
                 <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
                     <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
-                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-blue-700 transition-all">
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-pink-600 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
@@ -1353,12 +1353,12 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     onClick={onClick}
                     className={cn(
                         "w-10 h-5 rounded-full relative transition-all duration-300 cursor-pointer",
-                        active ? "bg-indigo-600" : "bg-slate-200"
+                        active ? "bg-pink-600" : "bg-slate-200"
                     )}
                 >
                     <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-md", active ? "left-5.5" : "left-0.5")} />
                 </div>
-                <span className="text-[9px] font-black text-slate-400 w-6 uppercase tracking-widest">{active ? "YES" : "NO"}</span>
+                <span className="text-[9px] font-semibold text-slate-400 w-6 uppercase tracking-widest">{active ? "YES" : "NO"}</span>
             </div>
         </div>
     );
@@ -1376,35 +1376,35 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }}
-                className="relative z-10 w-full max-w-3xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                className="relative z-10 w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
                 <div className="px-10 py-6 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10">
-                    <h2 className="text-[15px] font-black text-slate-800 uppercase tracking-tight">
-                        Enable / Edit Full Page Reply for: <span className="text-indigo-600 ml-1">{page.page_name}</span>
+                    <h2 className="text-[15px] font-semibold text-slate-800 uppercase tracking-tight">
+                        Enable / Edit Full Page Reply for: <span className="text-pink-600 ml-1">{page.page_name}</span>
                     </h2>
-                    <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-indigo-500 hover:bg-slate-50 transition-all">
+                    <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-pink-500 hover:bg-slate-50 transition-all">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 <div className="p-8 space-y-8 overflow-y-auto no-scrollbar">
                     {/* Campaign Name */}
-                    <div className="p-8 rounded-[32px] border border-slate-100 bg-white shadow-sm space-y-3">
-                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Auto Reply Campaign Name <span className="text-indigo-500">*</span></label>
+                    <div className="p-8 rounded-2xl border border-slate-100 bg-white shadow-sm space-y-3">
+                        <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.2em]">Auto Reply Campaign Name <span className="text-pink-500">*</span></label>
                         <input
                             type="text"
                             value={form.name}
                             onChange={v => setForm({ ...form, name: v.target.value })}
                             placeholder="Write your auto reply campaign name here"
-                            className="w-full px-7 py-4 rounded-2xl bg-slate-50/50 border border-slate-100 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 outline-none transition-all font-bold text-slate-600"
+                            className="w-full px-7 py-4 rounded-2xl bg-slate-50/50 border border-slate-100 focus:bg-white focus:border-pink-400 focus:ring-4 focus:ring-indigo-50 outline-none transition-all font-bold text-slate-600"
                         />
                     </div>
 
                     {/* Offensive Filtering */}
-                    <div className="p-8 rounded-[32px] border border-slate-100 bg-white shadow-sm space-y-6">
-                        <div className="flex items-center gap-2 text-indigo-500">
+                    <div className="p-8 rounded-2xl border border-slate-100 bg-white shadow-sm space-y-6">
+                        <div className="flex items-center gap-2 text-pink-500">
                             <ShieldAlert className="w-4 h-4" />
-                            <h3 className="text-[12px] font-black uppercase tracking-widest">Offensive Comments Settings</h3>
+                            <h3 className="text-[12px] font-semibold uppercase tracking-widest">Offensive Comments Settings</h3>
                         </div>
                         <div className="flex gap-10 border-b border-slate-50 pb-6">
                             <Toggle label="Hide Comment" active={form.hide_comment} onClick={() => setForm({ ...form, hide_comment: !form.hide_comment })} />
@@ -1418,12 +1418,12 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                     value={form.offensive_keywords}
                                     onChange={e => setForm({ ...form, offensive_keywords: e.target.value })}
                                     placeholder="keyword1, keyword2..."
-                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-300 transition-all text-[13px] font-medium"
+                                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-pink-300 transition-all text-[13px] font-medium"
                                 />
                             </div>
                             <div className="space-y-3">
                                 <label className="text-[10px] font-bold text-slate-400 uppercase text-right block">Private Reply Template</label>
-                                <select className="w-full h-12 px-5 rounded-xl bg-slate-50 border border-slate-100 outline-none text-[13px] font-bold text-slate-600 focus:border-indigo-300">
+                                <select className="w-full h-12 px-5 rounded-xl bg-slate-50 border border-slate-100 outline-none text-[13px] font-bold text-slate-600 focus:border-pink-300">
                                     <option>Select...</option>
                                 </select>
                             </div>
@@ -1431,7 +1431,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     </div>
 
                     {/* Logic Toggles */}
-                    <div className="p-8 rounded-[32px] border border-slate-100 bg-slate-50/30 space-y-4">
+                    <div className="p-8 rounded-2xl border border-slate-100 bg-slate-50/30 space-y-4">
                         <Toggle label="Do you want to send reply message to a user multiple times?" active={form.multiple_reply_enabled} onClick={() => setForm({ ...form, multiple_reply_enabled: !form.multiple_reply_enabled })} />
                         <Toggle label="Do you want to enable comment reply?" active={form.comment_reply_enabled} onClick={() => setForm({ ...form, comment_reply_enabled: !form.comment_reply_enabled })} />
                         <Toggle label="Do you want to hide comments after comment reply?" active={form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
@@ -1442,14 +1442,14 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                         <button
                             onClick={() => setForm({ ...form, reply_type: "generic" })}
                             className={cn(
-                                "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                form.reply_type === "generic" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "text-slate-400 hover:text-slate-600"
+                                "flex-1 py-3 rounded-xl text-[11px] font-semibold uppercase tracking-widest transition-all",
+                                form.reply_type === "generic" ? "bg-pink-600 text-white shadow-lg shadow-indigo-200" : "text-slate-400 hover:text-slate-600"
                             )}>Generic Message for All</button>
                         <button
                             onClick={() => setForm({ ...form, reply_type: "filtering" })}
                             className={cn(
-                                "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                form.reply_type === "filtering" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "text-slate-400 hover:text-slate-600"
+                                "flex-1 py-3 rounded-xl text-[11px] font-semibold uppercase tracking-widest transition-all",
+                                form.reply_type === "filtering" ? "bg-pink-600 text-white shadow-lg shadow-indigo-200" : "text-slate-400 hover:text-slate-600"
                             )}>Send Message by Filtering Word/Sentence</button>
                     </div>
 
@@ -1458,11 +1458,11 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                             {form.filters.map((f, i) => (
                                 <div key={i} className="p-8 rounded-[36px] border border-slate-100 bg-white shadow-sm space-y-6">
                                     <div className="flex items-center justify-between border-b border-slate-50 pb-4">
-                                        <div className="flex items-center gap-2 text-indigo-600">
+                                        <div className="flex items-center gap-2 text-pink-600">
                                             <Filter className="w-4 h-4" />
-                                            <h3 className="text-[12px] font-black uppercase tracking-widest">Filter Rule #{i + 1}</h3>
+                                            <h3 className="text-[12px] font-semibold uppercase tracking-widest">Filter Rule #{i + 1}</h3>
                                         </div>
-                                        <button onClick={() => setForm({ ...form, filters: form.filters.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-indigo-500 transition-colors">
+                                        <button onClick={() => setForm({ ...form, filters: form.filters.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-pink-500 transition-colors">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -1477,7 +1477,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                     newFilters[i].keywords = e.target.value;
                                                     setForm({ ...form, filters: newFilters });
                                                 }}
-                                                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-400 font-medium"
+                                                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-pink-400 font-medium"
                                                 placeholder="Example: price, cost, how much"
                                             />
                                         </div>
@@ -1491,7 +1491,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                     newFilters[i].message = e.target.value;
                                                     setForm({ ...form, filters: newFilters });
                                                 }}
-                                                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-400 font-medium"
+                                                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:bg-white focus:border-pink-400 font-medium"
                                                 placeholder="Write your automated reply..."
                                             />
                                         </div>
@@ -1500,7 +1500,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                             ))}
                             <button
                                 onClick={addFilter}
-                                className="w-full py-4 rounded-[24px] border-2 border-dashed border-slate-200 text-slate-400 font-black text-[12px] uppercase tracking-widest hover:border-indigo-200 hover:text-indigo-600 transition-all flex items-center justify-center gap-2"
+                                className="w-full py-4 rounded-2xl border-2 border-dashed border-slate-200 text-slate-400 font-semibold text-[12px] uppercase tracking-widest hover:border-pink-200 hover:text-pink-600 transition-all flex items-center justify-center gap-2"
                             >
                                 <Plus className="w-4 h-4" /> Add More Filtering
                             </button>
@@ -1509,9 +1509,9 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
                     {/* Generic Response Builder */}
                     <div className="p-8 rounded-[36px] border border-slate-100 bg-white shadow-sm space-y-6">
-                        <div className="flex items-center gap-2 text-indigo-600 border-b border-slate-50 pb-4">
+                        <div className="flex items-center gap-2 text-pink-600 border-b border-slate-50 pb-4">
                             <MessageSquare className="w-4 h-4" />
-                            <h3 className="text-[12px] font-black uppercase tracking-widest">Message for Comment Reply</h3>
+                            <h3 className="text-[12px] font-semibold uppercase tracking-widest">Message for Comment Reply</h3>
                         </div>
 
                         <textarea
@@ -1519,7 +1519,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                             value={form.message}
                             onChange={e => setForm({ ...form, message: e.target.value })}
                             placeholder="Type your message here..."
-                            className="w-full p-6 rounded-3xl bg-slate-50/50 border border-slate-100 outline-none focus:bg-white focus:border-indigo-400 transition-all font-medium text-[15px]"
+                            className="w-full p-6 rounded-3xl bg-slate-50/50 border border-slate-100 outline-none focus:bg-white focus:border-pink-400 transition-all font-medium text-[15px]"
                         />
 
                         <div className="grid grid-cols-2 gap-4">
@@ -1531,7 +1531,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                 <ArrowRight className="w-3.5 h-3.5" /> Select Private Message Template (Fallback)
                             </label>
-                            <select className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 outline-none font-bold text-slate-600 focus:border-indigo-400 appearance-none">
+                            <select className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 outline-none font-bold text-slate-600 focus:border-pink-400 appearance-none">
                                 <option>Select Template...</option>
                             </select>
                         </div>
@@ -1543,7 +1543,7 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="flex-[1.5] py-4.5 bg-indigo-600 text-white font-black text-[13px] rounded-[22px] shadow-2xl shadow-indigo-100 hover:translate-y-[-2px] active:translate-y-[0px] transition-all flex items-center justify-center gap-3 uppercase tracking-[0.2em] disabled:opacity-50"
+                        className="flex-[1.5] py-4.5 bg-pink-600 text-white font-semibold text-[13px] rounded-[22px] shadow-2xl shadow-indigo-100 hover:translate-y-[-2px] active:translate-y-[0px] transition-all flex items-center justify-center gap-3 uppercase tracking-[0.2em] disabled:opacity-50"
                     >
                         {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-5 h-5" />}
                         {hasCampaign ? "Update Campaign" : "Enable Global Activity"}
@@ -1556,10 +1556,10 @@ function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
 function UploadBox({ label, icon: Icon }: any) {
     return (
-        <div className="p-5 rounded-[24px] border border-slate-100 bg-slate-50/30 group">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">{label}</span>
+        <div className="p-5 rounded-2xl border border-slate-100 bg-slate-50/30 group">
+            <span className="text-[10px] font-medium text-slate-500 block mb-3">{label}</span>
             <div className="flex items-center gap-3">
-                <button className="h-11 px-5 rounded-xl bg-indigo-600 text-white flex items-center gap-2 text-[11px] font-black uppercase tracking-tight shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                <button className="h-11 px-5 rounded-xl bg-pink-600 text-white flex items-center gap-2 text-[11px] font-semibold shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
                     <Upload className="w-3.5 h-3.5" /> Upload
                 </button>
                 <div className="flex-1 h-11 px-4 rounded-xl border border-slate-100 bg-white flex items-center">
