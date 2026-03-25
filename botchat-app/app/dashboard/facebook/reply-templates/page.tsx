@@ -24,7 +24,7 @@ export interface ReplyTemplate {
   multiple_reply_enabled: boolean;
   comment_reply_enabled: boolean;
   hide_after_reply: boolean;
-  private_template_id: number | null;
+  private_template_id: string; // Updated to match stringent backend validation (must be string)
   page_id?: string;
   
   // Advanced Fields from Screenshot
@@ -150,7 +150,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
     multiple_reply_enabled: initial?.multiple_reply_enabled ?? false,
     comment_reply_enabled: initial?.comment_reply_enabled ?? false,
     hide_after_reply: initial?.hide_after_reply ?? true,
-    private_template_id: initial?.private_template_id ?? null,
+    private_template_id: initial?.private_template_id ? String(initial.private_template_id) : "",
     page_id: initial?.page_id ?? "",
     
     hide_comment: initial?.hide_comment ?? false,
@@ -175,10 +175,15 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
   const [isLoadingDropdown, setIsLoadingDropdown] = useState(false);
   const [isLoadingPages, setIsLoadingPages] = useState(false);
 
-  const fetchDropdown = async () => {
+  const fetchDropdown = async (pageId?: string) => {
+    const targetPageId = pageId || form.page_id;
+    if (!targetPageId) {
+        setDropdownTemplates([]);
+        return;
+    }
     setIsLoadingDropdown(true);
     try {
-      const res = await api.get("/facebook/auto-reply-template");
+      const res = await api.get(`/facebook/bot-replies?page_id=${targetPageId}`);
       setDropdownTemplates(Array.isArray(res.data?.data) ? res.data.data : res.data);
     } catch { toast.error("Failed to load list"); }
     finally { setIsLoadingDropdown(false); }
@@ -198,7 +203,14 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
   };
 
   useEffect(() => { 
-    fetchDropdown(); 
+    if (form.page_id) {
+       fetchDropdown();
+    } else {
+       setDropdownTemplates([]);
+    }
+  }, [form.page_id]);
+
+  useEffect(() => {
     fetchPages();
   }, []);
 
@@ -304,7 +316,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
                       <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
                          <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")}/> Refresh List
                       </button>
-                      <button className="hover:underline">+ Add Message Template</button>
+                      <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
                     </div>
                  </div>
                  <div className="relative">
@@ -380,11 +392,11 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
                          <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
                             <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")}/> Refresh List
                          </button>
-                         <button className="hover:underline">+ Add Message Template</button>
+                         <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
                        </div>
                     </div>
                     <div className="relative">
-                       <select value={form.private_template_id??""} onChange={e=>setForm({...form, private_template_id: parseInt(e.target.value) || null})}
+                       <select value={form.private_template_id} onChange={e=>setForm({...form, private_template_id: e.target.value})}
                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
                        >
                           <option value="">Please select a message template</option>
@@ -450,7 +462,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
                              <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
                                <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")}/> Refresh List
                              </button>
-                             <button className="hover:underline">+ Add Message Template</button>
+                             <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
                            </div>
                         </div>
                         <div className="relative">
@@ -499,7 +511,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
                              <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
                                <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")}/> Refresh List
                              </button>
-                             <button className="hover:underline">+ Add Message Template</button>
+                             <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
                            </div>
                         </div>
                         <div className="relative">
@@ -562,7 +574,23 @@ export default function ReplyTemplatesPage() {
     } catch { toast.error("Delete failed"); }
   };
 
-  const filtered = templates.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+  const handleEdit = async (t: ReplyTemplate) => {
+    const toastId = toast.loading("Loading template details...");
+    try {
+      const res = await api.get(`/facebook/auto-reply-template/${t.id}`);
+      const fullTemplate = res.data?.data || res.data;
+      setFormModal({open:true, mode:"edit", template: fullTemplate});
+      toast.dismiss(toastId);
+    } catch { 
+      toast.error("Failed to fetch full template details", { id: toastId });
+      // Fallback
+      setFormModal({open:true, mode:"edit", template: t});
+    }
+  };
+
+  const filtered = templates
+    .filter(t => t.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => b.id - a.id);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0f172a] font-sans pb-20">
@@ -637,7 +665,7 @@ export default function ReplyTemplatesPage() {
                        <Clock className="w-4 h-4"/> Nov 22, 2026
                     </span>
                     <div className="flex items-center gap-2">
-                       <button onClick={()=>setFormModal({open:true, mode:"edit", template:t})} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all active:scale-90">
+                       <button onClick={()=>handleEdit(t)} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all active:scale-90">
                           <Edit3 className="w-4 h-4"/>
                        </button>
                        <button onClick={()=>setDeleteId(t.id)} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90">
