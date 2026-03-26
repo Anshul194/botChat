@@ -166,8 +166,8 @@ export function PostAutoReplyModal({
     const fetchCampaignConfig = async () => {
         setIsFetchingConfig(true);
         try {
-            const endpoint = platform === "facebook" ? `/facebook/post-auto-reply` : `/instagram/post-auto-reply`;
-            const res = await api.get(`${endpoint}?page_id=${pageId}&post_id=${postId}`);
+            const base = platform === "facebook" ? `/facebook/post-auto-reply` : `/instagram/post-auto-reply`;
+            const res = await api.get(`${base}/${postId}?page_id=${pageId}`);
             const data = res.data?.data;
 
             if (data) {
@@ -206,9 +206,18 @@ export function PostAutoReplyModal({
                         ...r, id: Math.random().toString()
                     })));
                 }
+            } else {
+                // No data → no campaign exists yet, show choice screen
+                setView("choice");
             }
-        } catch (error) {
-            console.error("Fetch Config Error:", error);
+        } catch (error: any) {
+            const status = error?.response?.status;
+            if (status === 400 || status === 404) {
+                // Backend returns 400/404 when no campaign exists for this post — normal case
+                setView("choice");
+            } else {
+                console.error("Fetch Campaign Config Error:", error);
+            }
         } finally {
             setIsFetchingConfig(false);
         }
