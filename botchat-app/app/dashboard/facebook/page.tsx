@@ -67,7 +67,7 @@ export default function FacebookPage() {
                     .flatMap((acc: any) => acc.pages || [])
                     .map((p: any) => ({
                         ...p,
-                        is_enabled: !!p.is_enabled,
+                        is_enabled: p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true,
                     }));
                 setPages(fetchedPages);
             }
@@ -433,7 +433,7 @@ export default function FacebookPage() {
                                         )}
                                     >
                                         {page.is_enabled ? <Pause className="h-4 w-4" /> : <Power className="h-4 w-4" />}
-                                        {page.is_enabled ? "Pause" : "Enable"}
+                                        {page.is_enabled ? "Disable" : "Enable"}
                                     </button>
 
                                     <button
@@ -495,7 +495,7 @@ export default function FacebookPage() {
                             </div>
 
                             <h3 className="text-3xl font-black text-center text-neutral-900 dark:text-white mb-4 uppercase tracking-tight leading-none">
-                                {confirmModal.type.includes("disconnect") ? "Disconnect" : confirmModal.type === "enable" ? "Enable" : "Pause"} Action
+                                {confirmModal.type.includes("disconnect") ? "Disconnect" : confirmModal.type === "enable" ? "Enable" : "Disable"} Action
                             </h3>
 
                             <p className="text-center text-neutral-500 dark:text-neutral-400 mb-12 text-lg font-medium">

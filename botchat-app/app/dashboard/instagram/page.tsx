@@ -64,7 +64,11 @@ export default function InstagramPage() {
             const response = await api.get("/social/instagram-connect");
             if (response.data.is_success || response.data.success) {
                 const fetchedAccounts = response.data.data.instagram_accounts || [];
-                setAccounts(fetchedAccounts);
+                const parsedAccounts = fetchedAccounts.map((acc: any) => ({
+                    ...acc,
+                    is_active: acc.is_active === "1" || acc.is_active === 1 || acc.is_active === true,
+                }));
+                setAccounts(parsedAccounts);
             }
         } catch (err) {
             toast.error("Couldn't load your Instagram accounts");
@@ -434,7 +438,7 @@ export default function InstagramPage() {
                                         )}
                                     >
                                         {acc.is_active ? <Pause className="h-4 w-4" /> : <Power className="h-4 w-4" />}
-                                        {acc.is_active ? "Pause" : "Enable"}
+                                        {acc.is_active ? "Disable" : "Enable"}
                                     </button>
 
                                     <button
@@ -498,7 +502,7 @@ export default function InstagramPage() {
                             <h3 className="text-3xl font-black text-center text-neutral-900 dark:text-white mb-4 uppercase tracking-tight leading-none">
                                 {confirmModal.type === "disconnectAll" ? "Security Alert" : 
                                  confirmModal.type === "disconnect" ? "Disconnect" : 
-                                 confirmModal.type === "enable" ? "Enable" : "Pause"} Action
+                                 confirmModal.type === "enable" ? "Enable" : "Disable"} Action
                             </h3>
 
                             <p className="text-center text-neutral-500 dark:text-neutral-400 mb-12 text-lg font-medium">
