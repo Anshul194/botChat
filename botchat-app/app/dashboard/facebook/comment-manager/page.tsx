@@ -240,8 +240,8 @@ export default function CommentManager() {
                 setPageStats(data.stats);
             }
 
-            const mapped = fetchedPosts.map((p: any) => ({
-                id: p.id,
+            const mapped = fetchedPosts.map((p: any, idx: number) => ({
+                id: p.id ? String(p.id) : `post-${idx}`,
                 user: p.user || selectedPage.page_name,
                 time: p.created_time ? new Date(p.created_time).toLocaleString() : new Date().toLocaleString(),
                 text: p.message || p.message_short || "View Post Interaction",
@@ -564,8 +564,8 @@ export default function CommentManager() {
                                         <div key={i} className="h-24 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl animate-pulse" />
                                     ))
                                 ) : posts.length > 0 ? (
-                                    posts.map(post => (
-                                        <div key={post.id} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30">
+                                    posts.map((post, idx) => (
+                                        <div key={post.id || `post-${idx}`} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30">
                                             <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800">
                                                 <img src={post.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                             </div>
@@ -957,132 +957,135 @@ export default function CommentManager() {
                 )}
             </AnimatePresence>
 
+            {/* Auto Comment Modal */}
+            <PostAutoCommentModal
+                isOpen={showAutoCommentModal}
+                onClose={() => setShowAutoCommentModal(false)}
+                onSaved={fetchPosts}
+                platform="facebook"
+                postId={selectedPostForAuto?.id || ""}
+                pageId={selectedPage?.page_id || ""}
+            />
+
+            {/* Auto Reply Modal */}
+            <PostAutoReplyModal
+                isOpen={showAutoReplyModal}
+                onClose={() => setShowAutoReplyModal(false)}
+                onSaved={fetchPosts}
+                platform="facebook"
+                postId={selectedPostForReply?.id || ""}
+                pageId={selectedPage?.page_id || ""}
+            />
+
+            {/* Comment Report Modal */}
+            <CommentReportModal
+                isOpen={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                platform="facebook"
+                postId={selectedPostForReport?.id || ""}
+                pageId={selectedPage?.page_id || ""}
+            />
+
+            {/* Campaign Report Modal */}
+            <CampaignReportModal
+                isOpen={showCampaignReportModal}
+                onClose={() => setShowCampaignReportModal(false)}
+                reportType={activeReportType}
+                platform="facebook"
+                pageId={selectedPage?.page_id || ""}
+            />
+
+            {/* Post Comment Modal */}
+            <PostCommentModal
+                isOpen={showCommentNowModal}
+                onClose={() => setShowCommentNowModal(false)}
+                platform="facebook"
+                postId={selectedPostForComment?.id || ""}
+                pageId={selectedPage?.page_id || ""}
+            />
+
+            {/* Status Toggle Modal */}
             <AnimatePresence>
-                <PostAutoCommentModal
-                    isOpen={showAutoCommentModal}
-                    onClose={() => setShowAutoCommentModal(false)}
-                    onSaved={fetchPosts}
-                    platform="facebook"
-                    postId={selectedPostForAuto?.id || ""}
-                    pageId={selectedPage?.page_id || ""}
-                />
-
-                <PostAutoReplyModal
-                    isOpen={showAutoReplyModal}
-                    onClose={() => setShowAutoReplyModal(false)}
-                    onSaved={fetchPosts}
-                    platform="facebook"
-                    postId={selectedPostForReply?.id || ""}
-                    pageId={selectedPage?.page_id || ""}
-                />
-
-                <CommentReportModal
-                    isOpen={showReportModal}
-                    onClose={() => setShowReportModal(false)}
-                    platform="facebook"
-                    postId={selectedPostForReport?.id || ""}
-                    pageId={selectedPage?.page_id || ""}
-                />
-
-                <CampaignReportModal
-                    isOpen={showCampaignReportModal}
-                    onClose={() => setShowCampaignReportModal(false)}
-                    reportType={activeReportType}
-                    platform="facebook"
-                    pageId={selectedPage?.page_id || ""}
-                />
-
-                <PostCommentModal
-                    isOpen={showCommentNowModal}
-                    onClose={() => setShowCommentNowModal(false)}
-                    platform="facebook"
-                    postId={selectedPostForComment?.id || ""}
-                    pageId={selectedPage?.page_id || ""}
-                />
-
-                {/* Status Toggle Modal */}
-                <AnimatePresence>
-                    {statusConfirm.isOpen && (
-                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
-                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
-                                <div className="p-8 text-center space-y-6">
-                                    <div className={cn(
-                                        "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg",
-                                        statusConfirm.action === "paused" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
-                                    )}>
-                                        {statusConfirm.action === "paused" ? <Pause size={32} /> : <Play size={32} />}
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
-                                            {statusConfirm.action === "paused" ? "Pause Campaign?" : "Resume Campaign?"}
-                                        </h3>
-                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
-                                            Are you sure you want to {statusConfirm.action} this automated {statusConfirm.type} lifecycle?
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-3 pt-4">
-                                        <button 
-                                            onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
-                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
-                                        >
-                                            No, Cancel
-                                        </button>
-                                        <button 
-                                            onClick={handleToggleStatus}
-                                            disabled={isUpdatingStatus}
-                                            className={cn(
-                                                "flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
-                                                statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
-                                            )}
-                                        >
-                                            {isUpdatingStatus ? "Updating..." : `Yes, ${statusConfirm.action} it`}
-                                        </button>
-                                    </div>
+                {statusConfirm.isOpen && (
+                    <div key="status-confirm-modal" className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
+                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                            <div className="p-8 text-center space-y-6">
+                                <div className={cn(
+                                    "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg",
+                                    statusConfirm.action === "paused" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
+                                )}>
+                                    {statusConfirm.action === "paused" ? <Pause size={32} /> : <Play size={32} />}
                                 </div>
-                            </motion.div>
-                        </div>
-                    )}
-                </AnimatePresence>
-
-                {/* Deletion Confirmation Modal */}
-                <AnimatePresence>
-                    {deleteConfirm.isOpen && (
-                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
-                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
-                                <div className="p-8 text-center space-y-6">
-                                    <div className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
-                                        <Trash2 size={32} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
-                                            Delete Campaign?
-                                        </h3>
-                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
-                                            Are you absolutely sure you want to delete this automated {deleteConfirm.type} lifecycle? This action is irreversible.
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-3 pt-4">
-                                        <button 
-                                            onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
-                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
-                                        >
-                                            No, Keep it
-                                        </button>
-                                        <button 
-                                            onClick={handleDeleteCampaign}
-                                            disabled={isDeleting}
-                                            className="flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-rose-500 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
-                                        >
-                                            {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
-                                        </button>
-                                    </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
+                                        {statusConfirm.action === "paused" ? "Pause Campaign?" : "Resume Campaign?"}
+                                    </h3>
+                                    <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                        Are you sure you want to {statusConfirm.action} this automated {statusConfirm.type} lifecycle?
+                                    </p>
                                 </div>
-                            </motion.div>
-                        </div>
-                    )}
-                </AnimatePresence>
+                                <div className="flex gap-3 pt-4">
+                                    <button 
+                                        onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
+                                        className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                    >
+                                        No, Cancel
+                                    </button>
+                                    <button 
+                                        onClick={handleToggleStatus}
+                                        disabled={isUpdatingStatus}
+                                        className={cn(
+                                            "flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
+                                            statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
+                                        )}
+                                    >
+                                        {isUpdatingStatus ? "Updating..." : `Yes, ${statusConfirm.action} it`}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Deletion Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm.isOpen && (
+                    <div key="delete-confirm-modal" className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
+                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                            <div className="p-8 text-center space-y-6">
+                                <div className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
+                                    <Trash2 size={32} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
+                                        Delete Campaign?
+                                    </h3>
+                                    <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                        Are you absolutely sure you want to delete this automated {deleteConfirm.type} lifecycle? This action is irreversible.
+                                    </p>
+                                </div>
+                                <div className="flex gap-3 pt-4">
+                                    <button 
+                                        onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
+                                        className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                    >
+                                        No, Keep it
+                                    </button>
+                                    <button 
+                                        onClick={handleDeleteCampaign}
+                                        disabled={isDeleting}
+                                        className="flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-rose-500 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                    >
+                                        {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
             </AnimatePresence>
         </div>
     );
