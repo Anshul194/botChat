@@ -8,7 +8,7 @@ import {
     Edit3, Save, Copy, Check, Loader2, Megaphone, Activity,
     Eye, Settings, Tag, MessageCircle, Image as ImageIcon,
     FileText, PieChart, Info, AlertCircle, Box, Heart, Bell, User,
-    ShieldCheck
+    ShieldCheck, Settings2, BarChart3, ClipboardList
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -153,11 +153,29 @@ export default function InstagramCommentManagerPage() {
         try {
             const id = selectedAccount.instagram_id;
             const response = await api.get(`/instagram/comment-manager/posts/${id}`);
-            if (response.data.success || response.data.is_success) {
-                setPosts(response.data.data?.posts || []);
-                if (response.data.data?.stats) {
-                    setPageStats(response.data.data.stats);
-                }
+            
+            // Be more robust with the data structure
+            const responseData = response.data;
+            const success = responseData.success || responseData.is_success || responseData.posts;
+            
+            if (success) {
+                const rawPosts = responseData.data?.posts || responseData.posts || [];
+                const stats = responseData.data?.stats || responseData.stats;
+
+                // Map to unified structure for UI
+                const mappedPosts = rawPosts.map((p: any) => ({
+                    ...p,
+                    id: p.id || p.instagram_id,
+                    thumbnail: p.media_url || p.thumbnail,
+                    text: p.caption || p.message_short || p.text || (p.media_type === "IMAGE" ? "Photo" : "Post"),
+                    status: {
+                        reply: p.auto_reply_enabled || p.has_post_auto_reply ? (p.post_auto_reply_status === "paused" ? "paused" : "active") : null,
+                        comment: p.auto_comment_enabled ? "active" : null
+                    }
+                }));
+
+                setPosts(mappedPosts);
+                if (stats) setPageStats(stats);
             }
         } catch (error) {
             console.error("Fetch Posts Error:", error);
@@ -325,8 +343,8 @@ export default function InstagramCommentManagerPage() {
                         {isPostsLoading ? (
                             [1, 2, 3].map(i => <div key={i} className="h-28 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl animate-pulse" />)
                         ) : posts.length > 0 ? (
-                            posts.map(post => (
-                                <div key={post.id} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30">
+                            posts.map((post, idx) => (
+                                <div key={post.id || `post-${idx}`} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30 shadow-sm">
                                     <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800 border border-slate-100">
                                         <img src={post.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                     </div>
@@ -334,72 +352,113 @@ export default function InstagramCommentManagerPage() {
                                         <div className="space-y-1">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate uppercase tracking-tight">{selectedAccount?.username}</h4>
+                                                    <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate">{selectedAccount?.username}</h4>
                                                     <div className="flex items-center gap-2 mt-0.5">
-                                                        <p className="text-[10px] text-slate-400 font-semibold">{post.created_at || 'RECENTLY'}</p>
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20">
+                                                        <p className="text-[10px] text-slate-400 font-semibold">{post.created_at || 'Recently'}</p>
+                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
                                                             <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">ID: {post.id}</span>
-                                                            <Copy size={10} className="hover:text-indigo-900 cursor-pointer transition-colors" />
+                                                            <button 
+                                                                onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
+                                                                className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95" 
+                                                                title="Copy ID"
+                                                            >
+                                                                <Copy size={10} />
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {post.status?.reply && (
-                                                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase bg-emerald-500/10 text-emerald-600">Reply Active</span>
+                                                        <span className={cn(
+                                                            "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
+                                                            post.status.reply === "active" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                                                        )}>
+                                                            Reply {post.status.reply}
+                                                        </span>
+                                                    )}
+                                                    
+                                                    {post.status?.comment && (
+                                                        <span className={cn(
+                                                            "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
+                                                            post.status.comment === "active" ? "bg-pink-500/10 text-pink-600" : "bg-slate-100 text-slate-400"
+                                                        )}>
+                                                            Comment {post.status.comment}
+                                                        </span>
                                                     )}
 
-                                                    <div className="relative">
+                                                    <div className="relative" ref={dropdownRef}>
                                                         <button
                                                             onClick={() => setActiveDropdown(activeDropdown === post.id ? null : post.id)}
-                                                            className={cn(
-                                                                "p-2 rounded-xl transition-all duration-300",
-                                                                activeDropdown === post.id
-                                                                    ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110"
-                                                                    : "text-slate-400 hover:text-primary hover:bg-primary/5 active:scale-90"
-                                                            )}
+                                                            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary transition-all border border-transparent hover:border-pink-100 group/btn"
                                                         >
-                                                            <div className="transition-transform duration-300" style={{ transform: activeDropdown === post.id ? 'rotate(90deg)' : 'rotate(0deg)' }}>
-                                                                <MoreHorizontal size={18} />
-                                                            </div>
+                                                            <Settings2 size={16} className={cn("transition-transform duration-300", activeDropdown === post.id && "rotate-90 text-primary")} />
                                                         </button>
 
                                                         <AnimatePresence>
                                                             {activeDropdown === post.id && (
-                                                                <div ref={dropdownRef}>
-                                                                    <motion.div
-                                                                        initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                                        exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                                                                        transition={{ duration: 0.15 }}
-                                                                        className="absolute right-0 top-full mt-2 w-[240px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-[60] py-2 overflow-hidden flex flex-col"
-                                                                    >
-                                                                        <button
-                                                                            onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }}
-                                                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
-                                                                        >
-                                                                            <Settings className="w-4 h-4 text-primary" />
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                                                                    transition={{ duration: 0.15 }}
+                                                                    className="absolute right-0 top-full mt-2 w-[240px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-[60] py-2 overflow-hidden flex flex-col"
+                                                                >
+                                                                    {post.status?.reply ? (
+                                                                        <>
+                                                                            <button onClick={() => { setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
+                                                                            </button>
+                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
+                                                                            </button>
+                                                                        </>
+                                                                    ) : (
+                                                                        <button onClick={() => { setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-50 dark:border-slate-800/50">
+                                                                            <Megaphone className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                                                                            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply</span>
+                                                                        </button>
+                                                                    )}
+
+                                                                    <div className="h-px bg-slate-50 dark:bg-slate-800 my-1 mx-4" />
+
+                                                                    {post.status?.comment ? (
+                                                                        <>
+                                                                            <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
+                                                                            </button>
+                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors text-slate-400">
+                                                                                <BarChart3 className="w-4 h-4" />
+                                                                                <span className="text-[12px] font-bold">View auto comment report</span>
+                                                                            </button>
+                                                                        </>
+                                                                    ) : (
+                                                                        <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                            <Settings className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                             <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Auto Comment</span>
                                                                         </button>
+                                                                    )}
 
-                                                                        <div className="h-px bg-slate-50 dark:bg-slate-800 my-1 mx-4" />
+                                                                    <div className="h-px bg-slate-50 dark:bg-slate-800 my-1 mx-4" />
 
-                                                                        <button
-                                                                            onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
-                                                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
-                                                                        >
-                                                                            <MessageSquare className="w-4 h-4 text-slate-400" />
-                                                                            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
-                                                                        </button>
+                                                                    <button
+                                                                        onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
+                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                    >
+                                                                        <MessageCircle className="w-4 h-4 text-slate-400" />
+                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
+                                                                    </button>
 
-                                                                        <button
-                                                                            onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
-                                                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
-                                                                        >
-                                                                            <Edit3 className="w-4 h-4 text-slate-400" />
-                                                                            <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
-                                                                        </button>
-                                                                    </motion.div>
-                                                                </div>
+                                                                    <button
+                                                                        onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
+                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                    >
+                                                                        <Edit3 className="w-4 h-4 text-slate-400" />
+                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
+                                                                    </button>
+                                                                </motion.div>
                                                             )}
                                                         </AnimatePresence>
                                                     </div>
@@ -411,9 +470,10 @@ export default function InstagramCommentManagerPage() {
                                 </div>
                             ))
                         ) : (
-                            <div className="py-20 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                            <div className="py-20 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 shadow-inner mt-4">
                                 <Box className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">No Interaction Active</p>
+                                <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest leading-none">No Interaction Active</p>
+                                <p className="text-[10px] text-slate-400 mt-2 font-medium">Sync your latest Instagram activity to start automating.</p>
                             </div>
                         )}
                     </div>

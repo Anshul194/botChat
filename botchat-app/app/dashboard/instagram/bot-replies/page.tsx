@@ -72,6 +72,7 @@ export default function InstagramBotRepliesPage() {
     const [newReply, setNewReply] = useState({
         name: "",
         page_id: "",
+        instagram_id: "",
         trigger_type: "exact",
         trigger_value: ""
     });
@@ -99,7 +100,11 @@ export default function InstagramBotRepliesPage() {
                 setPages(fetchedAccounts);
                 if (fetchedAccounts.length > 0 && !selectedAccount) {
                     setSelectedAccount(fetchedAccounts[0]);
-                    setNewReply(prev => ({ ...prev, page_id: fetchedAccounts[0].page?.page_id || "" }));
+                    setNewReply(prev => ({ 
+                        ...prev, 
+                        page_id: fetchedAccounts[0].page?.page_id || "",
+                        instagram_id: fetchedAccounts[0].instagram_id || ""
+                    }));
                 }
             }
         } catch (error) {
@@ -135,7 +140,7 @@ export default function InstagramBotRepliesPage() {
 
     const handleCreate = async () => {
         const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
-        if (!newReply.name || !newReply.page_id || (isKeywordRequired && !newReply.trigger_value)) {
+        if (!newReply.name || !newReply.instagram_id || (isKeywordRequired && !newReply.trigger_value)) {
             toast.error("Please fill all required fields");
             return;
         }
@@ -154,6 +159,7 @@ export default function InstagramBotRepliesPage() {
             setNewReply({
                 name: "",
                 page_id: selectedAccount?.page?.page_id || "",
+                instagram_id: selectedAccount?.instagram_id || "",
                 trigger_type: "exact",
                 trigger_value: ""
             });

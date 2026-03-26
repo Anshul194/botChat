@@ -25,6 +25,140 @@ interface PersistentMenuProps {
     actions: any[];
 }
 
+interface MenuItemFormProps {
+    item: PersistentMenuItem;
+    index: number;
+    subIndex?: number;
+    onUpdate: (index: number, subIndex: number | undefined, data: Partial<PersistentMenuItem>) => void;
+    onRemove: (index: number, subIndex?: number) => void;
+    onAddSub: (index: number) => void;
+    actions: any[];
+}
+
+const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, actions }: MenuItemFormProps) => {
+    // Local state for Title to prevent focus loss during heavy re-renders
+    const [title, setTitle] = useState(item.title);
+
+    useEffect(() => {
+        setTitle(item.title);
+    }, [item.title]);
+
+    const handleTitleChange = (val: string) => {
+        setTitle(val);
+        onUpdate(index, subIndex, { title: val });
+    };
+
+    return (
+        <div className={cn(
+            "p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm relative group/item",
+            subIndex !== undefined ? "ml-6 mt-3" : "mt-4"
+        )}>
+            <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 space-y-3">
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Title (Max 30)</label>
+                        <input
+                            type="text"
+                            maxLength={30}
+                            placeholder="Menu Item Label"
+                            value={title}
+                            onChange={(e) => handleTitleChange(e.target.value)}
+                            className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Type</label>
+                        <select
+                            value={item.type}
+                            onChange={(e) => onUpdate(index, subIndex, { type: e.target.value as any })}
+                            className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
+                        >
+                            <option value="url">Web URL</option>
+                            <option value="postback">Postback</option>
+                            {subIndex === undefined && <option value="nested">Nested Menu</option>}
+                        </select>
+                    </div>
+
+                    {item.type === 'url' && (
+                        <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">URL</label>
+                            <div className="relative">
+                                <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                <input
+                                    type="url"
+                                    placeholder="https://example.com"
+                                    value={item.url || ""}
+                                    onChange={(e) => onUpdate(index, subIndex, { url: e.target.value })}
+                                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-medium"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {item.type === 'postback' && (
+                        <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Postback Payload / Bot Flow</label>
+                            <div className="relative">
+                                <MousePointerClick className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                <select
+                                    value={item.payload || ""}
+                                    onChange={(e) => onUpdate(index, subIndex, { payload: e.target.value })}
+                                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
+                                >
+                                    <option value="" disabled>Select Bot Flow</option>
+                                    {actions.map((a: any) => (
+                                        <option key={a.type} value={a.type}>{a.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex sm:flex-col justify-end gap-2 pt-2 sm:pt-6">
+                    <button
+                        onClick={() => onRemove(index, subIndex)}
+                        className="p-2.5 rounded-xl border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-300 hover:text-red-500 transition-all"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                </div>
+            </div>
+
+            {item.type === 'nested' && (
+                <div className="mt-4 pt-4 border-t border-neutral-50 dark:border-neutral-800/50">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <Layers className="w-3.5 h-3.5 text-pink-500" />
+                            <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
+                        </div>
+                        <button
+                            onClick={() => onAddSub(index)}
+                            className="px-3 py-1.5 rounded-lg bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 text-[10px] font-black uppercase tracking-widest hover:bg-pink-100 transition-all flex items-center gap-1.5"
+                        >
+                            <Plus className="w-3 h-3" /> Add Sub
+                        </button>
+                    </div>
+
+                    {item.children?.map((subItem, si) => (
+                        <MenuItemForm 
+                            key={subItem.id || si} 
+                            item={subItem} 
+                            index={index} 
+                            subIndex={si} 
+                            onUpdate={onUpdate} 
+                            onRemove={onRemove} 
+                            onAddSub={onAddSub}
+                            actions={actions}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default function PersistentMenu({ instagramId, pageId, actions }: PersistentMenuProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -40,9 +174,17 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
             const response = await api.get(`/instagram/persistent-menu/${instagramId}`);
             if (response.data.success || response.data.is_success) {
                 const data = response.data.data;
-                if (data) {
+                if (data && data.menu) {
                     setComposerInputDisabled(data.composer_input_disabled || false);
-                    setItems(data.menu || []);
+                    const mappedMenu = data.menu.map((m: any) => ({
+                        ...m,
+                        id: m.id || Math.random().toString(36).substr(2, 9),
+                        children: m.children?.map((c: any) => ({
+                            ...c,
+                            id: c.id || Math.random().toString(36).substr(2, 9)
+                        }))
+                    }));
+                    setItems(mappedMenu);
                 } else {
                     setItems([]);
                 }
@@ -60,6 +202,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
 
     const handleAddItem = (parentIndex?: number) => {
         const newItem: PersistentMenuItem = {
+            id: Math.random().toString(36).substr(2, 9),
             title: "",
             type: "url",
             url: ""
@@ -194,108 +337,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
         }
     };
 
-    const MenuItemForm = ({ item, index, subIndex }: { item: PersistentMenuItem, index: number, subIndex?: number }) => {
-        return (
-            <div className={cn(
-                "p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm relative group/item",
-                subIndex !== undefined ? "ml-6 mt-3" : "mt-4"
-            )}>
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1 space-y-3">
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Title (Max 30)</label>
-                            <input
-                                type="text"
-                                maxLength={30}
-                                placeholder="Menu Item Label"
-                                value={item.title}
-                                onChange={(e) => handleUpdateItem(index, subIndex, { title: e.target.value })}
-                                className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold"
-                            />
-                        </div>
 
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Type</label>
-                            <select
-                                value={item.type}
-                                onChange={(e) => handleUpdateItem(index, subIndex, { type: e.target.value as any })}
-                                className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
-                            >
-                                <option value="url">Web URL</option>
-                                <option value="postback">Postback</option>
-                                {subIndex === undefined && <option value="nested">Nested Menu</option>}
-                            </select>
-                        </div>
-
-                        {item.type === 'url' && (
-                            <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">URL</label>
-                                <div className="relative">
-                                    <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
-                                    <input
-                                        type="url"
-                                        placeholder="https://example.com"
-                                        value={item.url || ""}
-                                        onChange={(e) => handleUpdateItem(index, subIndex, { url: e.target.value })}
-                                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-medium"
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {item.type === 'postback' && (
-                            <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 px-1">Postback Payload / Bot Flow</label>
-                                <div className="relative">
-                                    <MousePointerClick className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
-                                    <select
-                                        value={item.payload || ""}
-                                        onChange={(e) => handleUpdateItem(index, subIndex, { payload: e.target.value })}
-                                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
-                                    >
-                                        <option value="" disabled>Select Bot Flow</option>
-                                        {actions.map((a: any) => (
-                                            <option key={a.type} value={a.type}>{a.label}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex sm:flex-col justify-end gap-2 pt-2 sm:pt-6">
-                        <button
-                            onClick={() => handleRemoveItem(index, subIndex)}
-                            className="p-2.5 rounded-xl border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-300 hover:text-red-500 transition-all"
-                        >
-                            <Trash2 size={18} />
-                        </button>
-                    </div>
-                </div>
-
-                {item.type === 'nested' && (
-                    <div className="mt-4 pt-4 border-t border-neutral-50 dark:border-neutral-800/50">
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                                <Layers className="w-3.5 h-3.5 text-pink-500" />
-                                <span className="text-[11px] font-black uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
-                            </div>
-                            <button
-                                onClick={() => handleAddItem(index)}
-                                className="px-3 py-1.5 rounded-lg bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 text-[10px] font-black uppercase tracking-widest hover:bg-pink-100 transition-all flex items-center gap-1.5"
-                            >
-                                <Plus className="w-3 h-3" /> Add Sub
-                            </button>
-                        </div>
-
-                        {item.children?.map((subItem, si) => (
-                            <MenuItemForm key={si} item={subItem} index={index} subIndex={si} />
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
-    };
 
     return (
         <div className="w-full space-y-6 pb-12 animate-in fade-in duration-500">
@@ -402,12 +444,20 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     ) : (
                         items.map((item, idx) => (
                             <motion.div
-                                key={idx}
+                                key={item.id || idx}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                             >
-                                <MenuItemForm item={item} index={idx} />
+                                <MenuItemForm 
+                                    key={item.id || idx} 
+                                    item={item} 
+                                    index={idx} 
+                                    onUpdate={handleUpdateItem}
+                                    onRemove={handleRemoveItem}
+                                    onAddSub={handleAddItem}
+                                    actions={actions}
+                                />
                             </motion.div>
                         ))
                     )}
