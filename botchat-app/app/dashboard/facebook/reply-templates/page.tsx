@@ -376,7 +376,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                 <div className="flex items-center justify-between px-1">
                   <label className="text-sm font-medium text-slate-600">Private reply template</label>
                   <div className="flex gap-3 text-xs font-medium text-pink-500">
-                    <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
+                    <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
                       <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                     </button>
                     <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
@@ -452,7 +452,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
                     </label>
                     <div className="flex gap-3 text-xs font-medium text-pink-500">
-                      <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
+                      <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
                         <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                       </button>
                       <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
@@ -522,7 +522,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                           <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
                         </label>
                         <div className="flex gap-3 text-xs font-medium text-pink-500">
-                          <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
+                          <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
                             <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                           </button>
                           <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
@@ -571,7 +571,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                         <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template (Fallback)
                       </label>
                       <div className="flex gap-3 text-xs font-medium text-pink-500">
-                        <button onClick={fetchDropdown} className="hover:underline flex items-center gap-1">
+                        <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
                           <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                         </button>
                         <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
