@@ -129,7 +129,7 @@ export function PostAutoCommentModal({
                 comment_between_start: betweenStart,
                 comment_between_end: betweenEnd,
                 comment_type: selectionMode,
-                ...(platform === "facebook" ? { facebook_page_id: pageId } : { instagram_account_id: pageId })
+                ...(platform === "facebook" ? { facebook_page_id: pageId } : { instagram_id: pageId })
             };
 
             let res;

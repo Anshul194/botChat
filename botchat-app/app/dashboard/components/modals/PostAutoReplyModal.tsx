@@ -248,8 +248,7 @@ export function PostAutoReplyModal({
 
             const payload: any = {
                 post_id: postId,
-                facebook_page_id: pageId,
-                ...(platform === "instagram" && { instagram_account_id: pageId }),
+                ...(platform === "facebook" ? { facebook_page_id: pageId } : { instagram_id: pageId }),
                 use_template: view === "template" ? 1 : 0,
                 name: form.name || "My Auto Reply",
                 reply_type: form.reply_type,

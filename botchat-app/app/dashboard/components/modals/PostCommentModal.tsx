@@ -64,7 +64,7 @@ export function PostCommentModal({
             
             const params = platform === "facebook" 
                 ? { facebook_page_id: pageId } 
-                : { instagram_account_id: pageId };
+                : { instagram_id: pageId };
 
             const res = await api.get(endpoint, { params });
             // The API structure is data.comments
@@ -92,7 +92,7 @@ export function PostCommentModal({
                 message: message.trim()
             } : {
                 post_id: postId,
-                instagram_account_id: pageId,
+                instagram_id: pageId,
                 message: message.trim()
             };
 
