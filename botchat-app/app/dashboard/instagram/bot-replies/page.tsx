@@ -56,7 +56,7 @@ export default function InstagramBotRepliesPage() {
     const router = useRouter();
     const [replies, setReplies] = useState<BotReply[]>([]);
     const [pages, setPages] = useState<InstagramPageData[]>([]);
-    const { showModal } = useModal();
+    const { showModal, showConfirm } = useModal();
     const [isLoading, setIsLoading] = useState(true);
 
     const [selectedAccountId, setSelectedAccountId] = useState<string | "all">("all");
@@ -173,14 +173,22 @@ export default function InstagramBotRepliesPage() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Are you sure you want to delete this Instagram bot reply?")) return;
-        try {
-            await api.delete(`/instagram/bot-replies/${id}`);
-            showModal("success", "Success", "Bot reply deleted");
-            setReplies(prev => prev.filter(r => r.id !== id));
-        } catch (error) {
-            showModal("error", "Error", "Failed to delete bot reply");
-        }
+        const reply = replies.find(r => r.id === id);
+        showConfirm({
+            title: "Delete Reply?",
+            message: `Are you sure you want to delete "${reply?.name || 'this reply'}"? This action cannot be undone.`,
+            confirmText: "Delete",
+            type: "danger",
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/instagram/bot-replies/${id}`);
+                    showModal("success", "Deleted", "Bot reply deleted successfully");
+                    setReplies(prev => prev.filter(r => r.id !== id));
+                } catch (error) {
+                    showModal("error", "Error", "Failed to delete bot reply");
+                }
+            }
+        });
     };
 
     const handleToggleStatus = async (reply: BotReply) => {
@@ -218,14 +226,23 @@ export default function InstagramBotRepliesPage() {
 
     const handleActionDelete = async (action: ActionData) => {
         if (!action.automation_id) return;
-        if (!confirm("Are you sure? This will unmap the action.")) return;
-        try {
-            await api.delete(`/instagram/actions/${action.automation_id}`);
-            showModal("success", "Success", "Action unmapped");
-            if (selectedAccountId !== "all") fetchActions();
-        } catch (error) {
-            showModal("error", "Error", "Failed to remove mapping");
-        }
+        showConfirm({
+            title: "Unmap Action?",
+            message: `Are you sure you want to unmap "${action.label}"?`,
+            confirmText: "Unmap",
+            type: "danger",
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/instagram/actions/${action.automation_id}`);
+                    showModal("success", "Unmapped", "Action unmapped successfully");
+                    if (selectedAccountId !== "all") {
+                        fetchActions(selectedAccountId);
+                    }
+                } catch (error) {
+                    showModal("error", "Error", "Failed to remove mapping");
+                }
+            }
+        });
     };
 
     const handleConfigureAction = async (type: string) => {

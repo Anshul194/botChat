@@ -51,7 +51,7 @@ type MenuId = typeof MENUS[number]['id'];
 
 export default function BotRepliesPage() {
     const router = useRouter();
-    const { showModal } = useModal();
+    const { showModal, showConfirm } = useModal();
     const [replies, setReplies] = useState<BotReply[]>([]);
     const [pages, setPages] = useState<FacebookPage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -163,14 +163,22 @@ export default function BotRepliesPage() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Are you sure you want to delete this bot reply?")) return;
-        try {
-            await api.delete(`/facebook/bot-replies/${id}`);
-            showModal("success", "Deleted", "Bot reply deleted");
-            setReplies(prev => prev.filter(r => r.id !== id));
-        } catch (error) {
-            showModal("error", "Error", "Failed to delete bot reply");
-        }
+        const reply = replies.find(r => r.id === id);
+        showConfirm({
+            title: "Delete Reply?",
+            message: `Are you sure you want to delete "${reply?.name || 'this reply'}"? This action cannot be undone.`,
+            confirmText: "Delete",
+            type: "danger",
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/facebook/bot-replies/${id}`);
+                    showModal("success", "Deleted", "Bot reply deleted successfully");
+                    setReplies(prev => prev.filter(r => r.id !== id));
+                } catch (error) {
+                    showModal("error", "Error", "Failed to delete bot reply");
+                }
+            }
+        });
     };
 
     const handleToggleStatus = async (reply: BotReply) => {
@@ -200,16 +208,23 @@ export default function BotRepliesPage() {
 
     const handleActionDelete = async (action: ActionData) => {
         if (!action.automation_id) return;
-        if (!confirm("Are you sure? This will unmap the action.")) return;
-        try {
-            await api.delete(`/facebook/actions/${action.automation_id}`);
-            showModal("success", "Unmapped", "Action unmapped");
-            if (selectedPageId !== "all") {
-                fetchActions(selectedPageId);
+        showConfirm({
+            title: "Unmap Action?",
+            message: `Are you sure you want to unmap "${action.label}"?`,
+            confirmText: "Unmap",
+            type: "danger",
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/facebook/actions/${action.automation_id}`);
+                    showModal("success", "Unmapped", "Action unmapped successfully");
+                    if (selectedPageId !== "all") {
+                        fetchActions(selectedPageId);
+                    }
+                } catch (error) {
+                    showModal("error", "Error", "Failed to remove mapping");
+                }
             }
-        } catch (error) {
-            showModal("error", "Error", "Failed to remove mapping");
-        }
+        });
     };
 
     const handleConfigureAction = async (type: string) => {

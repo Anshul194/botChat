@@ -45,13 +45,7 @@ export default function InstagramPage() {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [isLoading, setIsLoading] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
-    const { showModal } = useModal();
-    const [confirmModal, setConfirmModal] = useState<{
-        show: boolean;
-        type: "enable" | "disable" | "disconnect" | "disconnectAll" | "clean";
-        accountId: string | number;
-        username: string;
-    } | null>(null);
+    const { showModal, showConfirm } = useModal();
 
     const fetchConnectedAccounts = async () => {
         setIsLoading(true);
@@ -122,11 +116,7 @@ export default function InstagramPage() {
         }
     }, [isConnecting, api, showModal, fetchConnectedAccounts]);
 
-    const handleAction = async () => {
-        if (!confirmModal) return;
-        const { type, accountId } = confirmModal;
-        setConfirmModal(null);
-
+    const handleAction = async (type: string, accountId: string | number) => {
         try {
             let response;
             if (type === "enable") {
@@ -285,7 +275,15 @@ export default function InstagramPage() {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => setConfirmModal({ show: true, type: "disconnectAll", accountId: group.id, username: group.name })}
+                                        onClick={() =>
+                                            showConfirm({
+                                                title: "Confirm Master Disconnect",
+                                                message: `Are you sure you want to disconnect the master Facebook account "${group.name}" and all linked Instagram pages? This action will modify your automation state.`,
+                                                confirmText: "Disconnect All",
+                                                type: "danger",
+                                                onConfirm: () => handleAction("disconnectAll", group.id)
+                                            })
+                                        }
                                         className="p-2.5 rounded-lg text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
                                         title="Disconnect Master Account"
                                     >
@@ -339,11 +337,12 @@ export default function InstagramPage() {
                                     <div className="flex flex-wrap items-center gap-3">
                                         <button
                                             onClick={() =>
-                                                setConfirmModal({
-                                                    show: true,
-                                                    type: acc.is_active ? "disable" : "enable",
-                                                    accountId: acc.id,
-                                                    username: acc.username,
+                                                showConfirm({
+                                                    title: acc.is_active ? "Disable Automations?" : "Enable Modules?",
+                                                    message: `Are you sure you want to ${acc.is_active ? "disable automations" : "enable modules"} for @${acc.username}?`,
+                                                    confirmText: acc.is_active ? "Disable" : "Enable",
+                                                    type: acc.is_active ? "warning" : "danger",
+                                                    onConfirm: () => handleAction(acc.is_active ? "disable" : "enable", acc.id)
                                                 })
                                             }
                                             className={cn(
@@ -358,11 +357,12 @@ export default function InstagramPage() {
 
                                         <button
                                             onClick={() =>
-                                                setConfirmModal({
-                                                    show: true,
-                                                    type: "clean",
-                                                    accountId: acc.id,
-                                                    username: acc.username,
+                                                showConfirm({
+                                                    title: "Clean Cache?",
+                                                    message: `Are you sure you want to clean media data for @${acc.username}? This will refresh assets.`,
+                                                    confirmText: "Clean",
+                                                    type: "warning",
+                                                    onConfirm: () => handleAction("clean", acc.id)
                                                 })
                                             }
                                             title="Clean Data"
@@ -373,11 +373,12 @@ export default function InstagramPage() {
 
                                         <button
                                             onClick={() =>
-                                                setConfirmModal({
-                                                    show: true,
-                                                    type: "disconnect",
-                                                    accountId: acc.id,
-                                                    username: acc.username,
+                                                showConfirm({
+                                                    title: "Confirm Disconnect",
+                                                    message: `Are you sure you want to disconnect ${acc.username}? This action will modify your automation state.`,
+                                                    confirmText: "Disconnect",
+                                                    type: "danger",
+                                                    onConfirm: () => handleAction("disconnect", acc.id)
                                                 })
                                             }
                                             title="Disconnect Account"
@@ -409,49 +410,6 @@ export default function InstagramPage() {
                     </div>
                 )}
             </main>
-
-            {/* Confirmation Dialog */}
-            <AnimatePresence>
-                {confirmModal?.show && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
-                        
-                        <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            className="relative w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl border dark:border-gray-800 z-10"
-                        >
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                Confirm {confirmModal.type === "disconnectAll" ? "Master Disconnect" : confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
-                            </h3>
-                            
-                            <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                                Are you sure you want to {confirmModal.type === "disconnectAll" ? "disconnect the master Facebook account and all linked Instagram pages" : `${confirmModal.type.replace("-", " ")}`} <strong className="font-medium text-gray-900 dark:text-white">{confirmModal.username}</strong>? This action will modify your automation state.
-                            </p>
-
-                            <div className="flex gap-3 justify-end">
-                                <button
-                                    onClick={() => setConfirmModal(null)}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleAction}
-                                    className={cn(
-                                        "px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm transition-colors",
-                                        confirmModal.type.includes("disconnect") ? "bg-rose-600 hover:bg-rose-700" :
-                                        confirmModal.type === "clean" ? "bg-pink-600 hover:bg-pink-700" : "bg-pink-600 hover:bg-pink-700"
-                                    )}
-                                >
-                                    Confirm
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-        </div>
+        </div>
     );
 }

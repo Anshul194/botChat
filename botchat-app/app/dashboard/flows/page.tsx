@@ -240,6 +240,9 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
     set({ buttons: buttons.filter((_, i) => i !== idx) });
   };
 
+  const onUpdateSave = async () => {
+    setSaving(true);
+    await onSaveStep(step);
     setSaving(false);
     showModal("success", "Success", "Message step updated");
   };
@@ -2153,7 +2156,7 @@ export default function FlowBuilderPage() {
 }
 
 function FlowBuilder() {
-  const { showModal } = useModal();
+  const { showModal, showConfirm } = useModal();
   const searchParams = useSearchParams();
   const replyId = searchParams.get("id");
   const platformParam = searchParams.get("platform") || "instagram";
@@ -2171,7 +2174,6 @@ function FlowBuilder() {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({ dmLimit: 30, slowMode: true, humanize: true });
-  const [stepToDeleteId, setStepToDeleteId] = useState(null);
   const bottomRef = useRef(null);
 
   // Fetch Flow Data if ID exists
@@ -2219,32 +2221,30 @@ function FlowBuilder() {
 
   const updateStep = useCallback((id, data) => setSteps(s => s.map(x => x.id === id ? data : x)), []);
   const deleteStep = useCallback((id) => {
-    setStepToDeleteId(id);
-  }, []);
-
-  const confirmDelete = async () => {
-    if (!stepToDeleteId) return;
-    const id = stepToDeleteId;
-    setStepToDeleteId(null);
-    
-    const isNew = String(id).startsWith("s_");
-    try {
-      if (!isNew) {
-        const endpoint = platform === "facebook"
-          ? `/facebook/bot-replies/steps/${id}`
-          : `/instagram/bot-replies/steps/${id}`;
-        
-        await api.delete(endpoint);
+    showConfirm({
+      title: "Delete Action?",
+      message: "Confirm you want to delete this action. This operation cannot be reversed.",
+      confirmText: "Delete",
+      type: "danger",
+      onConfirm: async () => {
+        const isNew = String(id).startsWith("s_");
+        try {
+          if (!isNew) {
+            const endpoint = platform === "facebook"
+              ? `/facebook/bot-replies/steps/${id}`
+              : `/instagram/bot-replies/steps/${id}`;
+            await api.delete(endpoint);
+          }
+          setSteps(s => s.filter(x => x.id !== id));
+          setExpandedId(p => p === id ? null : p);
+          showModal("success", "Success", "Step deleted successfully");
+        } catch (err) {
+          console.error("Delete Step Error:", err);
+          showModal("error", "Error", "Failed to delete step");
+        }
       }
-      
-      setSteps(s => s.filter(x => x.id !== id));
-      setExpandedId(p => p === id ? null : p);
-      showModal("success", "Success", "Step deleted successfully");
-    } catch (err) {
-      console.error("Delete Step Error:", err);
-      showModal("error", "Error", "Failed to delete step");
-    }
-  };
+    });
+  }, [platform, showConfirm, showModal]);
   const dupStep = useCallback((id) => {
     setSteps(s => {
       const idx = s.findIndex(x => x.id === id);
@@ -2556,26 +2556,6 @@ function FlowBuilder() {
           </div>
         </div>
       </div>
-
-      {/* DELETE CONFIRMATION MODAL */}
-      <AnimatePresence>
-        {stepToDeleteId && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStepToDeleteId(null)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }} />
-            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} style={{ position: "relative", width: "100%", maxWidth: 380, background: DS.card, borderRadius: 28, padding: 32, border: `1.5px solid ${DS.border}`, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
-              <div style={{ width: 64, height: 64, borderRadius: 20, background: "rgba(239, 68, 68, 0.08)", border: "1.5px solid rgba(239, 68, 68, 0.12)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-                <Trash2 color="#EF4444" size={28} />
-              </div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: DS.ink, textAlign: "center", marginBottom: 12, letterSpacing: "-0.02em" }}>Delete Action?</h3>
-              <p style={{ fontSize: 13.5, color: DS.ink2, textAlign: "center", marginBottom: 28, lineHeight: 1.5, fontWeight: 500 }}>Confirm you want to delete this action. This operation cannot be reversed.</p>
-              <div style={{ display: "flex", gap: 12 }}>
-                <button onClick={() => setStepToDeleteId(null)} style={{ flex: 1, padding: "12px", borderRadius: 16, background: DS.bg, border: `1.5px solid ${DS.border}`, color: DS.ink2, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}>Cancel</button>
-                <button onClick={confirmDelete} style={{ flex: 1, padding: "12px", borderRadius: 16, background: "#EF4444", border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", boxShadow: "0 4px 12px rgba(239,68,68,0.2)" }}>Delete</button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </DSContext.Provider>
   );
 }
