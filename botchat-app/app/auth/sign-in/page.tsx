@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function SignInPage() {
     const router = useRouter();
