@@ -275,7 +275,11 @@ export default function InstagramBotRepliesPage() {
                             key={acc.id}
                             onClick={() => {
                                 setSelectedAccount(acc);
-                                setNewReply(prev => ({ ...prev, instagram_id: acc.instagram_id }));
+                                setNewReply(prev => ({ 
+                                    ...prev, 
+                                    instagram_id: acc.instagram_id,
+                                    page_id: acc.page?.page_id || ""
+                                }));
                             }}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",

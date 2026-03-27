@@ -29,6 +29,16 @@ export default function SignInPage() {
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [serverError, setServerError] = useState("");
     const [socialLoading, setSocialLoading] = useState<string | null>(null);
+    const [isPopupClosing, setIsPopupClosing] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && window.opener && window.name === "instagram-connect") {
+            setIsPopupClosing(true);
+            setTimeout(() => {
+                window.close();
+            }, 1000);
+        }
+    }, []);
 
     const validate = () => {
         const e: typeof errors = {};
@@ -137,6 +147,20 @@ export default function SignInPage() {
             setSocialLoading(null);
         }
     };
+
+    if (isPopupClosing) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-950">
+                <div className="text-center flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/20 mb-6">
+                        <Check className="w-8 h-8 text-white stroke-[3]" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Connection Successful</h2>
+                    <p className="text-gray-400 font-medium">Finishing setup and redirecting back...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex" style={{ background: isLight ? "#fdf2f8" : "#06030f" }}>

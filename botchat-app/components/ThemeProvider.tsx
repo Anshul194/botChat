@@ -23,9 +23,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        // Read the theme that was already applied by the inline script in layout
-        const current = document.documentElement.classList.contains("light") ? "light" : "dark";
+        const stored = localStorage.getItem("botchat-theme") as Theme | null;
+        const current = stored || "dark";
         setTheme(current);
+        document.documentElement.classList.remove("dark", "light");
+        document.documentElement.classList.add(current);
         setMounted(true);
     }, []);
 
