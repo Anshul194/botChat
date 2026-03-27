@@ -5,7 +5,7 @@ import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick,
     Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight,
-    ChevronLeft, ChevronDown, ListFilter
+    ChevronLeft, ChevronDown, ListFilter, ArrowLeft, Facebook as FacebookIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -261,121 +261,120 @@ export default function BotRepliesPage() {
 
     const creationPageIdFallback = selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId;
 
-    return (
-        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full min-w-0">
+    const DS = {
+        accent: "#0866FF",
+        accentSoft: "rgba(8,102,255,0.06)",
+        bg: "var(--background)",
+        card: "var(--card)",
+        border: "var(--border)",
+        ink: "var(--foreground)",
+        ink2: "var(--muted-foreground)",
+        ink3: "var(--muted-foreground-3, #8e8e8e)",
+    };
 
-            {/* 1. PAGES SELECTOR (Scrollable + Dropdown) */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
-                <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
-                    <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
-                        <ChevronLeft className="w-5 h-5" />
+    return (
+        <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
+            {/* 1. PREMIUM BRANDED HEADER */}
+            <div className="sticky top-0 z-[50] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => router.push('/dashboard')}
+                        className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
+                    >
+                        <ArrowLeft size={18} strokeWidth={2.5} />
                     </button>
-                    
-                    <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0866FF]">Facebook Automation</span>
+                            <div className="w-1 h-1 rounded-full bg-neutral-300" />
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
+                                <FacebookIcon size={10} className="text-[#0866FF] fill-[#0866FF]" />
+                                <span className="text-[9px] font-bold text-[#0866FF]">Active Node</span>
+                            </div>
+                        </div>
+                        <h1 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Bot Replies Dashboard</h1>
+                    </div>
+                </div>
+
+                <div className="hidden md:flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-2xl border border-neutral-200 dark:border-neutral-700">
+                    {MENUS.map(menu => (
                         <button
-                            onClick={() => handlePageSelect("all")}
+                            key={menu.id}
+                            onClick={() => setActiveMenu(menu.id)}
                             className={cn(
-                                "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                selectedPageId === "all"
-                                    ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md"
-                                    : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                "px-5 py-2 rounded-xl text-[13px] font-black uppercase tracking-wider flex items-center gap-2 transition-all",
+                                activeMenu === menu.id
+                                    ? "bg-white dark:bg-neutral-700 text-[#0866FF] shadow-sm"
+                                    : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
                             )}
                         >
-                            All Automations
+                            <menu.icon size={14} strokeWidth={2.5} />
+                            {menu.label}
                         </button>
-                        <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
-                        {pages.map(page => (
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-[#0866FF] transition-all"><Settings2 size={18} /></button>
+                    <button className="px-6 py-2.5 rounded-2xl bg-[#0866FF] text-white text-[13px] font-black uppercase tracking-wider shadow-lg shadow-[#0866FF]/20 hover:scale-105 active:scale-95 transition-all">Live Vitals</button>
+                </div>
+            </div>
+
+            <div className="p-4 sm:p-8 space-y-8">
+                {/* 2. PAGES SELECTOR (REFINED) */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-[#0866FF] transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
                             <button
-                                key={page.page_id}
-                                onClick={() => handlePageSelect(page.page_id)}
+                                onClick={() => handlePageSelect("all")}
                                 className={cn(
-                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                    selectedPageId === page.page_id
-                                        ? "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 shadow-sm border border-purple-100 dark:border-purple-800/50"
-                                        : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
+                                    "px-5 py-2.5 rounded-xl text-[14px] font-black uppercase tracking-wider transition-all whitespace-nowrap",
+                                    selectedPageId === "all"
+                                        ? "bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900"
+                                        : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                 )}
                             >
-                                {page.page_name}
+                                All Accounts
                             </button>
-                        ))}
+                            <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
+                            {pages.map(page => (
+                                <button
+                                    key={page.page_id}
+                                    onClick={() => handlePageSelect(page.page_id)}
+                                    className={cn(
+                                        "px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap",
+                                        selectedPageId === page.page_id
+                                            ? "bg-[#0866FF]/10 text-[#0866FF] shadow-sm border border-[#0866FF]/20"
+                                            : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
+                                    )}
+                                >
+                                    {page.page_name}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button onClick={() => scroll('right')} className="p-2 text-neutral-400 hover:text-[#0866FF] transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    <button onClick={() => scroll('right')} className="p-2 text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
-                        <ChevronRight className="w-5 h-5" />
-                    </button>
+                    <div className="relative shrink-0 z-20">
+                        <button 
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-black uppercase tracking-wider hover:border-[#0866FF]/30 transition-colors text-neutral-700 dark:text-neutral-300"
+                        >
+                            <div className="flex items-center gap-2">
+                                <ListFilter className="w-4 h-4 text-[#0866FF]" />
+                                Filter
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
+                        </button>
+                    </div>
                 </div>
-
-                <div className="relative shrink-0 z-20">
-                    <button 
-                        onClick={() => setShowPageDropdown(!showPageDropdown)}
-                        className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-purple-300 transition-colors text-neutral-700 dark:text-neutral-300"
-                    >
-                        <div className="flex items-center gap-2">
-                            <ListFilter className="w-4 h-4 text-purple-500" />
-                            Quick Find
-                        </div>
-                        <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
-                    </button>
-                    <AnimatePresence>
-                        {showPageDropdown && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
-                            >
-                                <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                    <button
-                                        onClick={() => handlePageSelect("all")}
-                                        className={cn(
-                                            "w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors",
-                                            selectedPageId === "all" ? "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400" : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                        )}
-                                    >
-                                        All Automations
-                                    </button>
-                                    <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
-                                    {pages.map(page => (
-                                        <button
-                                            key={page.page_id}
-                                            onClick={() => handlePageSelect(page.page_id)}
-                                            className={cn(
-                                                "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate",
-                                                selectedPageId === page.page_id ? "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                            )}
-                                        >
-                                            {page.page_name}
-                                        </button>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
-
-            {/* 2. MENU TABS */}
-            <div className="flex items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 mb-8 overflow-x-auto no-scrollbar w-full min-w-0">
-                {MENUS.map(menu => (
-                    <button
-                        key={menu.id}
-                        onClick={() => setActiveMenu(menu.id)}
-                        className={cn(
-                            "pb-4 px-2 text-[15px] font-semibold flex items-center gap-2 transition-all relative whitespace-nowrap",
-                            activeMenu === menu.id
-                                ? "text-purple-600 dark:text-purple-400"
-                                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
-                        )}
-                    >
-                        <menu.icon className="w-4 h-4" />
-                        {menu.label}
-                        {activeMenu === menu.id && (
-                            <motion.div
-                                layoutId="activeTabIndicator"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 dark:bg-purple-500 rounded-t-full"
-                            />
-                        )}
-                    </button>
-                ))}
-            </div>
 
             {/* 3. MAIN WORKSPACE */}
             <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
@@ -753,5 +752,6 @@ export default function BotRepliesPage() {
                 )}
             </AnimatePresence>
         </div>
-    );
+    </div>
+  );
 }

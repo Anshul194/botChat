@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const pathname = usePathname();
+    const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies");
 
     // Close mobile sidebar on route change / resize
     useEffect(() => {
@@ -48,12 +51,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* ── Main area ─ topbar + page content ── */}
             <div className="flex flex-col flex-1 min-w-0 relative">
-                <Topbar
-                    onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                    collapsed={sidebarCollapsed}
-                    onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    mobileSidebarOpen={mobileSidebarOpen}
-                />
+                {!isAutomationPage && (
+                    <Topbar
+                        onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                        collapsed={sidebarCollapsed}
+                        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+                        mobileSidebarOpen={mobileSidebarOpen}
+                    />
+                )}
                 <main className="flex-1 overflow-y-auto">
                     {children}
                 </main>

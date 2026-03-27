@@ -1,9 +1,10 @@
 // @ts-nocheck
 "use client";
 import { useState, useRef, useEffect, useCallback, createContext, useContext, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import { toast } from "sonner";
 import { useModal } from "@/components/providers/ModalProvider";
 import {
   MessageSquare, MousePointer2, Link, Image as ImageIcon, Layers,
@@ -11,8 +12,8 @@ import {
   Tag as TagIcon, ShieldCheck, UserCog, Bell, Users, Zap,
   ExternalLink, Table, CheckCircle2, Search, Wand2, Plus, Trash2,
   Copy, MoreVertical, GripHorizontal, ChevronRight, Share,
-  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play,
-  Sparkle, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload
+  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play, SquareStack,
+  Sparkle, Sparkles, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload
 } from "lucide-react";
 
 /* ============================================================
@@ -29,10 +30,10 @@ const PLATFORMS = {
   },
   facebook: {
     name: "Facebook",
-    accent: "#1877F2",
-    accentSoft: "rgba(24,119,242,0.08)",
-    accentBorder: "rgba(24,119,242,0.16)",
-    gradient: "linear-gradient(135deg, #1877F2, #3B5998)",
+    accent: "#0866FF", // Modern FB blue
+    accentSoft: "rgba(8,102,255,0.06)",
+    accentBorder: "rgba(8,102,255,0.12)",
+    gradient: "linear-gradient(135deg, #0866FF, #0056D6)",
     icon: "👤",
   },
 };
@@ -706,21 +707,21 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <input type="file" ref={fileInputRef} onChange={handleFileUpload} style={{ display: "none" }} accept="image/*" />
-      
+
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {items.map((item, i) => (
-          <div key={i} style={{ 
+          <div key={i} style={{
             background: DS.bg, border: `1.5px solid ${DS.border}`, borderRadius: 20, padding: 16,
             position: "relative"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink3 }}>CARD #{i+1}</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink3 }}>CARD #{i + 1}</span>
               <button onClick={() => removeItem(i)} style={{ border: "none", background: "transparent", color: "#EF4444", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>✕ Delete Card</button>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ display: "flex", gap: 12 }}>
-                <div style={{ 
+                <div style={{
                   width: 90, height: 90, borderRadius: 14, background: item.image_url ? `url(${item.image_url}) center/cover` : DS.card,
                   flexShrink: 0, cursor: "pointer", border: `1.5px solid ${DS.border}`, display: "flex", alignItems: "center", justifyContent: "center",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
@@ -758,7 +759,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                           { value: "open_url", label: "Open URL" },
                           { value: "postback_action", label: "Trigger" },
                         ]} style={{ flex: 0.6, height: 32, fontSize: 11.5 }} />
-                        
+
                         {btn.action_type === "send_message" ? (
                           <Select value={btn.action_value} onChange={e => {
                             const val = e.target.value;
@@ -786,10 +787,10 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
 
       <button onClick={addItem} style={{ width: "100%", padding: "14px", borderRadius: 18, border: `2px dashed ${DS.border}`, background: "#fff", color: DS.ink3, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = DS.accent} onMouseLeave={e => e.currentTarget.style.borderColor = DS.border}>+ ADD ANOTHER CARD</button>
 
-      <button onClick={onUpdateSave} disabled={saving} style={{ 
-        width: "100%", padding: "12px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff", fontSize: 13.5, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", 
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: saving ? 0.7 : 1, transition: "all 0.2s" 
-      }} onMouseEnter={e => { if(!saving) e.currentTarget.style.opacity = 0.9 }} onMouseLeave={e => { if(!saving) e.currentTarget.style.opacity = 1 }}>
+      <button onClick={onUpdateSave} disabled={saving} style={{
+        width: "100%", padding: "12px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff", fontSize: 13.5, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: saving ? 0.7 : 1, transition: "all 0.2s"
+      }} onMouseEnter={e => { if (!saving) e.currentTarget.style.opacity = 0.9 }} onMouseLeave={e => { if (!saving) e.currentTarget.style.opacity = 1 }}>
         {saving ? "Updating..." : <><Save size={15} /> Update Carousel Step</>}
       </button>
     </div>
@@ -1565,7 +1566,7 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
   const isTrigger = step.kind === "trigger";
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative" }} id={`step-card-${step.id}`}>
       {!isLast && (
         <div style={{
           position: "absolute", left: 27, bottom: -14, width: 2, height: 14, zIndex: 0,
@@ -1620,7 +1621,7 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
           <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
             {!isFirst && <IconBtn onClick={e => { e.stopPropagation(); onMoveUp(); }} title="Move up">↑</IconBtn>}
             {!isLast && <IconBtn onClick={e => { e.stopPropagation(); onMoveDown(); }} title="Move down">↓</IconBtn>}
-            <IconBtn onClick={e => { e.stopPropagation(); onDup(); }} title="Duplicate">⊕</IconBtn>
+            <IconBtn onClick={e => { e.stopPropagation(); onDup(); }} title="Duplicate"><SquareStack size={14} /></IconBtn>
             <IconBtn onClick={e => { e.stopPropagation(); onDelete(); }} danger title="Delete">✕</IconBtn>
           </div>
         </div>
@@ -1658,68 +1659,99 @@ function IconBtn({ children, onClick, danger, title }) {
 function AddActionPicker({ onAdd, isCreating }) {
   const DS = useDS();
   const [open, setOpen] = useState(false);
+
   return (
     <div style={{ position: "relative" }}>
-      <button onClick={() => setOpen(true)} style={{
-        width: "100%", padding: 16, borderRadius: 20, cursor: "pointer",
-        border: `2px solid ${DS.accent}`, background: DS.accentSoft,
-        color: DS.accent, fontSize: 15, fontWeight: 800, fontFamily: "inherit",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 10, transition: "all 0.2s",
-        boxShadow: "0 4px 12px rgba(6,182,212,0.15)",
-      }}
-        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(6,182,212,0.25)"; }}
-        onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(6,182,212,0.15)"; }}
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: "100%", padding: "20px", borderRadius: 28, cursor: "pointer",
+          border: `2px dashed ${open ? DS.accent : DS.border}`, background: open ? DS.bg : "#fff",
+          color: open ? DS.accent : DS.ink3, fontSize: 15, fontWeight: 900, fontFamily: "inherit",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 12, transition: "all 0.3s ease",
+          boxShadow: open ? `0 10px 30px ${DS.accent}20` : "none"
+        }}
       >
-        <Plus size={20} strokeWidth={3} /> Add New Step
+        <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ type: "spring", damping: 12 }}>
+          <Plus size={22} strokeWidth={3} />
+        </motion.div>
+        {open ? "CHOOSE AN ACTION" : "ADD NEW STEP"}
       </button>
 
-      {open && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-          <div onClick={() => setOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.6)", backdropFilter: "blur(8px)" }} />
-          <div style={{
-            position: "relative", width: 480, maxWidth: "100%", background: "#fff", borderRadius: 32,
-            boxShadow: "0 40px 100px -20px rgba(0,0,0,0.35)", overflow: "hidden", border: "1px solid rgba(0,0,0,0.05)"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px 28px", borderBottom: `1px solid ${DS.border}` }}>
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 900, color: DS.ink, letterSpacing: "-0.02em" }}>Choose Step Type</div>
-                <div style={{ fontSize: 12, color: DS.ink3, marginTop: 2 }}>Select the next action for your flow</div>
-              </div>
-              <button onClick={() => setOpen(false)} style={{ border: "none", background: DS.bg, width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: DS.ink3 }}><X size={18} /></button>
-            </div>
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Backdrop Layer */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              style={{
+                position: "fixed", inset: 0, zIndex: 9998,
+                background: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(8px)"
+              }}
+            />
 
-            <div style={{ padding: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              {ACTIONS.map(a => (
-                <button
-                  key={a.id}
-                  onClick={async () => { 
-                    if (!isCreating) {
-                      await onAdd(a.id); 
-                      setOpen(false); 
-                    }
-                  }} 
-                  disabled={isCreating}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 14, height: 64, padding: "0 18px", borderRadius: 20,
-                    border: `1.5px solid ${DS.border}`, background: "#fff", cursor: isCreating ? "wait" : "pointer", textAlign: "left", fontFamily: "inherit",
-                    transition: "all 0.15s", opacity: isCreating ? 0.7 : 1,
-                  }}
-                  onMouseEnter={e => { if(!isCreating) { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.background = DS.accentSoft; e.currentTarget.style.transform = "scale(1.02)"; } }}
-                  onMouseLeave={e => { if(!isCreating) { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "#fff"; e.currentTarget.style.transform = "none"; } }}
-                >
-                  <div style={{ width: 36, height: 36, borderRadius: 12, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink }}>
-                    <a.icon size={20} />
+            {/* Modal Container to fix scrolling issues */}
+            <div style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, pointerEvents: "none" }}>
+              {/* Centered Modal Panel */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                style={{
+                  width: "100%", maxWidth: 640, pointerEvents: "auto",
+                  background: "rgba(255, 255, 255, 0.98)", backdropFilter: "blur(20px)",
+                  border: `1.5px solid ${DS.border}`, borderRadius: 40, padding: "32px",
+                  boxShadow: "0 40px 100px -20px rgba(0,0,0,0.3), 0 20px 50px -25px rgba(0,0,0,0.2)",
+                  display: "flex", flexDirection: "column", gap: 24,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <h2 style={{ fontSize: 20, fontWeight: 900, color: DS.ink, margin: 0 }}>Add New Action</h2>
+                    <p style={{ fontSize: 13, color: DS.ink3, margin: 0, fontWeight: 500 }}>Select the next step for your automated conversation.</p>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: DS.ink }}>{a.label}</div>
-                    <div style={{ fontSize: 10, color: DS.ink3, marginTop: 1 }}>{a.desc.slice(0, 24)}...</div>
-                  </div>
-                </button>
-              ))}
+                  <button onClick={() => setOpen(false)} style={{ width: 36, height: 36, borderRadius: "50%", background: DS.bg, border: "none", cursor: "pointer", color: DS.ink3, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(135px, 1fr))", gap: 16 }}>
+                  {ACTIONS.map(a => (
+                    <motion.button
+                      key={a.id}
+                      whileHover={{ y: -5, scale: 1.02 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        if (!isCreating) {
+                          setOpen(false);
+                          onAdd(a.id);
+                        }
+                      }}
+                      style={{
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "20px 14px", borderRadius: 28,
+                        border: `1.5px solid ${DS.border}`, background: "#fff", cursor: "pointer", transition: "all 0.2s"
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.background = DS.accentSoft; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "#fff"; }}
+                    >
+                      <div style={{ width: 52, height: 52, borderRadius: 18, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", color: DS.accent, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)" }}>
+                        <a.icon size={26} />
+                      </div>
+                      <div style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 13, fontWeight: 900, color: DS.ink }}>{a.label}</div>
+                        <div style={{ fontSize: 9, color: DS.ink3, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 2 }}>{a.id.replace('_', ' ')}</div>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -2156,6 +2188,7 @@ export default function FlowBuilderPage() {
 }
 
 function FlowBuilder() {
+  const router = useRouter();
   const { showModal, showConfirm } = useModal();
   const searchParams = useSearchParams();
   const replyId = searchParams.get("id");
@@ -2245,13 +2278,6 @@ function FlowBuilder() {
       }
     });
   }, [platform, showConfirm, showModal]);
-  const dupStep = useCallback((id) => {
-    setSteps(s => {
-      const idx = s.findIndex(x => x.id === id);
-      const copy = { ...s[idx], id: uid(), label: s[idx].label + " (copy)" };
-      const n = [...s]; n.splice(idx + 1, 0, copy); return n;
-    });
-  }, []);
   const handleReorder = useCallback(async (newSteps) => {
     if (!replyId) return;
     const orders = {};
@@ -2331,8 +2357,10 @@ function FlowBuilder() {
         response = await api.post(endpoint, payload);
         const newId = response.data?.data?.id || response.data?.id;
         if (newId) {
-          // Force ID to string to ensure .startsWith("s_") check works correctly on next save
-          updateStep(step.id, { ...step, id: String(newId) });
+          const sid = String(newId);
+          updateStep(step.id, { ...step, id: sid });
+          // Synchronize expanded state using functional update to stay open during ID change
+          setExpandedId(prev => prev === step.id ? sid : prev);
         }
       } else {
         const patchEndpoint = platform === "facebook"
@@ -2341,30 +2369,84 @@ function FlowBuilder() {
         response = await api.patch(patchEndpoint, payload);
       }
 
-      showModal("success", "Success", "Step saved successfully");
+      // Removed "Step saved successfully" toast as per user request
     } catch (err) {
       console.error("Step Save Error:", err);
       showModal("error", "Error", "Failed to save step data");
     }
   }, [replyId, platform, updateStep]);
+  const dupStep = useCallback((id) => {
+    const step = steps.find(x => x.id === id);
+    if (!step) return;
+
+    showConfirm({
+      title: "Duplicate Action?",
+      message: `Confirm you want to duplicate this "${step.label || step.type}" action with all its current settings.`,
+      confirmText: "Duplicate",
+      onConfirm: async () => {
+        try {
+          // Prepare the copy data
+          const idx = steps.findIndex(x => x.id === id);
+          const copyId = uid();
+          const copyLabel = (step.label || step.type).endsWith("(copy)")
+            ? step.label
+            : (step.label || step.type) + " (copy)";
+
+          const copy = {
+            ...step,
+            id: copyId,
+            label: copyLabel,
+            order: idx + 2 // Place right below
+          };
+
+          // Update local state first for instant feedback
+          setSteps(current => {
+            const next = [...current];
+            next.splice(idx + 1, 0, copy);
+            return next;
+          });
+
+          // Sync with backend by calling handleStepSave
+          await handleStepSave(copy);
+
+          setExpandedId(copyId);
+          showModal("success", "Duplicated", "Step duplicated successfully");
+        } catch (err) {
+          console.error("Duplicate Error:", err);
+          showModal("error", "Error", "Failed to duplicate step");
+        }
+      }
+    });
+  }, [steps, handleStepSave, showConfirm, showModal]);
 
   const addStep = useCallback(async (type) => {
     if (isCreating) return;
     const def = getActionDef(type);
     const tempId = uid();
     const newStep = { id: tempId, kind: "action", type, label: def.label, config: {} };
-    
+
     setSteps(s => [...s, newStep]);
-    setExpandedId(tempId);
-    
+    setExpandedId(tempId); // Ensure the newly added step is expanded
+
     setIsCreating(true);
     try {
       await handleStepSave(newStep);
     } finally {
       setIsCreating(false);
     }
-    
-    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 60);
+
+    // Scroll to the newly added step after it renders and ID settles
+    setTimeout(() => {
+      const cards = document.querySelectorAll('[id^="step-card-"]');
+      const el = cards[cards.length - 1];
+      if (el) {
+        const topOffset = el.getBoundingClientRect().top + window.pageYOffset - 120;
+        window.scrollTo({ top: topOffset, behavior: "smooth" });
+      } else {
+        // More conservative fallback: scroll to bottom but offset to avoid showing only footer
+        window.scrollTo({ top: document.body.scrollHeight - 600, behavior: "smooth" });
+      }
+    }, 450);
     return tempId;
   }, [handleStepSave, isCreating]);
 
@@ -2391,8 +2473,25 @@ function FlowBuilder() {
         status: finalStatus
       });
 
+      // Special call for publishing if requested
+      if (finalStatus === 'published') {
+        const publishPath = platform === "facebook"
+          ? `/facebook/bot-replies/${replyId}/publish`
+          : `/instagram/bot-replies/${replyId}/publish`;
+        const res = await api.patch(publishPath);
+        if (res.data?.is_success) {
+          showModal("success", "Published!", res.data.message || "Bot reply published successfully.");
+        }
+      }
+
       setSaved(true);
-      toast.success(`Flow ${finalStatus === 'published' ? 'published' : 'saved'} successfully`);
+
+      if (finalStatus === 'published') {
+        setTimeout(() => {
+          router.push(`/dashboard/${platform}/bot-replies/`);
+        }, 1500);
+      }
+
       setTimeout(() => setSaved(false), 2200);
     } catch (error) {
       console.error("Save Error:", error);
@@ -2446,78 +2545,100 @@ function FlowBuilder() {
         .flow-hdr { background: ${DS.card}; border-bottom: 1.5px solid ${DS.border}; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); }
         .flow-hdr-r1 { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
         .flow-hdr-r2 { display: flex; align-items: center; gap: 6px; }
-        .ftab-label { display: inline; }
-        .btn-text { display: inline; }
+        .flow-hdr { background: ${DS.card}; border-bottom: 1.5px solid ${DS.border}; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); }
         @media (max-width: 600px) {
           .flow-hdr { padding: 8px 10px; gap: 6px; }
-          .ftab-label { display: none; }
-          .flow-hdr-r2 { width: 100%; justify-content: flex-end; }
-          .btn-text { display: none; }
         }
       `}</style>
 
 
         {/* ── HEADER ─────────────────────────────────────────────── */}
-        <div className="flow-hdr">
-          {/* Row 1: Logo + name + tabs */}
-          <div className="flow-hdr-r1">
-            <div style={{ width: 32, height: 32, borderRadius: 9, background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚡</div>
-            <input value={flowName} onChange={e => setFlowName(e.target.value)} style={{ flex: 1, border: "none", background: "transparent", fontSize: 14, fontWeight: 800, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.02em", minWidth: 0 }} />
+        <div className="flow-hdr" style={{ padding: "12px 24px", minHeight: 74 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, width: "100%" }}>
 
-            {/* Platform Switcher */}
-            <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
-              {Object.entries(PLATFORMS).map(([id, p]) => (
-                <button key={id} onClick={() => setPlatform(id)} style={{
-                  padding: "5px 12px", borderRadius: 8, fontSize: 11.5, fontWeight: 800, border: "none", cursor: "pointer", fontFamily: "inherit",
-                  background: platform === id ? DS.card : "transparent",
-                  color: platform === id ? DS.accent : DS.ink3,
-                  boxShadow: platform === id ? DS.shadow : "none",
-                  transition: "all 0.15s", display: "flex", alignItems: "center", gap: 5,
-                }}>
-                  <span style={{ fontSize: 14 }}>{p.icon}</span>
-                  <span className="btn-text" style={{ fontSize: 10.5 }}>{p.name}</span>
+            {/* Left Section: Back + Branding */}
+            <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0, flex: 1 }}>
+              <button
+                onClick={() => router.push(`/dashboard/${platform}/bot-replies`)}
+                style={{
+                  padding: "10px 14px", borderRadius: 14, border: `1.5px solid ${DS.border}`,
+                  background: "#fff", color: DS.ink2, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 800,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)", transition: "all 0.2s"
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = "translateX(-2px)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "none"}
+              >
+                <ArrowLeft size={16} /> <span className="btn-text">Back</span>
+              </button>
+
+              <div style={{
+                width: 42, height: 42, borderRadius: 14, background: DS.gradient,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 20, flexShrink: 0, boxShadow: `0 8px 16px ${DS.accent}20`
+              }}>
+                {platform === "facebook" ? <FacebookIcon size={20} color="#fff" fill="#fff" /> : <InstagramIcon size={20} color="#fff" />}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 10, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.08em" }}>{platform.toUpperCase()} AUTOMATION</span>
+                  <div style={{ width: 4, height: 4, borderRadius: "50%", background: DS.border }} />
+                  <span style={{ fontSize: 10, fontWeight: 800, color: DS.ink3, textTransform: "uppercase" }}>Editing</span>
+                </div>
+                <input
+                  value={flowName}
+                  onChange={e => setFlowName(e.target.value)}
+                  placeholder="Untitled Flow"
+                  style={{ border: "none", background: "transparent", fontSize: 17, fontWeight: 900, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.01em", width: "100%", padding: 0 }}
+                />
+              </div>
+            </div>
+
+            {/* Center: Navigation Tabs */}
+            <div style={{ display: "flex", background: DS.bg, padding: 4, borderRadius: 14, border: `1.5px solid ${DS.border}`, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.04)" }}>
+              {[
+                { id: "flow", label: "Workflow", icon: GitBranch },
+                { id: "settings", label: "Settings", icon: Settings2 },
+                { id: "analytics", label: "Vitals", icon: Brain },
+              ].map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  style={{
+                    padding: "8px 18px", borderRadius: 11, fontSize: 13, fontWeight: tab === t.id ? 900 : 600, border: "none",
+                    background: tab === t.id ? "#fff" : "transparent",
+                    color: tab === t.id ? DS.ink : DS.ink3,
+                    boxShadow: tab === t.id ? "0 4px 12px rgba(0,0,0,0.06)" : "none",
+                    cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit"
+                  }}
+                >
+                  <t.icon size={15} color={tab === t.id ? DS.accent : "currentColor"} />
+                  {t.label}
                 </button>
               ))}
             </div>
 
-            <div style={{ display: "flex", background: DS.bg, borderRadius: 10, padding: 3, gap: 2, border: `1.5px solid ${DS.border}`, flexShrink: 0 }}>
-              {TABS.map(t => (
-                <button key={t.id} onClick={() => setTab(t.id)} style={{
-                  padding: "5px 9px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit",
-                  background: tab === t.id ? DS.card : "transparent",
-                  color: tab === t.id ? DS.ink : DS.ink3,
-                  boxShadow: tab === t.id ? DS.shadow : "none",
-                  transition: "all 0.15s", display: "flex", alignItems: "center", gap: 3,
-                }}>{t.icon}<span className="ftab-label"> {t.label}</span></button>
-              ))}
+            {/* Right: Actions */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, justifyContent: "flex-end" }}>
+              <button onClick={() => setIsLive(!isLive)} style={{
+                padding: "10px 16px", borderRadius: 14, fontSize: 13, fontWeight: 800, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
+                background: isLive ? DS.greenSoft : "#fff", color: isLive ? DS.green : DS.ink3, cursor: "pointer", fontFamily: "inherit",
+                display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s",
+              }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: isLive ? DS.green : DS.ink3, border: `2px solid ${isLive ? DS.green : DS.border}`, boxShadow: isLive ? `0 0 10px ${DS.green}60` : "none" }} />
+                {isLive ? "Live Sync" : "Draft Only"}
+              </button>
+
+              <button onClick={handleSave} style={{
+                padding: "10px 18px", borderRadius: 14, fontSize: 13, fontWeight: 800, border: `1.5px solid ${saved ? DS.green : DS.border}`,
+                background: saved ? DS.greenSoft : "#fff", color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+                display: "flex", alignItems: "center", gap: 6
+              }}>
+                {saved ? "✓" : <Save size={16} />}
+                <span className="btn-text"> {saved ? "Saved!" : "Quick Save"}</span>
+              </button>
             </div>
-          </div>
-
-          {/* Row 2: Action buttons */}
-          <div className="flow-hdr-r2">
-
-            <button onClick={() => setIsLive(!isLive)} style={{
-              padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
-              background: isLive ? DS.greenSoft : DS.bg, color: isLive ? DS.green : DS.ink3, cursor: "pointer", fontFamily: "inherit",
-              display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s",
-            }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: isLive ? DS.green : DS.ink3, display: "inline-block", boxShadow: isLive ? `0 0 6px ${DS.green}` : "none", transition: "all 0.2s" }} />
-              {isLive ? "Live" : "Draft"}
-            </button>
-
-            <button onClick={handleSave} style={{
-              padding: "6px 11px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: `1.5px solid ${saved ? DS.green : DS.border}`,
-              background: saved ? DS.greenSoft : DS.bg, color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
-            }}>{saved ? "✓" : "💾"}<span className="btn-text"> {saved ? "Saved!" : "Save"}</span></button>
-
-            <button onClick={() => { handleSave(true); }} style={{
-              padding: "7px 14px", borderRadius: 20, fontSize: 12, fontWeight: 800, border: "none", fontFamily: "inherit",
-              background: `linear-gradient(135deg,${DS.accent},#F97316)`,
-              color: "#fff", cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(232,69,10,0.3)", transition: "all 0.2s",
-            }} title="Publish flow">
-              <Play size={12} style={{ marginRight: 4 }} /><span className="btn-text"> {isSaving ? "Publishing..." : "Publish"}</span>
-            </button>
           </div>
         </div>
 
@@ -2529,6 +2650,47 @@ function FlowBuilder() {
 
             {tab === "flow" && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {/* Empty state */}
+                {steps.length === 0 && (
+                  <div style={{ padding: "50px 30px", textAlign: "center", background: DS.card, border: `2px dashed ${DS.border}`, borderRadius: 32, marginBottom: 10, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div style={{ width: 84, height: 84, borderRadius: 32, background: DS.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, marginBottom: 24, color: DS.accent }}>
+                      <Bot size={42} />
+                    </div>
+                    <div style={{ marginBottom: 30 }}>
+                      <h3 style={{ fontSize: 22, fontWeight: 900, color: DS.ink, marginBottom: 10, letterSpacing: "-0.02em" }}>Build Your First Template</h3>
+                      <p style={{ fontSize: 14, color: DS.ink3, maxWidth: 360, lineHeight: 1.6, margin: "0 auto", fontWeight: 500 }}>
+                        Select an action below to start your automation flow. A "Message" is usually the best place to start!
+                      </p>
+                    </div>
+
+                    <div style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 10, marginBottom: 32 }}>
+                      {ACTIONS.map(a => (
+                        <button
+                          key={a.id}
+                          onClick={() => addStep(a.id)}
+                          style={{
+                            padding: "16px 12px", borderRadius: 20, border: `1.5px solid ${DS.border}`,
+                            background: DS.bg, color: DS.ink, cursor: "pointer", transition: "all 0.2s",
+                            display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(0,0,0,0.1)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
+                        >
+                          <div style={{ width: 34, height: 34, borderRadius: 10, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink, border: `1px solid ${DS.border}` }}>
+                            <a.icon size={18} />
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 800 }}>{a.label}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", background: DS.bg, padding: "10px 18px", borderRadius: 18, border: `1.5px solid ${DS.border}` }}>
+                      <Sparkles size={16} className="text-amber-500" />
+                      <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink2, letterSpacing: "0.03em" }}>PRO TIP: START WITH A WELCOME MESSAGE</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Step list */}
                 {steps.map((s, gi) => (
                   <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
@@ -2539,10 +2701,44 @@ function FlowBuilder() {
                   />
                 ))}
 
-                {/* Add step */}
-                <div style={{ marginTop: 16 }} ref={bottomRef}>
-                  <AddActionPicker onAdd={addStep} isCreating={isCreating} />
-                </div>
+                {/* Add step (hidden for first-time onboarding) */}
+                {steps.length > 0 && (
+                  <div style={{ marginTop: 16 }} ref={bottomRef}>
+                    <AddActionPicker onAdd={addStep} isCreating={isCreating} />
+                  </div>
+                )}
+
+                {/* Publish Footer */}
+                {steps.length > 0 && (
+                  <div style={{
+                    marginTop: 32, padding: "24px 30px", background: DS.card, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius,
+                    display: "flex", flexDirection: "column", sm: "row", gap: 20, justifyContent: "space-between", alignItems: "center",
+                    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.1)", position: "relative", overflow: "hidden"
+                  }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 3, background: `linear-gradient(90deg, ${DS.accent}, ${DS.accent}80)` }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <Zap size={15} fill={DS.accent} color={DS.accent} />
+                        <span style={{ fontSize: 15, fontWeight: 900, color: DS.ink, letterSpacing: "-0.01em" }}>Everything looks good?</span>
+                      </div>
+                      <span style={{ fontSize: 12, color: DS.ink3, fontWeight: 500 }}>Publish your flow now to make all changes live for your audience.</span>
+                    </div>
+                    <button
+                      onClick={() => handleSave(true)}
+                      disabled={isSaving}
+                      style={{
+                        padding: "12px 32px", borderRadius: 16, fontSize: 13, fontWeight: 900, border: "none", fontFamily: "inherit",
+                        background: DS.gradient,
+                        color: "#fff", cursor: isSaving ? "default" : "pointer",
+                        boxShadow: `0 8px 25px ${DS.accent}30`, transition: "all 0.2s",
+                        display: "flex", alignItems: "center", gap: 10,
+                        opacity: isSaving ? 0.7 : 1
+                      }}
+                    >
+                      <Play size={16} fill="currentColor" /> {isSaving ? "Publishing..." : "PUBLISH FLOW"}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
