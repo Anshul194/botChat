@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import {
     Facebook, MessageSquare, Zap, Target,
     MoreHorizontal, Search, CheckCircle2,
-    Clock, BarChart3, ChevronRight,
+    Clock, BarChart3, ChevronRight, ChevronLeft, ListFilter,
     Settings2, Filter, LayoutGrid, List,
     Activity, Globe, ArrowUpRight, Plus,
     MousePointer2, Layers, Sparkles, Command,
@@ -121,6 +121,15 @@ export default function CommentManager() {
 
     const loaderRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [showPageDropdown, setShowPageDropdown] = useState(false);
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const amount = 200;
+            scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+        }
+    };
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -314,58 +323,84 @@ export default function CommentManager() {
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] p-4 lg:p-8 font-sans transition-all duration-300">
             <div className="max-w-[1400px] mx-auto space-y-8">
 
-                {/* 1. PROFESSIONAL CONTEXT BAR */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300">
-                    <div className="flex items-center gap-5 border-r border-slate-100 dark:border-slate-800 pr-6">
-                        <div className="w-12 h-12 rounded-[18px] bg-primary/10 text-primary flex items-center justify-center shadow-inner">
-                            <Layers className="w-6 h-6" />
+                {/* 1. PAGES SELECTOR (Scrollable + Dropdown) */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-primary transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                            {isLoading ? (
+                                [1, 2, 3].map(i => <div key={i} className="w-32 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse flex-shrink-0" />)
+                            ) : pages.length > 0 ? (
+                                pages.map(page => (
+                                    <button
+                                        key={page.id}
+                                        onClick={() => { setSelectedPage(page); setShowPageDropdown(false); }}
+                                        className={cn(
+                                            "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap flex-shrink-0 flex items-center gap-2",
+                                            selectedPage?.id === page.id
+                                                ? "bg-primary/10 text-primary shadow-sm border border-primary/20"
+                                                : "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
+                                        )}
+                                    >
+                                        {page.image && <img src={page.image} className="w-5 h-5 rounded-full object-cover" />}
+                                        {page.page_name}
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="text-sm font-medium text-slate-400 px-2 py-2">Loading Connected Pages...</div>
+                            )}
                         </div>
-                        <div>
-                            <h1 className="text-lg font-semibold text-slate-900 dark:text-white uppercase tracking-tight leading-none">Comment Hub</h1>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Asset Directory</p>
-                        </div>
+
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-slate-400 hover:text-primary transition-colors z-10 bg-white dark:bg-slate-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-                        {isLoading ? (
-                            [1, 2, 3].map(i => <div key={i} className="w-32 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse" />)
-                        ) : pages.length > 0 ? (
-                            pages.map(page => (
-                                <button
-                                    key={page.id}
-                                    onClick={() => setSelectedPage(page)}
-                                    className={cn(
-                                        "px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap flex items-center gap-3 border transition-all duration-300 group",
-                                        selectedPage?.id === page.id
-                                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-[1.02]"
-                                            : "bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:border-primary/30"
-                                    )}
-                                >
-                                    <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20 shadow-sm flex-shrink-0">
-                                        <img src={page.image} className="w-full h-full object-cover" />
-                                    </div>
-                                    <span className="truncate max-w-[150px]">{page.page_name}</span>
-                                    {selectedPage?.id === page.id && (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                    )}
-                                </button>
-                            ))
-                        ) : (
-                            <p className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">Connect Assets to Begin</p>
-                        )}
-                    </div>
-
-                    <div className="flex items-center gap-3 pl-6 border-l border-slate-100 dark:border-slate-800">
+                    <div className="relative shrink-0 z-20 flex gap-2">
                         <button
                             onClick={fetchPages}
                             disabled={isLoading}
-                            className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-primary transition-all border border-slate-100 dark:border-slate-700 active:scale-95"
+                            className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-primary/50 transition-colors text-slate-500"
                         >
                             <RefreshCw className={cn("w-5 h-5", isLoading && "animate-spin")} />
                         </button>
-                        <button className="px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-widest shadow-xl active:scale-95 hover:bg-slate-800">
-                            Sync New
+                        <button 
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-primary/50 transition-colors text-slate-700 dark:text-slate-300"
+                        >
+                            <div className="flex items-center gap-2">
+                                <ListFilter className="w-4 h-4 text-primary" />
+                                Quick Find
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
                         </button>
+                        <AnimatePresence>
+                            {showPageDropdown && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                    className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden"
+                                >
+                                    <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                        {pages.map(page => (
+                                            <button
+                                                key={page.id}
+                                                onClick={() => { setSelectedPage(page); setShowPageDropdown(false); }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate flex items-center gap-2",
+                                                    selectedPage?.id === page.id ? "bg-primary/10 text-primary" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                )}
+                                            >
+                                                {page.image && <img src={page.image} className="w-4 h-4 rounded-full object-cover shrink-0" />}
+                                                <span className="truncate">{page.page_name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 

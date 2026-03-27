@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick,
-    Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Instagram, Layers
+    Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Instagram, Layers,
+    ChevronLeft, ChevronDown, ListFilter
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -57,12 +58,15 @@ export default function InstagramBotRepliesPage() {
     const [pages, setPages] = useState<InstagramPageData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const [selectedAccount, setSelectedAccount] = useState<InstagramPageData | null>(null);
+    const [selectedAccountId, setSelectedAccountId] = useState<string | "all">("all");
     const [activeMenu, setActiveMenu] = useState<MenuId>('bot_reply');
 
     const [searchQuery, setSearchQuery] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [showPageDropdown, setShowPageDropdown] = useState(false);
 
     const [actions, setActions] = useState<ActionData[]>([]);
     const [isActionsLoading, setIsActionsLoading] = useState(false);
@@ -76,6 +80,8 @@ export default function InstagramBotRepliesPage() {
         trigger_type: "exact",
         trigger_value: ""
     });
+
+    const selectedAccountObj = useMemo(() => pages.find(p => p.instagram_id === selectedAccountId) || null, [pages, selectedAccountId]);
 
     const fetchReplies = useCallback(async () => {
         setIsLoading(true);
@@ -98,25 +104,19 @@ export default function InstagramBotRepliesPage() {
             if (response.data.success || response.data.is_success) {
                 const fetchedAccounts = response.data.data.instagram_accounts || [];
                 setPages(fetchedAccounts);
-                if (fetchedAccounts.length > 0 && !selectedAccount) {
-                    setSelectedAccount(fetchedAccounts[0]);
-                    setNewReply(prev => ({ 
-                        ...prev, 
-                        page_id: fetchedAccounts[0].page?.page_id || "",
-                        instagram_id: fetchedAccounts[0].instagram_id || ""
-                    }));
-                }
             }
         } catch (error) {
             console.error("Fetch Pages Error:", error);
         }
-    }, [api, selectedAccount]);
+    }, [api]);
 
-    const fetchActions = useCallback(async () => {
-        if (!selectedAccount || !selectedAccount.page?.page_id) return;
+    const fetchActions = useCallback(async (accountIdToUse?: string) => {
+        const accountId = accountIdToUse || selectedAccountId;
+        const acc = pages.find(p => p.instagram_id === accountId) || (pages.length ? pages[0] : null);
+        if (!acc || !acc.page?.page_id) return;
         setIsActionsLoading(true);
         try {
-            const response = await api.get(`/instagram/actions?page_id=${selectedAccount.page.page_id}`);
+            const response = await api.get(`/instagram/actions?page_id=${acc.page.page_id}`);
             if (response.data.success || response.data.is_success) {
                 setActions(response.data.data || []);
             }
@@ -125,7 +125,7 @@ export default function InstagramBotRepliesPage() {
         } finally {
             setIsActionsLoading(false);
         }
-    }, [api, selectedAccount]);
+    }, [api, selectedAccountId, pages]);
 
     useEffect(() => {
         fetchReplies();
@@ -134,9 +134,13 @@ export default function InstagramBotRepliesPage() {
 
     useEffect(() => {
         if (activeMenu === 'action_buttons' || activeMenu === 'persistent_menu') {
-            fetchActions();
+            if (selectedAccountId === "all" && pages.length > 0) {
+                setSelectedAccountId(pages[0].instagram_id);
+            } else if (selectedAccountId !== "all") {
+                fetchActions();
+            }
         }
-    }, [activeMenu, selectedAccount, fetchActions]);
+    }, [activeMenu, selectedAccountId, pages, fetchActions]);
 
     const handleCreate = async () => {
         const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
@@ -156,10 +160,11 @@ export default function InstagramBotRepliesPage() {
             toast.error("Failed to create Instagram bot reply");
         } finally {
             setIsCreating(false);
+            const rccFb = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
             setNewReply({
                 name: "",
-                page_id: selectedAccount?.page?.page_id || "",
-                instagram_id: selectedAccount?.instagram_id || "",
+                page_id: rccFb?.page?.page_id || "",
+                instagram_id: rccFb?.instagram_id || "",
                 trigger_type: "exact",
                 trigger_value: ""
             });
@@ -204,7 +209,7 @@ export default function InstagramBotRepliesPage() {
             const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/instagram/bot-replies/${action.automation_id}/${newStatus}`);
             toast.success(`Action status updated`);
-            fetchActions();
+            if (selectedAccountId !== "all") fetchActions();
         } catch (error) {
             toast.error("Failed to toggle action");
         }
@@ -216,7 +221,7 @@ export default function InstagramBotRepliesPage() {
         try {
             await api.delete(`/instagram/actions/${action.automation_id}`);
             toast.success("Action unmapped");
-            fetchActions();
+            if (selectedAccountId !== "all") fetchActions();
         } catch (error) {
             toast.error("Failed to remove mapping");
         }
@@ -228,11 +233,11 @@ export default function InstagramBotRepliesPage() {
     };
 
     const handleActionCreate = async (type: string) => {
-        if (!type || !selectedAccount || !selectedAccount.page?.page_id) return;
+        if (!type || !selectedAccountObj || !selectedAccountObj.page?.page_id) return;
         setIsCreating(true);
         try {
             const response = await api.post("/instagram/actions", {
-                page_id: selectedAccount.page.page_id,
+                page_id: selectedAccountObj.page.page_id,
                 action_type: type,
                 name: type === 'action_no_match' ? 'No Match' : type === 'action_get_started' ? 'Get Started' : 'Ice Breakers'
             });
@@ -252,52 +257,131 @@ export default function InstagramBotRepliesPage() {
         router.push(`/dashboard/flows?id=${replyId}&platform=instagram`);
     };
 
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const amount = 200;
+            scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+        }
+    };
+
+    const handleAccountSelect = (id: string | "all") => {
+        setSelectedAccountId(id);
+        setShowPageDropdown(false);
+        if (id !== "all") {
+            const acc = pages.find(p => p.instagram_id === id);
+            if (acc) {
+                setNewReply(prev => ({ 
+                    ...prev, 
+                    instagram_id: acc.instagram_id,
+                    page_id: acc.page?.page_id || ""
+                }));
+            }
+        }
+    };
+
     const filteredReplies = useMemo(() => {
-        const targetIgId = selectedAccount?.instagram_id;
         return replies.filter(r =>
-            r.instagram_id === targetIgId &&
+            (selectedAccountId === "all" || r.instagram_id === selectedAccountId) &&
             (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 r.trigger_value.toLowerCase().includes(searchQuery.toLowerCase()))
         );
-    }, [replies, selectedAccount, searchQuery]);
+    }, [replies, selectedAccountId, searchQuery]);
+
+    const creationAccountFallback = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
 
     return (
-        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full">
+        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full min-w-0">
 
-            {/* 1. ACCOUNTS SELECTOR */}
-            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-2 mb-8 shadow-sm flex items-center">
-                <div className="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-500/10 text-pink-600 flex flex-shrink-0 items-center justify-center mr-3 ml-1">
-                    <Instagram className="w-5 h-5" />
-                </div>
-                <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar pr-2 items-center">
-                    {pages.length > 0 ? pages.map(acc => (
+            {/* 1. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                    <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    
+                    <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
                         <button
-                            key={acc.id}
-                            onClick={() => {
-                                setSelectedAccount(acc);
-                                setNewReply(prev => ({ 
-                                    ...prev, 
-                                    instagram_id: acc.instagram_id,
-                                    page_id: acc.page?.page_id || ""
-                                }));
-                            }}
+                            onClick={() => handleAccountSelect("all")}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                selectedAccount?.id === acc.id
-                                    ? "bg-pink-50 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 shadow-sm"
-                                    : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                selectedAccountId === "all"
+                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md"
+                                    : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                             )}
                         >
-                            {acc.username}
+                            All Automations
                         </button>
-                    )) : (
-                        <div className="text-sm font-medium text-neutral-400 px-2 py-2">Loading Connected Accounts...</div>
-                    )}
+                        <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
+                        {pages.map(acc => (
+                            <button
+                                key={acc.id}
+                                onClick={() => handleAccountSelect(acc.instagram_id)}
+                                className={cn(
+                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
+                                    selectedAccountId === acc.instagram_id
+                                        ? "bg-pink-50 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 shadow-sm border border-pink-100 dark:border-pink-800/50"
+                                        : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
+                                )}
+                            >
+                                {acc.username}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="relative shrink-0 z-20">
+                    <button 
+                        onClick={() => setShowPageDropdown(!showPageDropdown)}
+                        className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-pink-300 transition-colors text-neutral-700 dark:text-neutral-300"
+                    >
+                        <div className="flex items-center gap-2">
+                            <ListFilter className="w-4 h-4 text-pink-500" />
+                            Quick Find
+                        </div>
+                        <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
+                    </button>
+                    <AnimatePresence>
+                        {showPageDropdown && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
+                            >
+                                <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                    <button
+                                        onClick={() => handleAccountSelect("all")}
+                                        className={cn(
+                                            "w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors",
+                                            selectedAccountId === "all" ? "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400" : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                        )}
+                                    >
+                                        All Automations
+                                    </button>
+                                    <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                                    {pages.map(acc => (
+                                        <button
+                                            key={acc.id}
+                                            onClick={() => handleAccountSelect(acc.instagram_id)}
+                                            className={cn(
+                                                "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate",
+                                                selectedAccountId === acc.instagram_id ? "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                            )}
+                                        >
+                                            {acc.username}
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
 
             {/* 2. MENU TABS */}
-            <div className="flex items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 mb-8 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 mb-8 overflow-x-auto no-scrollbar w-full min-w-0">
                 {MENUS.map(menu => (
                     <button
                         key={menu.id}
@@ -322,7 +406,7 @@ export default function InstagramBotRepliesPage() {
             </div>
 
             {/* 3. MAIN WORKSPACE */}
-            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
                 <AnimatePresence mode="wait">
 
                     {/* BOT REPLIES CONTENT */}
@@ -384,6 +468,14 @@ export default function InstagramBotRepliesPage() {
                                                         <span className="text-xs text-neutral-500 font-medium whitespace-nowrap">
                                                             Type: {reply.trigger_type}
                                                         </span>
+                                                        {selectedAccountId === "all" && (
+                                                            <>
+                                                                <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
+                                                                <span className="text-[11px] text-pink-600 dark:text-pink-400 font-semibold bg-pink-50 dark:bg-pink-500/10 px-2 rounded-full truncate max-w-[120px] sm:max-w-none">
+                                                                    {pages.find(p => p.instagram_id === reply.instagram_id)?.username || "Unknown"}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -446,7 +538,7 @@ export default function InstagramBotRepliesPage() {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <button
-                                        onClick={fetchActions}
+                                        onClick={() => fetchActions()}
                                         className="p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
                                     >
                                         <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
@@ -529,10 +621,10 @@ export default function InstagramBotRepliesPage() {
                         </motion.div>
                     )}
 
-                    {activeMenu === 'persistent_menu' && selectedAccount && (
+                    {activeMenu === 'persistent_menu' && selectedAccountObj && selectedAccountId !== "all" && (
                         <PersistentMenu 
-                            instagramId={selectedAccount.instagram_id} 
-                            pageId={selectedAccount.page?.page_id || ""} 
+                            instagramId={selectedAccountObj.instagram_id} 
+                            pageId={selectedAccountObj.page?.page_id || ""} 
                             actions={actions} 
                         />
                     )}
@@ -562,8 +654,27 @@ export default function InstagramBotRepliesPage() {
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
                             className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
                         >
-                            <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">New IG Flow for {selectedAccount?.username}</h3>
+                            <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
+                                New IG Flow {selectedAccountId !== "all" ? `for ${selectedAccountObj?.username}` : ""}
+                            </h3>
                             <div className="space-y-4">
+                                {selectedAccountId === "all" && (
+                                    <div className="space-y-2">
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select IG Account</label>
+                                        <select
+                                            value={creationAccountFallback?.instagram_id || ""}
+                                            onChange={(e) => {
+                                                const sel = pages.find(p => p.instagram_id === e.target.value);
+                                                setNewReply({ ...newReply, instagram_id: e.target.value, page_id: sel?.page?.page_id || "" });
+                                            }}
+                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 appearance-none transition-all cursor-pointer"
+                                        >
+                                            {pages.map(p => (
+                                                <option key={p.id} value={p.instagram_id}>{p.username}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                                 <div className="space-y-2">
                                     <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Bot Name</label>
                                     <input

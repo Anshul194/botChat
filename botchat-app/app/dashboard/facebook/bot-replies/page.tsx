@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick,
-    Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight
+    Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight,
+    ChevronLeft, ChevronDown, ListFilter
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -54,12 +55,15 @@ export default function BotRepliesPage() {
     const [pages, setPages] = useState<FacebookPage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const [selectedPage, setSelectedPage] = useState<FacebookPage | null>(null);
+    const [selectedPageId, setSelectedPageId] = useState<string | "all">("all");
     const [activeMenu, setActiveMenu] = useState<MenuId>('bot_reply');
 
     const [searchQuery, setSearchQuery] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [showPageDropdown, setShowPageDropdown] = useState(false);
 
     const [newReply, setNewReply] = useState({
         name: "",
@@ -95,21 +99,16 @@ export default function BotRepliesPage() {
                 const fetchedAccounts = response.data.data.facebook_accounts || [];
                 const fetchedPages = fetchedAccounts.flatMap((acc: any) => acc.pages || []);
                 setPages(fetchedPages);
-                if (fetchedPages.length > 0 && !selectedPage) {
-                    setSelectedPage(fetchedPages[0]);
-                    setNewReply(prev => ({ ...prev, facebook_page_id: fetchedPages[0].page_id }));
-                }
             }
         } catch (error) {
             console.error("Fetch Pages Error:", error);
         }
     };
 
-    const fetchActions = async () => {
-        if (!selectedPage) return;
+    const fetchActions = async (pageId: string) => {
         setIsActionsLoading(true);
         try {
-            const response = await api.get(`/facebook/actions?page_id=${selectedPage.page_id}`);
+            const response = await api.get(`/facebook/actions?page_id=${pageId}`);
             if (response.data.success || response.data.is_success) {
                 setActions(response.data.data || []);
             }
@@ -127,9 +126,13 @@ export default function BotRepliesPage() {
 
     useEffect(() => {
         if (activeMenu === 'action_buttons' || activeMenu === 'persistent_menu') {
-            fetchActions();
+            if (selectedPageId === "all" && pages.length > 0) {
+                setSelectedPageId(pages[0].page_id);
+            } else if (selectedPageId !== "all") {
+                fetchActions(selectedPageId);
+            }
         }
-    }, [activeMenu, selectedPage]);
+    }, [activeMenu, selectedPageId, pages]);
 
     const handleCreate = async () => {
         const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
@@ -151,7 +154,7 @@ export default function BotRepliesPage() {
             setIsCreating(false);
             setNewReply({
                 name: "",
-                facebook_page_id: selectedPage?.page_id || "",
+                facebook_page_id: selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId,
                 trigger_type: "exact",
                 trigger_value: ""
             });
@@ -186,7 +189,9 @@ export default function BotRepliesPage() {
             const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/facebook/bot-replies/${action.automation_id}/${newStatus}`);
             toast.success(`Action status updated`);
-            fetchActions();
+            if (selectedPageId !== "all") {
+                fetchActions(selectedPageId);
+            }
         } catch (error) {
             toast.error("Failed to toggle action");
         }
@@ -198,7 +203,9 @@ export default function BotRepliesPage() {
         try {
             await api.delete(`/facebook/actions/${action.automation_id}`);
             toast.success("Action unmapped");
-            fetchActions();
+            if (selectedPageId !== "all") {
+                fetchActions(selectedPageId);
+            }
         } catch (error) {
             toast.error("Failed to remove mapping");
         }
@@ -213,47 +220,124 @@ export default function BotRepliesPage() {
         router.push(`/dashboard/flows?id=${replyId}&platform=facebook`);
     };
 
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const amount = 200;
+            scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+        }
+    };
+
+    const handlePageSelect = (id: string | "all") => {
+        setSelectedPageId(id);
+        setShowPageDropdown(false);
+        if (id !== "all") {
+            setNewReply(prev => ({ ...prev, facebook_page_id: id }));
+        }
+    };
+
     const filteredReplies = useMemo(() => {
         return replies.filter(r =>
-            r.facebook_page_id === selectedPage?.page_id &&
+            (selectedPageId === "all" || r.facebook_page_id === selectedPageId) &&
             (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 r.trigger_value.toLowerCase().includes(searchQuery.toLowerCase()))
         );
-    }, [replies, selectedPage, searchQuery]);
+    }, [replies, selectedPageId, searchQuery]);
+
+    const creationPageIdFallback = selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId;
 
     return (
-        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full">
+        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full min-w-0">
 
-            {/* 1. PAGES SELECTOR (Modern Subtle Bar) */}
-            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-2 mb-8 shadow-sm flex items-center">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 flex flex-shrink-0 items-center justify-center mr-3 ml-1">
-                    <Target className="w-5 h-5" />
-                </div>
-                <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar pr-2 items-center">
-                    {pages.length > 0 ? pages.map(page => (
+            {/* 1. PAGES SELECTOR (Scrollable + Dropdown) */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                    <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    
+                    <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
                         <button
-                            key={page.page_id}
-                            onClick={() => {
-                                setSelectedPage(page);
-                                setNewReply(prev => ({ ...prev, facebook_page_id: page.page_id }));
-                            }}
+                            onClick={() => handlePageSelect("all")}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                selectedPage?.page_id === page.page_id
-                                    ? "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 shadow-sm"
-                                    : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                selectedPageId === "all"
+                                    ? "bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md"
+                                    : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                             )}
                         >
-                            {page.page_name}
+                            All Automations
                         </button>
-                    )) : (
-                        <div className="text-sm font-medium text-neutral-400 px-2 py-2">Loading Connected Pages...</div>
-                    )}
+                        <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
+                        {pages.map(page => (
+                            <button
+                                key={page.page_id}
+                                onClick={() => handlePageSelect(page.page_id)}
+                                className={cn(
+                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
+                                    selectedPageId === page.page_id
+                                        ? "bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 shadow-sm border border-purple-100 dark:border-purple-800/50"
+                                        : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
+                                )}
+                            >
+                                {page.page_name}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button onClick={() => scroll('right')} className="p-2 text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="relative shrink-0 z-20">
+                    <button 
+                        onClick={() => setShowPageDropdown(!showPageDropdown)}
+                        className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-purple-300 transition-colors text-neutral-700 dark:text-neutral-300"
+                    >
+                        <div className="flex items-center gap-2">
+                            <ListFilter className="w-4 h-4 text-purple-500" />
+                            Quick Find
+                        </div>
+                        <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
+                    </button>
+                    <AnimatePresence>
+                        {showPageDropdown && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
+                            >
+                                <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                    <button
+                                        onClick={() => handlePageSelect("all")}
+                                        className={cn(
+                                            "w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors",
+                                            selectedPageId === "all" ? "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400" : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                        )}
+                                    >
+                                        All Automations
+                                    </button>
+                                    <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                                    {pages.map(page => (
+                                        <button
+                                            key={page.page_id}
+                                            onClick={() => handlePageSelect(page.page_id)}
+                                            className={cn(
+                                                "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate",
+                                                selectedPageId === page.page_id ? "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                            )}
+                                        >
+                                            {page.page_name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
 
-            {/* 2. MENU TABS (Inline simple tabs instead of gigantic cards) */}
-            <div className="flex items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 mb-8 overflow-x-auto no-scrollbar">
+            {/* 2. MENU TABS */}
+            <div className="flex items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 mb-8 overflow-x-auto no-scrollbar w-full min-w-0">
                 {MENUS.map(menu => (
                     <button
                         key={menu.id}
@@ -278,7 +362,7 @@ export default function BotRepliesPage() {
             </div>
 
             {/* 3. MAIN WORKSPACE */}
-            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
                 <AnimatePresence mode="wait">
 
                     {/* BOT REPLIES CONTENT */}
@@ -337,9 +421,17 @@ export default function BotRepliesPage() {
                                                         )}>
                                                             {reply.status}
                                                         </span>
-                                                        <span className="text-xs text-neutral-500 font-medium">
+                                                        <span className="text-xs text-neutral-500 font-medium whitespace-nowrap">
                                                             Type: {reply.trigger_type}
                                                         </span>
+                                                        {selectedPageId === "all" && (
+                                                            <>
+                                                                <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
+                                                                <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-500/10 px-2 rounded-full truncate max-w-[120px] sm:max-w-none">
+                                                                    {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown"}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -371,7 +463,7 @@ export default function BotRepliesPage() {
                                     <div className="w-16 h-16 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center mb-4">
                                         <MessageSquare className="w-8 h-8 text-purple-400" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Start Building Flows</h3>
+                                    <h3 className="text-lg font-bold text-neutral-900 dark:text-white">No Automations Found</h3>
                                     <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6">Create your first automated response trigger to engage your page audience 24/7.</p>
                                     <button
                                         onClick={() => setShowCreateModal(true)}
@@ -384,7 +476,7 @@ export default function BotRepliesPage() {
                         </motion.div>
                     )}
 
-                    {/* OTHER TABS (Simplified placeholders) */}
+                    {/* OTHER TABS */}
                     {activeMenu === 'action_buttons' && (
                         <motion.div key="action" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pb-12">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-800 pb-6">
@@ -393,7 +485,7 @@ export default function BotRepliesPage() {
                                     <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] mt-1">Connect system events to custom automation layers</p>
                                 </div>
                                 <button
-                                    onClick={fetchActions}
+                                    onClick={() => fetchActions(selectedPageId !== "all" ? selectedPageId : (pages[0]?.page_id))}
                                     className="self-start sm:self-center p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
                                 >
                                     <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
@@ -489,16 +581,16 @@ export default function BotRepliesPage() {
                                         </div>
 
                                         <div className="space-y-3 max-h-[350px] overflow-y-auto pr-3 custom-scrollbar px-1">
-                                            {replies.filter(r => r.facebook_page_id === selectedPage?.page_id).length > 0 ? (
-                                                replies.filter(r => r.facebook_page_id === selectedPage?.page_id).map(r => (
+                                            {replies.filter(r => r.facebook_page_id === selectedPageId).length > 0 ? (
+                                                replies.filter(r => r.facebook_page_id === selectedPageId).map(r => (
                                                     <button
                                                         key={r.id}
                                                         onClick={async () => {
                                                             try {
-                                                                await api.post(`/facebook/actions/${selectedActionType}`, { bot_reply_id: r.id, facebook_page_id: selectedPage?.page_id });
+                                                                await api.post(`/facebook/actions/${selectedActionType}`, { bot_reply_id: r.id, facebook_page_id: selectedPageId });
                                                                 toast.success("Action mapped!");
                                                                 setShowActionModal(false);
-                                                                fetchActions();
+                                                                fetchActions(selectedPageId);
                                                             } catch (e) { toast.error("Mapping failed"); }
                                                         }}
                                                         className="w-full group p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 hover:border-purple-300 dark:hover:border-purple-700/50 hover:bg-white dark:hover:bg-neutral-900 transition-all flex items-center justify-between shadow-sm"
@@ -545,10 +637,10 @@ export default function BotRepliesPage() {
                         </motion.div>
                     )}
 
-                    {activeMenu === 'persistent_menu' && selectedPage && (
+                    {activeMenu === 'persistent_menu' && selectedPageId !== "all" && (
                         <motion.div key="menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             <PersistentMenu
-                                pageId={selectedPage.page_id}
+                                pageId={selectedPageId}
                                 actions={actions}
                             />
                         </motion.div>
@@ -571,8 +663,24 @@ export default function BotRepliesPage() {
                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
                             className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
                         >
-                            <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">New Automation for {selectedPage?.page_name}</h3>
+                            <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
+                                New Automation {selectedPageId !== "all" ? `for ${pages.find(p => p.page_id === selectedPageId)?.page_name}` : ""}
+                            </h3>
                             <div className="space-y-4">
+                                {selectedPageId === "all" && (
+                                    <div className="space-y-2">
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select Page</label>
+                                        <select
+                                            value={creationPageIdFallback}
+                                            onChange={(e) => setNewReply({ ...newReply, facebook_page_id: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-purple-500 appearance-none transition-all cursor-pointer"
+                                        >
+                                            {pages.map(p => (
+                                                <option key={p.page_id} value={p.page_id}>{p.page_name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                                 <div className="space-y-2">
                                     <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Automation Name</label>
                                     <input

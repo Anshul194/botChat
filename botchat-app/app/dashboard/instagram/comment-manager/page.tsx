@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
     Instagram, MessageSquare, Zap, Target, MoreHorizontal, Search,
-    Plus, RefreshCw, Layers, Sparkles, ChevronRight, ChevronDown,
+    Plus, RefreshCw, Layers, Sparkles, ChevronRight, ChevronDown, ChevronLeft, ListFilter,
     Trash2, Pause, Play, X, SlidersHorizontal, ArrowRight,
     Edit3, Save, Copy, Check, Loader2, Megaphone, Activity,
     Eye, Settings, Tag, MessageCircle, Image as ImageIcon,
@@ -100,6 +100,16 @@ export default function InstagramCommentManagerPage() {
     // Interaction Dropdown
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [showPageDropdown, setShowPageDropdown] = useState(false);
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const amount = 200;
+            scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+        }
+    };
 
     // Leave a Comment Now Modal
     const [showCommentNowModal, setShowCommentNowModal] = useState(false);
@@ -530,50 +540,86 @@ export default function InstagramCommentManagerPage() {
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] font-sans">
             <div className="max-w-[1500px] mx-auto p-4 lg:p-10 space-y-10">
 
-                {/* ── CONTEXT BAR ── */}
-                <header className="bg-white dark:bg-neutral-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="flex items-center gap-5 md:border-r border-slate-100 dark:border-slate-800 pr-6">
-                        <div className="w-12 h-12 rounded-[18px] bg-primary/10 text-primary flex items-center justify-center shadow-inner">
-                            <Layers className="w-6 h-6" />
+                {/* 1. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                            {isLoading ? (
+                                [1, 2, 3].map(i => <div key={i} className="w-32 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse flex-shrink-0" />)
+                            ) : accounts.length > 0 ? (
+                                accounts.map(acc => (
+                                    <button
+                                        key={acc.id}
+                                        onClick={() => { setSelectedAccount(acc); setShowPageDropdown(false); }}
+                                        className={cn(
+                                            "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap flex-shrink-0 flex items-center gap-2",
+                                            selectedAccount?.id === acc.id
+                                                ? "bg-pink-50 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 shadow-sm border border-pink-100 dark:border-pink-800/50"
+                                                : "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
+                                        )}
+                                    >
+                                        {acc.profile_picture && <img src={acc.profile_picture} className="w-5 h-5 rounded-full object-cover" />}
+                                        {acc.username}
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="text-sm font-medium text-slate-400 px-2 py-2">Loading Connected Accounts...</div>
+                            )}
                         </div>
-                        <div>
-                            <h1 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none">Comment Hub</h1>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Asset Directory IG</p>
-                        </div>
+
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1 px-4">
-                        {isLoading ? (
-                            [1, 2].map(i => <div key={i} className="w-32 h-10 bg-slate-100 rounded-xl animate-pulse" />)
-                        ) : accounts.map(acc => (
-                            <button
-                                key={acc.id}
-                                onClick={() => setSelectedAccount(acc)}
-                                className={cn(
-                                    "px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap flex items-center gap-3 border transition-all duration-300 group",
-                                    selectedAccount?.id === acc.id
-                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-[1.02]"
-                                        : "bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700 text-slate-500 hover:bg-white dark:hover:bg-slate-800 hover:border-primary/30"
-                                )}
-                            >
-                                <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20 shadow-sm flex-shrink-0">
-                                    <img src={acc.profile_picture} className="w-full h-full object-cover" />
-                                </div>
-                                <span className="uppercase tracking-widest leading-none">@{acc.username}</span>
-                                {selectedAccount?.id === acc.id && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="flex items-center gap-3 pl-6 md:border-l border-slate-100 dark:border-slate-800">
-                        <button onClick={fetchAccounts} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-primary transition-all border border-slate-100 dark:border-slate-700 active:scale-95">
+                    <div className="relative shrink-0 z-20 flex gap-2">
+                        <button
+                            onClick={fetchAccounts}
+                            disabled={isLoading}
+                            className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-pink-300 transition-colors text-slate-500 active:scale-95"
+                        >
                             <RefreshCw className={cn("w-5 h-5", isLoading && "animate-spin")} />
                         </button>
-                        <button className="px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-widest shadow-xl active:scale-95 hover:bg-slate-800">
-                            Sync New
+                        <button 
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 active:scale-95"
+                        >
+                            <div className="flex items-center gap-2">
+                                <ListFilter className="w-4 h-4 text-pink-500" />
+                                Quick Find
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
                         </button>
+                        <AnimatePresence>
+                            {showPageDropdown && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                    className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden"
+                                >
+                                    <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                        {accounts.map(acc => (
+                                            <button
+                                                key={acc.id}
+                                                onClick={() => { setSelectedAccount(acc); setShowPageDropdown(false); }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate flex items-center gap-2",
+                                                    selectedAccount?.id === acc.id ? "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                )}
+                                            >
+                                                {acc.profile_picture && <img src={acc.profile_picture} className="w-4 h-4 rounded-full object-cover shrink-0" />}
+                                                <span className="truncate">{acc.username}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                </header>
+                </div>
 
                 <AnimatePresence mode="wait">
                     {activeView === 'dashboard' ? (
