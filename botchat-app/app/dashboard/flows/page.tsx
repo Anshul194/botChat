@@ -15,7 +15,6 @@ import {
   Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play, SquareStack,
   Sparkle, Sparkles, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload
 } from "lucide-react";
-import { toast } from "sonner";
 
 /* ============================================================
    DESIGN SYSTEM — use site CSS vars so preview matches site theme
