@@ -309,6 +309,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 { label: "Connect Account", href: "/dashboard/instagram" },
                                                 { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
                                                 { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
+                                                { label: "Bio Link (Portfolio)", href: "/dashboard/instagram/bio-link", badge: "Premium" },
                                             ].map(sub => (
                                                 <Link
                                                     key={sub.href}
@@ -593,7 +594,8 @@ function NavItem({
                                         "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter",
                                         item.badge === "New" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" :
                                             item.badge === "Live" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300" :
-                                                "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300"
+                                                item.badge === "Premium" ? "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300" :
+                                                    "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300"
                                     )}
                                 >
                                     {item.badge}
