@@ -312,33 +312,36 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
                                                 { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
                                                 { label: "Bio Link (Portfolio)", href: "/dashboard/instagram/bio-link", badge: "Premium" },
-                                            ].map(sub => (
-                                                <Link
-                                                    key={sub.href}
-                                                    href={sub.href}
-                                                    onClick={onClose}
-                                                    className={cn(
-                                                        "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                                        pathname === sub.href || pathname.startsWith(sub.href + "/")
-                                                            ? "text-pink-700 dark:text-pink-300 bg-pink-50/60 dark:bg-pink-950/30"
-                                                            : "text-neutral-600 dark:text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                                                    )}
-                                                >
-                                                    <div className="absolute left-0 w-1 h-1 rounded-full bg-pink-400/60 group-hover:bg-pink-500 transition-colors" />
-                                                    <span className="flex-1 truncate">{sub.label}</span>
-                                                    {sub.badge && (
-                                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                            {sub.badge}
-                                                        </span>
-                                                    )}
-                                                </Link>
-                                            ))}
+                                            ].map(sub => {
+                                                const isActive = sub.href === "/dashboard/instagram" ? pathname === "/dashboard/instagram" : pathname.startsWith(sub.href);
+                                                return (
+                                                    <Link
+                                                        key={sub.href}
+                                                        href={sub.href}
+                                                        onClick={onClose}
+                                                        className={cn(
+                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
+                                                            isActive
+                                                                ? "text-pink-700 dark:text-pink-300 bg-pink-50/60 dark:bg-pink-950/30"
+                                                                : "text-neutral-600 dark:text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                                                        )}
+                                                    >
+                                                        <div className="absolute left-0 w-1 h-1 rounded-full bg-pink-400/60 group-hover:bg-pink-500 transition-colors" />
+                                                        <span className="flex-1 truncate">{sub.label}</span>
+                                                        {sub.badge && (
+                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                                {sub.badge}
+                                                            </span>
+                                                        )}
+                                                    </Link>
+                                                );
+                                            })}
                                         </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                         </div>
-
+ 
                         {/* Facebook Accordion */}
                         <div>
                             <motion.button
@@ -368,7 +371,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     </div>
                                     {!collapsed && <span className="font-medium">Facebook</span>}
                                 </div>
-
+ 
                                 {!collapsed && (
                                     <motion.div
                                         animate={{ rotate: facebookOpen ? 180 : 0 }}
@@ -378,7 +381,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     </motion.div>
                                 )}
                             </motion.button>
-
+ 
                             {/* Submenu – with smooth accordion animation */}
                             <AnimatePresence>
                                 {facebookOpen && !collapsed && (
@@ -394,27 +397,31 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 { label: "Connect Account", href: "/dashboard/facebook" },
                                                 { label: "Bot Replies", href: "/dashboard/facebook/bot-replies" },
                                                 { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", badge: "Live" },
-                                            ].map(sub => (
-                                                <Link
-                                                    key={sub.href}
-                                                    href={sub.href}
-                                                    onClick={onClose}
-                                                    className={cn(
-                                                        "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                                        pathname === sub.href || pathname.startsWith(sub.href + "/")
-                                                            ? "text-pink-700 dark:text-pink-300 bg-pink-50/60 dark:bg-pink-950/30"
-                                                            : "text-neutral-600 dark:text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                                                    )}
-                                                >
-                                                    <div className="absolute left-0 w-1 h-1 rounded-full bg-pink-400/60 group-hover:bg-pink-500 transition-colors" />
-                                                    <span className="flex-1 truncate">{sub.label}</span>
-                                                    {sub.badge && (
-                                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                            {sub.badge}
-                                                        </span>
-                                                    )}
-                                                </Link>
-                                            ))}
+                                            ].map(sub => {
+                                                const isActive = sub.href === "/dashboard/facebook" ? pathname === "/dashboard/facebook" : pathname.startsWith(sub.href);
+                                                return (
+                                                    <Link
+                                                        key={sub.href}
+                                                        href={sub.href}
+                                                        onClick={onClose}
+                                                        className={cn(
+                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
+                                                            isActive
+                                                                ? "text-pink-700 dark:text-pink-300 bg-pink-50/60 dark:bg-pink-950/30"
+                                                                : "text-neutral-600 dark:text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                                                        )}
+                                                    >
+                                                        <div className="absolute left-0 w-1 h-1 rounded-full bg-pink-400/60 group-hover:bg-pink-500 transition-colors" />
+                                                        <span className="flex-1 truncate">{sub.label}</span>
+                                                        {sub.badge && (
+                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                                {sub.badge}
+                                                            </span>
+                                                        )}
+                                                    </Link>
+                                                );
+                                            })}
+
                                         </div>
                                     </motion.div>
                                 )}
@@ -544,7 +551,10 @@ function NavItem({
     pathname: string;
     onClose?: () => void;
 }) {
-    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+    // For the main Dashboard link, use exact match to avoid highlighting it on all sub-pages.
+    const isActive = item.href === "/dashboard" 
+        ? pathname === "/dashboard" 
+        : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
     return (
         <motion.div

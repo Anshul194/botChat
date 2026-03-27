@@ -168,12 +168,12 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
     hide_comment: initial?.offensive?.hide_comment === "1" || initial?.offensive?.hide_comment === 1 || !!initial?.hide_comment,
     delete_comment: initial?.offensive?.delete_comment === "1" || initial?.offensive?.delete_comment === 1 || !!initial?.delete_comment,
     offensive_keywords: initial?.offensive?.offensive_keywords ?? initial?.offensive_keywords ?? "",
-    offensive_template_id: initial?.offensive?.private_reply_template_id ? String(initial.offensive.private_reply_template_id) : (initial?.offensive_template_id ?? ""),
+    offensive_template_id: initial?.offensive?.private_reply_template_id ? String(initial.offensive.private_reply_template_id) : (initial?.offensive_template_id ? String(initial.offensive_template_id) : ""),
 
-    fallback_message: initial?.fallback_message ?? "",
-    fallback_image: initial?.fallback_image ?? "",
-    fallback_video: initial?.fallback_video ?? "",
-    fallback_template_id: initial?.fallback_template_id ?? ""
+    fallback_message: "",
+    fallback_image: "",
+    fallback_video: "",
+    fallback_template_id: ""
   });
 
   const [filterRules, setFilterRules] = useState<FilterRule[]>(
@@ -183,11 +183,11 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         id: r.id?.toString() ?? Math.random().toString(),
         name: r.name ?? "",
         match_type: r.match_type ?? "contains",
-        keywords: r.keywords ?? "",
+        keywords: r.keyword ?? r.keywords ?? "",
         message: r.message ?? "",
         image: r.image ?? "",
         video: r.video ?? "",
-        template_id: r.template_id ? String(r.template_id) : "",
+        template_id: r.private_template_id ? String(r.private_template_id) : (r.template_id ? String(r.template_id) : ""),
       }))
       : initial?.filter_rules?.length
         ? initial.filter_rules
@@ -256,40 +256,38 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
       fd.append("platform", "facebook");
       fd.append("name", form.name);
       fd.append("page_id", form.page_id ?? "");
-      fd.append("reply_type", form.message_type ?? form.reply_type ?? "generic");
+      
+      // Standardize reply_type to 'filter' for keyword logic as per CURL
+      const apiReplyType = form.message_type === "filter" ? "filter" : "generic";
+      fd.append("reply_type", apiReplyType);
+      
       fd.append("comment_reply_enabled", form.comment_reply_enabled ? "1" : "0");
       fd.append("hide_after_reply", form.hide_after_reply ? "1" : "0");
       fd.append("multiple_reply_enabled", form.multiple_reply_enabled ? "1" : "0");
 
-      // Main message block
-      fd.append("message", form.message ?? "");
-      fd.append("image", form.image ?? "");
-      fd.append("video", form.video ?? "");
-      fd.append("private_template_id", form.private_template_id ?? "");
+      // Main message / Fallback message (unified)
+      fd.append("message", form.message || "");
+      fd.append("image", form.image || "");
+      fd.append("video", form.video || "");
+      fd.append("private_template_id", form.private_template_id || "");
 
-      // Fallback block
-      fd.append("fallback_message", form.fallback_message ?? "");
-      fd.append("fallback_image", form.fallback_image ?? "");
-      fd.append("fallback_video", form.fallback_video ?? "");
-      fd.append("fallback_template_id", form.fallback_template_id ?? "");
-
-      // Offensive block with bracket notation
+      // Offensive block with bracket notation (As per CURL)
       fd.append("offensive[hide_comment]", form.hide_comment ? "1" : "0");
       fd.append("offensive[delete_comment]", form.delete_comment ? "1" : "0");
       fd.append("offensive[offensive_keywords]", form.offensive_keywords ?? "");
       fd.append("offensive[private_reply_template_id]", form.offensive_template_id ?? "");
 
-      // Filter rules - using `rules` key with exact backend field names
-      const rules = form.message_type === "filter" ? filterRules : [];
-      rules.forEach((rule, i) => {
-        fd.append(`rules_tmp_match_${i}`, rule.match_type);           // backend helper key
-        fd.append(`rules[${i}][match_type]`, rule.match_type);
-        fd.append(`rules[${i}][keyword]`, rule.keywords);             // singular "keyword"
-        fd.append(`rules[${i}][message]`, rule.message);
-        fd.append(`rules[${i}][image]`, rule.image ?? "");
-        fd.append(`rules[${i}][video]`, rule.video ?? "");
-        fd.append(`rules[${i}][private_template_id]`, rule.template_id ?? "");
-      });
+      // Filter rules using exact CURL structure: rules[i][key]
+      if (form.message_type === "filter") {
+        filterRules.forEach((rule, i) => {
+          fd.append(`rules[${i}][keyword]`, rule.keywords || "");
+          fd.append(`rules[${i}][match_type]`, rule.match_type || "contains");
+          fd.append(`rules[${i}][message]`, rule.message || "");
+          fd.append(`rules[${i}][image]`, rule.image || "");
+          fd.append(`rules[${i}][video]`, rule.video || "");
+          fd.append(`rules[${i}][private_template_id]`, rule.template_id || "");
+        });
+      }
 
       const config = { headers: { "Content-Type": "multipart/form-data" } };
       if (mode === "create") {
@@ -383,8 +381,12 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                   </div>
                 </div>
                 <div className="relative">
-                  <select className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white">
-                    <option>Please select a message template</option>
+                  <select 
+                    value={form.offensive_template_id}
+                    onChange={e => setForm({ ...form, offensive_template_id: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                  >
+                    <option value="">Please select a message template</option>
                     {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                   </select>
                   <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
@@ -555,15 +557,15 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                   </div>
                   <Field label="Message for Comment Reply" icon={MessageCircle}>
                     <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
-                      <textarea rows={4} value={form.fallback_message} onChange={e => setForm({ ...form, fallback_message: e.target.value })}
+                      <textarea rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
                         className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
                       />
                       <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                     </div>
                   </Field>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <UploadBox label="Image for Comment Reply" value={form.fallback_image!!} onChange={v => setForm({ ...form, fallback_image: v })} icon={ImageIcon} />
-                    <UploadBox label="Video for Comment Reply" value={form.fallback_video!!} onChange={v => setForm({ ...form, fallback_video: v })} icon={Video} />
+                    <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
+                    <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
@@ -578,7 +580,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       </div>
                     </div>
                     <div className="relative">
-                      <select value={form.fallback_template_id} onChange={e => setForm({ ...form, fallback_template_id: e.target.value })}
+                      <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
                       >
                         <option value="">Please select a message template</option>
