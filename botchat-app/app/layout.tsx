@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { ModalProvider } from "@/components/providers/ModalProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -58,8 +58,9 @@ export default function RootLayout({
         <ReduxProvider>
           <AuthProvider>
             <ThemeProvider>
-              {children}
-              <Toaster position="top-right" richColors />
+              <ModalProvider>
+                {children}
+              </ModalProvider>
             </ThemeProvider>
           </AuthProvider>
         </ReduxProvider>

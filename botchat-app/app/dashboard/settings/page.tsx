@@ -15,7 +15,7 @@ import {
     selectIsReseller as isResellerSelector,
     selectIsTenant as isTenantSelector
 } from "../../../store/slices/authSlice";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import {
     User, Bell, Shield, Key, Database, Save,
     Eye, EyeOff, Plus, Trash2, Copy, Check,
@@ -163,6 +163,7 @@ function ApiKeyRow({ label, value }: { label: string; value: string }) {
 export default function SettingsPage() {
     const [tab, setTab] = useState("profile");
     const dispatch = useDispatch<AppDispatch>();
+    const { showModal } = useModal();
 
     // File Input Refs
     const logoInputRef = useRef<HTMLInputElement>(null);
@@ -299,16 +300,16 @@ export default function SettingsPage() {
             }
 
             await dispatch(updateGeneralSettings(formData as any)).unwrap();
-            toast.success("Settings saved successfully!");
+            showModal("success", "Saved", "Settings saved successfully!");
         } catch (err: any) {
-            toast.error(err || "Failed to update settings");
+            showModal("error", "Error", err || "Failed to update settings");
         }
     };
 
     const handleSaveAI = async (e: React.FormEvent) => {
         e.preventDefault();
         await dispatch(updateAiSettings(aiForm)).unwrap();
-        toast.success("AI Integration saved successfully!");
+        showModal("success", "Saved", "AI Integration saved successfully!");
     };
 
     const handleSaveFacebook = async (e: React.FormEvent) => {
@@ -317,7 +318,7 @@ export default function SettingsPage() {
         if (!payload.appSecret) delete payload.appSecret; // Only send if changed
 
         await dispatch(updateFacebookSettings(payload)).unwrap();
-        toast.success("Facebook settings saved successfully!");
+        showModal("success", "Saved", "Facebook settings saved successfully!");
     };
 
 
@@ -651,7 +652,7 @@ export default function SettingsPage() {
                                                         const reader = new FileReader();
                                                         reader.onloadend = () => setLogoPreview(reader.result as string);
                                                         reader.readAsDataURL(file);
-                                                        toast.success("Logo selected!");
+                                                        showModal("success", "Logo", "Logo selected!");
                                                     }
                                                 }}
                                             />
@@ -713,7 +714,7 @@ export default function SettingsPage() {
                                                         const reader = new FileReader();
                                                         reader.onloadend = () => setFaviconPreview(reader.result as string);
                                                         reader.readAsDataURL(file);
-                                                        toast.success("Favicon selected!");
+                                                        showModal("success", "Favicon", "Favicon selected!");
                                                     }
                                                 }}
                                             />

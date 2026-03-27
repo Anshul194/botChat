@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface Template {
@@ -35,6 +35,7 @@ export function PostAutoCommentModal({
     postId,
     pageId
 }: PostAutoCommentModalProps) {
+    const { showModal } = useModal();
     const [view, setView] = useState<"choice" | "template" | "custom">("choice");
     const [templates, setTemplates] = useState<Template[]>([]);
     const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
@@ -110,7 +111,7 @@ export function PostAutoCommentModal({
 
     const handleSave = async () => {
         if (!name || (view === "custom" && !templateId) || (view === "template" && !templateId)) {
-            toast.error("Please fill in all required fields");
+            showModal("error", "Error", "Please fill in all required fields");
             return;
         }
 
@@ -140,12 +141,12 @@ export function PostAutoCommentModal({
             }
 
             if (res.data.success || res.data.is_success) {
-                toast.success(existingCampaignId ? "Campaign updated!" : "Campaign enabled!");
+                showModal("success", "Success", existingCampaignId ? "Campaign updated!" : "Campaign enabled!");
                 onSaved();
                 onClose();
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to save campaign");
+            showModal("error", "Error", error.response?.data?.message || "Failed to save campaign");
         } finally {
             setIsSaving(false);
         }
@@ -159,11 +160,11 @@ export function PostAutoCommentModal({
             const res = await api.patch(endpoint, { status: newStatus });
             if (res.data.success || res.data.is_success) {
                 setStatus(newStatus);
-                toast.success(`Campaign ${newStatus === 'active' ? 'resumed' : 'paused'}!`);
+                showModal("success", "Updated", `Campaign ${newStatus === 'active' ? 'resumed' : 'paused'}!`);
                 onSaved();
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Status update failed");
+            showModal("error", "Error", error.response?.data?.message || "Status update failed");
         } finally {
             setIsSaving(false);
         }
@@ -176,12 +177,12 @@ export function PostAutoCommentModal({
             const endpoint = platform === "facebook" ? `/facebook/post-auto-comment/${postId}` : `/instagram/post-auto-comment/${postId}`;
             const res = await api.delete(`${endpoint}?page_id=${pageId}`);
             if (res.data.success || res.data.is_success) {
-                toast.success("Campaign deleted");
+                showModal("success", "Deleted", "Campaign deleted");
                 onSaved();
                 onClose();
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Deletion failed");
+            showModal("error", "Error", error.response?.data?.message || "Deletion failed");
         } finally {
             setIsDeleting(false);
         }

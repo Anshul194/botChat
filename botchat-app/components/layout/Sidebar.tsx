@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import {
     Dialog, DialogContent, DialogDescription,
     DialogHeader, DialogTitle, DialogFooter,
@@ -77,6 +77,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
         return role.includes("super_admin") || role.includes("admin");
     }, [user, mounted]);
 
+    const { showModal } = useModal();
+
     const isFacebookActive = pathname.startsWith("/dashboard/facebook");
     const isInstagramActive = pathname.startsWith("/dashboard/instagram");
 
@@ -93,17 +95,17 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
         );
 
         if (!popup) {
-            toast.error("Popup blocked! Please allow popups for this site.");
+            showModal("error", "Error", "Popup blocked! Please allow popups for this site.");
             return;
         }
 
-        const toastId = toast.loading("Linking Instagram...");
+        showModal("loading", "Linking Instagram", "Connecting to system...");
         try {
             const res = await api.get("/social/instagram-connect/redirect");
             const redirectUrl = res.data?.data?.url || res.data?.data?.redirect_url;
             
             if (redirectUrl) {
-                toast.success("Ready to connect", { id: toastId });
+                showModal("success", "Ready", "Please complete the setup in the popup.");
                 popup.location.href = redirectUrl;
 
                 const pollTimer = setInterval(() => {
@@ -120,7 +122,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
             }
         } catch (err: any) {
             popup?.close();
-            toast.error(err.response?.data?.message || "Failed to connect Instagram", { id: toastId });
+            showModal("error", "Error", err.response?.data?.message || "Failed to connect Instagram");
         }
     };
 

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface InstagramAccount {
@@ -45,6 +45,7 @@ export default function InstagramPage() {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [isLoading, setIsLoading] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
+    const { showModal } = useModal();
     const [confirmModal, setConfirmModal] = useState<{
         show: boolean;
         type: "enable" | "disable" | "disconnect" | "disconnectAll" | "clean";
@@ -64,7 +65,7 @@ export default function InstagramPage() {
                 })));
             }
         } catch (err) {
-            toast.error("Couldn't load your Instagram accounts");
+            showModal("error", "Error", "Couldn't load your Instagram accounts");
         } finally {
             setIsLoading(false);
         }
@@ -90,7 +91,7 @@ export default function InstagramPage() {
         );
 
         if (!popup) {
-            toast.error("Popup blocked! Please allow popups for this site.");
+            showModal("error", "Error", "Popup blocked! Please allow popups for this site.");
             setIsConnecting(false);
             return;
         }
@@ -112,14 +113,14 @@ export default function InstagramPage() {
             } else {
                 popup.close();
                 setIsConnecting(false);
-                toast.error("No redirect URL received from server");
+                showModal("error", "Error", "No redirect URL received from server");
             }
         } catch (err: any) {
             popup?.close();
             setIsConnecting(false);
-            toast.error("Failed to start Instagram connection");
+            showModal("error", "Error", "Failed to start Instagram connection");
         }
-    }, [isConnecting, api, toast, fetchConnectedAccounts]);
+    }, [isConnecting, api, showModal, fetchConnectedAccounts]);
 
     const handleAction = async () => {
         if (!confirmModal) return;
@@ -141,11 +142,11 @@ export default function InstagramPage() {
             }
 
             if (response?.data?.is_success || response?.data?.success) {
-                toast.success(response.data.message || "Action completed successfully");
+                showModal("success", "Success", response.data.message || "Action completed successfully");
                 fetchConnectedAccounts();
             }
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Action failed");
+            showModal("error", "Error", err.response?.data?.message || "Action failed");
         }
     };
 

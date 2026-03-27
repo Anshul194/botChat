@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ function UploadBox({ label, value, onChange, icon: Icon }: { label: string; valu
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => { onChange(reader.result as string); toast.success(`${file.name} selected!`); };
+            reader.onloadend = () => { onChange(reader.result as string); };
             reader.readAsDataURL(file);
         }
     };
@@ -125,6 +125,7 @@ export function PostAutoReplyModal({
     postId,
     pageId
 }: PostAutoReplyModalProps) {
+    const { showModal } = useModal();
     const [view, setView] = useState<"choice" | "template" | "custom">("choice");
     const [templates, setTemplates] = useState<ReplyTemplate[]>([]);
     const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
@@ -239,8 +240,8 @@ export function PostAutoReplyModal({
     };
 
     const handleSave = async () => {
-        if (!form.name && view === "custom") { toast.error("Campaign name is required"); return; }
-        if (!form.template_id && view === "template") { toast.error("Please select a template"); return; }
+        if (!form.name && view === "custom") { showModal("error", "Error", "Campaign name is required"); return; }
+        if (!form.template_id && view === "template") { showModal("error", "Error", "Please select a template"); return; }
 
         setIsSaving(true);
         try {
@@ -291,12 +292,12 @@ export function PostAutoReplyModal({
             }
 
             if (res.data.success || res.data.is_success) {
-                toast.success(existingCampaignId ? "Campaign updated!" : "Campaign enabled!");
+                showModal("success", "Success", existingCampaignId ? "Campaign updated!" : "Campaign enabled!");
                 onSaved();
                 onClose();
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to save campaign");
+            showModal("error", "Error", error.response?.data?.message || "Failed to save campaign");
         } finally {
             setIsSaving(false);
         }
@@ -310,11 +311,11 @@ export function PostAutoReplyModal({
             const res = await api.patch(endpoint, { status: newStatus });
             if (res.data.success || res.data.is_success) {
                 setStatus(newStatus);
-                toast.success(`Campaign ${newStatus === 'active' ? 'resumed' : 'paused'}!`);
+                showModal("success", "Updated", `Campaign ${newStatus === 'active' ? 'resumed' : 'paused'}!`);
                 onSaved();
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Status update failed");
+            showModal("error", "Error", error.response?.data?.message || "Status update failed");
         } finally {
             setIsSaving(false);
         }
@@ -327,12 +328,12 @@ export function PostAutoReplyModal({
             const endpoint = platform === "facebook" ? `/facebook/post-auto-reply/${postId}` : `/instagram/post-auto-reply/${postId}`;
             const res = await api.delete(`${endpoint}?page_id=${pageId}`);
             if (res.data.success || res.data.is_success) {
-                toast.success("Campaign deleted successfully");
+                showModal("success", "Deleted", "Campaign deleted successfully");
                 onSaved();
                 onClose();
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Deletion failed");
+            showModal("error", "Error", error.response?.data?.message || "Deletion failed");
         } finally {
             setIsDeleting(false);
         }

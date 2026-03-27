@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface FacebookPageData {
@@ -47,6 +47,7 @@ export default function FacebookPage() {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [isLoading, setIsLoading] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
+    const { showModal } = useModal();
     const [confirmModal, setConfirmModal] = useState<{
         show: boolean;
         type: "enable" | "disable" | "disconnect" | "disconnect-account" | "clean";
@@ -71,7 +72,7 @@ export default function FacebookPage() {
                 setPages(fetchedPages);
             }
         } catch (err) {
-            toast.error("Couldn't load your Facebook pages");
+            showModal("error", "Error", "Couldn't load your Facebook pages");
         } finally {
             setIsLoading(false);
         }
@@ -93,14 +94,14 @@ export default function FacebookPage() {
                 window.location.href = redirectUrl;
             } else {
                 setIsConnecting(false);
-                toast.error("No redirect URL received from server");
+                showModal("error", "Error", "No redirect URL received from server");
             }
         } catch (err: any) {
             console.error("Facebook connect error:", err);
             setIsConnecting(false);
-            toast.error("Failed to start Facebook connection");
+            showModal("error", "Error", "Failed to start Facebook connection");
         }
-    }, [isConnecting, api, toast, fetchConnectedPages]);
+    }, [isConnecting, api, showModal, fetchConnectedPages]);
 
     const handleAction = async () => {
         if (!confirmModal) return;
@@ -122,11 +123,11 @@ export default function FacebookPage() {
 
             const response = await api.post(endpoint);
             if (response.data.is_success || response.data.success) {
-                toast.success(response.data.message || "Action completed successfully");
+                showModal("success", "Success", response.data.message || "Action completed successfully");
                 fetchConnectedPages();
             }
         } catch (err: any) {
-            toast.error(err.response?.data?.message || "Action failed");
+            showModal("error", "Error", err.response?.data?.message || "Action failed");
         }
     };
 

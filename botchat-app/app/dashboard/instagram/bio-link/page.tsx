@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -252,6 +252,7 @@ const TEMPLATES: Record<string, {
 };
 
 export default function InstagramBioLinkPage() {
+    const { showModal } = useModal();
     const [links, setLinks] = useState<BioLinkItem[]>(INITIAL_LINKS);
 
     const [config, setConfig] = useState<BioLinkConfig>({
@@ -303,7 +304,7 @@ export default function InstagramBioLinkPage() {
         };
         setLinks([newItem, ...links]);
         setShowTypeSelector(false);
-        toast.success(`${type.replace("_", " ")} added to your arsenal!`);
+        showModal("success", "Added", `${type.replace("_", " ")} added to your arsenal!`);
     };
 
     const handleUpdateLink = (id: string, data: Partial<BioLinkItem>) => {
@@ -312,7 +313,7 @@ export default function InstagramBioLinkPage() {
 
     const handleRemoveLink = (id: string) => {
         setLinks(links.filter(l => l.id !== id));
-        toast.info("Link removed.");
+        showModal("success", "Removed", "Link removed.");
     };
 
     const handleApplyTemplate = (id: string) => {
@@ -325,9 +326,7 @@ export default function InstagramBioLinkPage() {
         setConfig(template.config);
         setLinks(clonedLinks);
         setActiveTab("links");
-        toast.success(`${template.name} template applied!`, {
-            description: "Your blocks and styling have been updated."
-        });
+        showModal("success", template.name, "Your blocks and styling have been updated.");
     };
 
     // ── Components ────────────────────────────────────────────────────────

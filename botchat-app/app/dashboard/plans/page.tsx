@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger, DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import PlanForm from "./PlanForm";
@@ -24,6 +24,7 @@ import PlanForm from "./PlanForm";
 export default function PlansPage() {
     const dispatch = useAppDispatch();
     const { plans, isLoading, selectedPlan } = useAppSelector((state) => state.plans);
+    const { showModal } = useModal();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,10 +55,10 @@ export default function PlansPage() {
         setIsSubmitting(true);
         try {
             await dispatch(deletePlan(planToDelete)).unwrap();
-            toast.success("Plan deleted successfully.");
+            showModal("success", "Deleted", "Plan deleted successfully.");
             setIsDeleteOpen(false);
         } catch (error: any) {
-            toast.error(error || "Failed to delete plan.");
+            showModal("error", "Error", error || "Failed to delete plan.");
         } finally {
             setIsSubmitting(false);
         }
@@ -75,14 +76,14 @@ export default function PlansPage() {
                     try {
                         if (selectedPlan) {
                             await dispatch(updatePlan({ id: selectedPlan.id, data })).unwrap();
-                            toast.success("Plan updated successfully.");
+                            showModal("success", "Updated", "Plan updated successfully.");
                         } else {
                             await dispatch(createPlan(data)).unwrap();
-                            toast.success("Plan created successfully.");
+                            showModal("success", "Created", "Plan created successfully.");
                         }
                         setIsFormOpen(false);
                     } catch (error: any) {
-                        toast.error(error || "Something went wrong.");
+                        showModal("error", "Error", error || "Something went wrong.");
                     } finally {
                         setIsSubmitting(false);
                     }

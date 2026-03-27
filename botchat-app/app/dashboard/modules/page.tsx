@@ -12,7 +12,7 @@ import {
     clearSelectedModule,
     type Permission,
 } from "@/store/slices/modulesSlice";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import {
     Layers, Plus, Pencil, Trash2, Shield, Eye, Search,
@@ -101,6 +101,7 @@ type ViewMode = "card" | "row";
 export default function ModulesPage() {
     const dispatch = useAppDispatch();
     const { modules, isLoading, selectedModule, isFetching } = useAppSelector(s => s.modules);
+    const { showModal } = useModal();
 
     const [search, setSearch] = useState("");
     const [view, setView] = useState<ViewMode>("card");
@@ -144,25 +145,25 @@ export default function ModulesPage() {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.name.trim()) { toast.error("Module name is required"); return; }
-        if (!form.permissions.length) { toast.error("Select at least one permission"); return; }
+        if (!form.name.trim()) { showModal("error", "Error", "Module name is required"); return; }
+        if (!form.permissions.length) { showModal("error", "Error", "Select at least one permission"); return; }
         setIsSubmitting(true);
         const res = await dispatch(createModule(form));
         setIsSubmitting(false);
-        if (createModule.fulfilled.match(res)) { toast.success("Module created"); setIsCreateOpen(false); }
-        else toast.error(res.payload as string || "Failed to create module");
+        if (createModule.fulfilled.match(res)) { showModal("success", "Created", "Module created"); setIsCreateOpen(false); }
+        else showModal("error", "Error", res.payload as string || "Failed to create module");
     };
 
     const handleEdit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedModule) return;
-        if (!form.name.trim()) { toast.error("Module name is required"); return; }
-        if (!form.permissions.length) { toast.error("Select at least one permission"); return; }
+        if (!form.name.trim()) { showModal("error", "Error", "Module name is required"); return; }
+        if (!form.permissions.length) { showModal("error", "Error", "Select at least one permission"); return; }
         setIsSubmitting(true);
         const res = await dispatch(updateModule({ id: selectedModule.id, ...form }));
         setIsSubmitting(false);
-        if (updateModule.fulfilled.match(res)) { toast.success("Module updated"); setIsEditOpen(false); }
-        else toast.error(res.payload as string || "Failed to update module");
+        if (updateModule.fulfilled.match(res)) { showModal("success", "Updated", "Module updated"); setIsEditOpen(false); }
+        else showModal("error", "Error", res.payload as string || "Failed to update module");
     };
 
     const handleDelete = async () => {
@@ -170,8 +171,8 @@ export default function ModulesPage() {
         setIsDeleting(true);
         const res = await dispatch(deleteModule(deletingId));
         setIsDeleting(false);
-        if (deleteModule.fulfilled.match(res)) { toast.success("Module deleted"); setIsDeleteOpen(false); setDeletingId(null); }
-        else toast.error(res.payload as string || "Failed to delete");
+        if (deleteModule.fulfilled.match(res)) { showModal("success", "Deleted", "Module deleted"); setIsDeleteOpen(false); setDeletingId(null); }
+        else showModal("error", "Error", res.payload as string || "Failed to delete");
     };
 
     const filtered = modules.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));

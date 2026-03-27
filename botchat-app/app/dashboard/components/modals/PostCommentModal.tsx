@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface Comment {
@@ -37,6 +37,7 @@ export function PostCommentModal({
     postId,
     pageId
 }: PostCommentModalProps) {
+    const { showModal } = useModal();
     const [comments, setComments] = useState<Comment[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSending, setIsSending] = useState(false);
@@ -98,12 +99,12 @@ export function PostCommentModal({
 
             const res = await api.post(endpoint, payload);
             if (res.data.success || res.data.is_success) {
-                toast.success("Comment posted!");
+                showModal("success", "Success", "Comment posted!");
                 setMessage("");
                 fetchComments(); // Refresh list
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to post comment");
+            showModal("error", "Error", error.response?.data?.message || "Failed to post comment");
         } finally {
             setIsSending(false);
         }

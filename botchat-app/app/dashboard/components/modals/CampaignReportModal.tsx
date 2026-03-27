@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface CampaignReportModalProps {
@@ -26,6 +26,7 @@ export function CampaignReportModal({
     platform,
     pageId 
 }: CampaignReportModalProps) {
+    const { showModal } = useModal();
     const [data, setData] = useState<any[]>([]);
     const [stats, setStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +62,7 @@ export function CampaignReportModal({
             }
         } catch (error) {
             console.error("Fetch Campaign Report Error:", error);
-            toast.error("Failed to load report analytics");
+            showModal("error", "Error", "Failed to load report analytics");
         } finally {
             setIsLoading(false);
         }

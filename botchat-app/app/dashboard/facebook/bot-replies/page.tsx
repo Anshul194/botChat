@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
@@ -51,6 +51,7 @@ type MenuId = typeof MENUS[number]['id'];
 
 export default function BotRepliesPage() {
     const router = useRouter();
+    const { showModal } = useModal();
     const [replies, setReplies] = useState<BotReply[]>([]);
     const [pages, setPages] = useState<FacebookPage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -86,7 +87,7 @@ export default function BotRepliesPage() {
             }
         } catch (error) {
             console.error("Fetch Replies Error:", error);
-            toast.error("Failed to load bot replies");
+            showModal("error", "Error", "Failed to load bot replies");
         } finally {
             setIsLoading(false);
         }
@@ -137,19 +138,19 @@ export default function BotRepliesPage() {
     const handleCreate = async () => {
         const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
         if (!newReply.name || !newReply.facebook_page_id || (isKeywordRequired && !newReply.trigger_value)) {
-            toast.error("Please fill all required fields");
+            showModal("error", "Error", "Please fill all required fields");
             return;
         }
         setIsCreating(true);
         try {
             const response = await api.post("/facebook/bot-replies", newReply);
             if (response.data.success || response.data.is_success) {
-                toast.success("Bot reply created successfully");
+                showModal("success", "Created", "Bot reply created successfully");
                 setShowCreateModal(false);
                 fetchReplies();
             }
         } catch (error) {
-            toast.error("Failed to create bot reply");
+            showModal("error", "Error", "Failed to create bot reply");
         } finally {
             setIsCreating(false);
             setNewReply({
@@ -165,10 +166,10 @@ export default function BotRepliesPage() {
         if (!confirm("Are you sure you want to delete this bot reply?")) return;
         try {
             await api.delete(`/facebook/bot-replies/${id}`);
-            toast.success("Bot reply deleted");
+            showModal("success", "Deleted", "Bot reply deleted");
             setReplies(prev => prev.filter(r => r.id !== id));
         } catch (error) {
-            toast.error("Failed to delete bot reply");
+            showModal("error", "Error", "Failed to delete bot reply");
         }
     };
 
@@ -176,10 +177,10 @@ export default function BotRepliesPage() {
         const newStatus = reply.status === 'published' ? 'draft' : 'publish';
         try {
             await api.patch(`/facebook/bot-replies/${reply.id}/${newStatus}`);
-            toast.success(`Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
+            showModal("success", "Updated", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             fetchReplies();
         } catch (error) {
-            toast.error("Failed to update status");
+            showModal("error", "Error", "Failed to update status");
         }
     };
 
@@ -188,12 +189,12 @@ export default function BotRepliesPage() {
         try {
             const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/facebook/bot-replies/${action.automation_id}/${newStatus}`);
-            toast.success(`Action status updated`);
+            showModal("success", "Updated", `Action status updated`);
             if (selectedPageId !== "all") {
                 fetchActions(selectedPageId);
             }
         } catch (error) {
-            toast.error("Failed to toggle action");
+            showModal("error", "Error", "Failed to toggle action");
         }
     };
 
@@ -202,12 +203,12 @@ export default function BotRepliesPage() {
         if (!confirm("Are you sure? This will unmap the action.")) return;
         try {
             await api.delete(`/facebook/actions/${action.automation_id}`);
-            toast.success("Action unmapped");
+            showModal("success", "Unmapped", "Action unmapped");
             if (selectedPageId !== "all") {
                 fetchActions(selectedPageId);
             }
         } catch (error) {
-            toast.error("Failed to remove mapping");
+            showModal("error", "Error", "Failed to remove mapping");
         }
     };
 
@@ -588,10 +589,10 @@ export default function BotRepliesPage() {
                                                         onClick={async () => {
                                                             try {
                                                                 await api.post(`/facebook/actions/${selectedActionType}`, { bot_reply_id: r.id, facebook_page_id: selectedPageId });
-                                                                toast.success("Action mapped!");
+                                                                showModal("success", "Mapped", "Action mapped!");
                                                                 setShowActionModal(false);
                                                                 fetchActions(selectedPageId);
-                                                            } catch (e) { toast.error("Mapping failed"); }
+                                                            } catch (e) { showModal("error", "Error", "Mapping failed"); }
                                                         }}
                                                         className="w-full group p-5 rounded-3xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 hover:border-purple-300 dark:hover:border-purple-700/50 hover:bg-white dark:hover:bg-neutral-900 transition-all flex items-center justify-between shadow-sm"
                                                     >

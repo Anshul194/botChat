@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
@@ -56,6 +56,7 @@ export default function InstagramBotRepliesPage() {
     const router = useRouter();
     const [replies, setReplies] = useState<BotReply[]>([]);
     const [pages, setPages] = useState<InstagramPageData[]>([]);
+    const { showModal } = useModal();
     const [isLoading, setIsLoading] = useState(true);
 
     const [selectedAccountId, setSelectedAccountId] = useState<string | "all">("all");
@@ -92,11 +93,11 @@ export default function InstagramBotRepliesPage() {
             }
         } catch (error) {
             console.error("Fetch Replies Error:", error);
-            toast.error("Failed to load Instagram bot replies");
+            showModal("error", "Error", "Failed to load Instagram bot replies");
         } finally {
             setIsLoading(false);
         }
-    }, [api, toast]);
+    }, [api, showModal]);
 
     const fetchPages = useCallback(async () => {
         try {
@@ -145,19 +146,19 @@ export default function InstagramBotRepliesPage() {
     const handleCreate = async () => {
         const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
         if (!newReply.name || !newReply.instagram_id || (isKeywordRequired && !newReply.trigger_value)) {
-            toast.error("Please fill all required fields");
+            showModal("error", "Missing Fields", "Please fill all required fields");
             return;
         }
         setIsCreating(true);
         try {
             const response = await api.post("/instagram/bot-replies", newReply);
             if (response.data.success || response.data.is_success) {
-                toast.success("Instagram bot reply created successfully");
+                showModal("success", "Success", "Instagram bot reply created successfully");
                 setShowCreateModal(false);
                 fetchReplies();
             }
         } catch (error) {
-            toast.error("Failed to create Instagram bot reply");
+            showModal("error", "Error", "Failed to create Instagram bot reply");
         } finally {
             setIsCreating(false);
             const rccFb = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
@@ -175,10 +176,10 @@ export default function InstagramBotRepliesPage() {
         if (!confirm("Are you sure you want to delete this Instagram bot reply?")) return;
         try {
             await api.delete(`/instagram/bot-replies/${id}`);
-            toast.success("Bot reply deleted");
+            showModal("success", "Success", "Bot reply deleted");
             setReplies(prev => prev.filter(r => r.id !== id));
         } catch (error) {
-            toast.error("Failed to delete bot reply");
+            showModal("error", "Error", "Failed to delete bot reply");
         }
     };
 
@@ -186,20 +187,20 @@ export default function InstagramBotRepliesPage() {
         const newStatus = reply.status === 'published' ? 'draft' : 'publish';
         try {
             await api.patch(`/instagram/bot-replies/${reply.id}/${newStatus}`);
-            toast.success(`Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
+            showModal("success", "Success", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             fetchReplies();
         } catch (error) {
-            toast.error("Failed to update status");
+            showModal("error", "Error", "Failed to update status");
         }
     };
 
     const handleDuplicate = async (id: number) => {
         try {
             await api.post(`/instagram/bot-replies/${id}/duplicate`);
-            toast.success("Bot reply duplicated");
+            showModal("success", "Success", "Bot reply duplicated");
             fetchReplies();
         } catch (error) {
-            toast.error("Failed to duplicate bot reply");
+            showModal("error", "Error", "Failed to duplicate bot reply");
         }
     };
 
@@ -208,10 +209,10 @@ export default function InstagramBotRepliesPage() {
         try {
             const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/instagram/bot-replies/${action.automation_id}/${newStatus}`);
-            toast.success(`Action status updated`);
+            showModal("success", "Success", `Action status updated`);
             if (selectedAccountId !== "all") fetchActions();
         } catch (error) {
-            toast.error("Failed to toggle action");
+            showModal("error", "Error", "Failed to toggle action");
         }
     };
 
@@ -220,10 +221,10 @@ export default function InstagramBotRepliesPage() {
         if (!confirm("Are you sure? This will unmap the action.")) return;
         try {
             await api.delete(`/instagram/actions/${action.automation_id}`);
-            toast.success("Action unmapped");
+            showModal("success", "Success", "Action unmapped");
             if (selectedAccountId !== "all") fetchActions();
         } catch (error) {
-            toast.error("Failed to remove mapping");
+            showModal("error", "Error", "Failed to remove mapping");
         }
     };
 
@@ -242,12 +243,12 @@ export default function InstagramBotRepliesPage() {
                 name: type === 'action_no_match' ? 'No Match' : type === 'action_get_started' ? 'Get Started' : 'Ice Breakers'
             });
             if (response.data.success || response.data.is_success) {
-                toast.success("Action created successfully");
+                showModal("success", "Success", "Action created successfully");
                 setShowActionModal(false);
                 fetchActions();
             }
         } catch (error) {
-            toast.error("Failed to create action");
+            showModal("error", "Error", "Failed to create action");
         } finally {
             setIsCreating(false);
         }

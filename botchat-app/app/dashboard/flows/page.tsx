@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, createContext, useContext, Su
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import {
   MessageSquare, MousePointer2, Link, Image as ImageIcon, Layers,
   Keyboard, Mail, Phone, Bot, Brain, GitBranch, Timer, Shuffle,
@@ -207,6 +207,7 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
    ============================================================ */
 
 function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+  const { showModal } = useModal();
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const [saving, setSaving] = useState(false);
@@ -239,15 +240,8 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
     set({ buttons: buttons.filter((_, i) => i !== idx) });
   };
 
-  const onUpdateSave = async () => {
-    setSaving(true);
-    if (onSaveStep) {
-      await onSaveStep(step);
-    } else {
-      await new Promise(r => setTimeout(r, 600));
-    }
     setSaving(false);
-    toast.success("Message step updated");
+    showModal("success", "Success", "Message step updated");
   };
 
   return (
@@ -462,6 +456,7 @@ function AIReplyFields({ step, update }) {
 }
 
 function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+  const { showModal } = useModal();
   const c = step.config || {};
   const rules = c.rules || [{ field_type: "system", field_name: "first_name", operator: "equals", value: "" }];
   const match_type = c.match_type || "all";
@@ -479,9 +474,9 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
       } else {
         await new Promise(r => setTimeout(r, 600));
       }
-      toast.success("Condition updated successfully");
+      showModal("success", "Success", "Condition updated successfully");
     } catch (e) {
-      toast.error("Failed to update condition");
+      showModal("error", "Error", "Failed to update condition");
     } finally {
       setSaving(false);
     }
@@ -631,6 +626,7 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
 }
 
 function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+  const { showModal } = useModal();
   const c = step.config || {};
   const items = c.carousel_items || [{ title: "New Item", subtitle: "", image_url: "", destination_url: "", buttons: [] }];
   const [activeItemIdx, setActiveItemIdx] = useState(0);
@@ -678,7 +674,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         await onSaveStep(step);
       } else {
         await new Promise(r => setTimeout(r, 600));
-        toast.success("Carousel step updated (local only)");
+        showModal("success", "Success", "Carousel step updated (local only)");
       }
     } catch (e) {
       console.error(e);
@@ -694,17 +690,14 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
     formData.append('file', file);
     formData.append('type', 'image');
 
-    toast.promise(
-      new Promise(async (resolve, reject) => {
-        try {
-          const response = await api.post('/facebook/bot-replies/media/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-          const url = response.data.url || response.data.data?.url || response.data;
-          updateItem(activeItemIdx, { image_url: url });
-          resolve(file.name);
-        } catch (err) { reject(err); }
-      }),
-      { loading: `Uploading...`, success: `Uploaded!`, error: 'Upload failed' }
-    );
+    try {
+      const response = await api.post('/facebook/bot-replies/media/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const url = response.data.url || response.data.data?.url || response.data;
+      updateItem(activeItemIdx, { image_url: url });
+      showModal("success", "Uploaded", `File ${file.name} uploaded!`);
+    } catch (err) {
+      showModal("error", "Upload Failed", "File upload failed");
+    }
   };
 
   return (
@@ -2160,6 +2153,7 @@ export default function FlowBuilderPage() {
 }
 
 function FlowBuilder() {
+  const { showModal } = useModal();
   const searchParams = useSearchParams();
   const replyId = searchParams.get("id");
   const platformParam = searchParams.get("platform") || "instagram";
@@ -2216,7 +2210,7 @@ function FlowBuilder() {
           }
         } catch (error) {
           console.error("Error fetching flow:", error);
-          toast.error("Failed to load flow data");
+          showModal("error", "Error", "Failed to load flow data");
         }
       };
       fetchFlow();
@@ -2240,17 +2234,15 @@ function FlowBuilder() {
           ? `/facebook/bot-replies/steps/${id}`
           : `/instagram/bot-replies/steps/${id}`;
         
-        const toastId = toast.loading("Deleting step...");
         await api.delete(endpoint);
-        toast.dismiss(toastId);
       }
       
       setSteps(s => s.filter(x => x.id !== id));
       setExpandedId(p => p === id ? null : p);
-      toast.success("Step deleted successfully");
+      showModal("success", "Success", "Step deleted successfully");
     } catch (err) {
       console.error("Delete Step Error:", err);
-      toast.error("Failed to delete step");
+      showModal("error", "Error", "Failed to delete step");
     }
   };
   const dupStep = useCallback((id) => {
@@ -2279,7 +2271,7 @@ function FlowBuilder() {
       await api.patch(endpoint, { orders });
     } catch (err) {
       console.error("Reorder Error:", err);
-      toast.error("Failed to sync step order");
+      showModal("error", "Error", "Failed to sync step order");
     }
   }, [replyId, platform]);
 
@@ -2349,10 +2341,10 @@ function FlowBuilder() {
         response = await api.patch(patchEndpoint, payload);
       }
 
-      toast.success("Step saved successfully");
+      showModal("success", "Success", "Step saved successfully");
     } catch (err) {
       console.error("Step Save Error:", err);
-      toast.error("Failed to save step data");
+      showModal("error", "Error", "Failed to save step data");
     }
   }, [replyId, platform, updateStep]);
 

@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,13 +14,14 @@ import { useAppDispatch } from "@/store/hooks";
 import { loginUser, fetchMe } from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 export default function SignInPage() {
     const router = useRouter();
     const { theme } = useTheme();
     const dispatch = useAppDispatch();
+    const { showModal } = useModal();
     const isLight = theme === "light";
 
     const [showPwd, setShowPwd] = useState(false);
@@ -83,7 +84,7 @@ export default function SignInPage() {
         );
 
         if (!popup) {
-            toast.error("Popup blocked! Please allow popups for this site.");
+            showModal("error", "Error", "Popup blocked! Please allow popups for this site.");
             setSocialLoading(null);
             return;
         }

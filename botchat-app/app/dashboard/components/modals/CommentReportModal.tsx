@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface ReportSummary {
@@ -53,6 +53,7 @@ export function CommentReportModal({
     postId,
     pageId
 }: CommentReportModalProps) {
+    const { showModal } = useModal();
     const [reports, setReports] = useState<ReportItem[]>([]);
     const [summary, setSummary] = useState<ReportSummary | null>(null);
     const [meta, setMeta] = useState<{ current_page: number, last_page: number } | null>(null);
@@ -83,7 +84,7 @@ export function CommentReportModal({
             }
         } catch (error) {
             console.error("Fetch Report Error:", error);
-            toast.error("Failed to load report data");
+            showModal("error", "Error", "Failed to load report data");
         } finally {
             setIsLoading(false);
         }

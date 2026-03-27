@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
@@ -72,6 +72,7 @@ export default function InstagramCommentManagerPage() {
         auto_comment_count: 0,
         has_full_page_reply: false
     });
+    const { showModal } = useModal();
     const [isLoading, setIsLoading] = useState(true);
     const [isPostsLoading, setIsPostsLoading] = useState(false);
 
@@ -151,11 +152,11 @@ export default function InstagramCommentManagerPage() {
             }
         } catch (error) {
             console.error("Fetch Accounts Error:", error);
-            toast.error("Failed to load Instagram accounts");
+            showModal("error", "Error", "Failed to load Instagram accounts");
         } finally {
             setIsLoading(false);
         }
-    }, [selectedAccount]);
+    }, [api, showModal]);
 
     const fetchPosts = useCallback(async () => {
         if (!selectedAccount) return;

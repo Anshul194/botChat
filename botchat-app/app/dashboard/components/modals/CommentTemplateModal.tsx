@@ -7,7 +7,7 @@ import {
     Sparkles, Tag, Smile, Clock, Search, Save, RefreshCw
 } from "lucide-react";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 // ── Emoji DB ──────────────────────────────────────────────────────────────────
@@ -179,6 +179,7 @@ function MessageRow({ value, index, onChange, onRemove, showRemove, recent, addR
 
 // ── MAIN MODAL COMPONENT ─────────────────────────────────────────────────────
 export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate, platform }: CommentTemplateModalProps) {
+    const { showModal } = useModal();
     const [name, setName] = useState("");
     const [messages, setMessages] = useState<string[]>([""]);
     const [isSaving, setIsSaving] = useState(false);
@@ -197,9 +198,9 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
     const addRecent = (e:string) => setRecent(p => [e,...p.filter(x=>x!==e)].slice(0,32));
     const addRow = () => setMessages([...messages, ""]);
     const handleSave = async () => {
-        if (!name.trim()) return toast.error("Template name is required");
+        if (!name.trim()) return showModal("error", "Error", "Template name is required");
         const filtered = messages.map(m=>m.trim()).filter(Boolean);
-        if(!filtered.length) return toast.error("Add at least one message");
+        if(!filtered.length) return showModal("error", "Error", "Add at least one message");
 
         setIsSaving(true);
         try {
@@ -210,11 +211,11 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
             else res = await api.post(endpoint, payload);
 
             if (res.data.success || res.data.is_success) {
-                toast.success(`Success : Template Distributed`);
+                showModal("success", "Success", "Success : Template Distributed");
                 onSaved();
                 onClose();
             }
-        } catch(err) { toast.error("Deployment failure"); }
+        } catch(err) { showModal("error", "Error", "Deployment failure"); }
         finally { setIsSaving(false); }
     };
 

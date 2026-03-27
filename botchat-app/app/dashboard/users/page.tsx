@@ -25,7 +25,7 @@ import {
     DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -33,6 +33,7 @@ export default function UserManagementPage() {
     const dispatch = useAppDispatch();
     const { users, isLoading, selectedUser } = useAppSelector((state) => state.users);
     const { plans } = useAppSelector((state) => state.plans);
+    const { showModal } = useModal();
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
     const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -75,7 +76,7 @@ export default function UserManagementPage() {
     const handleAddUser = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!addUserForm.name || !addUserForm.email || !addUserForm.password || !addUserForm.plan_id) {
-            toast.error("Please fill in all required fields.");
+            showModal("error", "Error", "Please fill in all required fields.");
             return;
         }
         setIsAddingUser(true);
@@ -90,11 +91,11 @@ export default function UserManagementPage() {
                 phone: addUserForm.phone,
                 plan_id: Number(addUserForm.plan_id),
             })).unwrap();
-            toast.success("User created successfully!");
+            showModal("success", "Created", "User created successfully!");
             setIsAddUserOpen(false);
             setAddUserForm({ name: "", email: "", password: "", domains: "", country_code: "US", dial_code: "+1", phone: "", plan_id: "" });
         } catch (error: any) {
-            toast.error(error || "Failed to create user.");
+            showModal("error", "Error", error || "Failed to create user.");
         } finally {
             setIsAddingUser(false);
         }
@@ -105,10 +106,10 @@ export default function UserManagementPage() {
 
         try {
             await dispatch(toggleUserStatus(confirmState.userId)).unwrap();
-            toast.success(`User ${confirmState.currentStatus ? 'deactivated' : 'activated'} successfully`);
+            showModal("success", "Status Updated", `User ${confirmState.currentStatus ? 'deactivated' : 'activated'} successfully`);
             setConfirmState(s => ({ ...s, open: false }));
         } catch (error: any) {
-            toast.error(error || "Failed to update status");
+            showModal("error", "Error", error || "Failed to update status");
         }
     };
 
@@ -128,7 +129,7 @@ export default function UserManagementPage() {
         try {
             await dispatch(fetchUserById(id)).unwrap();
         } catch (error: any) {
-            toast.error(error || "Failed to fetch user details");
+            showModal("error", "Error", error || "Failed to fetch user details");
             setIsDetailOpen(false);
         } finally {
             setIsFetchingDetail(false);

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface PersistentMenuItem {
@@ -168,6 +168,7 @@ function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAd
    Main component
 ───────────────────────────────────────────────────────────── */
 export default function PersistentMenu({ pageId, actions }: PersistentMenuProps) {
+    const { showModal } = useModal();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -226,13 +227,13 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
             const newItems = [...items];
             if (!newItems[parentIndex].call_to_actions) newItems[parentIndex].call_to_actions = [];
             if (newItems[parentIndex].call_to_actions!.length >= 5) {
-                toast.error("Max 5 items allowed in nested menu");
+                showModal("error", "Error", "Max 5 items allowed in nested menu");
                 return;
             }
             newItems[parentIndex].call_to_actions!.push(newItem);
             setItems(newItems);
         } else {
-            if (items.length >= 3) { toast.error("Max 3 items allowed in top-level menu"); return; }
+            if (items.length >= 3) { showModal("error", "Error", "Max 3 items allowed in top-level menu"); return; }
             setItems([...items, newItem]);
         }
     };
@@ -286,7 +287,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
             return null;
         };
         const error = validateItems(items);
-        if (error) { toast.error(error); return; }
+        if (error) { showModal("error", "Error", error); return; }
 
         setIsSaving(true);
         try {
@@ -296,9 +297,9 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                 locale: "default",
                 menu: formToApi(items),
             });
-            if (response.data.success || response.data.is_success) toast.success("Persistent menu saved locally");
+            if (response.data.success || response.data.is_success) showModal("success", "Saved", "Persistent menu saved locally");
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to save menu");
+            showModal("error", "Error", error.response?.data?.message || "Failed to save menu");
         } finally {
             setIsSaving(false);
         }
@@ -308,9 +309,9 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
         setIsSyncing(true);
         try {
             const response = await api.post(`/facebook/persistent-menu/sync/${pageId}`);
-            if (response.data.success || response.data.is_success) toast.success("Persistent menu synced to Facebook!");
+            if (response.data.success || response.data.is_success) showModal("success", "Synced", "Persistent menu synced to Facebook!");
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to sync with Meta");
+            showModal("error", "Error", error.response?.data?.message || "Failed to sync with Meta");
         } finally {
             setIsSyncing(false);
         }
@@ -322,11 +323,11 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
         try {
             const response = await api.delete(`/facebook/persistent-menu/${pageId}`);
             if (response.data.success || response.data.is_success) {
-                toast.success("Persistent menu removed");
+                showModal("success", "Deleted", "Persistent menu removed");
                 setItems([]);
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to delete");
+            showModal("error", "Error", error.response?.data?.message || "Failed to delete");
         } finally {
             setIsDeleting(false);
         }

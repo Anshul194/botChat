@@ -6,7 +6,7 @@ import {
     X, Zap, Save, Loader2, RefreshCw, Layers, 
     Sparkles, Smile, Clock, Search, Check, Send
 } from "lucide-react";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +74,7 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect:(e:string)=>void;
 
 // ── MAIN MODAL COMPONENT ─────────────────────────────────────────────────────
 export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, platform }: ReplyTemplateModalProps) {
+    const { showModal } = useModal();
     const [name, setName] = useState("");
     const [message, setMessage] = useState("");
     const [replyType, setReplyType] = useState("generic");
@@ -107,8 +108,8 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
     },[message]);
 
     const handleSave = async () => {
-        if (!name.trim()) return toast.error("Template name is required");
-        if (!message.trim()) return toast.error("Response message is required");
+        if (!name.trim()) return showModal("error", "Error", "Template name is required");
+        if (!message.trim()) return showModal("error", "Error", "Response message is required");
 
         setIsSaving(true);
         try {
@@ -119,11 +120,11 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
             else res = await api.post(endpoint, payload);
 
             if (res.data.success || res.data.is_success) {
-                toast.success(`Rule Finalized : Automation Synchronized`);
+                showModal("success", "Success", "Rule Finalized : Automation Synchronized");
                 onSaved();
                 onClose();
             }
-        } catch(err) { toast.error("Deployment Rejected"); }
+        } catch(err) { showModal("error", "Error", "Deployment Rejected"); }
         finally { setIsSaving(false); }
     };
 

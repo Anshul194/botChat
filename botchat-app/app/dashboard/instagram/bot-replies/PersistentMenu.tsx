@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
 interface PersistentMenuItem {
@@ -160,6 +160,7 @@ const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, act
 };
 
 export default function PersistentMenu({ instagramId, pageId, actions }: PersistentMenuProps) {
+    const { showModal } = useModal();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -214,14 +215,14 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                 newItems[parentIndex].children = [];
             }
             if (newItems[parentIndex].children!.length >= 5) {
-                toast.error("Max 5 items allowed in nested menu");
+                showModal("error", "Error", "Max 5 items allowed in nested menu");
                 return;
             }
             newItems[parentIndex].children!.push(newItem);
             setItems(newItems);
         } else {
             if (items.length >= 3) {
-                toast.error("Max 3 items allowed in top-level menu");
+                showModal("error", "Error", "Max 3 items allowed in top-level menu");
                 return;
             }
             setItems([...items, newItem]);
@@ -290,7 +291,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
 
         const error = validateItems(items);
         if (error) {
-            toast.error(error);
+            showModal("error", "Error", error);
             return;
         }
 
@@ -303,9 +304,9 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                 composer_input_disabled: composerInputDisabled,
                 menu: items
             });
-            toast.success("Persistent menu saved locally");
+            showModal("success", "Saved", "Persistent menu saved locally");
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to save menu");
+            showModal("error", "Error", error.response?.data?.message || "Failed to save menu");
         } finally {
             setIsSaving(false);
         }
@@ -315,9 +316,9 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
         setIsSyncing(true);
         try {
             await api.post(`/instagram/persistent-menu/sync/${instagramId}`);
-            toast.success("Persistent menu synced to Instagram!");
+            showModal("success", "Synced", "Persistent menu synced to Instagram!");
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to sync with Instagram");
+            showModal("error", "Error", error.response?.data?.message || "Failed to sync with Instagram");
         } finally {
             setIsSyncing(false);
         }
@@ -328,10 +329,10 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
         setIsDeleting(true);
         try {
             await api.delete(`/instagram/persistent-menu/${instagramId}`);
-            toast.success("Persistent menu removed");
+            showModal("success", "Deleted", "Persistent menu removed");
             setItems([]);
         } catch (error: any) {
-            toast.error(error.response?.data?.message || "Failed to delete");
+            showModal("error", "Error", error.response?.data?.message || "Failed to delete");
         } finally {
             setIsDeleting(false);
         }

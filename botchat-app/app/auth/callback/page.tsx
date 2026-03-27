@@ -4,12 +4,13 @@ import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials, fetchMe } from '@/store/slices/authSlice';
-import { toast } from 'sonner';
+import { useModal } from '@/components/providers/ModalProvider';
 
 function CallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const dispatch = useAppDispatch();
+    const { showModal } = useModal();
 
     useEffect(() => {
         const token = searchParams.get('token');
@@ -19,7 +20,7 @@ function CallbackContent() {
         const isPopup = window.opener && window.opener !== window;
 
         if (error) {
-            toast.error(error || 'Authentication failed');
+            showModal("error", "Auth Error", error || 'Authentication failed');
             if (isPopup) {
                 window.close();
             } else {
@@ -45,13 +46,11 @@ function CallbackContent() {
                     const user = action.payload;
                     const name = user?.name || user?.email?.split('@')[0] || 'User';
                     
-                    toast.success(`Welcome back, ${name}!`, {
-                        description: "You've successfully connected via social login."
-                    });
+                    showModal("success", "Welcome Back!", `Welcome back, ${name}! You've successfully connected via social login.`);
                     
                     router.push('/dashboard');
                 } else {
-                    toast.error('Failed to retrieve user information');
+                    showModal("error", "Error", 'Failed to retrieve user information');
                     router.push('/auth/sign-in');
                 }
             });
@@ -63,7 +62,7 @@ function CallbackContent() {
                 router.push('/auth/sign-in');
             }
         }
-    }, [router, searchParams, dispatch]);
+    }, [router, searchParams, dispatch, showModal]);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#06030f] text-white">
