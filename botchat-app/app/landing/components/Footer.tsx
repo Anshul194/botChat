@@ -107,8 +107,8 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-500">
             <p>© {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
             <div className="flex gap-8">
-               <Link href="#" className="hover:text-white transition-colors">Privacy Privacy</Link>
-               <Link href="#" className="hover:text-white transition-colors">Legal Terms</Link>
+               <Link href="/home/privacy_policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+               <Link href="/home/terms_use" className="hover:text-white transition-colors">Terms of Use</Link>
             </div>
           </div>
 
