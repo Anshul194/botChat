@@ -27,9 +27,7 @@ interface SidebarProps {
 
 const mainNav = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { label: "Inbox", icon: Inbox, href: "/dashboard/inbox", badge: "12" },
-    { label: "Automations", icon: Zap, href: "/dashboard/automations" },
-    { label: "Flow Builder", icon: GitBranch, href: "/dashboard/flows", badge: "New" },
+    { label: "Inbox", icon: Inbox, href: "/dashboard/inbox", badge: "12" }
 ];
 
 const growthNav = [
@@ -103,7 +101,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
         try {
             const res = await api.get("/social/instagram-connect/redirect");
             const redirectUrl = res.data?.data?.url || res.data?.data?.redirect_url;
-            
+
             if (redirectUrl) {
                 showModal("success", "Ready", "Please complete the setup in the popup.");
                 popup.location.href = redirectUrl;
@@ -163,7 +161,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                 {/* Logo / Brand */}
                 <div className="h-16 flex items-center px-4 border-b border-neutral-200 dark:border-neutral-800 flex-shrink-0">
                     <div className="flex items-center gap-2.5">
-                        <motion.div 
+                        <motion.div
                             whileHover={{ rotate: 12, scale: 1.1 }}
                             className="w-8 h-8 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-sm flex-shrink-0"
                         >
@@ -171,7 +169,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         </motion.div>
                         <AnimatePresence mode="wait">
                             {!collapsed && (
-                                <motion.span 
+                                <motion.span
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -10 }}
@@ -212,7 +210,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                 </div>
 
                 {/* Navigation */}
-                <motion.nav 
+                <motion.nav
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
@@ -221,7 +219,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     {/* MAIN */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 className="px-3 pb-1.5"
@@ -239,7 +237,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     {/* PLATFORMS */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 className="px-3 pb-1.5 flex items-center justify-between"
@@ -341,7 +339,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 )}
                             </AnimatePresence>
                         </div>
- 
+
                         {/* Facebook Accordion */}
                         <div>
                             <motion.button
@@ -371,7 +369,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     </div>
                                     {!collapsed && <span className="font-medium">Facebook</span>}
                                 </div>
- 
+
                                 {!collapsed && (
                                     <motion.div
                                         animate={{ rotate: facebookOpen ? 180 : 0 }}
@@ -381,11 +379,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     </motion.div>
                                 )}
                             </motion.button>
- 
+
                             {/* Submenu – with smooth accordion animation */}
                             <AnimatePresence>
                                 {facebookOpen && !collapsed && (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
@@ -472,7 +470,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             collapsed && "justify-center"
                         )}
                     >
-                        <motion.div 
+                        <motion.div
                             whileHover={{ scale: 1.1 }}
                             className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white font-semibold shadow-sm flex-shrink-0"
                         >
@@ -552,8 +550,8 @@ function NavItem({
     onClose?: () => void;
 }) {
     // For the main Dashboard link, use exact match to avoid highlighting it on all sub-pages.
-    const isActive = item.href === "/dashboard" 
-        ? pathname === "/dashboard" 
+    const isActive = item.href === "/dashboard"
+        ? pathname === "/dashboard"
         : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
     return (
@@ -573,12 +571,12 @@ function NavItem({
                 )}
             >
                 {isActive && (
-                    <motion.div 
+                    <motion.div
                         layoutId="activeNav"
                         className="absolute left-0 w-1 h-6 bg-pink-500 rounded-full"
                     />
                 )}
-                
+
                 <div className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
                     isActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
@@ -599,7 +597,7 @@ function NavItem({
                         >
                             <span className="truncate font-medium">{item.label}</span>
                             {item.badge && (
-                                <motion.span 
+                                <motion.span
                                     initial={{ scale: 0.5, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     className={cn(
