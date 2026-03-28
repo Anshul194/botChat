@@ -192,6 +192,16 @@ export default function BotRepliesPage() {
         }
     };
 
+    const handleDuplicate = async (id: number) => {
+        try {
+            await api.post(`/facebook/bot-replies/${id}/duplicate`);
+            showModal("success", "Success", "Bot reply duplicated");
+            fetchReplies();
+        } catch (error) {
+            showModal("error", "Error", "Failed to duplicate bot reply");
+        }
+    };
+
     const handleActionToggle = async (action: ActionData) => {
         if (!action.automation_id) return;
         try {
@@ -460,12 +470,21 @@ export default function BotRepliesPage() {
                                                 <button
                                                     onClick={() => handleToggleStatus(reply)}
                                                     className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
+                                                    title={reply.status === 'published' ? "Pause" : "Live"}
                                                 >
                                                     {reply.status === 'published' ? <Pause className="w-4 h-4 text-amber-500" /> : <Play className="w-4 h-4 text-emerald-500" />}
                                                 </button>
                                                 <button
+                                                    onClick={() => handleDuplicate(reply.id)}
+                                                    className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
+                                                    title="Duplicate"
+                                                >
+                                                    <Copy className="w-4 h-4 text-purple-500" />
+                                                </button>
+                                                <button
                                                     onClick={() => handleDelete(reply.id)}
                                                     className="p-2.5 rounded-lg border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
+                                                    title="Delete"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
