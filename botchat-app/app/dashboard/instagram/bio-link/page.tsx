@@ -77,13 +77,13 @@ const CarouselBlock = ({ items }: { items: any[] }) => {
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>
-                    
+
                     <div className="p-5 flex flex-col flex-1 bg-white relative z-10">
                         <h4 className="font-bold text-[15px] text-[#111] leading-tight mb-2 group-hover:text-[#db2777] transition-colors">{item.title || "Link Title"}</h4>
                         {(item.description || item.url) && (
                             <p className="text-[12px] text-slate-500 line-clamp-2 leading-relaxed mb-4">{item.description || item.url}</p>
                         )}
-                        
+
                         <div className="mt-auto pt-3 border-t border-slate-50 flex items-center justify-between">
                             <span className="text-[#db2777] text-[12px] font-bold flex items-center gap-1.5 group-hover:gap-2 transition-all">
                                 {item.button_text || "Visit Link"} <ArrowRight size={12} />
@@ -139,7 +139,7 @@ export default function BioLinkBuilder() {
     };
 
     const handleSaveCarouselEditor = async () => {
-        if(!editingCarouselBlock) return;
+        if (!editingCarouselBlock) return;
         try {
             await api.put(`/bio-builder/blocks/${editingCarouselBlock.id}`, {
                 type: editingCarouselBlock.type,
@@ -147,19 +147,19 @@ export default function BioLinkBuilder() {
             });
             fetchBuilderData();
             setShowCarouselEditorModal(false);
-        } catch(err) {
+        } catch (err) {
             showModal("error", "Error", "Failed to save block data.");
         }
     };
 
     const updateCarouselItem = (idx: number, field: string, value: string) => {
-        const updated = {...editingCarouselBlock};
-        if(!updated.items) updated.items = [];
-        if(!updated.items[idx]) updated.items[idx] = {};
+        const updated = { ...editingCarouselBlock };
+        if (!updated.items) updated.items = [];
+        if (!updated.items[idx]) updated.items[idx] = {};
         updated.items[idx][field] = value;
         setEditingCarouselBlock(updated);
     };
-    
+
     // Load Accounts
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -377,7 +377,74 @@ export default function BioLinkBuilder() {
         }
     };
 
-    // Helpers
+    // Arrange Mode
+    const [isArranging, setIsArranging] = useState(false);
+
+    // Reorder Helpers
+    const reorderInArray = <T extends { id: number }>(arr: T[], from: number, to: number) => {
+        const result = Array.from(arr);
+        const [removed] = result.splice(from, 1);
+        result.splice(to, 0, removed);
+        return result;
+    };
+
+    // 17. POST /api/v1/bio-builder/tabs/reorder
+    const handleReorderTabs = async (fromIdx: number, toIdx: number) => {
+        if (!tabs || toIdx < 0 || toIdx >= tabs.length) return;
+        const newTabs = reorderInArray(tabs, fromIdx, toIdx);
+        setTabs(newTabs); // Optimistic Update
+        try {
+            await api.post("/bio-builder/tabs/reorder", {
+                ids: newTabs.map(t => t.id)
+            });
+        } catch (err) {
+            showModal("error", "Error", "Failed to reorder tabs.");
+            fetchBuilderData(); // Rollback
+        }
+    };
+
+    // 18. POST /api/v1/bio-builder/sections/reorder
+    const handleReorderSections = async (fromIdx: number, toIdx: number) => {
+        if (!currentTab?.sections || toIdx < 0 || toIdx >= currentTab.sections.length) return;
+        const newSections = reorderInArray(currentTab.sections, fromIdx, toIdx);
+
+        // Update local state nested structure
+        const updatedTabs = tabs.map(t => t.id === currentTab.id ? { ...t, sections: newSections } : t);
+        setTabs(updatedTabs);
+
+        try {
+            await api.post("/bio-builder/sections/reorder", {
+                ids: newSections.map(s => s.id)
+            });
+        } catch (err) {
+            showModal("error", "Error", "Failed to reorder sections.");
+            fetchBuilderData(); // Rollback
+        }
+    };
+
+    // 19. POST /api/v1/bio-builder/blocks/reorder
+    const handleReorderBlocks = async (sectionId: number, fromIdx: number, toIdx: number) => {
+        const section = currentTab?.sections.find(s => s.id === sectionId);
+        if (!section || !section.blocks || toIdx < 0 || toIdx >= section.blocks.length) return;
+
+        const newBlocks = reorderInArray(section.blocks, fromIdx, toIdx);
+
+        // Update local state deep nested structure
+        const updatedTabs = tabs.map(t => ({
+            ...t,
+            sections: t.sections.map(s => s.id === sectionId ? { ...s, blocks: newBlocks } : s)
+        }));
+        setTabs(updatedTabs);
+
+        try {
+            await api.post("/bio-builder/blocks/reorder", {
+                ids: newBlocks.map(b => b.id)
+            });
+        } catch (err) {
+            showModal("error", "Error", "Failed to reorder steps.");
+            fetchBuilderData(); // Rollback
+        }
+    };
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
     const instagramUsername = accounts.find(a => String(a.id) === selectedPageId)?.username || "username";
 
@@ -436,26 +503,41 @@ export default function BioLinkBuilder() {
                                     <button onClick={() => setShowAddTabModal(true)} className="w-8 h-8 rounded-full border border-[#D5D8DF] bg-white text-[#db2777] flex items-center justify-center hover:bg-slate-50 transition-colors">
                                         <Plus size={16} />
                                     </button>
-                                    <button className="h-8 px-4 border border-[#D5D8DF] rounded-full text-[#6C768A] text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-colors">
-                                        <GripVertical size={12} className="opacity-50" /> Arrange
+                                    <button
+                                        onClick={() => setIsArranging(!isArranging)}
+                                        className={cn("h-8 px-4 border rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all",
+                                            isArranging ? "bg-[#db2777] border-[#db2777] text-white" : "border-[#D5D8DF] bg-white text-[#6C768A] hover:bg-slate-50")}
+                                    >
+                                        <GripVertical size={12} className="opacity-50" /> {isArranging ? "Done" : "Arrange"}
                                     </button>
                                 </div>
                             </div>
 
                             {tabs.length > 0 && (
-                                <div className="px-8 py-2 border-b border-[#EAEBEE] flex gap-2 overflow-x-auto no-scrollbar">
-                                    {tabs.map((tab) => (
-                                        <button
-                                            key={tab.id}
-                                            onClick={() => setSelectedTabId(tab.id)}
-                                            className={cn("px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap",
-                                                selectedTabId === tab.id ? "bg-[#db2777] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200")}
-                                        >
-                                            {tab.title}
-                                            {selectedTabId === tab.id && tabs.length > 1 && (
-                                                <span onClick={(e) => { e.stopPropagation(); handleDeleteTab(tab.id); }} className="ml-2 py-0.5 px-1.5 bg-white/20 hover:bg-red-500 text-white rounded-full">×</span>
+                                <div className="px-8 py-2 border-b border-[#EAEBEE] flex gap-2 overflow-x-auto no-scrollbar items-center">
+                                    {tabs.map((tab, idx) => (
+                                        <motion.div layout key={tab.id} className="flex items-center gap-1 group/tabitem">
+                                            {isArranging && idx > 0 && (
+                                                <button onClick={() => handleReorderTabs(idx, idx - 1)} className="w-5 h-5 rounded-full bg-slate-100 text-slate-400 hover:text-[#db2777] flex items-center justify-center transition-all opacity-0 group-hover/tabitem:opacity-100">
+                                                    <ArrowRight size={10} className="rotate-180" />
+                                                </button>
                                             )}
-                                        </button>
+                                            <button
+                                                onClick={() => setSelectedTabId(tab.id)}
+                                                className={cn("px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap",
+                                                    selectedTabId === tab.id ? "bg-[#db2777] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200")}
+                                            >
+                                                {tab.title}
+                                                {!isArranging && selectedTabId === tab.id && tabs.length > 1 && (
+                                                    <span onClick={(e) => { e.stopPropagation(); handleDeleteTab(tab.id); }} className="ml-2 py-0.5 px-1.5 bg-white/20 hover:bg-red-500 text-white rounded-full">×</span>
+                                                )}
+                                            </button>
+                                            {isArranging && idx < tabs.length - 1 && (
+                                                <button onClick={() => handleReorderTabs(idx, idx + 1)} className="w-5 h-5 rounded-full bg-slate-100 text-slate-400 hover:text-[#db2777] flex items-center justify-center transition-all opacity-0 group-hover/tabitem:opacity-100">
+                                                    <ArrowRight size={10} />
+                                                </button>
+                                            )}
+                                        </motion.div>
                                     ))}
                                 </div>
                             )}
@@ -492,12 +574,12 @@ export default function BioLinkBuilder() {
                                         <ImageIcon className="w-3.5 h-3.5" />
                                         <span>@{instagramUsername}</span>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             if (!profile) return;
                                             setEditProfileForm({ title: profile.title || "", bio: profile.bio || "", email_link: profile.email_link || "", contact_link: profile.contact_link || "" });
                                             setShowEditProfileModal(true);
-                                        }} 
+                                        }}
                                         className="text-[#db2777] text-[13px] font-medium hover:underline flex items-center gap-1.5"
                                     >
                                         Edit Basic Details <Edit3 size={12} />
@@ -506,7 +588,7 @@ export default function BioLinkBuilder() {
 
                                 {/* Primary Buttons */}
                                 <div className="flex gap-4 w-full max-w-[500px] mb-12">
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             if (!profile) return;
                                             setEditProfileForm({ title: profile.title || "", bio: profile.bio || "", email_link: profile.email_link || "", contact_link: profile.contact_link || "" });
@@ -516,7 +598,7 @@ export default function BioLinkBuilder() {
                                     >
                                         Email <Edit3 size={14} className="opacity-70" />
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             if (!profile) return;
                                             setEditProfileForm({ title: profile.title || "", bio: profile.bio || "", email_link: profile.email_link || "", contact_link: profile.contact_link || "" });
@@ -547,11 +629,18 @@ export default function BioLinkBuilder() {
                                         </div>
                                     ) : (
                                         <div className="space-y-4 w-full">
-                                            {currentTab.sections.map(section => (
-                                                <div key={section.id} className="bg-white border text-sm border-slate-200 rounded-2xl p-4 shadow-sm relative group w-full">
+                                            {currentTab.sections.map((section, sidx) => (
+                                                <motion.div layout key={section.id} className="bg-white border text-sm border-slate-200 rounded-2xl p-4 shadow-sm relative group w-full">
                                                     <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-3">
                                                         <div className="flex items-center gap-2">
-                                                            <GripVertical className="w-4 h-4 text-slate-300" />
+                                                            {isArranging ? (
+                                                                <div className="flex flex-col gap-0.5">
+                                                                    <button onClick={() => handleReorderSections(sidx, sidx - 1)} disabled={sidx === 0} className="p-1 hover:text-[#db2777] disabled:opacity-30"><Layers size={12} className="rotate-180" /></button>
+                                                                    <button onClick={() => handleReorderSections(sidx, sidx + 1)} disabled={sidx === currentTab.sections.length - 1} className="p-1 hover:text-[#db2777] disabled:opacity-30"><Layers size={12} /></button>
+                                                                </div>
+                                                            ) : (
+                                                                <GripVertical className="w-4 h-4 text-slate-300" />
+                                                            )}
                                                             <h4 className="font-bold text-slate-700">{section.title}</h4>
                                                         </div>
                                                         <button onClick={() => handleDeleteSection(section.id)} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={14} /></button>
@@ -561,28 +650,34 @@ export default function BioLinkBuilder() {
                                                         <p className="text-xs text-center text-slate-400 py-4 italic">Empty section</p>
                                                     ) : (
                                                         <div className="space-y-2">
-                                                            {section.blocks?.map(block => {
+                                                            {section.blocks?.map((block, bidx) => {
                                                                 const isEditableLink = ['links_carousel', 'hero_single_link', 'links_grid', 'add_products', 'add_apps'].includes(block.type);
                                                                 return (
-                                                                <div key={block.id} onClick={() => { if(isEditableLink) handleOpenCarouselEditor(block) }} className={cn("bg-slate-50 px-3 py-2 rounded-lg flex items-center justify-between transition-colors", isEditableLink ? "cursor-pointer hover:border-[#db2777] border border-transparent shadow-sm" : "")}>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="text-xs font-bold text-[#db2777] uppercase bg-[#db2777]/10 px-2 py-1 rounded inline-flex items-center gap-1">
-                                                                            {block.type === 'links_carousel' && <Layers size={10} />}
-                                                                            {block.type === 'hero_single_link' && <LinkIcon size={10} />}
-                                                                            {block.type === 'links_grid' && <Grid size={10} />}
-                                                                            {block.type === 'add_products' && <ShoppingBag size={10} />}
-                                                                            {block.type === 'add_apps' && <SmartphoneNfc size={10} />}
-                                                                            {block.type}
-                                                                        </span>
-                                                                        {isEditableLink && <span className="text-[10px] text-slate-400 font-medium">Click to edit items</span>}
-                                                                    </div>
-                                                                    <button onClick={(e) => { e.stopPropagation(); handleDeleteBlock(block.id); }} className="text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
-                                                                </div>
+                                                                    <motion.div layout key={block.id} onClick={() => { if (isEditableLink) handleOpenCarouselEditor(block) }} className={cn("bg-slate-50 px-3 py-2 rounded-lg flex items-center justify-between transition-colors", isEditableLink ? "cursor-pointer hover:border-[#db2777] border border-transparent shadow-sm" : "")}>
+                                                                        <div className="flex items-center gap-2">
+                                                                            {isArranging ? (
+                                                                                <div className="flex flex-col gap-0.5 pr-2 border-r border-slate-200 mr-2">
+                                                                                    <button onClick={(e) => { e.stopPropagation(); handleReorderBlocks(section.id, bidx, bidx - 1); }} disabled={bidx === 0} className="p-0.5 hover:text-[#db2777] disabled:opacity-10"><Wand2 size={10} className="rotate-180" /></button>
+                                                                                    <button onClick={(e) => { e.stopPropagation(); handleReorderBlocks(section.id, bidx, bidx + 1); }} disabled={bidx === section.blocks.length - 1} className="p-0.5 hover:text-[#db2777] disabled:opacity-10"><Wand2 size={10} /></button>
+                                                                                </div>
+                                                                            ) : null}
+                                                                            <span className="text-xs font-bold text-[#db2777] uppercase bg-[#db2777]/10 px-2 py-1 rounded inline-flex items-center gap-1">
+                                                                                {block.type === 'links_carousel' && <Layers size={10} />}
+                                                                                {block.type === 'hero_single_link' && <LinkIcon size={10} />}
+                                                                                {block.type === 'links_grid' && <Grid size={10} />}
+                                                                                {block.type === 'add_products' && <ShoppingBag size={10} />}
+                                                                                {block.type === 'add_apps' && <SmartphoneNfc size={10} />}
+                                                                                {block.type}
+                                                                            </span>
+                                                                            {isEditableLink && !isArranging && <span className="text-[10px] text-slate-400 font-medium">Click to edit items</span>}
+                                                                        </div>
+                                                                        {!isArranging && <button onClick={(e) => { e.stopPropagation(); handleDeleteBlock(block.id); }} className="text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>}
+                                                                    </motion.div>
                                                                 );
                                                             })}
                                                         </div>
                                                     )}
-                                                </div>
+                                                </motion.div>
                                             ))}
                                         </div>
                                     )}
@@ -609,18 +704,22 @@ export default function BioLinkBuilder() {
 
                         {/* RIGHT COLUMN: Preview & Actions */}
                         <div className="flex-[1] flex flex-col items-center">
-                            {/* Actions Top Bar */}
-                            <div className="flex items-center justify-center gap-3 w-full max-w-[400px] mb-8 bg-white py-3 rounded-[16px] shadow-sm border border-[#EAEBEE]">
+                            {/* Actions Top Bar */}                             <div className="flex items-center justify-center gap-3 w-full max-w-[400px] mb-8 bg-white py-3 rounded-[16px] shadow-sm border border-[#EAEBEE]">
                                 <button className="h-9 px-4 rounded-full border border-[#D5D8DF] bg-white text-[#6C768A] text-xs font-semibold flex items-center gap-2 hover:bg-slate-50">
                                     <Eye size={14} /> Preview
                                 </button>
-                                <button className="h-9 px-4 rounded-full border border-[#D5D8DF] bg-white text-[#6C768A] text-xs font-semibold flex items-center gap-2 hover:bg-slate-50">
-                                    <GripVertical size={14} className="opacity-50" /> Arrange
+                                <button
+                                    onClick={() => setIsArranging(!isArranging)}
+                                    className={cn("h-9 px-4 rounded-full border text-xs font-semibold flex items-center gap-2 transition-all",
+                                        isArranging ? "bg-[#db2777] border-[#db2777] text-white" : "border-[#D5D8DF] bg-white text-[#6C768A] hover:bg-slate-50")}
+                                >
+                                    <GripVertical size={14} className="opacity-50" /> {isArranging ? "Finish" : "Arrange"}
                                 </button>
                                 <button className="h-9 px-5 rounded-full bg-[#db2777] text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-[#db2777]/20 hover:scale-105 transition-transform">
                                     <Share2 size={12} /> Share
                                 </button>
                             </div>
+
 
                             {/* Mobile Mockup Form Factor */}
                             <div className="w-[360px] h-[720px] bg-[#333333] rounded-[48px] shadow-[0_30px_60px_rgba(0,0,0,0.1)] p-4 relative flex-shrink-0">
@@ -687,7 +786,7 @@ export default function BioLinkBuilder() {
                                                                         <div className="absolute inset-0 flex items-center justify-center bg-slate-800 text-slate-400"><ImageIcon size={40} className="opacity-30" /></div>
                                                                     )}
                                                                     <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/80"></div>
-                                                                    
+
                                                                     <div className="absolute inset-0 p-6 flex flex-col justify-end">
                                                                         <h4 className="font-bold text-[20px] text-white leading-tight mb-3 drop-shadow-md group-hover:text-pink-200 transition-colors">{item.title || "Featured Link"}</h4>
                                                                         <div className="inline-flex mt-1">
@@ -724,26 +823,26 @@ export default function BioLinkBuilder() {
                                                             const items = block.items || (block as any).content?.items || [];
                                                             return (
                                                                 <div key={block.id} className="w-[105%] -ml-[2.5%] flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory py-2 px-6 relative mb-4">
-                                                                     {items.map((item: any, idx: number) => (
-                                                                         <a key={idx} href={item.url || "#"} target="_blank" className="flex-shrink-0 w-[180px] bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.04)] snap-center border border-[#f1f3f5] flex flex-col group transition-all duration-300 hover:-translate-y-1 relative focus:outline-none">
-                                                                              <div className="w-full h-[180px] bg-[#F8F9FB] relative overflow-hidden flex-shrink-0 p-4">
-                                                                                   {item.image_url ? (
-                                                                                       <img src={item.image_url} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-sm" />
-                                                                                   ) : (
-                                                                                       <div className="absolute inset-0 flex items-center justify-center text-slate-300"><ShoppingBag size={32} className="opacity-40" /></div>
-                                                                                   )}
-                                                                              </div>
-                                                                              <div className="p-4 flex flex-col flex-1 bg-white text-center z-10">
-                                                                                   <h4 className="font-bold text-[14px] text-[#111] leading-tight mb-1 group-hover:text-[#db2777] transition-colors line-clamp-1">{item.title || "Product Name"}</h4>
-                                                                                   {(item.description || item.url) && (
-                                                                                       <p className="text-[12px] font-bold text-slate-400 line-clamp-1">{item.description}</p>
-                                                                                   )}
-                                                                                   <div className="mt-4 pt-3 border-t border-slate-50">
-                                                                                       <span className="bg-[#db2777]/10 text-[#db2777] group-hover:bg-[#db2777] group-hover:text-white transition-colors text-[11px] font-bold px-4 py-2 rounded-full inline-block w-full shadow-sm">{item.button_text || "Buy Now"}</span>
-                                                                                   </div>
-                                                                              </div>
-                                                                         </a>
-                                                                     ))}
+                                                                    {items.map((item: any, idx: number) => (
+                                                                        <a key={idx} href={item.url || "#"} target="_blank" className="flex-shrink-0 w-[180px] bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.04)] snap-center border border-[#f1f3f5] flex flex-col group transition-all duration-300 hover:-translate-y-1 relative focus:outline-none">
+                                                                            <div className="w-full h-[180px] bg-[#F8F9FB] relative overflow-hidden flex-shrink-0 p-4">
+                                                                                {item.image_url ? (
+                                                                                    <img src={item.image_url} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-sm" />
+                                                                                ) : (
+                                                                                    <div className="absolute inset-0 flex items-center justify-center text-slate-300"><ShoppingBag size={32} className="opacity-40" /></div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="p-4 flex flex-col flex-1 bg-white text-center z-10">
+                                                                                <h4 className="font-bold text-[14px] text-[#111] leading-tight mb-1 group-hover:text-[#db2777] transition-colors line-clamp-1">{item.title || "Product Name"}</h4>
+                                                                                {(item.description || item.url) && (
+                                                                                    <p className="text-[12px] font-bold text-slate-400 line-clamp-1">{item.description}</p>
+                                                                                )}
+                                                                                <div className="mt-4 pt-3 border-t border-slate-50">
+                                                                                    <span className="bg-[#db2777]/10 text-[#db2777] group-hover:bg-[#db2777] group-hover:text-white transition-colors text-[11px] font-bold px-4 py-2 rounded-full inline-block w-full shadow-sm">{item.button_text || "Buy Now"}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </a>
+                                                                    ))}
                                                                 </div>
                                                             )
                                                         }
@@ -751,24 +850,24 @@ export default function BioLinkBuilder() {
                                                             const items = block.items || (block as any).content?.items || [];
                                                             return (
                                                                 <div key={block.id} className="w-full space-y-3 mb-6">
-                                                                     {items.map((item: any, idx: number) => (
-                                                                         <a key={idx} href={item.url || "#"} target="_blank" className="w-full bg-white rounded-[20px] p-3 shadow-sm border border-[#f1f3f5] flex items-center gap-4 group transition-all duration-300 hover:shadow-md hover:border-[#db2777]/30">
-                                                                             <div className="w-[68px] h-[68px] rounded-[16px] bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200/60 shadow-inner p-0.5">
-                                                                                 {item.image_url ? (
-                                                                                     <img src={item.image_url} className="w-full h-full object-cover rounded-[14px]" />
-                                                                                 ) : (
-                                                                                     <div className="w-full h-full flex items-center justify-center text-slate-300"><SmartphoneNfc size={24} className="opacity-50" /></div>
-                                                                                 )}
-                                                                             </div>
-                                                                             <div className="flex-1 min-w-0">
-                                                                                 <h4 className="font-bold text-[14px] text-[#111] leading-tight mb-0.5 truncate group-hover:text-[#db2777] transition-colors">{item.title || "App Name"}</h4>
-                                                                                 {(item.description || item.url) && <p className="text-[12px] text-slate-400 truncate font-medium">{item.description}</p>}
-                                                                             </div>
-                                                                             <div className="flex-shrink-0 bg-[#F8F9FB] group-hover:bg-[#db2777] group-hover:text-white text-slate-500 shadow-sm text-[11px] font-bold px-4 py-2 rounded-full transition-colors mr-1">
-                                                                                 {item.button_text || "GET"}
-                                                                             </div>
-                                                                         </a>
-                                                                     ))}
+                                                                    {items.map((item: any, idx: number) => (
+                                                                        <a key={idx} href={item.url || "#"} target="_blank" className="w-full bg-white rounded-[20px] p-3 shadow-sm border border-[#f1f3f5] flex items-center gap-4 group transition-all duration-300 hover:shadow-md hover:border-[#db2777]/30">
+                                                                            <div className="w-[68px] h-[68px] rounded-[16px] bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200/60 shadow-inner p-0.5">
+                                                                                {item.image_url ? (
+                                                                                    <img src={item.image_url} className="w-full h-full object-cover rounded-[14px]" />
+                                                                                ) : (
+                                                                                    <div className="w-full h-full flex items-center justify-center text-slate-300"><SmartphoneNfc size={24} className="opacity-50" /></div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <h4 className="font-bold text-[14px] text-[#111] leading-tight mb-0.5 truncate group-hover:text-[#db2777] transition-colors">{item.title || "App Name"}</h4>
+                                                                                {(item.description || item.url) && <p className="text-[12px] text-slate-400 truncate font-medium">{item.description}</p>}
+                                                                            </div>
+                                                                            <div className="flex-shrink-0 bg-[#F8F9FB] group-hover:bg-[#db2777] group-hover:text-white text-slate-500 shadow-sm text-[11px] font-bold px-4 py-2 rounded-full transition-colors mr-1">
+                                                                                {item.button_text || "GET"}
+                                                                            </div>
+                                                                        </a>
+                                                                    ))}
                                                                 </div>
                                                             )
                                                         }
@@ -853,13 +952,13 @@ export default function BioLinkBuilder() {
             <AnimatePresence>
                 {showEditProfileModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-[#333]/40 backdrop-blur-sm" onClick={() => setShowEditProfileModal(false)}
                         />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }} 
-                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="w-full max-w-lg bg-white rounded-[24px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
                         >
@@ -872,8 +971,8 @@ export default function BioLinkBuilder() {
                             <div className="p-8 space-y-6 overflow-y-auto">
                                 <div className="space-y-3">
                                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Portfolio Title</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={editProfileForm.title || ""}
                                         onChange={e => setEditProfileForm({ ...editProfileForm, title: e.target.value })}
                                         className="w-full px-5 py-3 rounded-lg border border-[#D5D8DF] outline-none focus:border-[#db2777] transition-colors font-medium text-[14px]"
@@ -882,7 +981,7 @@ export default function BioLinkBuilder() {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Bio Description</label>
-                                    <textarea 
+                                    <textarea
                                         value={editProfileForm.bio || ""}
                                         onChange={e => setEditProfileForm({ ...editProfileForm, bio: e.target.value })}
                                         rows={3}
@@ -892,8 +991,8 @@ export default function BioLinkBuilder() {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Email Link</label>
-                                    <input 
-                                        type="email" 
+                                    <input
+                                        type="email"
                                         value={editProfileForm.email_link || ""}
                                         onChange={e => setEditProfileForm({ ...editProfileForm, email_link: e.target.value })}
                                         className="w-full px-5 py-3 rounded-lg border border-[#D5D8DF] outline-none focus:border-[#db2777] transition-colors font-medium text-[14px]"
@@ -902,8 +1001,8 @@ export default function BioLinkBuilder() {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Contact number</label>
-                                    <input 
-                                        type="tel" 
+                                    <input
+                                        type="tel"
                                         value={editProfileForm.contact_link || ""}
                                         onChange={e => setEditProfileForm({ ...editProfileForm, contact_link: e.target.value })}
                                         className="w-full px-5 py-3 rounded-lg border border-[#D5D8DF] outline-none focus:border-[#db2777] transition-colors font-medium text-[14px]"
@@ -913,11 +1012,11 @@ export default function BioLinkBuilder() {
                             </div>
                             <div className="px-8 py-5 border-t border-slate-100 flex gap-3 bg-slate-50 mt-auto">
                                 <button onClick={() => setShowEditProfileModal(false)} className="flex-1 h-12 rounded-lg border border-[#D5D8DF] bg-white text-slate-600 font-bold text-[13px] hover:bg-slate-50 transition-colors">Cancel</button>
-                                <button 
+                                <button
                                     onClick={async () => {
                                         await handleUpdateProfile(editProfileForm);
                                         setShowEditProfileModal(false);
-                                    }} 
+                                    }}
                                     className="flex-[1.5] h-12 rounded-lg bg-[#db2777] text-white font-bold text-[13px] shadow-lg shadow-[#db2777]/20 hover:bg-[#be185d] transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Save className="w-4 h-4" /> Save Details
@@ -932,13 +1031,13 @@ export default function BioLinkBuilder() {
             <AnimatePresence>
                 {showAddTabModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-[#333]/40 backdrop-blur-sm" onClick={() => setShowAddTabModal(false)}
                         />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }} 
-                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="w-full max-w-md bg-white rounded-[24px] shadow-2xl relative z-10 overflow-hidden flex flex-col"
                         >
@@ -957,8 +1056,8 @@ export default function BioLinkBuilder() {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tab Name</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={newTabTitle}
                                         onChange={e => setNewTabTitle(e.target.value)}
                                         className="w-full px-5 py-3 rounded-lg border border-[#D5D8DF] outline-none focus:border-[#db2777] transition-colors font-medium text-[14px]"
@@ -969,7 +1068,7 @@ export default function BioLinkBuilder() {
                             </div>
                             <div className="px-8 py-5 border-t border-slate-100 flex gap-3 bg-slate-50">
                                 <button onClick={() => setShowAddTabModal(false)} className="flex-1 h-12 rounded-lg border border-[#D5D8DF] bg-white text-slate-600 font-bold text-[13px] hover:bg-slate-50 transition-colors">Cancel</button>
-                                <button 
+                                <button
                                     onClick={handleAddTab}
                                     disabled={!newTabTitle.trim()}
                                     className="flex-[1.5] h-12 rounded-lg bg-[#db2777] text-white font-bold text-[13px] shadow-lg shadow-[#db2777]/20 hover:bg-[#be185d] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -986,13 +1085,13 @@ export default function BioLinkBuilder() {
             <AnimatePresence>
                 {showAddSectionModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-[#333]/40 backdrop-blur-sm" onClick={() => setShowAddSectionModal(false)}
                         />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }} 
-                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="w-full max-w-md bg-white rounded-[24px] shadow-2xl relative z-10 overflow-hidden flex flex-col"
                         >
@@ -1011,8 +1110,8 @@ export default function BioLinkBuilder() {
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Section Heading</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={newSectionTitle}
                                         onChange={e => setNewSectionTitle(e.target.value)}
                                         className="w-full px-5 py-3 rounded-lg border border-[#D5D8DF] outline-none focus:border-[#db2777] transition-colors font-medium text-[14px]"
@@ -1023,7 +1122,7 @@ export default function BioLinkBuilder() {
                             </div>
                             <div className="px-8 py-5 border-t border-slate-100 flex gap-3 bg-slate-50">
                                 <button onClick={() => setShowAddSectionModal(false)} className="flex-1 h-12 rounded-lg border border-[#D5D8DF] bg-white text-slate-600 font-bold text-[13px] hover:bg-slate-50 transition-colors">Cancel</button>
-                                <button 
+                                <button
                                     onClick={handleAddSection}
                                     disabled={!newSectionTitle.trim()}
                                     className="flex-[1.5] h-12 rounded-lg bg-[#db2777] text-white font-bold text-[13px] shadow-lg shadow-[#db2777]/20 hover:bg-[#be185d] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1040,13 +1139,13 @@ export default function BioLinkBuilder() {
             <AnimatePresence>
                 {showAddBlockModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-[#333]/40 backdrop-blur-sm" onClick={() => setShowAddBlockModal(false)}
                         />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }} 
-                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="w-full max-w-4xl bg-[#F8F9FB] rounded-[24px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
                         >
@@ -1056,7 +1155,7 @@ export default function BioLinkBuilder() {
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            
+
                             <div className="p-8 overflow-y-auto space-y-10">
                                 {/* CATEGORY: Links */}
                                 <div>
@@ -1067,7 +1166,7 @@ export default function BioLinkBuilder() {
                                             { id: "hero_single_link", title: "Hero Single Link", desc: "Highlight your master link", icon: <LinkIcon /> },
                                             { id: "links_grid", title: "Links Grid", desc: "Keep your links in an easy grid format", icon: <Grid /> }
                                         ].map(block => (
-                                            <button key={block.id} onClick={() => { if(targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
+                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
                                                 <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
                                                     {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
                                                 </div>
@@ -1089,7 +1188,7 @@ export default function BioLinkBuilder() {
                                             { id: "youtube_shorts", title: "Youtube Shorts", desc: "Share your pace shorts", icon: <Youtube /> },
                                             { id: "long_video", title: "Long form videos", desc: "Integrate videos from youtube, vimeo or anywhere", icon: <MonitorPlay /> }
                                         ].map(block => (
-                                            <button key={block.id} onClick={() => { if(targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
+                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
                                                 <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
                                                     {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
                                                 </div>
@@ -1112,7 +1211,7 @@ export default function BioLinkBuilder() {
                                             { id: "horizontal_media", title: "Horizontal media", desc: "Show off your horizontal format", icon: <Monitor /> },
                                             { id: "add_logos", title: "Add Logos", desc: "Share your brand logos", icon: <Hexagon /> }
                                         ].map(block => (
-                                            <button key={block.id} onClick={() => { if(targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
+                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
                                                 <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
                                                     {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
                                                 </div>
@@ -1133,7 +1232,7 @@ export default function BioLinkBuilder() {
                                             { id: "add_products", title: "Add products", desc: "Provide affiliate links", icon: <ShoppingBag /> },
                                             { id: "add_apps", title: "Add Apps", desc: "Share Apps from Play Store & Apple Store", icon: <SmartphoneNfc /> }
                                         ].map(block => (
-                                            <button key={block.id} onClick={() => { if(targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
+                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
                                                 <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
                                                     {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
                                                 </div>
@@ -1155,30 +1254,30 @@ export default function BioLinkBuilder() {
             <AnimatePresence>
                 {showCarouselEditorModal && editingCarouselBlock && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-[#333]/40 backdrop-blur-sm" onClick={() => setShowCarouselEditorModal(false)}
                         />
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }} 
-                            animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="w-full max-w-2xl bg-white rounded-[24px] shadow-2xl relative z-10 flex flex-col max-h-[90vh]"
                         >
                             <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-[24px]">
                                 <h3 className="text-[16px] font-bold text-slate-800 flex items-center gap-2">
-                                    {editingCarouselBlock.type === 'links_carousel' && <Layers size={18} className="text-[#db2777]"/>}
-                                    {editingCarouselBlock.type === 'hero_single_link' && <LinkIcon size={18} className="text-[#db2777]"/>}
-                                    {editingCarouselBlock.type === 'links_grid' && <Grid size={18} className="text-[#db2777]"/>}
-                                    {editingCarouselBlock.type === 'add_products' && <ShoppingBag size={18} className="text-[#db2777]"/>}
-                                    {editingCarouselBlock.type === 'add_apps' && <SmartphoneNfc size={18} className="text-[#db2777]"/>}
+                                    {editingCarouselBlock.type === 'links_carousel' && <Layers size={18} className="text-[#db2777]" />}
+                                    {editingCarouselBlock.type === 'hero_single_link' && <LinkIcon size={18} className="text-[#db2777]" />}
+                                    {editingCarouselBlock.type === 'links_grid' && <Grid size={18} className="text-[#db2777]" />}
+                                    {editingCarouselBlock.type === 'add_products' && <ShoppingBag size={18} className="text-[#db2777]" />}
+                                    {editingCarouselBlock.type === 'add_apps' && <SmartphoneNfc size={18} className="text-[#db2777]" />}
                                     Edit {editingCarouselBlock.type.replace('_', ' ')}
                                 </h3>
                                 <button onClick={() => setShowCarouselEditorModal(false)} className="p-2 text-slate-400 hover:bg-slate-50 rounded-full transition-colors">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            
+
                             <div className="p-8 overflow-y-auto bg-slate-50/50 space-y-6">
                                 {(editingCarouselBlock.items || []).map((item: any, idx: number) => (
                                     <div key={idx} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm relative space-y-4 hover:border-[#db2777]/30 transition-colors">
@@ -1188,10 +1287,10 @@ export default function BioLinkBuilder() {
                                                 Card
                                             </span>
                                             <button onClick={() => {
-                                                const updated = {...editingCarouselBlock};
+                                                const updated = { ...editingCarouselBlock };
                                                 updated.items.splice(idx, 1);
                                                 setEditingCarouselBlock(updated);
-                                            }} className="text-slate-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-md transition-all"><Trash2 size={15}/></button>
+                                            }} className="text-slate-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-md transition-all"><Trash2 size={15} /></button>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1.5 col-span-2 md:col-span-1">
@@ -1229,8 +1328,8 @@ export default function BioLinkBuilder() {
                                     </div>
                                 ))}
                                 <button onClick={() => {
-                                    const updated = {...editingCarouselBlock};
-                                    if(!updated.items) updated.items = [];
+                                    const updated = { ...editingCarouselBlock };
+                                    if (!updated.items) updated.items = [];
                                     updated.items.push({ title: "New Card", url: "https://", description: "", button_text: "Visit Now" });
                                     setEditingCarouselBlock(updated);
                                 }} className="w-full py-4 border-2 border-dashed border-[#db2777]/30 bg-[#db2777]/5 text-[#db2777] rounded-2xl text-[13px] font-bold hover:bg-[#db2777]/10 transition-colors">
@@ -1240,7 +1339,7 @@ export default function BioLinkBuilder() {
 
                             <div className="px-8 py-5 border-t border-slate-100 flex gap-3 bg-white sticky bottom-0 rounded-b-[24px]">
                                 <button onClick={() => setShowCarouselEditorModal(false)} className="flex-1 h-12 rounded-lg border border-[#D5D8DF] bg-white text-slate-600 font-bold text-[13px] hover:bg-slate-50 transition-colors">Cancel</button>
-                                <button 
+                                <button
                                     onClick={handleSaveCarouselEditor}
                                     className="flex-[1.5] h-12 rounded-lg bg-[#db2777] text-white font-bold text-[13px] shadow-lg shadow-[#db2777]/20 hover:bg-[#be185d] transition-colors flex items-center justify-center gap-2"
                                 >
