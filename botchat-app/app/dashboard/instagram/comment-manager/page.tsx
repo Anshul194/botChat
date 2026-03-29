@@ -20,6 +20,7 @@ import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
 import { FullAccountReplyModal } from "../../components/modals/FullAccountReplyModal";
+import { MentionReplyModal } from "../../components/modals/MentionReplyModal";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -119,6 +120,7 @@ export default function InstagramCommentManagerPage() {
     const [showCommentNowModal, setShowCommentNowModal] = useState(false);
     const [selectedPostForComment, setSelectedPostForComment] = useState<InstagramPost | null>(null);
     const [showFullReplyModal, setShowFullReplyModal] = useState(false);
+    const [showMentionReplyModal, setShowMentionReplyModal] = useState(false);
 
     // Outside click for dropdown
     useEffect(() => {
@@ -298,6 +300,7 @@ export default function InstagramCommentManagerPage() {
                                         <div key={item.id} 
                                             onClick={() => {
                                                 if (item.id === 'full') setShowFullReplyModal(true);
+                                                if (item.id === 'mention') setShowMentionReplyModal(true);
                                             }}
                                             className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer"
                                         >
@@ -659,6 +662,16 @@ export default function InstagramCommentManagerPage() {
                 <FullAccountReplyModal
                     isOpen={showFullReplyModal}
                     onClose={() => setShowFullReplyModal(false)}
+                    onSaved={() => {
+                        fetchTemplates();
+                    }}
+                    instagramId={selectedAccount?.instagram_id || ""}
+                    platform="instagram"
+                />
+
+                <MentionReplyModal
+                    isOpen={showMentionReplyModal}
+                    onClose={() => setShowMentionReplyModal(false)}
                     onSaved={() => {
                         fetchTemplates();
                     }}
