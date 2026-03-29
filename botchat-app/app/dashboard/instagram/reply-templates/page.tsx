@@ -214,7 +214,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   const fetchPages = async () => {
     setIsLoadingPages(true);
     try {
-      const response = await api.get("/social/instagram-connect");
+      const response = await api.get("/social/instagram-connect?platform=instagram");
       if (response.data.success || response.data.is_success) {
         const fetchedAccounts = response.data.data.instagram_accounts || [];
         // For Instagram, sometimes it's flattened or we use the account list
@@ -624,7 +624,7 @@ export default function InstagramReplyTemplatesPage() {
   const handleEdit = async (t: ReplyTemplate) => {
     const tid = toast.loading("Syncing asset data...");
     try {
-      const res = await api.get(`/instagram/auto-reply-template/${t.id}`);
+      const res = await api.get(`/instagram/auto-reply-template/${t.id}?platform=instagram`);
       const full = res.data?.data || res.data;
       setFormModal({ open: true, mode: "edit", template: full });
       toast.dismiss(tid);

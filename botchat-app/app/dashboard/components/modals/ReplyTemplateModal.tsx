@@ -285,7 +285,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
           setPages(fetchedPages.map((p: any) => ({ id: p.page_id, name: p.page_name })));
         }
       } else {
-        const response = await api.get("/social/instagram-connect");
+        const response = await api.get("/social/instagram-connect?platform=instagram");
         if (response.data.success || response.data.is_success) {
           const fetchedAccounts = response.data.data.instagram_accounts || [];
           setPages(fetchedAccounts.map((acc: any) => ({ id: acc.instagram_id, name: acc.username })));

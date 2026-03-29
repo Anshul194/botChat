@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
     Instagram, MessageSquare, Zap, Target, MoreHorizontal, Search,
-    Plus, RefreshCw, Layers, Sparkles, ChevronRight, ChevronDown, ChevronLeft, ListFilter,
-    Trash2, Pause, Play, X, SlidersHorizontal, ArrowRight,
+    Plus, RefreshCw, Layers, Sparkles, ChevronRight, ChevronDown, ChevronLeft, ListFilter, Clock,
+    Trash2, Pause, Play, X, SlidersHorizontal, ArrowRight, LayoutGrid,
     Edit3, Save, Copy, Check, Loader2, Megaphone, Activity,
     Eye, Settings, Tag, MessageCircle, Image as ImageIcon,
     FileText, PieChart, Info, AlertCircle, Box, Heart, Bell, User,
@@ -144,7 +144,7 @@ export default function InstagramCommentManagerPage() {
     const fetchAccounts = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await api.get("/social/instagram-connect");
+            const response = await api.get("/social/instagram-connect?platform=instagram");
             if (response.data.success || response.data.is_success) {
                 const fetchedAccounts = response.data.data.instagram_accounts || [];
                 setAccounts(fetchedAccounts);
@@ -165,7 +165,7 @@ export default function InstagramCommentManagerPage() {
         setIsPostsLoading(true);
         try {
             const id = selectedAccount.instagram_id;
-            const response = await api.get(`/instagram/comment-manager/posts/${id}`);
+            const response = await api.get(`/instagram/comment-manager/posts/${id}?platform=instagram`);
 
             // Be more robust with the data structure
             const responseData = response.data;
@@ -201,13 +201,24 @@ export default function InstagramCommentManagerPage() {
         setIsTemplatesLoading(true);
         try {
             const [commentsRes, repliesRes] = await Promise.all([
-                api.get("/instagram/comment-template"),
-                api.get("/instagram/auto-reply-template")
+                api.get("/instagram/comment-template?platform=instagram"),
+                api.get("/instagram/auto-reply-template?platform=instagram")
             ]);
             if (commentsRes.data.success || commentsRes.data.is_success) setCommentTemplates(commentsRes.data.data || []);
             if (repliesRes.data.success || repliesRes.data.is_success) setReplyTemplates(repliesRes.data.data || []);
         } catch (error) { } finally { setIsTemplatesLoading(false); }
     }, []);
+
+    const deleteTemplate = async (type: "comment" | "reply", id: number) => {
+        if (!confirm("Are you sure you want to permanently delete this asset?")) return;
+        try {
+            await api.delete(type === "comment" ? `/instagram/comment-template/${id}` : `/instagram/auto-reply-template/${id}`);
+            toast.success("Asset scrubbed successfully!");
+            fetchTemplates();
+        } catch (error) {
+            toast.error("Failed to delete asset");
+        }
+    };
 
     useEffect(() => {
         fetchAccounts();
@@ -283,44 +294,43 @@ export default function InstagramCommentManagerPage() {
                         </div>
                     </div>
 
-                    {/* Automation List Hub (Screenshot Box Content) */}
-                    <div className="p-1 rounded-2xl bg-neutral-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800 shadow-inner">
-                        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                            <h3 className="text-[12px] font-black text-indigo-600 uppercase tracking-widest leading-none">@{selectedAccount?.username}</h3>
+                    {/* Automation List Hub */}
+                    <div className="space-y-4">
+                        <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-4 text-center">
+                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto shadow-sm">
+                                <Sparkles className="w-6 h-6" />
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Full Account Automation</h3>
+                                <p className="text-[10px] text-slate-500 font-medium">Global override logic for all IG activity</p>
+                            </div>
+                            <button className="w-full py-2.5 rounded-xl bg-primary text-white font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                                {pageStats.has_full_page_reply ? "Edit Global Logic" : "Enable Full Automation"}
+                            </button>
                         </div>
-                        {[
-                            { id: 'comment', label: 'Auto Comment', desc: 'Enabled : 0 . Comment : 0 . Not replied yet', icon: MessageSquare, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
-                            { id: 'reply', label: 'Auto Comment Reply', desc: 'Enabled : 0 . Response : 0 . Not replied yet', icon: Zap, color: 'text-emerald-500', bg: 'bg-emerald-50/50' },
-                            { id: 'full', label: 'Full Account Comment Reply', desc: 'Manage Full Account Reply . Not Enabled', icon: Layers, color: 'text-sky-500', bg: 'bg-sky-50/50', isAction: true },
-                            { id: 'mention', label: 'Mention Reply', desc: 'Manage Mention Reply . Not Enabled', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50', isAction: true },
-                            { id: 'tagged', label: 'Tagged Media', desc: 'Get the media objects in which Business has been tagged.', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
-                        ].map((item, idx) => (
-                            <div key={item.id} className={cn(
-                                "group p-4 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all cursor-pointer border-b border-slate-50 dark:border-slate-800/50 last:border-0",
-                            )}>
-                                <div className="flex items-center gap-4">
-                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", item.bg, item.color)}>
-                                        <item.icon size={18} strokeWidth={2.5} />
+
+                        <div className="p-1 rounded-2xl bg-neutral-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800 shadow-inner overflow-hidden">
+                            {[
+                                { id: 'comment', label: 'Auto Comment', desc: 'Enabled : 0 . Active', icon: MessageSquare, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
+                                { id: 'reply', label: 'Auto Comment Reply', desc: 'Enabled : 0 . Active', icon: Zap, color: 'text-emerald-500', bg: 'bg-emerald-50/50' },
+                                { id: 'mention', label: 'Mention Reply', desc: 'Configure @Mention replies', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50', isAction: true },
+                                { id: 'tagged', label: 'Tagged Media', desc: 'Manage your tagged catalog', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
+                            ].map((item) => (
+                                <div key={item.id} className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer">
+                                    <div className="flex items-center gap-3.5">
+                                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shadow-xs", item.bg, item.color)}>
+                                            <item.icon size={16} strokeWidth={2.5} />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <h4 className="text-[12px] font-bold text-slate-800 dark:text-slate-200 tracking-tight leading-none">{item.label}</h4>
+                                            <p className="text-[9px] font-medium text-slate-400 truncate max-w-[140px] mt-1">{item.desc}</p>
+                                        </div>
                                     </div>
-                                    <div className="space-y-0.5">
-                                        <h4 className="text-[13px] font-black text-slate-800 dark:text-slate-200 tracking-tight leading-none">{item.label}</h4>
-                                        <p className="text-[10px] font-medium text-slate-400 truncate max-w-[200px] leading-tight mt-1">{item.desc}</p>
+                                    <div className="p-1.5 rounded-lg border border-slate-100 text-slate-300 group-hover:text-primary group-hover:border-primary/20 transition-all">
+                                        <ChevronRight size={14} />
                                     </div>
                                 </div>
-                                <button className={cn(
-                                    "p-2 rounded-xl transition-all shadow-sm border",
-                                    item.isAction ? "border-sky-100 text-sky-500 hover:bg-sky-50" : "border-slate-100 text-slate-300 hover:text-primary",
-                                    item.id === 'mention' && "border-orange-100 text-orange-500 hover:bg-orange-50",
-                                    item.id === 'tagged' && "border-rose-100 text-rose-500 hover:bg-rose-50"
-                                )}>
-                                    {item.isAction ? <RefreshCw size={14} /> : <Eye size={16} />}
-                                </button>
-                            </div>
-                        ))}
-                        <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                            <button className="w-full py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 font-bold text-[12px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
-                                <FileText size={16} /> See Auto Reply Report
-                            </button>
+                            ))}
                         </div>
                     </div>
 
@@ -496,44 +506,117 @@ export default function InstagramCommentManagerPage() {
     );
 
     const TemplateListView = ({ type }: { type: "comment" | "reply" }) => {
-        const templates = type === "comment" ? commentTemplates : replyTemplates;
+        const templates = (type === "comment" ? commentTemplates : replyTemplates).sort((a, b) => b.id - a.id);
+        const [search, setSearch] = useState("");
+
+        const filtered = templates.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+
         return (
-            <div className="space-y-6 pb-20">
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl flex items-center justify-between shadow-sm">
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => setActiveView("dashboard")} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 text-slate-400 hover:text-primary transition-all active:scale-95 border border-slate-100 dark:border-slate-700"><ChevronRight size={18} className="rotate-180" /></button>
+            <div className="space-y-8 pb-20">
+                {/* View Header */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-[32px] flex items-center justify-between shadow-xs">
+                    <div className="flex items-center gap-6">
+                        <button onClick={() => setActiveView("dashboard")} className="w-12 h-12 rounded-[20px] bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 text-slate-400 hover:text-primary transition-all active:scale-95 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm">
+                            <ChevronLeft size={20} />
+                        </button>
                         <div>
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight">{type === 'comment' ? 'Comment Sets' : 'Reply Templates'}</h2>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Asset Inventory</p>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{type === 'comment' ? 'Comment Sets' : 'Reply Templates'}</h2>
+                            <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                Asset Inventory
+                            </p>
                         </div>
                     </div>
-                    <button
-                        onClick={() => {
-                            if (type === 'comment') { setEditingComment({ name: "", messages: [""] }); setShowCommentModal(true); }
-                            else { setEditingReply({ name: "", message: "", reply_type: "generic" }); setShowReplyModal(true); }
-                        }}
-                        className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center gap-2"
-                    >
-                        <Plus size={14} /> New Asset
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Search inventory..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-11 pr-5 py-3 rounded-2xl bg-slate-50 border border-transparent focus:border-primary/20 focus:bg-white outline-none text-sm font-medium transition-all w-64"
+                            />
+                        </div>
+                        <button
+                            onClick={() => {
+                                if (type === 'comment') { setEditingComment({ name: "", messages: [""] }); setShowCommentModal(true); }
+                                else { setEditingReply({ name: "", message: "", reply_type: "generic" }); setShowReplyModal(true); }
+                            }}
+                            className="bg-primary text-white px-8 py-3.5 rounded-2xl font-bold text-[12px] uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center gap-3"
+                        >
+                            <Plus size={18} /> New Asset
+                        </button>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {templates.map((t) => (
-                        <div key={t.id} className="group bg-white dark:bg-slate-900 border border-neutral-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:border-primary/30 transition-all">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", type === 'comment' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600')}>
-                                    {type === 'comment' ? <MessageSquare size={16} /> : <Zap size={16} />}
-                                </div>
-                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => { if (type === 'comment') { setEditingComment(t as CommentTemplate); setShowCommentModal(true); } else { setEditingReply(t as ReplyTemplate); setShowReplyModal(true); } }} className="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 text-slate-400 hover:text-primary"><Edit3 size={14} /></button>
-                                    <button onClick={async () => { if (confirm("Delete Asset?")) { await api.delete(type === 'comment' ? `/instagram/comment-template/${t.id}` : `/instagram/auto-reply-template/${t.id}`); fetchTemplates(); } }} className="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-rose-50 text-slate-400 hover:text-rose-600"><Trash2 size={14} /></button>
-                                </div>
+                {/* Table Layout */}
+                <div className="bg-white dark:bg-slate-900 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div className="grid grid-cols-[2.5fr_1.5fr_1.5fr_120px] gap-8 px-10 py-6 bg-slate-50/50 dark:bg-slate-950/20 border-b border-slate-50 dark:border-slate-800">
+                        {["Asset Identity", "Asset Type", "Last Update", "Actions"].map(h => (
+                            <span key={h} className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{h}</span>
+                        ))}
+                    </div>
+
+                    <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                        {isTemplatesLoading ? (
+                            <div className="p-20 text-center"><Loader2 className="w-10 h-10 animate-spin text-primary/30 mx-auto" /></div>
+                        ) : filtered.length === 0 ? (
+                            <div className="p-20 text-center bg-slate-50/30">
+                                <Box className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+                                <h3 className="text-lg font-bold text-slate-400 uppercase tracking-tight">Inventory Empty</h3>
+                                <p className="text-xs text-slate-400 mt-2 font-medium italic">Create your first automation asset to get started.</p>
                             </div>
-                            <h4 className="text-[14px] font-bold text-slate-800 dark:text-white uppercase tracking-tight truncate">{t.name}</h4>
-                            <p className="text-[11px] text-slate-400 font-medium mt-2 line-clamp-2 italic leading-relaxed">"{type === 'comment' ? (t as CommentTemplate).messages[0] : (t as ReplyTemplate).message}"</p>
-                        </div>
-                    ))}
+                        ) : (
+                            filtered.map((t) => (
+                                <div key={t.id} className="grid grid-cols-[2.5fr_1.5fr_1.5fr_120px] gap-8 px-10 py-8 items-center hover:bg-slate-50/20 transition-all group border-b border-transparent last:border-0">
+                                    <div className="flex items-center gap-5">
+                                        <div className={cn(
+                                            "w-14 h-14 rounded-[22px] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:shadow-md",
+                                            type === 'comment' ? "bg-purple-50 text-purple-500 group-hover:bg-purple-600 group-hover:text-white" : "bg-pink-50 text-pink-500 group-hover:bg-pink-600 group-hover:text-white"
+                                        )}>
+                                            <LayoutGrid size={24} />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[15px] font-bold text-slate-800 dark:text-white truncate tracking-tight">{t.name}</p>
+                                            <p className="text-[11px] text-slate-400 font-medium italic truncate mt-1">
+                                                "{type === 'comment' ? (t as CommentTemplate).messages[0] : (t as ReplyTemplate).message}"
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex">
+                                        <span className={cn(
+                                            "px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border",
+                                            type === 'comment' ? "bg-purple-50 text-purple-600 border-purple-100" : "bg-pink-50 text-pink-600 border-pink-100"
+                                        )}>
+                                            {type === 'comment' ? 'Comment Set' : (t as ReplyTemplate).reply_type}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2.5 text-slate-400">
+                                        <Clock size={16} className="text-slate-300" />
+                                        <span className="text-[13px] font-bold tracking-tight">Jan 24, 2026</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => { if (type === 'comment') { setEditingComment(t as CommentTemplate); setShowCommentModal(true); } else { setEditingReply(t as ReplyTemplate); setShowReplyModal(true); } }}
+                                            className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all shadow-xs active:scale-95 border border-transparent hover:border-slate-100"
+                                        >
+                                            <Edit3 size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => deleteTemplate(type, t.id)}
+                                            className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-xs active:scale-95 border border-transparent hover:border-rose-100"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
         );
