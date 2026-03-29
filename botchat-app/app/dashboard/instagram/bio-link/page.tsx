@@ -750,18 +750,21 @@ export default function BioLinkBuilder() {
 
                                         {/* Mobile Preview Tabs */}
                                         {tabs && tabs.length > 1 && (
-                                            <div className="w-full flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-2">
-                                                {tabs.map((tab) => (
-                                                    <button
-                                                        key={tab.id}
-                                                        onClick={() => setSelectedTabId(tab.id)}
-                                                        className={cn("px-4 py-2 rounded-full text-[11px] font-bold transition-all whitespace-nowrap",
-                                                            selectedTabId === tab.id ? "bg-[#db2777] text-white" : "bg-white border border-[#eaeaea] text-slate-500 shadow-sm hover:bg-slate-50"
-                                                        )}
-                                                    >
-                                                        {tab.title}
-                                                    </button>
-                                                ))}
+                                            <div className="w-full mb-6">
+                                                <div className="w-full flex items-center gap-2 overflow-x-auto no-scrollbar p-1">
+                                                    {tabs.map((tab) => (
+                                                        <button
+                                                            key={tab.id}
+                                                            type="button"
+                                                            onClick={(e) => { e.preventDefault(); setSelectedTabId(tab.id); }}
+                                                            className={cn("flex-shrink-0 px-5 py-2 rounded-full text-[11px] font-bold transition-all whitespace-nowrap",
+                                                                selectedTabId === tab.id ? "bg-[#db2777] text-white shadow-md shadow-[#db2777]/20" : "bg-white border border-[#eaeaea] text-slate-500 shadow-sm hover:bg-slate-50"
+                                                            )}
+                                                        >
+                                                            {tab.title}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
 
