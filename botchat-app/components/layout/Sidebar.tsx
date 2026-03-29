@@ -182,32 +182,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     </div>
                 </div>
 
-                {/* New Automation Button */}
-                <div className="p-3 flex-shrink-0">
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={cn(
-                            "w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all",
-                            collapsed
-                                ? "bg-pink-50 dark:bg-pink-950/30 text-pink-600 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-pink-950/50"
-                                : "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/10 hover:brightness-105"
-                        )}
-                    >
-                        <Plus className="w-4 h-4" />
-                        <AnimatePresence>
-                            {!collapsed && (
-                                <motion.span
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.8 }}
-                                >
-                                    New Automation
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </motion.button>
-                </div>
+
 
                 {/* Navigation */}
                 <motion.nav
@@ -254,91 +229,6 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 </motion.button>
                             </motion.div>
                         )}
-
-                        {/* Instagram Accordion */}
-                        <div>
-                            <motion.button
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => {
-                                    setInstagramOpen(prev => !prev);
-                                    if (!instagramOpen && !isInstagramActive) {
-                                        router.push("/dashboard/instagram");
-                                    }
-                                }}
-                                className={cn(
-                                    "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                                    isInstagramActive
-                                        ? "bg-pink-50/70 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 font-medium shadow-sm"
-                                        : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
-                                )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                                        isInstagramActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
-                                    )}>
-                                        <Instagram className={cn(
-                                            "w-4.5 h-4.5",
-                                            isInstagramActive ? "text-pink-600 dark:text-pink-400" : "text-neutral-600 dark:text-neutral-400"
-                                        )} />
-                                    </div>
-                                    {!collapsed && <span className="font-medium">Instagram</span>}
-                                </div>
-
-                                {!collapsed && (
-                                    <motion.div
-                                        animate={{ rotate: instagramOpen ? 180 : 0 }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                    >
-                                        <ChevronDown className="w-4 h-4 text-neutral-400" />
-                                    </motion.div>
-                                )}
-                            </motion.button>
-
-                            <AnimatePresence>
-                                {instagramOpen && !collapsed && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
-                                            {[
-                                                { label: "Connect Account", href: "/dashboard/instagram" },
-                                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
-                                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
-                                                { label: "Bio Link (Portfolio)", href: "/dashboard/instagram/bio-link", badge: "Premium" },
-                                            ].map(sub => {
-                                                const isActive = sub.href === "/dashboard/instagram" ? pathname === "/dashboard/instagram" : pathname.startsWith(sub.href);
-                                                return (
-                                                    <Link
-                                                        key={sub.href}
-                                                        href={sub.href}
-                                                        onClick={onClose}
-                                                        className={cn(
-                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                                            isActive
-                                                                ? "text-pink-700 dark:text-pink-300 bg-pink-50/60 dark:bg-pink-950/30"
-                                                                : "text-neutral-600 dark:text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                                                        )}
-                                                    >
-                                                        <div className="absolute left-0 w-1 h-1 rounded-full bg-pink-400/60 group-hover:bg-pink-500 transition-colors" />
-                                                        <span className="flex-1 truncate">{sub.label}</span>
-                                                        {sub.badge && (
-                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                                {sub.badge}
-                                                            </span>
-                                                        )}
-                                                    </Link>
-                                                );
-                                            })}
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
 
                         {/* Facebook Accordion */}
                         <div>
@@ -420,6 +310,91 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 );
                                             })}
 
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Instagram Accordion */}
+                        <div>
+                            <motion.button
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => {
+                                    setInstagramOpen(prev => !prev);
+                                    if (!instagramOpen && !isInstagramActive) {
+                                        router.push("/dashboard/instagram");
+                                    }
+                                }}
+                                className={cn(
+                                    "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+                                    isInstagramActive
+                                        ? "bg-pink-50/70 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 font-medium shadow-sm"
+                                        : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
+                                )}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={cn(
+                                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                                        isInstagramActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
+                                    )}>
+                                        <Instagram className={cn(
+                                            "w-4.5 h-4.5",
+                                            isInstagramActive ? "text-pink-600 dark:text-pink-400" : "text-neutral-600 dark:text-neutral-400"
+                                        )} />
+                                    </div>
+                                    {!collapsed && <span className="font-medium">Instagram</span>}
+                                </div>
+
+                                {!collapsed && (
+                                    <motion.div
+                                        animate={{ rotate: instagramOpen ? 180 : 0 }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                    >
+                                        <ChevronDown className="w-4 h-4 text-neutral-400" />
+                                    </motion.div>
+                                )}
+                            </motion.button>
+
+                            <AnimatePresence>
+                                {instagramOpen && !collapsed && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
+                                            {[
+                                                { label: "Connect Account", href: "/dashboard/instagram" },
+                                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
+                                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
+                                                { label: "Bio Link (Portfolio)", href: "/dashboard/instagram/bio-link", badge: "Premium" },
+                                            ].map(sub => {
+                                                const isActive = sub.href === "/dashboard/instagram" ? pathname === "/dashboard/instagram" : pathname.startsWith(sub.href);
+                                                return (
+                                                    <Link
+                                                        key={sub.href}
+                                                        href={sub.href}
+                                                        onClick={onClose}
+                                                        className={cn(
+                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
+                                                            isActive
+                                                                ? "text-pink-700 dark:text-pink-300 bg-pink-50/60 dark:bg-pink-950/30"
+                                                                : "text-neutral-600 dark:text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                                                        )}
+                                                    >
+                                                        <div className="absolute left-0 w-1 h-1 rounded-full bg-pink-400/60 group-hover:bg-pink-500 transition-colors" />
+                                                        <span className="flex-1 truncate">{sub.label}</span>
+                                                        {sub.badge && (
+                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                                {sub.badge}
+                                                            </span>
+                                                        )}
+                                                    </Link>
+                                                );
+                                            })}
                                         </div>
                                     </motion.div>
                                 )}

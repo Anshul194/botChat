@@ -15,6 +15,7 @@ import {
     List,
     TrendingUp,
     Loader2,
+    Eraser,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -325,7 +326,7 @@ export default function FacebookPage() {
                                                     title="Clean Data"
                                                     className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/40 transition-colors"
                                                 >
-                                                    <RefreshCw className="h-4 w-4" />
+                                                    <Eraser className="h-4 w-4" />
                                                 </button>
 
                                                 <button
