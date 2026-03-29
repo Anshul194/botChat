@@ -16,6 +16,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
+import { CommentReportModal } from "../../components/modals/CommentReportModal";
 import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
 import { PostAutoReplyModal } from "../../components/modals/PostAutoReplyModal";
@@ -23,6 +24,7 @@ import { PostCommentModal } from "../../components/modals/PostCommentModal";
 import { FullAccountReplyModal } from "../../components/modals/FullAccountReplyModal";
 import { MentionReplyModal } from "../../components/modals/MentionReplyModal";
 import { PostReplyReportModal } from "../../components/modals/PostReplyReportModal";
+import { CampaignReportModal } from "../../components/modals/CampaignReportModal";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -130,6 +132,11 @@ export default function InstagramCommentManagerPage() {
 
     const [showReplyReportModal, setShowReplyReportModal] = useState(false);
     const [selectedPostForReport, setSelectedPostForReport] = useState<InstagramPost | null>(null);
+
+    const [showCampaignReportModal, setShowCampaignReportModal] = useState(false);
+    const [campaignReportType, setCampaignReportType] = useState<"auto-reply" | "auto-comment">("auto-reply");
+
+    const [showCommentReportModal, setShowCommentReportModal] = useState(false);
 
     const [statusConfirm, setStatusConfirm] = useState<{
         isOpen: boolean;
@@ -262,12 +269,12 @@ export default function InstagramCommentManagerPage() {
                     platform: "instagram"
                 });
             }
-            
+
             if (res.data.success || res.data.is_success) {
                 toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
                 setStatusConfirm({ ...statusConfirm, isOpen: false });
                 fetchPosts();
-                
+
                 // On SUCCESS of activation, ask to pause others (requested feature)
                 if (action === "active") {
                     setShowPauseAllOthersModal(true);
@@ -337,6 +344,11 @@ export default function InstagramCommentManagerPage() {
     const viewReplyReport = (post: InstagramPost) => {
         setSelectedPostForReport(post);
         setShowReplyReportModal(true);
+    };
+
+    const viewCommentReport = (post: InstagramPost) => {
+        setSelectedPostForReport(post);
+        setShowCommentReportModal(true);
     };
 
     const deleteTemplate = async (type: "comment" | "reply", id: number) => {
@@ -423,13 +435,21 @@ export default function InstagramCommentManagerPage() {
                                 { id: 'mention', label: 'Mention Reply', desc: 'Manage Mention Reply Not Enabled', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50' },
                                 { id: 'tagged', label: 'Tagged Media', desc: 'Get the media objects in which Business has been tagged.', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
                             ].map((item) => (
-                                        <div key={item.id} 
-                                            onClick={() => {
-                                                if (item.id === 'full') setShowFullReplyModal(true);
-                                                if (item.id === 'mention') setShowMentionReplyModal(true);
-                                            }}
-                                            className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer"
-                                        >
+                                <div key={item.id}
+                                    onClick={() => {
+                                        if (item.id === 'comment') {
+                                            setCampaignReportType("auto-comment");
+                                            setShowCampaignReportModal(true);
+                                        }
+                                        if (item.id === 'reply') {
+                                            setCampaignReportType("auto-reply");
+                                            setShowCampaignReportModal(true);
+                                        }
+                                        if (item.id === 'full') setShowFullReplyModal(true);
+                                        if (item.id === 'mention') setShowMentionReplyModal(true);
+                                    }}
+                                    className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer"
+                                >
                                     <div className="flex items-center gap-3.5">
                                         <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shadow-xs", item.bg, item.color)}>
                                             <item.icon size={16} strokeWidth={2.5} />
@@ -469,9 +489,9 @@ export default function InstagramCommentManagerPage() {
                                     className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[13px] outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                 />
                             </div>
-                            <button className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-sm">
+                            {/* <button className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-sm">
                                 ID Lookup
-                            </button>
+                            </button> */}
                         </div>
                     </header>
 
@@ -545,16 +565,16 @@ export default function InstagramCommentManagerPage() {
                                                                                 <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                             </button>
-                                                                            <button 
-                                                                                onClick={() => { 
-                                                                                    setStatusConfirm({ 
-                                                                                        isOpen: true, 
-                                                                                        post: post, 
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setStatusConfirm({
+                                                                                        isOpen: true,
+                                                                                        post: post,
                                                                                         action: post.status.reply === "paused" ? "active" : "paused",
                                                                                         type: "reply"
-                                                                                    }); 
-                                                                                    setActiveDropdown(null); 
-                                                                                }} 
+                                                                                    });
+                                                                                    setActiveDropdown(null);
+                                                                                }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
                                                                                 {post.status.reply === "paused" ? (
@@ -573,11 +593,11 @@ export default function InstagramCommentManagerPage() {
                                                                                 <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">View auto reply report</span>
                                                                             </button>
-                                                                            <button 
-                                                                                onClick={() => { 
+                                                                            <button
+                                                                                onClick={() => {
                                                                                     setDeleteConfirm({ isOpen: true, post: post, type: "reply" });
-                                                                                    setActiveDropdown(null); 
-                                                                                }} 
+                                                                                    setActiveDropdown(null);
+                                                                                }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
                                                                                 <Trash2 className="w-4 h-4 text-rose-500" />
@@ -599,16 +619,16 @@ export default function InstagramCommentManagerPage() {
                                                                                 <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Edit auto comment</span>
                                                                             </button>
-                                                                            <button 
-                                                                                onClick={() => { 
-                                                                                    setStatusConfirm({ 
-                                                                                        isOpen: true, 
-                                                                                        post: post, 
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setStatusConfirm({
+                                                                                        isOpen: true,
+                                                                                        post: post,
                                                                                         action: post.status.comment === "paused" ? "active" : "paused",
                                                                                         type: "comment"
-                                                                                    }); 
-                                                                                    setActiveDropdown(null); 
-                                                                                }} 
+                                                                                    });
+                                                                                    setActiveDropdown(null);
+                                                                                }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
                                                                                 {post.status.comment === "paused" ? (
@@ -623,20 +643,20 @@ export default function InstagramCommentManagerPage() {
                                                                                     </>
                                                                                 )}
                                                                             </button>
-                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                            <button onClick={() => { viewCommentReport(post); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                 <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">View comment report</span>
                                                                             </button>
-                                                                            <button 
-                                                                                 onClick={() => { 
-                                                                                     setDeleteConfirm({ isOpen: true, post: post, type: "comment" });
-                                                                                     setActiveDropdown(null); 
-                                                                                 }} 
-                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
-                                                                             >
-                                                                                 <Trash2 className="w-4 h-4 text-rose-500" />
-                                                                                 <span className="text-[12px] font-bold text-rose-600 uppercase tracking-tight">Delete Auto Comment</span>
-                                                                             </button>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setDeleteConfirm({ isOpen: true, post: post, type: "comment" });
+                                                                                    setActiveDropdown(null);
+                                                                                }}
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                            >
+                                                                                <Trash2 className="w-4 h-4 text-rose-500" />
+                                                                                <span className="text-[12px] font-bold text-rose-600 uppercase tracking-tight">Delete Auto Comment</span>
+                                                                            </button>
                                                                         </>
                                                                     ) : (
                                                                         <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
@@ -819,14 +839,14 @@ export default function InstagramCommentManagerPage() {
     return (
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] font-sans">
             <div className="max-w-[1500px] mx-auto p-4 lg:p-10 space-y-10">
-                
+
                 {/* ── TOP SECTION: ACCOUNT SELECTION (Pill Style) ── */}
                 <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
                         <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        
+
                         <div ref={scrollRef} className="flex-1 min-w-0 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
                             {accounts.map(acc => (
                                 <button
@@ -853,7 +873,7 @@ export default function InstagramCommentManagerPage() {
                     </div>
 
                     <div className="relative shrink-0 z-[60]">
-                        <button 
+                        <button
                             onClick={() => setShowPageDropdown(!showPageDropdown)}
                             className="h-full px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 group"
                         >
@@ -863,10 +883,10 @@ export default function InstagramCommentManagerPage() {
                             </div>
                             <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
                         </button>
-                        
+
                         <AnimatePresence>
                             {showPageDropdown && (
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                     className="absolute right-0 top-[calc(100%+8px)] w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden"
                                 >
@@ -978,6 +998,22 @@ export default function InstagramCommentManagerPage() {
                     }}
                     instagramId={selectedAccount?.instagram_id || ""}
                     platform="instagram"
+                />
+
+                <CampaignReportModal
+                    isOpen={showCampaignReportModal}
+                    onClose={() => setShowCampaignReportModal(false)}
+                    reportType={campaignReportType}
+                    platform="instagram"
+                    pageId={selectedAccount?.page?.page_id || selectedAccount?.instagram_id || ""}
+                />
+
+                <CommentReportModal
+                    isOpen={showCommentReportModal}
+                    onClose={() => setShowCommentReportModal(false)}
+                    platform="instagram"
+                    postId={selectedPostForReport?.id || ""}
+                    pageId={selectedAccount?.page?.page_id || selectedAccount?.instagram_id || ""}
                 />
 
                 <PostReplyReportModal
