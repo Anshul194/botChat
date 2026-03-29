@@ -282,39 +282,16 @@ export default function InstagramCommentManagerPage() {
                         </div>
                     </div>
 
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                            <p className="text-3xl font-bold text-primary">{pageStats.auto_reply_count}</p>
-                            <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1 tracking-wider">Auto Replies</p>
-                        </div>
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                            <p className="text-3xl font-bold text-blue-500">{pageStats.auto_comment_count}</p>
-                            <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1 tracking-wider">Auto Comments</p>
-                        </div>
-                    </div>
-
                     {/* Automation List Hub */}
                     <div className="space-y-4">
-                        <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-4 text-center">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto shadow-sm">
-                                <Sparkles className="w-6 h-6" />
-                            </div>
-                            <div className="space-y-1">
-                                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Full Account Automation</h3>
-                                <p className="text-[10px] text-slate-500 font-medium">Global override logic for all IG activity</p>
-                            </div>
-                            <button className="w-full py-2.5 rounded-xl bg-primary text-white font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                                {pageStats.has_full_page_reply ? "Edit Global Logic" : "Enable Full Automation"}
-                            </button>
-                        </div>
 
                         <div className="p-1 rounded-2xl bg-neutral-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800 shadow-inner overflow-hidden">
                             {[
-                                { id: 'comment', label: 'Auto Comment', desc: 'Enabled : 0 . Active', icon: MessageSquare, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
-                                { id: 'reply', label: 'Auto Comment Reply', desc: 'Enabled : 0 . Active', icon: Zap, color: 'text-emerald-500', bg: 'bg-emerald-50/50' },
-                                { id: 'mention', label: 'Mention Reply', desc: 'Configure @Mention replies', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50', isAction: true },
-                                { id: 'tagged', label: 'Tagged Media', desc: 'Manage your tagged catalog', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
+                                { id: 'comment', label: 'Auto Comment', desc: `Enabled : ${pageStats.auto_comment_count} . Comment : 0 . Not replied yet`, icon: MessageSquare, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
+                                { id: 'reply', label: 'Auto Comment Reply', desc: `Enabled : ${pageStats.auto_reply_count} . Response : 0 . Not replied yet`, icon: Zap, color: 'text-emerald-500', bg: 'bg-emerald-50/50' },
+                                { id: 'full', label: 'Full Account Comment Reply', desc: pageStats.has_full_page_reply ? 'Manage Full Account Reply Enabled' : 'Manage Full Account Reply Not Enabled', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50/50' },
+                                { id: 'mention', label: 'Mention Reply', desc: 'Manage Mention Reply Not Enabled', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50' },
+                                { id: 'tagged', label: 'Tagged Media', desc: 'Get the media objects in which Business has been tagged.', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
                             ].map((item) => (
                                 <div key={item.id} className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer">
                                     <div className="flex items-center gap-3.5">
@@ -626,114 +603,7 @@ export default function InstagramCommentManagerPage() {
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] font-sans">
             <div className="max-w-[1500px] mx-auto p-4 lg:p-10 space-y-10">
 
-                {/* 1. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
-                    <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
-                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-
-                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
-                            {isLoading ? (
-                                [1, 2, 3].map(i => <div key={i} className="w-32 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse flex-shrink-0" />)
-                            ) : accounts.length > 0 ? (
-                                accounts.map(acc => (
-                                    <button
-                                        key={acc.id}
-                                        onClick={() => { setSelectedAccount(acc); setShowPageDropdown(false); }}
-                                        className={cn(
-                                            "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap flex-shrink-0 flex items-center gap-2",
-                                            selectedAccount?.id === acc.id
-                                                ? "bg-pink-50 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 shadow-sm border border-pink-100 dark:border-pink-800/50"
-                                                : "bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
-                                        )}
-                                    >
-                                        {acc.profile_picture && <img src={acc.profile_picture} className="w-5 h-5 rounded-full object-cover" />}
-                                        {acc.username}
-                                    </button>
-                                ))
-                            ) : (
-                                <div className="text-sm font-medium text-slate-400 px-2 py-2">Loading Connected Accounts...</div>
-                            )}
-                        </div>
-
-                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <div className="relative shrink-0 z-20 flex gap-2">
-                        <button
-                            onClick={fetchAccounts}
-                            disabled={isLoading}
-                            className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-pink-300 transition-colors text-slate-500 active:scale-95"
-                        >
-                            <RefreshCw className={cn("w-5 h-5", isLoading && "animate-spin")} />
-                        </button>
-                        <button
-                            onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 active:scale-95"
-                        >
-                            <div className="flex items-center gap-2">
-                                <ListFilter className="w-4 h-4 text-pink-500" />
-                                Quick Find
-                            </div>
-                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
-                        </button>
-                        <AnimatePresence>
-                            {showPageDropdown && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                    className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden"
-                                >
-                                    <div className="flex flex-col max-h-[350px]">
-                                        <div className="p-2 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
-                                            <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search accounts..."
-                                                    value={quickFindSearch}
-                                                    onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent focus:bg-white dark:focus:bg-slate-800 focus:border-pink-500/20 text-xs outline-none transition-all"
-                                                    autoFocus
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="p-1 overflow-y-auto custom-scrollbar">
-                                            {accounts
-                                                .filter(acc => !quickFindSearch || acc.username.toLowerCase().includes(quickFindSearch.toLowerCase()))
-                                                .map(acc => (
-                                                    <button
-                                                        key={acc.id}
-                                                        onClick={() => { setSelectedAccount(acc); setShowPageDropdown(false); setQuickFindSearch(""); }}
-                                                        className={cn(
-                                                            "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate flex items-center gap-2",
-                                                            selectedAccount?.id === acc.id ? "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400" : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
-                                                        )}
-                                                    >
-                                                        {acc.profile_picture ? (
-                                                            <img src={acc.profile_picture} className="w-5 h-5 rounded-full object-cover shrink-0" />
-                                                        ) : (
-                                                            <Instagram className="w-4 h-4 text-pink-500 shrink-0" />
-                                                        )}
-                                                        <span className="truncate">{acc.username}</span>
-                                                    </button>
-                                                ))}
-                                            {accounts.filter(acc => acc.username.toLowerCase().includes(quickFindSearch.toLowerCase())).length === 0 && (
-                                                <div className="py-8 text-center px-4">
-                                                    <Search className="w-8 h-8 text-slate-200 dark:text-slate-800 mx-auto mb-2" />
-                                                    <p className="text-xs text-slate-400 font-medium italic">No accounts found</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
+                <div className="pt-2" />
 
                 <AnimatePresence mode="wait">
                     {activeView === 'dashboard' ? (
