@@ -1,234 +1,675 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    X, Zap, Save, Loader2, RefreshCw, Layers, 
-    Sparkles, Smile, Clock, Search, Check, Send
+import {
+  Plus, Search, Trash2, Edit3, X, Sparkles,
+  ChevronLeft, Hash, Loader2, Check, RefreshCw,
+  Clock, Smile, Settings, Eye, EyeOff, MessageCircle,
+  LayoutGrid, Image as ImageIcon, Video, Filter, Info, Send, ShieldAlert
 } from "lucide-react";
-import { useModal } from "@/components/providers/ModalProvider";
+import { toast } from "sonner";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-// ── Emoji DB ──────────────────────────────────────────────────────────────────
-const EC = [
-  { id:"recent",  label:"Recent",          icon:"🕐" as string, emojis:[] as string[] },
-  { id:"smileys", label:"Smileys & People", icon:"😀", emojis:["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","🙃","😉","😊","😇","🥰","😍","🤩","😘","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤧","🥵","🥶","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","😮","😲","😳","🥺","😦","😧","😨","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","💩","🤡","👹","👺","👻","👽","👾","🤖","👋","🤚","✋","🖖","👌","🤌","✌️","🤞","🤟","🤘","👍","👎","✊","👏","🙌","🤝","🙏","💪","🫶","❤️","🧡","💛","💚","💙","💜","🖤","🤍","💔","❣️","💕","💞","💓","💗","💖","💘","💝"] },
-  { id:"animals",  label:"Animals & Nature",  icon:"🐻", emojis:["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐽","🐸","🐵","🙈","🙉","🙊","🐔","🐧","🐦","🐤","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🦟","🦗","🕷","🦂","🐢","🐍","🦎","🦕","🦖","🦈","🐬","🐋","🐳","🦭","🐊","🐆","🦓","🦍","🦧","🦣","🐘","🦛","🦏","🐪","🐫","🦒","🦘","🦬","🐃","🐂","🐄","🐎","🐖","🐏","🐑","🦙","🐐","🦌","🐕","🐩","🦮","🐈","🐓","🦤","🦚","🦜","🦢","🕊","🐇","🦝","🦨","🦡","🦦","🦥","🐁","🐿","🦔","🌸","🌺","🌹","🌷","🌼","🌻","🌞","🌝","🌚","🌙","⭐","🌟","💫","✨","☀️","⛅","☁️","🌈","☔","⚡","🔥","🌊","💧","🌿","🍀","🍁","🍃","🌱","🌲","🌳","🌴","🪴","🦋","🐾","🍄","🌵"] },
-];
+// ── Types ──────────────────────────────────────────────────────────────────────
+export interface ReplyTemplate {
+  id: number;
+  name: string;
+  reply_type: string;
+  message: string;
+  image?: string;
+  video?: string;
+  multiple_reply_enabled: boolean | string | number;
+  comment_reply_enabled: boolean | string | number;
+  hide_after_reply: boolean | string | number;
+  private_template_id: string;
+  page_id?: string;
 
-interface ReplyTemplateModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSaved: () => void;
-    editingTemplate: any | null;
-    platform: "facebook" | "instagram";
+  // Advanced Fields
+  message_type?: "generic" | "filtered" | "filter";
+  hide_comment?: boolean;
+  delete_comment?: boolean;
+  offensive_keywords?: string;
+  offensive_template_id?: string;
+  filter_rules?: FilterRule[];
+  fallback_message?: string;
+  fallback_image?: string;
+  fallback_video?: string;
+  fallback_template_id?: string;
+
+  // Nested offensive object returned by GET API
+  offensive?: {
+    id?: number;
+    hide_comment?: string | number | boolean;
+    delete_comment?: string | number | boolean;
+    offensive_keywords?: string;
+    private_reply_template_id?: string | null;
+  };
 }
 
-// ── Emoji Picker Component (Shared Logic) ────────────────────────────────────
-function EmojiPicker({ onSelect, onClose, recent }: { onSelect:(e:string)=>void; onClose:()=>void; recent:string[] }) {
-  const [q, setQ] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const h = (e:MouseEvent) => { if(ref.current && !ref.current.contains(e.target as Node)) onClose(); };
-    document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
-  }, [onClose]);
-  const scrollTo = (id:string) => {
-    const el = document.getElementById(`cat-${id}`);
-    if(el && listRef.current) listRef.current.scrollTo({ top: el.offsetTop - 10, behavior: "smooth" });
-    setQ("");
-  };
-  const allFiltered = q ? EC.flatMap(c => c.emojis).filter(e => e.includes(q)).slice(0,100) : null;
+export interface FilterRule {
+  id: string;
+  name: string;
+  match_type: "exact" | "contains";
+  keywords: string;
+  message: string;
+  image: string;
+  video: string;
+  template_id: string;
+}
+
+interface ReplyTemplateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSaved: () => void;
+  editingTemplate: any | null;
+  platform: "facebook" | "instagram";
+}
+
+// ── Reusable Field Components ──────────────────────────────────────────────────
+
+function Field({ label, required, children, icon: Icon }: { label: string; required?: boolean; children: React.ReactNode; icon?: any }) {
   return (
-    <motion.div ref={ref} initial={{opacity:0,scale:0.95,y:10}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.95,y:10}}
-      className="w-[320px] sm:w-[380px] bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700 rounded-[32px] shadow-[0_32px_96px_-12px_rgba(0,0,0,0.25)] overflow-hidden"
-    >
-      <div className="flex items-center px-4 pt-4 pb-2 gap-1 overflow-x-auto no-scrollbar border-b border-slate-50 dark:border-slate-800">
-        {EC.map(cat => (
-          <button key={cat.id} onClick={()=>scrollTo(cat.id)} className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-xl text-[18px] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">{cat.icon}</button>
-        ))}
+    <div className="space-y-1.5 flex-1 min-w-0">
+      <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
+        {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
+        {label} {required && <span className="text-rose-400">*</span>}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function Toggle({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <div className="flex items-center gap-3 group">
+      {label && <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">{label}</span>}
+      <div className="flex items-center gap-2">
+        <button onClick={onClick} className={cn(
+          "w-10 h-5 rounded-full relative transition-all duration-200",
+          active ? "bg-pink-500" : "bg-slate-200"
+        )}>
+          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all", active ? "left-5.5" : "left-0.5")} />
+        </button>
+        <span className="text-xs font-medium text-slate-400 w-6">{active ? "On" : "Off"}</span>
       </div>
-      <div className="px-4 py-3">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/>
-          <input type="text" placeholder="Search emojis…" value={q} onChange={e=>setQ(e.target.value)} className="w-full pl-10 pr-4 py-2 text-[13px] rounded-2xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary/10 text-slate-700 dark:text-slate-200" />
+    </div>
+  );
+}
+
+function UploadBox({ label, value, onChange, icon: Icon }: { label: string; value: string; onChange: (v: string) => void; icon: any }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onChange(reader.result as string);
+        toast.success(`${file.name} selected!`);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const isVideo = label.toLowerCase().includes("video");
+
+  return (
+    <div className="space-y-2 flex-1">
+      <label className="text-[11px] font-bold text-slate-500  px-1 flex items-center gap-2">
+        <Icon className="w-3.5 h-3.5" /> {label}
+      </label>
+      <div className="flex items-center gap-0 rounded-xl border border-slate-200 bg-white group focus-within:border-pink-400 overflow-hidden transition-all shadow-xs h-[44px]">
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept={isVideo ? "video/*" : "image/*"}
+          onChange={handleFileChange}
+        />
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-pink-600 text-white px-5 h-full text-[12px] font-semibold flex items-center justify-center gap-2 transition-colors flex-shrink-0 cursor-pointer hover:bg-pink-700"
+        >
+          <Plus className="w-4 h-4" /> Upload
         </div>
+        <input type="text" placeholder={`Put your ${isVideo ? 'video' : 'image'} URL here or click upload`} value={value} onChange={e => onChange(e.target.value)}
+          className="flex-1 bg-transparent border-none outline-none text-[13px] font-medium text-slate-700 px-4 placeholder:text-slate-300"
+        />
       </div>
-      <div ref={listRef} className="max-h-[300px] overflow-y-auto px-4 pb-4 no-scrollbar scroll-smooth">
-        {allFiltered ? (
-          <div className="grid grid-cols-7 gap-1 pt-2">{allFiltered.map((emoji,i) => <button key={i} onClick={()=>{onSelect(emoji); setQ("");}} className="text-[24px] h-10 w-10 flex items-center justify-center rounded-xl hover:bg-primary/10 transition-all">{emoji}</button>)}</div>
-        ) : (
-          EC.map(cat => (
-            <div key={cat.id} id={`cat-${cat.id}`} className="mb-4">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">{cat.label}</p>
-              <div className="grid grid-cols-7 gap-1">{cat.emojis.map((emoji,i) => <button key={i} onClick={()=>onSelect(emoji)} className="text-[24px] h-10 w-10 flex items-center justify-center rounded-xl hover:bg-primary/10 transition-all">{emoji}</button>)}</div>
-            </div>
-          ))
-        )}
-      </div>
-    </motion.div>
+    </div>
+  );
+}
+
+function CapsuleSwitch({ active }: { active: boolean }) {
+  return (
+    <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-pink-600" : "bg-slate-300 shadow-inner")}>
+      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all", active ? "left-6.5" : "left-0.5")} />
+    </div>
   );
 }
 
 // ── MAIN MODAL COMPONENT ─────────────────────────────────────────────────────
+
 export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, platform }: ReplyTemplateModalProps) {
-    const { showModal } = useModal();
-    const [name, setName] = useState("");
-    const [message, setMessage] = useState("");
-    const [replyType, setReplyType] = useState("generic");
-    const [isSaving, setIsSaving] = useState(false);
-    const [showEmoji, setShowEmoji] = useState(false);
-    const [recent, setRecent] = useState<string[]>([]);
-    
-    const textRef = useRef<HTMLTextAreaElement>(null);
-    const emojiTriggerRef = useRef<HTMLButtonElement>(null);
+  const [form, setForm] = useState<ReplyTemplate>({
+    id: 0,
+    name: "",
+    reply_type: "generic",
+    message_type: "generic",
+    message: "",
+    image: "",
+    video: "",
+    multiple_reply_enabled: false,
+    comment_reply_enabled: false,
+    hide_after_reply: false,
+    private_template_id: "",
+    page_id: "",
+    hide_comment: false,
+    delete_comment: false,
+    offensive_keywords: "",
+    offensive_template_id: "",
+    fallback_message: "",
+    fallback_image: "",
+    fallback_video: "",
+    fallback_template_id: ""
+  });
 
-    useEffect(() => {
-        if (editingTemplate) {
-            setName(editingTemplate.name || "");
-            setMessage(editingTemplate.message || "");
-            setReplyType(editingTemplate.reply_type || "generic");
+  const [filterRules, setFilterRules] = useState<FilterRule[]>([
+    { id: Math.random().toString(), name: "Rule 1", match_type: "contains", keywords: "", message: "", image: "", video: "", template_id: "" }
+  ]);
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [dropdownTemplates, setDropdownTemplates] = useState<any[]>([]);
+  const [pages, setPages] = useState<any[]>([]);
+  const [isLoadingDropdown, setIsLoadingDropdown] = useState(false);
+  const [isLoadingPages, setIsLoadingPages] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (editingTemplate) {
+        setForm({
+          id: editingTemplate?.id ?? 0,
+          name: editingTemplate?.name ?? "",
+          reply_type: editingTemplate?.reply_type ?? "generic",
+          message_type: (editingTemplate?.reply_type ?? editingTemplate?.message_type ?? "generic") as "generic" | "filtered" | "filter",
+          message: editingTemplate?.message ?? "",
+          image: editingTemplate?.image ?? "",
+          video: editingTemplate?.video ?? "",
+          multiple_reply_enabled: editingTemplate?.multiple_reply_enabled === "1" || editingTemplate?.multiple_reply_enabled === true || editingTemplate?.multiple_reply_enabled === 1,
+          comment_reply_enabled: editingTemplate?.comment_reply_enabled === "1" || editingTemplate?.comment_reply_enabled === true || editingTemplate?.comment_reply_enabled === 1,
+          hide_after_reply: editingTemplate?.hide_after_reply === "1" || editingTemplate?.hide_after_reply === true || editingTemplate?.hide_after_reply === 1,
+          private_template_id: editingTemplate?.private_template_id ? String(editingTemplate.private_template_id) : "",
+          page_id: editingTemplate?.page_id ?? editingTemplate?.instagram_id ?? "",
+
+          hide_comment: editingTemplate?.offensive?.hide_comment === "1" || editingTemplate?.offensive?.hide_comment === 1 || !!editingTemplate?.hide_comment,
+          delete_comment: editingTemplate?.offensive?.delete_comment === "1" || editingTemplate?.offensive?.delete_comment === 1 || !!editingTemplate?.delete_comment,
+          offensive_keywords: editingTemplate?.offensive?.offensive_keywords ?? editingTemplate?.offensive_keywords ?? "",
+          offensive_template_id: editingTemplate?.offensive?.private_reply_template_id ? String(editingTemplate.offensive.private_reply_template_id) : (editingTemplate?.offensive_template_id ? String(editingTemplate.offensive_template_id) : ""),
+
+          fallback_message: "",
+          fallback_image: "",
+          fallback_video: "",
+          fallback_template_id: ""
+        });
+
+        if (editingTemplate.rules?.length) {
+          setFilterRules(editingTemplate.rules.map((r: any) => ({
+            id: r.id?.toString() ?? Math.random().toString(),
+            name: r.name ?? "",
+            match_type: r.match_type ?? "contains",
+            keywords: r.keyword ?? r.keywords ?? "",
+            message: r.message ?? "",
+            image: r.image ?? "",
+            video: r.video ?? "",
+            template_id: r.private_template_id ? String(r.private_template_id) : (r.template_id ? String(r.template_id) : ""),
+          })));
+        } else if (editingTemplate.filter_rules?.length) {
+          setFilterRules(editingTemplate.filter_rules);
         } else {
-            setName(""); setMessage(""); setReplyType("generic");
+          setFilterRules([{ id: Math.random().toString(), name: "Rule 1", match_type: "contains", keywords: "", message: "", image: "", video: "", template_id: "" }]);
         }
-    }, [editingTemplate, isOpen]);
+      } else {
+        setForm({
+          id: 0,
+          name: "",
+          reply_type: "generic",
+          message_type: "generic",
+          message: "",
+          image: "",
+          video: "",
+          multiple_reply_enabled: false,
+          comment_reply_enabled: false,
+          hide_after_reply: false,
+          private_template_id: "",
+          page_id: "",
+          hide_comment: false,
+          delete_comment: false,
+          offensive_keywords: "",
+          offensive_template_id: "",
+          fallback_message: "",
+          fallback_image: "",
+          fallback_video: "",
+          fallback_template_id: ""
+        });
+        setFilterRules([{ id: Math.random().toString(), name: "Rule 1", match_type: "contains", keywords: "", message: "", image: "", video: "", template_id: "" }]);
+      }
+      fetchPages();
+    }
+  }, [isOpen, editingTemplate]);
 
-    const addRecent = (e:string) => setRecent(p => [e,...p.filter(x=>x!==e)].slice(0,32));
-    
-    const insertEmoji = useCallback((emoji:string) => {
-        addRecent(emoji);
-        const el = textRef.current;
-        if(!el){ setMessage(message+emoji); return; }
-        const s = el.selectionStart ?? message.length;
-        const e2 = el.selectionEnd ?? message.length;
-        setMessage(message.slice(0,s)+emoji+message.slice(e2));
-        setTimeout(()=>{ if(textRef.current){ textRef.current.focus(); textRef.current.setSelectionRange(s+emoji.length,s+emoji.length); }}, 0);
-    },[message]);
+  const fetchDropdown = async (pageId?: string) => {
+    const targetPageId = pageId || form.page_id;
+    if (!targetPageId) {
+      setDropdownTemplates([]);
+      return;
+    }
+    setIsLoadingDropdown(true);
+    try {
+      const endpoint = platform === "facebook" ? `/facebook/bot-replies?page_id=${targetPageId}` : `/instagram/bot-replies?page_id=${targetPageId}&platform=instagram`;
+      const res = await api.get(endpoint);
+      setDropdownTemplates(Array.isArray(res.data?.data) ? res.data.data : res.data);
+    } catch { toast.error("Failed to load list"); }
+    finally { setIsLoadingDropdown(false); }
+  };
 
-    const handleSave = async () => {
-        if (!name.trim()) return showModal("error", "Error", "Template name is required");
-        if (!message.trim()) return showModal("error", "Error", "Response message is required");
+  const fetchPages = async () => {
+    setIsLoadingPages(true);
+    try {
+      if (platform === "facebook") {
+        const response = await api.get("/social/facebook-connect");
+        if (response.data.success || response.data.is_success) {
+          const fetchedAccounts = response.data.data.facebook_accounts || [];
+          const fetchedPages = fetchedAccounts.flatMap((acc: any) => acc.pages || []);
+          setPages(fetchedPages.map((p: any) => ({ id: p.page_id, name: p.page_name })));
+        }
+      } else {
+        const response = await api.get("/social/instagram-connect");
+        if (response.data.success || response.data.is_success) {
+          const fetchedAccounts = response.data.data.instagram_accounts || [];
+          setPages(fetchedAccounts.map((acc: any) => ({ id: acc.instagram_id, name: acc.username })));
+        }
+      }
+    } catch { toast.error("Failed to load accounts"); }
+    finally { setIsLoadingPages(false); }
+  };
 
-        setIsSaving(true);
-        try {
-            const endpoint = platform === "facebook" ? "/facebook/auto-reply-template" : "/instagram/auto-reply-template";
-            const payload = { name, message, reply_type: replyType, platform };
-            let res;
-            if (editingTemplate?.id) res = await api.patch(`${endpoint}/${editingTemplate.id}`, payload);
-            else res = await api.post(endpoint, payload);
+  useEffect(() => {
+    if (form.page_id) {
+      fetchDropdown();
+    } else {
+      setDropdownTemplates([]);
+    }
+  }, [form.page_id]);
 
-            if (res.data.success || res.data.is_success) {
-                showModal("success", "Success", "Rule Finalized : Automation Synchronized");
-                onSaved();
-                onClose();
-            }
-        } catch(err) { showModal("error", "Error", "Deployment Rejected"); }
-        finally { setIsSaving(false); }
-    };
+  const handleAddRule = () => {
+    setFilterRules([...filterRules, {
+      id: Math.random().toString(),
+      name: `Rule ${filterRules.length + 1}`,
+      match_type: "contains",
+      keywords: "", message: "", image: "", video: "", template_id: ""
+    }]);
+  };
 
-    return (
-        <AnimatePresence>
-            {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }} 
-                        className="bg-[#fdfdff] dark:bg-slate-900 rounded-[40px] shadow-2xl w-full max-w-[900px] overflow-hidden flex flex-col max-h-[94vh] relative z-10"
-                        onClick={e=>e.stopPropagation()}
+  const handleSave = async () => {
+    if (!form.name.trim()) return toast.error("Campaign name is required");
+    setIsSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append("platform", platform);
+      fd.append("name", form.name);
+
+      fd.append("page_id", form.page_id ?? "");
+
+      const apiReplyType = form.message_type === "filter" ? "filter" : "generic";
+      fd.append("reply_type", apiReplyType);
+
+      fd.append("comment_reply_enabled", form.comment_reply_enabled ? "1" : "0");
+      fd.append("hide_after_reply", form.hide_after_reply ? "1" : "0");
+      fd.append("multiple_reply_enabled", form.multiple_reply_enabled ? "1" : "0");
+
+      fd.append("message", form.message || "");
+      fd.append("image", form.image || "");
+      fd.append("video", form.video || "");
+      fd.append("private_template_id", form.private_template_id || "");
+
+      fd.append("offensive[hide_comment]", form.hide_comment ? "1" : "0");
+      fd.append("offensive[delete_comment]", form.delete_comment ? "1" : "0");
+      fd.append("offensive[offensive_keywords]", form.offensive_keywords ?? "");
+      fd.append("offensive[private_reply_template_id]", form.offensive_template_id ?? "");
+
+      if (form.message_type === "filter") {
+        filterRules.forEach((rule, i) => {
+          fd.append(`rules[${i}][keyword]`, rule.keywords || "");
+          fd.append(`rules[${i}][match_type]`, rule.match_type || "contains");
+          fd.append(`rules[${i}][message]`, rule.message || "");
+          fd.append(`rules[${i}][image]`, rule.image || "");
+          fd.append(`rules[${i}][video]`, rule.video || "");
+          fd.append(`rules[${i}][private_template_id]`, rule.template_id || "");
+        });
+      }
+
+      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      const endpoint = platform === "facebook" ? "/facebook/auto-reply-template" : "/instagram/auto-reply-template";
+
+      if (!form.id || form.id === 0) {
+        await api.post(endpoint, fd, config);
+      } else {
+        fd.append("_method", platform === "instagram" ? "PATCH" : "PUT");
+        await api.post(`${endpoint}/${form.id}`, fd, config);
+      }
+
+      toast.success("Saved successfully!");
+      onSaved();
+      onClose();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? "Failed to save template");
+    } finally { setIsSaving(false); }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
+            className="relative z-10 w-full max-w-[980px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">
+              <h2 className="text-[13px] font-semibold text-slate-800">{editingTemplate ? 'Edit' : 'Create'} Auto Reply Template ({platform === 'instagram' ? 'Instagram' : 'Facebook'})</h2>
+              <button onClick={onClose} className="text-slate-300 hover:text-rose-500 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#FDFDFF]">
+
+              {/* SECTION 1: BASICS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-2xl border border-slate-100 shadow-xs">
+                <Field label="Auto Reply Campaign Name" required>
+                  <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                    placeholder="Write your auto reply campaign name here"
+                  />
+                </Field>
+                <Field label={platform === 'instagram' ? "Please select an account" : "Please select a page"} required>
+                  <div className="relative">
+                    <select
+                      value={form.page_id}
+                      onChange={e => setForm({ ...form, page_id: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
                     >
-                        {/* Header */}
-                        <div className="flex items-center gap-5 px-10 py-7 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
-                             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                <Zap className="w-6 h-6 text-white text-blue-100"/>
-                             </div>
-                             <div className="flex-1">
-                                <h2 className="text-[18px] font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none">{editingTemplate ? 'Modify Auto Reply' : 'Initialize Auto Reply'}</h2>
-                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1.5">{platform} Automation Engine</p>
-                             </div>
-                             <button onClick={onClose} className="p-3 rounded-2xl text-slate-300 hover:text-rose-500 transition-all active:scale-95"><X className="w-6 h-6"/></button>
-                        </div>
+                      <option value="">{isLoadingPages ? "Syncing..." : "Select..."}</option>
+                      {pages.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                    <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                  </div>
+                </Field>
+              </div>
 
-                        {/* Body */}
-                        <div className="flex-1 overflow-y-auto p-10 space-y-8 no-scrollbar">
-                            <div className="space-y-3">
-                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Template Asset Identity <span className="text-rose-500">*</span></label>
-                                <input autoFocus type="text" placeholder='e.g. "Customer Support Handshake"' value={name} onChange={e=>setName(e.target.value)}
-                                    className="w-full px-6 py-4.5 rounded-[24px] bg-white dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 focus:border-blue-500 text-[15px] font-bold outline-none transition-all placeholder:text-slate-200"
-                                />
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between px-1">
-                                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest leading-none">Response Metadata Payload <span className="text-rose-500">*</span></label>
-                                    <button ref={emojiTriggerRef} type="button" onClick={()=>setShowEmoji(!showEmoji)} className={cn("flex items-center gap-2 px-5 py-2 rounded-[18px] text-[12px] font-bold border transition-all", showEmoji ? "bg-blue-50 border-blue-100 text-blue-600" : "bg-slate-50 border-slate-100 text-slate-400 hover:text-blue-600")}>
-                                        <Smile className="w-4 h-4"/> Add Emoji
-                                    </button>
-                                </div>
-                                <div className="relative">
-                                    <textarea ref={textRef} rows={5} value={message} onChange={e=>setMessage(e.target.value)}
-                                        placeholder={`Deploy textual response asset here…`}
-                                        className="w-full p-8 rounded-[32px] bg-white dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 text-[16px] font-medium outline-none focus:border-blue-500 transition-all resize-none shadow-inner"
-                                    />
-                                    <div className="absolute top-4 right-4 text-[10px] font-black text-slate-200 uppercase tracking-widest pointer-events-none">Static Payload</div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Automation Logic Type</label>
-                                <div className="flex gap-5">
-                                    <button onClick={()=>setReplyType('generic')} className={cn("flex-1 p-8 rounded-[32px] border-2 transition-all flex flex-col items-center gap-4 group", replyType === 'generic' ? "border-blue-500 bg-blue-50/20 text-blue-600" : "border-slate-50 dark:border-slate-800 bg-slate-50/50 text-slate-300")}>
-                                        <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all", replyType==='generic' ? "bg-blue-600 text-white shadow-xl shadow-blue-500/20 scale-110" : "bg-white dark:bg-slate-800 text-slate-300 group-hover:scale-110")}>
-                                            <Layers size={24} />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-[12px] font-black uppercase tracking-widest">Generic Response</p>
-                                            <p className="text-[10px] font-medium uppercase mt-1 opacity-60">Fires for every interaction</p>
-                                        </div>
-                                    </button>
-                                    <button onClick={()=>setReplyType('filtered')} className={cn("flex-1 p-8 rounded-[32px] border-2 transition-all flex flex-col items-center gap-4 group", replyType === 'filtered' ? "border-indigo-500 bg-indigo-50/20 text-indigo-600" : "border-slate-50 dark:border-slate-800 bg-slate-50/50 text-slate-300")}>
-                                        <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all", replyType==='filtered' ? "bg-indigo-600 text-white shadow-xl shadow-indigo-500/20 scale-110" : "bg-white dark:bg-slate-800 text-slate-300 group-hover:scale-110")}>
-                                            <Zap size={24} />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-[12px] font-black uppercase tracking-widest">Keyword Filtered</p>
-                                            <p className="text-[10px] font-medium uppercase mt-1 opacity-60">Conditional deployment logic</p>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="flex gap-4 px-10 py-8 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                             <button onClick={onClose} className="flex-1 py-5 rounded-[22px] bg-slate-100 dark:bg-slate-800 text-slate-500 font-black text-[13px] uppercase tracking-widest hover:bg-slate-200 transition-all">Cancel Activation</button>
-                             <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-5 rounded-[22px] bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-[14px] uppercase tracking-widest shadow-2xl shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3">
-                                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                                {isSaving ? "Synchronizing Asset..." : "Register Global Logic"}
-                             </button>
-                        </div>
-                    </motion.div>
+              {/* SECTION 2: OFFENSIVE */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldAlert className="w-4 h-4 text-rose-400" />
+                  <h3 className="text-sm font-semibold text-slate-700">Offensive Comments Settings</h3>
                 </div>
-            )}
+                <div className="flex gap-8">
+                  <Toggle label="Hide Comment" active={form.hide_comment!!} onClick={() => setForm({ ...form, hide_comment: !form.hide_comment })} />
+                  <Toggle label="Delete Comment" active={form.delete_comment!!} onClick={() => setForm({ ...form, delete_comment: !form.delete_comment })} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-600">Offensive keywords <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                    <div className="relative">
+                      <textarea rows={4} value={form.offensive_keywords} onChange={e => setForm({ ...form, offensive_keywords: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] resize-none"
+                        placeholder="keyword1, keyword2..."
+                      />
+                      <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-slate-300" />
+                    </div>
+                  </div>
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between px-1">
+                      <label className="text-sm font-medium text-slate-600">Private reply template</label>
+                      <div className="flex gap-3 text-xs font-medium text-pink-500">
+                        <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                          <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
+                        </button>
+                        <button onClick={() => window.location.href = `/dashboard/${platform}/bot-replies`} className="hover:underline">+ Add Template</button>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={form.offensive_template_id}
+                        onChange={e => setForm({ ...form, offensive_template_id: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                      >
+                        <option value="">Please select a message template</option>
+                        {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                      </select>
+                      <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <AnimatePresence>
-                {showEmoji && (
-                  <div className="fixed inset-0 z-[200] pointer-events-none">
-                    <div className="absolute inset-0 pointer-events-auto" onClick={()=>setShowEmoji(false)}/>
-                    <div 
-                      style={{
-                        position: 'fixed',
-                        bottom: window.innerHeight - (emojiTriggerRef.current?.getBoundingClientRect().top ?? 0) + 12,
-                        right: window.innerWidth - (emojiTriggerRef.current?.getBoundingClientRect().right ?? 0),
-                        pointerEvents: 'auto'
-                      }}
-                    >
-                      <EmojiPicker onSelect={insertEmoji} onClose={()=>setShowEmoji(false)} recent={recent}/>
+              {/* SECTION 3: REPLAY TOGGLES */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs grid grid-cols-1 gap-4">
+                <div className="flex items-center justify-between py-1 px-1">
+                  <div className="flex items-center gap-3">
+                    <RefreshCw className="w-4 h-4 text-slate-400" />
+                    <span className="text-[13px] font-medium text-slate-600">Do you want to send reply message to a user multiple times?</span>
+                  </div>
+                  <Toggle label="" active={!!form.multiple_reply_enabled} onClick={() => setForm({ ...form, multiple_reply_enabled: !form.multiple_reply_enabled })} />
+                </div>
+                <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+                  <div className="flex items-center gap-3">
+                    <MessageCircle className="w-4 h-4 text-slate-400" />
+                    <span className="text-[13px] font-medium text-slate-600">Do you want to enable comment reply?</span>
+                  </div>
+                  <Toggle label="" active={!!form.comment_reply_enabled} onClick={() => setForm({ ...form, comment_reply_enabled: !form.comment_reply_enabled })} />
+                </div>
+                <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+                  <div className="flex items-center gap-3">
+                    <EyeOff className="w-4 h-4 text-slate-400" />
+                    <span className="text-[13px] font-medium text-slate-600">Do you want to hide comments after comment reply?</span>
+                  </div>
+                  <Toggle label="" active={!!form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
+                </div>
+              </div>
+
+              {/* SECTION 4: LOGIC SELECTION */}
+              <div className="bg-white border border-slate-100 rounded-[22px] p-6 shadow-xs space-y-5">
+                <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "generic" })}>
+                  <CapsuleSwitch active={form.message_type === "generic"} />
+                  <span className={cn("text-sm font-medium", form.message_type === "generic" ? "text-pink-600" : "text-slate-400")}>Generic message for all comments</span>
+                </div>
+                <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "filter" })}>
+                  <CapsuleSwitch active={form.message_type === "filter"} />
+                  <span className={cn("text-sm font-medium", form.message_type === "filter" ? "text-pink-600" : "text-slate-400")}>Send different messages by keyword filter</span>
+                </div>
+              </div>
+
+              {/* SECTION 5: EDITOR */}
+              <div className="space-y-8">
+                {form.message_type === "generic" ? (
+                  <div className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm space-y-8 animate-in fade-in duration-300">
+                    <Field label="Message for Comment Reply" required icon={MessageCircle}>
+                      <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                        <textarea rows={5} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
+                          className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[120px]" placeholder="Type your message here..."
+                        />
+                        <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
+                      </div>
+                    </Field>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
+                      <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between px-1">
+                        <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
+                          <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                        </label>
+                        <div className="flex gap-3 text-xs font-medium text-pink-500">
+                          <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                            <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
+                          </button>
+                          <button onClick={() => window.location.href = `/dashboard/${platform}/bot-replies`} className="hover:underline">+ Add Template</button>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                        >
+                          <option value="">Please select a message template</option>
+                          {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                        <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                    {filterRules.map((rule, idx) => (
+                      <div key={rule.id} className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-8 relative group">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
+                              <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
+                                {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                              </div>
+                              <span className={cn("text-xs font-medium", rule.match_type === "exact" ? "text-slate-700" : "text-slate-400")}>Exact match</span>
+                            </div>
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "contains" } : r))}>
+                              <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
+                                {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                              </div>
+                              <span className={cn("text-xs font-medium", rule.match_type === "contains" ? "text-slate-700" : "text-slate-400")}>Contains word</span>
+                            </div>
+                          </div>
+                          {filterRules.length > 1 && (
+                            <button onClick={() => setFilterRules(filterRules.filter(r => r.id !== rule.id))} className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-100 transition-colors">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+
+                        <Field label="Filter Word/Sentence" required>
+                          <input type="text" value={rule.keywords} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, keywords: e.target.value } : r))}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                            placeholder="Write your filter word here"
+                          />
+                        </Field>
+
+                        <Field label="Message for Comment Reply" required icon={MessageCircle}>
+                          <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                            <textarea rows={4} value={rule.message} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, message: e.target.value } : r))}
+                              className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
+                            />
+                            <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
+                          </div>
+                        </Field>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <UploadBox label="Image for Comment Reply" value={rule.image} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, image: v } : r))} icon={ImageIcon} />
+                          <UploadBox label="Video for Comment Reply" value={rule.video} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, video: v } : r))} icon={Video} />
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between px-1">
+                            <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
+                              <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                            </label>
+                            <div className="flex gap-3 text-xs font-medium text-pink-500">
+                              <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                                <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
+                              </button>
+                              <button onClick={() => window.location.href = `/dashboard/${platform}/bot-replies`} className="hover:underline">+ Add Template</button>
+                            </div>
+                          </div>
+                          <div className="relative">
+                            <select value={rule.template_id} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, template_id: e.target.value } : r))}
+                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                            >
+                              <option value="">Please select a message template</option>
+                              {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                            </select>
+                            <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="flex justify-end">
+                      <button onClick={handleAddRule} className="px-6 py-2.5 rounded-xl border-2 border-pink-600 text-pink-600 font-semibold text-[11px]  hover:bg-pink-50 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-pink-100/20">
+                        <Plus className="w-4 h-4" /> Add another filter rule
+                      </button>
+                    </div>
+
+                    {/* Fallback */}
+                    <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-200 border-dashed space-y-8">
+                      <div className="flex items-center gap-3">
+                        <Info className="w-4 h-4 text-slate-400" />
+                        <span className="text-sm font-medium text-slate-500">Fallback reply (when no filter matches)</span>
+                      </div>
+                      <Field label="Message for Comment Reply" icon={MessageCircle}>
+                        <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                          <textarea rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
+                            className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
+                          />
+                          <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
+                        </div>
+                      </Field>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
+                        <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between px-1">
+                          <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
+                            <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template (Fallback)
+                          </label>
+                          <div className="flex gap-3 text-xs font-medium text-pink-500">
+                            <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                              <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
+                            </button>
+                            <button onClick={() => window.location.href = `/dashboard/${platform}/bot-replies`} className="hover:underline">+ Add Template</button>
+                          </div>
+                        </div>
+                        <div className="relative">
+                          <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                          >
+                            <option value="">Please select a message template</option>
+                            {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                          </select>
+                          <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
-            </AnimatePresence>
-        </AnimatePresence>
-    );
+              </div>
+            </div>
+
+            <div className="flex gap-4 p-8 bg-white border-t border-slate-100 flex-shrink-0">
+              <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-500 font-bold text-[13px] hover:bg-slate-50 transition-all">Cancel</button>
+              <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-pink-600 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
+                <span>{editingTemplate ? 'UPDATE' : 'SAVE'} CHANGES</span>
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
 }

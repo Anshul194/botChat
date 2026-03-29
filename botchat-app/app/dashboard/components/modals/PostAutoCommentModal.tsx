@@ -70,7 +70,8 @@ export function PostAutoCommentModal({
             const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-comment/${postId}`
                 : `/instagram/post-auto-comment/${postId}`;
-            const res = await api.put(`${endpoint}?page_id=${pageId}`);
+            // Use GET for fetching config
+            const res = await api.get(`${endpoint}?page_id=${pageId}${platform === 'instagram' ? '&platform=instagram' : ''}`);
             const data = res.data?.data;
             if (data) {
                 setExistingCampaignId(data.id);
@@ -98,7 +99,7 @@ export function PostAutoCommentModal({
         setIsLoadingTemplates(true);
         try {
             const endpoint = platform === "facebook" ? "/facebook/comment-template" : "/instagram/comment-template";
-            const res = await api.get(`${endpoint}?page_id=${pageId}`);
+            const res = await api.get(`${endpoint}?page_id=${pageId}${platform === 'instagram' ? '&platform=instagram' : ''}`);
             if (res.data.success || res.data.is_success) {
                 setTemplates(res.data.data || []);
             }

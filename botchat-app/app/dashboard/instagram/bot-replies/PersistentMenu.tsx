@@ -172,7 +172,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
     const fetchMenu = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get(`/instagram/persistent-menu/${instagramId}`);
+            const response = await api.get(`/instagram/persistent-menu/${instagramId}?platform=instagram`);
             if (response.data.success || response.data.is_success) {
                 const data = response.data.data;
                 if (data && data.menu) {
@@ -315,7 +315,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
     const handleSync = async () => {
         setIsSyncing(true);
         try {
-            await api.post(`/instagram/persistent-menu/sync/${instagramId}`);
+            await api.post(`/instagram/persistent-menu/sync/${instagramId}`, { platform: "instagram" });
             showModal("success", "Synced", "Persistent menu synced to Instagram!");
         } catch (error: any) {
             showModal("error", "Error", error.response?.data?.message || "Failed to sync with Instagram");

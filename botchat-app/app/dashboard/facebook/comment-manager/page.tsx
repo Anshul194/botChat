@@ -1394,7 +1394,7 @@ function FPC_CapsuleSwitch({ active }: { active: boolean }) {
     );
 }
 
-export function FullPageCampaignModal({ page, onClose, onSaved }: { page: any; onClose: () => void; onSaved: () => void }) {
+export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: { page: any; hasCampaign?: boolean; onClose: () => void; onSaved: () => void }) {
     const [templates, setTemplates] = useState<any[]>([]);
     const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -1509,12 +1509,12 @@ export function FullPageCampaignModal({ page, onClose, onSaved }: { page: any; o
             fd.append("message", form.message || "");
             fd.append("image", form.image || "");
             fd.append("video", form.video || "");
-            fd.append("private_template_id", form.private_template_id || "");
+            fd.append("private_template_id", String(form.private_template_id || ""));
 
             fd.append("offensive[hide_comment]", form.offensive.hide_comment ? "1" : "0");
             fd.append("offensive[delete_comment]", form.offensive.delete_comment ? "1" : "0");
             fd.append("offensive[offensive_keywords]", form.offensive.offensive_keywords || "");
-            fd.append("offensive[private_reply_template_id]", form.offensive.private_reply_template_id || "");
+            fd.append("offensive[private_reply_template_id]", String(form.offensive.private_reply_template_id || ""));
 
             if (form.reply_type === "filter") {
                 filterRules.forEach((rule, i) => {

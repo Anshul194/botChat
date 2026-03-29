@@ -88,7 +88,7 @@ export default function InstagramBotRepliesPage() {
     const fetchReplies = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await api.get("/instagram/bot-replies");
+            const response = await api.get("/instagram/bot-replies?platform=instagram");
             if (response.data.success || response.data.is_success) {
                 setReplies(response.data.data || []);
             }
@@ -118,7 +118,7 @@ export default function InstagramBotRepliesPage() {
         if (!acc || !acc.page?.page_id) return;
         setIsActionsLoading(true);
         try {
-            const response = await api.get(`/instagram/actions?page_id=${acc.page.page_id}`);
+            const response = await api.get(`/instagram/actions?page_id=${acc.page.page_id}&platform=instagram`);
             if (response.data.success || response.data.is_success) {
                 setActions(response.data.data || []);
             }

@@ -183,7 +183,7 @@ export function PostAutoReplyModal({
         setIsFetchingConfig(true);
         try {
             const base = platform === "facebook" ? `/facebook/post-auto-reply` : `/instagram/post-auto-reply`;
-            const res = await api.get(`${base}/${postId}?page_id=${pageId}`);
+            const res = await api.get(`${base}/${postId}?page_id=${pageId}${platform === 'instagram' ? '&platform=instagram' : ''}`);
             const data = res.data?.data;
 
             if (data) {
@@ -274,7 +274,7 @@ export function PostAutoReplyModal({
         setIsLoadingTemplates(true);
         try {
             const endpoint = platform === "facebook" ? "/facebook/auto-reply-template" : "/instagram/auto-reply-template";
-            const res = await api.get(`${endpoint}?page_id=${pageId}`);
+            const res = await api.get(`${endpoint}?page_id=${pageId}${platform === 'instagram' ? '&platform=instagram' : ''}`);
             if (res.data.success || res.data.is_success) {
                 setTemplates(res.data.data || []);
             } else if (Array.isArray(res.data)) {
