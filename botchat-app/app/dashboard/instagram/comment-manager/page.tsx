@@ -22,6 +22,7 @@ import { PostAutoReplyModal } from "../../components/modals/PostAutoReplyModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
 import { FullAccountReplyModal } from "../../components/modals/FullAccountReplyModal";
 import { MentionReplyModal } from "../../components/modals/MentionReplyModal";
+import { PostReplyReportModal } from "../../components/modals/PostReplyReportModal";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -126,6 +127,25 @@ export default function InstagramCommentManagerPage() {
     const [showPostAutoReplyModal, setShowPostAutoReplyModal] = useState(false);
     const [selectedPostForReply, setSelectedPostForReply] = useState<InstagramPost | null>(null);
 
+    const [showReplyReportModal, setShowReplyReportModal] = useState(false);
+    const [selectedPostForReport, setSelectedPostForReport] = useState<InstagramPost | null>(null);
+
+    const [statusConfirm, setStatusConfirm] = useState<{ isOpen: boolean; post: InstagramPost | null; action: "active" | "paused" }>({
+        isOpen: false,
+        post: null,
+        action: "active"
+    });
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; post: InstagramPost | null }>({
+        isOpen: false,
+        post: null
+    });
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Success Follow-up Modal
+    const [showPauseAllOthersModal, setShowPauseAllOthersModal] = useState(false);
+    const [isPausingAllOthers, setIsPausingAllOthers] = useState(false);
+
     // Outside click for dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -216,6 +236,72 @@ export default function InstagramCommentManagerPage() {
             if (repliesRes.data.success || repliesRes.data.is_success) setReplyTemplates(repliesRes.data.data || []);
         } catch (error) { } finally { setIsTemplatesLoading(false); }
     }, []);
+
+    const handleToggleStatus = async () => {
+        const { post, action } = statusConfirm;
+        if (!post || !selectedAccount) return;
+
+        setIsUpdatingStatus(true);
+        try {
+            const res = await api.put("/instagram/comment-manager/post-auto-reply/status?platform=instagram", {
+                post_id: post.id,
+                instagram_id: selectedAccount.instagram_id,
+                status: action
+            });
+            
+            if (res.data.success || res.data.is_success) {
+                toast.success(`Campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
+                setStatusConfirm({ ...statusConfirm, isOpen: false });
+                fetchPosts();
+                
+                // On SUCCESS of activation, ask to pause others (requested feature)
+                if (action === "active") {
+                    setShowPauseAllOthersModal(true);
+                }
+            }
+        } catch (error) {
+            toast.error("Failed to update status");
+        } finally {
+            setIsUpdatingStatus(false);
+        }
+    };
+
+    const handleDeleteStatus = async () => {
+        const { post } = deleteConfirm;
+        if (!post || !selectedAccount) return;
+
+        setIsDeleting(true);
+        try {
+            await api.delete(`/instagram/comment-manager/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+            toast.success("Campaign deleted successfully!");
+            setDeleteConfirm({ ...deleteConfirm, isOpen: false });
+            fetchPosts();
+        } catch (error) {
+            toast.error("Failed to delete campaign");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handlePauseAllOthers = async () => {
+        if (!selectedAccount) return;
+        setIsPausingAllOthers(true);
+        try {
+            await api.put(`/instagram/comment-manager/post-auto-reply/pause-all?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+            toast.success("All other active campaigns have been paused.");
+            setShowPauseAllOthersModal(false);
+            fetchPosts();
+        } catch (error) {
+            toast.error("Failed to pause other campaigns.");
+        } finally {
+            setIsPausingAllOthers(false);
+        }
+    };
+
+    const viewReplyReport = (post: InstagramPost) => {
+        setSelectedPostForReport(post);
+        setShowReplyReportModal(true);
+    };
 
     const deleteTemplate = async (type: "comment" | "reply", id: number) => {
         if (!confirm("Are you sure you want to permanently delete this asset?")) return;
@@ -423,9 +509,42 @@ export default function InstagramCommentManagerPage() {
                                                                                 <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                             </button>
-                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                            <button 
+                                                                                onClick={() => { 
+                                                                                    setStatusConfirm({ 
+                                                                                        isOpen: true, 
+                                                                                        post: post, 
+                                                                                        action: post.status.reply === "paused" ? "active" : "paused" 
+                                                                                    }); 
+                                                                                    setActiveDropdown(null); 
+                                                                                }} 
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                            >
+                                                                                {post.status.reply === "paused" ? (
+                                                                                    <>
+                                                                                        <Play className="w-4 h-4 text-emerald-600" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Resume Campaign</span>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <Pause className="w-4 h-4 text-amber-600" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Pause Campaign</span>
+                                                                                    </>
+                                                                                )}
+                                                                            </button>
+                                                                            <button onClick={() => { viewReplyReport(post); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                 <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
+                                                                            </button>
+                                                                            <button 
+                                                                                onClick={() => { 
+                                                                                    setDeleteConfirm({ isOpen: true, post: post });
+                                                                                    setActiveDropdown(null); 
+                                                                                }} 
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                            >
+                                                                                <Trash2 className="w-4 h-4 text-rose-500" />
+                                                                                <span className="text-[12px] font-bold text-rose-600">Delete Auto Reply</span>
                                                                             </button>
                                                                         </>
                                                                     ) : (
@@ -457,11 +576,15 @@ export default function InstagramCommentManagerPage() {
 
                                                                     <div className="h-px bg-slate-50 dark:bg-slate-800 my-1 mx-4" />
 
+                                                                    <div className="px-4 py-2">
+                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comments</span>
+                                                                    </div>
+
                                                                     <button
                                                                         onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
                                                                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                     >
-                                                                        <MessageCircle className="w-4 h-4 text-slate-400" />
+                                                                        <MessageCircle className="w-4 h-4 text-slate-700 dark:text-slate-300" />
                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
                                                                     </button>
 
@@ -469,7 +592,7 @@ export default function InstagramCommentManagerPage() {
                                                                         onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
                                                                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                     >
-                                                                        <Edit3 className="w-4 h-4 text-slate-400" />
+                                                                        <Edit3 className="w-4 h-4 text-slate-700 dark:text-slate-300" />
                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
                                                                     </button>
                                                                 </motion.div>
@@ -775,6 +898,135 @@ export default function InstagramCommentManagerPage() {
                     instagramId={selectedAccount?.instagram_id || ""}
                     platform="instagram"
                 />
+
+                <PostReplyReportModal
+                    isOpen={showReplyReportModal}
+                    onClose={() => setShowReplyReportModal(false)}
+                    platform="instagram"
+                    postId={selectedPostForReport?.id || ""}
+                    instagramId={selectedAccount?.instagram_id || ""}
+                />
+
+                {/* Status Toggle Modal */}
+                <AnimatePresence>
+                    {statusConfirm.isOpen && (
+                        <div key="status-confirm-modal" className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                                <div className="p-8 text-center space-y-6">
+                                    <div className={cn(
+                                        "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg",
+                                        statusConfirm.action === "paused" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
+                                    )}>
+                                        {statusConfirm.action === "paused" ? <Pause size={32} /> : <Play size={32} />}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
+                                            {statusConfirm.action === "paused" ? "Pause Campaign?" : "Resume Campaign?"}
+                                        </h3>
+                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                            Are you sure you want to {statusConfirm.action} this automated lifecycle?
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-3 pt-4">
+                                        <button
+                                            onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
+                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        >
+                                            No, Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleToggleStatus}
+                                            disabled={isUpdatingStatus}
+                                            className={cn(
+                                                "flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
+                                                statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
+                                            )}
+                                        >
+                                            {isUpdatingStatus ? "Updating..." : `Yes, ${statusConfirm.action} it`}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Deletion Confirmation Modal */}
+                <AnimatePresence>
+                    {deleteConfirm.isOpen && (
+                        <div key="delete-confirm-modal" className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
+                                <div className="p-8 text-center space-y-6">
+                                    <div className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
+                                        <Trash2 size={32} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
+                                            Delete Campaign?
+                                        </h3>
+                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                            Are you absolutely sure you want to delete this automated lifecycle? This action is irreversible.
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-3 pt-4">
+                                        <button
+                                            onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
+                                            className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        >
+                                            No, Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteStatus}
+                                            disabled={isDeleting}
+                                            className="flex-[2] py-4 rounded-2xl bg-rose-600	text-white font-semibold text-[11px] uppercase tracking-widest shadow-xl shadow-rose-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                        >
+                                            {isDeleting ? "Deleting..." : "Yes, Delete it"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Pause All Others Modal (Success Follow-up) */}
+                <AnimatePresence>
+                    {showPauseAllOthersModal && (
+                        <div key="pause-others-modal" className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPauseAllOthersModal(false)} className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm" />
+                            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-[32px] w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-100 dark:border-neutral-800">
+                                <div className="p-10 text-center space-y-7">
+                                    <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center bg-pink-500/10 text-pink-600">
+                                        <Sparkles size={32} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-bold text-neutral-900 dark:text-white uppercase tracking-tight">Campaign is Live!</h3>
+                                        <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-2">
+                                            Great! Your automation is now active. Would you like to <span className="text-pink-600 font-bold">pause all other</span> active campaigns for this account to maintain focus?
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-col gap-3 pt-4">
+                                        <button
+                                            onClick={handlePauseAllOthers}
+                                            disabled={isPausingAllOthers}
+                                            className="w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isPausingAllOthers ? "Processing..." : "Yes, Pause all Others"}
+                                        </button>
+                                        <button
+                                            onClick={() => setShowPauseAllOthersModal(false)}
+                                            className="w-full py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        >
+                                            No, Keep them active
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

@@ -27,6 +27,7 @@ import { PostAutoReplyModal } from "../../components/modals/PostAutoReplyModal";
 import { CommentReportModal } from "../../components/modals/CommentReportModal";
 import { CampaignReportModal } from "../../components/modals/CampaignReportModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
+import { PostReplyReportModal } from "../../components/modals/PostReplyReportModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface FacebookPage {
@@ -115,6 +116,9 @@ export default function CommentManager() {
     // Leave a Comment Now Modal
     const [showCommentNowModal, setShowCommentNowModal] = useState(false);
     const [selectedPostForComment, setSelectedPostForComment] = useState<FacebookPost | null>(null);
+
+    const [showReplyReportModal, setShowReplyReportModal] = useState(false);
+    const [selectedPostForReportReply, setSelectedPostForReportReply] = useState<FacebookPost | null>(null);
 
     // Reporting Dropdown
     const [showReportDropdown, setShowReportDropdown] = useState(false);
@@ -673,7 +677,7 @@ export default function CommentManager() {
                                                                                         <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                                     </button>
-                                                                                    <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                    <button onClick={() => { setSelectedPostForReportReply(post); setShowReplyReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                         <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
                                                                                     </button>
@@ -1033,6 +1037,14 @@ export default function CommentManager() {
                 reportType={activeReportType}
                 platform="facebook"
                 pageId={selectedPage?.page_id || ""}
+            />
+
+            <PostReplyReportModal
+                isOpen={showReplyReportModal}
+                onClose={() => setShowReplyReportModal(false)}
+                platform="facebook"
+                postId={selectedPostForReportReply?.id || ""}
+                instagramId={selectedPage?.page_id || ""}
             />
 
             {/* Post Comment Modal */}
