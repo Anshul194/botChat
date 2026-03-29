@@ -173,8 +173,20 @@ export function PostAutoReplyModal({
     const fetchCampaignConfig = async () => {
         setIsFetchingConfig(true);
         try {
-            const base = `/instagram/comment-manager/post-auto-reply`;
-            const res = await api.get(`${base}/${postId}?platform=instagram`);
+            const base = platform === "facebook"
+                ? `/facebook/post-auto-reply`
+                : `/instagram/comment-manager/post-auto-reply`;
+
+            const params: any = {};
+            if (platform === "facebook") {
+                params.page_id = pageId;
+                params.post_id = postId;
+            } else {
+                params.platform = "instagram";
+            }
+
+            const fetchUrl = platform === "facebook" ? `${base}/${pageId}` : `${base}/${postId}`;
+            const res = await api.get(fetchUrl, { params });
             const data = res.data?.data;
 
             if (data) {
@@ -235,7 +247,9 @@ export function PostAutoReplyModal({
     const fetchTemplates = async () => {
         setIsLoadingTemplates(true);
         try {
-            const endpoint = `/instagram/comment-manager/post-auto-reply/templates/${pageId}?platform=instagram`;
+            const endpoint = platform === "facebook"
+                ? `/facebook/post-auto-reply/templates/${pageId}`
+                : `/instagram/comment-manager/post-auto-reply/templates/${pageId}?platform=instagram`;
             const res = await api.get(endpoint);
             setTemplates(Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []));
         } catch (error) {
@@ -250,17 +264,27 @@ export function PostAutoReplyModal({
         if (!form.template_id && view === "template") { toast.error("Please select a template"); return; }
 
         setIsSaving(true);
+        const isFB = platform === "facebook";
+        const endpoint = isFB ? `/facebook/post-auto-reply` : `/instagram/comment-manager/post-auto-reply`;
+
         try {
-            const endpoint = `/instagram/comment-manager/post-auto-reply`;
             const payload: any = {
                 post_id: postId,
-                instagram_id: pageId,
                 use_template: view === "template",
                 name: form.name,
                 reply_type: form.reply_type,
                 message: form.message,
+                image: form.image || null,
+                video: form.video || null,
                 save_as_template: form.save_as_template,
             };
+
+            if (isFB) {
+                payload.facebook_page_id = pageId;
+            } else {
+                payload.instagram_id = pageId;
+                payload.platform = "instagram";
+            }
 
             // Enhanced fields
             if (view === "template") {
@@ -276,19 +300,25 @@ export function PostAutoReplyModal({
                     offensive_keywords: form.offensive.offensive_keywords,
                     private_reply_template_id: form.offensive.private_reply_template_id
                 };
-                payload.rules = filterRules.map(r => ({
-                    keyword: r.keyword,
-                    match_type: r.match_type,
-                    message: r.message,
-                    private_template_id: r.private_template_id
-                }));
+                if (form.reply_type !== "generic") {
+                    payload.rules = (filterRules || []).map(r => ({
+                        keyword: r.keyword,
+                        match_type: r.match_type,
+                        message: r.message,
+                        image: r.image || null,
+                        video: r.video || null,
+                        private_template_id: r.private_template_id
+                    }));
+                }
             }
 
             let res;
             if (existingCampaignId) {
-                res = await api.put(`${endpoint}/${postId}?platform=instagram`, payload);
+                const updateUrl = isFB ? `${endpoint}/${postId}` : `${endpoint}/${postId}?platform=instagram`;
+                res = await api.put(updateUrl, payload);
             } else {
-                res = await api.post(`${endpoint}?platform=instagram`, payload);
+                const createUrl = isFB ? endpoint : `${endpoint}?platform=instagram`;
+                res = await api.post(createUrl, payload);
             }
 
             if (res.data.success || res.data.is_success) {
@@ -307,10 +337,21 @@ export function PostAutoReplyModal({
         setIsSaving(true);
         try {
             const newStatus = status === "active" ? "paused" : "active";
-            const res = await api.post(`/instagram/comment-manager/post-auto-reply/status?platform=instagram`, {
+            const endpoint = platform === "facebook"
+                ? `/facebook/post-auto-reply/status`
+                : `/instagram/comment-manager/post-auto-reply/status?platform=instagram`;
+
+            const payload: any = {
                 post_id: postId,
                 status: newStatus
-            });
+            };
+            if (platform === "facebook") {
+                payload.page_id = pageId;
+            } else {
+                payload.platform = "instagram";
+            }
+
+            const res = await api.post(endpoint, payload);
             if (res.data.success || res.data.is_success) {
                 setStatus(newStatus);
                 toast.success(`Automation ${newStatus === 'active' ? 'resumed' : 'paused'}`);
@@ -327,7 +368,16 @@ export function PostAutoReplyModal({
         if (!confirm("Are you sure? This will remove all automation rules for this post.")) return;
         setIsDeleting(true);
         try {
-            const res = await api.delete(`/instagram/comment-manager/post-auto-reply/${postId}?platform=instagram`);
+            const endpoint = platform === "facebook"
+                ? `/facebook/post-auto-reply/${postId}`
+                : `/instagram/comment-manager/post-auto-reply/${postId}?platform=instagram`;
+
+            const params: any = {};
+            if (platform === "facebook") {
+                params.page_id = pageId;
+            }
+
+            const res = await api.delete(endpoint, { params });
             if (res.data.success || res.data.is_success) {
                 toast.success("Post automation removed");
                 onSaved();
@@ -476,7 +526,7 @@ export function PostAutoReplyModal({
                                 </motion.div>
                             ) : (
                                 <motion.div key="custom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                                    
+
                                     {/* SECTION: BASICS */}
                                     <div className="bg-white p-7 rounded-2xl border border-slate-100 shadow-xs">
                                         <Field label="Auto Reply Campaign Name" required icon={Edit3}>

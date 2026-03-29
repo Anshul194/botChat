@@ -119,19 +119,21 @@ export function PostAutoCommentModal({
     const fetchCampaignConfig = async () => {
         setIsFetchingConfig(true);
         try {
-            const endpoint = platform === "facebook" 
+            const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-comment/${postId}`
                 : `/instagram/post-auto-comment/${postId}`;
-            
+
             const params = platform === "facebook"
                 ? { facebook_page_id: pageId }
                 : { instagram_id: pageId, platform: "instagram" };
 
             const res = await api.get(endpoint, { params });
-            const data = res.data?.data;
-            if (data && (data.id || data.campaign_name)) {
-                setExistingCampaignId(data.id || 1);
-                
+            const respData = res.data?.data;
+            const campaignData = respData?.campaign || respData;
+
+            if (campaignData && (campaignData.id || campaignData.campaign_name)) {
+                setExistingCampaignId(campaignData.id || 1);
+
                 // Helper to extract HH:MM from various backend formats
                 const formatTime = (val: string) => {
                     if (!val) return "";
@@ -142,17 +144,17 @@ export function PostAutoCommentModal({
                 };
 
                 setForm({
-                    campaign_name: data.campaign_name || "",
-                    template_id: data.template_id || "",
-                    schedule_type: data.schedule_type || "periodic",
-                    schedule_time: data.schedule_time || "",
-                    timezone: data.timezone || "Asia/Kolkata",
-                    start_time: formatTime(data.start_time),
-                    end_time: formatTime(data.end_time),
-                    comment_between_start: formatTime(data.comment_between_start) || "09:00",
-                    comment_between_end: formatTime(data.comment_between_end) || "21:00",
-                    comment_type: data.comment_type || "random",
-                    status: data.status || "active"
+                    campaign_name: campaignData.campaign_name || "",
+                    template_id: campaignData.template_id || "",
+                    schedule_type: campaignData.schedule_type || "periodic",
+                    schedule_time: campaignData.schedule_time || "",
+                    timezone: campaignData.timezone || "Asia/Kolkata",
+                    start_time: formatTime(campaignData.start_time),
+                    end_time: formatTime(campaignData.end_time),
+                    comment_between_start: formatTime(campaignData.comment_between_start) || "09:00",
+                    comment_between_end: formatTime(campaignData.comment_between_end) || "21:00",
+                    comment_type: campaignData.comment_type || "random",
+                    status: campaignData.status || "active"
                 });
                 setView("config");
             } else {
@@ -195,7 +197,7 @@ export function PostAutoCommentModal({
         try {
             const isFB = platform === "facebook";
             const endpoint = isFB ? `/facebook/post-auto-comment` : `/instagram/post-auto-comment`;
-            
+
             const payload: any = {
                 campaign_name: form.campaign_name,
                 template_id: form.template_id,
@@ -214,14 +216,14 @@ export function PostAutoCommentModal({
                     payload.start_time = (form.start_time || "09:00").slice(0, 5);
                     payload.end_time = (form.end_time || "21:00").slice(0, 5);
                 } else {
-                     payload.schedule_time = toBackendFormat(form.schedule_time);
+                    payload.schedule_time = toBackendFormat(form.schedule_time);
                 }
             } else {
                 // Instagram logic
-                payload.instagram_id = facebookPageId; 
-                payload.facebook_page_id = pageId; 
+                payload.instagram_id = facebookPageId;
+                payload.facebook_page_id = pageId;
                 payload.platform = "instagram";
-                
+
                 if (form.schedule_type === "periodic") {
                     payload.start_time = (form.start_time || "09:00").slice(0, 5);
                     payload.end_time = (form.end_time || "21:00").slice(0, 5);
@@ -258,7 +260,7 @@ export function PostAutoCommentModal({
             const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-comment/${postId}/status`
                 : `/instagram/post-auto-comment/${postId}/status`;
-            
+
             const payload: any = { status: newStatus };
             if (platform === "instagram") payload.platform = "instagram";
 
@@ -282,7 +284,7 @@ export function PostAutoCommentModal({
             const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-comment/${postId}`
                 : `/instagram/post-auto-comment/${postId}`;
-            
+
             const params = platform === "facebook"
                 ? { facebook_page_id: pageId }
                 : { instagram_id: pageId, platform: "instagram" };
@@ -305,7 +307,9 @@ export function PostAutoCommentModal({
     // Helper to format ISO to backend format
     const toBackendFormat = (val: string) => {
         if (!val) return "";
-        return val.replace("T", " ") + ":00";
+        // If ISO format (contains T), extract just the HH:MM
+        if (val.includes("T")) return val.split("T")[1].slice(0, 5);
+        return val.slice(0, 5);
     };
 
     const fromBackendFormat = (val: string) => {
@@ -451,7 +455,7 @@ export function PostAutoCommentModal({
                                             <Calendar className="w-4 h-4 text-pink-500" />
                                             <h3 className="text-sm font-semibold text-slate-700">Schedule Engine</h3>
                                         </div>
-                                        
+
                                         <div className="flex gap-2 p-1 bg-slate-50 rounded-xl mb-6">
                                             {[
                                                 { id: 'periodic', label: 'Periodic Flow' },
