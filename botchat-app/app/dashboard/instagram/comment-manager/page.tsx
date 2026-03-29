@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
 import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
+import { PostAutoReplyModal } from "../../components/modals/PostAutoReplyModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
 import { FullAccountReplyModal } from "../../components/modals/FullAccountReplyModal";
 import { MentionReplyModal } from "../../components/modals/MentionReplyModal";
@@ -121,6 +122,9 @@ export default function InstagramCommentManagerPage() {
     const [selectedPostForComment, setSelectedPostForComment] = useState<InstagramPost | null>(null);
     const [showFullReplyModal, setShowFullReplyModal] = useState(false);
     const [showMentionReplyModal, setShowMentionReplyModal] = useState(false);
+
+    const [showPostAutoReplyModal, setShowPostAutoReplyModal] = useState(false);
+    const [selectedPostForReply, setSelectedPostForReply] = useState<InstagramPost | null>(null);
 
     // Outside click for dropdown
     useEffect(() => {
@@ -415,7 +419,7 @@ export default function InstagramCommentManagerPage() {
                                                                 >
                                                                     {post.status?.reply ? (
                                                                         <>
-                                                                            <button onClick={() => { setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                            <button onClick={() => { setSelectedPostForReply(post); setShowPostAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                 <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
                                                                             </button>
@@ -425,7 +429,7 @@ export default function InstagramCommentManagerPage() {
                                                                             </button>
                                                                         </>
                                                                     ) : (
-                                                                        <button onClick={() => { setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-50 dark:border-slate-800/50">
+                                                                        <button onClick={() => { setSelectedPostForReply(post); setShowPostAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-50 dark:border-slate-800/50">
                                                                             <Megaphone className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                                                                             <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply</span>
                                                                         </button>
@@ -612,8 +616,92 @@ export default function InstagramCommentManagerPage() {
     return (
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] font-sans">
             <div className="max-w-[1500px] mx-auto p-4 lg:p-10 space-y-10">
+                
+                {/* ── TOP SECTION: ACCOUNT SELECTION (Pill Style) ── */}
+                <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                            {accounts.map(acc => (
+                                <button
+                                    key={acc.id}
+                                    onClick={() => setSelectedAccount(acc)}
+                                    className={cn(
+                                        "px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap flex items-center gap-3",
+                                        selectedAccount?.id === acc.id
+                                            ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md shadow-pink-200"
+                                            : "bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700"
+                                    )}
+                                >
+                                    <div className={cn("w-6 h-6 rounded-lg overflow-hidden border border-white/20", selectedAccount?.id === acc.id ? "opacity-100" : "opacity-60")}>
+                                        <img src={acc.profile_picture || `https://ui-avatars.com/api/?name=${acc.username}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+                                    </div>
+                                    @{acc.username}
+                                </button>
+                            ))}
+                        </div>
 
-                <div className="pt-2" />
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <div className="relative shrink-0 z-[60]">
+                        <button 
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 group"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Search className="w-4 h-4 text-pink-500 group-hover:scale-110 transition-transform" />
+                                Quick Find
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
+                        </button>
+                        
+                        <AnimatePresence>
+                            {showPageDropdown && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute right-0 top-[calc(100%+8px)] w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden"
+                                >
+                                    <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
+                                        <div className="relative border border-slate-200 rounded-xl bg-white overflow-hidden focus-within:border-pink-500 transition-all">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search accounts..."
+                                                value={quickFindSearch}
+                                                onChange={(e) => setQuickFindSearch(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-2 text-[13px] font-semibold outline-none bg-transparent"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="max-h-[300px] overflow-y-auto no-scrollbar p-2 space-y-1">
+                                        {accounts.filter(acc => acc.username.toLowerCase().includes(quickFindSearch.toLowerCase())).map(acc => (
+                                            <button
+                                                key={acc.id}
+                                                onClick={() => { setSelectedAccount(acc); setShowPageDropdown(false); }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center gap-3",
+                                                    selectedAccount?.id === acc.id ? "bg-pink-50 text-pink-600 dark:bg-pink-500/10" : "text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                )}
+                                            >
+                                                <div className="w-8 h-8 rounded-lg overflow-hidden border-2 border-white shadow-sm">
+                                                    <img src={acc.profile_picture || `https://ui-avatars.com/api/?name=${acc.username}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+                                                </div>
+                                                @{acc.username}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
 
                 <AnimatePresence mode="wait">
                     {activeView === 'dashboard' ? (
@@ -648,6 +736,15 @@ export default function InstagramCommentManagerPage() {
                     onSaved={fetchPosts}
                     platform="instagram"
                     postId={selectedPostForAuto?.id || ""}
+                    pageId={selectedAccount?.instagram_id || ""}
+                />
+
+                <PostAutoReplyModal
+                    isOpen={showPostAutoReplyModal}
+                    onClose={() => setShowPostAutoReplyModal(false)}
+                    onSaved={fetchPosts}
+                    platform="instagram"
+                    postId={selectedPostForReply?.id || ""}
                     pageId={selectedAccount?.instagram_id || ""}
                 />
 

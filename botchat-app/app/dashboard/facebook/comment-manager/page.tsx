@@ -323,7 +323,92 @@ export default function CommentManager() {
     return (
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] p-4 lg:p-8 font-sans transition-all duration-300">
             <div className="max-w-[1400px] mx-auto space-y-8">
-                <div className="pt-2" />
+                
+                {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
+                <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                            {pages.map(p => (
+                                <button
+                                    key={p.id}
+                                    onClick={() => setSelectedPage(p)}
+                                    className={cn(
+                                        "px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap flex items-center gap-3",
+                                        selectedPage?.id === p.id
+                                            ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md shadow-pink-200"
+                                            : "bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700"
+                                    )}
+                                >
+                                    <div className={cn("w-6 h-6 rounded-lg overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
+                                        <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+                                    </div>
+                                    {p.page_name}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <div className="relative shrink-0 z-[60]">
+                        <button 
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 group"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Search className="w-4 h-4 text-pink-500 group-hover:scale-110 transition-transform" />
+                                Quick Find
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
+                        </button>
+                        
+                        <AnimatePresence>
+                            {showPageDropdown && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute right-0 top-[calc(100%+8px)] w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden"
+                                >
+                                    <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
+                                        <div className="relative border border-slate-200 rounded-xl bg-white overflow-hidden focus-within:border-pink-500 transition-all">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search pages..."
+                                                value={quickFindSearch}
+                                                onChange={(e) => setQuickFindSearch(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-2 text-[13px] font-semibold outline-none bg-transparent"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="max-h-[300px] overflow-y-auto no-scrollbar p-2 space-y-1">
+                                        {pages.filter(p => (p.page_name || "").toLowerCase().includes(quickFindSearch.toLowerCase())).map(p => (
+                                            <button
+                                                key={p.id}
+                                                onClick={() => { setSelectedPage(p); setShowPageDropdown(false); }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center gap-3",
+                                                    selectedPage?.id === p.id ? "bg-pink-50 text-pink-600 dark:bg-pink-500/10" : "text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                )}
+                                            >
+                                                <div className="w-8 h-8 rounded-lg overflow-hidden border-2 border-white shadow-sm">
+                                                    <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+                                                </div>
+                                                {p.page_name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
 
                 {/* 3. MAIN GRID (1/3 LEFT, 2/3 RIGHT) */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
