@@ -119,8 +119,15 @@ export function PostAutoCommentModal({
     const fetchCampaignConfig = async () => {
         setIsFetchingConfig(true);
         try {
-            const endpoint = `/instagram/post-auto-comment/${postId}`;
-            const res = await api.get(`${endpoint}?instagram_id=${pageId}&platform=instagram`);
+            const endpoint = platform === "facebook" 
+                ? `/facebook/post-auto-comment/${postId}`
+                : `/instagram/post-auto-comment/${postId}`;
+            
+            const params = platform === "facebook"
+                ? { facebook_page_id: pageId }
+                : { instagram_id: pageId, platform: "instagram" };
+
+            const res = await api.get(endpoint, { params });
             const data = res.data?.data;
             if (data && (data.id || data.campaign_name)) {
                 setExistingCampaignId(data.id || 1);
@@ -164,10 +171,12 @@ export function PostAutoCommentModal({
     const fetchTemplates = async () => {
         setIsLoadingTemplates(true);
         try {
-            const endpoint = `/instagram/comment-template?instagram_id=${pageId}&platform=instagram`;
+            const endpoint = platform === "facebook"
+                ? `/facebook/comment-template?facebook_page_id=${pageId}`
+                : `/instagram/comment-template?instagram_id=${pageId}&platform=instagram`;
             const res = await api.get(endpoint);
             if (res.data.success || res.data.is_success) {
-                setTemplates(res.data.data || []);
+                setTemplates(res.data.data || res.data.templates || []);
             }
         } catch (error) {
             console.error("Fetch Templates Error:", error);
@@ -184,39 +193,50 @@ export function PostAutoCommentModal({
 
         setIsSaving(true);
         try {
-            const endpoint = `/instagram/post-auto-comment`;
+            const isFB = platform === "facebook";
+            const endpoint = isFB ? `/facebook/post-auto-comment` : `/instagram/post-auto-comment`;
             
-            // Build type-safe payload with cross-mapped identifiers
-            const commonPayload = {
+            const payload: any = {
                 campaign_name: form.campaign_name,
                 template_id: form.template_id,
                 schedule_type: form.schedule_type,
                 timezone: form.timezone,
                 comment_type: form.comment_type,
                 post_id: postId,
-                // Swapped mapping as requested:
-                instagram_id: facebookPageId, // passing facebook_page_id value in instagram_id 
-                facebook_page_id: pageId,     // passing instagram_id value in facebook_page_id
-                platform: "instagram"
+                // Strict H:i format (HH:MM)
+                comment_between_start: (form.comment_between_start || "09:00").slice(0, 5),
+                comment_between_end: (form.comment_between_end || "21:00").slice(0, 5),
             };
 
-            const payload: any = { ...commonPayload };
-
-            if (form.schedule_type === "one_time") {
-                payload.schedule_time = form.schedule_time;
+            if (isFB) {
+                payload.facebook_page_id = pageId;
+                if (form.schedule_type === "periodic") {
+                    payload.start_time = (form.start_time || "09:00").slice(0, 5);
+                    payload.end_time = (form.end_time || "21:00").slice(0, 5);
+                } else {
+                     payload.schedule_time = toBackendFormat(form.schedule_time);
+                }
             } else {
-                // Formatting time to strictly H:i (HH:MM)
-                payload.start_time = (form.start_time || "09:00").slice(0, 5);
-                payload.end_time = (form.end_time || "21:00").slice(0, 5);
-                payload.comment_between_start = (form.comment_between_start || "09:00").slice(0, 5);
-                payload.comment_between_end = (form.comment_between_end || "21:00").slice(0, 5);
+                // Instagram logic
+                payload.instagram_id = facebookPageId; 
+                payload.facebook_page_id = pageId; 
+                payload.platform = "instagram";
+                
+                if (form.schedule_type === "periodic") {
+                    payload.start_time = (form.start_time || "09:00").slice(0, 5);
+                    payload.end_time = (form.end_time || "21:00").slice(0, 5);
+                } else {
+                    payload.schedule_time = form.schedule_time;
+                }
             }
 
             let res;
             if (existingCampaignId) {
-                res = await api.put(`${endpoint}/${postId}?platform=instagram`, payload);
+                const updateUrl = isFB ? `${endpoint}/${postId}` : `${endpoint}/${postId}?platform=instagram`;
+                res = await api.put(updateUrl, payload);
             } else {
-                res = await api.post(`${endpoint}?platform=instagram`, payload);
+                const createUrl = isFB ? endpoint : `${endpoint}?platform=instagram`;
+                res = await api.post(createUrl, payload);
             }
 
             if (res.data.success || res.data.is_success) {
@@ -235,11 +255,14 @@ export function PostAutoCommentModal({
         setIsSaving(true);
         try {
             const newStatus = form.status === "active" ? "paused" : "active";
-            const endpoint = `/instagram/post-auto-comment/${postId}/status`;
-            const res = await api.patch(endpoint, { 
-                status: newStatus,
-                platform: "instagram"
-            });
+            const endpoint = platform === "facebook"
+                ? `/facebook/post-auto-comment/${postId}/status`
+                : `/instagram/post-auto-comment/${postId}/status`;
+            
+            const payload: any = { status: newStatus };
+            if (platform === "instagram") payload.platform = "instagram";
+
+            const res = await api.patch(endpoint, payload);
             if (res.data.success || res.data.is_success) {
                 setForm(f => ({ ...f, status: newStatus }));
                 toast.success(`Campaign ${newStatus === 'active' ? 'resumed' : 'paused'}!`);
@@ -256,8 +279,15 @@ export function PostAutoCommentModal({
         if (!confirm("Are you sure you want to delete this auto-comment campaign?")) return;
         setIsDeleting(true);
         try {
-            const endpoint = `/instagram/post-auto-comment/${postId}`;
-            const res = await api.delete(`${endpoint}?instagram_id=${pageId}&platform=instagram`);
+            const endpoint = platform === "facebook"
+                ? `/facebook/post-auto-comment/${postId}`
+                : `/instagram/post-auto-comment/${postId}`;
+            
+            const params = platform === "facebook"
+                ? { facebook_page_id: pageId }
+                : { instagram_id: pageId, platform: "instagram" };
+
+            const res = await api.delete(endpoint, { params });
             if (res.data.success || res.data.is_success) {
                 toast.success("Campaign deleted");
                 onSaved();
