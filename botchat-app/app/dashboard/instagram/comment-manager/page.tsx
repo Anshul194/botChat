@@ -19,6 +19,7 @@ import { CommentTemplateModal } from "../../components/modals/CommentTemplateMod
 import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
+import { FullAccountReplyModal } from "../../components/modals/FullAccountReplyModal";
 import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -117,6 +118,7 @@ export default function InstagramCommentManagerPage() {
     // Leave a Comment Now Modal
     const [showCommentNowModal, setShowCommentNowModal] = useState(false);
     const [selectedPostForComment, setSelectedPostForComment] = useState<InstagramPost | null>(null);
+    const [showFullReplyModal, setShowFullReplyModal] = useState(false);
 
     // Outside click for dropdown
     useEffect(() => {
@@ -293,7 +295,12 @@ export default function InstagramCommentManagerPage() {
                                 { id: 'mention', label: 'Mention Reply', desc: 'Manage Mention Reply Not Enabled', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50' },
                                 { id: 'tagged', label: 'Tagged Media', desc: 'Get the media objects in which Business has been tagged.', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
                             ].map((item) => (
-                                <div key={item.id} className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer">
+                                        <div key={item.id} 
+                                            onClick={() => {
+                                                if (item.id === 'full') setShowFullReplyModal(true);
+                                            }}
+                                            className="group p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800 transition-all border-b border-slate-50 dark:border-slate-800/50 last:border-0 cursor-pointer"
+                                        >
                                     <div className="flex items-center gap-3.5">
                                         <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shadow-xs", item.bg, item.color)}>
                                             <item.icon size={16} strokeWidth={2.5} />
@@ -647,6 +654,16 @@ export default function InstagramCommentManagerPage() {
                     platform="instagram"
                     postId={selectedPostForComment?.id || ""}
                     pageId={selectedAccount?.instagram_id || ""}
+                />
+
+                <FullAccountReplyModal
+                    isOpen={showFullReplyModal}
+                    onClose={() => setShowFullReplyModal(false)}
+                    onSaved={() => {
+                        fetchTemplates();
+                    }}
+                    instagramId={selectedAccount?.instagram_id || ""}
+                    platform="instagram"
                 />
             </div>
         </div>
