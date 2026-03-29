@@ -45,6 +45,7 @@ export function PostCommentModal({
     const [message, setMessage] = useState("");
     const [isScheduling, setIsScheduling] = useState(false);
     const [scheduleTime, setScheduleTime] = useState("12:00");
+    const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -64,15 +65,19 @@ export function PostCommentModal({
         try {
             const endpoint = platform === "facebook" 
                 ? `/facebook/post-comments/${postId}` 
-                : `/instagram/post-comments/${postId}`;
+                : `/instagram/comment-manager/post-comments/${postId}`;
             
             const params = platform === "facebook" 
                 ? { facebook_page_id: pageId } 
-                : { instagram_id: pageId };
+                : { 
+                    instagram_id: pageId, // Using the standard ID passed from page
+                    limit: 25,
+                    platform: "instagram"
+                };
 
             const res = await api.get(endpoint, { params });
-            // The API structure is data.comments
-            const fetched = res.data?.data?.comments || res.data?.data || [];
+            // Handle new structure: data.data...
+            const fetched = res.data?.data?.comments || res.data?.comments || res.data?.data || [];
             setComments(Array.isArray(fetched) ? fetched : []);
         } catch (error) {
             console.error("Fetch Comments Error:", error);
@@ -99,22 +104,31 @@ export function PostCommentModal({
 
             const endpoint = platform === "facebook" 
                 ? "/facebook/post-comment" 
-                : "/instagram/post-comment";
+                : "/instagram/comment-manager/post-comment-reply"; 
             
             const payload = platform === "facebook" ? {
                 post_id: postId,
                 facebook_page_id: pageId,
                 message: message.trim()
             } : {
-                post_id: postId,
+                // If replying to a specific comment
+                comment_id: selectedCommentId || comments[0]?.id, 
                 instagram_id: pageId,
-                message: message.trim()
+                message: message.trim(),
+                platform: "instagram"
             };
+
+            if (!payload.comment_id && platform === "instagram") {
+                toast.error("Please provide a comment ID to reply to");
+                setIsSending(false);
+                return;
+            }
 
             const res = await api.post(endpoint, payload);
             if (res.data.success || res.data.is_success) {
-                toast.success("Comment posted successfully!");
+                toast.success("Successfully responded!");
                 setMessage("");
+                setSelectedCommentId(null);
                 fetchComments(); // Refresh list
             }
         } catch (error: any) {

@@ -50,6 +50,7 @@ interface InstagramPost {
         reply?: string | null;
         comment?: string | null;
     };
+    is_comment_disabled?: boolean;
 }
 
 interface CommentTemplate {
@@ -130,15 +131,18 @@ export default function InstagramCommentManagerPage() {
     const [showReplyReportModal, setShowReplyReportModal] = useState(false);
     const [selectedPostForReport, setSelectedPostForReport] = useState<InstagramPost | null>(null);
 
-    const [statusConfirm, setStatusConfirm] = useState<{ isOpen: boolean; post: InstagramPost | null; action: "active" | "paused" }>({
-        isOpen: false,
-        post: null,
-        action: "active"
-    });
-    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; post: InstagramPost | null }>({
-        isOpen: false,
-        post: null
-    });
+    const [statusConfirm, setStatusConfirm] = useState<{
+        isOpen: boolean;
+        post: InstagramPost | null;
+        action: "active" | "paused";
+        type: "reply" | "comment";
+    }>({ isOpen: false, post: null, action: "active", type: "reply" });
+
+    const [deleteConfirm, setDeleteConfirm] = useState<{
+        isOpen: boolean;
+        post: InstagramPost | null;
+        type: "reply" | "comment";
+    }>({ isOpen: false, post: null, type: "reply" });
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -211,7 +215,7 @@ export default function InstagramCommentManagerPage() {
                     text: p.caption || p.message_short || p.text || (p.media_type === "IMAGE" ? "Photo" : "Post"),
                     status: {
                         reply: p.auto_reply_enabled || p.has_post_auto_reply ? (p.post_auto_reply_status === "paused" ? "paused" : "active") : null,
-                        comment: p.auto_comment_enabled ? "active" : null
+                        comment: p.auto_comment_enabled || p.has_post_auto_comment ? (p.post_auto_comment_status === "paused" ? "paused" : "active") : null
                     }
                 }));
 
@@ -238,19 +242,29 @@ export default function InstagramCommentManagerPage() {
     }, []);
 
     const handleToggleStatus = async () => {
-        const { post, action } = statusConfirm;
+        const { post, action, type } = statusConfirm;
         if (!post || !selectedAccount) return;
 
         setIsUpdatingStatus(true);
         try {
-            const res = await api.put("/instagram/comment-manager/post-auto-reply/status?platform=instagram", {
-                post_id: post.id,
-                instagram_id: selectedAccount.instagram_id,
-                status: action
-            });
+            let res;
+            if (type === "reply") {
+                res = await api.put("/instagram/comment-manager/post-auto-reply/status?platform=instagram", {
+                    post_id: post.id,
+                    instagram_id: selectedAccount.instagram_id,
+                    status: action
+                });
+            } else {
+                // Postman request uses PATCH and status in body
+                res = await api.patch(`/instagram/post-auto-comment/${post.id}/status?platform=instagram`, {
+                    status: action,
+                    instagram_id: selectedAccount.instagram_id,
+                    platform: "instagram"
+                });
+            }
             
             if (res.data.success || res.data.is_success) {
-                toast.success(`Campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
+                toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
                 setStatusConfirm({ ...statusConfirm, isOpen: false });
                 fetchPosts();
                 
@@ -267,19 +281,41 @@ export default function InstagramCommentManagerPage() {
     };
 
     const handleDeleteStatus = async () => {
-        const { post } = deleteConfirm;
+        const { post, type } = deleteConfirm;
         if (!post || !selectedAccount) return;
 
         setIsDeleting(true);
         try {
-            await api.delete(`/instagram/comment-manager/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
-            toast.success("Campaign deleted successfully!");
+            if (type === "reply") {
+                await api.delete(`/instagram/comment-manager/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+            } else {
+                await api.delete(`/instagram/post-auto-comment/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+            }
+            toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign deleted!`);
             setDeleteConfirm({ ...deleteConfirm, isOpen: false });
             fetchPosts();
         } catch (error) {
             toast.error("Failed to delete campaign");
         } finally {
             setIsDeleting(false);
+        }
+    };
+
+    const handleToggleComments = async (post: InstagramPost, enabled: boolean) => {
+        if (!selectedAccount) return;
+        try {
+            // Using facebook_page_id as instagram_id value as requested
+            const res = await api.post("/instagram/comment-manager/toggle-comments?platform=instagram", {
+                post_id: post.id,
+                instagram_id: selectedAccount.page?.page_id || selectedAccount.instagram_id,
+                comment_enabled: enabled
+            });
+            if (res.data.success || res.data.is_success) {
+                toast.success(`Comments ${enabled ? 'enabled' : 'disabled'}!`);
+                fetchPosts();
+            }
+        } catch (error) {
+            toast.error("Failed to toggle comments");
         }
     };
 
@@ -514,7 +550,8 @@ export default function InstagramCommentManagerPage() {
                                                                                     setStatusConfirm({ 
                                                                                         isOpen: true, 
                                                                                         post: post, 
-                                                                                        action: post.status.reply === "paused" ? "active" : "paused" 
+                                                                                        action: post.status.reply === "paused" ? "active" : "paused",
+                                                                                        type: "reply"
                                                                                     }); 
                                                                                     setActiveDropdown(null); 
                                                                                 }} 
@@ -523,28 +560,28 @@ export default function InstagramCommentManagerPage() {
                                                                                 {post.status.reply === "paused" ? (
                                                                                     <>
                                                                                         <Play className="w-4 h-4 text-emerald-600" />
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Resume Campaign</span>
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Resume Campaign</span>
                                                                                     </>
                                                                                 ) : (
                                                                                     <>
                                                                                         <Pause className="w-4 h-4 text-amber-600" />
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Pause Campaign</span>
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Pause Campaign</span>
                                                                                     </>
                                                                                 )}
                                                                             </button>
                                                                             <button onClick={() => { viewReplyReport(post); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                 <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">View auto reply report</span>
                                                                             </button>
                                                                             <button 
                                                                                 onClick={() => { 
-                                                                                    setDeleteConfirm({ isOpen: true, post: post });
+                                                                                    setDeleteConfirm({ isOpen: true, post: post, type: "reply" });
                                                                                     setActiveDropdown(null); 
                                                                                 }} 
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
                                                                                 <Trash2 className="w-4 h-4 text-rose-500" />
-                                                                                <span className="text-[12px] font-bold text-rose-600">Delete Auto Reply</span>
+                                                                                <span className="text-[12px] font-bold text-rose-600 uppercase tracking-tight">Delete Auto Reply</span>
                                                                             </button>
                                                                         </>
                                                                     ) : (
@@ -560,12 +597,46 @@ export default function InstagramCommentManagerPage() {
                                                                         <>
                                                                             <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
                                                                                 <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Edit auto comment</span>
                                                                             </button>
-                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors text-slate-400">
-                                                                                <BarChart3 className="w-4 h-4" />
-                                                                                <span className="text-[12px] font-bold">View auto comment report</span>
+                                                                            <button 
+                                                                                onClick={() => { 
+                                                                                    setStatusConfirm({ 
+                                                                                        isOpen: true, 
+                                                                                        post: post, 
+                                                                                        action: post.status.comment === "paused" ? "active" : "paused",
+                                                                                        type: "comment"
+                                                                                    }); 
+                                                                                    setActiveDropdown(null); 
+                                                                                }} 
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                            >
+                                                                                {post.status.comment === "paused" ? (
+                                                                                    <>
+                                                                                        <Play className="w-4 h-4 text-emerald-600 font-bold" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Resume Comment Flow</span>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <Pause className="w-4 h-4 text-amber-600 font-bold" />
+                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Pause Comment Flow</span>
+                                                                                    </>
+                                                                                )}
                                                                             </button>
+                                                                            <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">View comment report</span>
+                                                                            </button>
+                                                                            <button 
+                                                                                 onClick={() => { 
+                                                                                     setDeleteConfirm({ isOpen: true, post: post, type: "comment" });
+                                                                                     setActiveDropdown(null); 
+                                                                                 }} 
+                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                             >
+                                                                                 <Trash2 className="w-4 h-4 text-rose-500" />
+                                                                                 <span className="text-[12px] font-bold text-rose-600 uppercase tracking-tight">Delete Auto Comment</span>
+                                                                             </button>
                                                                         </>
                                                                     ) : (
                                                                         <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
@@ -577,23 +648,32 @@ export default function InstagramCommentManagerPage() {
                                                                     <div className="h-px bg-slate-50 dark:bg-slate-800 my-1 mx-4" />
 
                                                                     <div className="px-4 py-2">
-                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comments</span>
+                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Comments Hub</span>
                                                                     </div>
 
                                                                     <button
                                                                         onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
                                                                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                     >
-                                                                        <MessageCircle className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
+                                                                        <MessageSquare className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">View Comments & Reply</span>
                                                                     </button>
 
                                                                     <button
-                                                                        onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
-                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                        onClick={() => { handleToggleComments(post, !post.is_comment_disabled); setActiveDropdown(null); }}
+                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors font-bold"
                                                                     >
-                                                                        <Edit3 className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
+                                                                        {post.is_comment_disabled ? (
+                                                                            <>
+                                                                                <Zap className="w-4 h-4 text-emerald-600" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Enable Comments</span>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <Pause className="w-4 h-4 text-amber-600" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Disable Comments</span>
+                                                                            </>
+                                                                        )}
                                                                     </button>
                                                                 </motion.div>
                                                             )}
@@ -860,6 +940,7 @@ export default function InstagramCommentManagerPage() {
                     platform="instagram"
                     postId={selectedPostForAuto?.id || ""}
                     pageId={selectedAccount?.instagram_id || ""}
+                    facebookPageId={selectedAccount?.page?.page_id || ""}
                 />
 
                 <PostAutoReplyModal
