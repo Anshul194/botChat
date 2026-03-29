@@ -268,7 +268,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
       >
         {/* Header */}
         <div className="flex items-center gap-4 px-8 py-5 bg-white border-b border-slate-100">
-          <div className="w-11 h-11 rounded-2xl  from-pink-500 to-pink-500 flex items-center justify-center shadow-lg shadow-pink-200 flex-shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-500 flex items-center justify-center shadow-lg shadow-pink-200 flex-shrink-0">
             <Sparkles className="w-5 h-5 text-white"/>
           </div>
           <div className="flex-1">
@@ -326,7 +326,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
 
             {/* Preview */}
             {formMessages.filter(m=>m.trim()).length>0 && (
-              <div className="p-4 rounded-2xl  from-pink-50 to-pink-50 border border-pink-100">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-50 border border-pink-100">
                 <p className="text-[10px] font-medium text-pink-500 mb-2 flex items-center gap-1.5">
                   <Tag className="w-3 h-3"/> Preview · Rotates randomly
                 </p>
@@ -488,7 +488,7 @@ export default function CommentTemplatesPage(){
               <h3 className="text-base font-semibold text-slate-800 dark:text-white uppercase">{search?"No results":"No templates yet"}</h3>
               <p className="text-sm text-slate-400 mt-1.5 max-w-xs">{search?"Try a different keyword.":"Create your first comment template."}</p>
               {!search&&<button onClick={()=>setFormModal({open:true,mode:"create",template:null})}
-                className="mt-5 flex items-center gap-2 px-6 py-2.5 rounded-xl  bg-pink-600 text-white font-bold text-sm shadow-lg shadow-pink-500/20 hover:scale-105 transition-all">
+                className="mt-5 flex items-center gap-2 px-6 py-2.5 rounded-xl bg-pink-600 text-white font-bold text-sm shadow-lg shadow-pink-500/20 hover:scale-105 transition-all">
                 <Plus className="w-4 h-4"/> Create Template
               </button>}
             </div>
@@ -579,7 +579,7 @@ export default function CommentTemplatesPage(){
               <div className="flex gap-3">
                 <button onClick={()=>setConfirmDeleteId(null)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-[13px] hover:bg-slate-200 transition-all">Cancel</button>
                 <button onClick={()=>handleDelete(confirmDeleteId)} disabled={deletingId!==null}
-                  className="flex-1 py-2.5 rounded-xl  from-rose-500 to-pink-600 text-white font-bold text-[13px] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold text-[13px] shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {deletingId!==null?<><Loader2 className="w-4 h-4 animate-spin"/>Deleting…</>:<><Trash2 className="w-4 h-4"/>Delete</>}
                 </button>

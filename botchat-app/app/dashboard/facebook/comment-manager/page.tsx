@@ -1059,7 +1059,7 @@ export default function CommentManager() {
             {/* Status Toggle Modal */}
             <AnimatePresence>
                 {statusConfirm.isOpen && (
-                    <div key="status-confirm-modal" className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div key="status-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
                         <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
                             <div className="p-8 text-center space-y-6">
@@ -1104,7 +1104,7 @@ export default function CommentManager() {
             {/* Deletion Confirmation Modal */}
             <AnimatePresence>
                 {deleteConfirm.isOpen && (
-                    <div key="delete-confirm-modal" className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div key="delete-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
                         <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
                             <div className="p-8 text-center space-y-6">
@@ -1129,7 +1129,7 @@ export default function CommentManager() {
                                     <button
                                         onClick={handleDeleteCampaign}
                                         disabled={isDeleting}
-                                        className="flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-rose-500 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                        className="flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-gradient-to-r from-rose-500 to-pink-600 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
                                     >
                                         {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
                                     </button>
@@ -1186,7 +1186,7 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
     }
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                     <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
@@ -1221,7 +1221,7 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
                 </div>
                 <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
                     <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
-                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-pink-600 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
@@ -1273,7 +1273,7 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
     }
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                     <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
@@ -1308,7 +1308,7 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
                 </div>
                 <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
                     <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
-                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-pink-600 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
@@ -1538,7 +1538,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
     if (!page) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
             <motion.div
@@ -1827,7 +1827,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-500 font-bold text-[13px] hover:bg-slate-50 transition-all">
                         Cancel
                     </button>
-                    <button onClick={handleSave} disabled={isSaving || isLoadingData} className="flex-[2] py-3.5 rounded-xl bg-pink-600 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                    <button onClick={handleSave} disabled={isSaving || isLoadingData} className="flex-[2] py-3.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
                         <span>{campaignId ? "UPDATE CAMPAIGN" : "SAVE CHANGES"}</span>
                     </button>

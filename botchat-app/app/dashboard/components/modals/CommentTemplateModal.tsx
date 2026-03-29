@@ -222,7 +222,7 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }} 
@@ -296,7 +296,7 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
                         {/* Footer */}
                         <div className="flex gap-4 px-10 py-7 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
                              <button onClick={onClose} className="flex-1 py-4.5 rounded-[22px] bg-slate-100 dark:bg-slate-800 text-slate-500 font-black text-[13px] uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95">Cancel</button>
-                             <button onClick={handleSave} disabled={isSaving} className="flex-[2.5] py-4.5 rounded-[22px] bg-gradient-to-r from-primary to-pink-500 text-white font-black text-[14px] uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                             <button onClick={handleSave} disabled={isSaving} className="flex-[2.5] py-4.5 rounded-[22px] bg-gradient-to-r from-pink-600 to-rose-500 text-white font-black text-[14px] uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                                 {isSaving ? "Synchronizing Asset..." : (editingTemplate ? "Finalize Changes" : "Register Node")}
                              </button>

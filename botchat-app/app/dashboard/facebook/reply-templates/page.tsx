@@ -306,7 +306,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
@@ -757,7 +757,7 @@ export default function ReplyTemplatesPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl border border-slate-100">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
               <h3 className="text-2xl font-semibold text-slate-900 leading-none">Scrub Item?</h3>

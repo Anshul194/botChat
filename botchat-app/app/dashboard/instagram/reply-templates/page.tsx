@@ -298,7 +298,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
@@ -750,14 +750,14 @@ export default function InstagramReplyTemplatesPage() {
       <AnimatePresence>
         {deleteId && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-900 rounded-[32px] p-10 max-w-sm w-full text-center shadow-2xl relative z-10 border border-slate-100 dark:border-slate-800">
+             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000]" onClick={() => setDeleteId(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-900 rounded-[32px] p-10 max-w-sm w-full text-center shadow-2xl relative z-[1001] border border-slate-100 dark:border-slate-800">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
               <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
               <p className="text-sm text-slate-400 mt-4 leading-relaxed font-bold uppercase tracking-wide">Permanently purge this item from the Instagram automation hub?</p>
               <div className="flex gap-4 mt-10">
                 <button onClick={() => setDeleteId(null)} className="flex-1 py-4.5 rounded-[22px] bg-slate-100 dark:bg-slate-800 text-slate-500 font-black text-[12px] uppercase">Abort</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-4.5 rounded-[22px] bg-rose-600 text-white font-black text-[12px] uppercase shadow-xl shadow-rose-200">Confirm</button>
+                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-4.5 rounded-[22px] bg-gradient-to-r from-rose-500 to-pink-600 text-white font-black text-[12px] uppercase shadow-xl shadow-rose-200">Confirm</button>
               </div>
             </motion.div>
           </div>
