@@ -5,7 +5,7 @@ import {
     Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon,
     Image as ImageIcon, GripVertical, RefreshCw, LayoutTemplate,
     Search, Upload, Wand2, ArrowRight, CheckCircle2, X, Eye, Share2, Grid, User,
-    Layers, Video, Youtube, MonitorPlay, Smartphone, Monitor, Hexagon, ShoppingBag, SmartphoneNfc
+    Layers, Video, Youtube, MonitorPlay, Smartphone, Monitor, Hexagon, ShoppingBag, SmartphoneNfc, Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -580,7 +580,7 @@ export default function BioLinkBuilder() {
                                 {/* Identity Block */}
                                 <div className="flex flex-col items-center mb-10 group relative">
                                     <div className="w-24 h-24 rounded-full border border-slate-100 bg-[#F8F9FB] shadow-md relative mb-4 items-center justify-center flex overflow-hidden">
-                                        {profile.avatar ? <img src={profile.avatar} className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-slate-300" />}
+                                        {profile.avatar ? <img src={profile.avatar} referrerPolicy="no-referrer" className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-slate-300" />}
                                         {/* Edit Avatar */}
                                         <label className="absolute bottom-0 right-[-4px] w-8 h-8 bg-[#1f2937] text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-black transition-colors border-2 border-white shadow-sm z-10 translate-x-[-15px] translate-y-[-5px]">
                                             <Edit3 size={12} />
@@ -655,9 +655,17 @@ export default function BioLinkBuilder() {
                                     </div>
 
                                     {(!currentTab?.sections || currentTab.sections.length === 0) ? (
-                                        <div className="flex flex-col items-center justify-center py-16 text-[#8890A5]">
-                                            <Grid size={20} className="mb-3 opacity-50" />
-                                            <p className="text-[13px] font-medium">No sections in this tab</p>
+                                        <div className="flex flex-col items-center justify-center py-16 text-[#8890A5] bg-white border border-dashed border-slate-200 rounded-[20px] px-8 text-center">
+                                            <div className="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center mb-4">
+                                                <Layers size={20} className="text-[#db2777]" />
+                                            </div>
+                                            <h4 className="font-bold text-slate-800 mb-2">Build Your First Tab</h4>
+                                            <p className="text-[13px] font-medium text-slate-500 mb-6 leading-relaxed">
+                                                Start by creating a tab to organize your content. For example: "Portfolio", "Links", or "Socials".
+                                            </p>
+                                            <button onClick={() => setShowAddTabModal(true)} className="h-10 px-6 rounded-full bg-[#db2777] text-white font-bold text-xs shadow-md shadow-[#db2777]/20 hover:bg-[#be185d] transition-all flex items-center gap-2">
+                                                <Plus size={14} /> Create Your First Tab
+                                            </button>
                                         </div>
                                     ) : (
                                         <div className="space-y-4 w-full">
@@ -709,24 +717,46 @@ export default function BioLinkBuilder() {
                                                             })}
                                                         </div>
                                                     )}
+
+                                                    {/* Section-specific Add Block Button */}
+                                                    <div className="mt-4 pt-4 border-t border-slate-50">
+                                                        <button
+                                                            onClick={() => {
+                                                                setTargetSectionId(section.id);
+                                                                setShowAddBlockModal(true);
+                                                            }}
+                                                            className="w-full py-3 rounded-xl border border-dashed border-slate-200 text-[#db2777] text-xs font-bold hover:bg-pink-50 hover:border-[#db2777]/30 transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <Plus size={14} /> Add Block to {section.title}
+                                                        </button>
+                                                    </div>
                                                 </motion.div>
                                             ))}
                                         </div>
                                     )}
 
-                                    <div className="flex justify-center mt-16 mb-8 w-full">
+                                    {tabs.length === 0 && (
+                                        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-400 flex items-center justify-center text-white shadow-xl rotate-3">
+                                                <Sparkles size={24} />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-800 text-lg">Your Portfolio is Empty</h3>
+                                                <p className="text-slate-500 text-sm max-w-xs mx-auto font-medium">Create your first tab to start building your professional link-in-bio page.</p>
+                                            </div>
+                                            <button onClick={() => setShowAddTabModal(true)} className="h-12 px-8 rounded-full bg-[#db2777] text-white font-bold text-sm shadow-xl shadow-[#db2777]/20 hover:scale-105 transition-transform flex items-center gap-2">
+                                                <Plus size={18} /> Get Started with a Tab
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Global buttons removed in favor of section-specific ones for better UX if needed, or keeping it as a quick-add */}
+                                    <div className="flex justify-center mt-12 mb-8 w-full">
                                         <button
-                                            onClick={() => {
-                                                if (currentTab?.sections && currentTab.sections.length > 0) {
-                                                    setTargetSectionId(currentTab.sections[0].id);
-                                                    setShowAddBlockModal(true);
-                                                } else {
-                                                    showModal("error", "Error", "Create a section first");
-                                                }
-                                            }}
-                                            className="h-12 px-8 rounded-full bg-[#db2777] text-white font-semibold text-[13px] flex items-center gap-2 shadow-lg shadow-[#db2777]/30 hover:bg-[#be185d] transition-colors"
+                                            onClick={() => setShowAddSectionModal(true)}
+                                            className="h-12 px-8 rounded-full border-2 border-[#db2777] text-[#db2777] font-bold text-[13px] flex items-center gap-2 hover:bg-pink-50 transition-colors shadow-sm"
                                         >
-                                            <Grid size={14} /> Add New Block
+                                            <Layers size={14} /> Add New Section
                                         </button>
                                     </div>
                                 </div>
@@ -768,7 +798,7 @@ export default function BioLinkBuilder() {
                                     <div className="w-full h-full overflow-y-auto pt-16 pb-12 px-6 flex flex-col items-center relative no-scrollbar">
 
                                         <div className="w-20 h-20 rounded-full border-2 border-white bg-slate-100 shadow-md flex items-center justify-center overflow-hidden mb-4">
-                                            {profile.avatar ? <img src={profile.avatar} className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-slate-300" />}
+                                            {profile.avatar ? <img src={profile.avatar} referrerPolicy="no-referrer" className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-slate-300" />}
                                         </div>
 
                                         <h2 className="text-[20px] font-bold text-[#111] mb-1">{profile.title || "My Bio"}</h2>

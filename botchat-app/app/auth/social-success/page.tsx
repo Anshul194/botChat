@@ -6,10 +6,21 @@ import { motion } from 'framer-motion';
 
 export default function SocialSuccessPage() {
     useEffect(() => {
+        // Notify the opener window that the connection was successful
+        if (window.opener) {
+            window.opener.postMessage({ type: 'SOCIAL_CONNECTION_SUCCESS' }, window.location.origin);
+        }
+
         // Automatically close the popup after a short delay
         const timer = setTimeout(() => {
             window.close();
-        }, 2500);
+            // Fallback for some browsers if window.close() is blocked
+            setTimeout(() => {
+                if (!window.closed) {
+                    console.log("Window could not be closed automatically.");
+                }
+            }, 500);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);

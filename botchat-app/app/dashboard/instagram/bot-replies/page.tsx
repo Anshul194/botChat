@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
-    CheckCircle2, Target, Bot, MousePointerClick,
+    CheckCircle2, Target, Bot, MousePointerClick, ArrowLeft,
     Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Instagram, Layers,
     ChevronLeft, ChevronDown, ListFilter
 } from "lucide-react";
@@ -92,9 +92,10 @@ export default function InstagramBotRepliesPage() {
             if (response.data.success || response.data.is_success) {
                 setReplies(response.data.data || []);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Fetch Replies Error:", error);
-            showModal("error", "Error", "Failed to load Instagram bot replies");
+            const errorMsg = error.response?.data?.message || "Failed to load Instagram bot replies";
+            showModal("error", "Error", errorMsg);
         } finally {
             setIsLoading(false);
         }
@@ -164,8 +165,9 @@ export default function InstagramBotRepliesPage() {
                 setShowCreateModal(false);
                 fetchReplies();
             }
-        } catch (error) {
-            showModal("error", "Error", "Failed to create Instagram bot reply");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to create Instagram bot reply";
+            showModal("error", "Error", errorMsg);
         } finally {
             setIsCreating(false);
             setNewReply({
@@ -190,8 +192,9 @@ export default function InstagramBotRepliesPage() {
                     await api.delete(`/instagram/bot-replies/${id}`);
                     showModal("success", "Deleted", "Bot reply deleted successfully");
                     setReplies(prev => prev.filter(r => r.id !== id));
-                } catch (error) {
-                    showModal("error", "Error", "Failed to delete bot reply");
+                } catch (error: any) {
+                    const errorMsg = error.response?.data?.message || "Failed to delete bot reply";
+                    showModal("error", "Error", errorMsg);
                 }
             }
         });
@@ -203,8 +206,9 @@ export default function InstagramBotRepliesPage() {
             await api.patch(`/instagram/bot-replies/${reply.id}/${newStatus}`);
             showModal("success", "Success", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             fetchReplies();
-        } catch (error) {
-            showModal("error", "Error", "Failed to update status");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to update status";
+            showModal("error", "Error", errorMsg);
         }
     };
 
@@ -213,8 +217,9 @@ export default function InstagramBotRepliesPage() {
             await api.post(`/instagram/bot-replies/${id}/duplicate`);
             showModal("success", "Success", "Bot reply duplicated");
             fetchReplies();
-        } catch (error) {
-            showModal("error", "Error", "Failed to duplicate bot reply");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to duplicate bot reply";
+            showModal("error", "Error", errorMsg);
         }
     };
 
@@ -225,8 +230,9 @@ export default function InstagramBotRepliesPage() {
             await api.patch(`/instagram/bot-replies/${action.automation_id}/${newStatus}`);
             showModal("success", "Success", `Action status updated`);
             if (selectedAccountId !== "all") fetchActions();
-        } catch (error) {
-            showModal("error", "Error", "Failed to toggle action");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to toggle action";
+            showModal("error", "Error", errorMsg);
         }
     };
 
@@ -244,8 +250,9 @@ export default function InstagramBotRepliesPage() {
                     if (selectedAccountId !== "all") {
                         fetchActions(selectedAccountId);
                     }
-                } catch (error) {
-                    showModal("error", "Error", "Failed to remove mapping");
+                } catch (error: any) {
+                    const errorMsg = error.response?.data?.message || "Failed to remove mapping";
+                    showModal("error", "Error", errorMsg);
                 }
             }
         });
@@ -314,145 +321,166 @@ export default function InstagramBotRepliesPage() {
     const creationAccountFallback = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
 
     return (
-        <div className="min-h-screen bg-transparent p-2 sm:p-4 lg:p-6 font-sans pb-24 w-full min-w-0">
-
-            {/* 1. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
-                <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
-                    <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
-                        <ChevronLeft className="w-5 h-5" />
+        <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
+            {/* 1. PREMIUM BRANDED HEADER */}
+            <div className="sticky top-0 z-[50] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
+                    >
+                        <ArrowLeft size={18} strokeWidth={2.5} />
                     </button>
-                    
-                    <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#db2777]">Instagram Automation</span>
+                            <div className="w-1 h-1 rounded-full bg-neutral-300" />
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#db2777]/10 rounded-full">
+                                <Instagram size={10} className="text-[#db2777]" />
+                                <span className="text-[9px] font-medium text-[#db2777]">Neural Node</span>
+                            </div>
+                        </div>
+                        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Instagram Reply Manager</h1>
+                    </div>
+                </div>
+
+                <div className="hidden md:flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-2xl border border-neutral-200 dark:border-neutral-700">
+                    {MENUS.map(menu => (
                         <button
-                            onClick={() => handleAccountSelect("all")}
+                            key={menu.id}
+                            onClick={() => setActiveMenu(menu.id)}
                             className={cn(
-                                "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                selectedAccountId === "all"
-                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md"
-                                    : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                "px-5 py-2 rounded-xl text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all",
+                                activeMenu === menu.id
+                                    ? "bg-white dark:bg-neutral-700 text-[#db2777] shadow-sm"
+                                    : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
                             )}
                         >
-                            All Automations
+                            <menu.icon size={14} strokeWidth={2} />
+                            {menu.label}
                         </button>
-                        <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
-                        {pages.map(acc => (
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-[#db2777] transition-all"><Settings2 size={18} /></button>
+                    <button className="px-6 py-2.5 rounded-2xl bg-[#db2777] text-white text-[13px] font-medium uppercase tracking-wider shadow-lg shadow-[#db2777]/20 hover:scale-105 active:scale-95 transition-all">Pulse stats</button>
+                </div>
+            </div>
+
+            <div className="p-4 sm:p-8 space-y-8">
+                {/* 2. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-[#db2777] transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
                             <button
-                                key={acc.id}
-                                onClick={() => handleAccountSelect(acc.instagram_id)}
+                                onClick={() => handleAccountSelect("all")}
                                 className={cn(
-                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold transition-all whitespace-nowrap",
-                                    selectedAccountId === acc.instagram_id
-                                        ? "bg-pink-50 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 shadow-sm border border-pink-100 dark:border-pink-800/50"
-                                        : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
+                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold uppercase tracking-widest transition-all whitespace-nowrap",
+                                    selectedAccountId === "all"
+                                        ? "bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900"
+                                        : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                 )}
                             >
-                                {acc.username}
+                                All Accounts
                             </button>
-                        ))}
+                            <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
+                            {pages.map(acc => (
+                                <button
+                                    key={acc.id}
+                                    onClick={() => handleAccountSelect(acc.instagram_id)}
+                                    className={cn(
+                                        "px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all whitespace-nowrap",
+                                        selectedAccountId === acc.instagram_id
+                                            ? "bg-[#db2777]/10 text-[#db2777] shadow-sm border border-[#db2777]/20"
+                                            : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
+                                    )}
+                                >
+                                    @{acc.username}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-[#db2777] transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
-                        <ChevronRight className="w-5 h-5" />
-                    </button>
-                </div>
-
-                <div className="relative shrink-0 z-20">
-                    <button 
-                        onClick={() => setShowPageDropdown(!showPageDropdown)}
-                        className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-sm font-semibold hover:border-pink-300 transition-colors text-neutral-700 dark:text-neutral-300"
-                    >
-                        <div className="flex items-center gap-2">
-                            <ListFilter className="w-4 h-4 text-pink-500" />
-                            Quick Find
-                        </div>
-                        <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
-                    </button>
-                    <AnimatePresence>
-                        {showPageDropdown && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                className="absolute right-0 top-[calc(100%+8px)] w-full sm:w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
-                            >
-                                <div className="flex flex-col max-h-[350px]">
-                                    <div className="p-2 border-b border-neutral-100 dark:border-neutral-800 sticky top-0 bg-white dark:bg-neutral-900 z-10">
-                                        <div className="relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                                            <input
-                                                type="text"
-                                                placeholder="Search accounts..."
-                                                value={quickFindSearch}
-                                                onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                className="w-full pl-9 pr-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white dark:focus:bg-neutral-800 focus:border-pink-500/20 text-xs outline-none transition-all"
-                                                autoFocus
-                                                onClick={(e) => e.stopPropagation()}
-                                            />
+                    <div className="relative shrink-0 z-20">
+                        <button 
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-medium uppercase tracking-wider hover:border-[#db2777]/30 transition-colors text-neutral-700 dark:text-neutral-300"
+                        >
+                            <div className="flex items-center gap-2">
+                                <ListFilter className="w-4 h-4 text-[#db2777]" />
+                                Quick Find
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
+                        </button>
+                        <AnimatePresence>
+                            {showPageDropdown && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                    className="absolute right-0 top-[calc(100%+8px)] w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
+                                >
+                                    <div className="flex flex-col max-h-[350px]">
+                                        <div className="p-2 border-b border-neutral-100 dark:border-neutral-800 sticky top-0 bg-white dark:bg-neutral-900 z-10">
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search accounts..."
+                                                    value={quickFindSearch}
+                                                    onChange={(e) => setQuickFindSearch(e.target.value)}
+                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white dark:focus:bg-neutral-800 focus:border-[#db2777]/20 text-xs outline-none transition-all"
+                                                    autoFocus
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="p-1 overflow-y-auto custom-scrollbar">
+                                            <button
+                                                onClick={() => { handleAccountSelect("all"); setQuickFindSearch(""); }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                                                    selectedAccountId === "all" ? "bg-[#db2777]/10 text-[#db2777]" : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                )}
+                                            >
+                                                All Accounts
+                                            </button>
+                                            <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                                            {pages
+                                                .filter(acc => !quickFindSearch || acc.username.toLowerCase().includes(quickFindSearch.toLowerCase()))
+                                                .map(acc => (
+                                                    <button
+                                                        key={acc.id}
+                                                        onClick={() => { handleAccountSelect(acc.instagram_id); setQuickFindSearch(""); }}
+                                                        className={cn(
+                                                            "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all truncate flex items-center gap-2",
+                                                            selectedAccountId === acc.instagram_id ? "bg-[#db2777]/10 text-[#db2777]" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                        )}
+                                                    >
+                                                        <Instagram className="w-3.5 h-3.5 text-[#db2777] shrink-0" />
+                                                        <span className="truncate">{acc.username}</span>
+                                                    </button>
+                                                ))}
+                                            {pages.filter(acc => acc.username.toLowerCase().includes(quickFindSearch.toLowerCase())).length === 0 && (
+                                                <div className="py-8 text-center px-4">
+                                                    <Search className="w-8 h-8 text-neutral-200 dark:text-neutral-800 mx-auto mb-2" />
+                                                    <p className="text-xs text-neutral-400 font-medium italic">No accounts found</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="p-2 overflow-y-auto custom-scrollbar">
-                                        <button
-                                            onClick={() => { handleAccountSelect("all"); setQuickFindSearch(""); }}
-                                            className={cn(
-                                                "w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors",
-                                                selectedAccountId === "all" ? "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400" : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                            )}
-                                        >
-                                            All Automations
-                                        </button>
-                                        <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
-                                        {pages
-                                            .filter(acc => !quickFindSearch || acc.username.toLowerCase().includes(quickFindSearch.toLowerCase()))
-                                            .map(acc => (
-                                                <button
-                                                    key={acc.id}
-                                                    onClick={() => { handleAccountSelect(acc.instagram_id); setQuickFindSearch(""); }}
-                                                    className={cn(
-                                                        "w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors truncate flex items-center gap-2",
-                                                        selectedAccountId === acc.instagram_id ? "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                                    )}
-                                                >
-                                                    <Instagram className="w-4 h-4 text-pink-500 shrink-0" />
-                                                    <span className="truncate">{acc.username}</span>
-                                                </button>
-                                            ))}
-                                        {pages.filter(acc => acc.username.toLowerCase().includes(quickFindSearch.toLowerCase())).length === 0 && (
-                                            <div className="py-8 text-center px-4">
-                                                <Search className="w-8 h-8 text-neutral-200 dark:text-neutral-800 mx-auto mb-2" />
-                                                <p className="text-xs text-neutral-400 font-medium italic">No accounts found</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
-            </div>
-
-            {/* 2. MENU TABS */}
-            <div className="flex items-center gap-6 border-b border-neutral-200 dark:border-neutral-800 mb-8 overflow-x-auto no-scrollbar w-full min-w-0">
-                {MENUS.map(menu => (
-                    <button
-                        key={menu.id}
-                        onClick={() => setActiveMenu(menu.id)}
-                        className={cn(
-                            "pb-4 px-2 text-[15px] font-semibold flex items-center gap-2 transition-all relative whitespace-nowrap",
-                            activeMenu === menu.id
-                                ? "text-pink-600 dark:text-pink-400"
-                                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
-                        )}
-                    >
-                        <menu.icon className="w-4 h-4" />
-                        {menu.label}
-                        {activeMenu === menu.id && (
-                            <motion.div
-                                layoutId="activeTabIndicator"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-pink-600 dark:bg-pink-500 rounded-t-full"
-                            />
-                        )}
-                    </button>
-                ))}
-            </div>
 
             {/* 3. MAIN WORKSPACE */}
             <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
@@ -479,9 +507,9 @@ export default function InstagramBotRepliesPage() {
                                 </div>
                                 <button
                                     onClick={() => setShowCreateModal(true)}
-                                    className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
+                                    className="bg-gradient-to-r from-[#db2777] to-rose-500 hover:from-[#be185d] hover:to-rose-600 text-white px-6 py-2.5 rounded-xl font-medium uppercase text-[12px] tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
                                 >
-                                    <Sparkles className="w-4 h-4" /> Create IG Auto-Reply
+                                    <Sparkles className="w-4 h-4" /> Create IG Flow
                                 </button>
                             </div>
 
@@ -500,28 +528,28 @@ export default function InstagramBotRepliesPage() {
                                         >
                                             <div className="flex items-center gap-4 flex-1 min-w-0">
                                                 <div className={cn(
-                                                    "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center",
+                                                    "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all group-hover:rotate-6",
                                                     reply.status === 'published' ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20" : "bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
                                                 )}>
                                                     <MessageSquare className="w-4 h-4" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-[15px] font-bold text-neutral-900 dark:text-white truncate">{reply.name}</h4>
+                                                    <h4 className="text-[15px] font-semibold text-neutral-900 dark:text-white truncate uppercase tracking-tight">{reply.name}</h4>
                                                     <div className="flex items-center gap-2 mt-0.5">
                                                         <span className={cn(
-                                                            "text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded",
-                                                            reply.status === 'published' ? "bg-emerald-100/50 text-emerald-700 dark:text-emerald-400" : "bg-neutral-200/50 text-neutral-600 dark:text-neutral-400"
+                                                            "text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded",
+                                                            reply.status === 'published' ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20" : "bg-neutral-200/50 text-neutral-600 dark:text-neutral-400"
                                                         )}>
                                                             {reply.status}
                                                         </span>
-                                                        <span className="text-xs text-neutral-500 font-medium whitespace-nowrap">
+                                                        <span className="text-[10px] text-neutral-400 font-medium uppercase tracking-widest whitespace-nowrap">
                                                             Type: {reply.trigger_type}
                                                         </span>
                                                         {selectedAccountId === "all" && (
                                                             <>
                                                                 <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
-                                                                <span className="text-[11px] text-pink-600 dark:text-pink-400 font-semibold bg-pink-50 dark:bg-pink-500/10 px-2 rounded-full truncate max-w-[120px] sm:max-w-none">
-                                                                    {pages.find(p => p.instagram_id === reply.instagram_id)?.username || "Unknown"}
+                                                                <span className="text-[10px] text-[#db2777] font-semibold uppercase tracking-widest bg-[#db2777]/10 px-2 rounded-lg truncate max-w-[120px] sm:max-w-none">
+                                                                    @{pages.find(p => p.instagram_id === reply.instagram_id)?.username || "Unknown"}
                                                                 </span>
                                                             </>
                                                         )}
@@ -565,13 +593,13 @@ export default function InstagramBotRepliesPage() {
                                     <div className="w-16 h-16 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center mb-4">
                                         <MessageSquare className="w-8 h-8 text-pink-400" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Empty Instagram Library</h3>
-                                    <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6">Create automated responses for your Instagram DMs and comments.</p>
+                                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
+                                    <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Instagram DMs and comments.</p>
                                     <button
                                         onClick={() => setShowCreateModal(true)}
-                                        className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:scale-105 transition-transform"
+                                        className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
                                     >
-                                        Create First Reply
+                                        Build First Reply
                                     </button>
                                 </div>
                             )}
@@ -594,9 +622,9 @@ export default function InstagramBotRepliesPage() {
                                     </button>
                                     <button
                                         onClick={() => setShowActionModal(true)}
-                                        className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
+                                        className="bg-[#db2777] hover:bg-[#be185d] text-white px-6 py-2.5 rounded-xl font-medium text-[12px] uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
                                     >
-                                        <Plus className="w-4 h-4" /> Create Action
+                                        <Plus className="w-4 h-4" /> Create custom layer
                                     </button>
                                 </div>
                             </div>
@@ -629,7 +657,7 @@ export default function InstagramBotRepliesPage() {
                                                             <button onClick={() => handleActionDelete(action)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 text-neutral-400 hover:text-red-500 transition-all"><Trash2 className="w-4 h-4" /></button>
                                                         </div>
                                                     </div>
-                                                    <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
+                                                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
                                                     <p className="text-[11px] text-neutral-400 font-medium leading-relaxed mt-1">{def.desc}</p>
                                                 </div>
 
@@ -654,16 +682,16 @@ export default function InstagramBotRepliesPage() {
                                 </div>
                             ) : (
                                 <div className="py-20 text-center flex flex-col items-center border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[40px]">
-                                    <div className="w-20 h-20 rounded-3xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center mb-6">
-                                        <MousePointerClick className="w-10 h-10 text-pink-400" />
+                                    <div className="w-20 h-20 rounded-3xl bg-[#db2777]/5 dark:bg-[#db2777]/10 flex items-center justify-center mb-6">
+                                        <MousePointerClick className="w-10 h-10 text-[#db2777]" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white">No actions configured</h3>
-                                    <p className="text-sm text-neutral-500 max-w-xs mt-2 mb-8 font-medium italic">Create your first IG system shortcut to automate welcome messages or no-match scenarios.</p>
+                                    <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight leading-none">No custom shortcuts</h3>
+                                    <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] max-w-xs mt-2 mb-8 mx-auto leading-relaxed">Map IG system events to neural automation layers to handle complex edge cases.</p>
                                     <button
                                         onClick={() => setShowActionModal(true)}
-                                        className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-8 py-3 rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition-all"
+                                        className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-8 py-3 rounded-2xl font-medium text-[11px] uppercase tracking-widest shadow-xl shadow-neutral-950/20 hover:scale-105 active:scale-95 transition-all"
                                     >
-                                        Create First Action
+                                        Build custom layer
                                     </button>
                                 </div>
                             )}
@@ -828,6 +856,7 @@ export default function InstagramBotRepliesPage() {
                     </div>
                 )}
             </AnimatePresence>
+            </div>
         </div>
     );
 }

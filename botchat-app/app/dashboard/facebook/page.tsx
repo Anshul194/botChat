@@ -81,6 +81,19 @@ export default function FacebookPage() {
 
     useEffect(() => {
         fetchConnectedPages();
+
+        // Listen for messages from the popup
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) return;
+            
+            if (event.data?.type === 'SOCIAL_CONNECTION_SUCCESS') {
+                fetchConnectedPages();
+                setIsConnecting(false);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
     }, []);
 
     const handleConnectFacebook = useCallback(async () => {
@@ -92,7 +105,31 @@ export default function FacebookPage() {
             const redirectUrl = response.data.data?.url || response.data.data?.redirect_url;
 
             if (redirectUrl) {
-                window.location.href = redirectUrl;
+                // Open in a popup
+                const width = 600;
+                const height = 700;
+                const left = (window.innerWidth - width) / 2 + window.screenX;
+                const top = (window.innerHeight - height) / 2 + window.screenY;
+                
+                const popup = window.open(
+                    redirectUrl, 
+                    'Facebook Connect', 
+                    `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+                );
+
+                if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                    // Popup blocked
+                    setIsConnecting(false);
+                    showModal("error", "Popup Blocked", "Please allow popups to connect your Facebook account.");
+                } else {
+                    // Start a timer to stop the loading state if the popup is closed manually
+                    const checkClosed = setInterval(() => {
+                        if (popup.closed) {
+                            clearInterval(checkClosed);
+                            setIsConnecting(false);
+                        }
+                    }, 1000);
+                }
             } else {
                 setIsConnecting(false);
                 showModal("error", "Error", "No redirect URL received from server");

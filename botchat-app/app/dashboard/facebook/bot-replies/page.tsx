@@ -86,9 +86,10 @@ export default function BotRepliesPage() {
             if (response.data.success || response.data.is_success) {
                 setReplies(response.data.data || []);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Fetch Replies Error:", error);
-            showModal("error", "Error", "Failed to load bot replies");
+            const errorMsg = error.response?.data?.message || "Failed to load bot replies";
+            showModal("error", "Error", errorMsg);
         } finally {
             setIsLoading(false);
         }
@@ -153,8 +154,9 @@ export default function BotRepliesPage() {
                 setShowCreateModal(false);
                 fetchReplies();
             }
-        } catch (error) {
-            showModal("error", "Error", "Failed to create bot reply");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to create bot reply";
+            showModal("error", "Error", errorMsg);
         } finally {
             setIsCreating(false);
             setNewReply({
@@ -178,8 +180,9 @@ export default function BotRepliesPage() {
                     await api.delete(`/facebook/bot-replies/${id}`);
                     showModal("success", "Deleted", "Bot reply deleted successfully");
                     setReplies(prev => prev.filter(r => r.id !== id));
-                } catch (error) {
-                    showModal("error", "Error", "Failed to delete bot reply");
+                } catch (error: any) {
+                    const errorMsg = error.response?.data?.message || "Failed to delete bot reply";
+                    showModal("error", "Error", errorMsg);
                 }
             }
         });
@@ -191,8 +194,9 @@ export default function BotRepliesPage() {
             await api.patch(`/facebook/bot-replies/${reply.id}/${newStatus}`);
             showModal("success", "Updated", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             fetchReplies();
-        } catch (error) {
-            showModal("error", "Error", "Failed to update status");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to update status";
+            showModal("error", "Error", errorMsg);
         }
     };
 
@@ -201,8 +205,9 @@ export default function BotRepliesPage() {
             await api.post(`/facebook/bot-replies/${id}/duplicate`);
             showModal("success", "Success", "Bot reply duplicated");
             fetchReplies();
-        } catch (error) {
-            showModal("error", "Error", "Failed to duplicate bot reply");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to duplicate bot reply";
+            showModal("error", "Error", errorMsg);
         }
     };
 
@@ -215,8 +220,9 @@ export default function BotRepliesPage() {
             if (selectedPageId !== "all") {
                 fetchActions(selectedPageId);
             }
-        } catch (error) {
-            showModal("error", "Error", "Failed to toggle action");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to toggle action";
+            showModal("error", "Error", errorMsg);
         }
     };
 
@@ -234,8 +240,9 @@ export default function BotRepliesPage() {
                     if (selectedPageId !== "all") {
                         fetchActions(selectedPageId);
                     }
-                } catch (error) {
-                    showModal("error", "Error", "Failed to remove mapping");
+                } catch (error: any) {
+                    const errorMsg = error.response?.data?.message || "Failed to remove mapping";
+                    showModal("error", "Error", errorMsg);
                 }
             }
         });
@@ -299,14 +306,14 @@ export default function BotRepliesPage() {
                     </button>
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0866FF]">Facebook Automation</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
                             <div className="w-1 h-1 rounded-full bg-neutral-300" />
                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
                                 <FacebookIcon size={10} className="text-[#0866FF] fill-[#0866FF]" />
-                                <span className="text-[9px] font-bold text-[#0866FF]">Active Node</span>
+                                <span className="text-[9px] font-medium text-[#0866FF]">Neural Node</span>
                             </div>
                         </div>
-                        <h1 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Bot Replies Dashboard</h1>
+                        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Facebook Reply Manager</h1>
                     </div>
                 </div>
 
@@ -316,21 +323,21 @@ export default function BotRepliesPage() {
                             key={menu.id}
                             onClick={() => setActiveMenu(menu.id)}
                             className={cn(
-                                "px-5 py-2 rounded-xl text-[13px] font-black uppercase tracking-wider flex items-center gap-2 transition-all",
+                                "px-5 py-2 rounded-xl text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all",
                                 activeMenu === menu.id
                                     ? "bg-white dark:bg-neutral-700 text-[#0866FF] shadow-sm"
                                     : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
                             )}
                         >
-                            <menu.icon size={14} strokeWidth={2.5} />
+                            <menu.icon size={14} strokeWidth={2} />
                             {menu.label}
                         </button>
                     ))}
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-[#0866FF] transition-all"><Settings2 size={18} /></button>
-                    <button className="px-6 py-2.5 rounded-2xl bg-[#0866FF] text-white text-[13px] font-black uppercase tracking-wider shadow-lg shadow-[#0866FF]/20 hover:scale-105 active:scale-95 transition-all">Live Vitals</button>
+                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-[#0866FF] transition-all"><Settings2 size={18} /></button>
+                    <button className="px-6 py-2.5 rounded-2xl bg-[#0866FF] text-white text-[13px] font-medium uppercase tracking-wider shadow-lg shadow-[#0866FF]/20 hover:scale-105 active:scale-95 transition-all">Pulse stats</button>
                 </div>
             </div>
 
@@ -360,7 +367,7 @@ export default function BotRepliesPage() {
                                     key={page.page_id}
                                     onClick={() => handlePageSelect(page.page_id)}
                                     className={cn(
-                                        "px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap",
+                                        "px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all whitespace-nowrap",
                                         selectedPageId === page.page_id
                                             ? "bg-[#0866FF]/10 text-[#0866FF] shadow-sm border border-[#0866FF]/20"
                                             : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
@@ -559,14 +566,14 @@ export default function BotRepliesPage() {
                                         <div className="w-16 h-16 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center mb-4">
                                             <MessageSquare className="w-8 h-8 text-purple-400" />
                                         </div>
-                                        <h3 className="text-lg font-bold text-neutral-900 dark:text-white">No Automations Found</h3>
-                                        <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6">Create your first automated response trigger to engage your page audience 24/7.</p>
-                                        <button
-                                            onClick={() => setShowCreateModal(true)}
-                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:scale-105 transition-transform"
-                                        >
-                                            Create Reply
-                                        </button>
+                                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
+                                    <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Facebook DMs and comments.</p>
+                                    <button
+                                        onClick={() => setShowCreateModal(true)}
+                                        className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
+                                    >
+                                        Build First Reply
+                                    </button>
                                     </div>
                                 )}
                             </motion.div>
@@ -577,8 +584,9 @@ export default function BotRepliesPage() {
                             <motion.div key="action" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pb-12">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-800 pb-6">
                                     <div>
-                                        <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight uppercase">Identity Shortcuts</h2>
-                                        <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] mt-1">Connect system events to custom automation layers</p>
+                                        <div className="text-[10px] font-semibold uppercase tracking-widest text-[#0866FF] mb-2">Configure Action</div>
+                                        <h3 className="text-3xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">Facebook Action Shortcuts</h3>
+                                        <p className="text-xs text-neutral-400 mt-2 font-medium">Connect system events to custom automation layers</p>
                                     </div>
                                     <button
                                         onClick={() => fetchActions(selectedPageId !== "all" ? selectedPageId : (pages[0]?.page_id))}
@@ -628,7 +636,7 @@ export default function BotRepliesPage() {
 
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <h3 className="font-black text-neutral-900 dark:text-white text-lg leading-none uppercase tracking-tight">{item.label}</h3>
+                                                        <h3 className="font-semibold text-neutral-900 dark:text-white text-lg leading-none uppercase tracking-tight">{item.label}</h3>
                                                         {isMapped && (
                                                             <div className={cn(
                                                                 "w-1.5 h-1.5 rounded-full",
@@ -642,21 +650,20 @@ export default function BotRepliesPage() {
                                                             : `This action is currently using the system default response.`}
                                                     </p>
                                                 </div>
-
                                                 <div className="mt-8">
                                                     {isMapped ? (
                                                         <button
                                                             onClick={() => goToFlow(item.automation_id!)}
-                                                            className="w-full py-4 rounded-2xl bg-white dark:bg-neutral-800 border-2 border-purple-100 dark:border-purple-900/10 text-purple-600 dark:text-purple-400 text-[11px] font-black uppercase tracking-[0.15em] shadow-sm hover:shadow-md hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center justify-center gap-2"
+                                                            className="w-full py-4 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-purple-100 dark:border-purple-900/10 text-purple-600 dark:text-purple-400 text-[11px] font-semibold uppercase tracking-wider shadow-sm hover:shadow-md hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center justify-center gap-2"
                                                         >
                                                             <Box size={14} /> Open Flow Logic
                                                         </button>
                                                     ) : (
                                                         <button
                                                             onClick={() => handleConfigureAction(item.type)}
-                                                            className="w-full py-4 rounded-2xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-[11px] font-black uppercase tracking-[0.15em] shadow-xl shadow-neutral-950/10 hover:shadow-purple-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                            className="w-full py-4 rounded-2xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-[11px] font-semibold uppercase tracking-widest shadow-xl shadow-neutral-950/10 hover:shadow-purple-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                                         >
-                                                            <Plus size={14} strokeWidth={3} /> Create Custom Layer
+                                                            <Plus size={14} strokeWidth={2} /> Create Custom Layer
                                                         </button>
                                                     )}
                                                 </div>
