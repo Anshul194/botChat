@@ -73,7 +73,7 @@ export function CommentReportModal({
                 ? `/facebook/post-auto-comment/${postId}/report` 
                 : `/instagram/post-auto-comment/${postId}/report`;
             
-            const res = await api.get(`${endpoint}?page_id=${pageId}&page=${pageNum}`);
+            const res = await api.get(`${endpoint}?page_id=${pageId}&page=${pageNum}&platform=${platform}`);
             setReports(Array.isArray(res.data?.data) ? res.data.data : []);
             if (res.data?.summary) {
                 setSummary(res.data.summary);

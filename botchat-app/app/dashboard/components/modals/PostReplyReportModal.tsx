@@ -65,8 +65,8 @@ export function PostReplyReportModal({
         setIsLoading(true);
         try {
             const endpoint = platform === "facebook" 
-                ? `/facebook/comment-manager/post-auto-reply/report/${postId}` 
-                : `/instagram/comment-manager/post-auto-reply/report/${postId}`;
+                ? `/facebook/post-auto-reply/${postId}/report` 
+                : `/instagram/post-auto-reply/${postId}/report`;
             
             const res = await api.get(`${endpoint}?platform=${platform}&instagram_id=${instagramId}`);
             

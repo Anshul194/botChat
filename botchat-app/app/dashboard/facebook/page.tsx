@@ -29,7 +29,7 @@ interface FacebookPageData {
     page_access_token: string;
     category?: string;
     picture?: string;
-    is_enabled: boolean;
+    is_enabled: string | number | boolean;
     instagram_username?: string;
     followers_count?: number;
 }
@@ -259,7 +259,12 @@ export default function FacebookPage() {
                                 </div>
 
                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pl-4 md:pl-8 border-l-2 ml-4 dark:border-neutral-800 pb-4">
-                                    {account.pages.map((page) => (
+                                    {account.pages.map((rawPage) => {
+                                        const page = {
+                                            ...rawPage,
+                                            is_enabled: rawPage.is_enabled === "1" || rawPage.is_enabled === 1 || rawPage.is_enabled === true,
+                                        };
+                                        return (
                                         <div
                                             key={page.id}
                                             className="group relative rounded-2xl border bg-white dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
@@ -345,7 +350,8 @@ export default function FacebookPage() {
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         ))}

@@ -94,6 +94,24 @@ const CarouselBlock = ({ items }: { items: any[] }) => {
             ))}
         </div>
     );
+};const getBlockIcon = (type: string) => {
+    switch (type) {
+        case 'links_carousel': return <Layers />;
+        case 'hero_single_link': return <LinkIcon />;
+        case 'links_grid': return <Grid />;
+        case 'ig_reels_sync':
+        case 'ig_reels': return <Video />;
+        case 'youtube_shorts': return <Youtube />;
+        case 'long_form_videos':
+        case 'long_video': return <MonitorPlay />;
+        case 'vertical_media': return <Smartphone />;
+        case 'square_media': return <ImageIcon />;
+        case 'horizontal_media': return <Monitor />;
+        case 'add_logos': return <Hexagon />;
+        case 'add_products': return <ShoppingBag />;
+        case 'add_apps': return <SmartphoneNfc />;
+        default: return <LayoutTemplate />;
+    }
 };
 
 export default function BioLinkBuilder() {
@@ -101,6 +119,7 @@ export default function BioLinkBuilder() {
     const [isLoading, setIsLoading] = useState(true);
     const [accounts, setAccounts] = useState<any[]>([]);
     const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
+    const [blockCategories, setBlockCategories] = useState<{ [category: string]: any[] }>({});
 
     // Data State
     const [profile, setProfile] = useState<BioProfile | null>(null);
@@ -176,7 +195,20 @@ export default function BioLinkBuilder() {
                 console.error("Failed to fetch accounts", err);
             }
         };
+
+        const fetchBlockCategories = async () => {
+            try {
+                const response = await api.get("/bio-builder/block-types");
+                if (response.data?.success && response.data?.data) {
+                    setBlockCategories(response.data.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch block types", err);
+            }
+        };
+
         fetchAccounts();
+        fetchBlockCategories();
     }, []);
 
     // 15. GET /api/v1/bio-builder?page={{PAGE_ID}}
@@ -1160,93 +1192,34 @@ export default function BioLinkBuilder() {
                             </div>
 
                             <div className="p-8 overflow-y-auto space-y-10">
-                                {/* CATEGORY: Links */}
-                                <div>
-                                    <h4 className="text-[13px] font-black text-slate-800 mb-4 px-1">Links</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {[
-                                            { id: "links_carousel", title: "Links Carousel", desc: "Organize your links in a carousel", icon: <Layers /> },
-                                            { id: "hero_single_link", title: "Hero Single Link", desc: "Highlight your master link", icon: <LinkIcon /> },
-                                            { id: "links_grid", title: "Links Grid", desc: "Keep your links in an easy grid format", icon: <Grid /> }
-                                        ].map(block => (
-                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
-                                                <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
-                                                    {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
-                                                </div>
-                                                <div className="p-4 w-full flex flex-col justify-center bg-white h-[84px]">
-                                                    <h5 className="font-bold text-[13px] text-slate-900 mb-1 leading-tight">{block.title}</h5>
-                                                    <p className="text-[11px] font-medium text-slate-500 leading-snug">{block.desc}</p>
-                                                </div>
-                                            </button>
-                                        ))}
+                                {Object.keys(blockCategories).length > 0 ? (
+                                    Object.keys(blockCategories).map(categoryName => (
+                                        <div key={categoryName}>
+                                            <h4 className="text-[13px] font-black text-slate-800 mb-4 px-1">{categoryName}</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {blockCategories[categoryName].map(block => (
+                                                    <button 
+                                                        key={block.type} 
+                                                        onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.type); setShowAddBlockModal(false); } }} 
+                                                        className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left"
+                                                    >
+                                                        <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
+                                                            {React.cloneElement(getBlockIcon(block.type) as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
+                                                        </div>
+                                                        <div className="p-4 w-full flex flex-col justify-center bg-white h-[84px]">
+                                                            <h5 className="font-bold text-[13px] text-slate-900 mb-1 leading-tight">{block.label}</h5>
+                                                            <p className="text-[11px] font-medium text-slate-500 leading-snug line-clamp-2">{block.description}</p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="flex justify-center items-center py-10">
+                                        <Loader2 className="animate-spin w-8 h-8 text-[#db2777]" />
                                     </div>
-                                </div>
-
-                                {/* CATEGORY: Content from Social Media */}
-                                <div>
-                                    <h4 className="text-[13px] font-black text-slate-800 mb-4 px-1">Content from Social Media</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {[
-                                            { id: "ig_reels", title: "IG Reels Sync", desc: "Share your pace reels", icon: <Video /> },
-                                            { id: "youtube_shorts", title: "Youtube Shorts", desc: "Share your pace shorts", icon: <Youtube /> },
-                                            { id: "long_video", title: "Long form videos", desc: "Integrate videos from youtube, vimeo or anywhere", icon: <MonitorPlay /> }
-                                        ].map(block => (
-                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
-                                                <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
-                                                    {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
-                                                </div>
-                                                <div className="p-4 w-full flex flex-col justify-center bg-white h-[84px]">
-                                                    <h5 className="font-bold text-[13px] text-slate-900 mb-1 leading-tight">{block.title}</h5>
-                                                    <p className="text-[11px] font-medium text-slate-500 leading-snug">{block.desc}</p>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* CATEGORY: Media from your phone */}
-                                <div>
-                                    <h4 className="text-[13px] font-black text-slate-800 mb-4 px-1">Media from your phone</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {[
-                                            { id: "vertical_media", title: "Vertical media", desc: "Keep your media in an easy format", icon: <Smartphone /> },
-                                            { id: "square_media", title: "Square media", desc: "Share your square photos", icon: <ImageIcon /> },
-                                            { id: "horizontal_media", title: "Horizontal media", desc: "Show off your horizontal format", icon: <Monitor /> },
-                                            { id: "add_logos", title: "Add Logos", desc: "Share your brand logos", icon: <Hexagon /> }
-                                        ].map(block => (
-                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
-                                                <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
-                                                    {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
-                                                </div>
-                                                <div className="p-4 w-full flex flex-col justify-center bg-white h-[84px]">
-                                                    <h5 className="font-bold text-[13px] text-slate-900 mb-1 leading-tight">{block.title}</h5>
-                                                    <p className="text-[11px] font-medium text-slate-500 leading-snug">{block.desc}</p>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* CATEGORY: Others Links */}
-                                <div>
-                                    <h4 className="text-[13px] font-black text-slate-800 mb-4 px-1">Others Links</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {[
-                                            { id: "add_products", title: "Add products", desc: "Provide affiliate links", icon: <ShoppingBag /> },
-                                            { id: "add_apps", title: "Add Apps", desc: "Share Apps from Play Store & Apple Store", icon: <SmartphoneNfc /> }
-                                        ].map(block => (
-                                            <button key={block.id} onClick={() => { if (targetSectionId) { handleAddBlock(targetSectionId, block.id); setShowAddBlockModal(false); } }} className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left">
-                                                <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
-                                                    {React.cloneElement(block.icon as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
-                                                </div>
-                                                <div className="p-4 w-full flex flex-col justify-center bg-white h-[84px]">
-                                                    <h5 className="font-bold text-[13px] text-slate-900 mb-1 leading-tight">{block.title}</h5>
-                                                    <p className="text-[11px] font-medium text-slate-500 leading-snug">{block.desc}</p>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         </motion.div>
                     </div>

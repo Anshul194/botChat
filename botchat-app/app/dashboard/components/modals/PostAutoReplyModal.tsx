@@ -185,7 +185,7 @@ export function PostAutoReplyModal({
                 params.platform = "instagram";
             }
 
-            const fetchUrl = platform === "facebook" ? `${base}/${pageId}` : `${base}/${postId}`;
+            const fetchUrl = platform === "facebook" ? `${base}/${postId}` : `${base}/${postId}`;
             const res = await api.get(fetchUrl, { params });
             const data = res.data?.data;
 
@@ -339,7 +339,7 @@ export function PostAutoReplyModal({
             const newStatus = status === "active" ? "paused" : "active";
             const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-reply/status`
-                : `/instagram/comment-manager/post-auto-reply/status?platform=instagram`;
+                : `/instagram/comment-manager/post-auto-reply/${postId}/status?platform=instagram`;
 
             const payload: any = {
                 post_id: postId,
@@ -351,7 +351,7 @@ export function PostAutoReplyModal({
                 payload.platform = "instagram";
             }
 
-            const res = await api.post(endpoint, payload);
+            const res = await api.patch(endpoint, payload);
             if (res.data.success || res.data.is_success) {
                 setStatus(newStatus);
                 toast.success(`Automation ${newStatus === 'active' ? 'resumed' : 'paused'}`);

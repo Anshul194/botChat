@@ -256,7 +256,7 @@ export default function InstagramCommentManagerPage() {
         try {
             let res;
             if (type === "reply") {
-                res = await api.put("/instagram/comment-manager/post-auto-reply/status?platform=instagram", {
+                res = await api.patch(`/instagram/comment-manager/post-auto-reply/${post.id}/status?platform=instagram`, {
                     post_id: post.id,
                     instagram_id: selectedAccount.instagram_id,
                     status: action
@@ -314,7 +314,7 @@ export default function InstagramCommentManagerPage() {
             // Using facebook_page_id as instagram_id value as requested
             const res = await api.post("/instagram/comment-manager/toggle-comments?platform=instagram", {
                 post_id: post.id,
-                instagram_id: selectedAccount.page?.page_id || selectedAccount.instagram_id,
+                instagram_id: selectedAccount.instagram_id,
                 comment_enabled: enabled
             });
             if (res.data.success || res.data.is_success) {
