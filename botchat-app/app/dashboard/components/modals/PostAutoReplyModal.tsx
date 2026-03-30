@@ -104,7 +104,9 @@ export function PostAutoReplyModal({
     const { showModal } = useModal();
     const [view, setView] = useState<"choice" | "template" | "custom">("choice");
     const [templates, setTemplates] = useState<ReplyTemplate[]>([]);
+    const [botReplies, setBotReplies] = useState<any[]>([]);
     const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+    const [isLoadingBotReplies, setIsLoadingBotReplies] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isFetchingConfig, setIsFetchingConfig] = useState(false);
@@ -137,12 +139,13 @@ export function PostAutoReplyModal({
     useEffect(() => {
         if (isOpen) {
             fetchTemplates();
+            fetchBotReplies();
             if (postId) fetchCampaignConfig();
             else setView("choice");
         } else {
             resetForm();
         }
-    }, [isOpen, postId]);
+    }, [isOpen, postId, pageId]);
 
     const resetForm = () => {
         setExistingCampaignId(null);
@@ -193,35 +196,39 @@ export function PostAutoReplyModal({
                 setExistingCampaignId(data.id || data.post_id || 1); // some non-null value
                 setStatus(data.status || "active");
 
-                if (data.use_template || data.template_id) {
+                const isUseTemplate = data.use_template === "1" || data.use_template === 1 || data.use_template === true;
+
+                if (isUseTemplate) {
                     setView("template");
                 } else {
                     setView("custom");
                 }
 
+                const configData = data.template || data;
+
                 setForm(f => ({
                     ...f,
-                    name: data.name || data.campaign_name || "",
-                    reply_type: data.reply_type || "generic",
-                    message: data.message || "",
-                    image: data.image || "",
-                    video: data.video || "",
-                    multiple_reply_enabled: data.multiple_reply_enabled === "1" || data.multiple_reply_enabled === 1 || !!data.multiple_reply_enabled,
-                    comment_reply_enabled: data.comment_reply_enabled !== "0" && data.comment_reply_enabled !== 0 && data.comment_reply_enabled !== false,
-                    hide_after_reply: data.hide_after_reply === "1" || data.hide_after_reply === 1 || !!data.hide_after_reply,
+                    name: configData.name || configData.campaign_name || "",
+                    reply_type: configData.reply_type || "generic",
+                    message: configData.message || "",
+                    image: configData.image || "",
+                    video: configData.video || "",
+                    multiple_reply_enabled: configData.multiple_reply_enabled === "1" || configData.multiple_reply_enabled === 1 || !!configData.multiple_reply_enabled,
+                    comment_reply_enabled: configData.comment_reply_enabled !== "0" && configData.comment_reply_enabled !== 0 && configData.comment_reply_enabled !== false,
+                    hide_after_reply: configData.hide_after_reply === "1" || configData.hide_after_reply === 1 || !!configData.hide_after_reply,
                     template_id: data.template_id || null,
-                    private_template_id: data.private_template_id || null,
+                    private_template_id: configData.private_template_id || null,
                     save_as_template: false,
-                    use_template: !!data.use_template,
+                    use_template: isUseTemplate,
                     offensive: {
-                        hide_comment: data.offensive?.hide_comment === "1" || !!data.offensive?.hide_comment,
-                        delete_comment: data.offensive?.delete_comment === "1" || !!data.offensive?.delete_comment,
-                        offensive_keywords: data.offensive?.offensive_keywords || "",
-                        private_reply_template_id: data.offensive?.private_reply_template_id || null
+                        hide_comment: configData.offensive?.hide_comment === "1" || !!configData.offensive?.hide_comment,
+                        delete_comment: configData.offensive?.delete_comment === "1" || !!configData.offensive?.delete_comment,
+                        offensive_keywords: configData.offensive?.offensive_keywords || "",
+                        private_reply_template_id: configData.offensive?.private_reply_template_id || null
                     }
                 }));
 
-                const rules = data.rules || [];
+                const rules = configData.rules || [];
                 if (rules && Array.isArray(rules) && rules.length > 0) {
                     setFilterRules(rules.map((r: any) => ({
                         id: String(r.id || Math.random()),
@@ -248,14 +255,29 @@ export function PostAutoReplyModal({
         setIsLoadingTemplates(true);
         try {
             const endpoint = platform === "facebook"
-                ? `/facebook/post-auto-reply/templates/${pageId}`
-                : `/instagram/comment-manager/post-auto-reply/templates/${pageId}?platform=instagram`;
+                ? `/facebook/auto-reply-template`
+                : `/instagram/auto-reply-template?platform=instagram`;
             const res = await api.get(endpoint);
             setTemplates(Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []));
         } catch (error) {
             console.error("Fetch Templates Error:", error);
         } finally {
             setIsLoadingTemplates(false);
+        }
+    };
+
+    const fetchBotReplies = async () => {
+        setIsLoadingBotReplies(true);
+        try {
+            const endpoint = platform === "facebook"
+                ? `/facebook/bot-replies?facebook_page_id=${pageId}`
+                : `/instagram/bot-replies?page_id=${pageId}&platform=instagram`;
+            const res = await api.get(endpoint);
+            setBotReplies(Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []));
+        } catch (error) {
+            console.error("Fetch Bot Replies Error:", error);
+        } finally {
+            setIsLoadingBotReplies(false);
         }
     };
 
@@ -561,8 +583,8 @@ export function PostAutoReplyModal({
                                             <div className="space-y-5">
                                                 <div className="flex items-center justify-between px-1">
                                                     <label className="text-sm font-medium text-slate-600">Private reply template</label>
-                                                    <button onClick={() => fetchTemplates()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
-                                                        <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh
+                                                    <button onClick={() => fetchBotReplies()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
+                                                        <RefreshCw className={cn("w-2.5 h-2.5", isLoadingBotReplies && "animate-spin")} /> Refresh List
                                                     </button>
                                                 </div>
                                                 <div className="relative">
@@ -572,7 +594,7 @@ export function PostAutoReplyModal({
                                                         className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
                                                     >
                                                         <option value="">Please select a message template</option>
-                                                        {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                        {botReplies.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                     </select>
                                                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                                                 </div>
@@ -634,8 +656,8 @@ export function PostAutoReplyModal({
                                                     <div className="space-y-5">
                                                         <div className="flex items-center justify-between px-1">
                                                             <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" /> Private reply template</label>
-                                                            <button onClick={() => fetchTemplates()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
-                                                                <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh
+                                                            <button onClick={() => fetchBotReplies()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
+                                                                <RefreshCw className={cn("w-2.5 h-2.5", isLoadingBotReplies && "animate-spin")} /> Refresh List
                                                             </button>
                                                         </div>
                                                         <div className="relative">
@@ -643,7 +665,7 @@ export function PostAutoReplyModal({
                                                                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer"
                                                             >
                                                                 <option value="">Please select a message template</option>
-                                                                {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                                {botReplies.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                             </select>
                                                             <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                                         </div>
@@ -695,8 +717,8 @@ export function PostAutoReplyModal({
                                                                 <div className="space-y-4">
                                                                     <div className="flex items-center justify-between px-1">
                                                                         <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" /> Private reply template</label>
-                                                                        <button onClick={() => fetchTemplates()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
-                                                                            <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh
+                                                                        <button onClick={() => fetchBotReplies()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
+                                                                            <RefreshCw className={cn("w-2.5 h-2.5", isLoadingBotReplies && "animate-spin")} /> Refresh List
                                                                         </button>
                                                                     </div>
                                                                     <div className="relative">
@@ -704,7 +726,7 @@ export function PostAutoReplyModal({
                                                                             className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer"
                                                                         >
                                                                             <option value="">Please select a message template</option>
-                                                                            {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                                            {botReplies.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                                         </select>
                                                                         <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                                                     </div>
@@ -734,8 +756,8 @@ export function PostAutoReplyModal({
                                                         <div className="space-y-4">
                                                             <div className="flex items-center justify-between px-1">
                                                                 <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" /> Private reply template (Fallback)</label>
-                                                                <button onClick={() => fetchTemplates()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
-                                                                    <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh
+                                                                <button onClick={() => fetchBotReplies()} className="text-xs font-semibold text-pink-500 hover:underline flex items-center gap-1">
+                                                                    <RefreshCw className={cn("w-2.5 h-2.5", isLoadingBotReplies && "animate-spin")} /> Refresh List
                                                                 </button>
                                                             </div>
                                                             <div className="relative">
@@ -743,7 +765,7 @@ export function PostAutoReplyModal({
                                                                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer shadow-sm"
                                                                 >
                                                                     <option value="">Please select a message template</option>
-                                                                    {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                                                    {botReplies.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                                 </select>
                                                                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                                                             </div>

@@ -137,14 +137,17 @@ export default function BotRepliesPage() {
     }, [activeMenu, selectedPageId, pages]);
 
     const handleCreate = async () => {
-        const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
-        if (!newReply.name || !newReply.facebook_page_id || (isKeywordRequired && !newReply.trigger_value)) {
+        const targetPageId = newReply.facebook_page_id || (selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId);
+        const submitData = { ...newReply, facebook_page_id: targetPageId };
+
+        const isKeywordRequired = !['welcome', 'fallback'].includes(submitData.trigger_type);
+        if (!submitData.name || !submitData.facebook_page_id || (isKeywordRequired && !submitData.trigger_value)) {
             showModal("error", "Error", "Please fill all required fields");
             return;
         }
         setIsCreating(true);
         try {
-            const response = await api.post("/facebook/bot-replies", newReply);
+            const response = await api.post("/facebook/bot-replies", submitData);
             if (response.data.success || response.data.is_success) {
                 showModal("success", "Created", "Bot reply created successfully");
                 setShowCreateModal(false);
@@ -156,7 +159,7 @@ export default function BotRepliesPage() {
             setIsCreating(false);
             setNewReply({
                 name: "",
-                facebook_page_id: selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId,
+                facebook_page_id: targetPageId,
                 trigger_type: "exact",
                 trigger_value: ""
             });

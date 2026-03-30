@@ -145,14 +145,20 @@ export default function InstagramBotRepliesPage() {
     }, [activeMenu, selectedAccountId, pages, fetchActions]);
 
     const handleCreate = async () => {
-        const isKeywordRequired = !['welcome', 'fallback'].includes(newReply.trigger_type);
-        if (!newReply.name || !newReply.instagram_id || (isKeywordRequired && !newReply.trigger_value)) {
+        const rccFb = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
+        const targetInstagramId = newReply.instagram_id || rccFb?.instagram_id || "";
+        const targetPageId = newReply.page_id || rccFb?.page?.page_id || "";
+
+        const submitData = { ...newReply, instagram_id: targetInstagramId, page_id: targetPageId };
+
+        const isKeywordRequired = !['welcome', 'fallback'].includes(submitData.trigger_type);
+        if (!submitData.name || !submitData.instagram_id || (isKeywordRequired && !submitData.trigger_value)) {
             showModal("error", "Missing Fields", "Please fill all required fields");
             return;
         }
         setIsCreating(true);
         try {
-            const response = await api.post("/instagram/bot-replies", newReply);
+            const response = await api.post("/instagram/bot-replies", submitData);
             if (response.data.success || response.data.is_success) {
                 showModal("success", "Success", "Instagram bot reply created successfully");
                 setShowCreateModal(false);
@@ -162,11 +168,10 @@ export default function InstagramBotRepliesPage() {
             showModal("error", "Error", "Failed to create Instagram bot reply");
         } finally {
             setIsCreating(false);
-            const rccFb = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
             setNewReply({
                 name: "",
-                page_id: rccFb?.page?.page_id || "",
-                instagram_id: rccFb?.instagram_id || "",
+                page_id: targetPageId,
+                instagram_id: targetInstagramId,
                 trigger_type: "exact",
                 trigger_value: ""
             });
