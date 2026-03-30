@@ -83,6 +83,9 @@ export default function InstagramBotRepliesPage() {
         trigger_value: ""
     });
 
+    const [isCreateAccountDropdownOpen, setIsCreateAccountDropdownOpen] = useState(false);
+    const [createAccountSearchQuery, setCreateAccountSearchQuery] = useState("");
+
     const selectedAccountObj = useMemo(() => pages.find(p => p.instagram_id === selectedAccountId) || null, [pages, selectedAccountId]);
 
     const fetchReplies = useCallback(async () => {
@@ -177,6 +180,8 @@ export default function InstagramBotRepliesPage() {
                 trigger_type: "exact",
                 trigger_value: ""
             });
+            setIsCreateAccountDropdownOpen(false);
+            setCreateAccountSearchQuery("");
         }
     };
 
@@ -788,18 +793,71 @@ export default function InstagramBotRepliesPage() {
                                 {selectedAccountId === "all" && (
                                     <div className="space-y-2">
                                         <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select IG Account</label>
-                                        <select
-                                            value={creationAccountFallback?.instagram_id || ""}
-                                            onChange={(e) => {
-                                                const sel = pages.find(p => p.instagram_id === e.target.value);
-                                                setNewReply({ ...newReply, instagram_id: e.target.value, page_id: sel?.page?.page_id || "" });
-                                            }}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 appearance-none transition-all cursor-pointer"
-                                        >
-                                            {pages.map(p => (
-                                                <option key={p.id} value={p.instagram_id}>{p.username}</option>
-                                            ))}
-                                        </select>
+                                        <div className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsCreateAccountDropdownOpen(!isCreateAccountDropdownOpen)}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-pink-500 transition-all cursor-pointer flex items-center justify-between"
+                                            >
+                                                <span className={cn(
+                                                    "truncate",
+                                                    !(newReply.instagram_id || creationAccountFallback?.instagram_id) && "text-neutral-400"
+                                                )}>
+                                                    {pages.find(p => p.instagram_id === (newReply.instagram_id || creationAccountFallback?.instagram_id))?.username || "Select an account..."}
+                                                </span>
+                                                <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreateAccountDropdownOpen && "rotate-180")} />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {isCreateAccountDropdownOpen && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                                        className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
+                                                    >
+                                                        <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
+                                                            <div className="relative">
+                                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Search accounts..."
+                                                                    value={createAccountSearchQuery}
+                                                                    onChange={(e) => setCreateAccountSearchQuery(e.target.value)}
+                                                                    className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-pink-500/30 text-sm outline-none transition-all"
+                                                                    autoFocus
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
+                                                            {pages.filter(p => !createAccountSearchQuery || p.username.toLowerCase().includes(createAccountSearchQuery.toLowerCase())).map(p => (
+                                                                <button
+                                                                    key={p.id}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setNewReply({ ...newReply, instagram_id: p.instagram_id, page_id: p.page?.page_id || "" });
+                                                                        setIsCreateAccountDropdownOpen(false);
+                                                                    }}
+                                                                    className={cn(
+                                                                        "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
+                                                                        (newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id
+                                                                            ? "bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 font-semibold"
+                                                                            : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                                    )}
+                                                                >
+                                                                    <Instagram className="w-4 h-4 opacity-50" />
+                                                                    <span className="truncate">{p.username}</span>
+                                                                    {(newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id && (
+                                                                        <CheckCircle2 className="w-4 h-4 ml-auto" />
+                                                                    )}
+                                                                </button>
+                                                            ))}
+                                                            {pages.filter(p => p.username.toLowerCase().includes(createAccountSearchQuery.toLowerCase())).length === 0 && (
+                                                                <div className="py-4 text-center text-xs text-neutral-500">No accounts found</div>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
                                 )}
                                 <div className="space-y-2">

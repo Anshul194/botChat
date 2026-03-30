@@ -74,6 +74,9 @@ export default function BotRepliesPage() {
         trigger_value: ""
     });
 
+    const [isCreatePageDropdownOpen, setIsCreatePageDropdownOpen] = useState(false);
+    const [createPageSearchQuery, setCreatePageSearchQuery] = useState("");
+
     const [actions, setActions] = useState<ActionData[]>([]);
     const [isActionsLoading, setIsActionsLoading] = useState(false);
     const [showActionModal, setShowActionModal] = useState(false);
@@ -165,6 +168,8 @@ export default function BotRepliesPage() {
                 trigger_type: "exact",
                 trigger_value: ""
             });
+            setIsCreatePageDropdownOpen(false);
+            setCreatePageSearchQuery("");
         }
     };
 
@@ -773,15 +778,71 @@ export default function BotRepliesPage() {
                                     {selectedPageId === "all" && (
                                         <div className="space-y-2">
                                             <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select Page</label>
-                                            <select
-                                                value={creationPageIdFallback}
-                                                onChange={(e) => setNewReply({ ...newReply, facebook_page_id: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-purple-500 appearance-none transition-all cursor-pointer"
-                                            >
-                                                {pages.map(p => (
-                                                    <option key={p.page_id} value={p.page_id}>{p.page_name}</option>
-                                                ))}
-                                            </select>
+                                            <div className="relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsCreatePageDropdownOpen(!isCreatePageDropdownOpen)}
+                                                    className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-purple-500 transition-all cursor-pointer flex items-center justify-between"
+                                                >
+                                                    <span className={cn(
+                                                        "truncate",
+                                                        !(newReply.facebook_page_id || creationPageIdFallback) && "text-neutral-400"
+                                                    )}>
+                                                        {pages.find(p => p.page_id === (newReply.facebook_page_id || creationPageIdFallback))?.page_name || "Select a page..."}
+                                                    </span>
+                                                    <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreatePageDropdownOpen && "rotate-180")} />
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {isCreatePageDropdownOpen && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                                            className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
+                                                        >
+                                                            <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
+                                                                <div className="relative">
+                                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Search pages..."
+                                                                        value={createPageSearchQuery}
+                                                                        onChange={(e) => setCreatePageSearchQuery(e.target.value)}
+                                                                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-purple-500/30 text-sm outline-none transition-all"
+                                                                        autoFocus
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
+                                                                {pages.filter(p => !createPageSearchQuery || p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).map(p => (
+                                                                    <button
+                                                                        key={p.page_id}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setNewReply({ ...newReply, facebook_page_id: p.page_id });
+                                                                            setIsCreatePageDropdownOpen(false);
+                                                                        }}
+                                                                        className={cn(
+                                                                            "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
+                                                                            (newReply.facebook_page_id || creationPageIdFallback) === p.page_id
+                                                                                ? "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-semibold"
+                                                                                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                                        )}
+                                                                    >
+                                                                        <FacebookIcon className="w-4 h-4 opacity-50 text-[#0866FF]" />
+                                                                        <span className="truncate">{p.page_name}</span>
+                                                                        {(newReply.facebook_page_id || creationPageIdFallback) === p.page_id && (
+                                                                            <CheckCircle2 className="w-4 h-4 ml-auto" />
+                                                                        )}
+                                                                    </button>
+                                                                ))}
+                                                                {pages.filter(p => p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).length === 0 && (
+                                                                    <div className="py-4 text-center text-xs text-neutral-500">No pages found</div>
+                                                                )}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
                                         </div>
                                     )}
                                     <div className="space-y-2">
