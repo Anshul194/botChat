@@ -327,14 +327,14 @@ export default function CommentManager() {
     return (
         <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] p-4 lg:p-8 font-sans transition-all duration-300">
             <div className="max-w-[1400px] mx-auto space-y-8">
-                
+
                 {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
                 <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
                         <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        
+
                         <div ref={scrollRef} className="flex-1 min-w-0 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
                             {pages.map(p => (
                                 <button
@@ -361,7 +361,7 @@ export default function CommentManager() {
                     </div>
 
                     <div className="relative shrink-0 z-[60]">
-                        <button 
+                        <button
                             onClick={() => setShowPageDropdown(!showPageDropdown)}
                             className="h-full px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 group"
                         >
@@ -371,10 +371,10 @@ export default function CommentManager() {
                             </div>
                             <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
                         </button>
-                        
+
                         <AnimatePresence>
                             {showPageDropdown && (
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                     className="absolute right-0 top-[calc(100%+8px)] w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden"
                                 >
@@ -1432,31 +1432,34 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
         try {
             const currentId = String(page?.page_id || page?.id);
             if (!currentId) return;
-            const res = await api.get("/facebook/report/full-page-reply?page_id=" + currentId);
-            const campaignData = (res.data?.data || []).find((c: any) => String(c.page_id || c.instagram_id) === currentId) || res.data?.data?.[0];
+            const res = await api.get(`/facebook/full-page-reply/${currentId}`);
+            const data = res.data?.data;
+            const c = data?.template || (Array.isArray(data) ? (data.find((x: any) => String(x.page_id || x.instagram_id) === currentId) || data[0]) : data);
 
-            if (campaignData) {
-                const c = campaignData;
+            if (c) {
+                const off = data?.offensive || c?.offensive;
+                const rulesArr = data?.rules || c?.rules || c?.filters || [];
+
                 setCampaignId(c.id);
                 setForm({
                     name: c.name || "",
                     reply_type: c.reply_type === "filter" ? "filter" : "generic",
-                    multiple_reply_enabled: c.multiple_reply_enabled === "1" || !!c.multiple_reply_enabled,
-                    comment_reply_enabled: c.comment_reply_enabled !== "0" && c.comment_reply_enabled !== false,
-                    hide_after_reply: c.hide_after_reply === "1" || !!c.hide_after_reply,
+                    multiple_reply_enabled: c.multiple_reply_enabled === "1" || c.multiple_reply_enabled === 1 || c.multiple_reply_enabled === true,
+                    comment_reply_enabled: c.comment_reply_enabled === "1" || c.comment_reply_enabled === 1 || c.comment_reply_enabled === true || (c.comment_reply_enabled !== "0" && c.comment_reply_enabled !== 0 && c.comment_reply_enabled !== false),
+                    hide_after_reply: c.hide_after_reply === "1" || c.hide_after_reply === 1 || c.hide_after_reply === true,
                     message: c.message || "",
                     image: c.image || "",
                     video: c.video || "",
                     private_template_id: c.private_template_id ? String(c.private_template_id) : "",
                     offensive: {
-                        hide_comment: c.hide_comment === "1" || !!c.hide_comment,
-                        delete_comment: c.delete_comment === "1" || !!c.delete_comment,
-                        offensive_keywords: c.offensive_keywords || "",
-                        private_reply_template_id: c.offensive_private_reply_template_id ? String(c.offensive_private_reply_template_id) : "",
+                        hide_comment: off?.hide_comment === "1" || off?.hide_comment === 1 || off?.hide_comment === true,
+                        delete_comment: off?.delete_comment === "1" || off?.delete_comment === 1 || off?.delete_comment === true,
+                        offensive_keywords: off?.offensive_keywords || "",
+                        private_reply_template_id: off?.private_reply_template_id ? String(off.private_reply_template_id) : "",
                     }
                 });
 
-                const rules = (c.rules || c.filters || []).map((r: any) => ({
+                const rules = rulesArr.map((r: any) => ({
                     id: r.id?.toString() || Math.random().toString(),
                     keyword: r.keyword || r.keywords || "",
                     match_type: r.match_type || "contains",
@@ -1465,7 +1468,6 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     video: r.video || "",
                     private_template_id: r.private_template_id ? String(r.private_template_id) : ""
                 }));
-                // Even if no rules, add one default one
                 if (rules.length === 0) rules.push({ id: Math.random().toString(), keyword: "", match_type: "contains", message: "", image: "", video: "", private_template_id: "" });
                 setFilterRules(rules);
             } else {
