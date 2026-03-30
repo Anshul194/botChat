@@ -273,9 +273,13 @@ export default function InstagramBotRepliesPage() {
                 name: type === 'action_no_match' ? 'No Match' : type === 'action_get_started' ? 'Get Started' : 'Ice Breakers'
             });
             if (response.data.success || response.data.is_success) {
+                const automationId = response.data.data?.automation_id || response.data.data?.id;
                 showModal("success", "Success", "Action created successfully");
                 setShowActionModal(false);
                 fetchActions();
+                if (automationId) {
+                    goToFlow(automationId);
+                }
             }
         } catch (error) {
             showModal("error", "Error", "Failed to create action");
@@ -524,7 +528,8 @@ export default function InstagramBotRepliesPage() {
                                     {filteredReplies.map((reply) => (
                                         <div
                                             key={reply.id}
-                                            className="group bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-pink-200 dark:hover:border-pink-900/50 hover:bg-pink-50/30 dark:hover:bg-pink-900/10"
+                                            onClick={() => goToFlow(reply.id)}
+                                            className="group bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-pink-200 dark:hover:border-pink-900/50 hover:bg-pink-50/30 dark:hover:bg-pink-900/10 cursor-pointer"
                                         >
                                             <div className="flex items-center gap-4 flex-1 min-w-0">
                                                 <div className={cn(
@@ -558,27 +563,27 @@ export default function InstagramBotRepliesPage() {
                                             </div>
                                             <div className="flex items-center gap-2 w-full sm:w-auto">
                                                 <button
-                                                    onClick={() => goToFlow(reply.id)}
+                                                    onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }}
                                                     className="flex-1 sm:flex-none py-2 px-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow-sm active:scale-95 transition-all text-center whitespace-nowrap"
                                                 >
                                                     Edit Flow
                                                 </button>
                                                 <button
-                                                    onClick={() => handleToggleStatus(reply)}
+                                                    onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
                                                     className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
                                                     title={reply.status === 'published' ? "Pause" : "Live"}
                                                 >
                                                     {reply.status === 'published' ? <Pause className="w-4 h-4 text-amber-500" /> : <Play className="w-4 h-4 text-emerald-500" />}
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDuplicate(reply.id)}
+                                                    onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
                                                     className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
                                                     title="Duplicate"
                                                 >
                                                     <Copy className="w-4 h-4 text-pink-500" />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(reply.id)}
+                                                    onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
                                                     className="p-2.5 rounded-lg border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
                                                     title="Delete"
                                                 >
@@ -642,39 +647,84 @@ export default function InstagramBotRepliesPage() {
                                             'action_get_started': { label: 'Get Started', desc: 'Triggered when someone opens your DM' },
                                             'action_no_match': { label: 'No Match / Fallback', desc: 'Triggered when no bot reply matches' },
                                             'action_ice_breaker': { label: 'Ice Breakers', desc: 'Precomputed conversation starters' },
+                                            'action_story_mention': { label: 'Story Mention', desc: 'Triggered when someone mentions you in their story' },
+                                            'action_story_private_reply': { label: 'Story Private Reply', desc: 'Send a private reply when someone interacts with your story' },
+                                            'action_message_unsend': { label: 'Message Unsend Private Reply', desc: 'Send a private reply when someone unsends a message' },
                                         };
-                                        const def = labels[action.type] || { label: action.type, desc: 'Custom System Action' };
+                                        const def = labels[action.type] || { label: action.label || action.type, desc: 'Custom System Action' };
                                         
                                         return (
-                                            <div key={action.type} className="group bg-neutral-50/50 dark:bg-neutral-950/20 shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-[32px] p-6 hover:border-pink-500/30 transition-all flex flex-col justify-between">
+                                            <div
+                                                key={action.type}
+                                                onClick={() => {
+                                                    if (action.automation_id) {
+                                                        goToFlow(action.automation_id);
+                                                    } else {
+                                                        handleConfigureAction(action.type);
+                                                    }
+                                                }}
+                                                className="group bg-neutral-50/50 dark:bg-neutral-950/20 shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-[32px] p-6 hover:border-pink-500/30 transition-all flex flex-col justify-between cursor-pointer"
+                                            >
                                                 <div>
                                                     <div className="flex items-center justify-between mb-4">
-                                                        <div className="w-10 h-10 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center text-pink-500 shadow-sm">
-                                                            {action.type === 'action_get_started' ? <Play className="w-5 h-5 fill-current" /> : <RefreshCw className="w-5 h-5" />}
+                                                        <div className={cn(
+                                                            "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm",
+                                                            action.automation_id ? "bg-pink-100 text-[#db2777] dark:bg-pink-900/40" : "bg-white dark:bg-neutral-900 text-neutral-400 dark:border-neutral-800"
+                                                        )}>
+                                                            {action.type === 'action_get_started' ? <Play className="w-6 h-6 fill-current" /> : <RefreshCw className="w-6 h-6" />}
                                                         </div>
                                                         <div className="flex items-center gap-2">
-                                                            <button onClick={() => goToFlow(action.automation_id!)} className="p-2 rounded-lg hover:bg-white dark:hover:bg-neutral-800 text-neutral-400 hover:text-pink-500 transition-all"><ChevronRight className="w-4 h-4" /></button>
-                                                            <button onClick={() => handleActionDelete(action)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 text-neutral-400 hover:text-red-500 transition-all"><Trash2 className="w-4 h-4" /></button>
+                                                            {action.automation_id && (
+                                                                <>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); handleActionToggle(action); }}
+                                                                        className={cn(
+                                                                            "p-2 rounded-lg border transition-all active:scale-90",
+                                                                            action.status === 'published' ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                                        )}
+                                                                        title={action.status === 'published' ? "Pause Action" : "Resume Action"}
+                                                                    >
+                                                                        {action.status === 'published' ? <Pause size={14} /> : <Play size={14} />}
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); handleActionDelete(action); }}
+                                                                        className="p-2 rounded-lg border bg-red-50 text-red-500 border-red-100 hover:bg-red-100 transition-all active:scale-90"
+                                                                        title="Unmap Action"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
-                                                    <p className="text-[11px] text-neutral-400 font-medium leading-relaxed mt-1">{def.desc}</p>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
+                                                        {action.automation_id && (
+                                                            <div className={cn(
+                                                                "w-1.5 h-1.5 rounded-full",
+                                                                action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
+                                                            )} />
+                                                        )}
+                                                    </div>
+                                                    <p className="text-[11px] text-neutral-400 font-medium leading-relaxed">{def.desc}</p>
                                                 </div>
 
-                                                <div className="mt-8 flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className={cn("w-2 h-2 rounded-full", action.status === 'published' ? "bg-emerald-500" : "bg-neutral-300")} />
-                                                        <span className="text-[10px] font-black uppercase text-neutral-500 tracking-widest">{action.status || 'Draft'}</span>
-                                                    </div>
-                                                    <button 
-                                                        onClick={() => handleActionToggle(action)}
-                                                        className={cn(
-                                                            "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                                            action.status === 'published' ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                                                        )}
-                                                    >
-                                                        {action.status === 'published' ? 'Pause' : 'Live'}
-                                                    </button>
+                                                <div className="mt-8">
+                                                    {action.automation_id ? (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); goToFlow(action.automation_id!); }}
+                                                            className="w-full py-3.5 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-pink-100 dark:border-pink-900/10 text-[#db2777] dark:text-pink-400 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-pink-50/50 dark:hover:bg-pink-900/20 transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <Box size={14} /> Open Flow Logic
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleActionCreate(action.type); }}
+                                                            className="w-full py-3.5 rounded-2xl bg-[#db2777] text-white text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-pink-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <Plus size={14} strokeWidth={2.5} /> Create Custom Layer
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
