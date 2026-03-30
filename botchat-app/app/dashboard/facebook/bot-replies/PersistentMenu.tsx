@@ -16,7 +16,7 @@ interface PersistentMenuItem {
     type: "web_url" | "postback" | "nested";
     url?: string;
     payload?: string;
-    call_to_actions?: PersistentMenuItem[];
+    children?: PersistentMenuItem[];
 }
 
 interface PersistentMenuProps {
@@ -135,7 +135,7 @@ function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAd
                         <div className="flex items-center gap-2">
                             <Layers className="w-3.5 h-3.5 text-pink-500" />
                             <span className="text-[11px] font-medium uppercase text-neutral-500 tracking-wider">
-                                Sub Menu Items ({item.call_to_actions?.length || 0}/5)
+                                Sub Menu Items ({item.children?.length || 0}/5)
                             </span>
                         </div>
                         <button
@@ -146,7 +146,7 @@ function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAd
                         </button>
                     </div>
 
-                    {item.call_to_actions?.map((subItem, si) => (
+                    {item.children?.map((subItem, si) => (
                         <MenuItemForm
                             key={si}
                             item={subItem}
@@ -181,7 +181,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
         menuItems.map((m: any) => ({
             ...m,
             type: m.type === "url" ? "web_url" : m.type,
-            call_to_actions: m.call_to_actions ? apiToForm(m.call_to_actions) : undefined,
+            children: m.children ? apiToForm(m.children) : undefined,
         }));
 
     /** Convert internal form format → API payload format (web_url → url) */
@@ -191,7 +191,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
             type: item.type === "web_url" ? "url" : item.type,
             ...(item.url && { url: item.url }),
             ...(item.payload && { payload: item.payload }),
-            ...(item.call_to_actions?.length && { call_to_actions: formToApi(item.call_to_actions) }),
+            ...(item.children?.length && { children: formToApi(item.children) }),
         }));
 
     const fetchMenu = async () => {
@@ -225,12 +225,12 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
 
         if (parentIndex !== undefined) {
             const newItems = [...items];
-            if (!newItems[parentIndex].call_to_actions) newItems[parentIndex].call_to_actions = [];
-            if (newItems[parentIndex].call_to_actions!.length >= 5) {
+            if (!newItems[parentIndex].children) newItems[parentIndex].children = [];
+            if (newItems[parentIndex].children!.length >= 5) {
                 showModal("error", "Error", "Max 5 items allowed in nested menu");
                 return;
             }
-            newItems[parentIndex].call_to_actions!.push(newItem);
+            newItems[parentIndex].children!.push(newItem);
             setItems(newItems);
         } else {
             if (items.length >= 3) { showModal("error", "Error", "Max 3 items allowed in top-level menu"); return; }
@@ -241,7 +241,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
     const handleRemoveItem = (index: number, subIndex?: number) => {
         const newItems = [...items];
         if (subIndex !== undefined) {
-            newItems[index].call_to_actions?.splice(subIndex, 1);
+            newItems[index].children?.splice(subIndex, 1);
         } else {
             newItems.splice(index, 1);
         }
@@ -251,21 +251,21 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
     const handleUpdateItem = (index: number, subIndex: number | undefined, data: Partial<PersistentMenuItem>) => {
         const newItems = [...items];
         if (subIndex !== undefined) {
-            const item = newItems[index].call_to_actions![subIndex];
-            newItems[index].call_to_actions![subIndex] = { ...item, ...data };
+            const item = newItems[index].children![subIndex];
+            newItems[index].children![subIndex] = { ...item, ...data };
             if (data.type) {
-                if (data.type === "web_url") delete newItems[index].call_to_actions![subIndex].payload;
-                if (data.type === "postback") delete newItems[index].call_to_actions![subIndex].url;
+                if (data.type === "web_url") delete newItems[index].children![subIndex].payload;
+                if (data.type === "postback") delete newItems[index].children![subIndex].url;
             }
         } else {
             newItems[index] = { ...newItems[index], ...data };
             if (data.type) {
-                if (data.type === "web_url") { delete newItems[index].payload; delete newItems[index].call_to_actions; }
-                if (data.type === "postback") { delete newItems[index].url; delete newItems[index].call_to_actions; }
+                if (data.type === "web_url") { delete newItems[index].payload; delete newItems[index].children; }
+                if (data.type === "postback") { delete newItems[index].url; delete newItems[index].children; }
                 if (data.type === "nested") {
                     delete newItems[index].url;
                     delete newItems[index].payload;
-                    if (!newItems[index].call_to_actions) newItems[index].call_to_actions = [];
+                    if (!newItems[index].children) newItems[index].children = [];
                 }
             }
         }
@@ -279,8 +279,8 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                 if (item.type === "web_url" && !item.url) return `"${item.title}" must have a URL`;
                 if (item.type === "postback" && !item.payload) return `"${item.title}" must have a payload`;
                 if (item.type === "nested") {
-                    if (!item.call_to_actions?.length) return `Nested item "${item.title}" must have sub-items`;
-                    const subError = validateItems(item.call_to_actions);
+                    if (!item.children?.length) return `Nested item "${item.title}" must have sub-items`;
+                    const subError = validateItems(item.children);
                     if (subError) return subError;
                 }
             }
