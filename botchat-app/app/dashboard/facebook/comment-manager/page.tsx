@@ -41,6 +41,7 @@ interface FacebookPage {
 
 interface FacebookPost {
     id: string;
+    url?: string;
     user?: string;
     time?: string;
     text: string;
@@ -254,21 +255,28 @@ export default function CommentManager() {
                 setPageStats(data.stats);
             }
 
-            const mapped = fetchedPosts.map((p: any, idx: number) => ({
-                id: p.id ? String(p.id) : `post-${idx}`,
-                user: p.user || selectedPage.page_name,
-                time: p.created_time ? new Date(p.created_time).toLocaleString() : new Date().toLocaleString(),
-                text: p.message || p.message_short || "View Post Interaction",
-                thumbnail: p.full_picture || "https://picsum.photos/seed/" + p.id + "/200/200",
-                stats: {
-                    reply: p.auto_reply_enabled ? 1 : 0,
-                    comment: p.auto_comment_enabled ? 1 : 0
-                },
-                status: {
-                    reply: p.post_auto_reply_status,
-                    comment: p.post_auto_comment_status
-                }
-            }));
+            const mapped = fetchedPosts.map((p: any, idx: number) => {
+                const fullId = p.id ? String(p.id) : `post-${idx}`;
+                const [pid, postid] = fullId.split('_');
+                const fbUrl = postid ? `https://facebook.com/${pid}/posts/${postid}` : `https://facebook.com/${fullId}`;
+
+                return {
+                    id: fullId,
+                    url: fbUrl,
+                    user: p.user || selectedPage.page_name,
+                    time: p.created_time ? new Date(p.created_time).toLocaleString() : new Date().toLocaleString(),
+                    text: p.message || p.message_short || "View Post Interaction",
+                    thumbnail: p.full_picture || "https://picsum.photos/seed/" + p.id + "/200/200",
+                    stats: {
+                        reply: p.auto_reply_enabled ? 1 : 0,
+                        comment: p.auto_comment_enabled ? 1 : 0
+                    },
+                    status: {
+                        reply: p.post_auto_reply_status,
+                        comment: p.post_auto_comment_status
+                    }
+                };
+            });
 
             if (isAppend) {
                 setPosts(prev => [...prev, ...mapped]);
@@ -609,15 +617,27 @@ export default function CommentManager() {
                                     ))
                                 ) : posts.length > 0 ? (
                                     posts.map((post, idx) => (
-                                        <div key={post.id || `post-${idx}`} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30">
-                                            <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800">
-                                                <img src={post.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                            </div>
+                                        <div key={post.id || `post-${idx}`} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30 relative">
+                                            <a 
+                                                href={post.url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800 cursor-pointer block group/thumb"
+                                                title="View on Facebook"
+                                            >
+                                                <img src={post.thumbnail} className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-500" />
+                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <ArrowUpRight className="w-6 h-6 text-white" />
+                                                </div>
+                                            </a>
                                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                                 <div className="space-y-1">
                                                     <div className="flex items-center justify-between">
                                                         <div>
-                                                            <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate">{post.user}</h4>
+                                                            <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[14px] font-bold text-slate-800 dark:text-white truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
+                                                                {post.user}
+                                                                <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5" />
+                                                            </a>
                                                             <div className="flex items-center gap-2 mt-0.5">
                                                                 <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
                                                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
@@ -772,8 +792,20 @@ export default function CommentManager() {
 
                                                                             {/* Default Actions */}
                                                                             <button
-                                                                                onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
+                                                                                onClick={() => { 
+                                                                                    setManualPostId(post.id); 
+                                                                                    setIsIdModalOpen(true); 
+                                                                                    handleCheckPostId(); 
+                                                                                    setActiveDropdown(null); 
+                                                                                }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1"
+                                                                            >
+                                                                                <Target className="w-4 h-4 text-emerald-500" />
+                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Quick Sync Identity</span>
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
                                                                                 <MessageSquare className="w-4 h-4 text-slate-400" />
                                                                                 <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
