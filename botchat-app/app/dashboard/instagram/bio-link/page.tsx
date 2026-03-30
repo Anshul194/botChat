@@ -1204,7 +1204,7 @@ export default function BioLinkBuilder() {
                                                         className="bg-white border border-[#EAEBEE] rounded-[16px] overflow-hidden hover:shadow-xl hover:border-[#db2777] transition-all group flex flex-col text-left"
                                                     >
                                                         <div className="w-full h-[76px] bg-[#f4f5f7] flex items-center justify-center text-slate-400 group-hover:bg-[#db2777]/5 group-hover:text-[#db2777] transition-colors border-b border-[#EAEBEE]/80">
-                                                            {React.cloneElement(getBlockIcon(block.type) as React.ReactElement, { size: 30, strokeWidth: 1.5 })}
+                                                            {React.cloneElement(getBlockIcon(block.type) as React.ReactElement<any>, { size: 30, strokeWidth: 1.5 })}
                                                         </div>
                                                         <div className="p-4 w-full flex flex-col justify-center bg-white h-[84px]">
                                                             <h5 className="font-bold text-[13px] text-slate-900 mb-1 leading-tight">{block.label}</h5>

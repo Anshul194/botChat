@@ -570,14 +570,14 @@ export default function InstagramCommentManagerPage() {
                                                                                     setStatusConfirm({
                                                                                         isOpen: true,
                                                                                         post: post,
-                                                                                        action: post.status.reply === "paused" ? "active" : "paused",
+                                                                                        action: post.status?.reply === "paused" ? "active" : "paused",
                                                                                         type: "reply"
                                                                                     });
                                                                                     setActiveDropdown(null);
                                                                                 }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
-                                                                                {post.status.reply === "paused" ? (
+                                                                                {post.status?.reply === "paused" ? (
                                                                                     <>
                                                                                         <Play className="w-4 h-4 text-emerald-600" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">Resume Campaign</span>
@@ -624,14 +624,14 @@ export default function InstagramCommentManagerPage() {
                                                                                     setStatusConfirm({
                                                                                         isOpen: true,
                                                                                         post: post,
-                                                                                        action: post.status.comment === "paused" ? "active" : "paused",
+                                                                                        action: post.status?.comment === "paused" ? "active" : "paused",
                                                                                         type: "comment"
                                                                                     });
                                                                                     setActiveDropdown(null);
                                                                                 }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
                                                                             >
-                                                                                {post.status.comment === "paused" ? (
+                                                                                {post.status?.comment === "paused" ? (
                                                                                     <>
                                                                                         <Play className="w-4 h-4 text-emerald-600 font-bold" />
                                                                                         <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Resume Comment Flow</span>
