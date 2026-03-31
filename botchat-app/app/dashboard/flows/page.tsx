@@ -157,7 +157,7 @@ function Toggle({ on, onChange, label }) {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: DS.radiusSm, background: DS.bg, border: `1.5px solid ${DS.border}` }}>
       <span style={{ fontSize: 13, color: DS.ink2, fontWeight: 500 }}>{label}</span>
       <div onClick={onChange} style={{ width: 40, height: 22, borderRadius: 99, background: on ? DS.accent : DS.border, position: "relative", cursor: "pointer", transition: "background 0.2s", flexShrink: 0 }}>
-        <div style={{ position: "absolute", top: 3, left: on ? 21 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 0.2s" }} />
+        <div style={{ position: "absolute", top: 3, left: on ? 21 : 3, width: 16, height: 16, borderRadius: "50%", background: DS.bg, boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 0.2s" }} />
       </div>
     </div>
   );
@@ -785,7 +785,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         ))}
       </div>
 
-      <button onClick={addItem} style={{ width: "100%", padding: "14px", borderRadius: 18, border: `2px dashed ${DS.border}`, background: "#fff", color: DS.ink3, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = DS.accent} onMouseLeave={e => e.currentTarget.style.borderColor = DS.border}>+ ADD ANOTHER CARD</button>
+      <button onClick={addItem} style={{ width: "100%", padding: "14px", borderRadius: 18, border: `2px dashed ${DS.border}`, background: DS.bg, color: DS.ink3, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = DS.accent} onMouseLeave={e => e.currentTarget.style.borderColor = DS.border}>+ ADD ANOTHER CARD</button>
 
       <button onClick={onUpdateSave} disabled={saving} style={{
         width: "100%", padding: "12px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff", fontSize: 13.5, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer",
@@ -1666,7 +1666,7 @@ function AddActionPicker({ onAdd, isCreating }) {
         onClick={() => setOpen(!open)}
         style={{
           width: "100%", padding: "20px", borderRadius: 28, cursor: "pointer",
-          border: `2px dashed ${open ? DS.accent : DS.border}`, background: open ? DS.bg : "#fff",
+          border: `2px dashed ${open ? DS.accent : DS.border}`, background: open ? DS.card : DS.bg,
           color: open ? DS.accent : DS.ink3, fontSize: 15, fontWeight: 900, fontFamily: "inherit",
           display: "flex", alignItems: "center", justifyContent: "center", gap: 12, transition: "all 0.3s ease",
           boxShadow: open ? `0 10px 30px ${DS.accent}20` : "none"
@@ -1732,7 +1732,7 @@ function AddActionPicker({ onAdd, isCreating }) {
                       }}
                       style={{
                         display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "20px 14px", borderRadius: 28,
-                        border: `1.5px solid ${DS.border}`, background: "#fff", cursor: "pointer", transition: "all 0.2s"
+                        border: `1.5px solid ${DS.border}`, background: DS.bg, cursor: "pointer", transition: "all 0.2s"
                       }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.background = DS.accentSoft; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.background = "#fff"; }}
@@ -1850,11 +1850,11 @@ function PhonePreview({ steps, platform }) {
         </div>
 
         {/* Screen */}
-        <div style={{ borderRadius: 48, overflow: "hidden", background: "#fff", height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+        <div style={{ borderRadius: 48, overflow: "hidden", background: DS.bg, height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
 
           {/* Header */}
           <div style={{
-            background: isFB ? "#fff" : "rgba(255,255,255,0.92)",
+            background: isFB ? DS.bg : DS.card,
             backdropFilter: isFB ? "none" : "blur(20px)",
             padding: "42px 14px 10px",
             borderBottom: `0.5px solid ${isFB ? "#E2E8F0" : "#DBDBDB"}`,
@@ -1892,7 +1892,7 @@ function PhonePreview({ steps, platform }) {
           </div>
 
           {/* Chat Messages */}
-          <div ref={scrollRef} style={{ padding: "12px", flex: 1, overflowY: "auto", background: "#fff" }}>
+          <div ref={scrollRef} style={{ padding: "12px", flex: 1, overflowY: "auto", background: DS.bg }}>
             {msgs.length === 0
               ? (
                 <div style={{ textAlign: "center", paddingTop: 120 }}>
@@ -1904,15 +1904,15 @@ function PhonePreview({ steps, platform }) {
               : msgs.map((m, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: m.type === "user" ? "flex-end" : "flex-start", marginBottom: 6, gap: 8, alignItems: "flex-end" }}>
                   {m.type === "bot" && (
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", border: "0.5px solid #DBDBDB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, marginBottom: 2, background: isFB ? "#F0F2F5" : "#fff" }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", border: "0.5px solid #DBDBDB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, marginBottom: 2, background: isFB ? DS.bg : DS.card }}>
                       🤖
                     </div>
                   )}
                   {m.carousel ? (
                     <div style={{ display: "flex", overflowX: "auto", gap: 8, paddingBottom: 8, width: "100%", scrollSnapType: "x mandatory" }}>
                       {m.carousel.map((card, ci) => (
-                        <div key={ci} style={{ minWidth: 200, maxWidth: 220, background: "#fff", border: `1px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
-                          {card.image_url && <div style={{ height: 100, background: "#F3F4F6", backgroundImage: `url(${ensureUrl(card.image_url)})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
+                        <div key={ci} style={{ minWidth: 200, maxWidth: 220, background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
+                          {card.image_url && <div style={{ height: 100, background: DS.bg, backgroundImage: `url(${ensureUrl(card.image_url)})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
                           <div style={{ padding: 10 }}>
                             <div style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{card.title || "Card Title"}</div>
                             <div style={{ fontSize: 11, color: "#65676B", marginTop: 2 }}>{card.subtitle || "Card description"}</div>
@@ -1947,7 +1947,7 @@ function PhonePreview({ steps, platform }) {
                           </div>
                         )}
                         {m.file && (
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 12, border: "1px solid #E2E8F0" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: DS.bg, borderRadius: 12, border: `1px solid ${DS.border}` }}>
                             <File size={20} color={DS.accent} />
                             <div style={{ display: "flex", flexDirection: "column" }}>
                               <span style={{ fontSize: 11, fontWeight: 700, color: "#000" }}>Document File</span>
@@ -1961,7 +1961,7 @@ function PhonePreview({ steps, platform }) {
                       {/* Message Buttons */}
                       {(m.buttons || []).map((b, bi) => (
                         <div key={bi} style={{
-                          marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
+                          marginTop: 8, background: DS.bg, border: `1px solid ${DS.border}`,
                           borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
                           color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
                         }}>
@@ -1971,7 +1971,7 @@ function PhonePreview({ steps, platform }) {
 
                       {m.link && (
                         <div style={{
-                          marginTop: 8, background: "#fff", border: `1.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
+                          marginTop: 8, background: DS.bg, border: `1px solid ${DS.border}`,
                           borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
                           color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
                         }}>
@@ -1987,7 +1987,7 @@ function PhonePreview({ steps, platform }) {
 
           {/* PLATFORM SPECIFIC INPUT BAR */}
           <div style={{
-            background: "#fff", padding: "8px 12px 34px",
+            background: DS.bg, padding: "8px 12px 34px",
             borderTop: `0.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
             display: "flex", gap: 14, alignItems: "center"
           }}>
@@ -1997,13 +1997,13 @@ function PhonePreview({ steps, platform }) {
                 <div style={{ color: "#0084FF" }}><Icons.IG_CAM /></div>
                 <div style={{ color: "#0084FF" }}><Icons.IG_IMG /></div>
                 <div style={{ color: "#0084FF" }}><Icons.IG_MIC /></div>
-                <div style={{ flex: 1, background: "#F0F2F5", borderRadius: 20, height: 36, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 15, color: "#8E9196" }}>Aa</div>
+                <div style={{ flex: 1, background: DS.bg, borderRadius: 20, height: 36, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 15, color: "#8E9196" }}>Aa</div>
                 <div style={{ color: "#0084FF" }}><Icons.FB_THUMB /></div>
               </>
             ) : (
               <>
                 <div style={{ width: 34, height: 34, borderRadius: "50%", background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}><Icons.IG_CAM /></div>
-                <div style={{ flex: 1, border: "1px solid #DBDBDB", borderRadius: 22, height: 38, display: "flex", alignItems: "center", paddingLeft: 16, fontSize: 14, color: "#8E8E8E" }}>Message...</div>
+                <div style={{ flex: 1, border: `1px solid ${DS.border}`, borderRadius: 22, height: 38, display: "flex", alignItems: "center", paddingLeft: 16, fontSize: 14, color: "#8E8E8E" }}>Message...</div>
                 <div style={{ color: "#262626" }}><Icons.IG_MIC /></div>
                 <div style={{ color: "#262626" }}><Icons.IG_IMG /></div>
                 <div style={{ color: "#ED4956" }}><Icons.IG_HEART /></div>
@@ -2562,7 +2562,7 @@ function FlowBuilder() {
                 onClick={() => router.push(`/dashboard/${platform}/bot-replies`)}
                 style={{
                   padding: "10px 14px", borderRadius: 14, border: `1.5px solid ${DS.border}`,
-                  background: "#fff", color: DS.ink2, cursor: "pointer",
+                  background: DS.bg, color: DS.ink2, cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 800,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.04)", transition: "all 0.2s"
                 }}
@@ -2577,7 +2577,7 @@ function FlowBuilder() {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 20, flexShrink: 0, boxShadow: `0 8px 16px ${DS.accent}20`
               }}>
-                {platform === "facebook" ? <FacebookIcon size={20} color="#fff" fill="#fff" /> : <InstagramIcon size={20} color="#fff" />}
+                {platform === "facebook" ? <FacebookIcon size={20} color="#fff" fill={DS.bg} /> : <InstagramIcon size={20} color="#fff" />}
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
@@ -2607,7 +2607,7 @@ function FlowBuilder() {
                   onClick={() => setTab(t.id)}
                   style={{
                     padding: "8px 18px", borderRadius: 11, fontSize: 13, fontWeight: tab === t.id ? 900 : 600, border: "none",
-                    background: tab === t.id ? "#fff" : "transparent",
+                    background: tab === t.id ? DS.bg : "transparent",
                     color: tab === t.id ? DS.ink : DS.ink3,
                     boxShadow: tab === t.id ? "0 4px 12px rgba(0,0,0,0.06)" : "none",
                     cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit"
@@ -2676,7 +2676,7 @@ function FlowBuilder() {
                           onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(0,0,0,0.1)"; }}
                           onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
                         >
-                          <div style={{ width: 34, height: 34, borderRadius: 10, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink, border: `1px solid ${DS.border}` }}>
+                          <div style={{ width: 34, height: 34, borderRadius: 10, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink, border: `1px solid ${DS.border}` }}>
                             <a.icon size={18} />
                           </div>
                           <span style={{ fontSize: 13, fontWeight: 800 }}>{a.label}</span>
