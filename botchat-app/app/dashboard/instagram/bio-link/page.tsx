@@ -691,7 +691,7 @@ export default function BioLinkBuilder() {
                                                     ) : (
                                                         <div className="space-y-2">
                                                             {section.blocks?.map((block, bidx) => {
-                                                                const isEditableLink = ['links_carousel', 'hero_single_link', 'links_grid', 'add_products', 'add_apps'].includes(block.type);
+                                                                const isEditableLink = ['links_carousel', 'hero_single_link', 'links_grid', 'add_products', 'add_apps', 'vertical_media', 'square_media', 'horizontal_media', 'add_logos'].includes(block.type);
                                                                 return (
                                                                     <motion.div layout key={block.id} onClick={() => { if (isEditableLink) handleOpenCarouselEditor(block) }} className={cn("bg-slate-50 px-3 py-2 rounded-lg flex items-center justify-between transition-colors", isEditableLink ? "cursor-pointer hover:border-[#db2777] border border-transparent shadow-sm" : "")}>
                                                                         <div className="flex items-center gap-2">
@@ -935,6 +935,44 @@ export default function BioLinkBuilder() {
                                                                     ))}
                                                                 </div>
                                                             )
+                                                        }
+                                                        if (block.type === 'vertical_media' || block.type === 'square_media' || block.type === 'horizontal_media') {
+                                                            const items = block.items || (block as any).content?.items || [];
+                                                            const isVertical = block.type === 'vertical_media';
+                                                            const isSquare = block.type === 'square_media';
+                                                            const imgH = isVertical ? 'h-[200px]' : isSquare ? 'h-[140px]' : 'h-[100px]';
+                                                            const imgW = isVertical ? 'w-[110px]' : isSquare ? 'w-[140px]' : 'w-[220px]';
+                                                            return (
+                                                                <div key={block.id} className="w-[105%] -ml-[2.5%] flex gap-3 overflow-x-auto no-scrollbar py-2 px-6 mb-4">
+                                                                    {items.length === 0 ? (
+                                                                        <div className="w-full h-24 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 text-xs font-bold">No media yet</div>
+                                                                    ) : items.map((item: any, idx: number) => (
+                                                                        <div key={idx} className={`flex-shrink-0 ${imgW} ${imgH} rounded-[16px] bg-slate-100 overflow-hidden border border-slate-100`}>
+                                                                            {item.image_url
+                                                                                ? <img src={item.image_url} className="w-full h-full object-cover" />
+                                                                                : <div className="w-full h-full flex items-center justify-center text-slate-300"><ImageIcon size={20} className="opacity-40" /></div>
+                                                                            }
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            );
+                                                        }
+                                                        if (block.type === 'add_logos') {
+                                                            const items = block.items || (block as any).content?.items || [];
+                                                            return (
+                                                                <div key={block.id} className="w-full flex flex-wrap gap-3 mb-4 justify-center">
+                                                                    {items.length === 0 ? (
+                                                                        <div className="w-full h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 text-xs font-bold">No logos yet</div>
+                                                                    ) : items.map((item: any, idx: number) => (
+                                                                        <div key={idx} className="w-14 h-14 rounded-[14px] bg-white border border-slate-100 shadow-sm overflow-hidden flex items-center justify-center p-1.5">
+                                                                            {item.image_url
+                                                                                ? <img src={item.image_url} className="w-full h-full object-contain" />
+                                                                                : <Hexagon size={20} className="text-slate-300" />
+                                                                            }
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            );
                                                         }
                                                         return (
                                                             <div key={block.id} className="w-full bg-white border border-[#eaeaea] p-4 rounded-[16px] shadow-sm text-center text-[13px] font-semibold text-[#333]">
@@ -1285,42 +1323,42 @@ export default function BioLinkBuilder() {
                             </div>
 
                             <div className="p-8 overflow-y-auto bg-slate-50/50 space-y-6">
-                                {(editingCarouselBlock.items || []).map((item: any, idx: number) => (
-                                    <div key={idx} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm relative space-y-4 hover:border-[#db2777]/30 transition-colors">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                                <div className="w-5 h-5 rounded-full bg-pink-100 text-[#db2777] flex items-center justify-center font-black">{idx + 1}</div>
-                                                Card
-                                            </span>
-                                            <button onClick={() => {
-                                                const updated = { ...editingCarouselBlock };
-                                                updated.items.splice(idx, 1);
-                                                setEditingCarouselBlock(updated);
-                                            }} className="text-slate-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-md transition-all"><Trash2 size={15} /></button>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
-                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Title <span className="text-red-400">*</span></label>
-                                                <input value={item.title || ""} onChange={e => updateCarouselItem(idx, 'title', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="e.g. My Latest Product" />
-                                            </div>
-                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
-                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Destination URL <span className="text-red-400">*</span></label>
-                                                <input value={item.url || ""} onChange={e => updateCarouselItem(idx, 'url', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="https://..." />
-                                            </div>
-                                            <div className="space-y-1.5 col-span-2">
-                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Description</label>
-                                                <textarea value={item.description || ""} onChange={e => updateCarouselItem(idx, 'description', e.target.value)} rows={2} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777] resize-none" placeholder="Add some context context or a catchy subtitle..." />
-                                            </div>
-                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
-                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Button Text</label>
-                                                <input value={item.button_text || ""} onChange={e => updateCarouselItem(idx, 'button_text', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="e.g. Visit, Shop Now, Read More" />
-                                            </div>
-                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
-                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Thumbnail Image (URL or Upload)</label>
-                                                <div className="flex gap-2">
-                                                    <input value={item.image_url || ""} onChange={e => updateCarouselItem(idx, 'image_url', e.target.value)} className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777] min-w-0" placeholder="https://..." />
-                                                    <label className="h-[38px] px-3 bg-[#db2777]/10 text-[#db2777] rounded-lg text-[12px] font-bold flex items-center justify-center cursor-pointer hover:bg-[#db2777]/20 transition-colors shrink-0">
-                                                        <Upload size={14} className="mr-1.5" /> Upload
+                                {(() => {
+                                    const isMediaOnly = ['vertical_media', 'square_media', 'horizontal_media'].includes(editingCarouselBlock.type);
+                                    const isLogos = editingCarouselBlock.type === 'add_logos';
+                                    return (
+                                        <>
+                                            {(editingCarouselBlock.items || []).map((item: any, idx: number) => (
+                                                <div key={idx} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm relative space-y-4 hover:border-[#db2777]/30 transition-colors">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                            <div className="w-5 h-5 rounded-full bg-pink-100 text-[#db2777] flex items-center justify-center font-black text-[10px]">{idx + 1}</div>
+                                                            {isMediaOnly ? 'Media' : isLogos ? 'Logo' : 'Card'}
+                                                        </span>
+                                                        <button onClick={() => {
+                                                            const updated = { ...editingCarouselBlock };
+                                                            updated.items.splice(idx, 1);
+                                                            setEditingCarouselBlock(updated);
+                                                        }} className="text-slate-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-md transition-all"><Trash2 size={15} /></button>
+                                                    </div>
+
+                                                    {/* Image Upload — shown for all types */}
+                                                    <label className="flex items-center gap-3 cursor-pointer group">
+                                                        <div className={cn(
+                                                            "rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:border-[#db2777]/40 transition-colors",
+                                                            isMediaOnly ? (editingCarouselBlock.type === 'vertical_media' ? 'w-20 h-32' : editingCarouselBlock.type === 'square_media' ? 'w-20 h-20' : 'w-32 h-20') : 'w-16 h-16'
+                                                        )}>
+                                                            {item.image_url
+                                                                ? <img src={item.image_url} className="w-full h-full object-cover" />
+                                                                : <ImageIcon size={20} className="text-slate-300 group-hover:text-[#db2777]/50 transition-colors" />
+                                                            }
+                                                        </div>
+                                                        <div className="flex flex-col gap-1">
+                                                            <span className="h-9 px-4 bg-[#db2777]/10 text-[#db2777] rounded-lg text-[12px] font-bold flex items-center gap-1.5 group-hover:bg-[#db2777]/20 transition-colors">
+                                                                <Upload size={13} /> {item.image_url ? 'Change Image' : 'Upload Image'}
+                                                            </span>
+                                                            <span className="text-[11px] text-slate-400 font-medium">JPG, PNG, WEBP supported</span>
+                                                        </div>
                                                         <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                                                             if (e.target.files?.[0]) {
                                                                 const url = await handleUploadImage(e.target.files[0]);
@@ -1328,19 +1366,49 @@ export default function BioLinkBuilder() {
                                                             }
                                                         }} />
                                                     </label>
+
+                                                    {/* Extra fields for non-media blocks */}
+                                                    {isLogos && (
+                                                        <div className="space-y-1.5">
+                                                            <label className="text-[11px] font-bold text-slate-500 uppercase">Logo Label (optional)</label>
+                                                            <input value={item.title || ""} onChange={e => updateCarouselItem(idx, 'title', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="e.g. Shopify, Meta..." />
+                                                        </div>
+                                                    )}
+                                                    {!isMediaOnly && !isLogos && (
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
+                                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Title <span className="text-red-400">*</span></label>
+                                                                <input value={item.title || ""} onChange={e => updateCarouselItem(idx, 'title', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="e.g. My Latest Product" />
+                                                            </div>
+                                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
+                                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Destination URL</label>
+                                                                <input value={item.url || ""} onChange={e => updateCarouselItem(idx, 'url', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="https://..." />
+                                                            </div>
+                                                            <div className="space-y-1.5 col-span-2">
+                                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Description</label>
+                                                                <textarea value={item.description || ""} onChange={e => updateCarouselItem(idx, 'description', e.target.value)} rows={2} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777] resize-none" placeholder="Add a catchy subtitle..." />
+                                                            </div>
+                                                            <div className="space-y-1.5 col-span-2 md:col-span-1">
+                                                                <label className="text-[11px] font-bold text-slate-500 uppercase">Button Text</label>
+                                                                <input value={item.button_text || ""} onChange={e => updateCarouselItem(idx, 'button_text', e.target.value)} className="w-full px-4 py-2 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-[#db2777]" placeholder="e.g. Visit, Shop Now" />
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                                <button onClick={() => {
-                                    const updated = { ...editingCarouselBlock };
-                                    if (!updated.items) updated.items = [];
-                                    updated.items.push({ title: "New Card", url: "https://", description: "", button_text: "Visit Now" });
-                                    setEditingCarouselBlock(updated);
-                                }} className="w-full py-4 border-2 border-dashed border-[#db2777]/30 bg-[#db2777]/5 text-[#db2777] rounded-2xl text-[13px] font-bold hover:bg-[#db2777]/10 transition-colors">
-                                    + Add Another Card
-                                </button>
+                                            ))}
+                                            <button onClick={() => {
+                                                const updated = { ...editingCarouselBlock };
+                                                if (!updated.items) updated.items = [];
+                                                if (isMediaOnly) updated.items.push({ image_url: '' });
+                                                else if (isLogos) updated.items.push({ image_url: '', title: '' });
+                                                else updated.items.push({ title: 'New Card', url: 'https://', description: '', button_text: 'Visit Now' });
+                                                setEditingCarouselBlock(updated);
+                                            }} className="w-full py-4 border-2 border-dashed border-[#db2777]/30 bg-[#db2777]/5 text-[#db2777] rounded-2xl text-[13px] font-bold hover:bg-[#db2777]/10 transition-colors">
+                                                + Add {isMediaOnly ? 'Media' : isLogos ? 'Logo' : 'Card'}
+                                            </button>
+                                        </>
+                                    );
+                                })()}
                             </div>
 
                             <div className="px-8 py-5 border-t border-slate-100 flex gap-3 bg-white sticky bottom-0 rounded-b-[24px]">
