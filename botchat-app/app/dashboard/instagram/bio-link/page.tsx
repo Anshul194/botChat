@@ -411,6 +411,7 @@ export default function BioLinkBuilder() {
 
     // Arrange Mode
     const [isArranging, setIsArranging] = useState(false);
+    const [copiedLink, setCopiedLink] = useState(false);
 
     // Reorder Helpers
     const reorderInArray = <T extends { id: number }>(arr: T[], from: number, to: number) => {
@@ -479,6 +480,23 @@ export default function BioLinkBuilder() {
     };
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
     const instagramUsername = accounts.find(a => String(a.id) === selectedPageId)?.username || "username";
+
+    const publicUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/p?u=${instagramUsername}&id=${selectedPageId}`
+        : `/p?u=${instagramUsername}&id=${selectedPageId}`;
+
+    const handleShareLink = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({ title: `${profile?.title || instagramUsername}'s Bio`, url: publicUrl });
+                return;
+            }
+        } catch { }
+        await navigator.clipboard.writeText(publicUrl);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+    };
+
 
     return (
         <div className="bg-[#F8F9FB] min-h-screen text-[#2D334A] font-sans selection:bg-[#db2777] selection:text-white">
@@ -766,10 +784,16 @@ export default function BioLinkBuilder() {
 
                         {/* RIGHT COLUMN: Preview & Actions */}
                         <div className="flex-[1] flex flex-col items-center">
-                            {/* Actions Top Bar */}                             <div className="flex items-center justify-center gap-3 w-full max-w-[400px] mb-8 bg-white py-3 rounded-[16px] shadow-sm border border-[#EAEBEE]">
-                                <button className="h-9 px-4 rounded-full border border-[#D5D8DF] bg-white text-[#6C768A] text-xs font-semibold flex items-center gap-2 hover:bg-slate-50">
-                                    <Eye size={14} /> Preview
-                                </button>
+                            {/* Actions Top Bar */}
+                            <div className="flex items-center justify-center gap-3 w-full max-w-[400px] mb-8 bg-white py-3 rounded-[16px] shadow-sm border border-[#EAEBEE]">
+                                <a
+                                    href={publicUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="h-9 px-4 rounded-full border border-[#D5D8DF] bg-white text-[#6C768A] text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 hover:text-[#db2777] hover:border-[#db2777]/40 transition-all"
+                                >
+                                    <Eye size={14} /> View Live
+                                </a>
                                 <button
                                     onClick={() => setIsArranging(!isArranging)}
                                     className={cn("h-9 px-4 rounded-full border text-xs font-semibold flex items-center gap-2 transition-all",
@@ -777,8 +801,11 @@ export default function BioLinkBuilder() {
                                 >
                                     <GripVertical size={14} className="opacity-50" /> {isArranging ? "Finish" : "Arrange"}
                                 </button>
-                                <button className="h-9 px-5 rounded-full bg-[#db2777] text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-[#db2777]/20 hover:scale-105 transition-transform">
-                                    <Share2 size={12} /> Share
+                                <button
+                                    onClick={handleShareLink}
+                                    className="h-9 px-5 rounded-full bg-[#db2777] text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-[#db2777]/20 hover:scale-105 transition-transform active:scale-95"
+                                >
+                                    {copiedLink ? <><CheckCircle2 size={13} className="text-white" /> Copied!</> : <><Share2 size={12} /> Share</>}
                                 </button>
                             </div>
 
