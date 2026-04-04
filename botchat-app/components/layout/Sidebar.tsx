@@ -34,6 +34,7 @@ const growthNav = [
     { label: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
     { label: "Contacts", icon: Users, href: "/dashboard/contacts" },
     { label: "Campaigns", icon: Target, href: "/dashboard/campaigns" },
+    { label: "AI Training", icon: MessageSquare, href: "/dashboard/ai-training", badge: "New" },
 ];
 
 const workspaceNav = [
