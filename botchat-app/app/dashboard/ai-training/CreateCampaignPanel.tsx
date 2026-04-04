@@ -193,7 +193,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+                        className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
                         onClick={handleClose}
                     />
 
@@ -204,7 +204,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         animate={{ x: 0 }}
                         exit={{ x: "100%" }}
                         transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                        className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-[520px] bg-white dark:bg-neutral-950 shadow-2xl flex flex-col"
+                        className="fixed right-0 top-0 bottom-0 z-[100] w-full max-w-[520px] bg-white dark:bg-neutral-950 shadow-2xl flex flex-col"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">

@@ -19,12 +19,40 @@ export type CampaignPayload = {
     system_prompt: string;
 };
 
+export type SourceType = 'manual' | 'url' | 'file' | 'api' | 'sheet';
+
+export interface KnowledgeSource {
+    id: number;
+    campaign_id: number;
+    type: SourceType;
+    status?: string;
+    // manual
+    title?: string;
+    content?: string;
+    // url / sheet
+    url?: string;
+    sheet_url?: string;
+    sheet_name?: string;
+    // file
+    file_name?: string;
+    file_path?: string;
+    // api
+    api_url?: string;
+    method?: string;
+    headers?: string;
+    created_at?: string;
+}
+
 interface CampaignsState {
     campaigns: Campaign[];
     selectedCampaign: Campaign | null;
     isLoading: boolean;
     isSubmitting: boolean;
     error: string | null;
+    // Knowledge sources
+    knowledgeSources: KnowledgeSource[];
+    isLoadingSources: boolean;
+    isAddingSource: boolean;
 }
 
 const initialState: CampaignsState = {
@@ -33,9 +61,12 @@ const initialState: CampaignsState = {
     isLoading: false,
     isSubmitting: false,
     error: null,
+    knowledgeSources: [],
+    isLoadingSources: false,
+    isAddingSource: false,
 };
 
-// ── Thunks ───────────────────────────────────────────────────────────────────
+// ── Campaign Thunks ───────────────────────────────────────────────────────────
 export const fetchCampaigns = createAsyncThunk(
     'aiTraining/fetchCampaigns',
     async (_, { rejectWithValue }) => {
@@ -54,8 +85,7 @@ export const createCampaign = createAsyncThunk(
     async (payload: CampaignPayload, { rejectWithValue }) => {
         try {
             const res = await api.post('/ai-training/campaigns', payload);
-            const data = res.data?.data ?? res.data;
-            return data;
+            return res.data?.data ?? res.data;
         } catch (err: any) {
             return rejectWithValue(err.response?.data?.message || 'Failed to create campaign');
         }
@@ -67,8 +97,7 @@ export const updateCampaign = createAsyncThunk(
     async ({ id, ...payload }: CampaignPayload & { id: number }, { rejectWithValue }) => {
         try {
             const res = await api.put(`/ai-training/campaigns/${id}`, payload);
-            const data = res.data?.data ?? res.data;
-            return data;
+            return res.data?.data ?? res.data;
         } catch (err: any) {
             return rejectWithValue(err.response?.data?.message || 'Failed to update campaign');
         }
@@ -87,6 +116,52 @@ export const deleteCampaign = createAsyncThunk(
     }
 );
 
+// ── Knowledge Source Thunks ───────────────────────────────────────────────────
+export const fetchKnowledgeSources = createAsyncThunk(
+    'aiTraining/fetchKnowledgeSources',
+    async (campaignId: number, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/ai-training/campaigns/${campaignId}/sources`);
+            const data = res.data?.data ?? res.data;
+            return Array.isArray(data) ? data : [];
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || 'Failed to fetch sources');
+        }
+    }
+);
+
+export const createKnowledgeSource = createAsyncThunk(
+    'aiTraining/createKnowledgeSource',
+    async (
+        { campaignId, payload }: { campaignId: number; payload: FormData | Record<string, any> },
+        { rejectWithValue }
+    ) => {
+        try {
+            const isFormData = payload instanceof FormData;
+            const res = await api.post(
+                `/ai-training/campaigns/${campaignId}/sources`,
+                payload,
+                isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined
+            );
+            return res.data?.data ?? res.data;
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || 'Failed to add source');
+        }
+    }
+);
+
+export const deleteKnowledgeSource = createAsyncThunk(
+    'aiTraining/deleteKnowledgeSource',
+    async ({ campaignId, sourceId }: { campaignId: number; sourceId: number }, { rejectWithValue }) => {
+        try {
+            await api.delete(`/ai-training/campaigns/${campaignId}/sources/${sourceId}`);
+            return sourceId;
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || 'Failed to delete source');
+        }
+    }
+);
+
 // ── Slice ────────────────────────────────────────────────────────────────────
 const aiTrainingSlice = createSlice({
     name: 'aiTraining',
@@ -97,6 +172,7 @@ const aiTrainingSlice = createSlice({
         },
         clearSelectedCampaign(state) {
             state.selectedCampaign = null;
+            state.knowledgeSources = [];
         },
     },
     extraReducers: (builder) => {
@@ -129,9 +205,8 @@ const aiTrainingSlice = createSlice({
                 if (action.payload) {
                     const idx = state.campaigns.findIndex(c => c.id === action.payload.id);
                     if (idx !== -1) state.campaigns[idx] = action.payload;
-                    if (state.selectedCampaign?.id === action.payload.id) {
+                    if (state.selectedCampaign?.id === action.payload.id)
                         state.selectedCampaign = action.payload;
-                    }
                 }
             })
             .addCase(updateCampaign.rejected, (state) => { state.isSubmitting = false; });
@@ -141,6 +216,30 @@ const aiTrainingSlice = createSlice({
             .addCase(deleteCampaign.fulfilled, (state, action) => {
                 state.campaigns = state.campaigns.filter(c => c.id !== action.payload);
                 if (state.selectedCampaign?.id === action.payload) state.selectedCampaign = null;
+            });
+
+        // fetchKnowledgeSources
+        builder
+            .addCase(fetchKnowledgeSources.pending, (state) => { state.isLoadingSources = true; })
+            .addCase(fetchKnowledgeSources.fulfilled, (state, action) => {
+                state.isLoadingSources = false;
+                state.knowledgeSources = action.payload;
+            })
+            .addCase(fetchKnowledgeSources.rejected, (state) => { state.isLoadingSources = false; });
+
+        // createKnowledgeSource
+        builder
+            .addCase(createKnowledgeSource.pending, (state) => { state.isAddingSource = true; })
+            .addCase(createKnowledgeSource.fulfilled, (state, action) => {
+                state.isAddingSource = false;
+                if (action.payload) state.knowledgeSources.unshift(action.payload);
+            })
+            .addCase(createKnowledgeSource.rejected, (state) => { state.isAddingSource = false; });
+
+        // deleteKnowledgeSource
+        builder
+            .addCase(deleteKnowledgeSource.fulfilled, (state, action) => {
+                state.knowledgeSources = state.knowledgeSources.filter(s => s.id !== action.payload);
             });
     },
 });
