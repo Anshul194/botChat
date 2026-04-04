@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     Edit2, Loader2, X, Tag, AlignLeft, Bot, CheckCircle,
     Plus, Trash2, Globe, FileText, Database, Table2,
-    MessageSquareText, ChevronDown, Search, AlertCircle
+    MessageSquareText, ChevronDown, Search, AlertCircle,
+    Save, RefreshCcw
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import {
     FormField, StyledInput, StyledTextarea, StatusRadio,
 } from "./CreateCampaignPanel";
+import api from "@/lib/api";
 
 // ── Source type config ────────────────────────────────────────────────────────
 const SOURCE_TYPES: {
@@ -82,49 +84,126 @@ function AddSourceModal({
     const { isAddingSource } = useAppSelector((s) => s.aiTraining);
     const fileRef = useRef<HTMLInputElement>(null);
 
-    const [title, setTitle]     = useState("");
-    const [content, setContent] = useState("");
-    const [url, setUrl]         = useState("");
+    // Manual format
+    const [manualFormat, setManualFormat] = useState<"faq" | "raw">("faq");
+    const [manualQuestion, setManualQuestion] = useState("");
+    const [manualAnswer, setManualAnswer] = useState("");
+    const [manualTitle, setManualTitle] = useState("");
+    const [manualContent, setManualContent] = useState("");
+    
+    // URL
+    const [url, setUrl] = useState("");
+    const [urlFetchType, setUrlFetchType] = useState("");
+    const [urlFetchName, setUrlFetchName] = useState("");
+    const [urlRemoveSelectors, setUrlRemoveSelectors] = useState([{ type: "", name: "" }]);
+    
+    // File
+    const [file, setFile] = useState<File | null>(null);
+    const [fileParseMode, setFileParseMode] = useState("raw_response");
+    const [previewContent, setPreviewContent] = useState("");
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    
+    // API
+    const [apiName, setApiName] = useState("");
+    const [apiMethod, setApiMethod] = useState("GET");
+    const [apiUrl, setApiUrl] = useState("");
+    const [apiListKey, setApiListKey] = useState("");
+    const [apiTitleKey, setApiTitleKey] = useState("title");
+    const [apiContentKey, setApiContentKey] = useState("description");
+    
+    // Sheet
     const [sheetUrl, setSheetUrl] = useState("");
     const [sheetName, setSheetName] = useState("");
-    const [apiUrl, setApiUrl]   = useState("");
-    const [method, setMethod]   = useState("GET");
-    const [headers, setHeaders] = useState("");
-    const [file, setFile]       = useState<File | null>(null);
+    const [sheetTitleKey, setSheetTitleKey] = useState("");
+    const [sheetContentKey, setSheetContentKey] = useState("");
 
     const reset = () => {
-        setTitle(""); setContent(""); setUrl("");
-        setSheetUrl(""); setSheetName(""); setApiUrl("");
-        setMethod("GET"); setHeaders(""); setFile(null);
+        setManualFormat("faq"); setManualQuestion(""); setManualAnswer(""); setManualTitle(""); setManualContent("");
+        setUrl(""); setUrlFetchType(""); setUrlFetchName(""); setUrlRemoveSelectors([{ type: "", name: "" }]);
+        setFile(null); setFileParseMode("raw_response"); setPreviewContent("");
+        setApiName(""); setApiUrl(""); setApiMethod("GET"); setApiListKey(""); setApiTitleKey("title"); setApiContentKey("description");
+        setSheetUrl(""); setSheetName(""); setSheetTitleKey(""); setSheetContentKey("");
+    };
+
+    const handleGeneratePreview = async (mode: "raw_response" | "generate_faq") => {
+        if (!file) return toast.error("Please select a file first");
+        setFileParseMode(mode);
+        setIsPreviewLoading(true);
+        try {
+            const fd = new FormData();
+            fd.append("campaign_id", campaignId.toString());
+            fd.append("file", file);
+            fd.append("parse_mode", mode);
+            const res = await api.post("/ai-training/sources/file/preview", fd, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            const extracted = res.data?.ai_content || res.data?.data?.ai_content || res.data?.data?.extracted_content || res.data?.extracted_content || res.data?.data || "";
+            setPreviewContent(typeof extracted === 'string' ? extracted : JSON.stringify(extracted));
+            toast.success("Preview generated successfully");
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to generate preview");
+        } finally {
+            setIsPreviewLoading(false);
+        }
     };
 
     const handleClose = () => { reset(); onClose(); };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (overrideUrlMode?: "raw_response" | "generate_faq") => {
         if (!type) return;
         let payload: FormData | Record<string, any>;
+        let endpoint = "";
 
         if (type === "manual") {
-            if (!title.trim()) return toast.error("Title is required");
-            payload = { type, title, content };
+            endpoint = "/ai-training/contents";
+            if (manualFormat === "faq") {
+                if (!manualQuestion.trim() || !manualAnswer.trim()) return toast.error("Question and Answer are required");
+                payload = { campaign_id: campaignId.toString(), content_format: "faq", question: manualQuestion, answer: manualAnswer };
+            } else {
+                if (!manualTitle.trim() || !manualContent.trim()) return toast.error("Topic Title and Content are required");
+                payload = { campaign_id: campaignId.toString(), content_format: "raw", title: manualTitle, content_text: manualContent };
+            }
         } else if (type === "url") {
             if (!url.trim()) return toast.error("URL is required");
-            payload = { type, url };
+            endpoint = "/ai-training/sources/url";
+            payload = { 
+                campaign_id: campaignId.toString(), 
+                url, 
+                fetch_mode: overrideUrlMode || "generate_faq",
+                fetch_config: { type: urlFetchType, name: urlFetchName },
+                remove_configs: urlRemoveSelectors.filter(r => r.name.trim() !== "")
+            };
         } else if (type === "file") {
             if (!file) return toast.error("Please select a file");
-            const fd = new FormData();
-            fd.append("type", type);
-            fd.append("file", file);
-            payload = fd;
+            if (!previewContent.trim()) return toast.error("Please generate content preview first");
+            endpoint = "/ai-training/sources/file/save";
+            payload = { 
+                campaign_id: campaignId.toString(), 
+                extracted_content: previewContent,
+                parse_mode: fileParseMode
+            };
         } else if (type === "api") {
             if (!apiUrl.trim()) return toast.error("API URL is required");
-            payload = { type, api_url: apiUrl, method, headers };
+            endpoint = "/ai-training/sources/api";
+            payload = { 
+                campaign_id: campaignId.toString(), 
+                api_name: apiName || "Custom API", 
+                method: apiMethod,
+                endpoint_url: apiUrl, 
+                response_mapping_json: { list_key: apiListKey, title: apiTitleKey, content: apiContentKey }
+            };
         } else {
             if (!sheetUrl.trim()) return toast.error("Sheet URL is required");
-            payload = { type, sheet_url: sheetUrl, sheet_name: sheetName };
+            endpoint = "/ai-training/sources/google-sheet";
+            payload = { 
+                campaign_id: campaignId.toString(), 
+                sheet_url: sheetUrl, 
+                sheet_name: sheetName,
+                mapping_json: { question: sheetTitleKey, answer: sheetContentKey } 
+            };
         }
 
-        const res = await dispatch(createKnowledgeSource({ campaignId, payload }));
+        const res = await dispatch(createKnowledgeSource({ campaignId, endpoint, payload }));
         if (createKnowledgeSource.fulfilled.match(res)) {
             toast.success("Source added successfully!");
             handleClose();
@@ -143,8 +222,7 @@ function AddSourceModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-                    style={{ background: "rgba(0,0,0,0.45)" }}
+                    className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
                     onClick={handleClose}
                 >
                     <motion.div
@@ -152,114 +230,277 @@ function AddSourceModal({
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 8 }}
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        className="w-full max-w-[480px] bg-white dark:bg-neutral-950 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden"
+                        className="w-full max-w-[700px] bg-white dark:bg-neutral-950 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden flex flex-col"
                         onClick={(e) => e.stopPropagation()}
+                        style={{ maxHeight: "calc(100vh - 2rem)" }}
                     >
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
-                            <div className="flex items-center gap-3">
-                                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", cfg.bg)}>
-                                    <cfg.icon className={cn("w-4 h-4", cfg.color)} />
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
-                                        Add {cfg.label}
-                                    </h3>
-                                    <p className="text-xs text-neutral-400">
-                                        Add a new knowledge source to this campaign
-                                    </p>
-                                </div>
-                            </div>
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
+                            <h3 className="text-base font-bold text-neutral-900 dark:text-white">
+                                {type === "manual" ? "Add Manual Content/FAQ" : `Add ${cfg.label}`}
+                            </h3>
                             <button onClick={handleClose} className="w-7 h-7 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-neutral-400 transition-colors">
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
 
                         {/* Modal Body */}
-                        <div className="px-6 py-5 space-y-4">
+                        <div className="px-6 py-5 space-y-5 overflow-y-auto min-h-[300px]">
                             {type === "manual" && (
                                 <>
-                                    <FormField label="Question / Title" required>
-                                        <StyledInput placeholder="e.g. How do I reset my password?" value={title} onChange={setTitle} />
-                                    </FormField>
-                                    <FormField label="Answer / Content">
-                                        <StyledTextarea placeholder="Enter the full answer or knowledge content..." value={content} onChange={setContent} rows={5} />
-                                    </FormField>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">Content Format</label>
+                                        <div className="flex items-center gap-6">
+                                            <label className="flex items-center gap-2 cursor-pointer group" onClick={() => setManualFormat("faq")}>
+                                                <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center transition-colors", manualFormat === "faq" ? "border-blue-600 bg-blue-600" : "border-neutral-300 dark:border-neutral-600")}>
+                                                    {manualFormat === "faq" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                </div>
+                                                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">Q&A / FAQ</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer group" onClick={() => setManualFormat("raw")}>
+                                                <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center transition-colors", manualFormat === "raw" ? "border-blue-600 bg-blue-600" : "border-neutral-300 dark:border-neutral-600")}>
+                                                    {manualFormat === "raw" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                </div>
+                                                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">Raw Text/Info</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    {manualFormat === "faq" ? (
+                                        <>
+                                            <FormField label="Question">
+                                                <StyledTextarea value={manualQuestion} onChange={setManualQuestion} rows={3} />
+                                            </FormField>
+                                            <FormField label="Answer">
+                                                <StyledTextarea value={manualAnswer} onChange={setManualAnswer} rows={4} />
+                                            </FormField>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FormField label="Topic Title">
+                                                <StyledInput value={manualTitle} onChange={setManualTitle} />
+                                            </FormField>
+                                            <FormField label="Content / Instructions">
+                                                <StyledTextarea value={manualContent} onChange={setManualContent} rows={5} />
+                                            </FormField>
+                                        </>
+                                    )}
                                 </>
                             )}
+                            
                             {type === "url" && (
-                                <FormField label="Website URL" required>
-                                    <StyledInput placeholder="https://example.com/docs" value={url} onChange={setUrl} />
-                                </FormField>
-                            )}
-                            {type === "file" && (
-                                <FormField label="Upload File (PDF / Doc)" required>
-                                    <div
-                                        onClick={() => fileRef.current?.click()}
-                                        className={cn(
-                                            "w-full rounded-xl border-2 border-dashed px-4 py-6 flex flex-col items-center gap-2 cursor-pointer transition-all",
-                                            file
-                                                ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/20"
-                                                : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
-                                        )}
-                                    >
-                                        <FileText className={cn("w-6 h-6", file ? "text-emerald-500" : "text-neutral-400")} />
-                                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                                            {file ? file.name : "Click to browse file"}
-                                        </p>
-                                        <p className="text-xs text-neutral-400">PDF, DOC, DOCX — Max 10MB</p>
-                                    </div>
-                                    <input ref={fileRef} type="file" accept=".pdf,.doc,.docx" className="hidden"
-                                        onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-                                </FormField>
-                            )}
-                            {type === "api" && (
-                                <>
-                                    <div className="grid grid-cols-3 gap-3">
-                                        <div className="col-span-2">
-                                            <FormField label="API Endpoint URL" required>
-                                                <StyledInput placeholder="https://api.example.com/data" value={apiUrl} onChange={setApiUrl} />
+                                <div className="space-y-6">
+                                    <FormField label="Campaign URL" hint="Add a webpage link that contains relevant content for training your bot. Example: https://botsocialai.com" required>
+                                        <StyledInput placeholder="Enter your URL" value={url} onChange={setUrl} />
+                                    </FormField>
+
+                                    <div>
+                                        <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1 mb-2">
+                                            Fetch Content Configuration <span className="text-[10px] font-normal text-neutral-500">(Use selectors to specify which parts of the webpage the AI should learn from.)</span>
+                                        </h5>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <FormField label="Selector Type">
+                                                <select value={urlFetchType} onChange={(e) => setUrlFetchType(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
+                                                    <option value="">Select Selector</option>
+                                                    <option value="css">CSS</option>
+                                                    <option value="xpath">XPath</option>
+                                                </select>
+                                            </FormField>
+                                            <FormField label="Selector Name">
+                                                <StyledInput placeholder="Enter Your Selector Name" value={urlFetchName} onChange={setUrlFetchName} className="rounded-md" />
                                             </FormField>
                                         </div>
-                                        <FormField label="Method">
-                                            <select
-                                                value={method}
-                                                onChange={(e) => setMethod(e.target.value)}
-                                                className="w-full h-11 px-3 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-pink-400 dark:focus:border-pink-500"
+                                    </div>
+
+                                    <div>
+                                        <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1 mb-2">
+                                            Remove Content Configuration <span className="text-[10px] font-normal text-neutral-500">(Specify areas to exclude if the webpage contains unnecessary details.)</span>
+                                        </h5>
+                                        <div className="space-y-3 mb-3">
+                                            {urlRemoveSelectors.map((sel, idx) => (
+                                                <div key={idx} className="flex gap-3 items-end">
+                                                    <div className="flex-1 grid grid-cols-2 gap-3">
+                                                        <FormField label={idx === 0 ? "Selector Type" : ""}>
+                                                            <select value={sel.type} onChange={(e) => { const n = [...urlRemoveSelectors]; n[idx].type = e.target.value; setUrlRemoveSelectors(n); }} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
+                                                                <option value="">Select Selector</option>
+                                                                <option value="css">CSS</option>
+                                                                <option value="xpath">XPath</option>
+                                                            </select>
+                                                        </FormField>
+                                                        <FormField label={idx === 0 ? "Selector Name" : ""}>
+                                                            <StyledInput placeholder="Enter Your Selector Name" value={sel.name} onChange={(v) => { const n = [...urlRemoveSelectors]; n[idx].name = v; setUrlRemoveSelectors(n); }} className="rounded-md" />
+                                                        </FormField>
+                                                    </div>
+                                                    <button onClick={() => setUrlRemoveSelectors(urlRemoveSelectors.filter((_, i) => i !== idx))} className="h-11 w-11 rounded-md bg-rose-500 hover:bg-rose-600 flex items-center justify-center text-white flex-shrink-0 transition-colors">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <button onClick={() => setUrlRemoveSelectors([...urlRemoveSelectors, { type: "", name: "" }])} className="text-xs font-bold text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 rounded-md px-3 py-1.5 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                                            + Add Remove Selector
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {type === "file" && (
+                                <div className="space-y-6">
+                                    <div>
+                                        <h4 className="text-sm font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wide flex flex-wrap items-center gap-2 mb-1">
+                                            UPLOAD FILE
+                                            <span className="text-xs normal-case text-neutral-500 font-normal">
+                                                (Upload documents (PDF, Word, Excel, CSV, OpenDocument, TXT) with structured information for the bot to learn from.
+                                            </span>
+                                        </h4>
+                                        <p className="text-xs text-neutral-500 leading-relaxed mb-4">
+                                            Example: Training manuals, product guides, FAQs. Accepted Formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx), CSV, OpenDocument (.ods, .odt), TXT.)
+                                        </p>
+
+                                        {/* Input Row */}
+                                        <div className="flex items-center w-full pt-1">
+                                            <div className="h-11 flex-1 flex items-center px-4 border border-neutral-300 dark:border-neutral-700 rounded-l-md bg-white dark:bg-neutral-900 text-sm text-neutral-700 dark:text-neutral-300 truncate">
+                                                {file ? file.name : "Select a file..."}
+                                            </div>
+                                            <button 
+                                                onClick={() => fileRef.current?.click()} 
+                                                className="h-11 px-6 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-r-md transition-colors shadow-sm shadow-pink-500/20"
                                             >
-                                                {["GET","POST","PUT"].map(m => <option key={m} value={m}>{m}</option>)}
+                                                Upload
+                                            </button>
+                                        </div>
+                                        <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                                        
+                                        <p className="text-[11px] text-neutral-500 mt-2">
+                                            Accepted Formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx), CSV, OpenDocument (.ods, .odt), TXT.
+                                        </p>
+                                    </div>
+
+                                    {/* Parse Mode Buttons */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button 
+                                            onClick={() => handleGeneratePreview("raw_response")}
+                                            disabled={isPreviewLoading}
+                                            className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "raw_response" ? "bg-pink-600 border-pink-600 text-white shadow-md shadow-pink-500/25" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
+                                        >
+                                            <RefreshCcw className={cn("w-4 h-4", isPreviewLoading && fileParseMode === "raw_response" && "animate-spin")} /> Generate Raw Response
+                                        </button>
+                                        <button 
+                                            onClick={() => handleGeneratePreview("generate_faq")}
+                                            disabled={isPreviewLoading}
+                                            className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "generate_faq" ? "bg-pink-600 border-pink-600 text-white shadow-md shadow-pink-500/25" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
+                                        >
+                                            <RefreshCcw className={cn("w-4 h-4", isPreviewLoading && fileParseMode === "generate_faq" && "animate-spin")} /> Generate FAQ
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-1">
+                                        <p className="text-[11px] text-neutral-500">
+                                            Generate Raw Response: Accurate and in-depth responses without splitting content.
+                                        </p>
+                                        <p className="text-[11px] text-neutral-500">
+                                            Generate FAQ: Optimized for efficiency, split into clear, concise sections.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="text-xs font-bold text-neutral-900 dark:text-neutral-100 mb-2 block">Extracted / AI Content Preview</label>
+                                        <textarea
+                                            value={previewContent}
+                                            onChange={(e) => setPreviewContent(e.target.value)}
+                                            placeholder={file ? (isPreviewLoading ? "Generating preview..." : "Click a Generate button to preview content.") : "No file selected."}
+                                            className="w-full h-40 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 p-4 overflow-y-auto text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                                            readOnly={!file || !previewContent}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {type === "api" && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormField label="API Name / Label" required>
+                                            <StyledInput placeholder="e.g. Shopify Products" value={apiName} onChange={setApiName} className="rounded-md" />
+                                        </FormField>
+                                        <FormField label="HTTP Method">
+                                            <select value={apiMethod} onChange={(e) => setApiMethod(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
+                                                <option value="GET">GET</option>
+                                                <option value="POST">POST</option>
+                                                <option value="PUT">PUT</option>
                                             </select>
                                         </FormField>
                                     </div>
-                                    <FormField label="Headers (JSON)" hint='e.g. {"Authorization": "Bearer token"}'>
-                                        <StyledTextarea placeholder='{"Authorization": "Bearer your-token"}' value={headers} onChange={setHeaders} rows={3} />
+                                    <FormField label="Endpoint URL" required>
+                                        <StyledInput placeholder="https://api.example.com/data" value={apiUrl} onChange={setApiUrl} className="rounded-md" />
                                     </FormField>
-                                </>
+                                    <div>
+                                        <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 mb-2">Response Mapping (JSON Paths)</h5>
+                                        <div className="grid grid-cols-3 gap-3 bg-neutral-50/50 dark:bg-neutral-900/30 p-4 border border-neutral-100 dark:border-neutral-800 rounded-md">
+                                            <FormField label="List Key (optional)">
+                                                <StyledInput placeholder="data.items" value={apiListKey} onChange={setApiListKey} className="rounded-md" />
+                                            </FormField>
+                                            <FormField label="Title Key">
+                                                <StyledInput placeholder="title" value={apiTitleKey} onChange={setApiTitleKey} className="rounded-md" />
+                                            </FormField>
+                                            <FormField label="Content Key">
+                                                <StyledInput placeholder="description" value={apiContentKey} onChange={setApiContentKey} className="rounded-md" />
+                                            </FormField>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
+                            
                             {type === "sheet" && (
-                                <>
-                                    <FormField label="Google Sheet URL" required>
-                                        <StyledInput placeholder="https://docs.google.com/spreadsheets/d/..." value={sheetUrl} onChange={setSheetUrl} />
+                                <div className="space-y-4">
+                                    <FormField label="Google Sheet URL" hint="Ensure the sheet is public or shared with our service account." required>
+                                        <StyledInput placeholder="https://docs.google.com/spreadsheets/d/..." value={sheetUrl} onChange={setSheetUrl} className="rounded-md" />
                                     </FormField>
-                                    <FormField label="Sheet / Tab Name">
-                                        <StyledInput placeholder="e.g. Sheet1" value={sheetName} onChange={setSheetName} />
+                                    <FormField label="Worksheet Name/GID">
+                                        <StyledInput placeholder="Sheet1 (Optional)" value={sheetName} onChange={setSheetName} className="rounded-md" />
                                     </FormField>
-                                </>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormField label="Title Column">
+                                            <StyledInput placeholder="Product Name" value={sheetTitleKey} onChange={setSheetTitleKey} className="rounded-md" />
+                                        </FormField>
+                                        <FormField label="Content Column">
+                                            <StyledInput placeholder="Description" value={sheetContentKey} onChange={setSheetContentKey} className="rounded-md" />
+                                        </FormField>
+                                    </div>
+                                </div>
                             )}
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3 bg-neutral-50/60 dark:bg-neutral-900/60">
-                            <button onClick={handleClose} className="h-9 px-4 rounded-xl border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSubmit}
-                                disabled={isAddingSource}
-                                className="h-9 px-5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold flex items-center gap-2 shadow-sm active:scale-[0.98] transition-all disabled:opacity-60"
-                            >
-                                {isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-3.5 h-3.5" /> Add Source</>}
-                            </button>
+                        <div className={cn("border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 flex-shrink-0 flex items-center", type === "url" ? "px-6 py-4 justify-between" : "px-6 py-4 justify-end gap-3")}>
+                            {type === "url" ? (
+                                <>
+                                    <div>
+                                        <p className="text-[10px] text-neutral-500">Generate Raw Response: Single text box extraction.</p>
+                                        <p className="text-[10px] text-neutral-500">Generate FAQ: Split content into clear FAQ entries.</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => handleSubmit("raw_response")} disabled={isAddingSource} className="h-10 px-5 rounded-md bg-white border border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-900 dark:border-neutral-700 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-semibold transition-colors disabled:opacity-60">{isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate Raw Response"}</button>
+                                        <button onClick={() => handleSubmit("generate_faq")} disabled={isAddingSource} className="h-10 px-5 rounded-md bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-500/25 transition-colors disabled:opacity-60">{isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate FAQ"}</button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <button onClick={handleClose} className="h-10 px-5 rounded-md bg-white border border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-900 dark:border-neutral-700 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-semibold transition-colors">
+                                        Close
+                                    </button>
+                                    <button
+                                        onClick={() => handleSubmit()}
+                                        disabled={isAddingSource}
+                                        className="h-10 px-5 rounded-md bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-500/25 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                                    >
+                                        {isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                                            <>
+                                                {type === "api" ? "Save & Sync API" : type === "sheet" ? "Import Data" : "Save Content"}
+                                            </>
+                                        )}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </motion.div>
                 </motion.div>

@@ -133,13 +133,13 @@ export const fetchKnowledgeSources = createAsyncThunk(
 export const createKnowledgeSource = createAsyncThunk(
     'aiTraining/createKnowledgeSource',
     async (
-        { campaignId, payload }: { campaignId: number; payload: FormData | Record<string, any> },
+        { campaignId, endpoint, payload }: { campaignId: number; endpoint: string; payload: FormData | Record<string, any> },
         { rejectWithValue }
     ) => {
         try {
             const isFormData = payload instanceof FormData;
             const res = await api.post(
-                `/ai-training/campaigns/${campaignId}/sources`,
+                endpoint,
                 payload,
                 isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined
             );
