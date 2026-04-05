@@ -11,7 +11,7 @@ import {
     FileText, PieChart, Users, Settings,
     MoreVertical, Info, RefreshCw, Box,
     Trash2, Pause, Play, FileJson, Megaphone,
-    ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal,
+    ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal, Menu,
     ShieldAlert, EyeOff, Scissors, Edit3, Image as ImageIcon, Video, Upload,
     Save, Ban, Copy, Check, Loader2, ClipboardList, Send
 } from "lucide-react";
@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/store/hooks";
 import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
 import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
 import { PostAutoCommentModal } from "../../components/modals/PostAutoCommentModal";
@@ -58,6 +59,7 @@ interface FacebookPost {
 
 export default function CommentManager() {
     const router = useRouter();
+    const { user } = useAppSelector((state) => state.auth);
     const [pages, setPages] = useState<FacebookPage[]>([]);
     const [selectedPage, setSelectedPage] = useState<FacebookPage | null>(null);
     const [posts, setPosts] = useState<FacebookPost[]>([]);
@@ -333,8 +335,43 @@ export default function CommentManager() {
     }, [selectedPage]);
 
     return (
-        <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] p-4 lg:p-8 font-sans transition-all duration-300">
-            <div className="max-w-[1400px] mx-auto space-y-8">
+        <div className="min-h-screen w-full overflow-x-hidden bg-[#f8fafc] dark:bg-[#0f172a] transition-all duration-300 pb-32">
+            {/* 1. STICKY UNIFIED HEADER */}
+            <div className="sticky top-0 z-[100] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
+                        className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all bg-slate-100 dark:bg-slate-800 rounded-lg shadow-sm"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="hidden md:flex w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm"
+                    >
+                         <ChevronLeft className="w-4 h-4" strokeWidth={3} />
+                    </button>
+                    <div className="flex flex-col">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-pink-600 uppercase tracking-[0.2em] leading-none">Intelligence Hub</span>
+                        <h1 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white uppercase mt-0.5 tracking-tight flex items-center gap-2">
+                           <Facebook className="w-4 h-4 text-[#0866FF] fill-[#0866FF] hidden sm:block" />
+                           Comment Manager
+                        </h1>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700">
+                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Neural Live</span>
+                    </div>
+                    <button className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><Search className="w-4 h-4" /></button>
+                    <div className="w-9 h-9 rounded-full bg-slate-800 dark:bg-pink-600 border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
+                         <img src={user?.picture || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
+                    </div>
+                </div>
+            </div>
+
+            <div className={cn("max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8")}>
 
                 {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
                 <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
@@ -427,7 +464,7 @@ export default function CommentManager() {
 
                     {/* ── LEFT COLUMN (1/3): STRATEGY & ACTIONS ── */}
                     <aside className="lg:col-span-4 space-y-6">
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-6">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-md font-bold text-slate-900 dark:text-white uppercase tracking-tight">Strategy Lab</h2>
 
@@ -512,7 +549,7 @@ export default function CommentManager() {
                             </div>
 
                             {/* Enabled Stats Grid */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
                                     <p className="text-3xl font-bold text-primary">{pageStats.auto_reply_count}</p>
                                     <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Replies</p>
@@ -524,7 +561,7 @@ export default function CommentManager() {
                             </div>
 
                             {/* Full Page CTA */}
-                            <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4 text-center">
+                            <div className="p-4 sm:p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4 text-center">
                                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
                                     <Sparkles className="w-6 h-6" />
                                 </div>
@@ -587,11 +624,14 @@ export default function CommentManager() {
 
                     {/* ── RIGHT COLUMN (2/3): POST FEED ── */}
                     <main className="lg:col-span-8 flex flex-col gap-6">
-                        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex-1 flex flex-col">
-                            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-50 dark:border-slate-800">
-                                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    Latest Interactions
-                                </h2>
+                        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm flex-1 flex flex-col">
+                            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-50 dark:border-slate-800">
+                                <section>
+                                    <h2 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-tight">
+                                        Latest Interactions
+                                    </h2>
+                                    <p className="text-[10px] font-semibold text-slate-400 mt-0.5 tracking-wider uppercase">Live Activity Feed</p>
+                                </section>
                                 <div className="flex items-center gap-3">
                                     <div className="relative group flex-1 md:w-64">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -638,13 +678,13 @@ export default function CommentManager() {
                                                                 {post.user}
                                                                 <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5" />
                                                             </a>
-                                                            <div className="flex items-center gap-2 mt-0.5">
-                                                                <p className="text-[10px] text-slate-400 font-semibold">{post.time}</p>
-                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
-                                                                    <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">ID: {post.id}</span>
+                                                            <div className="flex flex-col xs:flex-row xs:items-center gap-2 mt-0.5 flex-wrap">
+                                                                <p className="text-[10px] text-slate-400 font-semibold whitespace-nowrap">{post.time}</p>
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20 max-w-full">
+                                                                    <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-none">ID: {post.id}</span>
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
-                                                                        className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95"
+                                                                        className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95 flex-shrink-0"
                                                                         title="Copy ID"
                                                                     >
                                                                         <Copy className="w-3 h-3" />

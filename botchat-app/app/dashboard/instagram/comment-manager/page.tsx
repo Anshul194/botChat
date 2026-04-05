@@ -8,13 +8,14 @@ import {
     Edit3, Save, Copy, Check, Loader2, Megaphone, Activity,
     Eye, Settings, Tag, MessageCircle, Image as ImageIcon,
     FileText, PieChart, Info, AlertCircle, Box, Heart, Bell, User,
-    ShieldCheck, Settings2, BarChart3, ClipboardList
+    ShieldCheck, Settings2, BarChart3, ClipboardList, Menu
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/store/hooks";
 import { CommentTemplateModal } from "../../components/modals/CommentTemplateModal";
 import { CommentReportModal } from "../../components/modals/CommentReportModal";
 import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
@@ -72,6 +73,7 @@ interface ReplyTemplate {
 
 export default function InstagramCommentManagerPage() {
     const router = useRouter();
+    const { user } = useAppSelector((state) => state.auth);
     const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<InstagramAccount | null>(null);
     const [posts, setPosts] = useState<InstagramPost[]>([]);
@@ -509,13 +511,13 @@ export default function InstagramCommentManagerPage() {
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <h4 className="text-[14px] font-bold text-slate-800 dark:text-white truncate">{selectedAccount?.username}</h4>
-                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                    <div className="flex flex-col xs:flex-row xs:items-center gap-2 mt-0.5 flex-wrap">
                                                         <p className="text-[10px] text-slate-400 font-semibold">{post.created_at || 'Recently'}</p>
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
-                                                            <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">ID: {post.id}</span>
+                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20 max-w-full">
+                                                            <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-none">ID: {post.id}</span>
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
-                                                                className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95"
+                                                                className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95 flex-shrink-0"
                                                                 title="Copy ID"
                                                             >
                                                                 <Copy size={10} />
@@ -837,7 +839,29 @@ export default function InstagramCommentManagerPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#0f172a] font-sans">
+        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] transition-all duration-300 pb-32">
+            {/* 1. STICKY MOBILE HEADER */}
+            <div className="sticky top-0 z-[100] md:hidden bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
+                        className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all bg-slate-100 dark:bg-slate-800 rounded-lg shadow-sm"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </button>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-pink-600 uppercase tracking-widest leading-none">Intelligence</span>
+                        <h1 className="text-sm font-bold text-slate-900 dark:text-white uppercase mt-0.5">IG Manager</h1>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500"><Search className="w-4 h-4" /></button>
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden flex items-center justify-center">
+                         <Instagram className="w-4 h-4 text-pink-600" />
+                    </div>
+                </div>
+            </div>
+
             <div className="max-w-[1500px] mx-auto p-4 lg:p-10 space-y-10">
 
                 {/* ── TOP SECTION: ACCOUNT SELECTION (Pill Style) ── */}

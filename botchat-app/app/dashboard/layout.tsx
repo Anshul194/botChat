@@ -9,17 +9,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
-    const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies");
+    const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies") || pathname?.includes("/comment-manager");
 
-    // Close mobile sidebar on route change / resize
+    // Handle global sidebar toggle events
     useEffect(() => {
+        const handleToggle = () => setMobileSidebarOpen(prev => !prev);
+        const handleClose = () => setMobileSidebarOpen(false);
+        const handleOpen = () => setMobileSidebarOpen(true);
+
+        window.addEventListener("toggleMobileSidebar", handleToggle);
+        window.addEventListener("closeMobileSidebar", handleClose);
+        window.addEventListener("openMobileSidebar", handleOpen);
+
         const handleResize = () => {
             if (window.innerWidth >= 768) {
                 setMobileSidebarOpen(false);
             }
         };
         window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("toggleMobileSidebar", handleToggle);
+            window.removeEventListener("closeMobileSidebar", handleClose);
+            window.removeEventListener("openMobileSidebar", handleOpen);
+            window.removeEventListener("resize", handleResize);
+        };
     }, []);
 
     return (

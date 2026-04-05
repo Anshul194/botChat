@@ -198,7 +198,7 @@ export function AiAgentSettingsPanel({
     return (
         <div className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-3xl shadow-xl shadow-neutral-200/20 dark:shadow-none max-w-6xl mx-auto overflow-hidden">
             {/* Header Area */}
-            <div className="px-10 py-8 border-b border-neutral-50 dark:border-neutral-900 bg-neutral-50/30 dark:bg-neutral-900/50 flex items-center justify-between">
+            <div className="px-6 py-6 sm:px-10 sm:py-8 border-b border-neutral-50 dark:border-neutral-900 bg-neutral-50/30 dark:bg-neutral-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-5">
                     <div className="w-12 h-12 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-500 border border-pink-100 dark:border-pink-900/30">
                         <Bot className="w-6 h-6" />
@@ -214,7 +214,7 @@ export function AiAgentSettingsPanel({
             </div>
 
             {/* Grid Form */}
-            <div className="p-12 grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12">
+            <div className="p-6 sm:p-12 grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12">
 
                 {/* Activation & Core Section */}
                 <div className="space-y-10">
@@ -365,13 +365,13 @@ export function AiAgentSettingsPanel({
             </div>
 
             {/* Commit Footer */}
-            <div className="px-12 py-8 bg-neutral-50/50 dark:bg-neutral-900/50 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end">
+            <div className="px-6 py-6 sm:px-12 sm:py-8 bg-neutral-50/50 dark:bg-neutral-900/50 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end">
                 <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="h-16 px-16 rounded-[24px] bg-pink-500 text-white font-black text-xs uppercase tracking-[0.25em] shadow-2xl shadow-pink-500/30 hover:scale-[1.02] active:scale-95 hover:bg-pink-600 transition-all flex items-center gap-4"
+                    className="w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-16 rounded-[20px] sm:rounded-[24px] bg-pink-500 text-white font-black text-[10px] sm:text-xs uppercase tracking-[0.25em] shadow-2xl shadow-pink-500/30 hover:scale-[1.02] active:scale-95 hover:bg-pink-600 transition-all flex items-center justify-center gap-4"
                 >
-                    {isSaving ? <Loader2 className="w-6 h-6 animate-spin text-white/50" /> : <Save className="w-6 h-6" />}
+                    {isSaving ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-white/50" /> : <Save className="w-5 h-5 sm:w-6 sm:h-6" />}
                     Initialize Context Save
                 </button>
             </div>

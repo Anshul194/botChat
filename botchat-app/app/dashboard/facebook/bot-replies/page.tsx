@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick,
-    Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight,
+    Menu, Settings2, Sparkles, Box, RefreshCw, ChevronRight,
     ChevronLeft, ChevronDown, ListFilter, ArrowLeft, Facebook as FacebookIcon,
     ShieldAlert
 } from "lucide-react";
@@ -46,7 +46,7 @@ const MENUS = [
     { id: 'bot_reply', label: 'Bot Replies', icon: MessageSquare },
     { id: 'ai_agent', label: 'AI Agent', icon: Bot },
     { id: 'action_buttons', label: 'Action Buttons', icon: MousePointerClick },
-    { id: 'persistent_menu', label: 'Persistent Menu', icon: MenuIcon },
+    { id: 'persistent_menu', label: 'Persistent Menu', icon: Menu },
 ] as const;
 
 type MenuId = typeof MENUS[number]['id'];
@@ -303,52 +303,60 @@ export default function BotRepliesPage() {
     return (
         <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
             {/* 1. PREMIUM BRANDED HEADER */}
-            <div className="sticky top-0 z-[50] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="sticky top-0 z-[50] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
+                        className="md:hidden w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all bg-neutral-100 dark:bg-neutral-800 rounded-full"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </button>
                     <button
                         onClick={() => router.push('/dashboard')}
-                        className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
+                        className="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
                     >
-                        <ArrowLeft size={18} strokeWidth={2.5} />
+                        <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
                     </button>
                     <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
-                            <div className="w-1 h-1 rounded-full bg-neutral-300" />
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
-                                <FacebookIcon size={10} className="text-[#0866FF] fill-[#0866FF]" />
-                                <span className="text-[9px] font-medium text-[#0866FF]">Neural Node</span>
+                        <div className="flex items-center gap-1 sm:gap-2">
+                            <span className="text-[8px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
+                            <div className="hidden xs:block w-1 h-1 rounded-full bg-neutral-300" />
+                            <div className="hidden xs:flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
+                                <FacebookIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#0866FF] fill-[#0866FF]" />
+                                <span className="text-[8px] sm:text-[9px] font-medium text-[#0866FF]">Neural Node</span>
                             </div>
                         </div>
-                        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Facebook Reply Manager</h1>
+                        <h1 className="text-sm xs:text-base sm:text-lg lg:text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase whitespace-normal">Facebook Reply Manager</h1>
                     </div>
                 </div>
 
-                <div className="hidden md:flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-2xl border border-neutral-200 dark:border-neutral-700">
-                    {MENUS.map(menu => (
-                        <button
-                            key={menu.id}
-                            onClick={() => setActiveMenu(menu.id)}
-                            className={cn(
-                                "px-5 py-2 rounded-xl text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all",
-                                activeMenu === menu.id
-                                    ? "bg-white dark:bg-neutral-700 text-[#0866FF] shadow-sm"
-                                    : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
-                            )}
-                        >
-                            <menu.icon size={14} strokeWidth={2} />
-                            {menu.label}
-                        </button>
-                    ))}
+                <div className="order-last md:order-none w-full md:w-auto flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-2xl border border-neutral-200 dark:border-neutral-700 overflow-x-auto no-scrollbar scroll-smooth">
+                    <div className="flex items-center min-w-max">
+                        {MENUS.map(menu => (
+                            <button
+                                key={menu.id}
+                                onClick={() => setActiveMenu(menu.id)}
+                                className={cn(
+                                    "px-4 sm:px-5 py-2 rounded-xl text-[12px] sm:text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
+                                    activeMenu === menu.id
+                                        ? "bg-white dark:bg-neutral-700 text-[#0866FF] shadow-sm"
+                                        : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
+                                )}
+                            >
+                                <menu.icon className="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px]" strokeWidth={2} />
+                                {menu.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-[#0866FF] transition-all"><Settings2 size={18} /></button>
-                    <button className="px-6 py-2.5 rounded-2xl bg-[#0866FF] text-white text-[13px] font-medium uppercase tracking-wider shadow-lg shadow-[#0866FF]/20 hover:scale-105 active:scale-95 transition-all">Pulse stats</button>
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <button className="p-2 sm:p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-[#0866FF] transition-all"><Settings2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /></button>
+                    <button className="hidden xs:block px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl bg-[#0866FF] text-white text-[12px] sm:text-[13px] font-medium uppercase tracking-wider shadow-lg shadow-[#0866FF]/20 hover:scale-105 active:scale-95 transition-all">Pulse stats</button>
                 </div>
             </div>
 
-            <div className="p-4 sm:p-8 space-y-8">
+            <div className="p-4 sm:p-8 space-y-8 pb-32 lg:pb-8">
                 {/* 2. PAGES SELECTOR (REFINED) */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
@@ -795,7 +803,7 @@ export default function BotRepliesPage() {
                                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-5 xs:p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
                             >
                                 <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
                                     New Automation {selectedPageId !== "all" ? `for ${pages.find(p => p.page_id === selectedPageId)?.page_name}` : ""}

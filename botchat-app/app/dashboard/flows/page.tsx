@@ -1468,13 +1468,13 @@ function TriggerActionFields({ step, update, onSaveStep, pageId, platform, actio
     setSaving(true);
     if (onSaveStep) {
       // Ensure we save the exact type from the API if it's a match
-      const updatedStep = { 
-          ...step, 
-          config: { 
-              ...c, 
-              payload: matchedAction ? matchedAction.type : c.payload,
-              label: matchedAction ? matchedAction.label : (c.label || "Trigger Action")
-          } 
+      const updatedStep = {
+        ...step,
+        config: {
+          ...c,
+          payload: matchedAction ? matchedAction.type : c.payload,
+          label: matchedAction ? matchedAction.label : (c.label || "Trigger Action")
+        }
       };
       await onSaveStep(updatedStep);
     } else {
@@ -1488,25 +1488,25 @@ function TriggerActionFields({ step, update, onSaveStep, pageId, platform, actio
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
         <Label>{loadingActions ? "Loading System Actions..." : "Action Type"}</Label>
-        <Select 
-            value={matchedAction ? matchedAction.type : (c.payload || "")} 
-            onChange={e => {
-                const act = actions.find(a => a.type === e.target.value);
-                set({ 
-                    payload: e.target.value,
-                    label: act ? act.label : (c.label || "Trigger Action")
-                });
-            }}
-            options={[
-                { value: "", label: "Select Action..." },
-                ...actions.map(a => ({ value: a.type, label: a.label }))
-            ]}
+        <Select
+          value={matchedAction ? matchedAction.type : (c.payload || "")}
+          onChange={e => {
+            const act = actions.find(a => a.type === e.target.value);
+            set({
+              payload: e.target.value,
+              label: act ? act.label : (c.label || "Trigger Action")
+            });
+          }}
+          options={[
+            { value: "", label: "Select Action..." },
+            ...actions.map(a => ({ value: a.type, label: a.label }))
+          ]}
         />
       </div>
-      
+
       {matchedAction && (
-        <div style={{ 
-          background: DS.accentSoft, padding: "10px 14px", borderRadius: DS.radiusSm, 
+        <div style={{
+          background: DS.accentSoft, padding: "10px 14px", borderRadius: DS.radiusSm,
           border: `1.5px solid ${DS.accentBorder}`, display: "flex", alignItems: "center", gap: 10,
           boxShadow: `0 2px 8px ${DS.accent}10`
         }}>
@@ -2299,7 +2299,7 @@ function FlowBuilder() {
             setFlowName(data.name || "Untitled Flow");
             setIsLive(data.status === 'published');
             setReplyData(data);
-            
+
             const pid = data.facebook_page_id || data.instagram_id;
             // No longer overriding platform state from fetched data to respect the URL context
             setPageId(pid);
@@ -2652,61 +2652,140 @@ function FlowBuilder() {
         }
 
         /* Flow header responsive */
-        .flow-hdr { background: ${DS.card}; border-bottom: 1.5px solid ${DS.border}; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); }
-        .flow-hdr-r1 { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-        .flow-hdr-r2 { display: flex; align-items: center; gap: 6px; }
-        .flow-hdr { background: ${DS.card}; border-bottom: 1.5px solid ${DS.border}; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); }
+        .flow-hdr { 
+          background: ${DS.card}; 
+          border-bottom: 1.5px solid ${DS.border}; 
+          padding: 8px 12px; 
+          position: sticky; 
+          top: 0; 
+          z-index: 100; 
+          backdrop-filter: blur(8px); 
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        @media (min-width: 768px) {
+          .flow-hdr { 
+             flex-direction: row; 
+             padding: 12px 24px;
+             gap: 20px;
+          }
+        }
+
         @media (max-width: 600px) {
-          .flow-hdr { padding: 8px 10px; gap: 6px; }
+          .btn-text { display: none; }
+          .flow-hdr-title { font-size: 14px !important; }
+        }
+
+        .phone-fab {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 150;
+          height: 72px;
+          padding: 0 12px;
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(16px);
+          box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.15), inset 0 0 0 1.5px rgba(255, 255, 255, 0.2);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          border: 3px solid #fff;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .phone-fab:hover { transform: translateY(-10px) scale(1.08); box-shadow: 0 20px 50px -15px rgba(255, 0, 128, 0.3); }
+        .phone-fab:active { transform: scale(0.95); }
+
+        .fab-text {
+          color: #333;
+          font-weight: 900;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          background: linear-gradient(90deg, #FF0080, #7928CA);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          padding-right: 8px;
+        }
+
+        .fab-illustration {
+          width: 54px;
+          height: 54px;
+          object-fit: contain;
+          filter: drop-shadow(0 8px 12px rgba(255, 0, 128, 0.2));
         }
       `}</style>
 
 
+        {/* ── MOBILE PREVIEW FAB (3D 5 Illustration) ────────────────── */}
+        <motion.button
+          className="phone-fab md:hidden"
+          animate={{ y: [0, -12, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          onClick={() => {
+            const el = document.querySelector('.instdm-preview');
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth' });
+              el.classList.add('preview-highlight');
+              setTimeout(() => el.classList.remove('preview-highlight'), 1500);
+            }
+          }}
+        >
+          <img
+            src="/mobile_preview.png"
+            className="fab-illustration"
+            alt="Preview"
+          />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            <span className="fab-text">Swipe to</span>
+            <span style={{ fontSize: 13, fontWeight: 900, opacity: 0.8, color: "#FF0080", textTransform: "uppercase", letterSpacing: "0.02em", marginTop: -2 }}>Preview →</span>
+          </div>
+        </motion.button>
+
         {/* ── HEADER ─────────────────────────────────────────────── */}
-        <div className="flow-hdr" style={{ padding: "12px 24px", minHeight: 74 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, width: "100%" }}>
+        <div className="flow-hdr">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", flexWrap: "wrap" }}>
 
             {/* Left Section: Back + Branding */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0, flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: "auto" }}>
               <button
                 onClick={() => router.push(`/dashboard/${platform}/bot-replies`)}
                 style={{
-                  padding: "10px 14px", borderRadius: 14, border: `1.5px solid ${DS.border}`,
+                  padding: "8px 12px", borderRadius: 12, border: `1.5px solid ${DS.border}`,
                   background: DS.bg, color: DS.ink2, cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 800,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)", transition: "all 0.2s"
+                  display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 800,
+                  transition: "all 0.2s"
                 }}
-                onMouseEnter={e => e.currentTarget.style.transform = "translateX(-2px)"}
-                onMouseLeave={e => e.currentTarget.style.transform = "none"}
               >
                 <ArrowLeft size={16} /> <span className="btn-text">Back</span>
               </button>
 
               <div style={{
-                width: 42, height: 42, borderRadius: 14, background: DS.gradient,
+                width: 32, height: 32, borderRadius: 10, background: DS.gradient,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 20, flexShrink: 0, boxShadow: `0 8px 16px ${DS.accent}20`
+                fontSize: 16, flexShrink: 0, boxShadow: `0 4px 12px ${DS.accent}20`
               }}>
-                {platform === "facebook" ? <FacebookIcon size={20} color="#fff" fill={DS.bg} /> : <InstagramIcon size={20} color="#fff" />}
+                {platform === "facebook" ? <FacebookIcon size={16} color="#fff" fill={DS.bg} /> : <InstagramIcon size={16} color="#fff" />}
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 10, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.08em" }}>{platform.toUpperCase()} AUTOMATION</span>
-                  <div style={{ width: 4, height: 4, borderRadius: "50%", background: DS.border }} />
-                  <span style={{ fontSize: 10, fontWeight: 800, color: DS.ink3, textTransform: "uppercase" }}>Editing</span>
-                </div>
+              <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.08em" }}>{platform.toUpperCase()}</span>
                 <input
                   value={flowName}
+                  className="flow-hdr-title"
                   onChange={e => setFlowName(e.target.value)}
                   placeholder="Untitled Flow"
-                  style={{ border: "none", background: "transparent", fontSize: 17, fontWeight: 900, color: DS.ink, outline: "none", fontFamily: "inherit", letterSpacing: "-0.01em", width: "100%", padding: 0 }}
+                  style={{ border: "none", background: "transparent", fontSize: 15, fontWeight: 900, color: DS.ink, outline: "none", fontFamily: "inherit", width: "100%", padding: 0 }}
                 />
               </div>
             </div>
 
-            {/* Center: Navigation Tabs */}
-            <div style={{ display: "flex", background: DS.bg, padding: 4, borderRadius: 14, border: `1.5px solid ${DS.border}`, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.04)" }}>
+            {/* Center: Navigation Tabs (Scrollable on small screens if needed) */}
+            <div style={{ display: "flex", background: DS.bg, padding: 3, borderRadius: 12, border: `1.5px solid ${DS.border}`, overflowX: "auto", className: "no-scrollbar" }}>
               {[
                 { id: "flow", label: "Workflow", icon: GitBranch },
                 { id: "settings", label: "Settings", icon: Settings2 },
@@ -2716,36 +2795,40 @@ function FlowBuilder() {
                   key={t.id}
                   onClick={() => setTab(t.id)}
                   style={{
-                    padding: "8px 18px", borderRadius: 11, fontSize: 13, fontWeight: tab === t.id ? 900 : 600, border: "none",
+                    padding: "6px 12px", borderRadius: 9, fontSize: 12, fontWeight: tab === t.id ? 900 : 600, border: "none",
                     background: tab === t.id ? DS.bg : "transparent",
                     color: tab === t.id ? DS.ink : DS.ink3,
-                    boxShadow: tab === t.id ? "0 4px 12px rgba(0,0,0,0.06)" : "none",
-                    cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit"
+                    boxShadow: tab === t.id ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+                    cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 4, fontFamily: "inherit", whiteSpace: "nowrap"
                   }}
                 >
-                  <t.icon size={15} color={tab === t.id ? DS.accent : "currentColor"} />
-                  {t.label}
+                  <t.icon size={13} color={tab === t.id ? DS.accent : "currentColor"} />
+                  <span className="btn-text">{t.label}</span>
                 </button>
               ))}
             </div>
 
             {/* Right: Actions */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, justifyContent: "flex-end" }}>
-              <button onClick={() => setIsLive(!isLive)} style={{
-                padding: "10px 16px", borderRadius: 14, fontSize: 13, fontWeight: 800, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
-                background: isLive ? DS.greenSoft : "#fff", color: isLive ? DS.green : DS.ink3, cursor: "pointer", fontFamily: "inherit",
-                display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s",
-              }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: isLive ? DS.green : DS.ink3, border: `2px solid ${isLive ? DS.green : DS.border}`, boxShadow: isLive ? `0 0 10px ${DS.green}60` : "none" }} />
-                {isLive ? "Live Sync" : "Draft Only"}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "auto", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setIsLive(!isLive)}
+                title={isLive ? "Live Sync Enabled" : "Draft Only"}
+                style={{
+                  padding: "8px 12px", borderRadius: 12, fontSize: 12, fontWeight: 800, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
+                  background: isLive ? DS.greenSoft : "#fff", color: isLive ? DS.green : DS.ink3, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s",
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: isLive ? DS.green : DS.ink3 }} />
+                <span className="btn-text">{isLive ? "Live" : "Draft"}</span>
               </button>
 
               <button onClick={handleSave} style={{
-                padding: "10px 18px", borderRadius: 14, fontSize: 13, fontWeight: 800, border: `1.5px solid ${saved ? DS.green : DS.border}`,
-                background: saved ? DS.greenSoft : "#fff", color: saved ? DS.green : DS.ink2, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+                padding: "8px 12px", borderRadius: 12, fontSize: 12, fontWeight: 800, border: `1.5px solid ${saved ? DS.green : DS.border}`,
+                background: saved ? DS.greenSoft : "#fff", color: saved ? DS.green : DS.ink2, cursor: "pointer", transition: "all 0.2s",
                 display: "flex", alignItems: "center", gap: 6
               }}>
-                {saved ? "✓" : <Save size={16} />}
+                {saved ? "✓" : <Save size={14} />}
                 <span className="btn-text"> {saved ? "Saved!" : "Quick Save"}</span>
               </button>
             </div>
