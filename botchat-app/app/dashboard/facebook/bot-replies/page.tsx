@@ -5,7 +5,8 @@ import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick,
     Menu as MenuIcon, Settings2, Sparkles, Box, RefreshCw, ChevronRight,
-    ChevronLeft, ChevronDown, ListFilter, ArrowLeft, Facebook as FacebookIcon
+    ChevronLeft, ChevronDown, ListFilter, ArrowLeft, Facebook as FacebookIcon,
+    ShieldAlert
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -13,6 +14,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
+import { AiAgentSettingsPanel } from "../../instagram/AiAgentSettingsPanel";
 
 interface BotReply {
     id: number;
@@ -738,10 +740,34 @@ export default function BotRepliesPage() {
                         )}
 
                         {activeMenu === 'ai_agent' && (
-                            <motion.div key="ai" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-16 text-center">
-                                <Bot className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-bold text-neutral-900 dark:text-white">AI Agent Intelligence</h3>
-                                <p className="text-sm text-neutral-500 max-w-sm mt-2 font-medium mx-auto">Train and manage a natural language processing model. Coming extremely soon.</p>
+                            <motion.div 
+                                key="ai" 
+                                initial={{ opacity: 0, scale: 0.98 }} 
+                                animate={{ opacity: 1, scale: 1 }} 
+                                className="py-6 px-4 max-w-6xl mx-auto"
+                            >
+                                {selectedPageId !== "all" ? (
+                                    <div className="w-full">
+                                        
+                                        <AiAgentSettingsPanel
+                                            platform="facebook"
+                                            accountId={selectedPageId}
+                                            accountName={pages.find(p => p.page_id === selectedPageId)?.page_name || "Facebook Page"}
+                                        />
+                                    </div>
+                                ) : (
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="w-full max-w-md p-10 bg-amber-50 dark:bg-amber-500/10 rounded-[40px] border border-amber-100 dark:border-amber-500/20 flex flex-col items-center gap-4 text-center grayscale-0"
+                                    >
+                                        <div className="w-16 h-16 rounded-3xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-2">
+                                            <ShieldAlert className="w-8 h-8 text-amber-600" />
+                                        </div>
+                                        <h4 className="text-lg font-black text-amber-900 dark:text-amber-400 uppercase tracking-tight leading-tight">Environment Required</h4>
+                                        <p className="text-xs font-bold text-amber-700 dark:text-amber-500/80 uppercase tracking-widest leading-relaxed">Please select a specific page from the sidebar to enable neural agent configuration.</p>
+                                    </motion.div>
+                                )}
                             </motion.div>
                         )}
 
