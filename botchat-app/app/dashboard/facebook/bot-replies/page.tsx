@@ -573,14 +573,14 @@ export default function BotRepliesPage() {
                                         <div className="w-16 h-16 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center mb-4">
                                             <MessageSquare className="w-8 h-8 text-purple-400" />
                                         </div>
-                                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
-                                    <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Facebook DMs and comments.</p>
-                                    <button
-                                        onClick={() => setShowCreateModal(true)}
-                                        className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
-                                    >
-                                        Build First Reply
-                                    </button>
+                                        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
+                                        <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Facebook DMs and comments.</p>
+                                        <button
+                                            onClick={() => setShowCreateModal(true)}
+                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
+                                        >
+                                            Build First Reply
+                                        </button>
                                     </div>
                                 )}
                             </motion.div>
@@ -740,15 +740,15 @@ export default function BotRepliesPage() {
                         )}
 
                         {activeMenu === 'ai_agent' && (
-                            <motion.div 
-                                key="ai" 
-                                initial={{ opacity: 0, scale: 0.98 }} 
-                                animate={{ opacity: 1, scale: 1 }} 
+                            <motion.div
+                                key="ai"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 className="py-6 px-4 max-w-6xl mx-auto"
                             >
                                 {selectedPageId !== "all" ? (
                                     <div className="w-full">
-                                        
+
                                         <AiAgentSettingsPanel
                                             platform="facebook"
                                             accountId={selectedPageId}
@@ -756,7 +756,7 @@ export default function BotRepliesPage() {
                                         />
                                     </div>
                                 ) : (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         className="w-full max-w-md p-10 bg-amber-50 dark:bg-amber-500/10 rounded-[40px] border border-amber-100 dark:border-amber-500/20 flex flex-col items-center gap-4 text-center grayscale-0"
@@ -872,7 +872,7 @@ export default function BotRepliesPage() {
                                         </div>
                                     )}
                                     <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Automation Name</label>
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Template Name</label>
                                         <input
                                             type="text"
                                             placeholder="e.g. Sales Inquiry"
@@ -882,7 +882,7 @@ export default function BotRepliesPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Trigger Operator</label>
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Reply Type</label>
                                         <select
                                             value={newReply.trigger_type}
                                             onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
