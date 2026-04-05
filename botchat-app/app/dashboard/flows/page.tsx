@@ -207,7 +207,7 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
    FORM FIELDS PER STEP TYPE
    ============================================================ */
 
-function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, platform, actions, loadingActions }) {
   const { showModal } = useModal();
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
@@ -317,8 +317,22 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                 )}
                 {btn.action_type === "postback_action" && (
                   <div>
-                    <Label>Trigger Action (Payload)</Label>
-                    <Input value={btn.action_value} onChange={e => updateButton(i, { action_value: e.target.value })} placeholder="trigger_action_key" />
+                    <Label>{loadingActions ? "Loading..." : "Trigger Action (Select)"}</Label>
+                    <Select value={actions.find(a => (a.type || "").toLowerCase() === (btn.action_value || "").toLowerCase())?.type || btn.action_value} onChange={e => {
+                      const act = actions.find(a => a.type === e.target.value);
+                      updateButton(i, {
+                        action_value: e.target.value,
+                        title: (btn.title === "New Button" && act) ? act.label : btn.title
+                      });
+                    }} options={[
+                      { value: "", label: loadingActions ? "Loading..." : "Select Action..." },
+                      ...actions.map(a => ({ value: a.type, label: a.label }))
+                    ]} />
+                    {actions.some(a => (a.type || "").toLowerCase() === (btn.action_value || "").toLowerCase()) && (
+                      <div style={{ marginTop: 6, padding: "5px 8px", background: DS.accentSoft, borderRadius: 8, fontSize: 10, fontWeight: 800, color: DS.accent, display: "flex", alignItems: "center", gap: 4 }}>
+                        <Zap size={10} fill="currentColor" /> LINKED: {actions.find(a => (a.type || "").toLowerCase() === (btn.action_value || "").toLowerCase())?.label}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -629,7 +643,7 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   );
 }
 
-function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, platform, actions, loadingActions }) {
   const { showModal } = useModal();
   const c = step.config || {};
   const items = c.carousel_items || [{ title: "New Item", subtitle: "", image_url: "", destination_url: "", buttons: [] }];
@@ -760,7 +774,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                           { value: "postback_action", label: "Trigger" },
                         ]} style={{ flex: 0.6, height: 32, fontSize: 11.5 }} />
 
-                        {btn.action_type === "send_message" ? (
+                        {btn.action_type === "send_message" && (
                           <Select value={btn.action_value} onChange={e => {
                             const val = e.target.value;
                             if (val.startsWith("NEW_")) {
@@ -772,8 +786,28 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
                             ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
                             ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ ${a.label}` }))
                           ]} style={{ flex: 1, height: 32, fontSize: 11.5 }} />
-                        ) : (
-                          <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="value..." style={{ flex: 1, height: 32, fontSize: 11.5 }} />
+                        )}
+                        {btn.action_type === "open_url" && (
+                          <Input value={btn.action_value} onChange={e => updateButton(i, bi, { action_value: e.target.value })} placeholder="https://..." style={{ flex: 1, height: 32, fontSize: 11.5 }} />
+                        )}
+                        {btn.action_type === "postback_action" && (
+                          <>
+                            <Select value={actions.find(a => (a.type || "").toLowerCase() === (btn.action_value || "").toLowerCase())?.type || btn.action_value} onChange={e => {
+                              const act = actions.find(a => a.type === e.target.value);
+                              updateButton(i, bi, {
+                                action_value: e.target.value,
+                                title: (btn.title === "New Button" && act) ? act.label : btn.title
+                              });
+                            }} options={[
+                              { value: "", label: loadingActions ? "Loading..." : "Link Action..." },
+                              ...actions.map(a => ({ value: a.type, label: a.label }))
+                            ]} style={{ height: 32, fontSize: 11.5 }} />
+                            {actions.some(a => (a.type || "").toLowerCase() === (btn.action_value || "").toLowerCase()) && (
+                              <div style={{ padding: "4px 6px", background: DS.accentSoft, borderRadius: 6, fontSize: 9.5, fontWeight: 800, color: DS.accent, display: "flex", alignItems: "center", gap: 4 }}>
+                                <Zap size={10} fill="currentColor" /> LINKED
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -797,7 +831,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep }) {
   );
 }
 
-function UserInputFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+function UserInputFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, platform, actions, loadingActions }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const DS = useDS();
@@ -1422,33 +1456,69 @@ function CheckTagFields({ step, update }) {
   );
 }
 
-function TriggerActionFields({ step, update, onSaveStep }) {
+function TriggerActionFields({ step, update, onSaveStep, pageId, platform, actions, loadingActions }) {
   const c = step.config || {};
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const [saving, setSaving] = useState(false);
   const DS = useDS();
 
+  const matchedAction = actions?.find(a => (a.type || "").toLowerCase() === (c.payload || "").toLowerCase());
+
   const onUpdateSave = async () => {
     setSaving(true);
     if (onSaveStep) {
-      await onSaveStep(step);
+      // Ensure we save the exact type from the API if it's a match
+      const updatedStep = { 
+          ...step, 
+          config: { 
+              ...c, 
+              payload: matchedAction ? matchedAction.type : c.payload,
+              label: matchedAction ? matchedAction.label : (c.label || "Trigger Action")
+          } 
+      };
+      await onSaveStep(updatedStep);
     } else {
       await new Promise(r => setTimeout(r, 600));
     }
     setSaving(false);
-    toast.success("Trigger action step updated");
+    toast.success("Trigger updated");
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
-        <Label>Action Label (Internal)</Label>
-        <Input value={c.label} onChange={e => set({ label: e.target.value })} placeholder="User joined funnel" />
+        <Label>{loadingActions ? "Loading System Actions..." : "Action Type"}</Label>
+        <Select 
+            value={matchedAction ? matchedAction.type : (c.payload || "")} 
+            onChange={e => {
+                const act = actions.find(a => a.type === e.target.value);
+                set({ 
+                    payload: e.target.value,
+                    label: act ? act.label : (c.label || "Trigger Action")
+                });
+            }}
+            options={[
+                { value: "", label: "Select Action..." },
+                ...actions.map(a => ({ value: a.type, label: a.label }))
+            ]}
+        />
       </div>
-      <div>
-        <Label>Postback Payload</Label>
-        <Input value={c.payload} onChange={e => set({ payload: e.target.value })} placeholder="trigger_funnel_a" />
-      </div>
+      
+      {matchedAction && (
+        <div style={{ 
+          background: DS.accentSoft, padding: "10px 14px", borderRadius: DS.radiusSm, 
+          border: `1.5px solid ${DS.accentBorder}`, display: "flex", alignItems: "center", gap: 10,
+          boxShadow: `0 2px 8px ${DS.accent}10`
+        }}>
+          <div style={{ width: 24, height: 24, borderRadius: "50%", background: DS.accent, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+            <Zap size={14} fill="currentColor" />
+          </div>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.05em" }}>Authenticated System Event</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: DS.ink }}>{matchedAction.label}</div>
+          </div>
+        </div>
+      )}
 
       <button
         onClick={onUpdateSave}
@@ -1460,7 +1530,7 @@ function TriggerActionFields({ step, update, onSaveStep }) {
           opacity: saving ? 0.7 : 1
         }}
       >
-        {saving ? "Updating..." : <><Save size={14} /> Update Trigger Step</>}
+        {saving ? "Updating..." : <><Save size={14} /> Save Action Setting</>}
       </button>
     </div>
   );
@@ -1524,10 +1594,10 @@ function AIClassifyFields({ step, update }) {
   );
 }
 
-function StepFields({ step, update, allSteps, onSaveStep, onAddStep }) {
-  const props = { step, update, allSteps, onSaveStep, onAddStep };
+function StepFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, platform, actions, loadingActions }) {
+  const props = { step, update, allSteps, onSaveStep, onAddStep, pageId, platform, actions, loadingActions };
   const DS = useDS();
-  if (step.kind === "trigger") return <div style={{ fontSize: 12, color: DS.ink3 }}>Click to configure trigger</div>;
+  if (step.kind === "trigger") return <div style={{ fontSize: 13, fontWeight: 700, color: DS.accent }}>Matches Action: {actions?.find(a => a.type === step.config?.type)?.label || step.config?.type || "Standard Trigger"}</div>;
   const map = {
     message: MessageFields,
     image: MediaFields, video: MediaFields, audio: MediaFields, file: MediaFields,
@@ -1541,7 +1611,7 @@ function StepFields({ step, update, allSteps, onSaveStep, onAddStep }) {
 /* ============================================================
    STEP CARD
    ============================================================ */
-function StepSummary({ step }) {
+function StepSummary({ step, actions }) {
   const DS = useDS();
   const c = step.config || {};
   const m = {
@@ -1553,12 +1623,13 @@ function StepSummary({ step }) {
     carousel: `${(c.carousel || []).length} cards`,
     user_input: c.question?.slice(0, 40),
     condition: (c.rules || []).map(r => r.field_name).join(", "),
+    trigger_action: actions?.find(a => a.type === c.payload)?.label || c.payload,
   };
   const txt = m[step.type];
   return <span style={{ color: DS.ink3 }}>{txt ? (txt.length > 40 ? txt.slice(0, 40) + "…" : txt) : "Click to configure"}</span>;
 }
 
-function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown, onSaveStep, onAddStep }) {
+function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown, onSaveStep, onAddStep, pageId, platform, actions, loadingActions }) {
   const DS = useDS();
   const def = getDef(step.kind, step.type);
   const color = step.kind === "trigger" ? def.color : DS.ink;
@@ -1612,7 +1683,7 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
             </div>
             {!expanded && (
               <div style={{ fontSize: 12, marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                <StepSummary step={step} />
+                <StepSummary step={step} actions={actions} />
               </div>
             )}
           </div>
@@ -1629,7 +1700,7 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
         {/* EXPANDED BODY */}
         {expanded && (
           <div style={{ borderTop: `1px solid ${DS.border}`, padding: "16px 16px 18px" }}>
-            <StepFields step={step} update={onUpdate} allSteps={allSteps} onSaveStep={onSaveStep} onAddStep={onAddStep} />
+            <StepFields step={step} update={onUpdate} allSteps={allSteps} onSaveStep={onSaveStep} onAddStep={onAddStep} pageId={pageId} platform={platform} actions={actions} loadingActions={loadingActions} />
           </div>
         )}
       </div>
@@ -2208,6 +2279,10 @@ function FlowBuilder() {
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({ dmLimit: 30, slowMode: true, humanize: true });
   const bottomRef = useRef(null);
+  const [pageId, setPageId] = useState(null);
+  const [actions, setActions] = useState([]);
+  const [loadingActions, setLoadingActions] = useState(false);
+  const [replyData, setReplyData] = useState(null);
 
   // Fetch Flow Data if ID exists
   useEffect(() => {
@@ -2223,6 +2298,13 @@ function FlowBuilder() {
           if (data) {
             setFlowName(data.name || "Untitled Flow");
             setIsLive(data.status === 'published');
+            setReplyData(data);
+            
+            const pid = data.facebook_page_id || data.instagram_id;
+            const actualPlatform = data.facebook_page_id ? "facebook" : "instagram";
+            
+            setPageId(pid);
+            if (actualPlatform !== platform) setPlatform(actualPlatform);
 
             let rawSteps = [];
             if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {
@@ -2231,7 +2313,12 @@ function FlowBuilder() {
                 id: s.id,
                 type: s.step_type === "text" ? "message" : s.step_type,
                 label: s.title || s.step_type,
-                config: s.settings_json || {},
+                config: {
+                  ...(s.settings_json || {}),
+                  buttons: s.buttons || [],
+                  quick_replies: s.quick_replies || [],
+                  carousel_items: s.carousel_items || []
+                },
                 kind: (s.step_type === "condition" || s.step_type === "trigger") ? s.step_type : "action"
               }));
             } else if (data.flow_data) {
@@ -2251,6 +2338,31 @@ function FlowBuilder() {
       fetchFlow();
     }
   }, [replyId, platform]);
+
+  // Fetch actions when pageId or platform changes
+  useEffect(() => {
+    if (pageId && platform) {
+      console.log("FlowBuilder: Fetching Actions", { pageId, platform });
+      const fetchActions = async () => {
+        setLoadingActions(true);
+        try {
+          const endpoint = platform === "facebook"
+            ? `/facebook/actions?page_id=${pageId}`
+            : `/instagram/actions?page_id=${pageId}&platform=instagram`;
+          const response = await api.get(endpoint);
+          console.log("FlowBuilder: Actions Fetched Successfully", response.data.data?.length, "items");
+          setActions(response.data.data || []);
+        } catch (err) {
+          console.error("FlowBuilder: Fetch Actions Error", err);
+        } finally {
+          setLoadingActions(false);
+        }
+      };
+      fetchActions();
+    } else {
+      console.log("FlowBuilder: Skipping Actions Fetch (Waiting for pageId)", { pageId, platform });
+    }
+  }, [pageId, platform]);
 
   const updateStep = useCallback((id, data) => setSteps(s => s.map(x => x.id === id ? data : x)), []);
   const deleteStep = useCallback((id) => {
@@ -2691,6 +2803,26 @@ function FlowBuilder() {
                   </div>
                 )}
 
+                {/* Trigger Info Card (Virtual) */}
+                {replyData?.trigger_type && (
+                  <div style={{
+                    background: `${DS.bg}80`, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius, padding: "16px 20px",
+                    display: "flex", alignItems: "center", gap: 16, boxShadow: "0 4px 15px rgba(0,0,0,0.03)", position: "relative",
+                    backdropFilter: "blur(10px)", marginBottom: 4
+                  }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 14, background: DS.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", color: DS.accent, border: `1.5px solid ${DS.accentBorder}`, boxShadow: `0 0 15px ${DS.accent}15` }}>
+                      <Bot size={24} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10.5, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>SYSTEM TRIGGER MAPPING</div>
+                      <div style={{ fontSize: 15, fontWeight: 900, color: DS.ink, letterSpacing: "-0.01em" }}>
+                        {actions?.find(a => a.type === replyData.trigger_type)?.label || replyData.trigger_type}
+                      </div>
+                    </div>
+                    <div style={{ position: "absolute", left: 39, bottom: -18, width: 2, height: 18, background: `linear-gradient(${DS.accent}60, ${DS.accent}10)` }} />
+                  </div>
+                )}
+
                 {/* Step list */}
                 {steps.map((s, gi) => (
                   <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
@@ -2698,6 +2830,7 @@ function FlowBuilder() {
                     onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
                     onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
                     onSaveStep={handleStepSave} onAddStep={addStep}
+                    pageId={pageId} platform={platform} actions={actions} loadingActions={loadingActions}
                   />
                 ))}
 
