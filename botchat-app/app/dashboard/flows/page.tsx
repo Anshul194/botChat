@@ -2301,10 +2301,8 @@ function FlowBuilder() {
             setReplyData(data);
             
             const pid = data.facebook_page_id || data.instagram_id;
-            const actualPlatform = data.facebook_page_id ? "facebook" : "instagram";
-            
+            // No longer overriding platform state from fetched data to respect the URL context
             setPageId(pid);
-            if (actualPlatform !== platform) setPlatform(actualPlatform);
 
             let rawSteps = [];
             if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {

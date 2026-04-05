@@ -630,12 +630,12 @@ export default function InstagramBotRepliesPage() {
                                         >
                                             <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
                                         </button>
-                                        <button
+                                        {/* <button
                                             onClick={() => setShowActionModal(true)}
                                             className="bg-[#db2777] hover:bg-[#be185d] text-white px-6 py-2.5 rounded-xl font-medium text-[12px] uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
                                         >
                                             <Plus className="w-4 h-4" /> Create custom layer
-                                        </button>
+                                        </button> */}
                                     </div>
                                 </div>
 
