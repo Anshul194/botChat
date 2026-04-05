@@ -520,10 +520,31 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
     const [addType, setAddType]       = useState<SourceType | null>(null);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    
+    // Processed content state
+    const [processedContents, setProcessedContents] = useState<any[]>([]);
+    const [isLoadingContents, setIsLoadingContents] = useState(false);
 
     useEffect(() => {
         dispatch(fetchKnowledgeSources(campaign.id));
     }, [campaign.id, dispatch]);
+
+    useEffect(() => {
+        if (activeTab === "processed") {
+            const fetchContents = async () => {
+                setIsLoadingContents(true);
+                try {
+                    const res = await api.get('/ai-training/contents', { params: { campaign_id: campaign.id } });
+                    setProcessedContents(res.data?.data || res.data || []);
+                } catch (error) {
+                    console.error("Failed to fetch processed content", error);
+                } finally {
+                    setIsLoadingContents(false);
+                }
+            };
+            fetchContents();
+        }
+    }, [activeTab, campaign.id]);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -541,51 +562,88 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
         setAddModalOpen(true);
     };
 
-    const handleDelete = (source: KnowledgeSource) => {
+    const handleDelete = (source: any) => {
         showConfirm({
             title: "Remove Source?",
-            message: "This knowledge source will be permanently removed from the campaign.",
+            message: "This item will be permanently removed from the campaign.",
             confirmText: "Remove",
             cancelText: "Cancel",
             type: "danger",
             onConfirm: async () => {
-                const res = await dispatch(deleteKnowledgeSource({ campaignId: campaign.id, sourceId: source.id }));
-                if (deleteKnowledgeSource.fulfilled.match(res)) {
-                    showModal("success", "Removed", "Knowledge source removed.");
+                if (source._is_content) {
+                    try {
+                        await api.delete(`/ai-training/contents/${source.id}`);
+                        setProcessedContents(prev => prev.filter(c => c.id !== source.id));
+                        showModal("success", "Removed", "Processed content removed.");
+                    } catch (e) {
+                        toast.error("Failed to remove content");
+                    }
                 } else {
-                    toast.error("Failed to remove source");
+                    // Logic to delete based on source type mapping to specific endpoints
+                    let deleteEndpoint = "";
+                    if (source.type === 'url') deleteEndpoint = `/ai-training/sources/url/${source.id}`;
+                    else if (source.type === 'file') deleteEndpoint = `/ai-training/sources/file/${source.id}`;
+                    else if (source.type === 'api') deleteEndpoint = `/ai-training/sources/api/${source.id}`;
+                    else if (source.type === 'sheet') deleteEndpoint = `/ai-training/sources/google-sheet/${source.id}`;
+
+                    if (deleteEndpoint) {
+                        try {
+                            await api.delete(deleteEndpoint);
+                            // Refresh logic (we could trigger a re-fetch of campaign details here)
+                            dispatch(fetchKnowledgeSources(campaign.id));
+                            showModal("success", "Removed", "Knowledge source removed.");
+                        } catch (e) {
+                            toast.error("Failed to remove source");
+                        }
+                    } else {
+                        // Fallback to legacy generic thunk if type is missing or mismatch
+                        const res = await dispatch(deleteKnowledgeSource({ campaignId: campaign.id, sourceId: source.id }));
+                        if (deleteKnowledgeSource.fulfilled.match(res)) {
+                            showModal("success", "Removed", "Knowledge source removed.");
+                        } else {
+                            toast.error("Failed to remove source");
+                        }
+                    }
                 }
             },
         });
     };
 
     // Filter sources for each tab
-    const getTabSources = (tab: TabKey): KnowledgeSource[] => {
-        if (tab === "processed") return knowledgeSources.filter(s => s.status === "processed" || s.status === "active");
+    const getTabSources = (tab: TabKey): any[] => {
+        if (tab === "processed") {
+            return processedContents.map(c => ({
+                ...c,
+                _is_content: true,
+                title: c.title || c.question,
+                content: c.content_text || c.extracted_content || c.answer || c.content,
+                status: "processed"
+            }));
+        }
         return knowledgeSources.filter(s => s.type === tab);
     };
 
     const tabSources = getTabSources(activeTab);
 
     // Table columns per tab
-    const renderRow = (s: KnowledgeSource, idx: number) => {
+    const renderRow = (s: any, idx: number) => {
         const mainCell = () => {
             if (activeTab === "processed" || s.type === "manual") return (
-                <td className="px-4 py-3 max-w-[220px]">
+                <div className="px-4 py-3 max-w-[220px]">
                     <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">{s.title || "—"}</p>
-                    {s.content && <p className="text-[10px] text-neutral-400 truncate mt-0.5">{s.content}</p>}
-                </td>
+                    {(s.content) && <p className="text-[10px] text-neutral-400 truncate mt-0.5">{s.content}</p>}
+                </div>
             );
-            if (s.type === "url") return <td className="px-4 py-3 max-w-[220px]"><p className="text-xs text-blue-600 dark:text-blue-400 truncate font-medium">{s.url || "—"}</p></td>;
-            if (s.type === "file") return <td className="px-4 py-3 max-w-[220px]"><p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{s.file_name || "—"}</p></td>;
+            if (s.type === "url") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs text-blue-600 dark:text-blue-400 truncate font-medium">{s.url || "—"}</p></div>;
+            if (s.type === "file") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{s.file_name || "—"}</p></div>;
             if (s.type === "api") return (
-                <td className="px-4 py-3 max-w-[220px]">
-                    <p className="text-xs text-neutral-800 dark:text-neutral-200 truncate font-medium">{s.api_url || "—"}</p>
+                <div className="px-4 py-3 max-w-[220px]">
+                    <p className="text-xs text-neutral-800 dark:text-neutral-200 truncate font-medium">{s.endpoint_url || "—"}</p>
                     <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{s.method}</span>
-                </td>
+                </div>
             );
-            if (s.type === "sheet") return <td className="px-4 py-3 max-w-[220px]"><p className="text-xs text-rose-600 dark:text-rose-400 truncate font-medium">{s.sheet_url || "—"}</p></td>;
-            return <td className="px-4 py-3">—</td>;
+            if (s.type === "sheet") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs text-rose-600 dark:text-rose-400 truncate font-medium">{s.sheet_url || "—"}</p></div>;
+            return <div className="px-4 py-3">—</div>;
         };
 
         const colLabel = () => {
@@ -691,8 +749,8 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
             {/* Table */}
             <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
                 {/* Table header */}
-                <div className="grid grid-cols-[40px_1fr_100px_60px] bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-800">
-                    {["No.", colLabel, "Status", "Action"].map((h) => (
+                <div className={cn("grid bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-800", activeTab === "processed" ? "grid-cols-[40px_1.5fr_1fr_100px_60px]" : "grid-cols-[40px_1fr_100px_60px]")}>
+                    {(activeTab === "processed" ? ["No.", colLabel, "Source Details", "Status", "Action"] : ["No.", colLabel, "Status", "Action"]).map((h) => (
                         <div key={h} className="px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
                             {h}
                         </div>
@@ -700,10 +758,10 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 </div>
 
                 {/* Table body */}
-                {isLoadingSources ? (
+                {isLoadingSources || isLoadingContents ? (
                     <div className="flex items-center justify-center py-10 gap-2">
                         <Loader2 className="w-5 h-5 animate-spin text-pink-500" />
-                        <span className="text-xs text-neutral-400">Loading sources...</span>
+                        <span className="text-xs text-neutral-400">Loading data...</span>
                     </div>
                 ) : tabSources.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 gap-2">
@@ -715,15 +773,30 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                         {tabSources.map((source, idx) => {
                             const { mainCell } = renderRow(source, idx);
                             return (
-                                <div key={source.id} className="grid grid-cols-[40px_1fr_100px_60px] items-center hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors">
+                                <div key={source.id} className={cn("grid items-center hover:bg-neutral-50/60 dark:hover:bg-neutral-900/30 transition-colors", activeTab === "processed" ? "grid-cols-[40px_1.5fr_1fr_100px_60px]" : "grid-cols-[40px_1fr_100px_60px]")}>
                                     <div className="px-4 py-3 text-xs text-neutral-400 font-medium">{idx + 1}</div>
                                     {mainCell()}
+                                    {activeTab === "processed" && (
+                                        <div className="px-4 py-3 flex flex-col gap-1 overflow-hidden">
+                                            <span className="text-[10px] font-semibold text-neutral-600 dark:text-neutral-300 uppercase shrink-0 truncate">
+                                                {source.source_type || "Source"} • {source.content_format || "Raw"}
+                                            </span>
+                                            <span className="text-[10px] text-neutral-400 truncate w-full" title={source.source_reference}>
+                                                {source.source_reference || "—"}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="px-4 py-3">
                                         <SourceStatusBadge status={source.status} />
                                     </div>
                                     <div className="px-4 py-3 flex items-center justify-center">
                                         <button
-                                            onClick={() => handleDelete(source)}
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                handleDelete(source);
+                                            }}
                                             className="w-7 h-7 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                                             title="Remove source"
                                         >
