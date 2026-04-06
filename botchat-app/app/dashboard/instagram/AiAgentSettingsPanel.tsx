@@ -14,21 +14,20 @@ import { fetchCampaigns } from "@/store/slices/aiTrainingSlice";
 
 interface AiAgentSettings {
     ai_enabled: boolean;
-    ai_mode: "fixed" | "adaptive";
+    ai_mode: string;
     ai_training_campaign_id: number | string | null;
     ai_agent_prompt: string;
     ai_reply_delay: number;
-    intent_detection: boolean;
-    reasoning_level: "low" | "medium" | "high";
-    restricted_topics: string;
-    human_handoff_keywords: string;
-    auto_typing: boolean;
-    context_window: number;
-    fallback_only: boolean;
-    all_queries: boolean;
-    contextual_memory: boolean;
-    assign_to_team: boolean;
-    off_hours: boolean;
+    enable_intent_detection: boolean;
+    ai_reasoning_level: "low" | "medium" | "high";
+    restricted_topics_json: string | null;
+    restricted_response: string | null;
+    enable_typing_indicator: boolean;
+    ai_as_fallback_only: boolean;
+    ai_agent_all_queries: boolean;
+    enable_contextual_memory: boolean;
+    enable_assignment: boolean;
+    no_agent_off_hours: boolean;
 }
 
 // ── Simple Pink Form Components ───────────────────────────────────────────
@@ -89,21 +88,20 @@ export function AiAgentSettingsPanel({
     const [topicInput, setTopicInput] = useState("");
     const [settings, setSettings] = useState<AiAgentSettings>({
         ai_enabled: false,
-        ai_mode: "fixed",
+        ai_mode: "fallback_only",
         ai_training_campaign_id: null,
         ai_agent_prompt: "",
         ai_reply_delay: 0,
-        intent_detection: true,
-        reasoning_level: "low",
-        restricted_topics: "",
-        human_handoff_keywords: "operator, human, help",
-        auto_typing: true,
-        context_window: 5,
-        fallback_only: false,
-        all_queries: true,
-        contextual_memory: false,
-        assign_to_team: false,
-        off_hours: false,
+        enable_intent_detection: true,
+        ai_reasoning_level: "low",
+        restricted_topics_json: null,
+        restricted_response: null,
+        enable_typing_indicator: true,
+        ai_as_fallback_only: false,
+        ai_agent_all_queries: true,
+        enable_contextual_memory: false,
+        enable_assignment: false,
+        no_agent_off_hours: false,
     });
 
     useEffect(() => {
@@ -115,25 +113,24 @@ export function AiAgentSettingsPanel({
         setIsLoading(true);
         try {
             const response = await api.get(`/social/ai-agent-settings/${platform}/${accountId}/data`);
-            if (response.data.success || response.data.is_success) {
-                const data = response.data.data;
+            const s = response.data?.data?.settings || response.data?.settings;
+            if (s) {
                 setSettings({
-                    ai_enabled: !!data.ai_enabled,
-                    ai_mode: data.ai_mode || "fixed",
-                    ai_training_campaign_id: data.ai_training_campaign_id || null,
-                    ai_agent_prompt: data.ai_agent_prompt || "",
-                    ai_reply_delay: Number(data.ai_reply_delay) || 0,
-                    intent_detection: data.intent_detection !== undefined ? !!data.intent_detection : true,
-                    reasoning_level: data.reasoning_level || "low",
-                    restricted_topics: data.restricted_topics || "",
-                    human_handoff_keywords: data.human_handoff_keywords || "operator, human, help",
-                    auto_typing: !!data.auto_typing,
-                    context_window: Number(data.context_window) || 5,
-                    fallback_only: !!data.fallback_only,
-                    all_queries: data.all_queries !== undefined ? !!data.all_queries : true,
-                    contextual_memory: !!data.contextual_memory,
-                    assign_to_team: !!data.assign_to_team,
-                    off_hours: !!data.off_hours,
+                    ai_enabled: !!s.ai_enabled,
+                    ai_mode: s.ai_mode || "fallback_only",
+                    ai_training_campaign_id: s.ai_training_campaign_id || null,
+                    ai_agent_prompt: s.ai_agent_prompt || "",
+                    ai_reply_delay: Number(s.ai_reply_delay) || 0,
+                    enable_intent_detection: s.enable_intent_detection !== undefined ? !!s.enable_intent_detection : true,
+                    ai_reasoning_level: s.ai_reasoning_level || "low",
+                    restricted_topics_json: s.restricted_topics_json || null,
+                    restricted_response: s.restricted_response || null,
+                    enable_typing_indicator: !!s.enable_typing_indicator,
+                    ai_as_fallback_only: !!s.ai_as_fallback_only,
+                    ai_agent_all_queries: s.ai_agent_all_queries !== undefined ? !!s.ai_agent_all_queries : true,
+                    enable_contextual_memory: !!s.enable_contextual_memory,
+                    enable_assignment: !!s.enable_assignment,
+                    no_agent_off_hours: !!s.no_agent_off_hours,
                 });
             }
         } catch (err) {
@@ -149,13 +146,13 @@ export function AiAgentSettingsPanel({
             const payload = {
                 ...settings,
                 ai_enabled: settings.ai_enabled ? 1 : 0,
-                intent_detection: settings.intent_detection ? 1 : 0,
-                auto_typing: settings.auto_typing ? 1 : 0,
-                fallback_only: settings.fallback_only ? 1 : 0,
-                all_queries: settings.all_queries ? 1 : 0,
-                contextual_memory: settings.contextual_memory ? 1 : 0,
-                assign_to_team: settings.assign_to_team ? 1 : 0,
-                off_hours: settings.off_hours ? 1 : 0,
+                enable_intent_detection: settings.enable_intent_detection ? 1 : 0,
+                enable_typing_indicator: settings.enable_typing_indicator ? 1 : 0,
+                ai_as_fallback_only: settings.ai_as_fallback_only ? 1 : 0,
+                ai_agent_all_queries: settings.ai_agent_all_queries ? 1 : 0,
+                enable_contextual_memory: settings.enable_contextual_memory ? 1 : 0,
+                enable_assignment: settings.enable_assignment ? 1 : 0,
+                no_agent_off_hours: settings.no_agent_off_hours ? 1 : 0,
             };
             await api.post(`/social/ai-agent-settings/${platform}/${accountId}/save`, payload);
             showModal("success", "Success", "Configuration Synchronized.");
@@ -169,19 +166,19 @@ export function AiAgentSettingsPanel({
     const addTopic = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && topicInput.trim()) {
             e.preventDefault();
-            const currentTopics = settings.restricted_topics ? settings.restricted_topics.split(',').map(t => t.trim()) : [];
+            const currentTopics = settings.restricted_topics_json ? settings.restricted_topics_json.split(',').map(t => t.trim()) : [];
             if (!currentTopics.includes(topicInput.trim())) {
-                const newTopics = [...currentTopics, topicInput.trim()].join(', ');
-                setSettings(s => ({ ...s, restricted_topics: newTopics }));
+                const newTopics = [...currentTopics, topicInput.trim()].filter(Boolean).join(', ');
+                setSettings(s => ({ ...s, restricted_topics_json: newTopics }));
             }
             setTopicInput("");
         }
     };
 
     const removeTopic = (topic: string) => {
-        const currentTopics = settings.restricted_topics.split(',').map(t => t.trim());
+        const currentTopics = settings.restricted_topics_json ? settings.restricted_topics_json.split(',').map(t => t.trim()) : [];
         const newTopics = currentTopics.filter(t => t !== topic).join(', ');
-        setSettings(s => ({ ...s, restricted_topics: newTopics }));
+        setSettings(s => ({ ...s, restricted_topics_json: newTopics || null }));
     };
 
     if (isLoading) {
@@ -193,7 +190,7 @@ export function AiAgentSettingsPanel({
         );
     }
 
-    const topicList = settings.restricted_topics ? settings.restricted_topics.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const topicList = settings.restricted_topics_json ? settings.restricted_topics_json.split(',').map(t => t.trim()).filter(Boolean) : [];
 
     return (
         <div className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-3xl shadow-xl shadow-neutral-200/20 dark:shadow-none max-w-6xl mx-auto overflow-hidden">
@@ -244,19 +241,19 @@ export function AiAgentSettingsPanel({
                     <AnimatePresence mode="wait">
                         {settings.ai_enabled && (
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
-                                <PinkToggle label="Enable Intent Detection" enabled={settings.intent_detection} onToggle={() => setSettings(s => ({ ...s, intent_detection: !s.intent_detection }))} />
+                                <PinkToggle label="Enable Intent Detection" enabled={settings.enable_intent_detection} onToggle={() => setSettings(s => ({ ...s, enable_intent_detection: !s.enable_intent_detection }))} />
 
                                 <div className="flex items-center gap-5 p-5 bg-neutral-50/50 dark:bg-neutral-900/50 rounded-2xl">
                                     <button
-                                        onClick={() => setSettings(s => ({ ...s, all_queries: !s.all_queries }))}
-                                        className={cn("w-11 h-6 rounded-full relative px-1 flex items-center shadow-sm", settings.all_queries ? "bg-pink-500" : "bg-neutral-200 dark:bg-neutral-800")}
+                                        onClick={() => setSettings(s => ({ ...s, ai_agent_all_queries: !s.ai_agent_all_queries }))}
+                                        className={cn("w-11 h-6 rounded-full relative px-1 flex items-center shadow-sm", settings.ai_agent_all_queries ? "bg-pink-500" : "bg-neutral-200 dark:bg-neutral-800")}
                                     >
-                                        <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.all_queries ? "translate-x-5" : "translate-x-0")} />
+                                        <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.ai_agent_all_queries ? "translate-x-5" : "translate-x-0")} />
                                     </button>
                                     <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Execute for All Queries</span>
                                 </div>
 
-                                <PinkToggle label="Enable Contextual Memory" enabled={settings.contextual_memory} onToggle={() => setSettings(s => ({ ...s, contextual_memory: !s.contextual_memory }))} />
+                                <PinkToggle label="Enable Contextual Memory" enabled={settings.enable_contextual_memory} onToggle={() => setSettings(s => ({ ...s, enable_contextual_memory: !s.enable_contextual_memory }))} />
 
                                 <FormField label="Restricted Topics" hint="Add topics and press Enter to secure.">
                                     <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-3 min-h-[56px] flex flex-wrap gap-2 shadow-sm focus-within:border-pink-200 transition-all">
@@ -276,18 +273,18 @@ export function AiAgentSettingsPanel({
                                     </div>
                                 </FormField>
 
-                                <PinkToggle label="Automated Department Assignment" enabled={settings.assign_to_team} onToggle={() => setSettings(s => ({ ...s, assign_to_team: !s.assign_to_team }))} />
-                                <PinkToggle label="Real-time Typing Simulator" enabled={settings.auto_typing} onToggle={() => setSettings(s => ({ ...s, auto_typing: !s.auto_typing }))} />
+                                <PinkToggle label="Automated Department Assignment" enabled={settings.enable_assignment} onToggle={() => setSettings(s => ({ ...s, enable_assignment: !s.enable_assignment }))} />
+                                <PinkToggle label="Real-time Typing Simulator" enabled={settings.enable_typing_indicator} onToggle={() => setSettings(s => ({ ...s, enable_typing_indicator: !s.enable_typing_indicator }))} />
 
                                 <FormField label="Intelligence Reasoning Depth">
                                     <div className="grid grid-cols-3 gap-3">
                                         {(['low', 'medium', 'high'] as const).map(l => (
                                             <button
                                                 key={l}
-                                                onClick={() => setSettings(s => ({ ...s, reasoning_level: l }))}
+                                                onClick={() => setSettings(s => ({ ...s, ai_reasoning_level: l }))}
                                                 className={cn(
                                                     "h-12 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all border",
-                                                    settings.reasoning_level === l
+                                                    settings.ai_reasoning_level === l
                                                         ? "bg-pink-500 border-pink-500 text-white shadow-lg shadow-pink-500/20"
                                                         : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-pink-200"
                                                 )}
@@ -327,20 +324,20 @@ export function AiAgentSettingsPanel({
                             <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-10">
                                 <div className="flex items-center gap-5 p-5 bg-neutral-50/50 dark:bg-neutral-900/50 rounded-2xl">
                                     <button
-                                        onClick={() => setSettings(s => ({ ...s, fallback_only: !s.fallback_only }))}
-                                        className={cn("w-11 h-6 rounded-full relative px-1 flex items-center shadow-sm", settings.fallback_only ? "bg-pink-500 shadow-pink-500/20" : "bg-neutral-200 dark:bg-neutral-800")}
+                                        onClick={() => setSettings(s => ({ ...s, ai_as_fallback_only: !s.ai_as_fallback_only }))}
+                                        className={cn("w-11 h-6 rounded-full relative px-1 flex items-center shadow-sm", settings.ai_as_fallback_only ? "bg-pink-500 shadow-pink-500/20" : "bg-neutral-200 dark:bg-neutral-800")}
                                     >
-                                        <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.fallback_only ? "translate-x-5" : "translate-x-0")} />
+                                        <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.ai_as_fallback_only ? "translate-x-5" : "translate-x-0")} />
                                     </button>
                                     <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Strict Fallback Mode</span>
                                 </div>
 
-                                <PinkToggle label="Suspend Agent During Off Hours" enabled={settings.off_hours} onToggle={() => setSettings(s => ({ ...s, off_hours: !s.off_hours }))} />
+                                <PinkToggle label="Suspend Agent During Off Hours" enabled={settings.no_agent_off_hours} onToggle={() => setSettings(s => ({ ...s, no_agent_off_hours: !s.no_agent_off_hours }))} />
 
                                 <FormField label="Restricted Content Response" hint="Define the automated response for guardrail events.">
                                     <textarea
-                                        value={settings.human_handoff_keywords}
-                                        onChange={(e) => setSettings(s => ({ ...s, human_handoff_keywords: e.target.value }))}
+                                        value={settings.restricted_response || ""}
+                                        onChange={(e) => setSettings(s => ({ ...s, restricted_response: e.target.value }))}
                                         className="w-full h-40 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-6 text-sm font-medium text-neutral-700 dark:text-neutral-300 outline-none focus:border-pink-500 shadow-sm transition-all resize-none leading-relaxed"
                                         placeholder="e.g. Protocol mismatch. Redirecting to human operator..."
                                     />

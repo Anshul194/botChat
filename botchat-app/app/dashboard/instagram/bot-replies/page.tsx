@@ -13,6 +13,8 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
+import { AiAgentSettingsPanel } from "../AiAgentSettingsPanel";
+
 
 interface BotReply {
     id: number;
@@ -770,10 +772,33 @@ export default function InstagramBotRepliesPage() {
                         )}
 
                         {activeMenu === 'ai_agent' && (
-                            <motion.div key="ai" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-16 text-center">
-                                <Bot className="w-12 h-12 text-pink-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-bold text-neutral-900 dark:text-white">IG Agent Intelligence</h3>
-                                <p className="text-sm text-neutral-500 max-w-sm mt-2 font-medium mx-auto">Train a smart agent to handle Instagram DMs with neural precision.</p>
+                            <motion.div
+                                key="ai"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="py-6 px-4 max-w-6xl mx-auto"
+                            >
+                                {selectedAccountId !== "all" ? (
+                                    <div className="w-full">
+                                        <AiAgentSettingsPanel
+                                            platform="instagram"
+                                            accountId={selectedAccountId}
+                                            accountName={selectedAccountObj?.username || "Instagram Account"}
+                                        />
+                                    </div>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="w-full max-w-md p-10 bg-pink-50 dark:bg-pink-500/10 rounded-[40px] border border-pink-100 dark:border-pink-500/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
+                                    >
+                                        <div className="w-16 h-16 rounded-3xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-2">
+                                            <Bot className="w-8 h-8 text-pink-600" />
+                                        </div>
+                                        <h4 className="text-lg font-black text-pink-900 dark:text-pink-400 uppercase tracking-tight leading-tight">Environment Required</h4>
+                                        <p className="text-xs font-bold text-pink-700 dark:text-pink-500/80 uppercase tracking-widest leading-relaxed">Please select a specific Instagram account from the sidebar to enable neural agent configuration.</p>
+                                    </motion.div>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>
