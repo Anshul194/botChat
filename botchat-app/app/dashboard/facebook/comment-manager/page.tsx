@@ -366,7 +366,7 @@ export default function CommentManager() {
                     </div>
                     <button className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><Search className="w-4 h-4" /></button>
                     <div className="w-9 h-9 rounded-full bg-slate-800 dark:bg-pink-600 border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
-                         <img src={user?.picture || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
+                         <img src={user?.avatar || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
                     </div>
                 </div>
             </div>
