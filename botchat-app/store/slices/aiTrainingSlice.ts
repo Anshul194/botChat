@@ -7,7 +7,7 @@ export interface Campaign {
     name: string;
     description?: string;
     status?: string;
-    system_prompt?: string;
+    prompt_message?: string;
     created_at?: string;
     updated_at?: string;
 }
@@ -16,7 +16,7 @@ export type CampaignPayload = {
     name: string;
     status: 'active' | 'inactive';
     description: string;
-    system_prompt: string;
+    prompt_message: string;
 };
 
 export type SourceType = 'manual' | 'url' | 'file' | 'api' | 'sheet';
@@ -123,15 +123,15 @@ export const fetchKnowledgeSources = createAsyncThunk(
         try {
             const res = await api.get(`/ai-training/campaigns/${campaignId}`);
             const data = res.data?.data ?? res.data;
-            
+
             // Flatten categorical arrays into a single list with normalized type/status
             const flattened: any[] = [];
-            
+
             if (data.urls) data.urls.forEach((s: any) => flattened.push({ ...s, type: 'url', status: s.crawl_status }));
             if (data.files) data.files.forEach((s: any) => flattened.push({ ...s, type: 'file', status: s.processed_status }));
             if (data.api) data.api.forEach((s: any) => flattened.push({ ...s, type: 'api', status: s.fetch_status }));
             if (data.sheets) data.sheets.forEach((s: any) => flattened.push({ ...s, type: 'sheet', status: s.fetch_status }));
-            
+
             return flattened;
         } catch (err: any) {
             return rejectWithValue(err.response?.data?.message || 'Failed to fetch sources');

@@ -31,30 +31,30 @@ const SOURCE_TYPES: {
     color: string;
     bg: string;
 }[] = [
-    { type: "manual",  label: "Manual FAQ / Content",    icon: MessageSquareText, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-950/30" },
-    { type: "url",     label: "Website URL Scraping",    icon: Globe,             color: "text-blue-600 dark:text-blue-400",    bg: "bg-blue-50 dark:bg-blue-950/30"    },
-    { type: "file",    label: "File Upload (PDF / Doc)", icon: FileText,          color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
-    { type: "api",     label: "External API Source",     icon: Database,          color: "text-amber-600 dark:text-amber-400",  bg: "bg-amber-50 dark:bg-amber-950/30"  },
-    { type: "sheet",   label: "Google Sheets",           icon: Table2,            color: "text-rose-600 dark:text-rose-400",    bg: "bg-rose-50 dark:bg-rose-950/30"    },
-];
+        { type: "manual", label: "Manual FAQ / Content", icon: MessageSquareText, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-950/30" },
+        { type: "url", label: "Website URL Scraping", icon: Globe, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30" },
+        { type: "file", label: "File Upload (PDF / Doc)", icon: FileText, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
+        { type: "api", label: "External API Source", icon: Database, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/30" },
+        { type: "sheet", label: "Google Sheets", icon: Table2, color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-950/30" },
+    ];
 
 type TabKey = "processed" | SourceType;
 const TABS: { key: TabKey; label: string }[] = [
     { key: "processed", label: "Processed Contents" },
-    { key: "url",       label: "URLs"               },
-    { key: "file",      label: "Files"              },
-    { key: "api",       label: "API Sources"        },
-    { key: "sheet",     label: "Sheets"             },
-    { key: "manual",    label: "Manual FAQ"         },
+    { key: "url", label: "URLs" },
+    { key: "file", label: "Files" },
+    { key: "api", label: "API Sources" },
+    { key: "sheet", label: "Sheets" },
+    { key: "manual", label: "Manual FAQ" },
 ];
 
 // ── Source status badge ───────────────────────────────────────────────────────
 function SourceStatusBadge({ status }: { status?: string }) {
     const s = (status || "pending").toLowerCase();
     const styles: Record<string, string> = {
-        active:    "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
-        pending:   "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-        failed:    "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800",
+        active: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
+        pending: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+        failed: "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800",
         processed: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800",
     };
     return (
@@ -90,19 +90,19 @@ function AddSourceModal({
     const [manualAnswer, setManualAnswer] = useState("");
     const [manualTitle, setManualTitle] = useState("");
     const [manualContent, setManualContent] = useState("");
-    
+
     // URL
     const [url, setUrl] = useState("");
     const [urlFetchType, setUrlFetchType] = useState("");
     const [urlFetchName, setUrlFetchName] = useState("");
     const [urlRemoveSelectors, setUrlRemoveSelectors] = useState([{ type: "", name: "" }]);
-    
+
     // File
     const [file, setFile] = useState<File | null>(null);
     const [fileParseMode, setFileParseMode] = useState("raw_response");
     const [previewContent, setPreviewContent] = useState("");
     const [isPreviewLoading, setIsPreviewLoading] = useState(false);
-    
+
     // API
     const [apiName, setApiName] = useState("");
     const [apiMethod, setApiMethod] = useState("GET");
@@ -110,7 +110,7 @@ function AddSourceModal({
     const [apiListKey, setApiListKey] = useState("");
     const [apiTitleKey, setApiTitleKey] = useState("title");
     const [apiContentKey, setApiContentKey] = useState("description");
-    
+
     // Sheet
     const [sheetUrl, setSheetUrl] = useState("");
     const [sheetName, setSheetName] = useState("");
@@ -166,9 +166,9 @@ function AddSourceModal({
         } else if (type === "url") {
             if (!url.trim()) return toast.error("URL is required");
             endpoint = "/ai-training/sources/url";
-            payload = { 
-                campaign_id: campaignId.toString(), 
-                url, 
+            payload = {
+                campaign_id: campaignId.toString(),
+                url,
                 fetch_mode: overrideUrlMode || "generate_faq",
                 fetch_config: { type: urlFetchType, name: urlFetchName },
                 remove_configs: urlRemoveSelectors.filter(r => r.name.trim() !== "")
@@ -177,29 +177,29 @@ function AddSourceModal({
             if (!file) return toast.error("Please select a file");
             if (!previewContent.trim()) return toast.error("Please generate content preview first");
             endpoint = "/ai-training/sources/file/save";
-            payload = { 
-                campaign_id: campaignId.toString(), 
+            payload = {
+                campaign_id: campaignId.toString(),
                 extracted_content: previewContent,
                 parse_mode: fileParseMode
             };
         } else if (type === "api") {
             if (!apiUrl.trim()) return toast.error("API URL is required");
             endpoint = "/ai-training/sources/api";
-            payload = { 
-                campaign_id: campaignId.toString(), 
-                api_name: apiName || "Custom API", 
+            payload = {
+                campaign_id: campaignId.toString(),
+                api_name: apiName || "Custom API",
                 method: apiMethod,
-                endpoint_url: apiUrl, 
+                endpoint_url: apiUrl,
                 response_mapping_json: { list_key: apiListKey, title: apiTitleKey, content: apiContentKey }
             };
         } else {
             if (!sheetUrl.trim()) return toast.error("Sheet URL is required");
             endpoint = "/ai-training/sources/google-sheet";
-            payload = { 
-                campaign_id: campaignId.toString(), 
-                sheet_url: sheetUrl, 
+            payload = {
+                campaign_id: campaignId.toString(),
+                sheet_url: sheetUrl,
                 sheet_name: sheetName,
-                mapping_json: { question: sheetTitleKey, answer: sheetContentKey } 
+                mapping_json: { question: sheetTitleKey, answer: sheetContentKey }
             };
         }
 
@@ -265,7 +265,7 @@ function AddSourceModal({
                                             </label>
                                         </div>
                                     </div>
-                                    
+
                                     {manualFormat === "faq" ? (
                                         <>
                                             <FormField label="Question">
@@ -287,7 +287,7 @@ function AddSourceModal({
                                     )}
                                 </>
                             )}
-                            
+
                             {type === "url" && (
                                 <div className="space-y-6">
                                     <FormField label="Campaign URL" hint="Add a webpage link that contains relevant content for training your bot. Example: https://botsocialai.com" required>
@@ -302,8 +302,10 @@ function AddSourceModal({
                                             <FormField label="Selector Type">
                                                 <select value={urlFetchType} onChange={(e) => setUrlFetchType(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
                                                     <option value="">Select Selector</option>
-                                                    <option value="css">CSS</option>
-                                                    <option value="xpath">XPath</option>
+                                                    <option value="id">ID</option>
+                                                    <option value="class">Class</option>
+                                                    <option value="tag">Tag</option>
+
                                                 </select>
                                             </FormField>
                                             <FormField label="Selector Name">
@@ -323,6 +325,9 @@ function AddSourceModal({
                                                         <FormField label={idx === 0 ? "Selector Type" : ""}>
                                                             <select value={sel.type} onChange={(e) => { const n = [...urlRemoveSelectors]; n[idx].type = e.target.value; setUrlRemoveSelectors(n); }} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
                                                                 <option value="">Select Selector</option>
+                                                                <option value="id">ID</option>
+                                                                <option value="class">Class</option>
+                                                                <option value="tag">Tag</option>
                                                                 <option value="css">CSS</option>
                                                                 <option value="xpath">XPath</option>
                                                             </select>
@@ -343,7 +348,7 @@ function AddSourceModal({
                                     </div>
                                 </div>
                             )}
-                            
+
                             {type === "file" && (
                                 <div className="space-y-6">
                                     <div>
@@ -362,15 +367,15 @@ function AddSourceModal({
                                             <div className="h-11 flex-1 flex items-center px-4 border border-neutral-300 dark:border-neutral-700 rounded-l-md bg-white dark:bg-neutral-900 text-sm text-neutral-700 dark:text-neutral-300 truncate">
                                                 {file ? file.name : "Select a file..."}
                                             </div>
-                                            <button 
-                                                onClick={() => fileRef.current?.click()} 
+                                            <button
+                                                onClick={() => fileRef.current?.click()}
                                                 className="h-11 px-6 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-r-md transition-colors shadow-sm shadow-pink-500/20"
                                             >
                                                 Upload
                                             </button>
                                         </div>
                                         <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-                                        
+
                                         <p className="text-[11px] text-neutral-500 mt-2">
                                             Accepted Formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx), CSV, OpenDocument (.ods, .odt), TXT.
                                         </p>
@@ -378,14 +383,14 @@ function AddSourceModal({
 
                                     {/* Parse Mode Buttons */}
                                     <div className="grid grid-cols-2 gap-3">
-                                        <button 
+                                        <button
                                             onClick={() => handleGeneratePreview("raw_response")}
                                             disabled={isPreviewLoading}
                                             className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "raw_response" ? "bg-pink-600 border-pink-600 text-white shadow-md shadow-pink-500/25" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
                                         >
                                             <RefreshCcw className={cn("w-4 h-4", isPreviewLoading && fileParseMode === "raw_response" && "animate-spin")} /> Generate Raw Response
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleGeneratePreview("generate_faq")}
                                             disabled={isPreviewLoading}
                                             className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "generate_faq" ? "bg-pink-600 border-pink-600 text-white shadow-md shadow-pink-500/25" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
@@ -393,7 +398,7 @@ function AddSourceModal({
                                             <RefreshCcw className={cn("w-4 h-4", isPreviewLoading && fileParseMode === "generate_faq" && "animate-spin")} /> Generate FAQ
                                         </button>
                                     </div>
-                                    
+
                                     <div className="space-y-1">
                                         <p className="text-[11px] text-neutral-500">
                                             Generate Raw Response: Accurate and in-depth responses without splitting content.
@@ -415,7 +420,7 @@ function AddSourceModal({
                                     </div>
                                 </div>
                             )}
-                            
+
                             {type === "api" && (
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
@@ -449,7 +454,7 @@ function AddSourceModal({
                                     </div>
                                 </div>
                             )}
-                            
+
                             {type === "sheet" && (
                                 <div className="space-y-4">
                                     <FormField label="Google Sheet URL" hint="Ensure the sheet is public or shared with our service account." required>
@@ -515,12 +520,12 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
     const { knowledgeSources, isLoadingSources } = useAppSelector((s) => s.aiTraining);
     const { showConfirm, showModal } = useModal();
 
-    const [activeTab, setActiveTab]   = useState<TabKey>("processed");
+    const [activeTab, setActiveTab] = useState<TabKey>("processed");
     const [showDropdown, setShowDropdown] = useState(false);
-    const [addType, setAddType]       = useState<SourceType | null>(null);
+    const [addType, setAddType] = useState<SourceType | null>(null);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    
+
     // Processed content state
     const [processedContents, setProcessedContents] = useState<any[]>([]);
     const [isLoadingContents, setIsLoadingContents] = useState(false);
@@ -835,7 +840,7 @@ const DEFAULT_FORM = {
     name: "",
     status: "active" as "active" | "inactive",
     description: "",
-    system_prompt: "",
+    prompt_message: "",
 };
 
 interface Props {
@@ -855,7 +860,7 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
                 name: campaign.name || "",
                 status: (campaign.status as "active" | "inactive") || "active",
                 description: campaign.description || "",
-                system_prompt: campaign.system_prompt || "",
+                prompt_message: campaign.prompt_message || "",
             });
         }
     }, [campaign]);
@@ -936,8 +941,8 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
                         >
                             <StyledTextarea
                                 placeholder="Enter the global AI persona or instructions for this campaign"
-                                value={form.system_prompt}
-                                onChange={set("system_prompt")}
+                                value={form.prompt_message}
+                                onChange={set("prompt_message")}
                                 rows={4}
                             />
                         </FormField>

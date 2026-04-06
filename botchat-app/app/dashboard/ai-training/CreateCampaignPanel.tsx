@@ -149,7 +149,7 @@ const DEFAULT_FORM = {
     name: "",
     status: "active" as "active" | "inactive",
     description: "",
-    system_prompt: "",
+    prompt_message: "",
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -278,8 +278,8 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                                 >
                                     <StyledTextarea
                                         placeholder="Enter the global AI persona or instructions for this campaign"
-                                        value={form.system_prompt}
-                                        onChange={set("system_prompt")}
+                                        value={form.prompt_message}
+                                        onChange={set("prompt_message")}
                                         rows={6}
                                     />
                                 </FormField>

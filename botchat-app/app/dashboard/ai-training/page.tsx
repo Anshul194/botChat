@@ -83,7 +83,7 @@ function CampaignCard({
             )}
 
             {/* System Prompt Preview */}
-            {campaign.system_prompt && (
+            {campaign.prompt_message && (
                 <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-lg px-3 py-2 mb-3">
                     <div className="flex items-center gap-1.5 mb-1">
                         <Sparkles className="w-3 h-3 text-pink-500" />
@@ -92,7 +92,7 @@ function CampaignCard({
                         </span>
                     </div>
                     <p className="text-xs text-neutral-600 dark:text-neutral-300 line-clamp-2 font-mono leading-relaxed">
-                        {campaign.system_prompt}
+                        {campaign.prompt_message}
                     </p>
                 </div>
             )}
