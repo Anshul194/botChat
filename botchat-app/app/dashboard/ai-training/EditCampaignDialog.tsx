@@ -74,14 +74,17 @@ function AddSourceModal({
     campaignId,
     open,
     onClose,
+    onSuccess,
 }: {
     type: SourceType | null;
     campaignId: number;
     open: boolean;
     onClose: () => void;
+    onSuccess?: (type: SourceType) => void;
 }) {
     const dispatch = useAppDispatch();
     const { isAddingSource } = useAppSelector((s) => s.aiTraining);
+    const { showModal } = useModal();
     const fileRef = useRef<HTMLInputElement>(null);
 
     // Manual format
@@ -99,6 +102,7 @@ function AddSourceModal({
 
     // File
     const [file, setFile] = useState<File | null>(null);
+    const [fileUrl, setFileUrl] = useState("");
     const [fileParseMode, setFileParseMode] = useState("raw_response");
     const [previewContent, setPreviewContent] = useState("");
     const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -120,7 +124,7 @@ function AddSourceModal({
     const reset = () => {
         setManualFormat("faq"); setManualQuestion(""); setManualAnswer(""); setManualTitle(""); setManualContent("");
         setUrl(""); setUrlFetchType(""); setUrlFetchName(""); setUrlRemoveSelectors([{ type: "", name: "" }]);
-        setFile(null); setFileParseMode("raw_response"); setPreviewContent("");
+        setFile(null); setFileUrl(""); setFileParseMode("raw_response"); setPreviewContent("");
         setApiName(""); setApiUrl(""); setApiMethod("GET"); setApiListKey(""); setApiTitleKey("title"); setApiContentKey("description");
         setSheetUrl(""); setSheetName(""); setSheetTitleKey(""); setSheetContentKey("");
     };
@@ -138,7 +142,9 @@ function AddSourceModal({
                 headers: { "Content-Type": "multipart/form-data" }
             });
             const extracted = res.data?.ai_content || res.data?.data?.ai_content || res.data?.data?.extracted_content || res.data?.extracted_content || res.data?.data || "";
+            const uploadedUrl = res.data?.file_url || res.data?.data?.file_url || "";
             setPreviewContent(typeof extracted === 'string' ? extracted : JSON.stringify(extracted));
+            if (uploadedUrl) setFileUrl(uploadedUrl);
             toast.success("Preview generated successfully");
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Failed to generate preview");
@@ -177,11 +183,13 @@ function AddSourceModal({
             if (!file) return toast.error("Please select a file");
             if (!previewContent.trim()) return toast.error("Please generate content preview first");
             endpoint = "/ai-training/sources/file/save";
-            payload = {
-                campaign_id: campaignId.toString(),
-                extracted_content: previewContent,
-                parse_mode: fileParseMode
-            };
+            const fd = new FormData();
+            fd.append("campaign_id", campaignId.toString());
+            fd.append("extracted_content", previewContent);
+            fd.append("parse_mode", fileParseMode);
+            if (file) fd.append("file", file);
+            if (fileUrl) fd.append("file_url", fileUrl);
+            payload = fd;
         } else if (type === "api") {
             if (!apiUrl.trim()) return toast.error("API URL is required");
             endpoint = "/ai-training/sources/api";
@@ -205,7 +213,7 @@ function AddSourceModal({
 
         const res = await dispatch(createKnowledgeSource({ campaignId, endpoint, payload }));
         if (createKnowledgeSource.fulfilled.match(res)) {
-            toast.success("Source added successfully!");
+            onSuccess?.(type);
             handleClose();
         } else {
             toast.error((res.payload as string) || "Failed to add source");
@@ -328,8 +336,6 @@ function AddSourceModal({
                                                                 <option value="id">ID</option>
                                                                 <option value="class">Class</option>
                                                                 <option value="tag">Tag</option>
-                                                                <option value="css">CSS</option>
-                                                                <option value="xpath">XPath</option>
                                                             </select>
                                                         </FormField>
                                                         <FormField label={idx === 0 ? "Selector Name" : ""}>
@@ -518,7 +524,7 @@ function AddSourceModal({
 function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
     const dispatch = useAppDispatch();
     const { knowledgeSources, isLoadingSources } = useAppSelector((s) => s.aiTraining);
-    const { showConfirm, showModal } = useModal();
+    const { showConfirm, showModal, hideModal } = useModal();
 
     const [activeTab, setActiveTab] = useState<TabKey>("processed");
     const [showDropdown, setShowDropdown] = useState(false);
@@ -530,23 +536,24 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
     const [processedContents, setProcessedContents] = useState<any[]>([]);
     const [isLoadingContents, setIsLoadingContents] = useState(false);
 
+    const fetchContents = async () => {
+        setIsLoadingContents(true);
+        try {
+            const res = await api.get('/ai-training/contents', { params: { campaign_id: campaign.id } });
+            setProcessedContents(res.data?.data || res.data || []);
+        } catch (error) {
+            console.error("Failed to fetch processed content", error);
+        } finally {
+            setIsLoadingContents(false);
+        }
+    };
+
     useEffect(() => {
         dispatch(fetchKnowledgeSources(campaign.id));
     }, [campaign.id, dispatch]);
 
     useEffect(() => {
         if (activeTab === "processed") {
-            const fetchContents = async () => {
-                setIsLoadingContents(true);
-                try {
-                    const res = await api.get('/ai-training/contents', { params: { campaign_id: campaign.id } });
-                    setProcessedContents(res.data?.data || res.data || []);
-                } catch (error) {
-                    console.error("Failed to fetch processed content", error);
-                } finally {
-                    setIsLoadingContents(false);
-                }
-            };
             fetchContents();
         }
     }, [activeTab, campaign.id]);
@@ -580,6 +587,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                         await api.delete(`/ai-training/contents/${source.id}`);
                         setProcessedContents(prev => prev.filter(c => c.id !== source.id));
                         showModal("success", "Removed", "Processed content removed.");
+                        fetchContents(); // Refresh list
                     } catch (e) {
                         toast.error("Failed to remove content");
                     }
@@ -830,6 +838,20 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 campaignId={campaign.id}
                 open={addModalOpen}
                 onClose={() => setAddModalOpen(false)}
+                onSuccess={(type) => {
+                    dispatch(fetchKnowledgeSources(campaign.id));
+                    if (type === "manual") fetchContents();
+                    setActiveTab(type); // Auto switch to the new source tab
+                    
+                    // Show success modal from the parent to ensure it handles its own state
+                    const cfg = SOURCE_TYPES.find(s => s.type === type);
+                    showModal("success", "Source Added", `${cfg?.label || "Source"} has been added successfully.`);
+                    
+                    // Auto-close success modal after 3 seconds
+                    setTimeout(() => {
+                        hideModal();
+                    }, 3000);
+                }}
             />
         </div>
     );
