@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Search, Trash2, Edit3, X, Sparkles,
   ChevronLeft, Hash, Loader2, Check, RefreshCw,
-  Clock, Smile, Settings, Eye, EyeOff, MessageCircle,
+  Clock, Settings, Eye, EyeOff, MessageCircle,
   LayoutGrid, Image as ImageIcon, Video, Filter, Info, Send, ShieldAlert,
   Instagram
 } from "lucide-react";
@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { TextareaWithEmoji } from "@/components/ui/EmojiPicker";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface ReplyTemplate {
@@ -196,6 +197,8 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   const [pages, setPages] = useState<any[]>([]);
   const [isLoadingDropdown, setIsLoadingDropdown] = useState(false);
   const [isLoadingPages, setIsLoadingPages] = useState(false);
+  const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
+  const addRecent = (e: string) => setRecentEmojis(p => [e, ...p.filter(x => x !== e)].slice(0, 32));
 
   const fetchDropdown = async (pageId?: string) => {
     const targetPageId = pageId || form.page_id;
@@ -423,10 +426,15 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
               <div className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm space-y-8">
                 <Field label="Message for Comment Reply" required icon={MessageCircle}>
                   <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
-                    <textarea rows={5} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                      className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[120px]" placeholder="Type your message here..."
+                    <TextareaWithEmoji
+                      value={form.message}
+                      onChange={v => setForm({ ...form, message: v })}
+                      placeholder="Type your message here..."
+                      rows={5}
+                      minHeight="120px"
+                      recent={recentEmojis}
+                      onAddRecent={addRecent}
                     />
-                    <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                   </div>
                 </Field>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -491,10 +499,15 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
                     <Field label="Message for Comment Reply" required icon={MessageCircle}>
                       <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
-                        <textarea rows={4} value={rule.message} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, message: e.target.value } : r))}
-                          className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
+                        <TextareaWithEmoji
+                          value={rule.message}
+                          onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, message: v } : r))}
+                          placeholder="Type your message here..."
+                          rows={4}
+                          minHeight="100px"
+                          recent={recentEmojis}
+                          onAddRecent={addRecent}
                         />
-                        <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                       </div>
                     </Field>
 
@@ -539,10 +552,15 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                   </div>
                   <Field label="Message for Comment Reply" icon={MessageCircle}>
                     <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
-                      <textarea rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                        className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
+                      <TextareaWithEmoji
+                        value={form.message}
+                        onChange={v => setForm({ ...form, message: v })}
+                        placeholder="Type your message here..."
+                        rows={4}
+                        minHeight="100px"
+                        recent={recentEmojis}
+                        onAddRecent={addRecent}
                       />
-                      <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                     </div>
                   </Field>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

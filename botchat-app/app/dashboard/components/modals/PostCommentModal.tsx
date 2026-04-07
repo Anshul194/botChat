@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { 
-    X, Send, Smile, User, Clock, 
+    X, Send, User, Clock, 
     RefreshCw, MessageSquare, 
-    MoreHorizontal, Search, Trash2,
+    MoreHorizontal, Trash2,
     Heart, MessageCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,6 +12,7 @@ import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { InlineEmojiButton } from "@/components/ui/EmojiPicker";
 
 interface Comment {
     id: string;
@@ -47,6 +48,11 @@ export function PostCommentModal({
     const [scheduleTime, setScheduleTime] = useState("12:00");
     const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
+    const addRecent = useCallback(
+        (e: string) => setRecentEmojis(p => [e, ...p.filter(x => x !== e)].slice(0, 32)),
+        []
+    );
 
     useEffect(() => {
         if (isOpen && postId) {
@@ -292,12 +298,12 @@ export function PostCommentModal({
                                 className="w-full pl-6 pr-14 py-4 rounded-[24px] bg-slate-50 dark:bg-neutral-900 border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none shadow-sm focus:shadow-xl focus:shadow-primary/5 transition-all text-[14px] font-bold resize-none min-h-[60px] placeholder:text-neutral-300 tracking-tight"
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                                <button 
-                                    className="p-2 rounded-xl text-neutral-300 hover:text-primary transition-all active:scale-90"
-                                    title="Add emoji"
-                                >
-                                    <Smile className="w-5 h-5" />
-                                </button>
+                                <InlineEmojiButton
+                                    value={message}
+                                    onChange={setMessage}
+                                    recent={recentEmojis}
+                                    onAddRecent={addRecent}
+                                />
                             </div>
                         </div>
 

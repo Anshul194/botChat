@@ -13,8 +13,9 @@ import {
   ExternalLink, Table, CheckCircle2, Search, Wand2, Plus, Trash2,
   Copy, MoreVertical, GripHorizontal, ChevronRight, Share,
   Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play, SquareStack,
-  Sparkle, Sparkles, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload
+  Sparkle, Sparkles, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload, Smile
 } from "lucide-react";
+import { EmojiPicker } from "@/components/ui/EmojiPicker";
 
 /* ============================================================
    DESIGN SYSTEM — use site CSS vars so preview matches site theme
@@ -213,6 +214,9 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, 
   const set = patch => update({ ...step, config: { ...c, ...patch } });
   const [saving, setSaving] = useState(false);
   const textRef = useRef(null);
+  const emojiButtonRef = useRef(null);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [recentEmojis, setRecentEmojis] = useState([]);
   const DS = useDS();
 
   const buttons = c.buttons || [];
@@ -224,6 +228,41 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, 
     const val = (c.text || "");
     set({ text: val.slice(0, s) + v + val.slice(e) });
     setTimeout(() => el.setSelectionRange(s + v.length, s + v.length), 0);
+  };
+
+  const insertEmoji = emoji => {
+    setRecentEmojis(p => [emoji, ...p.filter(x => x !== emoji)].slice(0, 32));
+    const el = textRef.current;
+    if (!el) { set({ text: (c.text || "") + emoji }); setShowEmoji(false); return; }
+    const s = el.selectionStart, e = el.selectionEnd;
+    const val = (c.text || "");
+    set({ text: val.slice(0, s) + emoji + val.slice(e) });
+    setTimeout(() => { el.focus(); el.setSelectionRange(s + emoji.length, s + emoji.length); }, 0);
+    setShowEmoji(false);
+  };
+
+  const getEmojiPickerStyle = () => {
+    if (!emojiButtonRef.current) return { position: "fixed", bottom: 100, right: 20 };
+    const rect = emojiButtonRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    
+    const maxRight = window.innerWidth - rect.right;
+    const rightPos = maxRight < 0 ? 16 : maxRight;
+
+    if (spaceBelow < 340 && spaceAbove > spaceBelow) {
+      return { position: "fixed", bottom: window.innerHeight - rect.top + 8, right: rightPos };
+    }
+    return { position: "fixed", top: rect.bottom + 8, right: rightPos };
+  };
+
+  const getEmojiPickerHeightConstraint = (): React.CSSProperties => {
+    if (!emojiButtonRef.current) return {};
+    const rect = emojiButtonRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const openAbove = spaceBelow < 340 && spaceAbove > spaceBelow;
+    return { maxHeight: Math.max(200, (openAbove ? spaceAbove : spaceBelow) - (openAbove ? 34 : 24)) };
   };
 
   const addButton = () => {
@@ -252,11 +291,41 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, 
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       <div>
         <Label>Message text</Label>
-        <textarea ref={textRef} value={c.text || ""} onChange={e => set({ text: e.target.value })}
-          placeholder="Hey {first_name}! 👋 ..." rows={4}
-          style={{ width: "100%", padding: "9px 12px", borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, fontSize: 13, fontFamily: "inherit", background: DS.bg, color: DS.ink, outline: "none", boxSizing: "border-box", resize: "vertical" }}
-        />
+        <div style={{ position: "relative" }}>
+          <textarea ref={textRef} value={c.text || ""} onChange={e => set({ text: e.target.value })}
+            placeholder="Hey {first_name}! 👋 ..." rows={4}
+            style={{ width: "100%", padding: "9px 12px", paddingRight: 36, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, fontSize: 13, fontFamily: "inherit", background: DS.bg, color: DS.ink, outline: "none", boxSizing: "border-box", resize: "vertical" }}
+          />
+          <button
+            ref={emojiButtonRef}
+            type="button"
+            onClick={() => setShowEmoji(v => !v)}
+            style={{
+              position: "absolute", bottom: 8, right: 8,
+              width: 26, height: 26, borderRadius: 8, border: "none",
+              background: showEmoji ? DS.accentSoft : "transparent",
+              color: showEmoji ? DS.accent : DS.ink3,
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "all 0.15s",
+            }}
+            title="Add emoji"
+          >
+            <Smile size={15} />
+          </button>
+        </div>
         <VarPills onInsert={insertVar} />
+
+        {/* Emoji picker portal */}
+        <AnimatePresence>
+          {showEmoji && (
+            <div style={{ position: "fixed", inset: 0, zIndex: 9990, pointerEvents: "none" }}>
+              <div style={{ position: "absolute", inset: 0, pointerEvents: "auto" }} onClick={() => setShowEmoji(false)} />
+              <div style={{ pointerEvents: "auto", ...getEmojiPickerStyle() }}>
+                <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} recent={recentEmojis} style={getEmojiPickerHeightConstraint()} />
+              </div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div>
@@ -2689,12 +2758,16 @@ function FlowBuilder() {
           background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(16px);
           box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.15), inset 0 0 0 1.5px rgba(255, 255, 255, 0.2);
-          display: flex;
+          display: none;
           align-items: center;
           gap: 12px;
           border: 3px solid #fff;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @media (max-width: 1024px) {
+          .phone-fab { display: flex; }
         }
 
         .phone-fab:hover { transform: translateY(-10px) scale(1.08); box-shadow: 0 20px 50px -15px rgba(255, 0, 128, 0.3); }
@@ -2723,7 +2796,7 @@ function FlowBuilder() {
 
         {/* ── MOBILE PREVIEW FAB (3D 5 Illustration) ────────────────── */}
         <motion.button
-          className="phone-fab md:hidden"
+          className="phone-fab"
           animate={{ y: [0, -12, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           onClick={() => {

@@ -15,6 +15,7 @@ import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { TextareaWithEmoji } from "@/components/ui/EmojiPicker";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ReplyTemplate {
@@ -135,6 +136,8 @@ export function PostAutoReplyModal({
 
     const [filterRules, setFilterRules] = useState<FilterRule[]>([]);
     const [status, setStatus] = useState<"active" | "paused">("active");
+    const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
+    const addRecent = (e: string) => setRecentEmojis(p => [e, ...p.filter(x => x !== e)].slice(0, 32));
 
     useEffect(() => {
         if (isOpen) {
@@ -646,11 +649,15 @@ export function PostAutoReplyModal({
                                                 <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm space-y-8">
                                                     <Field label="Message for Comment Reply" required icon={MessageCircle}>
                                                         <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 bg-white">
-                                                            <textarea rows={5} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                                                                className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[120px]"
+                                                            <TextareaWithEmoji
+                                                                value={form.message}
+                                                                onChange={v => setForm({ ...form, message: v })}
                                                                 placeholder="Type your message here..."
+                                                                rows={5}
+                                                                minHeight="120px"
+                                                                recent={recentEmojis}
+                                                                onAddRecent={addRecent}
                                                             />
-                                                            <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                                                         </div>
                                                     </Field>
                                                     <div className="space-y-5">
@@ -707,11 +714,15 @@ export function PostAutoReplyModal({
                                                                 </Field>
                                                                 <Field label="Message for Comment Reply" required icon={MessageCircle}>
                                                                     <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 bg-white">
-                                                                        <textarea rows={4} value={rule.message} onChange={e => updateRule(rule.id!!, { message: e.target.value })}
-                                                                            className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]"
+                                                                        <TextareaWithEmoji
+                                                                            value={rule.message}
+                                                                            onChange={v => updateRule(rule.id!!, { message: v })}
                                                                             placeholder="Type your message here..."
+                                                                            rows={4}
+                                                                            minHeight="100px"
+                                                                            recent={recentEmojis}
+                                                                            onAddRecent={addRecent}
                                                                         />
-                                                                        <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                                                                     </div>
                                                                 </Field>
                                                                 <div className="space-y-4">
@@ -746,11 +757,15 @@ export function PostAutoReplyModal({
                                                         </div>
                                                         <Field label="Message for Comment Reply" icon={MessageCircle}>
                                                             <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white shadow-sm">
-                                                                <textarea rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                                                                    className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]"
+                                                                <TextareaWithEmoji
+                                                                    value={form.message}
+                                                                    onChange={v => setForm({ ...form, message: v })}
                                                                     placeholder="Type default response here..."
+                                                                    rows={4}
+                                                                    minHeight="100px"
+                                                                    recent={recentEmojis}
+                                                                    onAddRecent={addRecent}
                                                                 />
-                                                                <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
                                                             </div>
                                                         </Field>
                                                         <div className="space-y-4">

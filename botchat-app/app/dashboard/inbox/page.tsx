@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
     Search, Instagram, Facebook, Send, Bot, MoreVertical,
-    Tag, Phone, Clock, User, Zap, ChevronRight, Smile, ArrowLeft,
+    Tag, Phone, Clock, User, Zap, ChevronRight, ArrowLeft,
 } from "lucide-react";
+import { InlineEmojiButton } from "@/components/ui/EmojiPicker";
 
 const convs = [
     { id: 1, name: "Sarah Johnson", handle: "@sarah_j", platform: "instagram" as const, msg: "Do you ship internationally?", time: "2m", unread: 2, autoReply: true },
@@ -35,8 +36,12 @@ export default function InboxPage() {
     const [active, setActive] = useState(convs[0]);
     const [input, setInput] = useState("");
     const [filter, setFilter] = useState<"all" | "instagram" | "facebook">("all");
-    // Mobile: "list" shows conversation list, "chat" shows chat panel
     const [mobileView, setMobileView] = useState<"list" | "chat">("list");
+    const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
+    const addRecent = useCallback(
+        (e: string) => setRecentEmojis((p) => [e, ...p.filter((x) => x !== e)].slice(0, 32)),
+        []
+    );
 
     const msgs = msgMap[active.id] || [{ text: active.msg, from: "user" as const, time: "now" }];
     const filtered = convs.filter((c) => filter === "all" || c.platform === filter);
@@ -218,7 +223,12 @@ export default function InboxPage() {
                 {/* Input */}
                 <div className="px-4 pb-4">
                     <div className="flex items-center gap-2 rounded-2xl px-4 py-3" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
-                        <button className="p-1.5 hover:opacity-70"><Smile className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} /></button>
+                        <InlineEmojiButton
+                            value={input}
+                            onChange={setInput}
+                            recent={recentEmojis}
+                            onAddRecent={addRecent}
+                        />
                         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..."
                             className="flex-1 text-sm outline-none bg-transparent" style={{ color: "var(--foreground)" }}
                             onKeyDown={(e) => { if (e.key === "Enter") setInput(""); }}
