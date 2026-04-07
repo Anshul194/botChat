@@ -172,14 +172,13 @@ export default function InstagramPage() {
     ];
 
     const groupedAccounts = accounts.reduce((acc, obj) => {
-        const fbGroup = obj.page?.account;
-        if (!fbGroup) return acc;
+        const fbGroup = obj.page?.account || { id: 'unknown', name: 'Unknown Account', avatar: null };
         if (!acc[fbGroup.id]) {
             acc[fbGroup.id] = { ...fbGroup, instagrams: [] };
         }
         acc[fbGroup.id].instagrams.push(obj);
         return acc;
-    }, {} as Record<number, any>);
+    }, {} as Record<string | number, any>);
 
     const groupedArray = Object.values(groupedAccounts);
 
@@ -251,8 +250,8 @@ export default function InstagramPage() {
                                     <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest opacity-60">Neural Engine Context: @{selectedAccountForSettings.name}</p>
                                 </div>
                             </div>
-                            
-                            <AiAgentSettingsPanel 
+
+                            <AiAgentSettingsPanel
                                 platform="instagram"
                                 accountId={selectedAccountForSettings.id}
                                 accountName={selectedAccountForSettings.name}
@@ -320,114 +319,116 @@ export default function InstagramPage() {
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">{group.name}</h3>
-                                                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 text-xs font-medium">Verified</span>
+                                                            {group.id !== 'unknown' && <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 text-xs font-medium">Verified</span>}
                                                         </div>
                                                         <p className="text-sm text-neutral-500">Facebook Authenticator · {group.instagrams.length} Profiles</p>
                                                     </div>
                                                 </div>
-                                                <button
-                                                    onClick={() =>
-                                                        showConfirm({
-                                                            title: "Confirm Master Disconnect",
-                                                            message: `Are you sure you want to disconnect the master Facebook account "${group.name}" and all linked Instagram pages? This action will modify your automation state.`,
-                                                            confirmText: "Disconnect All",
-                                                            type: "danger",
-                                                            onConfirm: () => handleAction("disconnectAll", group.id)
-                                                        })
-                                                    }
-                                                    className="p-2.5 rounded-lg text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
-                                                    title="Disconnect Master Account"
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
+                                                {group.id !== 'unknown' && (
+                                                    <button
+                                                        onClick={() =>
+                                                            showConfirm({
+                                                                title: "Confirm Master Disconnect",
+                                                                message: `Are you sure you want to disconnect the master Facebook account "${group.name}" and all linked Instagram pages? This action will modify your automation state.`,
+                                                                confirmText: "Disconnect All",
+                                                                type: "danger",
+                                                                onConfirm: () => handleAction("disconnectAll", group.id)
+                                                            })
+                                                        }
+                                                        className="p-2.5 rounded-lg text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                                                        title="Disconnect Master Account"
+                                                    >
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </button>
+                                                )}
                                             </div>
 
                                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pl-4 md:pl-8 border-l-2 ml-4 dark:border-neutral-800 pb-4">
                                                 {group.instagrams.map((acc: any) => (
-                                            <div
-                                                key={acc.id}
-                                                className="group relative rounded-2xl border bg-white dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md cursor-pointer"
-                                                onClick={() => {
-                                                    setSelectedAccountForSettings({ id: acc.id, name: acc.username });
-                                                    setIsSettingsOpen(true);
-                                                }}
-                                            >
-                                                <div className="flex items-start gap-4 mb-5">
-                                                    <div className="relative shrink-0">
-                                                        <div className="h-14 w-14 overflow-hidden rounded-xl border dark:border-neutral-700 bg-gray-100 flex items-center justify-center p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600">
-                                                            <div className="h-full w-full bg-white dark:bg-neutral-900 rounded-[10px] overflow-hidden flex items-center justify-center">
-                                                                {acc.profile_picture_url ? (
-                                                                    <img
-                                                                        src={acc.profile_picture_url}
-                                                                        alt={acc.username}
-                                                                        className="h-full w-full object-cover"
-                                                                    />
-                                                                ) : (
-                                                                    <span className="text-xl font-bold text-pink-500">{acc.username[0]}</span>
+                                                    <div
+                                                        key={acc.id}
+                                                        className="group relative rounded-2xl border bg-white dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedAccountForSettings({ id: acc.id, name: acc.username });
+                                                            setIsSettingsOpen(true);
+                                                        }}
+                                                    >
+                                                        <div className="flex items-start gap-4 mb-5">
+                                                            <div className="relative shrink-0">
+                                                                <div className="h-14 w-14 overflow-hidden rounded-xl border dark:border-neutral-700 bg-gray-100 flex items-center justify-center p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600">
+                                                                    <div className="h-full w-full bg-white dark:bg-neutral-900 rounded-[10px] overflow-hidden flex items-center justify-center">
+                                                                        {acc.profile_picture_url ? (
+                                                                            <img
+                                                                                src={acc.profile_picture_url}
+                                                                                alt={acc.username}
+                                                                                className="h-full w-full object-cover"
+                                                                            />
+                                                                        ) : (
+                                                                            <span className="text-xl font-bold text-pink-500">{acc.username[0]}</span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="space-y-1 flex-1 min-w-0 pr-6">
+                                                                <h3 className="text-base font-semibold text-neutral-900 dark:text-white truncate">
+                                                                    {acc.name || acc.username}
+                                                                </h3>
+                                                                <p className="text-xs text-neutral-500 font-medium">
+                                                                    @{acc.username}
+                                                                </p>
+                                                                {acc.page && (
+                                                                    <div className="flex items-center gap-1 text-[10px] text-neutral-400 mt-1">
+                                                                        <Facebook className="w-3 h-3 text-blue-500" />
+                                                                        via {acc.page.page_name}
+                                                                    </div>
                                                                 )}
                                                             </div>
+
+                                                            {acc.is_active && (
+                                                                <div className="absolute top-5 right-5 h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm ring-4 ring-emerald-50 dark:ring-emerald-900/30" title="Active Automation" />
+                                                            )}
                                                         </div>
-                                                    </div>
 
-                                                    <div className="space-y-1 flex-1 min-w-0 pr-6">
-                                                        <h3 className="text-base font-semibold text-neutral-900 dark:text-white truncate">
-                                                            {acc.name || acc.username}
-                                                        </h3>
-                                                        <p className="text-xs text-neutral-500 font-medium">
-                                                            @{acc.username}
-                                                        </p>
-                                                        {acc.page && (
-                                                            <div className="flex items-center gap-1 text-[10px] text-neutral-400 mt-1">
-                                                                <Facebook className="w-3 h-3 text-blue-500" />
-                                                                via {acc.page.page_name}
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                        <div className="flex flex-wrap items-center gap-3">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    showConfirm({
+                                                                        title: acc.is_active ? "Disable Automations?" : "Enable Modules?",
+                                                                        message: `Are you sure you want to ${acc.is_active ? "disable automations" : "enable modules"} for @${acc.username}?`,
+                                                                        confirmText: acc.is_active ? "Disable" : "Enable",
+                                                                        type: acc.is_active ? "warning" : "danger",
+                                                                        onConfirm: () => handleAction(acc.is_active ? "disable" : "enable", acc.id)
+                                                                    });
+                                                                }}
+                                                                className={cn(
+                                                                    "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-sm font-medium transition-colors",
+                                                                    acc.is_active
+                                                                        ? "bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-500 dark:hover:bg-amber-500/20"
+                                                                        : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
+                                                                )}
+                                                            >
+                                                                {acc.is_active ? "Disable automations" : "Enable modules"}
+                                                            </button>
 
-                                                    {acc.is_active && (
-                                                        <div className="absolute top-5 right-5 h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm ring-4 ring-emerald-50 dark:ring-emerald-900/30" title="Active Automation" />
-                                                    )}
-                                                </div>
-
-                                                <div className="flex flex-wrap items-center gap-3">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            showConfirm({
-                                                                title: acc.is_active ? "Disable Automations?" : "Enable Modules?",
-                                                                message: `Are you sure you want to ${acc.is_active ? "disable automations" : "enable modules"} for @${acc.username}?`,
-                                                                confirmText: acc.is_active ? "Disable" : "Enable",
-                                                                type: acc.is_active ? "warning" : "danger",
-                                                                onConfirm: () => handleAction(acc.is_active ? "disable" : "enable", acc.id)
-                                                            });
-                                                        }}
-                                                        className={cn(
-                                                            "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-sm font-medium transition-colors",
-                                                            acc.is_active
-                                                                ? "bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-500 dark:hover:bg-amber-500/20"
-                                                                : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
-                                                        )}
-                                                    >
-                                                        {acc.is_active ? "Disable automations" : "Enable modules"}
-                                                    </button>
-
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            showConfirm({
-                                                                title: "Clean Cache?",
-                                                                message: `Are you sure you want to clean media data for @${acc.username}? This will refresh assets.`,
-                                                                confirmText: "Clean",
-                                                                type: "warning",
-                                                                onConfirm: () => handleAction("clean", acc.id)
-                                                            });
-                                                        }}
-                                                        title="Clean Data"
-                                                        className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-pink-600 hover:bg-pink-50 dark:bg-gray-800 dark:hover:bg-pink-900/40 transition-colors"
-                                                    >
-                                                        <Eraser className="h-4 w-4" />
-                                                    </button>
-
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    showConfirm({
+                                                                        title: "Clean Cache?",
+                                                                        message: `Are you sure you want to clean media data for @${acc.username}? This will refresh assets.`,
+                                                                        confirmText: "Clean",
+                                                                        type: "warning",
+                                                                        onConfirm: () => handleAction("clean", acc.id)
+                                                                    });
+                                                                }}
+                                                                title="Clean Data"
+                                                                className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-pink-600 hover:bg-pink-50 dark:bg-gray-800 dark:hover:bg-pink-900/40 transition-colors"
+                                                            >
+                                                                <Eraser className="h-4 w-4" />
+                                                            </button>
+                                                            {/* 
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -438,28 +439,29 @@ export default function InstagramPage() {
                                                         className="p-2 rounded-xl bg-pink-50 text-pink-600 hover:bg-pink-100 dark:bg-pink-500/10 dark:text-pink-500 dark:hover:bg-pink-500/20 transition-colors"
                                                     >
                                                         <BrainCircuit className="h-4 w-4" />
-                                                    </button>
+                                                    </button> */}
 
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            showConfirm({
-                                                                title: "Confirm Disconnect",
-                                                                message: `Are you sure you want to disconnect ${acc.username}? This action will modify your automation state.`,
-                                                                confirmText: "Disconnect",
-                                                                type: "danger",
-                                                                onConfirm: () => handleAction("disconnect", acc.id)
-                                                            });
-                                                        }}
-                                                        title="Disconnect Account"
-                                                        className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-900/40 transition-colors"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </button>
-                                                </div>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    showConfirm({
+                                                                        title: "Confirm Disconnect",
+                                                                        message: `Are you sure you want to disconnect ${acc.username}? This action will modify your automation state.`,
+                                                                        confirmText: "Disconnect",
+                                                                        type: "danger",
+                                                                        onConfirm: () => handleAction("disconnect", acc.id)
+                                                                    });
+                                                                }}
+                                                                title="Disconnect Account"
+                                                                className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-900/40 transition-colors"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            ))}
-                                        </div>                                        </div>
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
