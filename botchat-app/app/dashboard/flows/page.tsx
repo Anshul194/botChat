@@ -1459,6 +1459,15 @@ function MediaFields({ step, update, onSaveStep }) {
             <Upload size={16} /> Upload
           </button>
         </div>
+        {step.type === 'video' && c.url && (c.url.includes("youtube.com") || c.url.includes("youtu.be")) && (
+          <div style={{ marginTop: 12, borderRadius: DS.radiusSm, overflow: "hidden", border: `1.5px solid ${DS.border}`, background: "#000" }}>
+            <iframe 
+              src={`https://www.youtube.com/embed/${c.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)?.[1] || ''}`}
+              style={{ width: "100%", aspectRatio: "16/9", border: "none", display: "block" }}
+              allowFullScreen 
+            />
+          </div>
+        )}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", background: DS.bg, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}` }}>
@@ -2079,7 +2088,17 @@ function PhonePreview({ steps, platform }) {
                         overflow: "hidden"
                       }}>
                         {m.image && <img src={ensureUrl(m.image)} style={{ width: "100%", borderRadius: 14, display: "block" }} alt="" />}
-                        {m.video && <video src={ensureUrl(m.video)} controls style={{ width: "100%", borderRadius: 14, display: "block", background: "#000", aspectRatio: "16/9" }} />}
+                        {m.video && (
+                          (m.video.includes("youtube.com") || m.video.includes("youtu.be")) ? (
+                            <iframe 
+                              src={`https://www.youtube.com/embed/${m.video.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)?.[1] || ''}`}
+                              style={{ width: "100%", borderRadius: 14, display: "block", aspectRatio: "16/9", border: "none", background: "#000" }}
+                              allowFullScreen
+                            />
+                          ) : (
+                            <video src={ensureUrl(m.video)} controls style={{ width: "100%", borderRadius: 14, display: "block", background: "#000", aspectRatio: "16/9" }} />
+                          )
+                        )}
                         {m.audio && (
                           <div style={{ padding: "4px 8px" }}>
                             <div style={{ fontSize: 11, marginBottom: 4, fontWeight: 600, color: m.type === "user" ? "#fff" : "#65676B" }}>Audio Message</div>
