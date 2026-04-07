@@ -82,15 +82,15 @@ const ACTIONS = [
   { id: "carousel", icon: Layers, label: "Carousel", desc: "Horizontal scrolling cards" },
   { id: "user_input", icon: Keyboard, label: "User Input", desc: "Ask question and save response" },
   { id: "condition", icon: GitBranch, label: "Condition", desc: "Logic branching" },
-  { id: "trigger_action", icon: Zap, label: "Trigger Action", desc: "Fire a postback payload" },
+  // { id: "trigger_action", icon: Zap, label: "Trigger Action", desc: "Fire a postback payload" },
 ];
 
 const VARS = [
-  { v: "{first_name}", label: "First Name" },
-  { v: "{last_name}", label: "Last Name" },
-  { v: "{username}", label: "@Username" },
-  { v: "{post_url}", label: "Post URL" },
-  { v: "{story_url}", label: "Story URL" },
+  { v: "{{first_name}}", label: "First Name" },
+  { v: "{{last_name}}", label: "Last Name" },
+  // { v: "{username}", label: "@Username" },
+  // { v: "{post_url}", label: "Post URL" },
+  // { v: "{story_url}", label: "Story URL" },
 ];
 
 /* ============================================================
@@ -246,7 +246,7 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, 
     const rect = emojiButtonRef.current.getBoundingClientRect();
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
-    
+
     const maxRight = window.innerWidth - rect.right;
     const rightPos = maxRight < 0 ? 16 : maxRight;
 
