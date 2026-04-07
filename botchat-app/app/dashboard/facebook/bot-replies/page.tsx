@@ -514,29 +514,29 @@ export default function BotRepliesPage() {
                                                 key={reply.id}
                                                 className="group bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-purple-200 dark:hover:border-purple-900/50 hover:bg-purple-50/30 dark:hover:bg-purple-900/10"
                                             >
-                                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0 w-full">
                                                     <div className={cn(
-                                                        "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center",
+                                                        "w-10 h-10 mt-0.5 sm:mt-0 rounded-xl flex-shrink-0 flex items-center justify-center",
                                                         reply.status === 'published' ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20" : "bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
                                                     )}>
                                                         <MessageSquare className="w-4 h-4" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-[15px] font-bold text-neutral-900 dark:text-white truncate">{reply.name}</h4>
-                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                        <h4 className="text-[14px] sm:text-[15px] font-bold text-neutral-900 dark:text-white truncate">{reply.name}</h4>
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1">
                                                             <span className={cn(
-                                                                "text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded",
+                                                                "text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded",
                                                                 reply.status === 'published' ? "bg-emerald-100/50 text-emerald-700 dark:text-emerald-400" : "bg-neutral-200/50 text-neutral-600 dark:text-neutral-400"
                                                             )}>
                                                                 {reply.status}
                                                             </span>
-                                                            <span className="text-xs text-neutral-500 font-medium whitespace-nowrap">
+                                                            <span className="text-[10px] sm:text-xs text-neutral-500 font-medium whitespace-nowrap">
                                                                 Type: {reply.trigger_type}
                                                             </span>
                                                             {selectedPageId === "all" && (
                                                                 <>
                                                                     <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
-                                                                    <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-500/10 px-2 rounded-full truncate max-w-[120px] sm:max-w-none">
+                                                                    <span className="text-[10px] sm:text-[11px] text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-500/10 px-2 rounded-full truncate max-w-[120px] sm:max-w-none w-max">
                                                                         {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown"}
                                                                     </span>
                                                                 </>
@@ -544,7 +544,7 @@ export default function BotRepliesPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 grid grid-cols-4 sm:flex">
                                                     <button
                                                         onClick={() => window.location.href = `/dashboard/flows?id=${reply.id}&platform=facebook`}
                                                         className="flex-1 sm:flex-none py-2 px-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow-sm active:scale-95 transition-all text-center whitespace-nowrap"
@@ -578,11 +578,11 @@ export default function BotRepliesPage() {
                                     </div>
                                 ) : (
                                     <div className="py-16 text-center flex flex-col items-center">
-                                        <div className="w-16 h-16 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center mb-4">
+                                        <div className="w-16 h-16 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center mb-4 mx-auto">
                                             <MessageSquare className="w-8 h-8 text-purple-400" />
                                         </div>
                                         <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
-                                        <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Facebook DMs and comments.</p>
+                                        <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium text-center">Create automated responses for your Facebook DMs and comments.</p>
                                         <button
                                             onClick={() => setShowCreateModal(true)}
                                             className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
@@ -691,8 +691,8 @@ export default function BotRepliesPage() {
                                 {showActionModal && (
                                     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
                                         <div className="absolute inset-0 bg-white/60 dark:bg-neutral-950/60 backdrop-blur-md" onClick={() => setShowActionModal(false)} />
-                                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-[40px] p-10 w-full max-w-xl shadow-2xl">
-                                            <div className="mb-8">
+                                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-[28px] sm:rounded-[40px] p-5 sm:p-10 w-full max-w-xl shadow-2xl">
+                                            <div className="mb-6 sm:mb-8">
                                                 <div className="text-[10px] font-black uppercase tracking-[0.25em] text-purple-600 mb-2">Configure Action</div>
                                                 <h3 className="text-3xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">Select Target Flow</h3>
                                                 <p className="text-xs text-neutral-400 mt-2 font-medium">Choose a custom automated response to trigger for this system event.</p>
