@@ -19,15 +19,15 @@ import StepsSection from "./components/StepsSection";
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen w-full bg-white selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
+    <main className="min-h-screen w-full bg-[#0c0c0f] selection:bg-[#f472b6]/20 selection:text-[#f472b6]">
       <Navbar />
 
       {/* HERO: The main entry point */}
       <Hero />
 
 
-      {/* SUBSEQUENT SECTIONS: White backgrounds */}
-      <div className="relative z-10 bg-white">
+      {/* SUBSEQUENT SECTIONS */}
+      <div className="relative z-10 bg-[#0c0c0f]">
         {/* Social Proof handled inside Hero/CreatorProof */}
 
         <FeaturesOverview />
