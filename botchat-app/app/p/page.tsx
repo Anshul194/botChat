@@ -7,6 +7,7 @@ import {
     SmartphoneNfc, Layers, Image as ImageIcon, Hexagon, Share2, Check,
 } from "lucide-react";
 import { resolveApiBaseUrl, resolveXHost } from "@/lib/config";
+import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "@/app/dashboard/instagram/bio-link/TemplateSystem";
 
 // ─────────────────────────────────────────────────────────
 // Types
@@ -334,49 +335,53 @@ function PublicBioContent() {
     );
 
     const currentTab = profile.tabs.find(t => t.id === activeTab) || profile.tabs[0];
+    const theme = getTheme(profile.theme);
 
     return (
         <>
             <title>{profile.title || username} · Bio Link</title>
-            <div className="min-h-screen bg-gradient-to-b from-[#fce7f3] dark:from-[#140b10] via-[#fff0f8] dark:via-[#090507] to-white dark:to-[#000000]">
+            <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
                 {/* ── Hero Header ──────────────────────────────────── */}
                 <div className="relative pt-16 pb-10 px-6 flex flex-col items-center text-center"
-                    style={{ background: "linear-gradient(160deg, #db2777 0%, #f472b6 60%, #fce7f3 100%)" }}>
+                    style={theme.bgStyle}>
 
-                    <div className="absolute top-0 left-0 w-72 h-72 rounded-full bg-white/10 -translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
-                    <div className="absolute bottom-0 right-0 w-56 h-56 rounded-full bg-[#be185d]/20 translate-x-1/3 translate-y-1/3 blur-2xl pointer-events-none" />
+                    <ThemeAnimationStyles />
+                    <ThemeEffectsLayer theme={theme} />
 
                     <div className="absolute top-4 right-4 z-10">
                         <ShareButton username={username} />
                     </div>
 
-                    <div className="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-pink-200 mb-4 flex-shrink-0">
+                    <div className="w-24 h-24 rounded-full shadow-xl overflow-hidden mb-4 flex-shrink-0"
+                        style={{ border: `3px solid ${theme.textColor}40`, backgroundColor: `${theme.textColor}10` }}>
                         {profile.avatar
                             ? <img src={profile.avatar} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                            : <div className="w-full h-full flex items-center justify-center text-white font-black text-3xl">
+                            : <div className="w-full h-full flex items-center justify-center font-black text-3xl" style={{ color: theme.textColor }}>
                                 {(profile.title || username).charAt(0).toUpperCase()}
                             </div>
                         }
                     </div>
 
-                    <h1 className="text-[26px] font-black text-white leading-tight drop-shadow-sm">{profile.title || username}</h1>
-                    <p className="text-white/70 text-[13px] font-semibold mt-1 mb-3">@{username}</p>
+                    <h1 className="text-[26px] font-black leading-tight drop-shadow-sm" style={{ color: theme.textColor }}>{profile.title || username}</h1>
+                    <p className="text-[13px] font-semibold mt-1 mb-3" style={{ color: `${theme.textColor}B0` }}>@{username}</p>
 
                     {profile.bio && (
-                        <p className="text-white/90 text-[14px] font-medium max-w-[300px] leading-relaxed mb-4">{profile.bio}</p>
+                        <p className="text-[14px] font-medium max-w-[300px] leading-relaxed mb-4" style={{ color: `${theme.textColor}E5` }}>{profile.bio}</p>
                     )}
 
                     {(profile.email_link || profile.contact_link) && (
                         <div className="flex gap-3 mt-2">
                             {profile.email_link && (
                                 <a href={`mailto:${profile.email_link}`}
-                                    className="h-11 px-6 rounded-full bg-white dark:bg-[#12151E] text-[#db2777] font-bold text-[13px] flex items-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:scale-95">
+                                    className="h-11 px-6 rounded-full font-bold text-[13px] flex items-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:scale-95"
+                                    style={{ backgroundColor: '#ffffff', color: theme.accent }}>
                                     <Mail size={15} /> Email
                                 </a>
                             )}
                             {profile.contact_link && (
                                 <a href={`tel:${profile.contact_link}`}
-                                    className="h-11 px-6 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white font-bold text-[13px] flex items-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:scale-95">
+                                    className="h-11 px-6 rounded-full backdrop-blur-md font-bold text-[13px] flex items-center gap-2 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:scale-95"
+                                    style={{ backgroundColor: `${theme.textColor}20`, border: `1px solid ${theme.textColor}40`, color: theme.textColor }}>
                                     <Phone size={15} /> Contact
                                 </a>
                             )}
@@ -386,16 +391,17 @@ function PublicBioContent() {
 
                 {/* ── Tab Bar ──────────────────────────────────────── */}
                 {profile.tabs.length > 1 && (
-                    <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-pink-100 px-4 py-3">
+                    <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3">
                         <div className="flex gap-2 overflow-x-auto no-scrollbar justify-start max-w-lg mx-auto">
                             {profile.tabs.map(tab => (
                                 <button key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`flex-shrink-0 px-5 py-2 rounded-full text-[12px] font-bold transition-all whitespace-nowrap ${
                                         activeTab === tab.id
-                                            ? "bg-[#db2777] text-white shadow-md shadow-[#db2777]/20"
+                                            ? "text-white shadow-md"
                                             : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-200"
-                                    }`}>
+                                    }`}
+                                    style={activeTab === tab.id ? { backgroundColor: theme.accent, boxShadow: `0 4px 12px ${theme.accent}30` } : {}}>
                                     {tab.title}
                                 </button>
                             ))}
