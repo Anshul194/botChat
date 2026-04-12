@@ -11,6 +11,7 @@ import {
     Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
@@ -459,6 +460,7 @@ const SectionCard = ({ section, sidx, sectionsLength, isArranging, onReorder, on
 
 
 export default function BioLinkBuilder() {
+    const searchParams = useSearchParams();
     const { showModal } = useModal();
     const [isLoading, setIsLoading] = useState(true);
     const [accounts, setAccounts] = useState<any[]>([]);
@@ -492,6 +494,7 @@ export default function BioLinkBuilder() {
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
     const flatBlocks = (tabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
     const visibleBlocks = flatBlocks;
+    const requestedPageId = searchParams.get("page");
     const advancedFlowTips = [
         "1. Turn features ON that you want visitors to use.",
         "2. Fill only the fields needed for your current campaign.",
@@ -516,12 +519,24 @@ export default function BioLinkBuilder() {
                 const res = await api.get("/social/instagram-connect");
                 const accs = res.data?.data?.instagram_accounts || [];
                 setAccounts(accs);
-                if (accs.length > 0) setSelectedPageId(accs[0].id.toString());
+                if (accs.length > 0) {
+                    const preferredId = requestedPageId && accs.some((a: any) => String(a.id) === requestedPageId)
+                        ? requestedPageId
+                        : accs[0].id.toString();
+                    setSelectedPageId(preferredId);
+                }
             } catch { }
         };
         fetchAccounts();
         setBlockCategories(PRESET_BLOCK_CATEGORIES);
-    }, []);
+    }, [requestedPageId]);
+
+    useEffect(() => {
+        if (!requestedPageId || !accounts.length) return;
+        if (accounts.some((a: any) => String(a.id) === requestedPageId)) {
+            setSelectedPageId(requestedPageId);
+        }
+    }, [accounts, requestedPageId]);
 
     const fetchBuilderData = useCallback(async () => {
         if (!selectedPageId) return;
@@ -539,7 +554,11 @@ export default function BioLinkBuilder() {
                 setTabs((prevTabs) => mergeTabsPreservingItems(prevTabs, payload.tabs || []));
                 if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id);
             }
-            else { setProfile(null); setTabs([]); setSelectedTabId(null); }
+            else {
+                setProfile(null);
+                setTabs([]);
+                setSelectedTabId(null);
+            }
         } catch { setProfile(null); setTabs([]); setSelectedTabId(null); }
         finally { setIsLoading(false); }
     }, [selectedPageId]);

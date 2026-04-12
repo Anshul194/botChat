@@ -371,7 +371,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 { label: "Connect Account", href: "/dashboard/instagram" },
                                                 { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
                                                 { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
-                                                { label: "Bio Link (Portfolio)", href: "/dashboard/instagram/bio-link", badge: "Premium" },
+                                                { label: "Bio Link Builder", href: "/dashboard/instagram/bio-link", badge: "Premium" },
+                                                { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
                                             ].map(sub => {
                                                 const isActive = sub.href === "/dashboard/instagram" ? pathname === "/dashboard/instagram" : pathname.startsWith(sub.href);
                                                 return (
