@@ -352,14 +352,17 @@ function PublicBioContent() {
                         <ShareButton username={username} />
                     </div>
 
-                    <div className="w-24 h-24 rounded-full shadow-xl overflow-hidden mb-4 flex-shrink-0"
-                        style={{ border: `3px solid ${theme.textColor}40`, backgroundColor: `${theme.textColor}10` }}>
-                        {profile.avatar
-                            ? <img src={profile.avatar} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                            : <div className="w-full h-full flex items-center justify-center font-black text-3xl" style={{ color: theme.textColor }}>
-                                {(profile.title || username).charAt(0).toUpperCase()}
-                            </div>
-                        }
+                    <div className="w-[100px] h-[100px] rounded-full p-[3px] mb-4 flex-shrink-0 shadow-xl"
+                        style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}60, ${theme.textColor}30)` }}>
+                        <div className="w-full h-full rounded-full overflow-hidden"
+                            style={{ backgroundColor: `${theme.textColor}08` }}>
+                            {profile.avatar
+                                ? <img src={profile.avatar} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                : <div className="w-full h-full flex items-center justify-center font-black text-3xl" style={{ color: theme.textColor }}>
+                                    {(profile.title || username).charAt(0).toUpperCase()}
+                                </div>
+                            }
+                        </div>
                     </div>
 
                     <h1 className="text-[26px] font-black leading-tight drop-shadow-sm" style={{ color: theme.textColor }}>{profile.title || username}</h1>

@@ -7,7 +7,8 @@ import {
     Upload, Wand2, ArrowRight, CheckCircle2, X, Eye, Share2, Grid, User,
     Layers, Video, Youtube, MonitorPlay, Smartphone, Monitor, Hexagon,
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
-    Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera
+    Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
+    Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -19,6 +20,60 @@ interface BioProfile { id: number; title: string; bio: string; avatar: string; e
 interface BioTab { id: number; title: string; is_active: number; sections: BioSection[]; }
 interface BioSection { id: number; tab_id: number; title: string; type: string; is_active: number; blocks: BioBlock[]; }
 interface BioBlock { id: number; section_id: number; type: string; is_active: number; items: any[]; }
+
+type PhaseIconType = React.ComponentType<{ size?: number; className?: string }>;
+
+interface BioAdvancedSettings {
+    displayBranding: boolean;
+    brandingName: string;
+    brandingUrl: string;
+    brandingTextColor: string;
+    pixelFacebookEnabled: boolean;
+    pixelGoogleEnabled: boolean;
+    utmSource: string;
+    utmMedium: string;
+    utmCampaign: string;
+    password: string;
+    sensitiveContentWarning: boolean;
+    brandedButtonEnabled: boolean;
+    brandedIconUrl: string;
+    brandedModalTitle: string;
+    brandedModalContent: string;
+    enableShareButton: boolean;
+    enableScrollButtons: boolean;
+    enableDirectoryDisplaying: boolean;
+    projectName: string;
+    splashPageName: string;
+    leapLinkUrl: string;
+    customCss: string;
+    customJs: string;
+}
+
+const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
+    displayBranding: true,
+    brandingName: "",
+    brandingUrl: "",
+    brandingTextColor: "",
+    pixelFacebookEnabled: true,
+    pixelGoogleEnabled: true,
+    utmSource: "",
+    utmMedium: "",
+    utmCampaign: "",
+    password: "",
+    sensitiveContentWarning: false,
+    brandedButtonEnabled: false,
+    brandedIconUrl: "",
+    brandedModalTitle: "",
+    brandedModalContent: "",
+    enableShareButton: true,
+    enableScrollButtons: true,
+    enableDirectoryDisplaying: true,
+    projectName: "None",
+    splashPageName: "None",
+    leapLinkUrl: "",
+    customCss: "",
+    customJs: "",
+};
 
 const BLOCK_ICONS: Record<string, React.ReactNode> = {
     links_carousel: <Layers size={16} />, hero_single_link: <LinkIcon size={16} />, links_grid: <Grid size={16} />,
@@ -84,6 +139,26 @@ const InputField = ({ label, ...props }: any) => (
     </div>
 );
 
+const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolean; onChange: (value: boolean) => void; disabled?: boolean }) => (
+    <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && onChange(!checked)}
+        className={cn(
+            "relative inline-flex h-7 w-12 items-center rounded-full transition-all",
+            disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+            checked ? "bg-indigo-500" : "bg-slate-300 dark:bg-slate-700"
+        )}
+    >
+        <span
+            className={cn(
+                "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-all",
+                checked ? "translate-x-6" : "translate-x-1"
+            )}
+        />
+    </button>
+);
+
 const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId }: any) => {
     const currentTab = tabs.find((t: any) => t.id === selectedTabId) || tabs[0];
     const theme = getTheme(profile?.theme);
@@ -99,16 +174,24 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId }: any) =
                     <ThemeEffectsLayer theme={theme} />
                     <div className="flex-1 overflow-y-auto no-scrollbar pt-10 px-5 pb-20 relative z-10">
                         <div className="flex flex-col items-center pt-6 pb-8">
-                            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-                                className="w-20 h-20 rounded-full overflow-hidden shadow-2xl mb-4 p-0.5"
-                                style={{ border: `3px solid ${theme.textColor}35`, backgroundColor: `${theme.textColor}08` }}>
-                                {profile?.avatar ? <img src={profile.avatar} className="w-full h-full rounded-full object-cover" /> :
-                                    <div className="w-full h-full flex items-center justify-center rounded-full" style={{ color: `${theme.textColor}50` }}><User size={32} /></div>}
+                            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="mb-4">
+                                <div className="w-[84px] h-[84px] rounded-full p-[3px] mx-auto shadow-xl"
+                                    style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}60, ${theme.textColor}30)` }}>
+                                    <div className="w-full h-full rounded-full overflow-hidden"
+                                        style={{ backgroundColor: `${theme.textColor}08` }}>
+                                        {profile?.avatar ? <img src={profile.avatar} className="w-full h-full rounded-full object-cover" /> :
+                                            <div className="w-full h-full flex items-center justify-center rounded-full" style={{ color: `${theme.textColor}50` }}><User size={32} /></div>}
+                                    </div>
+                                </div>
                             </motion.div>
                             <div className="backdrop-blur-md rounded-2xl px-8 py-2.5 shadow-xl"
                                 style={{ backgroundColor: `${theme.textColor}0D`, border: `1px solid ${theme.textColor}18` }}>
                                 <p className="text-[14px] font-black tracking-tight" style={{ color: theme.textColor }}>{profile?.title || "Your Brand"}</p>
                             </div>
+                            {profile?.bio && (
+                                <p className="text-[11px] mt-2.5 max-w-[200px] text-center leading-relaxed font-medium"
+                                    style={{ color: `${theme.textColor}80` }}>{profile.bio}</p>
+                            )}
                         </div>
                         {tabs.length > 1 && (
                             <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar justify-center px-2">
@@ -126,7 +209,13 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId }: any) =
                         <div className="space-y-4">
                             {currentTab?.sections?.map((sec: any) => (
                                 <div key={sec.id}>
-                                    {sec.title !== "New Section" && <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 pl-2" style={{ color: `${theme.textColor}70` }}>{sec.title}</p>}
+                                    {sec.title !== "New Section" && (
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="flex-1 h-px" style={{ backgroundColor: `${theme.textColor}15` }} />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: `${theme.textColor}50` }}>{sec.title}</span>
+                                            <div className="flex-1 h-px" style={{ backgroundColor: `${theme.textColor}15` }} />
+                                        </div>
+                                    )}
                                     <div className="space-y-3">
                                         {sec.blocks?.map((block: any) => (
                                             (block.items || []).map((item: any, i: number) => (
@@ -260,6 +349,8 @@ export default function BioLinkBuilder() {
     const [copiedLink, setCopiedLink] = useState(false);
     const [activePanel, setActivePanel] = useState<"builder" | "preview">("builder");
     const [view, setView] = useState("blocks");
+    const [advancedSettings, setAdvancedSettings] = useState<BioAdvancedSettings>(DEFAULT_ADVANCED_SETTINGS);
+    const [isSavingAdvanced, setIsSavingAdvanced] = useState(false);
 
     const instagramUsername = accounts.find(a => String(a.id) === selectedPageId)?.username || "username";
     const publicUrl = typeof window !== "undefined"
@@ -267,6 +358,23 @@ export default function BioLinkBuilder() {
         : `/p?u=${instagramUsername}&id=${selectedPageId}`;
 
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
+    const advancedFlowTips = [
+        "1. Turn features ON that you want visitors to use.",
+        "2. Fill only the fields needed for your current campaign.",
+        "3. Click Save Advanced Settings to apply changes.",
+    ];
+    const enabledAdvancedFlags = [
+        advancedSettings.displayBranding && "Branding",
+        advancedSettings.pixelFacebookEnabled && "Facebook Pixel",
+        advancedSettings.pixelGoogleEnabled && "Google Analytics",
+        advancedSettings.sensitiveContentWarning && "Sensitive Warning",
+        advancedSettings.brandedButtonEnabled && "Branded Button",
+        advancedSettings.enableShareButton && "Share Button",
+        advancedSettings.enableScrollButtons && "Scroll Buttons",
+        advancedSettings.enableDirectoryDisplaying && "Directory Listing",
+        !!advancedSettings.password && "Password Protection",
+        !!advancedSettings.leapLinkUrl && "Leap Redirect",
+    ].filter(Boolean) as string[];
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -300,6 +408,18 @@ export default function BioLinkBuilder() {
     }, [selectedPageId]);
 
     useEffect(() => { fetchBuilderData(); }, [fetchBuilderData]);
+
+    useEffect(() => {
+        if (!profile) {
+            setAdvancedSettings(DEFAULT_ADVANCED_SETTINGS);
+            return;
+        }
+        setAdvancedSettings(prev => ({
+            ...prev,
+            brandingName: profile.title || prev.brandingName,
+            brandingUrl: prev.brandingUrl || (typeof window !== "undefined" ? window.location.origin : ""),
+        }));
+    }, [profile]);
 
     const handleUpdateProfile = async (updates: Partial<BioProfile>) => {
         if (!profile) return;
@@ -366,6 +486,29 @@ export default function BioLinkBuilder() {
 
     const handleShareLink = () => { navigator.clipboard.writeText(publicUrl); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); };
 
+    const handleSaveAdvanced = async () => {
+        if (!profile) return;
+        setIsSavingAdvanced(true);
+        try {
+            await api.put(`/bio-builder/profile/${profile.id}`, advancedSettings);
+        } catch {
+            showModal("error", "Error", "Failed to save advanced settings.");
+        } finally {
+            setIsSavingAdvanced(false);
+        }
+    };
+
+    const PHASES: Array<{ id: string; label: string; desc: string; hint: string; Icon: PhaseIconType; details: string[] }> = [
+        { id: "identity", label: "1. Info", desc: "Name & Bio", hint: "Set your title, avatar, and short intro.", Icon: User, details: ["Upload your profile image.", "Add your brand title.", "Write a short bio visitors understand fast."] },
+        { id: "blocks", label: "2. Content", desc: "Links & Photos", hint: "Add sections, buttons, and media blocks.", Icon: Layers, details: ["Create content sections.", "Add links, photos, or products.", "Arrange items in the order you want."] },
+        { id: "visuals", label: "3. Style", desc: "Colors & Design", hint: "Pick the look, theme, and visual mood.", Icon: Palette, details: ["Choose the page look and feel.", "Match colors to your brand.", "Preview the design before launch."] },
+        { id: "advanced", label: "4. Growth", desc: "Launch Gear", hint: "Turn on tracking, protection, and extras.", Icon: Sparkles, details: ["Enable pixels and analytics.", "Turn on password or warning protection.", "Add advanced brand controls and redirects."] }
+    ];
+    const currentPhase = PHASES.find((p) => p.id === view) || PHASES[0];
+    const currentPhaseNumber = Math.max(PHASES.findIndex((p) => p.id === currentPhase.id), 0) + 1;
+    const nextPhase = PHASES[currentPhaseNumber] || null;
+    const completionPercent = Math.round((currentPhaseNumber / PHASES.length) * 100);
+
     if (!selectedPageId) return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center p-6">
             <div className="max-w-md w-full text-center space-y-6">
@@ -377,40 +520,32 @@ export default function BioLinkBuilder() {
         </div>
     );
 
-    const PHASES = [
-        { id: "identity", label: "1. Info", desc: "Name & Bio" },
-        { id: "blocks", label: "2. Content", desc: "Links & Photos" },
-        { id: "visuals", label: "3. Style", desc: "Colors & Design" },
-        { id: "advanced", label: "4. Growth", desc: "Launch Gear" }
-    ];
-
     return (
-        <div className="min-h-screen bg-white dark:bg-[#020617] font-sans selection:bg-rose-500/10 flex flex-col relative">
+        <div className="min-h-screen bg-white dark:bg-[#05060a] font-sans selection:bg-rose-500/10 flex flex-col relative">
             
             {/* ── PINK AMBIENT GLOW ── */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-rose-500/5 blur-[120px] rounded-full" />
-                <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-pink-500/5 blur-[100px] rounded-full" />
+                <div className="absolute top-[-8%] right-[-10%] w-[38%] h-[38%] bg-rose-500/12 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-12%] left-[-6%] w-[34%] h-[34%] bg-pink-500/10 blur-[120px] rounded-full" />
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-400/40 to-transparent" />
             </div>
 
             {/* ── STABLE TOP BAR ── */}
-            <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-rose-500 flex items-center justify-center text-white shadow-lg">
+            <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white/85 dark:bg-black/70 backdrop-blur-2xl border-b border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-fuchsia-500 to-orange-400 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
                         <Sparkles size={16} />
                     </div>
-                    <span className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Creator Studio</span>
+                    <div className="min-w-0">
+                        <span className="block text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">Creator Studio</span>
+                        <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">Bio link builder</span>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-                        {accounts.map(a => (
-                            <button key={a.id} onClick={() => setSelectedPageId(a.id.toString())}
-                                className={cn("px-4 py-1.5 rounded-md text-[10px] font-black tracking-tight transition-all",
-                                    selectedPageId === a.id.toString() ? "bg-white dark:bg-slate-700 text-rose-500 shadow-sm" : "text-slate-400 hover:text-slate-600")}>
-                                @{a.username}
-                            </button>
-                        ))}
+                <div className="flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        {instagramUsername}
                     </div>
                     <button onClick={handleShareLink} className="h-8 px-4 rounded-lg bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-rose-600 transition-all shadow-md">
                         {copiedLink ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
@@ -422,22 +557,72 @@ export default function BioLinkBuilder() {
             {/* ── CREATOR WORKSPACE ── */}
             <div className="relative flex-1 flex overflow-hidden">
                 
-                <main className="flex-1 overflow-y-auto no-scrollbar relative z-10">
-                    <div className="max-w-4xl mx-auto px-6 py-8">
+                <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[440px] pb-40 sm:pb-44 xl:pb-48", activePanel === "preview" ? "hidden xl:block" : "block")}>
+                    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 xl:pl-4">
                         
-                        {/* ── SIMPLE PROGRESS MAP ── */}
-                        <div className="mb-10 flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                        {/* ── FLOATING STEP GUIDE + BAR ── */}
+                        <div className="fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(520px,calc(100%-0.5rem))] sm:w-[min(620px,calc(100%-1rem))] rounded-full border border-rose-100/70 dark:border-white/10 bg-white/94 dark:bg-black/40 backdrop-blur-2xl px-1.5 py-1.5 shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
+                            <div className="grid grid-cols-4 gap-1">
                             {PHASES.map((p, idx) => (
                                 <button key={p.id} onClick={() => setView(p.id)}
-                                    className="flex-1 group relative outline-none">
-                                    <div className={cn("flex flex-col items-center py-4 rounded-xl transition-all duration-300", 
-                                        view === p.id ? "bg-white dark:bg-slate-800 text-rose-500 shadow-md scale-[1.02]" : "text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/20")}>
-                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">{p.label}</span>
-                                        <span className="text-[9px] font-bold opacity-60 mt-1">{p.desc}</span>
-                                        {view === p.id && <div className="absolute -bottom-1 w-12 h-1 bg-rose-500 rounded-full" />}
+                                    className="group relative outline-none">
+                                    <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+10px)] w-[220px] sm:w-[270px] hidden group-hover:block">
+                                        <div className="rounded-[24px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-black/95 p-3 shadow-[0_18px_48px_rgba(15,23,42,0.16)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
+                                            <div className="flex items-start gap-3">
+                                                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-rose-500 text-white" : "bg-rose-50 dark:bg-white/10 text-rose-500 dark:text-rose-300")}>
+                                                    <p.Icon size={18} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-rose-500">Step {idx + 1}</p>
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{p.desc}</p>
+                                                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-1 leading-relaxed">{p.hint}</p>
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 space-y-1.5 border-t border-slate-100 dark:border-white/10 pt-3">
+                                                {p.details.map((detail) => (
+                                                    <div key={detail} className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300">
+                                                        <span className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                                                        <span>{detail}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={cn("flex flex-col items-center justify-center gap-0.5 min-h-[48px] sm:min-h-[54px] px-1.5 rounded-full transition-all duration-300 border",
+                                        view === p.id
+                                            ? "bg-rose-500 text-white border-rose-500 shadow-[0_10px_24px_rgba(244,63,94,0.20)] scale-[1.02]"
+                                            : "bg-white/80 dark:bg-white/5 text-slate-500 border-transparent hover:border-rose-100 dark:hover:border-white/10 hover:bg-rose-50/70 dark:hover:bg-white/10") }>
+                                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[9px] font-bold", view === p.id ? "bg-white/18 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500")}>{idx + 1}</div>
+                                        <span className={cn("hidden lg:block text-[8px] font-semibold uppercase tracking-[0.16em] truncate", view === p.id ? "text-white" : "text-slate-600 dark:text-slate-300")}>{p.label}</span>
+                                        {view === p.id && <div className="absolute inset-x-6 -bottom-1 h-1 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full" />}
                                     </div>
                                 </button>
                             ))}
+                            </div>
+                        </div>
+
+                        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-white/5 px-4 py-3 shadow-sm mt-4">
+                            <div>
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Step {currentPhaseNumber} of {PHASES.length}</p>
+                                <p className="text-sm font-semibold text-slate-900 dark:text-white mt-1">Current: {currentPhase.desc}</p>
+                                <p className="text-xs text-slate-500 mt-1">Use the steps above to move through setup in order. Each step shows what to complete next.</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="hidden sm:block w-44 h-2 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+                                    <div className="h-full rounded-full bg-gradient-to-r from-rose-400 via-pink-500 to-orange-400" style={{ width: `${completionPercent}%` }} />
+                                </div>
+                                <span className="text-xs font-medium text-rose-500">{completionPercent}%</span>
+                                {nextPhase ? (
+                                    <button
+                                        onClick={() => setView(nextPhase.id)}
+                                        className="h-9 px-4 rounded-full bg-rose-500 text-white text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2 shadow-md"
+                                    >
+                                        Next <ArrowRight size={12} />
+                                    </button>
+                                ) : (
+                                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Final step ready</span>
+                                )}
+                            </div>
                         </div>
 
                         {/* ── PHASE CONTENT AREA ── */}
@@ -445,10 +630,10 @@ export default function BioLinkBuilder() {
                             <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}>
                                 
                                 <div className="mb-8">
-                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1 capitalize">
+                                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2 capitalize">
                                         {view ==='identity' ? "Setup your Profile" : view === 'blocks' ? "Build your Content" : view === 'visuals' ? 'Style your Page' : 'Launch Preparation'}
                                     </h2>
-                                    <p className="text-sm text-slate-500 font-medium">Follow the steps below to complete this phase.</p>
+                                    <p className="text-sm text-slate-500 font-medium max-w-2xl">Each section is designed to guide you from setup to launch without needing to guess what happens next.</p>
                                 </div>
 
                                 {view === "identity" && (
@@ -544,26 +729,353 @@ export default function BioLinkBuilder() {
                                 {view === "visuals" && <VisualsLab profile={profile} updateProfile={handleUpdateProfile} />}
 
                                 {view === "advanced" && (
-                                    <div className="max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-                                        <h3 className="text-[13px] font-black text-slate-950 dark:text-white uppercase tracking-tight mb-8">Growth Engine & Domain</h3>
-                                        <div className="space-y-4">
-                                            {[
-                                                { label: "Search Engine Optimization", desc: "Manage Google visibility", icon: <Search size={20} /> },
-                                                { label: "Custom Domain Mapping", desc: "Connect your personal .com", icon: <LinkIcon size={20} /> },
-                                                { label: "Growth Analytics", desc: "Visitor telemetry & insights", icon: <CheckCircle2 size={20} /> },
-                                            ].map((item, i) => (
-                                                <div key={i} className="flex items-center justify-between p-5 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-rose-500/30 transition-all group cursor-pointer shadow-sm">
-                                                    <div className="flex items-center gap-5">
-                                                        <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all">{item.icon}</div>
-                                                        <div>
-                                                            <p className="text-sm font-black text-slate-900 dark:text-white mb-0.5">{item.label}</p>
-                                                            <p className="text-[12px] text-slate-400 font-medium">{item.desc}</p>
-                                                        </div>
-                                                    </div>
-                                                    <ChevronRight size={18} className="text-slate-300 group-hover:translate-x-1 transition-all" />
+                                    <div className="max-w-3xl space-y-6">
+                                        <div className="bg-gradient-to-br from-rose-50 to-indigo-50 dark:from-slate-900 dark:to-slate-900 rounded-3xl border border-rose-100 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                                                <div>
+                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Make it clear for your visitors</h3>
+                                                    <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">These options control trust, tracking, protection, and advanced behavior.</p>
                                                 </div>
-                                            ))}
+                                                <div className="px-3 py-2 rounded-xl bg-white/80 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                                                    {enabledAdvancedFlags.length} active options
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                                                <div className="rounded-2xl bg-white/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4">
+                                                    <p className="text-xs font-black uppercase tracking-widest text-rose-500 mb-3 flex items-center gap-2"><Info size={14} /> How it works</p>
+                                                    <div className="space-y-2">
+                                                        {advancedFlowTips.map((tip) => (
+                                                            <p key={tip} className="text-sm text-slate-700 dark:text-slate-200">{tip}</p>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="rounded-2xl bg-white/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4">
+                                                    <p className="text-xs font-black uppercase tracking-widest text-indigo-500 mb-3">Currently enabled</p>
+                                                    {enabledAdvancedFlags.length > 0 ? (
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {enabledAdvancedFlags.map((flag) => (
+                                                                <span key={flag} className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200 text-xs font-bold">
+                                                                    {flag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-slate-500">No advanced options enabled yet.</p>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <a href="#advanced-branding" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Branding</a>
+                                                <a href="#advanced-pixels" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Pixels</a>
+                                                <a href="#advanced-utm" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">UTM</a>
+                                                <a href="#advanced-protection" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Protection</a>
+                                                <a href="#advanced-branded-button" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Branded Button</a>
+                                                <a href="#advanced-more" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Advanced</a>
+                                            </div>
                                         </div>
+
+                                        <div id="advanced-branding" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
+                                                <Shuffle size={16} className="text-slate-700 dark:text-slate-300" />
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Branding</h3>
+                                            </div>
+
+                                            <div className="space-y-5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xl font-semibold text-slate-900 dark:text-white">Display branding</span>
+                                                    <ToggleSwitch
+                                                        checked={advancedSettings.displayBranding}
+                                                        onChange={(value) => setAdvancedSettings({ ...advancedSettings, displayBranding: value })}
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Shuffle size={16} /> Branding name</label>
+                                                    <input
+                                                        value={advancedSettings.brandingName}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="Brand name"
+                                                    />
+                                                    <p className="text-sm text-slate-500 mt-2">Leave empty to have the default site branding.</p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><LinkIcon size={16} /> Branding URL</label>
+                                                    <input
+                                                        value={advancedSettings.brandingUrl}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingUrl: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="https://example.com/"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Palette size={16} /> Text color</label>
+                                                    <input
+                                                        value={advancedSettings.brandingTextColor}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="#1f2937"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="advanced-pixels" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
+                                                <CircleDot size={16} className="text-slate-700 dark:text-slate-300" />
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Pixels</h3>
+                                            </div>
+                                            <div className="flex flex-wrap gap-8">
+                                                <label className="flex items-center gap-3 text-xl font-semibold text-slate-900 dark:text-white">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={advancedSettings.pixelFacebookEnabled}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, pixelFacebookEnabled: e.target.checked })}
+                                                        className="w-5 h-5 accent-indigo-500"
+                                                    />
+                                                    Facebook Pixel
+                                                </label>
+                                                <label className="flex items-center gap-3 text-xl font-semibold text-slate-900 dark:text-white">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={advancedSettings.pixelGoogleEnabled}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, pixelGoogleEnabled: e.target.checked })}
+                                                        className="w-5 h-5 accent-indigo-500"
+                                                    />
+                                                    Google Analytics
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div id="advanced-utm" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
+                                                <Grid size={16} className="text-slate-700 dark:text-slate-300" />
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">UTM Parameters</h3>
+                                            </div>
+                                            <div className="space-y-5">
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white mb-2 block">Source</label>
+                                                    <input
+                                                        value={advancedSettings.utmSource}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="e.g. newsletter, bing, google, youtube"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white mb-2 block">Medium</label>
+                                                    <input
+                                                        value={advancedSettings.utmMedium}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="e.g. link, banner, email, social"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white mb-2 block">Campaign</label>
+                                                    <div className="h-12 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-base flex items-center">
+                                                        Automatically set for each link based on the name.
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <p className="text-lg font-semibold text-slate-900 dark:text-white">UTM preview</p>
+                                                    <p className="text-base text-slate-700 dark:text-slate-300 mt-2">
+                                                        {advancedSettings.utmSource || advancedSettings.utmMedium
+                                                            ? `?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`
+                                                            : "None"}
+                                                    </p>
+                                                    <p className="text-sm text-slate-500 mt-2">This query parameter will be appended to your destination URL.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="advanced-protection" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
+                                                <ShieldAlert size={16} className="text-slate-700 dark:text-slate-300" />
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Protection</h3>
+                                            </div>
+                                            <div className="space-y-5">
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><KeyRound size={16} /> Password</label>
+                                                    <input
+                                                        type="password"
+                                                        value={advancedSettings.password}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="Enter password"
+                                                    />
+                                                    <p className="text-sm text-slate-500 mt-2">Require users to enter a password before accessing the link.</p>
+                                                </div>
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <p className="text-xl font-semibold text-slate-900 dark:text-white">Sensitive content warning</p>
+                                                        <p className="text-sm text-slate-500 mt-1">Require users to confirm that they want to access your link and let them know the link might be sensitive.</p>
+                                                    </div>
+                                                    <ToggleSwitch
+                                                        checked={advancedSettings.sensitiveContentWarning}
+                                                        onChange={(value) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="advanced-branded-button" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
+                                                <CircleDot size={16} className="text-slate-700 dark:text-slate-300" />
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Branded button</h3>
+                                            </div>
+                                            <div className="space-y-5">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="text-xl font-semibold text-slate-900 dark:text-white">Enable branded button</p>
+                                                    <ToggleSwitch
+                                                        checked={advancedSettings.brandedButtonEnabled}
+                                                        onChange={(value) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white block">Branded icon</label>
+                                                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                                                        <input
+                                                            type="file"
+                                                            disabled={!advancedSettings.brandedButtonEnabled}
+                                                            onChange={async (e) => {
+                                                                if (!e.target.files?.[0]) return;
+                                                                const uploaded = await handleUploadImage(e.target.files[0]);
+                                                                if (uploaded) {
+                                                                    setAdvancedSettings({ ...advancedSettings, brandedIconUrl: uploaded });
+                                                                }
+                                                            }}
+                                                            className="w-full text-sm"
+                                                        />
+                                                    </div>
+                                                    <p className="text-sm text-slate-500">Use a 1:1 transparent image. jpg, jpeg, png, ico, svg, gif, webp allowed. 2 MB maximum.</p>
+                                                </div>
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white block mb-2">Modal title</label>
+                                                    <input
+                                                        value={advancedSettings.brandedModalTitle}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
+                                                        disabled={!advancedSettings.brandedButtonEnabled}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base disabled:opacity-50"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white block mb-2">Modal content</label>
+                                                    <textarea
+                                                        value={advancedSettings.brandedModalContent}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
+                                                        disabled={!advancedSettings.brandedButtonEnabled}
+                                                        rows={4}
+                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base resize-none disabled:opacity-50"
+                                                    />
+                                                    <p className="text-sm text-slate-500 mt-2">This field accepts usage of HTML.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="advanced-more" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
+                                                <Orbit size={16} className="text-slate-700 dark:text-slate-300" />
+                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Advanced</h3>
+                                            </div>
+                                            <div className="space-y-5">
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">Enable share button</p>
+                                                        <p className="text-sm text-slate-500">Display a button in the top right of the page that opens a share modal.</p>
+                                                    </div>
+                                                    <ToggleSwitch checked={advancedSettings.enableShareButton} onChange={(value) => setAdvancedSettings({ ...advancedSettings, enableShareButton: value })} />
+                                                </div>
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">Enable scroll buttons</p>
+                                                        <p className="text-sm text-slate-500">Display scroll top and bottom buttons in the left of the page. They will only show up when the page is long enough.</p>
+                                                    </div>
+                                                    <ToggleSwitch checked={advancedSettings.enableScrollButtons} onChange={(value) => setAdvancedSettings({ ...advancedSettings, enableScrollButtons: value })} />
+                                                </div>
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div>
+                                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">Enable directory displaying</p>
+                                                        <p className="text-sm text-slate-500">If enabled, your biolink page will be public in our Directory.</p>
+                                                    </div>
+                                                    <ToggleSwitch checked={advancedSettings.enableDirectoryDisplaying} onChange={(value) => setAdvancedSettings({ ...advancedSettings, enableDirectoryDisplaying: value })} />
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Megaphone size={14} /> Project</label>
+                                                        <select
+                                                            value={advancedSettings.projectName}
+                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, projectName: e.target.value })}
+                                                            className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        >
+                                                            <option value="None">None</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Sparkles size={14} /> Splash page</label>
+                                                        <select
+                                                            value={advancedSettings.splashPageName}
+                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, splashPageName: e.target.value })}
+                                                            className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        >
+                                                            <option value="None">None</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><ArrowRight size={14} /> Leap Link URL</label>
+                                                    <input
+                                                        value={advancedSettings.leapLinkUrl}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
+                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="https://example.com/"
+                                                    />
+                                                    <p className="text-sm text-slate-500 mt-2">Fully redirect all users that access the biolink page to this URL. Leave empty to disable the feature.</p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Code2 size={14} /> Custom CSS</label>
+                                                    <textarea
+                                                        value={advancedSettings.customCss}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
+                                                        rows={4}
+                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="body { background: blue !important; }"
+                                                    />
+                                                    <p className="text-sm text-slate-500 mt-2">Your CSS code to modify the existing page style.</p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><FileCode2 size={14} /> Custom JS</label>
+                                                    <textarea
+                                                        value={advancedSettings.customJs}
+                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
+                                                        rows={4}
+                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
+                                                        placeholder="<script>console.log('Hello world');</script>"
+                                                    />
+                                                    <p className="text-sm text-slate-500 mt-2">Your custom JS code to enhance your page capability.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end">
+                                            <button
+                                                onClick={handleSaveAdvanced}
+                                                disabled={isSavingAdvanced}
+                                                className="h-12 px-8 rounded-xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 disabled:opacity-60"
+                                            >
+                                                {isSavingAdvanced ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                                                {isSavingAdvanced ? "Saving..." : "Save Advanced Settings"}
+                                            </button>
+                                        </div>
+                                        <p className="text-sm text-slate-500">Tip: enable only what you need for this campaign to keep your page clean and fast.</p>
                                     </div>
                                 )}
                             </motion.div>
@@ -571,24 +1083,58 @@ export default function BioLinkBuilder() {
                     </div>
                 </main>
 
+                {/* ── MOBILE FIXED PREVIEW MODE ── */}
+                {activePanel === "preview" && (
+                    <div className="xl:hidden fixed inset-0 z-[160] bg-slate-50 dark:bg-[#020617] pt-16 pb-24 px-4 overflow-hidden">
+                        <div className="h-full flex flex-col">
+                            <div className="flex items-center justify-between mb-4 px-1">
+                                <div>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Mobile Preview</h3>
+                                    <p className="text-xs text-slate-500">Static preview mode. Swipe inside phone to inspect links.</p>
+                                </div>
+                                <button
+                                    onClick={() => setActivePanel("builder")}
+                                    className="h-9 px-3 rounded-lg bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest"
+                                >
+                                    Back to Editor
+                                </button>
+                            </div>
+                            <div className="flex-1 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur p-3 flex items-center justify-center">
+                                <PhonePreview
+                                    profile={profile}
+                                    tabs={tabs}
+                                    selectedTabId={selectedTabId}
+                                    setSelectedTabId={setSelectedTabId}
+                                    instagramUsername={instagramUsername}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* ── PHONE PREVIEW PORTAL (PERMANENTLY VISIBLE ON XL) ── */}
-                <aside className={cn("relative z-50 w-[440px] hidden xl:flex flex-col p-8 bg-slate-50 dark:bg-[#020617] border-l border-slate-200 dark:border-slate-800 transition-all duration-500", 
+                <aside className={cn("fixed right-0 top-14 z-50 hidden xl:flex w-[440px] flex-col p-6 bg-slate-50/95 dark:bg-[#020617]/95 backdrop-blur-2xl border-l border-slate-200 dark:border-slate-800 transition-all duration-500 h-[calc(100vh-56px)] shadow-[-24px_0_60px_rgba(15,23,42,0.08)]", 
                     activePanel === "preview" ? "translate-x-0 opacity-100" : "translate-x-0 opacity-100")}>
                     <div className="flex-1 flex flex-col gap-8">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Live Preview</h3>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Realtime Sync</span>
+                        <div className="rounded-[28px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-4 shadow-sm">
+                            <div className="flex items-center justify-between gap-4">
+                                <div>
+                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Live Preview</h3>
+                                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">Static, always visible phone mockup</p>
+                                </div>
+                                <div className="flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-2">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">Synced</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex-1 flex items-center justify-center overflow-hidden rounded-[34px] border border-slate-200 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-950 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
                             <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId} 
                                 setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} />
                         </div>
                         
-                        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+                        <div className="rounded-[24px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-[10px] font-black text-rose-500 uppercase tracking-tight">Public URL</span>
                                 <button onClick={handleShareLink} className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase">Copy URL</button>
@@ -602,7 +1148,7 @@ export default function BioLinkBuilder() {
             </div>
 
             {/* ── MOBILE SWITCHER ── */}
-            <div className="xl:hidden fixed bottom-6 left-6 right-6 z-[200] h-16 bg-slate-950/90 backdrop-blur-xl rounded-2xl flex p-1.5 shadow-2xl">
+            <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-slate-950/92 backdrop-blur-xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/10">
                 <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
                     <Edit3 size={16} /> Studio
                 </button>
