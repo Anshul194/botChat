@@ -159,16 +159,22 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
     </button>
 );
 
-const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId }: any) => {
+const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewportOffset = 280, previewWidth = 300 }: any) => {
     const currentTab = tabs.find((t: any) => t.id === selectedTabId) || tabs[0];
     const theme = getTheme(profile?.theme);
     const accentLight = isColorLight(theme.accent);
 
     return (
-        <div className="relative mx-auto w-[300px]">
-            <div className="relative bg-[#020617] rounded-[54px] p-2.5 shadow-[0_50px_100px_rgba(0,0,0,0.4),0_0_0_4px_rgba(255,255,255,0.05)] border-4 border-slate-800">
+        <div
+            className="relative mx-auto flex items-center justify-center"
+            style={{
+                width: `min(${previewWidth}px, calc(100vw - 2rem))`,
+                height: `min(600px, calc(100vh - ${viewportOffset}px))`,
+            }}
+        >
+            <div className="relative w-full h-full bg-[#020617] rounded-[54px] p-2.5 shadow-[0_50px_100px_rgba(0,0,0,0.4),0_0_0_4px_rgba(255,255,255,0.05)] border-4 border-slate-800">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#020617] rounded-b-3xl z-20" />
-                <div className="rounded-[44px] overflow-hidden h-[600px] relative flex flex-col shadow-inner transition-all duration-700"
+                <div className="rounded-[44px] overflow-hidden w-full h-full relative flex flex-col shadow-inner transition-all duration-700"
                     style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
@@ -508,14 +514,33 @@ export default function BioLinkBuilder() {
     const currentPhaseNumber = Math.max(PHASES.findIndex((p) => p.id === currentPhase.id), 0) + 1;
     const nextPhase = PHASES[currentPhaseNumber] || null;
     const completionPercent = Math.round((currentPhaseNumber / PHASES.length) * 100);
+    const previewDemoProfile = {
+        title: "Preview locked",
+        bio: "Connect your Instagram account to unlock live editing. This demo keeps the layout visible.",
+        theme: "photo_aura",
+    };
+    const previewDemoTabs = [{
+        id: 1,
+        title: "Demo",
+        sections: [{
+            id: 1,
+            title: "Starter Links",
+            blocks: [{ items: [{ title: "Join Waitlist", url: "#" }, { title: "Watch Demo", url: "#" }] }],
+        }],
+    }];
 
     if (!selectedPageId) return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center p-6">
-            <div className="max-w-md w-full text-center space-y-6">
-                <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto text-rose-500 shadow-inner"><Monitor size={40} /></div>
-                <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Deployment Required</h2>
-                <p className="text-slate-500 font-medium">Please connect your Instagram account first to unlock the Creator Studio.</p>
-                <button onClick={() => window.location.href='/dashboard/instagram/connect'} className="h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-xs hover:scale-105 transition-all">Connect Now</button>
+        <div className="min-h-screen bg-white dark:bg-[#05060a] flex items-center justify-center p-4 sm:p-6">
+            <div className="w-full max-w-6xl grid gap-6 xl:grid-cols-[minmax(0,1fr)_auto] items-center">
+                <div className="rounded-[32px] border border-rose-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(15,23,42,0.12)] p-6 sm:p-10">
+                    <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 shadow-inner mb-6"><Monitor size={40} /></div>
+                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Deployment Required</h2>
+                    <p className="mt-3 max-w-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed">Please connect your Instagram account first to unlock the Creator Studio. A demo preview is shown beside this message so you can still verify the layout.</p>
+                    <button onClick={() => window.location.href='/dashboard/instagram/connect'} className="mt-6 h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all">Connect Now</button>
+                </div>
+                <div className="w-full flex justify-center">
+                    <PhonePreview profile={previewDemoProfile} tabs={previewDemoTabs} selectedTabId={1} setSelectedTabId={() => {}} viewportOffset={220} previewWidth={360} />
+                </div>
             </div>
         </div>
     );
@@ -1090,7 +1115,7 @@ export default function BioLinkBuilder() {
                             <div className="flex items-center justify-between mb-4 px-1">
                                 <div>
                                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Mobile Preview</h3>
-                                    <p className="text-xs text-slate-500">Static preview mode. Swipe inside phone to inspect links.</p>
+                                    <p className="text-xs text-slate-500">Same phone preview on mobile, with the editor kept out of the way.</p>
                                 </div>
                                 <button
                                     onClick={() => setActivePanel("builder")}
@@ -1105,6 +1130,8 @@ export default function BioLinkBuilder() {
                                     tabs={tabs}
                                     selectedTabId={selectedTabId}
                                     setSelectedTabId={setSelectedTabId}
+                                    viewportOffset={170}
+                                    previewWidth={320}
                                     instagramUsername={instagramUsername}
                                 />
                             </div>
@@ -1115,33 +1142,11 @@ export default function BioLinkBuilder() {
                 {/* ── PHONE PREVIEW PORTAL (PERMANENTLY VISIBLE ON XL) ── */}
                 <aside className={cn("fixed right-0 top-14 z-50 hidden xl:flex w-[440px] flex-col p-6 bg-slate-50/95 dark:bg-[#020617]/95 backdrop-blur-2xl border-l border-slate-200 dark:border-slate-800 transition-all duration-500 h-[calc(100vh-56px)] shadow-[-24px_0_60px_rgba(15,23,42,0.08)]", 
                     activePanel === "preview" ? "translate-x-0 opacity-100" : "translate-x-0 opacity-100")}>
-                    <div className="flex-1 flex flex-col gap-8">
-                        <div className="rounded-[28px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-4 shadow-sm">
-                            <div className="flex items-center justify-between gap-4">
-                                <div>
-                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Live Preview</h3>
-                                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">Static, always visible phone mockup</p>
-                                </div>
-                                <div className="flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-2">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-widest">Synced</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="flex-1 flex items-center justify-center overflow-hidden rounded-[34px] border border-slate-200 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-950 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
+                        <div className="flex-1 rounded-[34px] border border-slate-200 dark:border-slate-800 bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-950 dark:to-black p-4 shadow-[0_24px_80px_rgba(15,23,42,0.12)] relative overflow-hidden">
+                        <div className="absolute inset-0 pointer-events-none opacity-60" style={{ backgroundImage: 'radial-gradient(circle at 20% 10%, rgba(244,63,94,0.08), transparent 40%), radial-gradient(circle at 80% 90%, rgba(99,102,241,0.10), transparent 40%)' }} />
+                        <div className="relative h-full w-full flex items-center justify-center overflow-hidden rounded-[26px] border border-white/60 dark:border-white/10 bg-white/55 dark:bg-white/[0.03] backdrop-blur-sm">
                             <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId} 
-                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} />
-                        </div>
-                        
-                        <div className="rounded-[24px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-[10px] font-black text-rose-500 uppercase tracking-tight">Public URL</span>
-                                <button onClick={handleShareLink} className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase">Copy URL</button>
-                            </div>
-                            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-[13px] font-medium text-slate-600 dark:text-slate-300 truncate">
-                                {publicUrl}
-                            </div>
+                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={140} previewWidth={360} />
                         </div>
                     </div>
                 </aside>
