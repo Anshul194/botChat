@@ -15,6 +15,7 @@ import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { VisualsLab, getTheme, isColorLight, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
+import BlockMarketplaceContent from "./BlockMarketplaceContent";
 
 interface BioProfile { id: number; title: string; bio: string; avatar: string; email_link: string; contact_link: string; theme: string; }
 interface BioTab { id: number; title: string; is_active: number; sections: BioSection[]; }
@@ -75,7 +76,42 @@ const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
     customJs: "",
 };
 
+const PRESET_BLOCK_CATEGORIES: Record<string, Array<{ type: string; label: string; desc: string }>> = {
+    Standard: [
+        { type: "link", label: "Link", desc: "Add a single clickable link." },
+        { type: "heading", label: "Heading", desc: "Add a section heading." },
+        { type: "paragraph", label: "Paragraph", desc: "Add rich text content." },
+        { type: "avatar", label: "Avatar", desc: "Show a profile-style image." },
+        { type: "image", label: "Image", desc: "Upload and show an image." },
+        { type: "socials", label: "Socials", desc: "Display social profile links." },
+        { type: "business_hours", label: "Business hours", desc: "Add your opening hours." },
+        { type: "modal_text", label: "Modal text", desc: "Show extra text in a modal." },
+    ],
+    Advanced: [
+        { type: "email_collector", label: "Email collector", desc: "Collect emails from visitors." },
+        { type: "phone_collector", label: "Phone collector", desc: "Collect phone numbers." },
+        { type: "contact_form", label: "Contact form", desc: "Add a simple contact form." },
+    ],
+    Payments: [
+        { type: "paypal", label: "PayPal", desc: "Accept payments with PayPal." },
+    ],
+    Embed: [
+        { type: "soundcloud", label: "SoundCloud", desc: "Embed SoundCloud content." },
+        { type: "spotify", label: "Spotify", desc: "Embed Spotify content." },
+        { type: "youtube", label: "YouTube", desc: "Embed YouTube content." },
+        { type: "twitch", label: "Twitch", desc: "Embed Twitch content." },
+        { type: "vimeo", label: "Vimeo", desc: "Embed Vimeo content." },
+        { type: "tiktok_video", label: "TikTok Video", desc: "Embed a TikTok video." },
+    ],
+};
+
 const BLOCK_ICONS: Record<string, React.ReactNode> = {
+    link: <LinkIcon size={16} />, heading: <FileCode2 size={16} />, paragraph: <FileCode2 size={16} />,
+    avatar: <User size={16} />, image: <ImageIcon size={16} />, socials: <Share2 size={16} />,
+    business_hours: <CircleDot size={16} />, modal_text: <Info size={16} />,
+    email_collector: <Megaphone size={16} />, phone_collector: <Megaphone size={16} />, contact_form: <Megaphone size={16} />,
+    paypal: <ShoppingBag size={16} />, soundcloud: <Orbit size={16} />, spotify: <Orbit size={16} />,
+    youtube: <Youtube size={16} />, twitch: <Video size={16} />, vimeo: <Video size={16} />, tiktok_video: <Video size={16} />,
     links_carousel: <Layers size={16} />, hero_single_link: <LinkIcon size={16} />, links_grid: <Grid size={16} />,
     ig_reels_sync: <Video size={16} />, ig_reels: <Video size={16} />, youtube_shorts: <Youtube size={16} />,
     long_form_videos: <MonitorPlay size={16} />, long_video: <MonitorPlay size={16} />,
@@ -88,6 +124,71 @@ const BLOCK_COLORS: Record<string, string> = {
     vertical_media: "#06B6D4", square_media: "#10B981", horizontal_media: "#F59E0B",
     add_logos: "#EF4444", add_products: "#F97316", add_apps: "#3B82F6",
     ig_reels: "#E11D48", ig_reels_sync: "#E11D48", youtube_shorts: "#DC2626",
+};
+
+const normalizeBlockType = (value: unknown) => String(value || "").toLowerCase();
+
+const isImageOnlyType = (value: unknown) => {
+    const type = normalizeBlockType(value);
+    return /image|photo|picture/.test(type) || type === "square_media" || type === "add_logos";
+};
+
+const isMediaType = (value: unknown) => {
+    const type = normalizeBlockType(value);
+    return isImageOnlyType(type) || type.includes("avatar") || type.includes("media");
+};
+
+const mapPickerTypeToBackendType = (value: unknown) => {
+    const type = normalizeBlockType(value);
+    if (["image", "avatar"].includes(type)) return "square_media";
+    if (["socials", "business_hours", "email_collector", "phone_collector", "contact_form"].includes(type)) return "links_grid";
+    if (["paypal", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"].includes(type)) return "links_grid";
+    return "hero_single_link";
+};
+
+const getUiTypeFromBlock = (block: any, uiTypeOverrides?: Record<number, string>) =>
+    normalizeBlockType(
+        block?._uiType ||
+        block?.items?.[0]?.builder_type ||
+        (block?.id && uiTypeOverrides?.[block.id]) ||
+        block?.type
+    );
+
+const getDefaultItemForType = (value: unknown) => {
+    const type = normalizeBlockType(value);
+    if (isMediaType(type)) return { title: "", url: "", image_url: "", builder_type: type };
+    if (["paragraph", "modal_text", "business_hours"].includes(type)) return { title: "", description: "", url: "", builder_type: type };
+    if (type === "heading") return { title: "", builder_type: type };
+    if (["email_collector", "phone_collector", "contact_form"].includes(type)) return { title: "", description: "", builder_type: type };
+    return { title: "", url: "https://", builder_type: type };
+};
+
+const mergeTabsPreservingItems = (localTabs: any[], incomingTabs: any[]) => {
+    if (!Array.isArray(incomingTabs) || incomingTabs.length === 0) {
+        return Array.isArray(localTabs) ? localTabs : [];
+    }
+
+    return incomingTabs.map((incomingTab) => {
+        const localTab = (localTabs || []).find((t: any) => t.id === incomingTab.id);
+        const incomingSections = Array.isArray(incomingTab?.sections) ? incomingTab.sections : [];
+
+        const mergedSections = incomingSections.map((incomingSection: any) => {
+            const localSection = (localTab?.sections || []).find((s: any) => s.id === incomingSection.id);
+            const incomingBlocks = Array.isArray(incomingSection?.blocks) ? incomingSection.blocks : [];
+
+            const mergedBlocks = incomingBlocks.map((incomingBlock: any) => {
+                const localBlock = (localSection?.blocks || []).find((b: any) => b.id === incomingBlock.id);
+                const incomingItems = Array.isArray(incomingBlock?.items) ? incomingBlock.items : [];
+                const localItems = Array.isArray(localBlock?.items) ? localBlock.items : [];
+                const mergedItems = incomingItems.length > 0 ? incomingItems : localItems;
+                return { ...incomingBlock, items: mergedItems };
+            });
+
+            return { ...incomingSection, blocks: mergedBlocks };
+        });
+
+        return { ...incomingTab, sections: mergedSections };
+    });
 };
 
 const CarouselPreview = ({ items }: { items: any[] }) => (
@@ -108,7 +209,7 @@ const CarouselPreview = ({ items }: { items: any[] }) => (
     </div>
 );
 
-const ModalShell = ({ open, onClose, title, icon, children, footer }: any) => (
+const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
         {open && (
             <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -116,7 +217,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer }: any) => (
                     className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className="relative z-10 w-full sm:max-w-xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.5)]">
+                    className={cn("relative z-10 w-full bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.5)]", maxWidthClassName)}>
                     <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
                         {icon && <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500">{icon}</div>}
                         <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
@@ -159,8 +260,10 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
     </button>
 );
 
-const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewportOffset = 280, previewWidth = 300 }: any) => {
+const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewportOffset = 280, previewWidth = 300, uiTypeOverrides = {} }: any) => {
+    const mergedSections = (tabs || []).flatMap((tab: any) => tab.sections || []);
     const currentTab = tabs.find((t: any) => t.id === selectedTabId) || tabs[0];
+    const previewSections = mergedSections.length > 0 ? mergedSections : (currentTab?.sections || []);
     const theme = getTheme(profile?.theme);
     const accentLight = isColorLight(theme.accent);
 
@@ -199,39 +302,65 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewport
                                     style={{ color: `${theme.textColor}80` }}>{profile.bio}</p>
                             )}
                         </div>
-                        {tabs.length > 1 && (
-                            <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar justify-center px-2">
-                                {tabs.map((t: any) => (
-                                    <button key={t.id} onClick={() => setSelectedTabId(t.id)}
-                                        className="flex-shrink-0 px-5 py-2 rounded-full text-[11px] font-semibold tracking-normal transition-all shadow-sm"
-                                        style={selectedTabId === t.id
-                                            ? { backgroundColor: theme.accent, color: accentLight ? '#000' : '#fff' }
-                                            : { backgroundColor: `${theme.textColor}12`, color: `${theme.textColor}AA`, backdropFilter: 'blur(8px)' }}>
-                                        {t.title}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
                         <div className="space-y-4">
-                            {currentTab?.sections?.map((sec: any) => (
+                            {previewSections.map((sec: any) => (
                                 <div key={sec.id}>
-                                    {sec.title !== "New Section" && (
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="flex-1 h-px" style={{ backgroundColor: `${theme.textColor}15` }} />
-                                            <span className="text-[9px] font-semibold uppercase tracking-[0.12em]" style={{ color: `${theme.textColor}50` }}>{sec.title}</span>
-                                            <div className="flex-1 h-px" style={{ backgroundColor: `${theme.textColor}15` }} />
-                                        </div>
-                                    )}
                                     <div className="space-y-3">
-                                        {sec.blocks?.map((block: any) => (
-                                            (block.items || []).map((item: any, i: number) => (
-                                                <motion.a key={i} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                                                    href={item.url || "#"} className={cn("block w-full flex items-center justify-center transition-all", theme.fontClass)}
-                                                    style={theme.btnStyle}>
-                                                    {item.title}
-                                                </motion.a>
-                                            ))
-                                        ))}
+                                        {sec.blocks?.map((block: any) => {
+                                            const type = getUiTypeFromBlock(block, uiTypeOverrides);
+                                            const isMediaBlock = isMediaType(type);
+
+                                            return (block.items || []).map((item: any, i: number) => {
+                                                if (isMediaBlock) {
+                                                    const mediaUrl = item?.image_url || item?.url;
+                                                    const mediaHeight = type === "horizontal_media" ? "h-28" : type === "square_media" ? "h-44" : "h-52";
+
+                                                    return (
+                                                        <motion.div
+                                                            key={`${block.id}-media-${i}`}
+                                                            whileHover={{ scale: 1.01, y: -2 }}
+                                                            className={cn("w-full overflow-hidden rounded-2xl border", mediaHeight)}
+                                                            style={{
+                                                                borderColor: `${theme.textColor}25`,
+                                                                backgroundColor: `${theme.textColor}0A`,
+                                                            }}
+                                                        >
+                                                            {mediaUrl ? (
+                                                                <img src={mediaUrl} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center" style={{ color: `${theme.textColor}70` }}>
+                                                                    <ImageIcon size={22} />
+                                                                </div>
+                                                            )}
+                                                        </motion.div>
+                                                    );
+                                                }
+
+                                                if (type === "heading") {
+                                                    return (
+                                                        <div key={`${block.id}-item-${i}`} className="px-4 py-2 rounded-xl" style={{ backgroundColor: `${theme.textColor}0A` }}>
+                                                            <p className="text-[13px] font-black tracking-wide" style={{ color: theme.textColor }}>{item.title || "Heading"}</p>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                if (["paragraph", "modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(type)) {
+                                                    return (
+                                                        <div key={`${block.id}-item-${i}`} className="px-4 py-3 rounded-xl border" style={{ borderColor: `${theme.textColor}20`, backgroundColor: `${theme.textColor}08` }}>
+                                                            <p className="text-[11px] leading-relaxed" style={{ color: `${theme.textColor}CC` }}>{item.description || item.title || "Text block"}</p>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <motion.a key={`${block.id}-item-${i}`} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                                                        href={item.url || "#"} className={cn("block w-full flex items-center justify-center transition-all", theme.fontClass)}
+                                                        style={theme.btnStyle}>
+                                                        {item.title || "Open Link"}
+                                                    </motion.a>
+                                                );
+                                            });
+                                        })}
                                     </div>
                                 </div>
                             ))}
@@ -334,18 +463,15 @@ export default function BioLinkBuilder() {
     const [isLoading, setIsLoading] = useState(true);
     const [accounts, setAccounts] = useState<any[]>([]);
     const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
-    const [blockCategories, setBlockCategories] = useState<{ [cat: string]: any[] }>({});
+    const [blockCategories, setBlockCategories] = useState<{ [cat: string]: any[] }>(PRESET_BLOCK_CATEGORIES);
     const [profile, setProfile] = useState<BioProfile | null>(null);
     const [tabs, setTabs] = useState<BioTab[]>([]);
+    const [uiTypeOverrides, setUiTypeOverrides] = useState<Record<number, string>>({});
     const [selectedTabId, setSelectedTabId] = useState<number | null>(null);
 
     const [showCreate, setShowCreate] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [createTitle, setCreateTitle] = useState("");
-    const [showAddTab, setShowAddTab] = useState(false);
-    const [newTabTitle, setNewTabTitle] = useState("");
-    const [showAddSection, setShowAddSection] = useState(false);
-    const [newSectionTitle, setNewSectionTitle] = useState("");
     const [showAddBlock, setShowAddBlock] = useState(false);
     const [targetSectionId, setTargetSectionId] = useState<number | null>(null);
     const [showCarouselEditor, setShowCarouselEditor] = useState(false);
@@ -364,6 +490,8 @@ export default function BioLinkBuilder() {
         : `/p?u=${instagramUsername}&id=${selectedPageId}`;
 
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
+    const flatBlocks = (tabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
+    const visibleBlocks = flatBlocks;
     const advancedFlowTips = [
         "1. Turn features ON that you want visitors to use.",
         "2. Fill only the fields needed for your current campaign.",
@@ -391,13 +519,8 @@ export default function BioLinkBuilder() {
                 if (accs.length > 0) setSelectedPageId(accs[0].id.toString());
             } catch { }
         };
-        const fetchBlockCategories = async () => {
-            try {
-                const res = await api.get("/bio-builder/block-types");
-                if (res.data?.success) setBlockCategories(res.data.data);
-            } catch { }
-        };
-        fetchAccounts(); fetchBlockCategories();
+        fetchAccounts();
+        setBlockCategories(PRESET_BLOCK_CATEGORIES);
     }, []);
 
     const fetchBuilderData = useCallback(async () => {
@@ -406,8 +529,16 @@ export default function BioLinkBuilder() {
         try {
             const res = await api.get(`/bio-builder?page=${selectedPageId}`);
             const payload = res.data?.data || res.data;
-            if (payload?.id) { setProfile(payload); setTabs(payload.tabs || []); if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id); }
-            else if (payload?.profile) { setProfile(payload.profile); setTabs(payload.tabs || []); if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id); }
+            if (payload?.id) {
+                setProfile(payload);
+                setTabs((prevTabs) => mergeTabsPreservingItems(prevTabs, payload.tabs || []));
+                if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id);
+            }
+            else if (payload?.profile) {
+                setProfile(payload.profile);
+                setTabs((prevTabs) => mergeTabsPreservingItems(prevTabs, payload.tabs || []));
+                if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id);
+            }
             else { setProfile(null); setTabs([]); setSelectedTabId(null); }
         } catch { setProfile(null); setTabs([]); setSelectedTabId(null); }
         finally { setIsLoading(false); }
@@ -429,37 +560,211 @@ export default function BioLinkBuilder() {
 
     const handleUpdateProfile = async (updates: Partial<BioProfile>) => {
         if (!profile) return;
-        try { await api.put(`/bio-builder/profile/${profile.id}`, updates); setProfile({ ...profile, ...updates }); }
-        catch { showModal("error", "Error", "Failed to update profile."); }
+        const previousProfile = profile;
+        const nextProfile = { ...profile, ...updates };
+        setProfile(nextProfile);
+        try {
+            await api.put(`/bio-builder/profile/${profile.id}`, updates);
+        } catch {
+            setProfile(previousProfile);
+            showModal("error", "Error", "Failed to update profile.");
+        }
     };
 
-    const handleAddTab = async () => {
-        if (!profile || !newTabTitle.trim()) return;
-        try { await api.post("/bio-builder/tabs", { profile_id: profile.id, title: newTabTitle }); setShowAddTab(false); setNewTabTitle(""); fetchBuilderData(); }
-        catch { showModal("error", "Error", "Failed to add tab."); }
-    };
-
-    const handleAddSection = async () => {
-        if (!profile || !currentTab || !newSectionTitle.trim()) return;
-        try { await api.post("/bio-builder/sections", { profile_id: profile.id, tab_id: currentTab.id, title: newSectionTitle, type: "links" }); setShowAddSection(false); setNewSectionTitle(""); fetchBuilderData(); }
-        catch { showModal("error", "Error", "Failed to add section."); }
+    const syncBlockItemsLocally = (blockId: number, items: any[]) => {
+        setTabs((prevTabs) =>
+            prevTabs.map((tab) => ({
+                ...tab,
+                sections: (tab.sections || []).map((section) => ({
+                    ...section,
+                    blocks: (section.blocks || []).map((block) =>
+                        block.id === blockId ? { ...block, items } : block
+                    ),
+                })),
+            }))
+        );
     };
 
     const handleDeleteSection = async (id: number) => {
+        if (typeof window !== "undefined") {
+            const ok = window.confirm("Are you sure you want to delete this section?");
+            if (!ok) return;
+        }
         try { await api.delete(`/bio-builder/sections/${id}`); fetchBuilderData(); }
         catch { showModal("error", "Error", "Failed to delete section."); }
     };
 
+    const ensureSectionForBlocks = async () => {
+        if (!profile || !selectedPageId) return;
+
+        let latestTabs = tabs;
+        try {
+            const fresh = await api.get(`/bio-builder?page=${selectedPageId}`);
+            const payload = fresh.data?.data || fresh.data;
+            latestTabs = payload?.tabs || tabs;
+        } catch {
+            // If refresh fails, continue with current local state.
+        }
+
+        let resolvedTabId = currentTab?.id || selectedTabId || latestTabs[0]?.id;
+
+        if (!resolvedTabId) {
+            try {
+                const createdTab = await api.post("/bio-builder/tabs", { profile_id: profile.id, title: "Main" });
+                resolvedTabId = createdTab?.data?.data?.id || createdTab?.data?.id;
+            } catch {
+                showModal("error", "Error", "Failed to create a content tab.");
+                return null;
+            }
+        }
+
+        try {
+            const fresh = await api.get(`/bio-builder?page=${selectedPageId}`);
+            const payload = fresh.data?.data || fresh.data;
+            latestTabs = payload?.tabs || tabs;
+            if (!resolvedTabId) {
+                resolvedTabId = payload?.tabs?.[0]?.id;
+            }
+        } catch {
+            // If refresh fails, we still continue with local state.
+        }
+
+        if (!resolvedTabId) {
+            showModal("error", "Error", "Could not resolve a tab for adding blocks.");
+            return null;
+        }
+
+        const activeTab = latestTabs.find((tab: any) => tab.id === resolvedTabId) || latestTabs[0];
+        const existingSection = activeTab?.sections?.[0];
+        if (existingSection?.id) {
+            setSelectedTabId(activeTab.id);
+            return existingSection.id;
+        }
+
+        try {
+            const created = await api.post("/bio-builder/sections", {
+                profile_id: profile.id,
+                tab_id: resolvedTabId,
+                title: "Main Content",
+                type: "links",
+            });
+
+            const createdSectionId = created?.data?.data?.id || created?.data?.id;
+            if (createdSectionId) {
+                await fetchBuilderData();
+                setSelectedTabId(resolvedTabId);
+                return createdSectionId;
+            }
+
+            const refreshed = await api.get(`/bio-builder?page=${selectedPageId}`);
+            const payload = refreshed.data?.data || refreshed.data;
+            const refreshedTabs = payload?.tabs || [];
+            const matchedTab = refreshedTabs.find((tab: any) => tab.id === resolvedTabId) || refreshedTabs[0];
+            const fallbackSectionId = matchedTab?.sections?.[0]?.id;
+
+            if (fallbackSectionId) {
+                await fetchBuilderData();
+                setSelectedTabId(matchedTab?.id || resolvedTabId);
+                return fallbackSectionId;
+            }
+
+            showModal("error", "Error", "Section created but could not open block marketplace. Please try again.");
+            return null;
+        } catch {
+            showModal("error", "Error", "Failed to prepare content blocks.");
+            return null;
+        }
+    };
+
+    const openBlockMarketplace = async (sectionId?: number) => {
+        if (!profile || !selectedPageId) return;
+
+        if (sectionId) {
+            setTargetSectionId(sectionId);
+            setShowAddBlock(true);
+            return;
+        }
+
+        const existingSectionId = currentTab?.sections?.[0]?.id || null;
+        setTargetSectionId(existingSectionId);
+        setShowAddBlock(true);
+    };
+
     const handleAddBlock = async (sectionId: number, type: string) => {
         if (!profile) return;
-        const defaultItems = type.includes('media') ? [{ image_url: '' }] : [{ title: 'New Item', url: 'https://', description: '', button_text: 'Visit Now' }];
-        try { await api.post("/bio-builder/blocks", { profile_id: profile.id, section_id: sectionId, type, items: defaultItems }); fetchBuilderData(); setShowAddBlock(false); }
-        catch { showModal("error", "Error", "Failed to add block."); }
+        const selectedType = normalizeBlockType(type);
+        const defaultItems = [getDefaultItemForType(selectedType)];
+        try {
+            const primaryRes = await api.post("/bio-builder/blocks", {
+                profile_id: profile.id,
+                section_id: sectionId,
+                type: selectedType,
+                items: defaultItems,
+            });
+            const createdId = primaryRes?.data?.data?.id || primaryRes?.data?.id;
+            if (createdId) {
+                setUiTypeOverrides((prev) => ({ ...prev, [createdId]: selectedType }));
+            }
+            await fetchBuilderData();
+            setShowAddBlock(false);
+        } catch {
+            try {
+                const fallbackType = mapPickerTypeToBackendType(selectedType);
+                const fallbackRes = await api.post("/bio-builder/blocks", {
+                    profile_id: profile.id,
+                    section_id: sectionId,
+                    type: fallbackType,
+                    items: defaultItems,
+                });
+                const createdId = fallbackRes?.data?.data?.id || fallbackRes?.data?.id;
+                if (createdId) {
+                    setUiTypeOverrides((prev) => ({ ...prev, [createdId]: selectedType }));
+                }
+                await fetchBuilderData();
+                setShowAddBlock(false);
+            } catch {
+                showModal("error", "Error", "Failed to add block.");
+            }
+        }
+    };
+
+    const handleSelectBlockType = async (type: string) => {
+        const resolvedSectionId = targetSectionId || await ensureSectionForBlocks();
+        if (!resolvedSectionId) {
+            showModal("error", "Error", "Could not prepare content for this block. Please try again.");
+            return;
+        }
+        setTargetSectionId(resolvedSectionId);
+        await handleAddBlock(resolvedSectionId, type);
     };
 
     const handleDeleteBlock = async (id: number) => {
-        try { await api.delete(`/bio-builder/blocks/${id}`); fetchBuilderData(); }
-        catch { showModal("error", "Error", "Failed to delete block."); }
+        if (typeof window !== "undefined") {
+            const ok = window.confirm("Are you sure you want to delete this block?");
+            if (!ok) return;
+        }
+
+        // Local-first delete: remove instantly from builder and preview.
+        setTabs((prevTabs) =>
+            prevTabs.map((tab) => ({
+                ...tab,
+                sections: (tab.sections || []).map((section) => ({
+                    ...section,
+                    blocks: (section.blocks || []).filter((block) => block.id !== id),
+                })),
+            }))
+        );
+
+        if (editingBlock?.id === id) {
+            setShowCarouselEditor(false);
+            setEditingBlock(null);
+        }
+
+        try {
+            await api.delete(`/bio-builder/blocks/${id}`);
+        } catch {
+            showModal("error", "Warning", "Block removed locally, but server delete failed.");
+        }
     };
 
     const handleUploadImage = async (file: File) => {
@@ -470,15 +775,40 @@ export default function BioLinkBuilder() {
         } catch { showModal("error", "Error", "Failed to upload image."); return null; }
     };
 
-    const openEditor = (block: any) => { setEditingBlock({ ...block, items: block.items || block.content?.items || [] }); setShowCarouselEditor(true); };
+    const openEditor = (block: any) => {
+        const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
+        const items = (block.items || block.content?.items || []).map((item: any) => ({ ...item, builder_type: item?.builder_type || uiType }));
+        setEditingBlock({ ...block, _uiType: uiType, items });
+        setShowCarouselEditor(true);
+    };
 
     const saveEditor = async () => {
         if (!editingBlock) return;
-        try { await api.put(`/bio-builder/blocks/${editingBlock.id}`, { type: editingBlock.type, items: editingBlock.items || [] }); fetchBuilderData(); setShowCarouselEditor(false); }
-        catch { showModal("error", "Error", "Failed to save block."); }
+        const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
+        const normalizedItems = (editingBlock.items || []).map((item: any) => ({ ...item, builder_type: item?.builder_type || uiType }));
+
+        syncBlockItemsLocally(editingBlock.id, normalizedItems);
+        setUiTypeOverrides((prev) => ({ ...prev, [editingBlock.id]: uiType }));
+        setShowCarouselEditor(false);
+
+        try {
+            await api.put(`/bio-builder/blocks/${editingBlock.id}`, {
+                type: editingBlock.type,
+                items: normalizedItems,
+            });
+        }
+        catch {
+            showModal("error", "Error", "Failed to save block on server. Local preview is kept.");
+        }
     };
 
-    const updateItem = (idx: number, field: string, value: any) => { if (!editingBlock) return; const items = [...(editingBlock.items || [])]; items[idx] = { ...items[idx], [field]: value }; setEditingBlock({ ...editingBlock, items }); };
+    const updateItem = (idx: number, field: string, value: any) => {
+        if (!editingBlock) return;
+        const items = [...(editingBlock.items || [])];
+        items[idx] = { ...items[idx], [field]: value };
+        setEditingBlock({ ...editingBlock, items });
+        syncBlockItemsLocally(editingBlock.id, items);
+    };
 
     const handleReorderSections = async (fromIdx: number, toIdx: number) => {
         if (!currentTab?.sections) return;
@@ -539,7 +869,7 @@ export default function BioLinkBuilder() {
                     <button onClick={() => window.location.href='/dashboard/instagram/connect'} className="mt-6 h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all">Connect Now</button>
                 </div>
                 <div className="w-full flex justify-center">
-                    <PhonePreview profile={previewDemoProfile} tabs={previewDemoTabs} selectedTabId={1} setSelectedTabId={() => {}} viewportOffset={220} previewWidth={360} />
+                    <PhonePreview profile={previewDemoProfile} tabs={previewDemoTabs} selectedTabId={1} setSelectedTabId={() => {}} viewportOffset={220} previewWidth={360} uiTypeOverrides={{}} />
                 </div>
             </div>
         </div>
@@ -700,46 +1030,78 @@ export default function BioLinkBuilder() {
                                 )}
 
                                 {view === "blocks" && (
-                                    <div className="space-y-6">
-                                        <div className="flex items-center gap-2 bg-slate-200/50 dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                                            {tabs.map((tab) => (
-                                                <button key={tab.id} onClick={() => setSelectedTabId(tab.id)}
-                                                    className={cn("h-10 px-6 rounded-lg text-[11px] font-bold tracking-tight transition-all relative flex-1 max-w-[160px]",
-                                                        selectedTabId === tab.id ? "text-slate-900 dark:text-white" : "text-slate-400")}>
-                                                    {selectedTabId === tab.id && <motion.div layoutId="tab-pill" className="absolute inset-0 bg-white dark:bg-slate-800 rounded-md shadow-sm" />}
-                                                    <span className="relative z-10">{tab.title}</span>
-                                                </button>
-                                            ))}
-                                            <button onClick={() => setShowAddTab(true)} className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white flex items-center justify-center hover:bg-slate-50 border border-slate-100 dark:border-slate-700 ml-auto transition-all"><Plus size={18} /></button>
+                                    <div className="space-y-6 pb-28 sm:pb-32">
+                                        <div className="flex items-center justify-between rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/40 px-4 py-3">
+                                            <div>
+                                                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">Content Area</p>
+                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">Blocks</p>
+                                            </div>
+                                            <span className="text-xs text-slate-500">{visibleBlocks.length} items</span>
                                         </div>
 
                                         <div className="space-y-6">
-                                            {(!currentTab || !currentTab.sections || currentTab.sections.length === 0) ? (
+                                            {(!currentTab || visibleBlocks.length === 0) ? (
                                                 <div className="py-20 text-center bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center">
                                                     <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-500/5 flex items-center justify-center text-rose-500 mb-6">
-                                                        <Layers size={28} />
+                                                        <Grid size={28} />
                                                     </div>
                                                     <h3 className="text-xl font-black text-slate-950 dark:text-white mb-2 tracking-tight">Ready to Start?</h3>
-                                                    <p className="text-[13px] text-slate-400 mb-8 max-w-xs mx-auto font-medium">Add your first section to organize your links and content.</p>
-                                                    <button onClick={() => !currentTab ? setShowAddTab(true) : setShowAddSection(true)} 
+                                                    <p className="text-[13px] text-slate-400 mb-8 max-w-xs mx-auto font-medium">Create your first block to start building your content canvas.</p>
+                                                    <button onClick={() => openBlockMarketplace()} 
                                                         className="h-12 px-10 rounded-xl bg-rose-500 text-white text-[11px] font-black uppercase tracking-widest shadow-xl shadow-rose-500/20 active:scale-95 transition-all animate-bounce">
-                                                        Deploy First Content Section
+                                                        Create Block
                                                     </button>
                                                 </div>
                                             ) : (
                                                 <div className="space-y-6">
-                                                    {currentTab.sections.map((sec, sidx) => (
-                                                        <SectionCard key={sec.id} section={sec} sidx={sidx} sectionsLength={currentTab.sections.length}
-                                                            isArranging={isArranging} onReorder={handleReorderSections}
-                                                            onDeleteSection={handleDeleteSection} onDeleteBlock={handleDeleteBlock}
-                                                            onOpenEditor={openEditor}
-                                                            onAddBlock={(secId: number) => { setTargetSectionId(secId); setShowAddBlock(true); }} />
-                                                    ))}
+                                                    <div className="grid gap-4">
+                                                        {visibleBlocks.map((block: any) => {
+                                                            const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
+                                                            const color = BLOCK_COLORS[uiType] || "#6B7280";
+                                                            const icon = BLOCK_ICONS[uiType] || <LayoutTemplate size={20} />;
+                                                            const isEditable = true;
+
+                                                            return (
+                                                                <motion.div
+                                                                    layout
+                                                                    key={block.id}
+                                                                    onClick={(e) => {
+                                                                        if (!isEditable) return;
+                                                                        const target = e.target as HTMLElement;
+                                                                        if (target.closest("button, a, input, textarea, select, label, [data-no-edit='true']")) return;
+                                                                        openEditor(block);
+                                                                    }}
+                                                                    className={cn("flex items-center gap-5 p-6 rounded-3xl border-2 transition-all group/block relative overflow-hidden",
+                                                                        isEditable ? "cursor-pointer bg-white dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 hover:border-rose-500/30 hover:shadow-xl hover:translate-x-1"
+                                                                            : "bg-slate-50 dark:bg-slate-950/40 border-transparent opacity-60") }>
+                                                                    <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-rose-500/5 blur-2xl rounded-full" />
+                                                                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style={{ backgroundColor: `${color}15`, color }}>
+                                                                        {icon}
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize">{uiType.replace(/_/g, " ")}</p>
+                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{isEditable ? "Tap to Edit Settings" : "System Content"}</p>
+                                                                    </div>
+                                                                    {!isArranging && (
+                                                                        <button
+                                                                            onClick={e => { e.stopPropagation(); handleDeleteBlock(block.id); }}
+                                                                            data-no-edit="true"
+                                                                            className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 dark:hover:border-red-500/30 hover:text-red-500 text-slate-400 flex items-center justify-center transition-all shrink-0"
+                                                                            aria-label="Delete block"
+                                                                            title="Delete block"
+                                                                        >
+                                                                            <Trash2 size={16} />
+                                                                        </button>
+                                                                    )}
+                                                                </motion.div>
+                                                            );
+                                                        })}
+                                                    </div>
                                                     <div className="flex items-center gap-4">
-                                                        <button onClick={() => setShowAddSection(true)} 
+                                                        <button onClick={() => openBlockMarketplace()} 
                                                             className="flex-1 h-16 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3 text-slate-400 hover:border-rose-500/50 hover:text-rose-500 transition-all text-[11px] font-black uppercase tracking-widest group">
                                                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-                                                            Add New Category Section
+                                                            Create Block
                                                         </button>
                                                         <button onClick={() => setView('visuals')} className="h-16 px-8 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
                                                             Next: Style <ArrowRight size={16} />
@@ -1133,6 +1495,7 @@ export default function BioLinkBuilder() {
                                     viewportOffset={170}
                                     previewWidth={320}
                                     instagramUsername={instagramUsername}
+                                    uiTypeOverrides={uiTypeOverrides}
                                 />
                             </div>
                         </div>
@@ -1146,7 +1509,7 @@ export default function BioLinkBuilder() {
                         <div className="absolute inset-0 pointer-events-none opacity-60" style={{ backgroundImage: 'radial-gradient(circle at 20% 10%, rgba(244,63,94,0.08), transparent 40%), radial-gradient(circle at 80% 90%, rgba(99,102,241,0.10), transparent 40%)' }} />
                         <div className="relative h-full w-full flex items-center justify-center overflow-hidden rounded-[26px] border border-white/60 dark:border-white/10 bg-white/55 dark:bg-white/[0.03] backdrop-blur-sm">
                             <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId} 
-                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={140} previewWidth={360} />
+                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={140} previewWidth={360} uiTypeOverrides={uiTypeOverrides} />
                         </div>
                     </div>
                 </aside>
@@ -1163,78 +1526,85 @@ export default function BioLinkBuilder() {
             </div>
 
             {/* MODALS */}
-            <ModalShell open={showAddTab} onClose={() => setShowAddTab(false)} title="Add a New Page Tab" icon={<Plus size={20} />} 
-                footer={<button onClick={handleAddTab} className="w-full h-14 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Create Tab</button>}>
-                <InputField label="Tab Name" value={newTabTitle} onChange={(e: any) => setNewTabTitle(e.target.value)} placeholder="e.g. Links" />
-            </ModalShell>
-
-            <ModalShell open={showAddSection} onClose={() => setShowAddSection(false)} title="Create a Category" icon={<Layers size={20} />}
-                footer={<button onClick={handleAddSection} className="w-full h-14 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Add Category</button>}>
-                <InputField label="Category Title" value={newSectionTitle} onChange={(e: any) => setNewSectionTitle(e.target.value)} placeholder="e.g. Latest Links" />
-            </ModalShell>
-
-            <ModalShell open={showAddBlock} onClose={() => setShowAddBlock(false)} title="Module Marketplace" icon={<Grid size={20} />}>
-                <div className="space-y-10">
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                        <input type="text" placeholder="Search for links, videos, stores..." 
-                            className="w-full h-14 pl-12 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-rose-500/20 text-sm font-medium outline-none transition-all shadow-inner" />
-                    </div>
-                    {Object.entries(blockCategories).map(([cat, types]) => (
-                        <div key={cat} className="space-y-6">
-                            <div className="flex items-center gap-3">
-                                <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">{cat} Library</h4>
-                                <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                {types.map((t: any) => (
-                                    <button key={t.type} onClick={() => handleAddBlock(targetSectionId!, t.type)}
-                                        className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-rose-500 hover:shadow-xl hover:translate-y-[-2px] transition-all flex items-center gap-4 group/btn text-left shadow-sm">
-                                        <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover/btn:text-rose-500 group-hover/btn:bg-rose-500/10 transition-all">
-                                            {BLOCK_ICONS[t.type] || <LayoutTemplate size={20} />}
-                                        </div>
-                                        <div>
-                                            <p className="text-[12px] font-black uppercase tracking-tight text-slate-900 dark:text-white">{t.label}</p>
-                                            <p className="text-[10px] text-slate-400 font-bold mt-0.5">Ready to use</p>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+            <ModalShell open={showAddBlock} onClose={() => setShowAddBlock(false)} title="Create Block" icon={<Grid size={20} />} maxWidthClassName="sm:max-w-5xl">
+                <BlockMarketplaceContent
+                    blockCategories={blockCategories}
+                    onSelect={handleSelectBlockType}
+                />
             </ModalShell>
 
             <ModalShell open={showCarouselEditor && !!editingBlock} onClose={() => setShowCarouselEditor(false)}
-                title={`Edit ${editingBlock?.type?.replace(/_/g, " ") || "Block"}`}
-                icon={editingBlock && (BLOCK_ICONS[editingBlock.type] || <LayoutTemplate size={20} />)}
-                footer={<button onClick={saveEditor} className="w-full h-14 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Save Changes</button>}>
+                title={`Edit ${getUiTypeFromBlock(editingBlock).replace(/_/g, " ") || "Block"}`}
+                icon={editingBlock && (BLOCK_ICONS[getUiTypeFromBlock(editingBlock)] || <LayoutTemplate size={20} />)}
+                footer={
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                            onClick={async () => {
+                                if (!editingBlock?.id) return;
+                                await handleDeleteBlock(editingBlock.id);
+                                setEditingBlock(null);
+                                setShowCarouselEditor(false);
+                            }}
+                            className="h-14 px-6 rounded-2xl border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 font-black uppercase tracking-widest text-[12px]"
+                        >
+                            Delete Block
+                        </button>
+                        <button onClick={saveEditor} className="flex-1 h-14 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Save Changes</button>
+                    </div>
+                }>
                 {editingBlock && (
                     <div className="space-y-6">
                         {(editingBlock.items || []).map((item: any, idx: number) => (
                             <div key={idx} className="p-6 rounded-[32px] bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 space-y-4">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Instance #{idx + 1}</span>
-                                    <button onClick={() => { const items = editingBlock.items.filter((_: any, i: number) => i !== idx); setEditingBlock({ ...editingBlock, items }); }} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                    <button onClick={() => {
+                                        if (typeof window !== "undefined") {
+                                            const ok = window.confirm("Are you sure you want to delete this item?");
+                                            if (!ok) return;
+                                        }
+                                        const items = editingBlock.items.filter((_: any, i: number) => i !== idx);
+                                        setEditingBlock({ ...editingBlock, items });
+                                    }} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
                                 </div>
-                                <InputField label="Interaction Text" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Button Label" />
-                                <InputField label="Endpoint URL" value={item.url || ""} onChange={(e: any) => updateItem(idx, 'url', e.target.value)} placeholder="https://..." />
-                                <div className="flex items-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-                                    <label className="flex-1 flex items-center gap-3 cursor-pointer group">
-                                        <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                                            {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Media Link</p>
-                                            <p className="text-[10px] font-bold text-slate-400 tracking-tight">Tap to upload visual asset</p>
-                                        </div>
-                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image_url', url); } }} />
-                                    </label>
-                                </div>
+                                <InputField
+                                    label={getUiTypeFromBlock(editingBlock) === "heading" ? "Heading Text" : "Primary Text"}
+                                    value={item.title || ""}
+                                    onChange={(e: any) => updateItem(idx, 'title', e.target.value)}
+                                    placeholder="Enter text"
+                                />
+                                {!["heading", "paragraph", "modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(getUiTypeFromBlock(editingBlock)) && (
+                                    <InputField label="Endpoint URL" value={item.url || ""} onChange={(e: any) => updateItem(idx, 'url', e.target.value)} placeholder="https://..." />
+                                )}
+                                {["paragraph", "modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(getUiTypeFromBlock(editingBlock)) && (
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Details</label>
+                                        <textarea
+                                            value={item.description || ""}
+                                            onChange={(e: any) => updateItem(idx, 'description', e.target.value)}
+                                            rows={3}
+                                            className="w-full px-5 py-4 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent focus:border-rose-500/20 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                            placeholder="Write content..."
+                                        />
+                                    </div>
+                                )}
+                                {isMediaType(getUiTypeFromBlock(editingBlock)) && (
+                                    <div className="flex items-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                                        <label className="flex-1 flex items-center gap-3 cursor-pointer group">
+                                            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                                                {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Media Link</p>
+                                                <p className="text-[10px] font-bold text-slate-400 tracking-tight">Tap to upload visual asset</p>
+                                            </div>
+                                            <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image_url', url); } }} />
+                                        </label>
+                                    </div>
+                                )}
                             </div>
                         ))}
-                        <button onClick={() => setEditingBlock({ ...editingBlock, items: [...(editingBlock.items || []), { title: 'New Item', url: 'https://' }] })}
+                        <button onClick={() => setEditingBlock({ ...editingBlock, items: [...(editingBlock.items || []), getDefaultItemForType(getUiTypeFromBlock(editingBlock))] })}
                             className="w-full h-14 rounded-2xl border-2 border-dashed border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all font-black text-xs uppercase tracking-widest">Add New Item</button>
                     </div>
                 )}
