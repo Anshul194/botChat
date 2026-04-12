@@ -192,10 +192,10 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewport
                             </motion.div>
                             <div className="backdrop-blur-md rounded-2xl px-8 py-2.5 shadow-xl"
                                 style={{ backgroundColor: `${theme.textColor}0D`, border: `1px solid ${theme.textColor}18` }}>
-                                <p className="text-[14px] font-black tracking-tight" style={{ color: theme.textColor }}>{profile?.title || "Your Brand"}</p>
+                                <p className="text-[14px] font-semibold tracking-normal" style={{ color: theme.textColor }}>{profile?.title || "Your Brand"}</p>
                             </div>
                             {profile?.bio && (
-                                <p className="text-[11px] mt-2.5 max-w-[200px] text-center leading-relaxed font-medium"
+                                <p className="text-[11px] mt-2.5 max-w-[200px] text-center leading-relaxed font-normal"
                                     style={{ color: `${theme.textColor}80` }}>{profile.bio}</p>
                             )}
                         </div>
@@ -203,7 +203,7 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewport
                             <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar justify-center px-2">
                                 {tabs.map((t: any) => (
                                     <button key={t.id} onClick={() => setSelectedTabId(t.id)}
-                                        className="flex-shrink-0 px-5 py-2 rounded-full text-[11px] font-black tracking-wide transition-all shadow-sm"
+                                        className="flex-shrink-0 px-5 py-2 rounded-full text-[11px] font-semibold tracking-normal transition-all shadow-sm"
                                         style={selectedTabId === t.id
                                             ? { backgroundColor: theme.accent, color: accentLight ? '#000' : '#fff' }
                                             : { backgroundColor: `${theme.textColor}12`, color: `${theme.textColor}AA`, backdropFilter: 'blur(8px)' }}>
@@ -218,7 +218,7 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewport
                                     {sec.title !== "New Section" && (
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="flex-1 h-px" style={{ backgroundColor: `${theme.textColor}15` }} />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: `${theme.textColor}50` }}>{sec.title}</span>
+                                            <span className="text-[9px] font-semibold uppercase tracking-[0.12em]" style={{ color: `${theme.textColor}50` }}>{sec.title}</span>
                                             <div className="flex-1 h-px" style={{ backgroundColor: `${theme.textColor}15` }} />
                                         </div>
                                     )}
@@ -582,28 +582,28 @@ export default function BioLinkBuilder() {
             {/* ── CREATOR WORKSPACE ── */}
             <div className="relative flex-1 flex overflow-hidden">
                 
-                <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[440px] pb-40 sm:pb-44 xl:pb-48", activePanel === "preview" ? "hidden xl:block" : "block")}>
+                <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[440px] pb-56 sm:pb-60 xl:pb-64", activePanel === "preview" ? "hidden xl:block" : "block")}>
                     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 xl:pl-4">
                         
                         {/* ── FLOATING STEP GUIDE + BAR ── */}
-                        <div className="fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(520px,calc(100%-0.5rem))] sm:w-[min(620px,calc(100%-1rem))] rounded-full border border-rose-100/70 dark:border-white/10 bg-white/94 dark:bg-black/40 backdrop-blur-2xl px-1.5 py-1.5 shadow-[0_18px_44px_rgba(15,23,42,0.12)]">
+                        <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(460px,calc(100%-1rem))] sm:w-[min(560px,calc(100%-1.5rem))] rounded-full border border-rose-100/70 dark:border-white/10 bg-white/96 dark:bg-black/50 backdrop-blur-2xl px-1 py-1 shadow-[0_16px_34px_rgba(15,23,42,0.12)]">
                             <div className="grid grid-cols-4 gap-1">
                             {PHASES.map((p, idx) => (
                                 <button key={p.id} onClick={() => setView(p.id)}
                                     className="group relative outline-none">
-                                    <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+10px)] w-[220px] sm:w-[270px] hidden group-hover:block">
-                                        <div className="rounded-[24px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-black/95 p-3 shadow-[0_18px_48px_rgba(15,23,42,0.16)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
+                                    <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+12px)] w-[200px] sm:w-[240px] hidden group-hover:block">
+                                        <div className="rounded-[22px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-black/95 p-2.5 shadow-[0_16px_34px_rgba(15,23,42,0.16)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
                                             <div className="flex items-start gap-3">
-                                                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-rose-500 text-white" : "bg-rose-50 dark:bg-white/10 text-rose-500 dark:text-rose-300")}>
+                                                <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-rose-500 text-white" : "bg-rose-50 dark:bg-white/10 text-rose-500 dark:text-rose-300")}>
                                                     <p.Icon size={18} />
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-rose-500">Step {idx + 1}</p>
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{p.desc}</p>
+                                                    <p className="text-[13px] font-semibold text-slate-900 dark:text-white mt-1 leading-snug">{p.desc}</p>
                                                     <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-1 leading-relaxed">{p.hint}</p>
                                                 </div>
                                             </div>
-                                            <div className="mt-3 space-y-1.5 border-t border-slate-100 dark:border-white/10 pt-3">
+                                            <div className="mt-2.5 space-y-1.5 border-t border-slate-100 dark:border-white/10 pt-2.5">
                                                 {p.details.map((detail) => (
                                                     <div key={detail} className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300">
                                                         <span className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
@@ -613,12 +613,12 @@ export default function BioLinkBuilder() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className={cn("flex flex-col items-center justify-center gap-0.5 min-h-[48px] sm:min-h-[54px] px-1.5 rounded-full transition-all duration-300 border",
+                                    <div className={cn("flex flex-col items-center justify-center gap-0.5 min-h-[44px] sm:min-h-[48px] px-1.5 rounded-full transition-all duration-300 border",
                                         view === p.id
                                             ? "bg-rose-500 text-white border-rose-500 shadow-[0_10px_24px_rgba(244,63,94,0.20)] scale-[1.02]"
                                             : "bg-white/80 dark:bg-white/5 text-slate-500 border-transparent hover:border-rose-100 dark:hover:border-white/10 hover:bg-rose-50/70 dark:hover:bg-white/10") }>
-                                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[9px] font-bold", view === p.id ? "bg-white/18 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500")}>{idx + 1}</div>
-                                        <span className={cn("hidden lg:block text-[8px] font-semibold uppercase tracking-[0.16em] truncate", view === p.id ? "text-white" : "text-slate-600 dark:text-slate-300")}>{p.label}</span>
+                                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[9px] font-semibold", view === p.id ? "bg-white/18 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500")}>{idx + 1}</div>
+                                        <span className={cn("hidden lg:block text-[8px] font-medium uppercase tracking-[0.12em] truncate", view === p.id ? "text-white" : "text-slate-600 dark:text-slate-300")}>{p.label}</span>
                                         {view === p.id && <div className="absolute inset-x-6 -bottom-1 h-1 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full" />}
                                     </div>
                                 </button>
@@ -629,8 +629,8 @@ export default function BioLinkBuilder() {
                         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-white/5 px-4 py-3 shadow-sm mt-4">
                             <div>
                                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Step {currentPhaseNumber} of {PHASES.length}</p>
-                                <p className="text-sm font-semibold text-slate-900 dark:text-white mt-1">Current: {currentPhase.desc}</p>
-                                <p className="text-xs text-slate-500 mt-1">Use the steps above to move through setup in order. Each step shows what to complete next.</p>
+                                <p className="text-sm font-medium text-slate-900 dark:text-white mt-1">Current: {currentPhase.desc}</p>
+                                <p className="text-xs text-slate-500 mt-1 leading-relaxed">Use the steps above to move through setup in order. Each step shows what to complete next.</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="hidden sm:block w-44 h-2 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
@@ -655,10 +655,10 @@ export default function BioLinkBuilder() {
                             <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}>
                                 
                                 <div className="mb-8">
-                                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2 capitalize">
+                                    <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white tracking-normal mb-2 capitalize">
                                         {view ==='identity' ? "Setup your Profile" : view === 'blocks' ? "Build your Content" : view === 'visuals' ? 'Style your Page' : 'Launch Preparation'}
                                     </h2>
-                                    <p className="text-sm text-slate-500 font-medium max-w-2xl">Each section is designed to guide you from setup to launch without needing to guess what happens next.</p>
+                                    <p className="text-sm text-slate-500 font-normal max-w-2xl leading-relaxed">Each section is designed to guide you from setup to launch without needing to guess what happens next.</p>
                                 </div>
 
                                 {view === "identity" && (
