@@ -106,6 +106,8 @@
   --brand-gradient: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
   --brand-gradient-alt: linear-gradient(135deg, #be185d 0%, #ec4899 60%, #a855f7 100%);
   --brand-gradient-soft: linear-gradient(135deg, rgba(236, 72, 153, 0.14) 0%, rgba(168, 85, 247, 0.14) 100%);
+  --app-button-bg: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  --app-button-text: #ffffff;
 
   /* Glass / Surface */
   --glass-bg: rgba(14, 22, 40, 0.75);
@@ -201,6 +203,8 @@ html.light :root,
   --brand-gradient: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
   --brand-gradient-alt: linear-gradient(135deg, #9d174d 0%, #db2777 60%, #9333ea 100%);
   --brand-gradient-soft: linear-gradient(135deg, rgba(219, 39, 119, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%);
+  --app-button-bg: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
+  --app-button-text: #ffffff;
 
   /* Glass */
   --glass-bg: rgba(255, 255, 255, 0.90);
@@ -842,4 +846,132 @@ svg,
 .pulse-dot,
 .shimmer {
   transition-property: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD PINK/ROSE OVERRIDES
+   Remap hardcoded utility classes to appearance variables.
+═══════════════════════════════════════════════════════════════ */
+[data-dashboard-theme="true"] [class*="text-pink-"] {
+  color: var(--nav-active-color) !important;
+}
+
+[data-dashboard-theme="true"] [class*="text-purple-"],
+[data-dashboard-theme="true"] [class*="text-indigo-"],
+[data-dashboard-theme="true"] [class*="text-blue-"] {
+  color: var(--nav-active-color) !important;
+}
+
+[data-dashboard-theme="true"] [class*="text-rose-"] {
+  color: var(--destructive) !important;
+}
+
+[data-dashboard-theme="true"] [class*="bg-pink-"] {
+  background-color: color-mix(in srgb, var(--nav-active-color) 14%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="bg-purple-"],
+[data-dashboard-theme="true"] [class*="bg-indigo-"],
+[data-dashboard-theme="true"] [class*="bg-blue-"] {
+  background-color: color-mix(in srgb, var(--nav-active-color) 14%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="bg-rose-"] {
+  background-color: color-mix(in srgb, var(--destructive) 14%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="border-pink-"] {
+  border-color: color-mix(in srgb, var(--nav-active-color) 28%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="border-purple-"],
+[data-dashboard-theme="true"] [class*="border-indigo-"],
+[data-dashboard-theme="true"] [class*="border-blue-"] {
+  border-color: color-mix(in srgb, var(--nav-active-color) 28%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="border-rose-"] {
+  border-color: color-mix(in srgb, var(--destructive) 28%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="ring-pink-"] {
+  --tw-ring-color: color-mix(in srgb, var(--nav-active-color) 22%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="ring-purple-"],
+[data-dashboard-theme="true"] [class*="ring-indigo-"],
+[data-dashboard-theme="true"] [class*="ring-blue-"] {
+  --tw-ring-color: color-mix(in srgb, var(--nav-active-color) 22%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="ring-rose-"] {
+  --tw-ring-color: color-mix(in srgb, var(--destructive) 22%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="shadow-pink-"] {
+  --tw-shadow-color: color-mix(in srgb, var(--nav-active-color) 28%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="shadow-purple-"],
+[data-dashboard-theme="true"] [class*="shadow-indigo-"],
+[data-dashboard-theme="true"] [class*="shadow-blue-"] {
+  --tw-shadow-color: color-mix(in srgb, var(--nav-active-color) 28%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="shadow-rose-"] {
+  --tw-shadow-color: color-mix(in srgb, var(--destructive) 28%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="hover:text-pink-"]:hover {
+  color: var(--nav-active-color) !important;
+}
+
+[data-dashboard-theme="true"] [class*="hover:text-purple-"]:hover,
+[data-dashboard-theme="true"] [class*="hover:text-indigo-"]:hover,
+[data-dashboard-theme="true"] [class*="hover:text-blue-"]:hover {
+  color: var(--nav-active-color) !important;
+}
+
+[data-dashboard-theme="true"] [class*="hover:text-rose-"]:hover {
+  color: var(--destructive) !important;
+}
+
+[data-dashboard-theme="true"] [class*="hover:bg-pink-"]:hover {
+  background-color: color-mix(in srgb, var(--nav-active-color) 16%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="hover:bg-purple-"]:hover,
+[data-dashboard-theme="true"] [class*="hover:bg-indigo-"]:hover,
+[data-dashboard-theme="true"] [class*="hover:bg-blue-"]:hover {
+  background-color: color-mix(in srgb, var(--nav-active-color) 16%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="hover:bg-rose-"]:hover {
+  background-color: color-mix(in srgb, var(--destructive) 16%, transparent) !important;
+}
+
+[data-dashboard-theme="true"] [class*="from-pink-"],
+[data-dashboard-theme="true"] [class*="from-rose-"],
+[data-dashboard-theme="true"] [class*="from-purple-"],
+[data-dashboard-theme="true"] [class*="from-indigo-"],
+[data-dashboard-theme="true"] [class*="from-blue-"] {
+  --tw-gradient-from: var(--nav-active-color) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: color-mix(in srgb, var(--nav-active-color) 0%, transparent) var(--tw-gradient-to-position) !important;
+}
+
+[data-dashboard-theme="true"] [class*="via-pink-"],
+[data-dashboard-theme="true"] [class*="via-rose-"],
+[data-dashboard-theme="true"] [class*="via-purple-"],
+[data-dashboard-theme="true"] [class*="via-indigo-"],
+[data-dashboard-theme="true"] [class*="via-blue-"] {
+  --tw-gradient-via: var(--nav-active-color) var(--tw-gradient-via-position) !important;
+  --tw-gradient-to: color-mix(in srgb, var(--nav-active-color) 0%, transparent) var(--tw-gradient-to-position) !important;
+}
+
+[data-dashboard-theme="true"] [class*="to-pink-"],
+[data-dashboard-theme="true"] [class*="to-rose-"],
+[data-dashboard-theme="true"] [class*="to-purple-"],
+[data-dashboard-theme="true"] [class*="to-indigo-"],
+[data-dashboard-theme="true"] [class*="to-blue-"] {
+  --tw-gradient-to: var(--brand-purple) var(--tw-gradient-to-position) !important;
 }

@@ -141,7 +141,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
             {/* ── Breadcrumb — page name visible on mobile too ── */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
-                <span className="hidden sm:inline text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>BotChat</span>
+                <span className="hidden sm:inline text-[11px] font-semibold" style={{ color: "var(--foreground)", opacity: 0.78 }}>BotChat</span>
                 <span className="hidden sm:inline" style={{ color: "var(--muted-foreground)", opacity: 0.35, fontSize: 13 }}>/</span>
                 <span className="text-[13px] font-black tracking-tight" style={{ color: "var(--foreground)" }}>{page}</span>
             </div>
@@ -167,8 +167,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     }}
                 >
                     <Search className="w-3.5 h-3.5 flex-shrink-0 group-hover:text-[#6C5CE7] transition-colors"
-                        style={{ color: "var(--muted-foreground)" }} />
-                    <span className="flex-1 text-[13px] select-none" style={{ color: "var(--muted-foreground)" }}>
+                        style={{ color: "var(--foreground)", opacity: 0.62 }} />
+                    <span className="flex-1 text-[13px] select-none" style={{ color: "var(--foreground)", opacity: 0.72 }}>
                         Search anything…
                     </span>
                     <div className="hidden sm:flex items-center gap-0.5">

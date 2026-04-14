@@ -23,18 +23,18 @@ import { EmojiPicker } from "@/components/ui/EmojiPicker";
 const PLATFORMS = {
   instagram: {
     name: "Instagram",
-    accent: "#E1306C",
-    accentSoft: "rgba(225,48,108,0.08)",
-    accentBorder: "rgba(225,48,108,0.16)",
-    gradient: "linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)",
+    accent: "var(--nav-active-color)",
+    accentSoft: "color-mix(in srgb, var(--nav-active-color) 10%, transparent)",
+    accentBorder: "color-mix(in srgb, var(--nav-active-color) 22%, transparent)",
+    gradient: "var(--brand-gradient)",
     icon: "📸",
   },
   facebook: {
     name: "Facebook",
-    accent: "#0866FF", // Modern FB blue
-    accentSoft: "rgba(8,102,255,0.06)",
-    accentBorder: "rgba(8,102,255,0.12)",
-    gradient: "linear-gradient(135deg, #0866FF, #0056D6)",
+    accent: "var(--nav-active-color)",
+    accentSoft: "color-mix(in srgb, var(--nav-active-color) 10%, transparent)",
+    accentBorder: "color-mix(in srgb, var(--nav-active-color) 22%, transparent)",
+    gradient: "var(--brand-gradient)",
     icon: "👤",
   },
 };
@@ -59,6 +59,9 @@ const getDS = (platform) => {
     amberSoft: "rgba(245,158,11,0.06)",
     blue: "var(--chart-1)",
     blueSoft: "rgba(29,110,245,0.06)",
+    destructive: "var(--destructive)",
+    destructiveSoft: "color-mix(in srgb, var(--destructive) 10%, transparent)",
+    destructiveBorder: "color-mix(in srgb, var(--destructive) 28%, transparent)",
     shadow: "0 1px 3px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.04)",
     shadowHover: "0 6px 20px rgba(0,0,0,0.08)",
     shadowCard: "0 0 0 1.5px var(--border), 0 2px 12px rgba(0,0,0,0.06)",
@@ -189,9 +192,9 @@ function SmallBtn({ children, onClick, danger, icon, style: extra = {} }) {
   return (
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{
       display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: DS.radiusSm,
-      border: `1.5px solid ${danger && hov ? "#FCA5A5" : DS.border}`,
-      background: danger && hov ? "#FFF1F0" : hov ? DS.bg : DS.card,
-      color: danger ? (hov ? "#DC2626" : DS.ink3) : DS.ink2,
+      border: `1.5px solid ${danger && hov ? DS.destructiveBorder : DS.border}`,
+      background: danger && hov ? DS.destructiveSoft : hov ? DS.bg : DS.card,
+      color: danger ? (hov ? DS.destructive : DS.ink3) : DS.ink2,
       cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: "inherit",
       transition: "all 0.12s", ...extra,
     }}>
@@ -341,7 +344,7 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, 
             <div key={i} style={{ background: DS.bg, border: `1.5px solid ${DS.border}`, borderRadius: DS.radiusSm, padding: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <span style={{ fontSize: 10, fontWeight: 800, color: DS.ink3 }}>BUTTON #{i + 1}</span>
-                <button onClick={() => removeButton(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 10 }}>✕ REMOVE</button>
+                <button onClick={() => removeButton(i)} style={{ border: "none", background: "transparent", color: DS.destructive, cursor: "pointer", fontSize: 10 }}>✕ REMOVE</button>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <div style={{ display: "flex", gap: 8 }}>
@@ -592,7 +595,7 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         {rules.map((rule, i) => (
           <div key={i} style={{ padding: 12, borderRadius: DS.radiusSm, border: `1.5px solid ${DS.border}`, background: DS.bg, position: "relative" }}>
             <div style={{ position: "absolute", top: 8, right: 8 }}>
-              <button onClick={() => removeRule(i)} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 14 }}>✕</button>
+              <button onClick={() => removeRule(i)} style={{ border: "none", background: "transparent", color: DS.destructive, cursor: "pointer", fontSize: 14 }}>✕</button>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <div>
@@ -671,8 +674,8 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
             style={{ padding: "4px 8px", fontSize: 11 }}
           />
         </div>
-        <div style={{ background: "#FFF1F0", border: "1.5px solid #FCA5A5", borderRadius: DS.radiusSm, padding: "10px 12px" }}>
-          <div style={{ fontSize: 10.5, fontWeight: 800, color: "#DC2626", marginBottom: 3 }}>✗ IF FALSE</div>
+        <div style={{ background: DS.destructiveSoft, border: `1.5px solid ${DS.destructiveBorder}`, borderRadius: DS.radiusSm, padding: "10px 12px" }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.destructive, marginBottom: 3 }}>✗ IF FALSE</div>
           <Label>Then go to</Label>
           <Select
             value={c.false_step_id || "end"}
@@ -1794,9 +1797,9 @@ function IconBtn({ children, onClick, danger, title }) {
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
         width: 26, height: 26, borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 700,
-        border: `1.5px solid ${danger && hov ? "#FCA5A5" : DS.border}`,
-        background: danger && hov ? "#FFF1F0" : hov ? DS.bg : "transparent",
-        color: danger ? (hov ? "#DC2626" : DS.ink3) : hov ? DS.ink : DS.ink3,
+        border: `1.5px solid ${danger && hov ? DS.destructiveBorder : DS.border}`,
+        background: danger && hov ? DS.destructiveSoft : hov ? DS.bg : "transparent",
+        color: danger ? (hov ? DS.destructive : DS.ink3) : hov ? DS.ink : DS.ink3,
         display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.1s",
       }}>{children}</button>
   );

@@ -339,9 +339,10 @@ export default function BotRepliesPage() {
                                 className={cn(
                                     "px-4 sm:px-5 py-2 rounded-xl text-[12px] sm:text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
                                     activeMenu === menu.id
-                                        ? "bg-white dark:bg-neutral-700 text-[#0866FF] shadow-sm"
+                                        ? "bg-white dark:bg-neutral-700 shadow-sm"
                                         : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
                                 )}
+                                style={activeMenu === menu.id ? { color: "var(--nav-active-color)" } : undefined}
                             >
                                 <menu.icon className="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px]" strokeWidth={2} />
                                 {menu.label}
@@ -351,8 +352,8 @@ export default function BotRepliesPage() {
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3">
-                    <button className="p-2 sm:p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-[#0866FF] transition-all"><Settings2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /></button>
-                    <button className="hidden xs:block px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl bg-[#0866FF] text-white text-[12px] sm:text-[13px] font-medium uppercase tracking-wider shadow-lg shadow-[#0866FF]/20 hover:scale-105 active:scale-95 transition-all">Pulse stats</button>
+                    <button className="p-2 sm:p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 transition-all" style={{ color: "var(--muted-foreground)" }}><Settings2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /></button>
+                    <button className="hidden xs:block px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl text-white text-[12px] sm:text-[13px] font-medium uppercase tracking-wider hover:scale-105 active:scale-95 transition-all" style={{ background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" }}>Pulse stats</button>
                 </div>
             </div>
 
@@ -360,7 +361,7 @@ export default function BotRepliesPage() {
                 {/* 2. PAGES SELECTOR (REFINED) */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
-                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 hover:text-[#0866FF] transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl" style={{ color: "var(--muted-foreground)" }}>
                             <ChevronLeft className="w-5 h-5" />
                         </button>
 
@@ -370,9 +371,10 @@ export default function BotRepliesPage() {
                                 className={cn(
                                     "px-5 py-2.5 rounded-xl text-[14px] font-black uppercase tracking-wider transition-all whitespace-nowrap",
                                     selectedPageId === "all"
-                                        ? "bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900"
+                                        ? "text-white shadow-md"
                                         : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                 )}
+                                    style={selectedPageId === "all" ? { background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" } : undefined}
                             >
                                 All Accounts
                             </button>
@@ -384,16 +386,17 @@ export default function BotRepliesPage() {
                                     className={cn(
                                         "px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all whitespace-nowrap",
                                         selectedPageId === page.page_id
-                                            ? "bg-[#0866FF]/10 text-[#0866FF] shadow-sm border border-[#0866FF]/20"
+                                            ? "shadow-sm border"
                                             : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
                                     )}
+                                    style={selectedPageId === page.page_id ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)", borderColor: "var(--nav-active-border)" } : undefined}
                                 >
                                     {page.page_name}
                                 </button>
                             ))}
                         </div>
 
-                        <button onClick={() => scroll('right')} className="p-2 text-neutral-400 hover:text-[#0866FF] transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                        <button onClick={() => scroll('right')} className="p-2 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl" style={{ color: "var(--muted-foreground)" }}>
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>
@@ -401,10 +404,11 @@ export default function BotRepliesPage() {
                     <div className="relative shrink-0 z-20">
                         <button
                             onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-black uppercase tracking-wider hover:border-[#0866FF]/30 transition-colors text-neutral-700 dark:text-neutral-300"
+                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-black uppercase tracking-wider transition-colors text-neutral-700 dark:text-neutral-300"
+                            style={{ borderColor: showPageDropdown ? "var(--nav-active-border)" : undefined }}
                         >
                             <div className="flex items-center gap-2">
-                                <ListFilter className="w-4 h-4 text-[#0866FF]" />
+                                <ListFilter className="w-4 h-4" style={{ color: "var(--nav-active-color)" }} />
                                 Quick Find
                             </div>
                             <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
@@ -424,7 +428,8 @@ export default function BotRepliesPage() {
                                                     placeholder="Search pages..."
                                                     value={quickFindSearch}
                                                     onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white dark:focus:bg-neutral-800 focus:border-[#0866FF]/20 text-xs outline-none transition-all"
+                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white dark:focus:bg-neutral-800 text-xs outline-none transition-all"
+                                                    style={{ borderColor: quickFindSearch ? "var(--nav-active-border)" : undefined }}
                                                     autoFocus
                                                     onClick={(e) => e.stopPropagation()}
                                                 />
@@ -435,8 +440,9 @@ export default function BotRepliesPage() {
                                                 onClick={() => { handlePageSelect("all"); setQuickFindSearch(""); }}
                                                 className={cn(
                                                     "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                                    selectedPageId === "all" ? "bg-[#0866FF]/10 text-[#0866FF]" : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                    selectedPageId === "all" ? "" : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                                 )}
+                                                style={selectedPageId === "all" ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : undefined}
                                             >
                                                 All Accounts
                                             </button>
@@ -449,10 +455,11 @@ export default function BotRepliesPage() {
                                                         onClick={() => { handlePageSelect(page.page_id); setQuickFindSearch(""); }}
                                                         className={cn(
                                                             "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all truncate flex items-center gap-2",
-                                                            selectedPageId === page.page_id ? "bg-[#0866FF]/10 text-[#0866FF]" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                            selectedPageId === page.page_id ? "" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                                         )}
+                                                        style={selectedPageId === page.page_id ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : undefined}
                                                     >
-                                                        <FacebookIcon className="w-3.5 h-3.5 text-[#0866FF] shrink-0" />
+                                                        <FacebookIcon className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--nav-active-color)" }} />
                                                         <span className="truncate">{page.page_name}</span>
                                                     </button>
                                                 ))}
@@ -495,7 +502,8 @@ export default function BotRepliesPage() {
                                     </div>
                                     <button
                                         onClick={() => setShowCreateModal(true)}
-                                        className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
+                                        className="text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
+                                        style={{ background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" }}
                                     >
                                         <Sparkles className="w-4 h-4" /> Create Auto-Reply
                                     </button>

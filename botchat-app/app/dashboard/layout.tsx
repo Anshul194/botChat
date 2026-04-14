@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 import { usePathname } from "next/navigation";
+import { applyAppearanceVariables, loadSavedAppearance } from "@/lib/appearance";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -36,8 +37,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         };
     }, []);
 
+    useEffect(() => {
+        applyAppearanceVariables(loadSavedAppearance());
+    }, []);
+
     return (
-        <div className="flex h-screen overflow-hidden" style={{ background: "var(--background)" }}>
+        <div
+            data-dashboard-theme="true"
+            className="flex h-screen overflow-hidden"
+            style={{
+                background: "var(--app-surface-bg, var(--background))",
+                fontFamily: "var(--app-font-family, inherit)",
+                fontSize: "var(--app-font-size, inherit)",
+                fontWeight: "var(--app-font-weight, inherit)",
+            }}
+        >
 
             {/* ── Mobile overlay backdrop ── */}
             {mobileSidebarOpen && (

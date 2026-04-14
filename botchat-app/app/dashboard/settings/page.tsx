@@ -22,8 +22,20 @@ import {
     Globe, Palette, UploadCloud, AlertCircle, Link2,
     Mail, Smartphone, Facebook, Sparkles, CreditCard, MessageSquare, Zap
 } from "lucide-react";
+import {
+    DEFAULT_APPEARANCE,
+    applyAppearanceVariables,
+    loadSavedAppearance,
+    saveAppearance,
+} from "@/lib/appearance";
 
 const navigationGroups = [
+    {
+        title: "Personalization",
+        items: [
+            { id: "appearance", label: "Appearance", Icon: Palette },
+        ]
+    },
     {
         title: "Account Setup",
         items: [
@@ -53,6 +65,8 @@ const navigationGroups = [
     }
 ];
 
+const defaultAppearance = DEFAULT_APPEARANCE;
+
 function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }) {
     return (
         <div className="glass-card rounded-2xl p-6 space-y-5">
@@ -65,11 +79,20 @@ function Section({ title, desc, children }: { title: string; desc?: string; chil
     );
 }
 
-function InputField({ label, name, type = "text", placeholder, defaultValue, value, onChange }: { label: string; name?: string; type?: string; placeholder?: string; defaultValue?: string; value?: string; onChange?: any }) {
+function InputField({ label, name, type = "text", placeholder, defaultValue, value, onChange, readOnly }: { label: string; name?: string; type?: string; placeholder?: string; defaultValue?: string; value?: string; onChange?: any; readOnly?: boolean }) {
+    const resolvedReadOnly = readOnly ?? (!!value && !onChange);
+
     return (
         <div className="space-y-1.5">
             <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>{label}</label>
-            <input type={type} name={name} placeholder={placeholder} defaultValue={defaultValue} value={value} onChange={onChange}
+            <input
+                type={type}
+                name={name}
+                placeholder={placeholder}
+                defaultValue={value === undefined ? defaultValue : undefined}
+                value={value}
+                onChange={onChange}
+                readOnly={resolvedReadOnly}
                 className="w-full px-3.5 py-2.5 rounded-xl text-sm outline-none transition-all duration-300"
                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
                 onFocus={(e) => { e.currentTarget.style.borderColor = "var(--brand-purple)"; e.currentTarget.style.boxShadow = "var(--input-focus-ring)"; }}
@@ -324,6 +347,367 @@ export default function SettingsPage() {
 
     const [mobileSettingsView, setMobileSettingsView] = useState<"nav" | "content">("nav");
 
+    const [appearance, setAppearance] = useState(defaultAppearance);
+    const [appearancePreview, setAppearancePreview] = useState(defaultAppearance);
+
+    const fontOptions = [
+        "Inter, sans-serif",
+        "Poppins, sans-serif",
+        "Montserrat, sans-serif",
+        "Nunito, sans-serif",
+        "Roboto, sans-serif",
+        "Open Sans, sans-serif",
+        "Lato, sans-serif",
+        "Raleway, sans-serif",
+        "DM Sans, sans-serif",
+        "Manrope, sans-serif",
+        "Mulish, sans-serif",
+        "Work Sans, sans-serif",
+        "Urbanist, sans-serif",
+        "Source Sans Pro, sans-serif",
+        "PT Sans, sans-serif",
+        "Merriweather, serif",
+        "Playfair Display, serif",
+        "Lora, serif",
+        "Libre Baskerville, serif",
+        "Fira Sans, sans-serif",
+        "IBM Plex Sans, sans-serif",
+        "Josefin Sans, sans-serif",
+    ];
+
+    const creatorPresets = [
+        {
+            name: "Reels Pop",
+            vibe: "Bold creator funnel",
+            mode: "Light",
+            primary: "#FF4D6D",
+            secondary: "#7C3AED",
+            tertiary: "#2DD4BF",
+            fontFamily: "Poppins, sans-serif",
+            fontSize: 16,
+            fontWeight: 600,
+            darkMode: false,
+        },
+        {
+            name: "Midnight Studio",
+            vibe: "Premium dark creator",
+            mode: "Dark",
+            primary: "#8B5CF6",
+            secondary: "#06B6D4",
+            tertiary: "#F59E0B",
+            fontFamily: "Montserrat, sans-serif",
+            fontSize: 16,
+            fontWeight: 500,
+            darkMode: true,
+        },
+        {
+            name: "Growth Mint",
+            vibe: "Clean coaching brand",
+            mode: "Light",
+            primary: "#0EA5A4",
+            secondary: "#2563EB",
+            tertiary: "#F97316",
+            fontFamily: "Nunito, sans-serif",
+            fontSize: 17,
+            fontWeight: 600,
+            darkMode: false,
+        },
+        {
+            name: "Creator Luxe",
+            vibe: "Elegant product launch",
+            mode: "Light",
+            primary: "#BE185D",
+            secondary: "#9333EA",
+            tertiary: "#F59E0B",
+            fontFamily: "Roboto, sans-serif",
+            fontSize: 16,
+            fontWeight: 500,
+            darkMode: false,
+        },
+        {
+            name: "Clean Monochrome",
+            vibe: "Minimal black and white",
+            mode: "Light",
+            primary: "#111111",
+            secondary: "#4B5563",
+            tertiary: "#9CA3AF",
+            fontFamily: "Inter, sans-serif",
+            fontSize: 16,
+            fontWeight: 500,
+            darkMode: false,
+        },
+        {
+            name: "Soft Editorial",
+            vibe: "Course creator aesthetic",
+            mode: "Light",
+            primary: "#2563EB",
+            secondary: "#EC4899",
+            tertiary: "#14B8A6",
+            fontFamily: "Playfair Display, serif",
+            fontSize: 17,
+            fontWeight: 600,
+            darkMode: false,
+        },
+        {
+            name: "Noir Creator",
+            vibe: "Dark black and white focus",
+            mode: "Dark",
+            primary: "#E5E7EB",
+            secondary: "#9CA3AF",
+            tertiary: "#6B7280",
+            fontFamily: "DM Sans, sans-serif",
+            fontSize: 16,
+            fontWeight: 600,
+            darkMode: true,
+        },
+        {
+            name: "Neon Podcast",
+            vibe: "High-energy dark brand",
+            mode: "Dark",
+            primary: "#22D3EE",
+            secondary: "#A855F7",
+            tertiary: "#FB7185",
+            fontFamily: "Manrope, sans-serif",
+            fontSize: 16,
+            fontWeight: 700,
+            darkMode: true,
+        },
+        {
+            name: "Dark Commerce",
+            vibe: "Premium ecommerce funnel",
+            mode: "Dark",
+            primary: "#38BDF8",
+            secondary: "#F59E0B",
+            tertiary: "#22C55E",
+            fontFamily: "Work Sans, sans-serif",
+            fontSize: 16,
+            fontWeight: 600,
+            darkMode: true,
+        },
+        {
+            name: "Afterhours Agency",
+            vibe: "Sleek agency dashboard",
+            mode: "Dark",
+            primary: "#C084FC",
+            secondary: "#60A5FA",
+            tertiary: "#F472B6",
+            fontFamily: "Urbanist, sans-serif",
+            fontSize: 16,
+            fontWeight: 500,
+            darkMode: true,
+        },
+    ];
+
+    const applyCreatorPreset = (preset: typeof creatorPresets[number]) => {
+        setAppearance((prev) => ({
+            ...prev,
+            primary: preset.primary,
+            secondary: preset.secondary,
+            tertiary: preset.tertiary,
+            buttonPrimary: preset.primary,
+            buttonSecondary: preset.secondary,
+            buttonText: "#FFFFFF",
+            chartColor: preset.primary,
+            fontFamily: preset.fontFamily,
+            fontSize: preset.fontSize,
+            fontWeight: preset.fontWeight,
+            darkMode: preset.darkMode,
+        }));
+    };
+
+    const getContrastTextColor = (hex: string) => {
+        const clean = hex.replace("#", "").trim();
+        const full = clean.length === 3 ? clean.split("").map((c) => `${c}${c}`).join("") : clean;
+        const value = Number.parseInt(full, 16);
+        if (Number.isNaN(value)) return "#FFFFFF";
+
+        const r = (value >> 16) & 255;
+        const g = (value >> 8) & 255;
+        const b = value & 255;
+
+        const linear = (channel: number) => {
+            const c = channel / 255;
+            return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        };
+
+        const luminance = (0.2126 * linear(r)) + (0.7152 * linear(g)) + (0.0722 * linear(b));
+        return luminance < 0.5 ? "#FFFFFF" : "#111827";
+    };
+
+    const getGradientContrastTextColor = (startHex: string, endHex: string) => {
+        const toRgb = (hex: string) => {
+            const clean = hex.replace("#", "").trim();
+            const full = clean.length === 3 ? clean.split("").map((c) => `${c}${c}`).join("") : clean;
+            const value = Number.parseInt(full, 16);
+            if (Number.isNaN(value)) return [108, 92, 231] as const;
+            return [
+                (value >> 16) & 255,
+                (value >> 8) & 255,
+                value & 255,
+            ] as const;
+        };
+
+        const [r1, g1, b1] = toRgb(startHex);
+        const [r2, g2, b2] = toRgb(endHex);
+        const avgHex = `#${Math.round((r1 + r2) / 2).toString(16).padStart(2, "0")}${Math.round((g1 + g2) / 2).toString(16).padStart(2, "0")}${Math.round((b1 + b2) / 2).toString(16).padStart(2, "0")}`;
+        return getContrastTextColor(avgHex);
+    };
+
+    useEffect(() => {
+        const saved = loadSavedAppearance();
+        setAppearance(saved);
+        setAppearancePreview(saved);
+        applyAppearanceVariables(saved);
+    }, []);
+
+    useEffect(() => {
+        setAppearancePreview(appearance);
+        applyAppearanceVariables(appearance);
+    }, [appearance]);
+
+    const AppearanceTab = (
+        <div className="space-y-8 slide-up">
+            <IntegrationHeader title="Appearance & Theme" desc="Personalize color theme and typography across the dashboard." Icon={Palette} color={appearance.primary} />
+            <Section title="Color Customization" desc="Pick your brand colors or choose a creator-focused preset.">
+                <div className="flex flex-wrap gap-6 items-center mb-4">
+                    {(["primary", "secondary", "tertiary"] as const).map((key) => (
+                        <div key={key} className="flex flex-col items-center">
+                            <label className="text-xs font-semibold mb-1" style={{ color: "var(--foreground)" }}>
+                                {key.charAt(0).toUpperCase() + key.slice(1)} Color
+                            </label>
+                            <input type="color" value={appearance[key]} onChange={(e) => setAppearance({ ...appearance, [key]: e.target.value })} className="w-12 h-12 rounded-full border-2 border-[var(--glass-border)]" />
+                            <input type="text" value={appearance[key]} onChange={(e) => setAppearance({ ...appearance, [key]: e.target.value })} className="mt-1 w-20 px-2 py-1 rounded text-xs border" />
+                        </div>
+                    ))}
+                </div>
+                <div className="mb-4">
+                    <label className="text-xs font-semibold mb-1 block">Mode</label>
+                    <select
+                        value={appearance.darkMode ? "dark" : "light"}
+                        onChange={(e) => setAppearance({ ...appearance, darkMode: e.target.value === "dark" })}
+                        className="px-2 py-1 rounded border text-xs"
+                    >
+                        <option value="light">Light (White)</option>
+                        <option value="dark">Dark (Black)</option>
+                    </select>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {creatorPresets.map((preset) => (
+                        <button
+                            key={preset.name}
+                            type="button"
+                            className="text-left rounded-xl border p-3 transition-all hover:scale-[1.01]"
+                            style={{ borderColor: "var(--glass-border)", background: "var(--card)" }}
+                            onClick={() => applyCreatorPreset(preset)}
+                        >
+                            <div className="flex items-center justify-between gap-2">
+                                <div>
+                                    <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{preset.name}</div>
+                                    <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>{preset.vibe}</div>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span
+                                        className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                                        style={{
+                                            background: preset.mode === "Dark" ? "rgba(15,23,42,0.14)" : "rgba(255,255,255,0.8)",
+                                            color: "var(--foreground)",
+                                            border: "1px solid var(--glass-border)",
+                                        }}
+                                    >
+                                        {preset.mode}
+                                    </span>
+                                    <span className="w-4 h-4 rounded-full" style={{ background: preset.primary }} />
+                                    <span className="w-4 h-4 rounded-full" style={{ background: preset.secondary }} />
+                                    <span className="w-4 h-4 rounded-full" style={{ background: preset.tertiary }} />
+                                </div>
+                            </div>
+                            <div className="mt-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                                {preset.fontFamily.split(",")[0]} · {preset.fontWeight >= 600 ? "Bold" : "Medium"}
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </Section>
+            <Section title="Typography" desc="Customize font family, size, and weight.">
+                <div className="flex flex-wrap gap-6 items-center">
+                    <div>
+                        <label className="text-xs font-semibold mb-1 block">Font Family</label>
+                        <select value={appearance.fontFamily} onChange={(e) => setAppearance({ ...appearance, fontFamily: e.target.value })} className="px-2 py-1 rounded border text-xs">
+                            {fontOptions.map((font) => (
+                                <option key={font} value={font}>{font.split(",")[0]}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="text-xs font-semibold mb-1 block">Font Size</label>
+                        <input type="number" min={12} max={32} value={appearance.fontSize} onChange={(e) => setAppearance({ ...appearance, fontSize: Number(e.target.value) })} className="w-16 px-2 py-1 rounded border text-xs" /> px
+                    </div>
+                    <div>
+                        <label className="text-xs font-semibold mb-1 block">Font Weight</label>
+                        <select value={appearance.fontWeight} onChange={(e) => setAppearance({ ...appearance, fontWeight: Number(e.target.value) })} className="px-2 py-1 rounded border text-xs">
+                            <option value={400}>Regular</option>
+                            <option value={500}>Medium</option>
+                            <option value={600}>SemiBold</option>
+                            <option value={700}>Bold</option>
+                        </select>
+                    </div>
+                </div>
+            </Section>
+            <Section title="Live Preview" desc="See your changes in real time.">
+                <div className="rounded-2xl p-8 flex flex-col items-center justify-center transition-all duration-500 w-full" style={{
+                    background: "var(--card)",
+                    border: `1px solid ${appearancePreview.primary}22`,
+                    borderRadius: 16,
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+                    fontFamily: appearancePreview.fontFamily,
+                    fontSize: appearancePreview.fontSize,
+                    fontWeight: appearancePreview.fontWeight,
+                    color: appearancePreview.darkMode ? "#fff" : "#23272F",
+                    transition: "all 0.5s cubic-bezier(.4,0,.2,1)",
+                }}>
+                    <div className="flex gap-3 mb-4">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: appearancePreview.secondary, color: getContrastTextColor(appearancePreview.secondary) }}>Primary</span>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: appearancePreview.tertiary, color: getContrastTextColor(appearancePreview.tertiary) }}>Accent</span>
+                    </div>
+                    <div className="text-lg font-bold mb-2">Live Preview Panel</div>
+                    <div className="text-sm mb-2">Only theme colors and fonts are customized.</div>
+                    <div className="flex gap-2 mt-2">
+                        <button className="px-4 py-2 rounded-xl font-semibold" style={{ background: `linear-gradient(135deg, ${appearancePreview.primary} 0%, ${appearancePreview.secondary} 100%)`, color: getGradientContrastTextColor(appearancePreview.primary, appearancePreview.secondary) }}>Button</button>
+                        <button className="px-4 py-2 rounded-xl font-semibold" style={{ background: appearancePreview.tertiary, color: getContrastTextColor(appearancePreview.tertiary) }}>Accent</button>
+                    </div>
+                </div>
+            </Section>
+            <div className="flex items-center gap-4 mt-6">
+                <button
+                    type="button"
+                    className="px-4 py-2 rounded-xl font-semibold"
+                    style={{ background: `linear-gradient(135deg, ${appearance.primary} 0%, ${appearance.secondary} 100%)`, color: getGradientContrastTextColor(appearance.primary, appearance.secondary) }}
+                    onClick={() => {
+                        setAppearance(defaultAppearance);
+                        setAppearancePreview(defaultAppearance);
+                        applyAppearanceVariables(defaultAppearance);
+                        saveAppearance(defaultAppearance);
+                    }}
+                >
+                    Reset to Default
+                </button>
+                <button
+                    type="button"
+                    className="px-4 py-2 rounded-xl font-semibold"
+                    style={{ background: `linear-gradient(135deg, ${appearance.primary} 0%, ${appearance.secondary} 100%)`, color: getGradientContrastTextColor(appearance.primary, appearance.secondary) }}
+                    onClick={() => {
+                        setAppearancePreview(appearance);
+                        applyAppearanceVariables(appearance);
+                        saveAppearance(appearance);
+                        showModal("success", "Appearance Saved", "Theme applied across your dashboard panels.");
+                    }}
+                >
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <div className="max-w-[1200px] w-full p-4 sm:p-6">
             {/* Header */}
@@ -378,6 +762,9 @@ export default function SettingsPage() {
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                         Back to Settings
                     </button>
+
+                    {/* Appearance */}
+                    {tab === "appearance" && AppearanceTab}
 
                     {/* Profile */}
                     {tab === "profile" && (
