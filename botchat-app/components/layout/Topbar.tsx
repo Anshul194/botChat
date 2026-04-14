@@ -336,10 +336,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                                     {item.label}
                                 </Link>
                             ))}
-                            <button className="w-full text-left px-4 py-3 text-[12px] font-bold text-rose-500 transition-colors"
-                                onClick={handleLogout}
-                                onMouseEnter={e => (e.currentTarget.style.background = "rgba(239,68,68,0.07)")}
-                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                            <button className="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                                onClick={handleLogout}>
                                 Sign out
                             </button>
                         </div>

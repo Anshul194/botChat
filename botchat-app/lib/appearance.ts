@@ -24,25 +24,25 @@ export type AppearanceSettings = {
 };
 
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
-    primary: "#6C5CE7",
-    secondary: "#00B894",
-    tertiary: "#FD79A8",
-    gradient: false,
+    primary: "#1d6ef5",
+    secondary: "#38b2ff",
+    tertiary: "#6366f1",
+    gradient: true,
     gradientDirection: "horizontal",
     buttonStyle: "gradient",
-    buttonPrimary: "#6C5CE7",
-    buttonSecondary: "#00B894",
+    buttonPrimary: "#1d6ef5",
+    buttonSecondary: "#38b2ff",
     buttonText: "#FFFFFF",
     fontFamily: "Inter, sans-serif",
-    fontSize: 16,
-    fontWeight: 400,
-    chartColor: "#6C5CE7",
+    fontSize: 14,
+    fontWeight: 500,
+    chartColor: "#1d6ef5",
     chartMatchTheme: true,
     panelBgType: "solid",
     borderRadius: 16,
-    shadow: 0.15,
-    glass: false,
-    glassOpacity: 0.7,
+    shadow: 0.1,
+    glass: true,
+    glassOpacity: 0.8,
     darkMode: false,
 };
 
@@ -153,22 +153,32 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
         root.style.setProperty("--background", "#0b1020");
         root.style.setProperty("--foreground", "#e8ecff");
         root.style.setProperty("--card", "#11182b");
+        root.style.setProperty("--card-foreground", "#e8ecff");
+        root.style.setProperty("--popover", "#11182b");
+        root.style.setProperty("--popover-foreground", "#e8ecff");
         root.style.setProperty("--sidebar", "#0a1124");
         root.style.setProperty("--sidebar-foreground", "#c6d1ec");
         root.style.setProperty("--sidebar-border", "rgba(255,255,255,0.07)");
         root.style.setProperty("--glass-bg", rgba("#11182b", 0.82));
         root.style.setProperty("--glass-border", "rgba(255,255,255,0.08)");
         root.style.setProperty("--muted-foreground", "#9aa6c7");
+        root.classList.add("dark");
+        root.classList.remove("light");
     } else {
         root.style.setProperty("--background", "#f8fafc");
         root.style.setProperty("--foreground", "#111827");
         root.style.setProperty("--card", "#ffffff");
+        root.style.setProperty("--card-foreground", "#111827");
+        root.style.setProperty("--popover", "#ffffff");
+        root.style.setProperty("--popover-foreground", "#111827");
         root.style.setProperty("--sidebar", "#ffffff");
         root.style.setProperty("--sidebar-foreground", "#374151");
         root.style.setProperty("--sidebar-border", "rgba(15,23,42,0.08)");
         root.style.setProperty("--glass-bg", "rgba(255,255,255,0.92)");
         root.style.setProperty("--glass-border", "rgba(15,23,42,0.08)");
         root.style.setProperty("--muted-foreground", "#64748b");
+        root.classList.add("light");
+        root.classList.remove("dark");
     }
 }
 
@@ -187,4 +197,9 @@ export function loadSavedAppearance(): AppearanceSettings {
 export function saveAppearance(settings: AppearanceSettings): void {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(APPEARANCE_STORAGE_KEY, JSON.stringify(settings));
+
+    // Dispatch to ThemeProvider so it syncs its internal state
+    const newTheme = settings.darkMode ? "dark" : "light";
+    const event = new CustomEvent("botchat-appearance-updated", { detail: newTheme });
+    window.dispatchEvent(event);
 }

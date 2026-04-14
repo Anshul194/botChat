@@ -24,9 +24,9 @@ const getBlockIcon = (type: string) => {
 
 const getCategoryAccent = (category: string) => {
     const value = category.toLowerCase();
-    if (/(brand|identity|base)/.test(value)) return "bg-rose-500/10 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300";
-    if (/(media|visual|image|video)/.test(value)) return "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300";
-    if (/(advanced|growth|tracking|marketing)/.test(value)) return "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300";
+    if (/(brand|identity|base)/.test(value)) return "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary";
+    if (/(media|visual|image|video)/.test(value)) return "bg-blue-500/10 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300";
+    if (/(advanced|growth|tracking|marketing)/.test(value)) return "bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300";
     if (/(social|embed|content|blocks?)/.test(value)) return "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300";
     return "bg-slate-500/10 text-slate-600 dark:bg-slate-500/15 dark:text-slate-300";
 };
@@ -73,8 +73,8 @@ export default function BlockMarketplaceContent({
                             className={cn(
                                 "h-9 px-4 rounded-full text-[10px] font-semibold uppercase tracking-[0.14em] border transition-all",
                                 activeCategory === "all"
-                                    ? "bg-slate-900 text-white border-slate-900"
-                                    : "bg-slate-50 text-slate-600 border-slate-200 hover:border-rose-200 hover:text-rose-600"
+                                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                                    : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/30 hover:text-primary"
                             )}
                         >
                             All <span className="ml-1 opacity-70">{allCount}</span>
@@ -87,8 +87,8 @@ export default function BlockMarketplaceContent({
                                 className={cn(
                                     "h-9 px-4 rounded-full text-[10px] font-semibold uppercase tracking-[0.14em] border transition-all",
                                     activeCategory === category
-                                        ? "bg-rose-500 text-white border-rose-500 shadow-sm"
-                                        : "bg-slate-50 text-slate-600 border-slate-200 hover:border-rose-200 hover:text-rose-600"
+                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                                        : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/30 hover:text-primary"
                                 )}
                             >
                                 {category} <span className="ml-1 opacity-70">{items.length}</span>
@@ -103,7 +103,7 @@ export default function BlockMarketplaceContent({
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search modules, buttons, media, forms..."
-                            className="w-full h-12 pl-11 pr-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white outline-none focus:border-rose-400 transition-all"
+                            className="w-full h-12 pl-11 pr-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white outline-none focus:border-slate-400 transition-all"
                         />
                     </div>
 
@@ -137,7 +137,7 @@ export default function BlockMarketplaceContent({
                                                 <p className="text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-[0.12em] truncate mt-0.5">{category}</p>
                                             </div>
                                         </div>
-                                        <ArrowRight size={14} className="text-slate-300 group-hover:text-rose-500 transition-colors shrink-0 mt-1" />
+                                        <ArrowRight size={14} className="text-slate-300 group-hover:text-primary transition-colors shrink-0 mt-1" />
                                     </div>
 
                                     <p className="mt-3 text-sm text-slate-500 dark:text-slate-300 leading-relaxed">
@@ -148,7 +148,7 @@ export default function BlockMarketplaceContent({
                                         <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.12em]", accentClass)}>
                                             {category}
                                         </span>
-                                        <span className="text-[10px] font-medium text-slate-400 group-hover:text-rose-500 transition-colors">Click to add</span>
+                                        <span className="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">Click to add</span>
                                     </div>
                                 </button>
                             );

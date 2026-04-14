@@ -401,40 +401,124 @@ export default function SettingsPage() {
             darkMode: true,
         },
         {
-            name: "Growth Mint",
-            vibe: "Clean coaching brand",
+            name: "Cyberpunk 2077",
+            vibe: "High contrast neon glow",
+            mode: "Dark",
+            primary: "#FCE205",
+            secondary: "#FF003C",
+            tertiary: "#00FF9F",
+            fontFamily: "Urbanist, sans-serif",
+            fontSize: 16,
+            fontWeight: 700,
+            darkMode: true,
+        },
+        {
+            name: "Nordic Minimal",
+            vibe: "Clean, organic, airy",
             mode: "Light",
-            primary: "#0EA5A4",
-            secondary: "#2563EB",
-            tertiary: "#F97316",
-            fontFamily: "Nunito, sans-serif",
+            primary: "#4A5568",
+            secondary: "#A0AEC0",
+            tertiary: "#E2E8F0",
+            fontFamily: "Inter, sans-serif",
+            fontSize: 15,
+            fontWeight: 400,
+            darkMode: false,
+        },
+        {
+            name: "Velvet Royal",
+            vibe: "Luxurious & elegant",
+            mode: "Dark",
+            primary: "#D4AF37",
+            secondary: "#4A0404",
+            tertiary: "#800020",
+            fontFamily: "Playfair Display, serif",
             fontSize: 17,
             fontWeight: 600,
-            darkMode: false,
+            darkMode: true,
         },
         {
-            name: "Creator Luxe",
-            vibe: "Elegant product launch",
+            name: "Matcha Zen",
+            vibe: "Peaceful holistic brand",
             mode: "Light",
-            primary: "#BE185D",
-            secondary: "#9333EA",
-            tertiary: "#F59E0B",
-            fontFamily: "Roboto, sans-serif",
+            primary: "#7C9082",
+            secondary: "#E8EAE6",
+            tertiary: "#D6E5D8",
+            fontFamily: "Nunito, sans-serif",
             fontSize: 16,
             fontWeight: 500,
             darkMode: false,
         },
         {
-            name: "Clean Monochrome",
-            vibe: "Minimal black and white",
+            name: "Aurora Borealis",
+            vibe: "Northern lights gradient",
+            mode: "Dark",
+            primary: "#4ade80",
+            secondary: "#818cf8",
+            tertiary: "#c084fc",
+            fontFamily: "Manrope, sans-serif",
+            fontSize: 16,
+            fontWeight: 600,
+            darkMode: true,
+        },
+        {
+            name: "Neobrutalism",
+            vibe: "Bold startup energy",
             mode: "Light",
-            primary: "#111111",
-            secondary: "#4B5563",
-            tertiary: "#9CA3AF",
-            fontFamily: "Inter, sans-serif",
+            primary: "#000000",
+            secondary: "#FF90E8",
+            tertiary: "#FFC900",
+            fontFamily: "IBM Plex Sans, sans-serif",
+            fontSize: 16,
+            fontWeight: 700,
+            darkMode: false,
+        },
+        {
+            name: "Ocean Depths",
+            vibe: "Tech and SaaS scale",
+            mode: "Dark",
+            primary: "#0EA5E9",
+            secondary: "#0369A1",
+            tertiary: "#38BDF8",
+            fontFamily: "DM Sans, sans-serif",
             fontSize: 16,
             fontWeight: 500,
+            darkMode: true,
+        },
+        {
+            name: "Sunset Drive",
+            vibe: "Vibrant synthwave",
+            mode: "Dark",
+            primary: "#FF7E67",
+            secondary: "#FF2A54",
+            tertiary: "#230B48",
+            fontFamily: "Work Sans, sans-serif",
+            fontSize: 16,
+            fontWeight: 600,
+            darkMode: true,
+        },
+        {
+            name: "Golden Hour",
+            vibe: "Warm photography portfolio",
+            mode: "Light",
+            primary: "#F6A867",
+            secondary: "#D7816A",
+            tertiary: "#F4EBD9",
+            fontFamily: "Lora, serif",
+            fontSize: 17,
+            fontWeight: 500,
             darkMode: false,
+        },
+        {
+            name: "Monokai Dev",
+            vibe: "Hacker / Coder aesthetic",
+            mode: "Dark",
+            primary: "#A6E22E",
+            secondary: "#F92672",
+            tertiary: "#66D9EF",
+            fontFamily: "Fira Sans, sans-serif",
+            fontSize: 15,
+            fontWeight: 500,
+            darkMode: true,
         },
         {
             name: "Soft Editorial",
@@ -461,41 +545,29 @@ export default function SettingsPage() {
             darkMode: true,
         },
         {
-            name: "Neon Podcast",
-            vibe: "High-energy dark brand",
-            mode: "Dark",
-            primary: "#22D3EE",
-            secondary: "#A855F7",
-            tertiary: "#FB7185",
-            fontFamily: "Manrope, sans-serif",
-            fontSize: 16,
-            fontWeight: 700,
-            darkMode: true,
-        },
-        {
-            name: "Dark Commerce",
-            vibe: "Premium ecommerce funnel",
-            mode: "Dark",
-            primary: "#38BDF8",
-            secondary: "#F59E0B",
-            tertiary: "#22C55E",
-            fontFamily: "Work Sans, sans-serif",
-            fontSize: 16,
+            name: "Growth Mint",
+            vibe: "Clean coaching brand",
+            mode: "Light",
+            primary: "#0EA5A4",
+            secondary: "#2563EB",
+            tertiary: "#F97316",
+            fontFamily: "Nunito, sans-serif",
+            fontSize: 17,
             fontWeight: 600,
-            darkMode: true,
+            darkMode: false,
         },
         {
-            name: "Afterhours Agency",
-            vibe: "Sleek agency dashboard",
-            mode: "Dark",
-            primary: "#C084FC",
-            secondary: "#60A5FA",
-            tertiary: "#F472B6",
-            fontFamily: "Urbanist, sans-serif",
+            name: "Creator Luxe",
+            vibe: "Elegant product launch",
+            mode: "Light",
+            primary: "#BE185D",
+            secondary: "#9333EA",
+            tertiary: "#F59E0B",
+            fontFamily: "Roboto, sans-serif",
             fontSize: 16,
             fontWeight: 500,
-            darkMode: true,
-        },
+            darkMode: false,
+        }
     ];
 
     const applyCreatorPreset = (preset: typeof creatorPresets[number]) => {
@@ -591,38 +663,45 @@ export default function SettingsPage() {
                         <option value="dark">Dark (Black)</option>
                     </select>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {creatorPresets.map((preset) => (
                         <button
                             key={preset.name}
                             type="button"
-                            className="text-left rounded-xl border p-3 transition-all hover:scale-[1.01]"
-                            style={{ borderColor: "var(--glass-border)", background: "var(--card)" }}
+                            className="group relative flex flex-col items-start overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-primary/10"
+                            style={{ 
+                                background: preset.darkMode ? "rgba(10,10,10,0.8)" : "rgba(255,255,255,0.9)",
+                                border: `1px solid ${preset.darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
+                                boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
+                            }}
                             onClick={() => applyCreatorPreset(preset)}
                         >
-                            <div className="flex items-center justify-between gap-2">
+                            {/* Animated background glow on hover */}
+                            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-40" style={{ background: preset.primary }} />
+
+                            <div className="flex w-full items-center justify-between gap-3 relative z-10">
                                 <div>
-                                    <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{preset.name}</div>
-                                    <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>{preset.vibe}</div>
+                                    <div className="text-base font-bold tracking-tight" style={{ color: preset.darkMode ? "#fff" : "#111" }}>{preset.name}</div>
+                                    <div className="text-xs font-medium mt-0.5 opacity-60" style={{ color: preset.darkMode ? "#fff" : "#111" }}>{preset.vibe}</div>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <span
-                                        className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                                        style={{
-                                            background: preset.mode === "Dark" ? "rgba(15,23,42,0.14)" : "rgba(255,255,255,0.8)",
-                                            color: "var(--foreground)",
-                                            border: "1px solid var(--glass-border)",
-                                        }}
-                                    >
-                                        {preset.mode}
-                                    </span>
-                                    <span className="w-4 h-4 rounded-full" style={{ background: preset.primary }} />
-                                    <span className="w-4 h-4 rounded-full" style={{ background: preset.secondary }} />
-                                    <span className="w-4 h-4 rounded-full" style={{ background: preset.tertiary }} />
+                                <div className="flex -space-x-1">
+                                    <span className="h-6 w-6 rounded-full border-2 border-white dark:border-black shadow-sm z-30" style={{ background: preset.primary }} />
+                                    <span className="h-6 w-6 rounded-full border-2 border-white dark:border-black shadow-sm z-20" style={{ background: preset.secondary }} />
+                                    <span className="h-6 w-6 rounded-full border-2 border-white dark:border-black shadow-sm z-10" style={{ background: preset.tertiary }} />
                                 </div>
                             </div>
-                            <div className="mt-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                                {preset.fontFamily.split(",")[0]} · {preset.fontWeight >= 600 ? "Bold" : "Medium"}
+                            
+                            <div className="mt-6 flex w-full items-center justify-between relative z-10">
+                                <div className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/10" style={{ color: preset.darkMode ? "#ddd" : "#444" }}>
+                                    {preset.fontFamily.split(",")[0]}
+                                </div>
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 border" style={{ 
+                                    background: preset.mode === "Dark" ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,1)",
+                                    borderColor: preset.darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+                                    color: preset.darkMode ? "#fff" : "#000"
+                                }}>
+                                    <div className="h-2 w-2 rounded-full" style={{ background: preset.mode === "Dark" ? "#fff" : "#000" }} /> {preset.mode}
+                                </span>
                             </div>
                         </button>
                     ))}

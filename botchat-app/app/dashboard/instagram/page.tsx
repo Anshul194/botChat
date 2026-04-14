@@ -152,22 +152,22 @@ export default function InstagramPage() {
             label: "Connected Pages",
             value: accounts.length.toString(),
             icon: Layers,
-            color: "text-pink-600",
-            bg: "bg-pink-50 dark:bg-pink-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             label: "Active Automations",
             value: accounts.filter(a => a.is_active).length.toString(),
             icon: Webhook,
-            color: "text-rose-600",
-            bg: "bg-rose-50 dark:bg-rose-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
         {
             label: "Total Reach",
             value: accounts.reduce((acc, a) => acc + (a.followers_count || 0), 0).toLocaleString(),
             icon: Users,
-            color: "text-orange-600",
-            bg: "bg-orange-50 dark:bg-orange-500/10"
+            color: "text-primary",
+            bg: "bg-primary/10"
         },
     ];
 
@@ -183,11 +183,12 @@ export default function InstagramPage() {
     const groupedArray = Object.values(groupedAccounts);
 
     return (
-        <div className="bg-gray-50/50 dark:bg-gray-950 min-h-screen pb-16">
+        <div className="bg-transparent min-h-screen pb-16"
+             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
             {/* Header */}
             <header className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-500 shadow-sm border border-pink-100 dark:border-pink-900/30">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20">
                         <Instagram className="w-5 h-5" />
                     </div>
                     <div>
@@ -223,7 +224,7 @@ export default function InstagramPage() {
                     <button
                         onClick={handleInstagramConnect}
                         disabled={isConnecting}
-                        className="h-10 px-5 rounded-xl bg-pink-500 text-white font-bold text-[11px] tracking-wide hover:bg-pink-600 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-pink-500/20"
+                        className="h-10 px-5 rounded-xl bg-primary text-white font-bold text-[11px] tracking-wide hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin text-white/50" /> : <Instagram className="w-4 h-4" />}
                         {isConnecting ? "Authorizing..." : "Connect Profile"}
@@ -242,7 +243,7 @@ export default function InstagramPage() {
                             className="space-y-6"
                         >
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-500 shadow-sm border border-pink-100 dark:border-pink-900/30">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20">
                                     <Bot className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -355,7 +356,7 @@ export default function InstagramPage() {
                                                     >
                                                         <div className="flex items-start gap-4 mb-5">
                                                             <div className="relative shrink-0">
-                                                                <div className="h-14 w-14 overflow-hidden rounded-xl border dark:border-neutral-700 bg-gray-100 flex items-center justify-center p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600">
+                                                                <div className="h-14 w-14 overflow-hidden rounded-xl border dark:border-neutral-700 bg-gray-100 flex items-center justify-center p-0.5 bg-gradient-to-tr from-primary/60 via-primary to-primary/80">
                                                                     <div className="h-full w-full bg-white dark:bg-neutral-900 rounded-[10px] overflow-hidden flex items-center justify-center">
                                                                         {acc.profile_picture_url ? (
                                                                             <img
@@ -364,7 +365,7 @@ export default function InstagramPage() {
                                                                                 className="h-full w-full object-cover"
                                                                             />
                                                                         ) : (
-                                                                            <span className="text-xl font-bold text-pink-500">{acc.username[0]}</span>
+                                                                            <span className="text-xl font-bold text-primary">{acc.username[0]}</span>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -424,7 +425,7 @@ export default function InstagramPage() {
                                                                     });
                                                                 }}
                                                                 title="Clean Data"
-                                                                className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-pink-600 hover:bg-pink-50 dark:bg-gray-800 dark:hover:bg-pink-900/40 transition-colors"
+                                                                className="p-2 rounded-xl bg-gray-50 dark:bg-slate-900 text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors"
                                                             >
                                                                 <Eraser className="h-4 w-4" />
                                                             </button>
@@ -467,13 +468,13 @@ export default function InstagramPage() {
                             ) : (
                                 <div className="rounded-3xl border border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900 p-12 text-center max-w-2xl mx-auto mt-12">
                                     <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 mx-auto mb-6 flex items-center justify-center">
-                                        <Instagram className="h-8 w-8 text-pink-500" />
+                                        <Instagram className="h-8 w-8 text-primary" />
                                     </div>
                                     <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">No Instagram Profiles Found</h3>
                                     <p className="text-neutral-500 dark:text-neutral-400 mb-8 max-w-md mx-auto text-sm">Connect your Instagram business account to unlock DM automations, comment auto-replies, and scheduled content.</p>
                                     <button
                                         onClick={handleInstagramConnect}
-                                        className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 px-8 py-3 text-sm font-medium text-white shadow-sm hover:opacity-90 transition duration-200 active:scale-95"
+                                        className="rounded-xl bg-primary px-8 py-3 text-sm font-medium text-white shadow-sm shadow-primary/20 hover:opacity-90 transition duration-200 active:scale-95"
                                     >
                                         Connect Profile
                                     </button>

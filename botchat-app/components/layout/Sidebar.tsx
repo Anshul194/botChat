@@ -59,9 +59,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const [mounted, setMounted] = useState(false);
     const [facebookOpen, setFacebookOpen] = useState(false);
     const [instagramOpen, setInstagramOpen] = useState(false);
+    const [pendingRoute, setPendingRoute] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
+        setPendingRoute(null); // Clear pending route when navigation completes
         if (pathname.startsWith("/dashboard/facebook")) {
             setFacebookOpen(true);
         }
@@ -78,8 +80,9 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
 
     const { showModal } = useModal();
 
-    const isFacebookActive = pathname.startsWith("/dashboard/facebook");
-    const isInstagramActive = pathname.startsWith("/dashboard/instagram");
+    const currentPath = pendingRoute || pathname;
+    const isFacebookActive = currentPath.startsWith("/dashboard/facebook");
+    const isInstagramActive = currentPath.startsWith("/dashboard/instagram");
 
     const handleInstagramConnect = async () => {
         const width = 600;
@@ -212,7 +215,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             </motion.div>
                         )}
                         {mainNav.map(item => (
-                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={pathname} onClose={onClose} />
+                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); setPendingRoute(item.href); if (onClose) onClose(); router.push(item.href); }} />
                         ))}
                     </motion.div>
 
@@ -245,6 +248,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 onClick={() => {
                                     setFacebookOpen(prev => !prev);
                                     if (!facebookOpen && !isFacebookActive) {
+                                        setPendingRoute("/dashboard/facebook");
                                         router.push("/dashboard/facebook");
                                     }
                                 }}
@@ -295,12 +299,12 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 { label: "Bot Replies", href: "/dashboard/facebook/bot-replies" },
                                                 { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", badge: "Live" },
                                             ].map(sub => {
-                                                const isActive = sub.href === "/dashboard/facebook" ? pathname === "/dashboard/facebook" : pathname.startsWith(sub.href);
+                                                const isActive = sub.href === "/dashboard/facebook" ? currentPath === "/dashboard/facebook" : currentPath.startsWith(sub.href);
                                                 return (
                                                     <Link
                                                         key={sub.href}
                                                         href={sub.href}
-                                                        onClick={onClose}
+                                                        onClick={(e) => { e.preventDefault(); setPendingRoute(sub.href); if (onClose) onClose(); router.push(sub.href); }}
                                                         className={cn(
                                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                                                             isActive
@@ -333,6 +337,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 onClick={() => {
                                     setInstagramOpen(prev => !prev);
                                     if (!instagramOpen && !isInstagramActive) {
+                                        setPendingRoute("/dashboard/instagram");
                                         router.push("/dashboard/instagram");
                                     }
                                 }}
@@ -384,12 +389,12 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                 { label: "Bio Link Builder", href: "/dashboard/instagram/bio-link", badge: "Premium" },
                                                 { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
                                             ].map(sub => {
-                                                const isActive = sub.href === "/dashboard/instagram" ? pathname === "/dashboard/instagram" : pathname.startsWith(sub.href);
+                                                const isActive = sub.href === "/dashboard/instagram" ? currentPath === "/dashboard/instagram" : currentPath.startsWith(sub.href);
                                                 return (
                                                     <Link
                                                         key={sub.href}
                                                         href={sub.href}
-                                                        onClick={onClose}
+                                                        onClick={(e) => { e.preventDefault(); setPendingRoute(sub.href); if (onClose) onClose(); router.push(sub.href); }}
                                                         className={cn(
                                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                                                             isActive
@@ -425,7 +430,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             </motion.div>
                         )}
                         {growthNav.map(item => (
-                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={pathname} onClose={onClose} />
+                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); setPendingRoute(item.href); if (onClose) onClose(); router.push(item.href); }} />
                         ))}
                     </motion.div>
 
@@ -434,13 +439,13 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div variants={itemVariants} className="space-y-0.5">
                             {!collapsed && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-3 pb-1.5">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                                         Administration
                                     </span>
                                 </motion.div>
                             )}
                             {adminNav.map(item => (
-                                <NavItem key={item.href} item={item} collapsed={collapsed} pathname={pathname} onClose={onClose} />
+                                <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); setPendingRoute(item.href); if (onClose) onClose(); router.push(item.href); }} />
                             ))}
                         </motion.div>
                     )}
@@ -532,12 +537,12 @@ function NavItem({
     item,
     collapsed,
     pathname,
-    onClose,
+    onClick,
 }: {
     item: { label: string; icon: any; href: string; badge?: string };
     collapsed: boolean;
     pathname: string;
-    onClose?: () => void;
+    onClick?: (e: React.MouseEvent) => void;
 }) {
     // For the main Dashboard link, use exact match to avoid highlighting it on all sub-pages.
     const isActive = item.href === "/dashboard"
@@ -552,7 +557,7 @@ function NavItem({
         >
             <Link
                 href={item.href}
-                onClick={onClose}
+                onClick={onClick}
                 className={cn(
                     "group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative",
                     isActive

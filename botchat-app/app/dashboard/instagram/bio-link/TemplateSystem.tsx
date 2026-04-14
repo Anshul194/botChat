@@ -780,7 +780,7 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                         className={cn(
                             "flex-shrink-0 h-10 px-5 rounded-xl flex items-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all",
                             selectedNiche === cat.id
-                                ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20"
+                                ? "bg-primary text-white shadow-lg shadow-primary/20"
                                 : "bg-white dark:bg-slate-900 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800"
                         )}>
                         {cat.icon} {cat.name}
@@ -801,8 +801,8 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                             className={cn(
                                 "group relative aspect-[9/16] rounded-2xl overflow-hidden border-2 transition-all duration-300 outline-none cursor-pointer",
                                 isSelected
-                                    ? "border-rose-500 shadow-2xl shadow-rose-500/20 scale-[1.02]"
-                                    : "border-transparent hover:border-rose-500/30 hover:shadow-xl"
+                                    ? "border-primary shadow-2xl shadow-primary/20 scale-[1.02]"
+                                    : "border-transparent hover:border-primary/30 dark:hover:border-primary/20 hover:shadow-xl"
                             )}>
 
                             <div className="absolute inset-0" style={tCfg.bgStyle}>
@@ -821,7 +821,7 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                             </div>
 
                             {isSelected && (
-                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-rose-500 flex items-center justify-center z-20 shadow-lg">
+                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-20 shadow-lg">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 </div>
                             )}
@@ -831,7 +831,7 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                                     "absolute top-3 left-3 px-2.5 py-1 text-white text-[8px] font-black uppercase rounded-full shadow-lg flex items-center gap-1 z-20",
                                     isAnimated ? "bg-gradient-to-r from-amber-500 to-orange-500" :
                                         isImage ? "bg-gradient-to-r from-cyan-500 to-blue-500" :
-                                            "bg-gradient-to-r from-rose-500 to-pink-500"
+                                            "bg-gradient-to-r from-slate-600 to-slate-800"
                                 )}>
                                     {isAnimated ? <Zap size={8} /> : isImage ? <ImageIcon size={8} /> : <Sparkles size={8} />}
                                     {tpl.badge}

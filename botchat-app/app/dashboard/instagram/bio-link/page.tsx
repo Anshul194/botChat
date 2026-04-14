@@ -121,10 +121,10 @@ const BLOCK_ICONS: Record<string, React.ReactNode> = {
 };
 
 const BLOCK_COLORS: Record<string, string> = {
-    links_carousel: "#6366F1", hero_single_link: "#EC4899", links_grid: "#8B5CF6",
+    links_carousel: "#6366F1", hero_single_link: "#6366F1", links_grid: "#8B5CF6",
     vertical_media: "#06B6D4", square_media: "#10B981", horizontal_media: "#F59E0B",
-    add_logos: "#EF4444", add_products: "#F97316", add_apps: "#3B82F6",
-    ig_reels: "#E11D48", ig_reels_sync: "#E11D48", youtube_shorts: "#DC2626",
+    add_logos: "#64748B", add_products: "#F97316", add_apps: "#3B82F6",
+    ig_reels: "#4F46E5", ig_reels_sync: "#4F46E5", youtube_shorts: "#4F46E5",
 };
 
 const normalizeBlockType = (value: unknown) => String(value || "").toLowerCase();
@@ -215,19 +215,19 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
         {open && (
             <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.5)]", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
                     <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-                        {icon && <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500">{icon}</div>}
+                        {icon && <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">{icon}</div>}
                         <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
                         <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
                             <X size={18} />
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-8">{children}</div>
-                    {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">{footer}</div>}
+                    {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
                 </motion.div>
             </div>
         )}
@@ -237,7 +237,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 const InputField = ({ label, ...props }: any) => (
     <div className="space-y-2">
         <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">{label}</label>
-        <input {...props} className="w-full h-12 px-5 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent focus:border-rose-500/20 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner" />
+        <input {...props} className="w-full h-12 px-5 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner" />
     </div>
 );
 
@@ -249,7 +249,7 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
         className={cn(
             "relative inline-flex h-7 w-12 items-center rounded-full transition-all",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-            checked ? "bg-indigo-500" : "bg-slate-300 dark:bg-slate-700"
+            checked ? "bg-slate-900 dark:bg-slate-700" : "bg-slate-200 dark:bg-slate-800"
         )}
     >
         <span
@@ -387,28 +387,28 @@ const SectionCard = ({ section, sidx, sectionsLength, isArranging, onReorder, on
         <div className="flex items-center gap-4 px-8 py-5 bg-slate-50/50 dark:bg-slate-950/30 border-b border-slate-100 dark:border-slate-800/50">
             {isArranging ? (
                 <div className="flex items-center gap-1.5 mr-2">
-                    <button disabled={sidx === 0} onClick={() => onReorder(sidx, sidx - 1)} 
-                        className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-rose-500 hover:text-white transition-all border border-slate-200 dark:border-slate-700">
+                    <button disabled={sidx === 0} onClick={() => onReorder(sidx, sidx - 1)}
+                        className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-slate-900 hover:text-white transition-all border border-slate-200 dark:border-slate-700">
                         <ChevronLeft size={14} />
                     </button>
-                    <button disabled={sidx === sectionsLength - 1} onClick={() => onReorder(sidx, sidx + 1)} 
-                        className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-rose-500 hover:text-white transition-all border border-slate-200 dark:border-slate-700">
+                    <button disabled={sidx === sectionsLength - 1} onClick={() => onReorder(sidx, sidx + 1)}
+                        className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-slate-900 hover:text-white transition-all border border-slate-200 dark:border-slate-700">
                         <ChevronRight size={14} />
                     </button>
                 </div>
             ) : (
-                <div className="w-9 h-9 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-inner ring-1 ring-rose-500/20">
+                <div className="w-9 h-9 rounded-xl  flex items-center justify-center text-slate-900 dark:text-white shadow-inner ring-1 ring-slate-900/20">
                     <Layers size={16} />
                 </div>
             )}
             <div className="flex-1">
                 <span className="text-[14px] font-black text-slate-900 dark:text-white uppercase tracking-[0.1em]">{section.title}</span>
                 <div className="flex items-center gap-2 mt-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full  animate-pulse" />
                     <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{section.blocks?.length || 0} Items linked</span>
                 </div>
             </div>
-            <button onClick={() => onDeleteSection(section.id)} 
+            <button onClick={() => onDeleteSection(section.id)}
                 className="w-10 h-10 rounded-xl opacity-0 group-hover/sec:opacity-100 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 text-slate-300 flex items-center justify-center transition-all">
                 <Trash2 size={16} />
             </button>
@@ -417,7 +417,7 @@ const SectionCard = ({ section, sidx, sectionsLength, isArranging, onReorder, on
         <div className="p-8 space-y-4">
             {section.blocks?.length === 0 ? (
                 <div className="py-12 text-center rounded-[28px] border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/30">
-                    <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.2em]">Empty Category</p>
+                    <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.2em] text-slate-400">Empty Category</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
@@ -425,13 +425,12 @@ const SectionCard = ({ section, sidx, sectionsLength, isArranging, onReorder, on
                         const color = BLOCK_COLORS[block.type] || "#6B7280";
                         const icon = BLOCK_ICONS[block.type] || <LayoutTemplate size={20} />;
                         const isEditable = ['links_carousel', 'hero_single_link', 'links_grid', 'add_products', 'add_apps', 'vertical_media', 'square_media', 'horizontal_media', 'add_logos'].includes(block.type);
-                        
+
                         return (
                             <motion.div layout key={block.id} onClick={() => isEditable && onOpenEditor(block)}
                                 className={cn("flex items-center gap-5 p-6 rounded-3xl border-2 transition-all group/block relative overflow-hidden",
-                                    isEditable ? "cursor-pointer bg-white dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 hover:border-rose-500/30 hover:shadow-xl hover:translate-x-1"
-                                        : "bg-slate-50 dark:bg-slate-950/40 border-transparent opacity-60")}>
-                                <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-rose-500/5 blur-2xl rounded-full" />
+                                    isEditable ? "cursor-pointer bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xl hover:translate-x-1"
+                                        : "bg-slate-50 dark:bg-slate-950 opacity-60")}>
                                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style={{ backgroundColor: `${color}15`, color }}>
                                     {icon}
                                 </div>
@@ -451,7 +450,7 @@ const SectionCard = ({ section, sidx, sectionsLength, isArranging, onReorder, on
                 </div>
             )}
             <button onClick={() => onAddBlock(section.id)}
-                className="w-full flex items-center justify-center gap-3 h-16 rounded-[28px] border-2 border-rose-500/10 bg-rose-500/[0.02] text-rose-500 hover:bg-rose-500 hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em] mt-4 shadow-sm">
+                className="w-full flex items-center justify-center gap-3 h-16 rounded-[28px] border-2 border-primary/10 bg-primary/[0.02] text-primary hover:bg-primary hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em] mt-4 shadow-sm">
                 <Plus size={20} /> Add New Link / Photo
             </button>
         </div>
@@ -879,35 +878,30 @@ export default function BioLinkBuilder() {
     }];
 
     if (!selectedPageId) return (
-        <div className="min-h-screen bg-white dark:bg-[#05060a] flex items-center justify-center p-4 sm:p-6">
+        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6"
+             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
             <div className="w-full max-w-6xl grid gap-6 xl:grid-cols-[minmax(0,1fr)_auto] items-center">
-                <div className="rounded-[32px] border border-rose-100 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(15,23,42,0.12)] p-6 sm:p-10">
-                    <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 shadow-inner mb-6"><Monitor size={40} /></div>
+                <div className="rounded-[32px] border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.05)] p-6 sm:p-10">
+                    <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary shadow-inner mb-6"><Monitor size={40} /></div>
                     <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Deployment Required</h2>
                     <p className="mt-3 max-w-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed">Please connect your Instagram account first to unlock the Creator Studio. A demo preview is shown beside this message so you can still verify the layout.</p>
-                    <button onClick={() => window.location.href='/dashboard/instagram/connect'} className="mt-6 h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all">Connect Now</button>
+                    <button onClick={() => window.location.href = '/dashboard/instagram/connect'} className="mt-6 h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all shadow-lg shadow-primary/20">Connect Now</button>
                 </div>
                 <div className="w-full flex justify-center">
-                    <PhonePreview profile={previewDemoProfile} tabs={previewDemoTabs} selectedTabId={1} setSelectedTabId={() => {}} viewportOffset={220} previewWidth={360} uiTypeOverrides={{}} />
+                    <PhonePreview profile={previewDemoProfile} tabs={previewDemoTabs} selectedTabId={1} setSelectedTabId={() => { }} viewportOffset={220} previewWidth={360} uiTypeOverrides={{}} />
                 </div>
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-white dark:bg-[#05060a] font-sans selection:bg-rose-500/10 flex flex-col relative">
-            
-            {/* ── PINK AMBIENT GLOW ── */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[-8%] right-[-10%] w-[38%] h-[38%] bg-rose-500/12 blur-[120px] rounded-full" />
-                <div className="absolute bottom-[-12%] left-[-6%] w-[34%] h-[34%] bg-pink-500/10 blur-[120px] rounded-full" />
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-400/40 to-transparent" />
-            </div>
+        <div className="min-h-screen bg-transparent font-sans selection:bg-primary/10 flex flex-col relative"
+             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
 
             {/* ── STABLE TOP BAR ── */}
             <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white/85 dark:bg-black/70 backdrop-blur-2xl border-b border-slate-100 dark:border-slate-800 shadow-sm">
                 <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 via-fuchsia-500 to-orange-400 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
+                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
                         <Sparkles size={16} />
                     </div>
                     <div className="min-w-0">
@@ -921,7 +915,7 @@ export default function BioLinkBuilder() {
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         {instagramUsername}
                     </div>
-                    <button onClick={handleShareLink} className="h-8 px-4 rounded-lg bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-rose-600 transition-all shadow-md">
+                    <button onClick={handleShareLink} className="h-8 px-4 rounded-lg bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-md shadow-primary/10">
                         {copiedLink ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
                         {copiedLink ? "COPIED" : "SHARE"}
                     </button>
@@ -930,48 +924,48 @@ export default function BioLinkBuilder() {
 
             {/* ── CREATOR WORKSPACE ── */}
             <div className="relative flex-1 flex overflow-hidden">
-                
+
                 <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[440px] pb-56 sm:pb-60 xl:pb-64", activePanel === "preview" ? "hidden xl:block" : "block")}>
                     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 xl:pl-4">
-                        
+
                         {/* ── FLOATING STEP GUIDE + BAR ── */}
-                        <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(460px,calc(100%-1rem))] sm:w-[min(560px,calc(100%-1.5rem))] rounded-full border border-rose-100/70 dark:border-white/10 bg-white/96 dark:bg-black/50 backdrop-blur-2xl px-1 py-1 shadow-[0_16px_34px_rgba(15,23,42,0.12)]">
+                        <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(460px,calc(100%-1rem))] sm:w-[min(560px,calc(100%-1.5rem))] rounded-full border border-slate-200 dark:border-white/10 bg-white/96 dark:bg-slate-900/90 backdrop-blur-2xl px-1 py-1 shadow-[0_16px_34px_rgba(0,0,0,0.05)]">
                             <div className="grid grid-cols-4 gap-1">
-                            {PHASES.map((p, idx) => (
-                                <button key={p.id} onClick={() => setView(p.id)}
-                                    className="group relative outline-none">
-                                    <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+12px)] w-[200px] sm:w-[240px] hidden group-hover:block">
-                                        <div className="rounded-[22px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-black/95 p-2.5 shadow-[0_16px_34px_rgba(15,23,42,0.16)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-                                            <div className="flex items-start gap-3">
-                                                <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-rose-500 text-white" : "bg-rose-50 dark:bg-white/10 text-rose-500 dark:text-rose-300")}>
-                                                    <p.Icon size={18} />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-rose-500">Step {idx + 1}</p>
-                                                    <p className="text-[13px] font-semibold text-slate-900 dark:text-white mt-1 leading-snug">{p.desc}</p>
-                                                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-1 leading-relaxed">{p.hint}</p>
-                                                </div>
-                                            </div>
-                                            <div className="mt-2.5 space-y-1.5 border-t border-slate-100 dark:border-white/10 pt-2.5">
-                                                {p.details.map((detail) => (
-                                                    <div key={detail} className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300">
-                                                        <span className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
-                                                        <span>{detail}</span>
+                                {PHASES.map((p, idx) => (
+                                    <button key={p.id} onClick={() => setView(p.id)}
+                                        className="group relative outline-none">
+                                        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+12px)] w-[200px] sm:w-[240px] hidden group-hover:block">
+                                            <div className="rounded-[22px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-slate-950 p-2.5 shadow-[0_16px_34px_rgba(0,0,0,0.08)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
+                                                <div className="flex items-start gap-3">
+                                                    <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-slate-900 text-white" : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300")}>
+                                                        <p.Icon size={18} />
                                                     </div>
-                                                ))}
+                                                    <div className="min-w-0">
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Step {idx + 1}</p>
+                                                        <p className="text-[13px] font-semibold text-slate-900 dark:text-white mt-1 leading-snug">{p.desc}</p>
+                                                        <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-1 leading-relaxed">{p.hint}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2.5 space-y-1.5 border-t border-slate-100 dark:border-white/10 pt-2.5">
+                                                    {p.details.map((detail) => (
+                                                        <div key={detail} className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300">
+                                                            <span className="mt-1 w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                                                            <span>{detail}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className={cn("flex flex-col items-center justify-center gap-0.5 min-h-[44px] sm:min-h-[48px] px-1.5 rounded-full transition-all duration-300 border",
-                                        view === p.id
-                                            ? "bg-rose-500 text-white border-rose-500 shadow-[0_10px_24px_rgba(244,63,94,0.20)] scale-[1.02]"
-                                            : "bg-white/80 dark:bg-white/5 text-slate-500 border-transparent hover:border-rose-100 dark:hover:border-white/10 hover:bg-rose-50/70 dark:hover:bg-white/10") }>
-                                        <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[9px] font-semibold", view === p.id ? "bg-white/18 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500")}>{idx + 1}</div>
-                                        <span className={cn("hidden lg:block text-[8px] font-medium uppercase tracking-[0.12em] truncate", view === p.id ? "text-white" : "text-slate-600 dark:text-slate-300")}>{p.label}</span>
-                                        {view === p.id && <div className="absolute inset-x-6 -bottom-1 h-1 bg-gradient-to-r from-rose-400 to-pink-500 rounded-full" />}
-                                    </div>
-                                </button>
-                            ))}
+                                        <div className={cn("flex flex-col items-center justify-center gap-0.5 min-h-[44px] sm:min-h-[48px] px-1.5 rounded-full transition-all duration-300 border",
+                                            view === p.id
+                                                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-[1.02]"
+                                                : "bg-white/80 dark:bg-white/5 text-slate-500 border-transparent hover:border-slate-200 dark:hover:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10")}>
+                                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black", view === p.id ? "bg-white/20 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500")}>{idx + 1}</div>
+                                            <span className={cn("hidden lg:block text-[8px] font-black uppercase tracking-[0.12em] truncate", view === p.id ? "text-white" : "text-slate-600 dark:text-slate-300")}>{p.label}</span>
+                                            {view === p.id && <div className="absolute inset-x-6 -bottom-1 h-1 bg-white/40 rounded-full" />}
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
@@ -983,18 +977,18 @@ export default function BioLinkBuilder() {
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="hidden sm:block w-44 h-2 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                    <div className="h-full rounded-full bg-gradient-to-r from-rose-400 via-pink-500 to-orange-400" style={{ width: `${completionPercent}%` }} />
+                                    <div className="h-full rounded-full bg-slate-400 dark:bg-slate-600" style={{ width: `${completionPercent}%` }} />
                                 </div>
-                                <span className="text-xs font-medium text-rose-500">{completionPercent}%</span>
+                                <span className="text-xs font-black text-slate-900 dark:text-white">{completionPercent}%</span>
                                 {nextPhase ? (
                                     <button
                                         onClick={() => setView(nextPhase.id)}
-                                        className="h-9 px-4 rounded-full bg-rose-500 text-white text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2 shadow-md"
+                                        className="h-9 px-4 rounded-full bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-md shadow-primary/20 hover:opacity-90 transition-all"
                                     >
                                         Next <ArrowRight size={12} />
                                     </button>
                                 ) : (
-                                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Final step ready</span>
+                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Final step ready</span>
                                 )}
                             </div>
                         </div>
@@ -1002,10 +996,10 @@ export default function BioLinkBuilder() {
                         {/* ── PHASE CONTENT AREA ── */}
                         <AnimatePresence mode="wait">
                             <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}>
-                                
+
                                 <div className="mb-8">
                                     <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white tracking-normal mb-2 capitalize">
-                                        {view ==='identity' ? "Setup your Profile" : view === 'blocks' ? "Build your Content" : view === 'visuals' ? 'Style your Page' : 'Launch Preparation'}
+                                        {view === 'identity' ? "Setup your Profile" : view === 'blocks' ? "Build your Content" : view === 'visuals' ? 'Style your Page' : 'Launch Preparation'}
                                     </h2>
                                     <p className="text-sm text-slate-500 font-normal max-w-2xl leading-relaxed">Each section is designed to guide you from setup to launch without needing to guess what happens next.</p>
                                 </div>
@@ -1015,9 +1009,9 @@ export default function BioLinkBuilder() {
                                         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
                                             <div className="flex items-center gap-8 mb-10 pb-10 border-b border-slate-100 dark:border-slate-800">
                                                 <label className="relative cursor-pointer shrink-0">
-                                                    <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 overflow-hidden ring-4 ring-rose-500/5 shadow-inner border-2 border-slate-100 dark:border-slate-700">
+                                                    <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 overflow-hidden ring-4 ring-slate-100 dark:ring-slate-700 shadow-inner border-2 border-slate-100 dark:border-slate-700">
                                                         {profile?.avatar ? <img src={profile.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300"><User size={32} /></div>}
-                                                        <div className="absolute inset-0 bg-rose-500/20 opacity-0 hover:opacity-100 flex items-center justify-center transition-all">
+                                                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 hover:opacity-100 flex items-center justify-center transition-all">
                                                             <Upload size={20} className="text-white" />
                                                         </div>
                                                     </div>
@@ -1029,13 +1023,13 @@ export default function BioLinkBuilder() {
                                                 </div>
                                             </div>
                                             <div className="grid gap-6">
-                                                <InputField label="Name or Brand Title" value={profile?.title || ""} onChange={(e: any) => setProfile({ ...profile!, title: e.target.value })} 
+                                                <InputField label="Name or Brand Title" value={profile?.title || ""} onChange={(e: any) => setProfile({ ...profile!, title: e.target.value })}
                                                     onBlur={(e: any) => handleUpdateProfile({ title: e.target.value })} placeholder="e.g. My Awesome Studio" />
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Short Biography</label>
-                                                    <textarea value={profile?.bio || ""} onChange={e => setProfile({ ...profile!, bio: e.target.value })} 
+                                                    <textarea value={profile?.bio || ""} onChange={e => setProfile({ ...profile!, bio: e.target.value })}
                                                         onBlur={e => handleUpdateProfile({ bio: e.target.value })} rows={3}
-                                                        className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-rose-500/20 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all" 
+                                                        className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all"
                                                         placeholder="Write a few lines about what you do..." />
                                                 </div>
                                                 <div className="flex justify-end pt-4">
@@ -1060,14 +1054,14 @@ export default function BioLinkBuilder() {
 
                                         <div className="space-y-6">
                                             {(!currentTab || visibleBlocks.length === 0) ? (
-                                                <div className="py-20 text-center bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center">
-                                                    <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-500/5 flex items-center justify-center text-rose-500 mb-6">
+                                                <div className="py-20 text-center bg-white dark:bg-slate-950 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center">
+                                                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400 mb-6">
                                                         <Grid size={28} />
                                                     </div>
                                                     <h3 className="text-xl font-black text-slate-950 dark:text-white mb-2 tracking-tight">Ready to Start?</h3>
                                                     <p className="text-[13px] text-slate-400 mb-8 max-w-xs mx-auto font-medium">Create your first block to start building your content canvas.</p>
-                                                    <button onClick={() => openBlockMarketplace()} 
-                                                        className="h-12 px-10 rounded-xl bg-rose-500 text-white text-[11px] font-black uppercase tracking-widest shadow-xl shadow-rose-500/20 active:scale-95 transition-all animate-bounce">
+                                                    <button onClick={() => openBlockMarketplace()}
+                                                        className="h-12 px-10 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all animate-bounce">
                                                         Create Block
                                                     </button>
                                                 </div>
@@ -1091,9 +1085,8 @@ export default function BioLinkBuilder() {
                                                                         openEditor(block);
                                                                     }}
                                                                     className={cn("flex items-center gap-5 p-6 rounded-3xl border-2 transition-all group/block relative overflow-hidden",
-                                                                        isEditable ? "cursor-pointer bg-white dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 hover:border-rose-500/30 hover:shadow-xl hover:translate-x-1"
-                                                                            : "bg-slate-50 dark:bg-slate-950/40 border-transparent opacity-60") }>
-                                                                    <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-rose-500/5 blur-2xl rounded-full" />
+                                                                        isEditable ? "cursor-pointer bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xl hover:translate-x-1"
+                                                                            : "bg-slate-50 dark:bg-slate-950 content-none opacity-60")}>
                                                                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style={{ backgroundColor: `${color}15`, color }}>
                                                                         {icon}
                                                                     </div>
@@ -1117,8 +1110,8 @@ export default function BioLinkBuilder() {
                                                         })}
                                                     </div>
                                                     <div className="flex items-center gap-4">
-                                                        <button onClick={() => openBlockMarketplace()} 
-                                                            className="flex-1 h-16 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3 text-slate-400 hover:border-rose-500/50 hover:text-rose-500 transition-all text-[11px] font-black uppercase tracking-widest group">
+                                                        <button onClick={() => openBlockMarketplace()}
+                                                            className="flex-1 h-16 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3 text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white transition-all text-[11px] font-black uppercase tracking-widest group">
                                                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
                                                             Create Block
                                                         </button>
@@ -1136,7 +1129,7 @@ export default function BioLinkBuilder() {
 
                                 {view === "advanced" && (
                                     <div className="max-w-3xl space-y-6">
-                                        <div className="bg-gradient-to-br from-rose-50 to-indigo-50 dark:from-slate-900 dark:to-slate-900 rounded-3xl border border-rose-100 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+                                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
                                             <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
                                                 <div>
                                                     <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Make it clear for your visitors</h3>
@@ -1148,8 +1141,8 @@ export default function BioLinkBuilder() {
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                                                <div className="rounded-2xl bg-white/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4">
-                                                    <p className="text-xs font-black uppercase tracking-widest text-rose-500 mb-3 flex items-center gap-2"><Info size={14} /> How it works</p>
+                                                <div className="rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2"><Info size={14} /> How it works</p>
                                                     <div className="space-y-2">
                                                         {advancedFlowTips.map((tip) => (
                                                             <p key={tip} className="text-sm text-slate-700 dark:text-slate-200">{tip}</p>
@@ -1157,11 +1150,11 @@ export default function BioLinkBuilder() {
                                                     </div>
                                                 </div>
                                                 <div className="rounded-2xl bg-white/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4">
-                                                    <p className="text-xs font-black uppercase tracking-widest text-indigo-500 mb-3">Currently enabled</p>
+                                                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Currently enabled</p>
                                                     {enabledAdvancedFlags.length > 0 ? (
                                                         <div className="flex flex-wrap gap-2">
                                                             {enabledAdvancedFlags.map((flag) => (
-                                                                <span key={flag} className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200 text-xs font-bold">
+                                                                <span key={flag} className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 text-xs font-bold">
                                                                     {flag}
                                                                 </span>
                                                             ))}
@@ -1241,7 +1234,7 @@ export default function BioLinkBuilder() {
                                                         type="checkbox"
                                                         checked={advancedSettings.pixelFacebookEnabled}
                                                         onChange={(e) => setAdvancedSettings({ ...advancedSettings, pixelFacebookEnabled: e.target.checked })}
-                                                        className="w-5 h-5 accent-indigo-500"
+                                                        className="w-5 h-5 accent-primary"
                                                     />
                                                     Facebook Pixel
                                                 </label>
@@ -1250,7 +1243,7 @@ export default function BioLinkBuilder() {
                                                         type="checkbox"
                                                         checked={advancedSettings.pixelGoogleEnabled}
                                                         onChange={(e) => setAdvancedSettings({ ...advancedSettings, pixelGoogleEnabled: e.target.checked })}
-                                                        className="w-5 h-5 accent-indigo-500"
+                                                        className="w-5 h-5 accent-primary"
                                                     />
                                                     Google Analytics
                                                 </label>
@@ -1475,7 +1468,7 @@ export default function BioLinkBuilder() {
                                             <button
                                                 onClick={handleSaveAdvanced}
                                                 disabled={isSavingAdvanced}
-                                                className="h-12 px-8 rounded-xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 disabled:opacity-60"
+                                                className="h-12 px-8 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 disabled:opacity-60 shadow-lg shadow-primary/10"
                                             >
                                                 {isSavingAdvanced ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                                                 {isSavingAdvanced ? "Saving..." : "Save Advanced Settings"}
@@ -1489,45 +1482,22 @@ export default function BioLinkBuilder() {
                     </div>
                 </main>
 
-                {/* ── MOBILE FIXED PREVIEW MODE ── */}
-                {activePanel === "preview" && (
-                    <div className="xl:hidden fixed inset-0 z-[160] bg-slate-50 dark:bg-[#020617] pt-16 pb-24 px-4 overflow-hidden">
-                        <div className="h-full flex flex-col">
-                            <div className="flex items-center justify-between mb-4 px-1">
-                                <div>
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Mobile Preview</h3>
-                                    <p className="text-xs text-slate-500">Same phone preview on mobile, with the editor kept out of the way.</p>
-                                </div>
-                                <button
-                                    onClick={() => setActivePanel("builder")}
-                                    className="h-9 px-3 rounded-lg bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest"
-                                >
-                                    Back to Editor
-                                </button>
-                            </div>
-                            <div className="flex-1 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur p-3 flex items-center justify-center">
-                                <PhonePreview
-                                    profile={profile}
-                                    tabs={tabs}
-                                    selectedTabId={selectedTabId}
-                                    setSelectedTabId={setSelectedTabId}
-                                    viewportOffset={170}
-                                    previewWidth={320}
-                                    instagramUsername={instagramUsername}
-                                    uiTypeOverrides={uiTypeOverrides}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {/* ── MOBILE SWITCHER ── */}
+                <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-slate-950/92 backdrop-blur-xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/10">
+                    <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
+                        <Edit3 size={16} /> Studio
+                    </button>
+                    <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
+                        <Eye size={16} /> Portal
+                    </button>
+                </div>
 
                 {/* ── PHONE PREVIEW PORTAL (PERMANENTLY VISIBLE ON XL) ── */}
-                <aside className={cn("fixed right-0 top-14 z-50 hidden xl:flex w-[440px] flex-col p-6 bg-slate-50/95 dark:bg-[#020617]/95 backdrop-blur-2xl border-l border-slate-200 dark:border-slate-800 transition-all duration-500 h-[calc(100vh-56px)] shadow-[-24px_0_60px_rgba(15,23,42,0.08)]", 
+                <aside className={cn("fixed right-0 top-14 z-50 hidden xl:flex w-[440px] flex-col p-6 bg-slate-50/95 dark:bg-[#020617]/95 backdrop-blur-2xl border-l border-slate-200 dark:border-slate-800 transition-all duration-500 h-[calc(100vh-56px)] shadow-[-24px_0_60px_rgba(0,0,0,0.05)]",
                     activePanel === "preview" ? "translate-x-0 opacity-100" : "translate-x-0 opacity-100")}>
-                        <div className="flex-1 rounded-[34px] border border-slate-200 dark:border-slate-800 bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-slate-900 dark:via-slate-950 dark:to-black p-4 shadow-[0_24px_80px_rgba(15,23,42,0.12)] relative overflow-hidden">
-                        <div className="absolute inset-0 pointer-events-none opacity-60" style={{ backgroundImage: 'radial-gradient(circle at 20% 10%, rgba(244,63,94,0.08), transparent 40%), radial-gradient(circle at 80% 90%, rgba(99,102,241,0.10), transparent 40%)' }} />
-                        <div className="relative h-full w-full flex items-center justify-center overflow-hidden rounded-[26px] border border-white/60 dark:border-white/10 bg-white/55 dark:bg-white/[0.03] backdrop-blur-sm">
-                            <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId} 
+                    <div className="flex-1 rounded-[34px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                        <div className="relative h-full w-full flex items-center justify-center overflow-hidden rounded-[26px] border border-slate-100 dark:border-white/10 bg-white/55 dark:bg-white/[0.03] backdrop-blur-sm">
+                            <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId}
                                 setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={140} previewWidth={360} uiTypeOverrides={uiTypeOverrides} />
                         </div>
                     </div>
@@ -1564,19 +1534,19 @@ export default function BioLinkBuilder() {
                                 setEditingBlock(null);
                                 setShowCarouselEditor(false);
                             }}
-                            className="h-14 px-6 rounded-2xl border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 font-black uppercase tracking-widest text-[12px]"
+                            className="h-14 px-6 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-black uppercase tracking-widest text-[12px]"
                         >
                             Delete Block
                         </button>
-                        <button onClick={saveEditor} className="flex-1 h-14 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Save Changes</button>
+                        <button onClick={saveEditor} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Save Changes</button>
                     </div>
                 }>
                 {editingBlock && (
                     <div className="space-y-6">
                         {(editingBlock.items || []).map((item: any, idx: number) => (
-                            <div key={idx} className="p-6 rounded-[32px] bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 space-y-4">
+                            <div key={idx} className="p-6 rounded-[32px] bg-card dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 space-y-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Instance #{idx + 1}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Instance #{idx + 1}</span>
                                     <button onClick={() => {
                                         if (typeof window !== "undefined") {
                                             const ok = window.confirm("Are you sure you want to delete this item?");
@@ -1602,7 +1572,7 @@ export default function BioLinkBuilder() {
                                             value={item.description || ""}
                                             onChange={(e: any) => updateItem(idx, 'description', e.target.value)}
                                             rows={3}
-                                            className="w-full px-5 py-4 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent focus:border-rose-500/20 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                            className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all"
                                             placeholder="Write content..."
                                         />
                                     </div>
@@ -1610,7 +1580,7 @@ export default function BioLinkBuilder() {
                                 {isMediaType(getUiTypeFromBlock(editingBlock)) && (
                                     <div className="flex items-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                                         <label className="flex-1 flex items-center gap-3 cursor-pointer group">
-                                            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                                            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-950 overflow-hidden flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                                                 {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
                                             </div>
                                             <div className="flex-1">
@@ -1624,7 +1594,7 @@ export default function BioLinkBuilder() {
                             </div>
                         ))}
                         <button onClick={() => setEditingBlock({ ...editingBlock, items: [...(editingBlock.items || []), getDefaultItemForType(getUiTypeFromBlock(editingBlock))] })}
-                            className="w-full h-14 rounded-2xl border-2 border-dashed border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white transition-all font-black text-xs uppercase tracking-widest">Add New Item</button>
+                            className="w-full h-14 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all font-black text-xs uppercase tracking-widest">Add New Item</button>
                     </div>
                 )}
             </ModalShell>

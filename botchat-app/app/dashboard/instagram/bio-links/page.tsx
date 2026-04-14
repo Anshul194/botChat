@@ -123,15 +123,15 @@ export default function InstagramBioLinksPage() {
     const availableAccounts = accounts.filter((acc) => !rowsMap.has(String(acc.id)));
 
     return (
-        <div className="min-h-screen bg-white dark:bg-[#05060a] px-4 sm:px-6 py-6 relative overflow-hidden">
-            <div className="pointer-events-none absolute -top-24 -right-10 w-64 h-64 rounded-full bg-rose-500/15 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-10 w-64 h-64 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="min-h-screen bg-transparent px-4 sm:px-6 py-6 relative overflow-hidden"
+             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
+            {/* ── CLEAN WORKSPACE CANVAS ── */}
 
             <div className="max-w-5xl mx-auto space-y-5 relative">
-                <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white via-rose-50/50 to-cyan-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 p-5 sm:p-7 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+                <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-7 shadow-[0_18px_40px_rgba(0,0,0,0.05)]">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/25">
+                            <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/25">
                                 <Crown size={20} />
                             </div>
                             <div>
@@ -142,7 +142,7 @@ export default function InstagramBioLinksPage() {
                         </div>
                         <button
                             onClick={handleAddNew}
-                            className="h-11 px-5 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg"
+                            className="h-11 px-5 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
                         >
                             <Plus size={16} /> Add New
                         </button>
@@ -168,7 +168,7 @@ export default function InstagramBioLinksPage() {
                                     : `/p?u=${row.username}&id=${row.pageId}`;
                                 return (
                                     <div key={row.pageId} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all">
-                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500/15 to-cyan-500/15 text-slate-800 dark:text-slate-100 font-black flex items-center justify-center text-sm">
+                                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary font-black flex items-center justify-center text-sm">
                                             {(row.username?.[0] || "B").toUpperCase()}
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -178,10 +178,10 @@ export default function InstagramBioLinksPage() {
                                             </div>
                                             <p className="text-[11px] text-slate-500 truncate">{publicUrl}</p>
                                         </div>
-                                        <button onClick={() => handleEdit(row)} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:border-rose-300 hover:text-rose-600" title="Edit">
+                                        <button onClick={() => handleEdit(row)} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:border-primary hover:text-primary transition-colors" title="Edit">
                                             <Edit3 size={14} />
                                         </button>
-                                        <button onClick={() => handleCopy(row)} className={cn("w-9 h-9 rounded-xl border flex items-center justify-center", copiedId === row.pageId ? "border-emerald-300 text-emerald-600" : "border-slate-200 dark:border-slate-700 text-slate-600 hover:border-cyan-300 hover:text-cyan-600")} title="Copy">
+                                        <button onClick={() => handleCopy(row)} className={cn("w-9 h-9 rounded-xl border flex items-center justify-center transition-colors", copiedId === row.pageId ? "border-emerald-300 text-emerald-600" : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-primary hover:text-primary")} title="Copy">
                                             {copiedId === row.pageId ? <CheckCircle2 size={14} /> : <Copy size={14} />}
                                         </button>
                                         <button onClick={() => handleDelete(row)} className="w-9 h-9 rounded-xl border border-red-200 dark:border-red-500/30 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10" title="Delete">
