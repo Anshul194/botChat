@@ -64,19 +64,60 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const [bioLinksOpen, setBioLinksOpen] = useState(false);
     const [pendingRoute, setPendingRoute] = useState<string | null>(null);
 
+    // Centralized navigate helper: sets pending route, fires nav:start, calls router.push,
+    // and falls back to a full redirect if router doesn't complete within timeout.
+    const navigate = (href: string) => {
+        setPendingRoute(href);
+        try { window.dispatchEvent(new CustomEvent('nav:start', { detail: { href } })); } catch {}
+        const fallback = setTimeout(() => {
+            try {
+                if (window.location.pathname !== href) window.location.href = href;
+            } catch (e) {}
+        }, 6000);
+        // router.push returns a promise in App Router
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            router.push(href).finally(() => clearTimeout(fallback));
+        } catch (e) {
+            clearTimeout(fallback);
+        }
+    };
+
     useEffect(() => {
         setMounted(true);
-        setPendingRoute(null); // Clear pending route when navigation completes
-        if (pathname.startsWith("/dashboard/facebook")) {
+
+        // Determine the path we should consider active: pendingRoute (in-flight) or the current pathname.
+        const current = pendingRoute || pathname || "";
+
+        // Open accordions based on the current (possibly pending) path so the UI reflects navigation immediately.
+        if (current.startsWith("/dashboard/facebook")) {
             setFacebookOpen(true);
+        } else {
+            setFacebookOpen(false);
         }
-        if (pathname.startsWith("/dashboard/instagram") && !pathname.startsWith("/dashboard/instagram/bio-link") && !pathname.startsWith("/dashboard/instagram/bio-links")) {
+
+        if (current.startsWith("/dashboard/instagram") && !current.startsWith("/dashboard/instagram/bio-link") && !current.startsWith("/dashboard/instagram/bio-links")) {
             setInstagramOpen(true);
+        } else {
+            setInstagramOpen(false);
         }
-        if (pathname.startsWith("/dashboard/instagram/bio-link") || pathname.startsWith("/dashboard/instagram/bio-links")) {
+
+        if (current.startsWith("/dashboard/instagram/bio-link") || current.startsWith("/dashboard/instagram/bio-links")) {
             setBioLinksOpen(true);
+        } else {
+            setBioLinksOpen(false);
         }
-    }, [pathname]);
+
+        // Clear pendingRoute only after the router has updated the pathname to match it.
+        if (pendingRoute && pathname === pendingRoute) {
+            setPendingRoute(null);
+            try {
+                window.dispatchEvent(new CustomEvent('nav:done'));
+            } catch (e) {
+                // ignore
+            }
+        }
+    }, [pathname, pendingRoute]);
 
     const isSuperAdmin = useMemo(() => {
         if (!mounted || !user) return false;
@@ -222,7 +263,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             </motion.div>
                         )}
                         {mainNav.map(item => (
-                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); setPendingRoute(item.href); if (onClose) onClose(); router.push(item.href); }} />
+                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                         ))}
                     </motion.div>
 
@@ -254,10 +295,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => {
                                     setFacebookOpen(prev => !prev);
-                                    if (!facebookOpen && !isFacebookActive) {
-                                        setPendingRoute("/dashboard/facebook");
-                                        router.push("/dashboard/facebook");
-                                    }
+                                        if (!facebookOpen && !isFacebookActive) {
+                                            const href = "/dashboard/facebook";
+                                            if (onClose) onClose();
+                                            navigate(href);
+                                        }
                                 }}
                                 className={cn(
                                     "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
@@ -311,7 +353,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                     <Link
                                                         key={sub.href}
                                                         href={sub.href}
-                                                        onClick={(e) => { e.preventDefault(); setPendingRoute(sub.href); if (onClose) onClose(); router.push(sub.href); }}
+                                                        prefetch={false}
+                                                        onClick={(e) => { e.preventDefault(); const href = sub.href; if (onClose) onClose(); navigate(href); }}
                                                         className={cn(
                                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                                                             isActive
@@ -344,8 +387,9 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 onClick={() => {
                                     setInstagramOpen(prev => !prev);
                                     if (!instagramOpen && !isInstagramActive) {
-                                        setPendingRoute("/dashboard/instagram");
-                                        router.push("/dashboard/instagram");
+                                        const href = "/dashboard/instagram";
+                                        if (onClose) onClose();
+                                        navigate(href);
                                     }
                                 }}
                                 className={cn(
@@ -399,7 +443,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                     <Link
                                                         key={sub.href}
                                                         href={sub.href}
-                                                        onClick={(e) => { e.preventDefault(); setPendingRoute(sub.href); if (onClose) onClose(); router.push(sub.href); }}
+                                                        prefetch={false}
+                                                        onClick={(e) => { e.preventDefault(); const href = sub.href; if (onClose) onClose(); navigate(href); }}
                                                         className={cn(
                                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                                                             isActive
@@ -431,8 +476,9 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 onClick={() => {
                                     setBioLinksOpen(prev => !prev);
                                     if (!bioLinksOpen && !isBioLinksActive) {
-                                        setPendingRoute("/dashboard/instagram/bio-links");
-                                        router.push("/dashboard/instagram/bio-links");
+                                        const href = "/dashboard/instagram/bio-links";
+                                        if (onClose) onClose();
+                                        navigate(href);
                                     }
                                 }}
                                 className={cn(
@@ -486,7 +532,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                                     <Link
                                                         key={sub.href}
                                                         href={sub.href}
-                                                        onClick={(e) => { e.preventDefault(); setPendingRoute(sub.href); if (onClose) onClose(); router.push(sub.href); }}
+                                                        prefetch={false}
+                                                        onClick={(e) => { e.preventDefault(); const href = sub.href; if (onClose) onClose(); navigate(href); }}
                                                         className={cn(
                                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
                                                             isActive
@@ -522,7 +569,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             </motion.div>
                         )}
                         {growthNav.map(item => (
-                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); setPendingRoute(item.href); if (onClose) onClose(); router.push(item.href); }} />
+                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                         ))}
                     </motion.div>
 
@@ -537,7 +584,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 </motion.div>
                             )}
                             {adminNav.map(item => (
-                                <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); setPendingRoute(item.href); if (onClose) onClose(); router.push(item.href); }} />
+                                <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                             ))}
                         </motion.div>
                     )}
@@ -649,6 +696,7 @@ function NavItem({
         >
             <Link
                 href={item.href}
+                prefetch={false}
                 onClick={onClick}
                 className={cn(
                     "group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative",

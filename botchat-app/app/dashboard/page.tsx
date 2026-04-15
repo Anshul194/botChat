@@ -1,23 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-    AreaChart,
-    Area,
-    BarChart,
-    Bar,
-    ComposedChart,
-    Line,
-    PieChart,
-    Pie,
-    Cell,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Legend,
-} from "recharts";
+import dynamic from "next/dynamic";
 import {
     MessageSquare,
     Zap,
@@ -138,6 +122,16 @@ export default function DashboardPage() {
         { label: "New Leads", value: "3,847", change: "+31.0%", up: true, icon: Users, color: "#10b981" },
     ];
 
+    const FlowChart = dynamic(() => import("./components/FlowChartClient"), {
+        ssr: false,
+        loading: () => <div className="h-[380px] w-full flex items-center justify-center">Loading chart...</div>,
+    });
+
+    const ChannelImpactChart = dynamic(() => import("./components/ChannelImpactChartClient"), {
+        ssr: false,
+        loading: () => <div className="h-[280px] w-full flex items-center justify-center">Loading chart...</div>,
+    });
+
     return (
         <div className="mx-auto flex max-w-[1400px] flex-col gap-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
@@ -218,23 +212,7 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="h-[380px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <ComposedChart data={interactionFlowData} margin={{ top: 20, right: 20, bottom: 0, left: -20 }}>
-                                    <defs>
-                                        <linearGradient id="flowGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                                    <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Area type="monotone" dataKey="active" fill="url(#flowGrad)" stroke="#ec4899" strokeWidth={3} />
-                                    <Bar dataKey="auto" barSize={30} fill="#a855f7" radius={[6, 6, 0, 0]} opacity={0.4} />
-                                    <Line type="monotone" dataKey="success" stroke="#10b981" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: "hsl(var(--background))" }} />
-                                </ComposedChart>
-                            </ResponsiveContainer>
+                            <FlowChart data={interactionFlowData} />
                         </div>
                     </CardContent>
                     <CardFooter className="grid grid-cols-3 border-t border-border/10 bg-muted/5 p-6">
@@ -264,15 +242,7 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent className="flex-1 pb-2">
                         <div className="h-[280px] w-full mt-4">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={hourlyEngagementData} layout="vertical" margin={{ left: -10, right: 20 }}>
-                                    <XAxis type="number" hide />
-                                    <YAxis dataKey="hour" type="category" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 800 }} width={45} />
-                                    <Tooltip cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                                    <Bar dataKey="instagram" stackId="a" fill="#ec4899" radius={[0, 0, 0, 0]} barSize={12} />
-                                    <Bar dataKey="facebook" stackId="a" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={12} />
-                                </BarChart>
-                            </ResponsiveContainer>
+                            <ChannelImpactChart data={hourlyEngagementData} />
                         </div>
                     </CardContent>
                     <CardFooter className="p-0">

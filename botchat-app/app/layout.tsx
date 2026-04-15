@@ -7,6 +7,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
 
 import { Toaster } from "sonner";
+import NavigationOverlay from "@/components/NavigationOverlay";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -62,6 +63,7 @@ export default function RootLayout({
             <ThemeProvider>
               <ModalProvider>
                 {children}
+                <NavigationOverlay />
                 <Toaster richColors position="top-right" />
               </ModalProvider>
             </ThemeProvider>
