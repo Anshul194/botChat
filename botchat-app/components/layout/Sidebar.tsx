@@ -525,6 +525,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                             {[
                                                 { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
                                                  { label: "Shortened Links", href: "/dashboard/shortened-links", badge: "Premium" },
+                                                 { label: "Analytics", href: "/dashboard/instagram/bio-links/analytics", badge: "" },
 
                                             ].map(sub => {
                                                 const isActive = currentPath.startsWith(sub.href);
