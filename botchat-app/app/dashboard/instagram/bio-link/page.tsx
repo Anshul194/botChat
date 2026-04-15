@@ -1594,7 +1594,7 @@ export default function BioLinkBuilder() {
                             </div>
                         ))}
                         <button onClick={() => setEditingBlock({ ...editingBlock, items: [...(editingBlock.items || []), getDefaultItemForType(getUiTypeFromBlock(editingBlock))] })}
-                            className="w-full h-14 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all font-black text-xs uppercase tracking-widest">Add New Item</button>
+                            className="w-full h-14 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all font-black text-xs uppercase tracking-widest">{isMediaType(getUiTypeFromBlock(editingBlock)) ? "Add More Image" : "Add More Option"}</button>
                     </div>
                 )}
             </ModalShell>
