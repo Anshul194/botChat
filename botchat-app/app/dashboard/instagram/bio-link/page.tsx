@@ -18,7 +18,19 @@ import { cn } from "@/lib/utils";
 import { VisualsLab, getTheme, isColorLight, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
 import BlockMarketplaceContent from "./BlockMarketplaceContent";
 
-interface BioProfile { id: number; title: string; bio: string; avatar: string; email_link: string; contact_link: string; theme: string; }
+interface BioProfile { 
+    link_id: string; 
+    title: string; 
+    description: string; 
+    url: string; 
+    is_enabled: string; 
+    settings?: any;
+    theme?: string; 
+    avatar?: string; 
+    email_link?: string; 
+    contact_link?: string; 
+    id?: number | string;
+}
 interface BioTab { id: number; title: string; is_active: number; sections: BioSection[]; }
 interface BioSection { id: number; tab_id: number; title: string; type: string; is_active: number; blocks: BioBlock[]; }
 interface BioBlock { id: number; section_id: number; type: string; is_active: number; items: any[]; }
@@ -77,34 +89,6 @@ const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
     customJs: "",
 };
 
-const PRESET_BLOCK_CATEGORIES: Record<string, Array<{ type: string; label: string; desc: string }>> = {
-    Standard: [
-        { type: "link", label: "Link", desc: "Add a single clickable link." },
-        { type: "heading", label: "Heading", desc: "Add a section heading." },
-        { type: "paragraph", label: "Paragraph", desc: "Add rich text content." },
-        { type: "avatar", label: "Avatar", desc: "Show a profile-style image." },
-        { type: "image", label: "Image", desc: "Upload and show an image." },
-        { type: "socials", label: "Socials", desc: "Display social profile links." },
-        { type: "business_hours", label: "Business hours", desc: "Add your opening hours." },
-        { type: "modal_text", label: "Modal text", desc: "Show extra text in a modal." },
-    ],
-    Advanced: [
-        { type: "email_collector", label: "Email collector", desc: "Collect emails from visitors." },
-        { type: "phone_collector", label: "Phone collector", desc: "Collect phone numbers." },
-        { type: "contact_form", label: "Contact form", desc: "Add a simple contact form." },
-    ],
-    Payments: [
-        { type: "paypal", label: "PayPal", desc: "Accept payments with PayPal." },
-    ],
-    Embed: [
-        { type: "soundcloud", label: "SoundCloud", desc: "Embed SoundCloud content." },
-        { type: "spotify", label: "Spotify", desc: "Embed Spotify content." },
-        { type: "youtube", label: "YouTube", desc: "Embed YouTube content." },
-        { type: "twitch", label: "Twitch", desc: "Embed Twitch content." },
-        { type: "vimeo", label: "Vimeo", desc: "Embed Vimeo content." },
-        { type: "tiktok_video", label: "TikTok Video", desc: "Embed a TikTok video." },
-    ],
-};
 
 const BLOCK_ICONS: Record<string, React.ReactNode> = {
     link: <LinkIcon size={16} />, heading: <FileCode2 size={16} />, paragraph: <FileCode2 size={16} />,
@@ -298,9 +282,9 @@ const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewport
                                 style={{ backgroundColor: `${theme.textColor}0D`, border: `1px solid ${theme.textColor}18` }}>
                                 <p className="text-[14px] font-semibold tracking-normal" style={{ color: theme.textColor }}>{profile?.title || "Your Brand"}</p>
                             </div>
-                            {profile?.bio && (
+                            {profile?.description && (
                                 <p className="text-[11px] mt-2.5 max-w-[200px] text-center leading-relaxed font-normal"
-                                    style={{ color: `${theme.textColor}80` }}>{profile.bio}</p>
+                                    style={{ color: `${theme.textColor}80` }}>{profile.description}</p>
                             )}
                         </div>
                         <div className="space-y-4">
@@ -464,7 +448,6 @@ export default function BioLinkBuilder() {
     const [isLoading, setIsLoading] = useState(true);
     const [accounts, setAccounts] = useState<any[]>([]);
     const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
-    const [blockCategories, setBlockCategories] = useState<{ [cat: string]: any[] }>(PRESET_BLOCK_CATEGORIES);
     const [profile, setProfile] = useState<BioProfile | null>(null);
     const [tabs, setTabs] = useState<BioTab[]>([]);
     const [uiTypeOverrides, setUiTypeOverrides] = useState<Record<number, string>>({});
@@ -519,37 +502,26 @@ export default function BioLinkBuilder() {
                 const accs = res.data?.data?.instagram_accounts || [];
                 setAccounts(accs);
                 if (accs.length > 0) {
-                    const preferredId = requestedPageId && accs.some((a: any) => String(a.id) === requestedPageId)
-                        ? requestedPageId
-                        : accs[0].id.toString();
+                    const preferredId = requestedPageId || accs[0].id.toString();
                     setSelectedPageId(preferredId);
                 }
             } catch { }
         };
         fetchAccounts();
-        setBlockCategories(PRESET_BLOCK_CATEGORIES);
     }, [requestedPageId]);
 
-    useEffect(() => {
-        if (!requestedPageId || !accounts.length) return;
-        if (accounts.some((a: any) => String(a.id) === requestedPageId)) {
-            setSelectedPageId(requestedPageId);
-        }
-    }, [accounts, requestedPageId]);
 
     const fetchBuilderData = useCallback(async () => {
         if (!selectedPageId) return;
         setIsLoading(true);
         try {
-            const res = await api.get(`/bio-builder?page=${selectedPageId}`);
-            const payload = res.data?.data || res.data;
-            if (payload?.id) {
+            const res = await api.get("/bio/pages");
+            const pages = res.data?.data || res.data || [];
+            // Find the page that matches the selectedPageId (link_id or url)
+            const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
+
+            if (payload?.link_id) {
                 setProfile(payload);
-                setTabs((prevTabs) => mergeTabsPreservingItems(prevTabs, payload.tabs || []));
-                if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id);
-            }
-            else if (payload?.profile) {
-                setProfile(payload.profile);
                 setTabs((prevTabs) => mergeTabsPreservingItems(prevTabs, payload.tabs || []));
                 if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id);
             }
@@ -617,8 +589,9 @@ export default function BioLinkBuilder() {
 
         let latestTabs = tabs;
         try {
-            const fresh = await api.get(`/bio-builder?page=${selectedPageId}`);
-            const payload = fresh.data?.data || fresh.data;
+            const res = await api.get("/bio/pages");
+            const pages = res.data?.data || res.data || [];
+            const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
             latestTabs = payload?.tabs || tabs;
         } catch {
             // If refresh fails, continue with current local state.
@@ -637,8 +610,9 @@ export default function BioLinkBuilder() {
         }
 
         try {
-            const fresh = await api.get(`/bio-builder?page=${selectedPageId}`);
-            const payload = fresh.data?.data || fresh.data;
+            const res = await api.get("/bio/pages");
+            const pages = res.data?.data || res.data || [];
+            const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
             latestTabs = payload?.tabs || tabs;
             if (!resolvedTabId) {
                 resolvedTabId = payload?.tabs?.[0]?.id;
@@ -674,8 +648,9 @@ export default function BioLinkBuilder() {
                 return createdSectionId;
             }
 
-            const refreshed = await api.get(`/bio-builder?page=${selectedPageId}`);
-            const payload = refreshed.data?.data || refreshed.data;
+            const refreshed = await api.get("/bio/pages");
+            const pages = refreshed.data?.data || refreshed.data || [];
+            const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
             const refreshedTabs = payload?.tabs || [];
             const matchedTab = refreshedTabs.find((tab: any) => tab.id === resolvedTabId) || refreshedTabs[0];
             const fallbackSectionId = matchedTab?.sections?.[0]?.id;
@@ -695,7 +670,10 @@ export default function BioLinkBuilder() {
     };
 
     const openBlockMarketplace = async (sectionId?: number) => {
-        if (!profile || !selectedPageId) return;
+        if (!profile || !selectedPageId) {
+            showModal("error", "Not Ready", "We couldn't resolve your bio profile. Please re-select it from the list.");
+            return;
+        }
 
         if (sectionId) {
             setTargetSectionId(sectionId);
@@ -1109,13 +1087,13 @@ export default function BioLinkBuilder() {
                                                             );
                                                         })}
                                                     </div>
-                                                    <div className="flex items-center gap-4">
+                                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                                                         <button onClick={() => openBlockMarketplace()}
                                                             className="flex-1 h-16 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3 text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white transition-all text-[11px] font-black uppercase tracking-widest group">
                                                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
                                                             Create Block
                                                         </button>
-                                                        <button onClick={() => setView('visuals')} className="h-16 px-8 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                                                        <button onClick={() => setView('visuals')} className="h-16 px-8 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
                                                             Next: Style <ArrowRight size={16} />
                                                         </button>
                                                     </div>
@@ -1517,7 +1495,6 @@ export default function BioLinkBuilder() {
             {/* MODALS */}
             <ModalShell open={showAddBlock} onClose={() => setShowAddBlock(false)} title="Create Block" icon={<Grid size={20} />} maxWidthClassName="sm:max-w-5xl">
                 <BlockMarketplaceContent
-                    blockCategories={blockCategories}
                     onSelect={handleSelectBlockType}
                 />
             </ModalShell>

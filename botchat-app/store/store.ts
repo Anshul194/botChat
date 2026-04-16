@@ -5,6 +5,7 @@ import usersReducer from './slices/usersSlice';
 import plansReducer from './slices/plansSlice';
 import modulesReducer from './slices/modulesSlice';
 import aiTrainingReducer from './slices/aiTrainingSlice';
+import bioReducer from './slices/bioSlice';
 
 export const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
         plans: plansReducer,
         modules: modulesReducer,
         aiTraining: aiTrainingReducer,
+        bio: bioReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 

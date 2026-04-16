@@ -13,14 +13,15 @@ import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "@/app/dashboa
 // Types
 // ─────────────────────────────────────────────────────────
 interface PublicProfile {
-    id: number;
+    link_id: string;
     title: string;
-    bio: string;
+    description: string;
     avatar: string;
     email_link: string;
     contact_link: string;
     theme: string;
     tabs: PublicTab[];
+    url: string;
 }
 interface PublicTab {
     id: number;
@@ -45,30 +46,27 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
     if (!id) return null;
     try {
         const baseUrl = resolveApiBaseUrl();
-        // Uses the exact API endpoint the bio-link builder relies on
-        const url = `${baseUrl}/bio-builder?page=${id}`;
+        const url = `${baseUrl}/bio/pages`;
         console.log("Fetching public profile from:", url);
 
         const res = await fetch(url, {
             headers: { 
                 "x-host": resolveXHost(), 
-                "Accept": "application/json" 
+                "Accept": "application/json",
             },
             cache: "no-store",
         });
 
         if (!res.ok) {
-            console.error("API Error:", res.status, res.statusText);
-            const text = await res.text();
-            console.error("Error body:", text);
             return null;
         }
         
         const json = await res.json();
-        console.log("API Response:", json);
-        return json?.data || json || null;
+        const pages = json?.data || json || [];
+        // Find the page that matches the link_id or url (slug)
+        const profile = pages.find((p: any) => String(p.link_id) === id || p.url === id);
+        return profile || null;
     } catch (err) {
-        console.error("Network / Fetch exception:", err);
         return null;
     }
 }
@@ -368,8 +366,8 @@ function PublicBioContent() {
                     <h1 className="text-[26px] font-black leading-tight drop-shadow-sm" style={{ color: theme.textColor }}>{profile.title || username}</h1>
                     <p className="text-[13px] font-semibold mt-1 mb-3" style={{ color: `${theme.textColor}B0` }}>@{username}</p>
 
-                    {profile.bio && (
-                        <p className="text-[14px] font-medium max-w-[300px] leading-relaxed mb-4" style={{ color: `${theme.textColor}E5` }}>{profile.bio}</p>
+                    {profile.description && (
+                        <p className="text-[14px] font-medium max-w-[300px] leading-relaxed mb-4" style={{ color: `${theme.textColor}E5` }}>{profile.description}</p>
                     )}
 
                     {(profile.email_link || profile.contact_link) && (
