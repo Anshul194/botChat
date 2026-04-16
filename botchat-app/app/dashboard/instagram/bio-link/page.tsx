@@ -8,7 +8,7 @@ import {
     Layers, Video, Youtube, MonitorPlay, Smartphone, Monitor, Hexagon,
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
-    Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info
+    Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
@@ -517,22 +517,49 @@ export default function BioLinkBuilder() {
         try {
             const res = await api.get("/bio/pages");
             const pages = res.data?.data || res.data || [];
-            // Find the page that matches the selectedPageId (link_id or url)
             const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
 
             if (payload?.link_id) {
                 setProfile(payload);
-                setTabs((prevTabs) => mergeTabsPreservingItems(prevTabs, payload.tabs || []));
-                if (payload.tabs?.length > 0 && !selectedTabId) setSelectedTabId(payload.tabs[0].id);
+                const linkId = payload.link_id;
+                
+                // Fetch blocks for this specific page
+                const bRes = await api.get(`/bio/pages/${linkId}/blocks`);
+                const bData = bRes.data?.data || bRes.data || [];
+                const mappedBlocks = bData.map((b: any) => ({
+                    ...b,
+                    id: b.biolink_block_id || b.id,
+                }));
+
+                // Ensure we have a tab/section structure to show blocks in panel/canvas
+                const activeTabs = payload.tabs?.length > 0 ? payload.tabs : [{ id: 1, title: "Main", sections: [{ id: 1, title: "Standard", blocks: [] }] }];
+                
+                const finalTabs = activeTabs.map((tab: any, idx: number) => {
+                    // For now, if it's the first tab, inject the fetched blocks into the first section
+                    if (idx === 0) {
+                        const sections = tab.sections?.length > 0 ? tab.sections : [{ id: 1, title: "Standard", blocks: [] }];
+                        sections[0].blocks = mappedBlocks;
+                        return { ...tab, sections };
+                    }
+                    return tab;
+                });
+
+                setTabs(finalTabs);
+                if (finalTabs.length > 0 && !selectedTabId) setSelectedTabId(finalTabs[0].id);
             }
             else {
                 setProfile(null);
                 setTabs([]);
                 setSelectedTabId(null);
             }
-        } catch { setProfile(null); setTabs([]); setSelectedTabId(null); }
+        } catch (err) {
+            console.error("Fetch Error:", err);
+            setProfile(null);
+            setTabs([]);
+            setSelectedTabId(null);
+        }
         finally { setIsLoading(false); }
-    }, [selectedPageId]);
+    }, [selectedPageId, selectedTabId]);
 
     useEffect(() => { fetchBuilderData(); }, [fetchBuilderData]);
 
@@ -600,13 +627,8 @@ export default function BioLinkBuilder() {
         let resolvedTabId = currentTab?.id || selectedTabId || latestTabs[0]?.id;
 
         if (!resolvedTabId) {
-            try {
-                const createdTab = await api.post("/bio-builder/tabs", { profile_id: profile.id, title: "Main" });
-                resolvedTabId = createdTab?.data?.data?.id || createdTab?.data?.id;
-            } catch {
-                showModal("error", "Error", "Failed to create a content tab.");
-                return null;
-            }
+             showModal("error", "Error", "Could not resolve a tab for adding blocks.");
+             return null;
         }
 
         try {
@@ -633,40 +655,8 @@ export default function BioLinkBuilder() {
             return existingSection.id;
         }
 
-        try {
-            const created = await api.post("/bio-builder/sections", {
-                profile_id: profile.id,
-                tab_id: resolvedTabId,
-                title: "Main Content",
-                type: "links",
-            });
-
-            const createdSectionId = created?.data?.data?.id || created?.data?.id;
-            if (createdSectionId) {
-                await fetchBuilderData();
-                setSelectedTabId(resolvedTabId);
-                return createdSectionId;
-            }
-
-            const refreshed = await api.get("/bio/pages");
-            const pages = refreshed.data?.data || refreshed.data || [];
-            const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
-            const refreshedTabs = payload?.tabs || [];
-            const matchedTab = refreshedTabs.find((tab: any) => tab.id === resolvedTabId) || refreshedTabs[0];
-            const fallbackSectionId = matchedTab?.sections?.[0]?.id;
-
-            if (fallbackSectionId) {
-                await fetchBuilderData();
-                setSelectedTabId(matchedTab?.id || resolvedTabId);
-                return fallbackSectionId;
-            }
-
-            showModal("error", "Error", "Section created but could not open block marketplace. Please try again.");
-            return null;
-        } catch {
-            showModal("error", "Error", "Failed to prepare content blocks.");
-            return null;
-        }
+        showModal("error", "Error", "Content structure is missing. Please re-load the page.");
+        return null;
     };
 
     const openBlockMarketplace = async (sectionId?: number) => {
@@ -686,61 +676,114 @@ export default function BioLinkBuilder() {
         setShowAddBlock(true);
     };
 
-    const handleAddBlock = async (sectionId: number, type: string) => {
+
+
+    const handleAddBlock = async (type: string, settings: any = {}) => {
         if (!profile) return;
-        const selectedType = normalizeBlockType(type);
-        const defaultItems = [getDefaultItemForType(selectedType)];
+        const linkId = profile.link_id || profile.id;
+        
+        // Extract location_url (some modules have it at top level)
+        const locationUrl = settings.location_url || settings.url || "";
+        
+        // Ensure required fields like 'name' or 'text' are present
+        const processedSettings = { ...settings };
+        
+        // Use a fallback if all name/text fields are empty to pass validation
+        const fallbackName = type.charAt(0).toUpperCase() + type.slice(1);
+        
+        processedSettings.name = (processedSettings.name || processedSettings.text || processedSettings.label || fallbackName).trim();
+        processedSettings.text = (processedSettings.text || processedSettings.name).trim();
+
+        // Location URL placeholder if empty for link-like types
+        let finalLocationUrl = locationUrl;
+        if (!finalLocationUrl && ["link", "image", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"].includes(type)) {
+            finalLocationUrl = "https://";
+        }
+
+        // Prepare payload according to backend expectations (Reference 1-15)
+        const payload: any = {
+            link_id: linkId,
+            type: type,
+            settings: processedSettings,
+        };
+
+        // Standard, Image, and Embeds use top-level location_url (Reference 27, 197, 467)
+        if (["link", "image", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"].includes(type)) {
+            payload.location_url = finalLocationUrl;
+            // Clean up to avoid duplication
+            delete payload.settings.url;
+            delete payload.settings.location_url;
+        }
+
         try {
-            const primaryRes = await api.post("/bio-builder/blocks", {
-                profile_id: profile.id,
-                section_id: sectionId,
-                type: selectedType,
-                items: defaultItems,
-            });
-            const createdId = primaryRes?.data?.data?.id || primaryRes?.data?.id;
-            if (createdId) {
-                setUiTypeOverrides((prev) => ({ ...prev, [createdId]: selectedType }));
-            }
-            await fetchBuilderData();
-            setShowAddBlock(false);
-        } catch {
-            try {
-                const fallbackType = mapPickerTypeToBackendType(selectedType);
-                const fallbackRes = await api.post("/bio-builder/blocks", {
-                    profile_id: profile.id,
-                    section_id: sectionId,
-                    type: fallbackType,
-                    items: defaultItems,
-                });
-                const createdId = fallbackRes?.data?.data?.id || fallbackRes?.data?.id;
-                if (createdId) {
-                    setUiTypeOverrides((prev) => ({ ...prev, [createdId]: selectedType }));
+            await api.post("/bio/blocks", payload);
+            
+            // After successful creation, call the specific GET blocks API for this page
+            const blocksRes = await api.get(`/bio/pages/${linkId}/blocks`);
+            const refreshedBlocks = (blocksRes.data?.data || blocksRes.data || []).map((b: any) => ({
+                ...b,
+                id: b.biolink_block_id || b.id
+            }));
+            
+            // Sync the refreshed blocks into the tabs state
+            setTabs(prev => prev.map((tab, idx) => {
+                if (idx === 0) {
+                    const sections = tab.sections?.length > 0 ? tab.sections : [{ id: 1, title: "Standard", blocks: [] }];
+                    sections[0].blocks = refreshedBlocks;
+                    return { ...tab, sections };
                 }
-                await fetchBuilderData();
-                setShowAddBlock(false);
-            } catch {
-                showModal("error", "Error", "Failed to add block.");
-            }
+                return tab;
+            }));
+            
+            await fetchBuilderData(); // Also refresh overall data
+            setShowAddBlock(false);
+            setShowCarouselEditor(false);
+            setEditingBlock(null);
+            showModal("success", "Success", "Block created successfully.");
+        } catch (err: any) {
+            console.error("Failed to add block via /bio/blocks", err);
+            const msg = err.response?.data?.message || "Failed to add block.";
+            showModal("error", "Error", msg);
         }
     };
 
-    const handleSelectBlockType = async (type: string) => {
-        const resolvedSectionId = targetSectionId || await ensureSectionForBlocks();
-        if (!resolvedSectionId) {
-            showModal("error", "Error", "Could not prepare content for this block. Please try again.");
+    const handleSelectBlockType = async (type: string, defaults?: any) => {
+        const mockBlock = {
+            id: "new",
+            type: type,
+            settings: defaults || {},
+            _uiType: type,
+            _isNew: true,
+            items: defaults ? [{ ...defaults }] : []
+        };
+        setEditingBlock(mockBlock);
+        setShowAddBlock(false);
+        setShowCarouselEditor(true);
+    };
+
+    const openEditor = (block: any) => {
+        const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
+        
+        // Map the single settings object from the new API into the 'items' array expected by CarouselEditor
+        const settings = block.settings || {};
+        const items = [{ ...settings, builder_type: settings.builder_type || uiType }];
+        
+        setEditingBlock({ ...block, _uiType: uiType, items });
+        setShowCarouselEditor(true);
+    };
+
+    const handleDeleteBlock = async (id: number | string) => {
+        if (id === "new") {
+            setShowCarouselEditor(false);
+            setEditingBlock(null);
             return;
         }
-        setTargetSectionId(resolvedSectionId);
-        await handleAddBlock(resolvedSectionId, type);
-    };
-
-    const handleDeleteBlock = async (id: number) => {
         if (typeof window !== "undefined") {
             const ok = window.confirm("Are you sure you want to delete this block?");
             if (!ok) return;
         }
 
-        // Local-first delete: remove instantly from builder and preview.
+        // Local-first delete
         setTabs((prevTabs) =>
             prevTabs.map((tab) => ({
                 ...tab,
@@ -757,44 +800,50 @@ export default function BioLinkBuilder() {
         }
 
         try {
-            await api.delete(`/bio-builder/blocks/${id}`);
+            await api.delete(`/bio/blocks/${id}`);
         } catch {
-            showModal("error", "Warning", "Block removed locally, but server delete failed.");
+            showModal("error", "Error", "Failed to delete block on server.");
+            await fetchBuilderData();
         }
-    };
-
-    const handleUploadImage = async (file: File) => {
-        try {
-            const fd = new FormData(); fd.append("image", file);
-            const res = await api.post("/bio-builder/upload-image", fd, { headers: { "Content-Type": "multipart/form-data" } });
-            return res.data?.url;
-        } catch { showModal("error", "Error", "Failed to upload image."); return null; }
-    };
-
-    const openEditor = (block: any) => {
-        const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
-        const items = (block.items || block.content?.items || []).map((item: any) => ({ ...item, builder_type: item?.builder_type || uiType }));
-        setEditingBlock({ ...block, _uiType: uiType, items });
-        setShowCarouselEditor(true);
     };
 
     const saveEditor = async () => {
         if (!editingBlock) return;
-        const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
-        const normalizedItems = (editingBlock.items || []).map((item: any) => ({ ...item, builder_type: item?.builder_type || uiType }));
+        
+        // Data usually lives in editingBlock.items[0] from CarouselEditor
+        const editorSettings = editingBlock.items?.[0] || editingBlock.settings || {};
+        
+        if (editingBlock._isNew) {
+            await handleAddBlock(editingBlock._uiType, editorSettings);
+            return;
+        }
 
-        syncBlockItemsLocally(editingBlock.id, normalizedItems);
+        const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
+        const locationUrl = editorSettings.location_url || editorSettings.url || "";
+        
+        const payload: any = {
+            settings: { ...editorSettings }
+        };
+
+        if (["link", "image", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"].includes(uiType)) {
+            payload.location_url = locationUrl;
+            delete payload.settings.url;
+            delete payload.settings.location_url;
+        }
+
+        // Local sync
+        const items = [{ ...editorSettings }];
+        syncBlockItemsLocally(editingBlock.id, items);
         setUiTypeOverrides((prev) => ({ ...prev, [editingBlock.id]: uiType }));
         setShowCarouselEditor(false);
 
         try {
-            await api.put(`/bio-builder/blocks/${editingBlock.id}`, {
-                type: editingBlock.type,
-                items: normalizedItems,
-            });
+            await api.put(`/bio/blocks/${editingBlock.id}`, payload);
+            await fetchBuilderData();
         }
         catch {
-            showModal("error", "Error", "Failed to save block on server. Local preview is kept.");
+            showModal("error", "Error", "Failed to update block on server.");
+            await fetchBuilderData();
         }
     };
 
@@ -806,14 +855,39 @@ export default function BioLinkBuilder() {
         syncBlockItemsLocally(editingBlock.id, items);
     };
 
-    const handleReorderSections = async (fromIdx: number, toIdx: number) => {
-        if (!currentTab?.sections) return;
-        const newSections = [...currentTab.sections];
-        const [moved] = newSections.splice(fromIdx, 1);
-        newSections.splice(toIdx, 0, moved);
-        setTabs(tabs.map(t => t.id === currentTab.id ? { ...t, sections: newSections } : t));
-        try { await api.post("/bio-builder/reorder-sections", { tab_id: currentTab.id, section_ids: newSections.map(s => s.id) }); }
-        catch { fetchBuilderData(); }
+    const handleReorderBlocks = async (newTabs: any) => {
+        if (!profile) return;
+        setTabs(newTabs);
+        
+        const allBlocks: any[] = [];
+        newTabs.forEach((tab: any) => {
+            tab.sections?.forEach((section: any) => {
+                section.blocks?.forEach((block: any, index: number) => {
+                    allBlocks.push({ id: block.id, order: index });
+                });
+            });
+        });
+
+        try {
+            await api.post("/bio/blocks/reorder", {
+                link_id: profile.link_id || profile.id,
+                blocks: allBlocks
+            });
+        } catch {
+            fetchBuilderData();
+        }
+    };
+
+    // Replace handleReorderSections if it existed with handleReorderBlocks
+    const handleReorderSections = handleReorderBlocks as any;
+
+    const handleUploadImage = async (file: File) => {
+        try {
+            const fd = new FormData(); fd.append("image", file);
+            // This endpoint might also change? Assuming /bio/upload-image for now
+            const res = await api.post("/bio-builder/upload-image", fd, { headers: { "Content-Type": "multipart/form-data" } });
+            return res.data?.url;
+        } catch { showModal("error", "Error", "Failed to upload image."); return null; }
     };
 
     const handleShareLink = () => { navigator.clipboard.writeText(publicUrl); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); };
@@ -1504,74 +1578,374 @@ export default function BioLinkBuilder() {
                 icon={editingBlock && (BLOCK_ICONS[getUiTypeFromBlock(editingBlock)] || <LayoutTemplate size={20} />)}
                 footer={
                     <div className="flex flex-col sm:flex-row gap-3">
-                        <button
-                            onClick={async () => {
-                                if (!editingBlock?.id) return;
-                                await handleDeleteBlock(editingBlock.id);
-                                setEditingBlock(null);
-                                setShowCarouselEditor(false);
-                            }}
-                            className="h-14 px-6 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-black uppercase tracking-widest text-[12px]"
-                        >
-                            Delete Block
+                        {!editingBlock?._isNew && (
+                            <button
+                                onClick={async () => {
+                                    if (!editingBlock?.id) return;
+                                    await handleDeleteBlock(editingBlock.id);
+                                    setEditingBlock(null);
+                                    setShowCarouselEditor(false);
+                                }}
+                                className="h-14 px-6 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-black uppercase tracking-widest text-[12px]"
+                            >
+                                Delete Block
+                            </button>
+                        )}
+                        <button onClick={saveEditor} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[12px] shadow-xl">
+                            {editingBlock?._isNew ? "Create block" : "Save Changes"}
                         </button>
-                        <button onClick={saveEditor} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[12px] shadow-xl">Save Changes</button>
                     </div>
                 }>
                 {editingBlock && (
                     <div className="space-y-6">
-                        {(editingBlock.items || []).map((item: any, idx: number) => (
-                            <div key={idx} className="p-6 rounded-[32px] bg-card dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 space-y-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Instance #{idx + 1}</span>
-                                    <button onClick={() => {
-                                        if (typeof window !== "undefined") {
-                                            const ok = window.confirm("Are you sure you want to delete this item?");
-                                            if (!ok) return;
-                                        }
-                                        const items = editingBlock.items.filter((_: any, i: number) => i !== idx);
-                                        setEditingBlock({ ...editingBlock, items });
-                                    }} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
-                                </div>
-                                <InputField
-                                    label={getUiTypeFromBlock(editingBlock) === "heading" ? "Heading Text" : "Primary Text"}
-                                    value={item.title || ""}
-                                    onChange={(e: any) => updateItem(idx, 'title', e.target.value)}
-                                    placeholder="Enter text"
-                                />
-                                {!["heading", "paragraph", "modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(getUiTypeFromBlock(editingBlock)) && (
-                                    <InputField label="Endpoint URL" value={item.url || ""} onChange={(e: any) => updateItem(idx, 'url', e.target.value)} placeholder="https://..." />
-                                )}
-                                {["paragraph", "modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(getUiTypeFromBlock(editingBlock)) && (
-                                    <div className="space-y-2">
-                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Details</label>
-                                        <textarea
-                                            value={item.description || ""}
-                                            onChange={(e: any) => updateItem(idx, 'description', e.target.value)}
-                                            rows={3}
-                                            className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                            placeholder="Write content..."
+                        {(editingBlock.items || []).map((item: any, idx: number) => {
+                            const uiType = getUiTypeFromBlock(editingBlock);
+                            
+                            return (
+                                <div key={idx} className="space-y-6">
+                                    {/* Image Type */}
+                                    {uiType === "image" && (
+                                        <>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <ImageIcon size={14} className="text-slate-400" /> Image
+                                                </label>
+                                                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
+                                                    {item.image && (
+                                                        <div className="w-full h-32 rounded-2xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-700 shadow-md mb-2">
+                                                            <img src={item.image} className="w-full h-full object-cover" />
+                                                        </div>
+                                                    )}
+                                                    <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
+                                                        Choose File
+                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                    </label>
+                                                    <p className="text-[10px] text-slate-400 text-center font-bold uppercase tracking-tight">.jpg, .png, .webp, .svg, .gif allowed. 2 MB maximum.</p>
+                                                </div>
+                                            </div>
+                                            <InputField
+                                                label="Destination URL"
+                                                value={item.url || item.location_url || ""}
+                                                onChange={(e: any) => updateItem(idx, 'url', e.target.value)}
+                                                placeholder="https://example.com/"
+                                                icon={<LinkIcon size={14} />}
+                                            />
+                                        </>
+                                    )}
+
+                                    {/* Socials Type */}
+                                    {uiType === "socials" && (
+                                        <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {[
+                                                { key: 'email', label: 'Email', prefix: '', icon: <Globe size={14} />, placeholder: 'email@domain.com' },
+                                                { key: 'tel', label: 'Telephone', prefix: '', icon: <Smartphone size={14} />, placeholder: '+00000000000' },
+                                                { key: 'whatsapp', label: 'WhatsApp', prefix: '', icon: <SmartphoneNfc size={14} />, placeholder: '2124567890' },
+                                                { key: 'facebook', label: 'Facebook', prefix: 'facebook.com/', icon: <Globe size={14} />, placeholder: 'facebook-page' },
+                                                { key: 'instagram', label: 'Instagram', prefix: 'instagram.com/', icon: <Camera size={14} />, placeholder: 'Instagram username' },
+                                                { key: 'twitter', label: 'Twitter', prefix: 'x.com/', icon: <Sparkles size={14} />, placeholder: 'Twitter username' },
+                                                { key: 'youtube', label: 'YouTube Channel', prefix: 'youtube.com/', icon: <Youtube size={14} />, placeholder: 'Channel ID' },
+                                                { key: 'tiktok', label: 'TikTok', prefix: 'tiktok.com/@', icon: <Video size={14} />, placeholder: 'TikTok username' },
+                                                { key: 'linkedin', label: 'LinkedIn', prefix: 'linkedin.com/', icon: <Globe size={14} />, placeholder: 'Linked In Profile' },
+                                                { key: 'discord', label: 'Discord', prefix: 'discord.gg/', icon: <Grid size={14} />, placeholder: 'Discord username' },
+                                                { key: 'telegram', label: 'Telegram', prefix: 't.me/', icon: <Globe size={14} />, placeholder: 'telegram-username' },
+                                            ].map((platform) => (
+                                                <div key={platform.key} className="space-y-2">
+                                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                        {platform.icon} {platform.label}
+                                                    </label>
+                                                    <div className="flex rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm transition-all focus-within:border-primary/30">
+                                                        {platform.prefix && (
+                                                            <div className="px-4 flex items-center bg-slate-50 dark:bg-slate-800 border-r border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-400">
+                                                                {platform.prefix}
+                                                            </div>
+                                                        )}
+                                                        <input
+                                                            value={item.socials?.[platform.key] || ""}
+                                                            onChange={(e) => {
+                                                                const newSocials = { ...(item.socials || {}), [platform.key]: e.target.value };
+                                                                updateItem(idx, 'socials', newSocials);
+                                                            }}
+                                                            placeholder={platform.placeholder}
+                                                            className="flex-1 h-12 px-4 bg-transparent text-sm font-bold text-slate-900 dark:text-white outline-none"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Heading Type */}
+                                    {uiType === "heading" && (
+                                        <>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <LayoutTemplate size={14} className="text-slate-400" /> Type
+                                                </label>
+                                                <select
+                                                    value={item.heading_type || "h1"}
+                                                    onChange={(e) => updateItem(idx, 'heading_type', e.target.value)}
+                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="h1">H1</option>
+                                                    <option value="h2">H2</option>
+                                                    <option value="h3">H3</option>
+                                                    <option value="h4">H4</option>
+                                                    <option value="h5">H5</option>
+                                                    <option value="h6">H6</option>
+                                                </select>
+                                            </div>
+                                            <InputField
+                                                label="Text"
+                                                value={item.text || item.title || ""}
+                                                onChange={(e: any) => {
+                                                    updateItem(idx, 'text', e.target.value);
+                                                    updateItem(idx, 'title', e.target.value); // Sync for display
+                                                }}
+                                                placeholder="Enter heading text"
+                                            />
+                                        </>
+                                    )}
+
+                                    {/* Business Hours Type */}
+                                    {uiType === "business_hours" && (
+                                        <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                            <div className="flex flex-col gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-900 dark:text-white">Open 24/7</p>
+                                                        <p className="text-[10px] text-slate-500 font-medium">Mark as always open.</p>
+                                                    </div>
+                                                    <ToggleSwitch checked={item.open_24_7 || false} onChange={v => updateItem(idx, 'open_24_7', v)} />
+                                                </div>
+                                                <div className="h-px bg-slate-200 dark:bg-slate-800" />
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-900 dark:text-white">Temporarily closed</p>
+                                                        <p className="text-[10px] text-slate-500 font-medium">Mark as temporarily closed.</p>
+                                                    </div>
+                                                    <ToggleSwitch checked={item.temporarily_closed || false} onChange={v => updateItem(idx, 'temporarily_closed', v)} />
+                                                </div>
+                                            </div>
+
+                                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, dIdx) => (
+                                                <div key={day} className="space-y-2">
+                                                    <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest pl-2">
+                                                        <Clock size={12} /> {day}
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            value={day}
+                                                            readOnly
+                                                            className="w-1/3 h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 text-sm font-bold text-slate-400 outline-none"
+                                                        />
+                                                        <input
+                                                            value={item[`day_${dIdx + 1}`] || ""}
+                                                            onChange={(e) => updateItem(idx, `day_${dIdx + 1}`, e.target.value)}
+                                                            placeholder="10:00 - 18:00, Closed or 24 H"
+                                                            className="flex-1 h-12 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 pl-2">
+                                                    <Edit3 size={12} /> Additional notice
+                                                </label>
+                                                <textarea
+                                                    value={item.additional_notice || ""}
+                                                    onChange={(e: any) => updateItem(idx, 'additional_notice', e.target.value)}
+                                                    rows={3}
+                                                    className="w-full px-5 py-4 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                    placeholder="Holiday notices, etc..."
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* PayPal Type */}
+                                    {uiType === "paypal" && (
+                                        <div className="space-y-5">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <MonitorPlay size={14} className="text-slate-400" /> Type
+                                                </label>
+                                                <select
+                                                    value={item.type || "buy_now"}
+                                                    onChange={(e) => updateItem(idx, 'type', e.target.value)}
+                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="buy_now">Buy now</option>
+                                                    <option value="add_to_cart">Add to cart</option>
+                                                    <option value="donation">Donation</option>
+                                                </select>
+                                            </div>
+                                            <InputField label="PayPal email" value={item.email || ""} onChange={(e: any) => updateItem(idx, 'email', e.target.value)} placeholder="your@paypal.com" icon={<Mail size={14} />} />
+                                            <InputField label="Product title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Product Name" icon={<LayoutTemplate size={14} />} />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="Currency code" value={item.currency || "USD"} onChange={(e: any) => updateItem(idx, 'currency', e.target.value)} placeholder="USD" icon={<Globe size={14} />} />
+                                                <InputField label="Price" value={item.price || ""} onChange={(e: any) => updateItem(idx, 'price', e.target.value)} placeholder="0.00" icon={<Zap size={14} />} />
+                                            </div>
+                                            <InputField label="Name" value={item.name || ""} onChange={(e: any) => updateItem(idx, 'name', e.target.value)} placeholder="Button Text" icon={<Megaphone size={14} />} />
+                                        </div>
+                                    )}
+
+                                    {/* Collectors */}
+                                    {["email_collector", "phone_collector", "contact_collector"].includes(uiType) && (
+                                        <InputField
+                                            label="Name"
+                                            value={item.name || item.title || ""}
+                                            onChange={(e: any) => {
+                                                updateItem(idx, 'name', e.target.value);
+                                                updateItem(idx, 'title', e.target.value);
+                                            }}
+                                            placeholder="Enter form name"
+                                            icon={<Megaphone size={14} />}
                                         />
-                                    </div>
-                                )}
-                                {isMediaType(getUiTypeFromBlock(editingBlock)) && (
-                                    <div className="flex items-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-                                        <label className="flex-1 flex items-center gap-3 cursor-pointer group">
-                                            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-950 overflow-hidden flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                                                {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
+                                    )}
+
+                                    {/* Embeds */}
+                                    {["spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video"].includes(uiType) && (
+                                        <InputField
+                                            label={`${uiType.charAt(0).toUpperCase() + uiType.slice(1)} URL`}
+                                            value={item.url || item.location_url || ""}
+                                            onChange={(e: any) => {
+                                                updateItem(idx, 'url', e.target.value);
+                                                updateItem(idx, 'location_url', e.target.value);
+                                            }}
+                                            placeholder={`https://${uiType}.com/...`}
+                                            icon={<LinkIcon size={14} />}
+                                        />
+                                    )}
+
+                                    {/* Link Type */}
+                                    {uiType === "link" && (
+                                        <>
+                                            <InputField
+                                                label="Destination URL"
+                                                value={item.url || item.location_url || ""}
+                                                onChange={(e: any) => updateItem(idx, 'url', e.target.value)}
+                                                placeholder="https://example.com/"
+                                                icon={<LinkIcon size={14} />}
+                                            />
+                                            <InputField
+                                                label="Name"
+                                                value={item.name || item.title || ""}
+                                                onChange={(e: any) => {
+                                                    updateItem(idx, 'name', e.target.value);
+                                                    updateItem(idx, 'title', e.target.value);
+                                                }}
+                                                placeholder="Your Link Name"
+                                                icon={<Megaphone size={14} />}
+                                            />
+                                        </>
+                                    )}
+
+                                    {/* Paragraph Type */}
+                                    {uiType === "paragraph" && (
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                <Edit3 size={14} className="text-slate-400" /> Text
+                                            </label>
+                                            <div className="rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+                                                <div className="flex items-center gap-4 px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                                                    <span className="text-xs font-bold text-slate-500">Normal</span>
+                                                    <div className="h-4 w-px bg-slate-200 dark:bg-slate-800 mx-2" />
+                                                    <div className="flex items-center gap-4 text-slate-400">
+                                                        <span className="font-bold hover:text-primary cursor-pointer transition-colors">B</span>
+                                                        <span className="italic hover:text-primary cursor-pointer transition-colors">I</span>
+                                                        <span className="underline hover:text-primary cursor-pointer transition-colors">U</span>
+                                                        <span className="line-through hover:text-primary cursor-pointer transition-colors">S</span>
+                                                        <span className="hover:text-primary cursor-pointer transition-colors">A</span>
+                                                        <LinkIcon size={14} className="hover:text-primary cursor-pointer transition-colors" />
+                                                    </div>
+                                                </div>
+                                                <textarea
+                                                    value={item.text || item.description || ""}
+                                                    onChange={(e: any) => {
+                                                        updateItem(idx, 'text', e.target.value);
+                                                        updateItem(idx, 'description', e.target.value);
+                                                    }}
+                                                    rows={6}
+                                                    className="w-full px-5 py-4 bg-transparent text-sm font-medium text-slate-900 dark:text-white outline-none resize-none"
+                                                    placeholder="Write content..."
+                                                />
                                             </div>
-                                            <div className="flex-1">
-                                                <p className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Media Link</p>
-                                                <p className="text-[10px] font-bold text-slate-400 tracking-tight">Tap to upload visual asset</p>
+                                        </div>
+                                    )}
+
+                                    {/* Avatar Type */}
+                                    {uiType === "avatar" && (
+                                        <>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <ImageIcon size={14} className="text-slate-400" /> Image
+                                                </label>
+                                                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
+                                                    <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
+                                                        {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <User size={24} className="text-slate-400" />}
+                                                    </div>
+                                                    <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
+                                                        Choose File
+                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                    </label>
+                                                    <p className="text-[10px] text-slate-400 text-center font-bold uppercase tracking-tight">.jpg, .png, .webp allowed. 2 MB maximum.</p>
+                                                </div>
                                             </div>
-                                            <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image_url', url); } }} />
-                                        </label>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <Maximize2 size={14} className="text-slate-400" /> Size
+                                                </label>
+                                                <select
+                                                    value={item.size || "75x75px"}
+                                                    onChange={(e) => updateItem(idx, 'size', e.target.value)}
+                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="75x75px">75x75px</option>
+                                                    <option value="100x100px">100x100px</option>
+                                                    <option value="125x125px">125x125px</option>
+                                                    <option value="150x150px">150x150px</option>
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <Grid size={14} className="text-slate-400" /> Border Radius
+                                                </label>
+                                                <select
+                                                    value={item.border_radius || "straight"}
+                                                    onChange={(e) => updateItem(idx, 'border_radius', e.target.value)}
+                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="straight">Straight</option>
+                                                    <option value="round">Round</option>
+                                                    <option value="rounded">Rounded</option>
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* Fallback for other types */}
+                                    {!["heading", "link", "paragraph", "avatar", "image", "socials", "business_hours", "paypal", "email_collector", "phone_collector", "contact_collector", "spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video"].includes(uiType) && (
+                                        <div className="space-y-4">
+                                            <InputField
+                                                label="Primary Text"
+                                                value={item.title || item.name || ""}
+                                                onChange={(e: any) => updateItem(idx, 'title', e.target.value)}
+                                                placeholder="Enter text"
+                                            />
+                                            {!["modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(uiType) && (
+                                                <InputField label="Endpoint URL" value={item.url || item.location_url || ""} onChange={(e: any) => updateItem(idx, 'url', e.target.value)} placeholder="https://..." />
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center gap-2 px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl border border-blue-100/50 dark:border-blue-900/20">
+                                        <Info size={14} className="text-blue-500" />
+                                        <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">All customization options available after creation.</p>
                                     </div>
-                                )}
-                            </div>
-                        ))}
-                        <button onClick={() => setEditingBlock({ ...editingBlock, items: [...(editingBlock.items || []), getDefaultItemForType(getUiTypeFromBlock(editingBlock))] })}
-                            className="w-full h-14 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all font-black text-xs uppercase tracking-widest">{isMediaType(getUiTypeFromBlock(editingBlock)) ? "Add More Image" : "Add More Option"}</button>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </ModalShell>

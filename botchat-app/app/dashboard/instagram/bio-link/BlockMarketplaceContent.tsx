@@ -51,7 +51,7 @@ const getLucideIcon = (id: string, category: string) => {
 export default function BlockMarketplaceContent({
     onSelect,
 }: {
-    onSelect: (type: string) => void;
+    onSelect: (type: string, defaults?: any) => void;
 }) {
     const [search, setSearch] = useState("");
     const [activeCategory, setActiveCategory] = useState("all");
@@ -172,8 +172,8 @@ export default function BlockMarketplaceContent({
                                 return (
                                     <button
                                         key={item.id}
-                                        onClick={() => onSelect(item.id)}
-                                        className="group relative flex flex-col items-start p-7 rounded-[38px] bg-white dark:bg-slate-900/60 border-2 border-slate-100/80 dark:border-slate-800/50 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1.5 transition-all duration-500 text-left overflow-hidden active:scale-[0.97]"
+                                        onClick={() => onSelect(item.id, item.defaults)}
+                                        className="group relative flex flex-col items-start p-5 rounded-[28px] bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 text-left overflow-hidden active:scale-[0.98]"
                                     >
                                         <div className="absolute -top-10 -right-10 w-24 h-24 blur-[40px] opacity-0 group-hover:opacity-30 transition-opacity duration-700"
                                             style={{ backgroundColor: itemColor }} />
