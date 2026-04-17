@@ -8,7 +8,8 @@ import {
     Layers, Video, Youtube, MonitorPlay, Smartphone, Monitor, Hexagon,
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
-    Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail
+    Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail,
+    Instagram, Twitter, Facebook
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
@@ -17,8 +18,11 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { VisualsLab, getTheme, isColorLight, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
 import BlockMarketplaceContent from "./BlockMarketplaceContent";
+import { PhonePreview } from "./PhonePreview";
+import { PortfolioCanvas as SectionCard } from "./PortfolioCanvas";
+import { BLOCK_ICONS, BLOCK_COLORS, getUiTypeFromBlock, mergeTabsPreservingItems } from "./builder-utils";
 
-interface BioProfile { 
+export interface BioProfile { 
     link_id: string; 
     title: string; 
     description: string; 
@@ -27,11 +31,12 @@ interface BioProfile {
     settings?: any;
     theme?: string; 
     avatar?: string; 
+    bio?: string;
     email_link?: string; 
     contact_link?: string; 
     id?: number | string;
 }
-interface BioTab { id: number; title: string; is_active: number; sections: BioSection[]; }
+export interface BioTab { id: number; title: string; is_active: number; sections: BioSection[]; }
 interface BioSection { id: number; tab_id: number; title: string; type: string; is_active: number; blocks: BioBlock[]; }
 interface BioBlock { id: number; section_id: number; type: string; is_active: number; items: any[]; }
 
@@ -89,92 +94,6 @@ const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
     customJs: "",
 };
 
-
-const BLOCK_ICONS: Record<string, React.ReactNode> = {
-    link: <LinkIcon size={16} />, heading: <FileCode2 size={16} />, paragraph: <FileCode2 size={16} />,
-    avatar: <User size={16} />, image: <ImageIcon size={16} />, socials: <Share2 size={16} />,
-    business_hours: <CircleDot size={16} />, modal_text: <Info size={16} />,
-    email_collector: <Megaphone size={16} />, phone_collector: <Megaphone size={16} />, contact_form: <Megaphone size={16} />,
-    paypal: <ShoppingBag size={16} />, soundcloud: <Orbit size={16} />, spotify: <Orbit size={16} />,
-    youtube: <Youtube size={16} />, twitch: <Video size={16} />, vimeo: <Video size={16} />, tiktok_video: <Video size={16} />,
-    links_carousel: <Layers size={16} />, hero_single_link: <LinkIcon size={16} />, links_grid: <Grid size={16} />,
-    ig_reels_sync: <Video size={16} />, ig_reels: <Video size={16} />, youtube_shorts: <Youtube size={16} />,
-    long_form_videos: <MonitorPlay size={16} />, long_video: <MonitorPlay size={16} />,
-    vertical_media: <Smartphone size={16} />, square_media: <ImageIcon size={16} />, horizontal_media: <Monitor size={16} />,
-    add_logos: <Hexagon size={16} />, add_products: <ShoppingBag size={16} />, add_apps: <SmartphoneNfc size={16} />,
-};
-
-const BLOCK_COLORS: Record<string, string> = {
-    links_carousel: "#6366F1", hero_single_link: "#6366F1", links_grid: "#8B5CF6",
-    vertical_media: "#06B6D4", square_media: "#10B981", horizontal_media: "#F59E0B",
-    add_logos: "#64748B", add_products: "#F97316", add_apps: "#3B82F6",
-    ig_reels: "#4F46E5", ig_reels_sync: "#4F46E5", youtube_shorts: "#4F46E5",
-};
-
-const normalizeBlockType = (value: unknown) => String(value || "").toLowerCase();
-
-const isImageOnlyType = (value: unknown) => {
-    const type = normalizeBlockType(value);
-    return /image|photo|picture/.test(type) || type === "square_media" || type === "add_logos";
-};
-
-const isMediaType = (value: unknown) => {
-    const type = normalizeBlockType(value);
-    return isImageOnlyType(type) || type.includes("avatar") || type.includes("media");
-};
-
-const mapPickerTypeToBackendType = (value: unknown) => {
-    const type = normalizeBlockType(value);
-    if (["image", "avatar"].includes(type)) return "square_media";
-    if (["socials", "business_hours", "email_collector", "phone_collector", "contact_form"].includes(type)) return "links_grid";
-    if (["paypal", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"].includes(type)) return "links_grid";
-    return "hero_single_link";
-};
-
-const getUiTypeFromBlock = (block: any, uiTypeOverrides?: Record<number, string>) =>
-    normalizeBlockType(
-        block?._uiType ||
-        block?.items?.[0]?.builder_type ||
-        (block?.id && uiTypeOverrides?.[block.id]) ||
-        block?.type
-    );
-
-const getDefaultItemForType = (value: unknown) => {
-    const type = normalizeBlockType(value);
-    if (isMediaType(type)) return { title: "", url: "", image_url: "", builder_type: type };
-    if (["paragraph", "modal_text", "business_hours"].includes(type)) return { title: "", description: "", url: "", builder_type: type };
-    if (type === "heading") return { title: "", builder_type: type };
-    if (["email_collector", "phone_collector", "contact_form"].includes(type)) return { title: "", description: "", builder_type: type };
-    return { title: "", url: "https://", builder_type: type };
-};
-
-const mergeTabsPreservingItems = (localTabs: any[], incomingTabs: any[]) => {
-    if (!Array.isArray(incomingTabs) || incomingTabs.length === 0) {
-        return Array.isArray(localTabs) ? localTabs : [];
-    }
-
-    return incomingTabs.map((incomingTab) => {
-        const localTab = (localTabs || []).find((t: any) => t.id === incomingTab.id);
-        const incomingSections = Array.isArray(incomingTab?.sections) ? incomingTab.sections : [];
-
-        const mergedSections = incomingSections.map((incomingSection: any) => {
-            const localSection = (localTab?.sections || []).find((s: any) => s.id === incomingSection.id);
-            const incomingBlocks = Array.isArray(incomingSection?.blocks) ? incomingSection.blocks : [];
-
-            const mergedBlocks = incomingBlocks.map((incomingBlock: any) => {
-                const localBlock = (localSection?.blocks || []).find((b: any) => b.id === incomingBlock.id);
-                const incomingItems = Array.isArray(incomingBlock?.items) ? incomingBlock.items : [];
-                const localItems = Array.isArray(localBlock?.items) ? localBlock.items : [];
-                const mergedItems = incomingItems.length > 0 ? incomingItems : localItems;
-                return { ...incomingBlock, items: mergedItems };
-            });
-
-            return { ...incomingSection, blocks: mergedBlocks };
-        });
-
-        return { ...incomingTab, sections: mergedSections };
-    });
-};
 
 const CarouselPreview = ({ items }: { items: any[] }) => (
     <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
@@ -244,203 +163,6 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
         />
     </button>
 );
-
-const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, viewportOffset = 280, previewWidth = 300, uiTypeOverrides = {} }: any) => {
-    const mergedSections = (tabs || []).flatMap((tab: any) => tab.sections || []);
-    const currentTab = tabs.find((t: any) => t.id === selectedTabId) || tabs[0];
-    const previewSections = mergedSections.length > 0 ? mergedSections : (currentTab?.sections || []);
-    const theme = getTheme(profile?.theme);
-    const accentLight = isColorLight(theme.accent);
-
-    return (
-        <div
-            className="relative mx-auto flex items-center justify-center"
-            style={{
-                width: `min(${previewWidth}px, calc(100vw - 2rem))`,
-                height: `min(600px, calc(100vh - ${viewportOffset}px))`,
-            }}
-        >
-            <div className="relative w-full h-full bg-[#020617] rounded-[54px] p-2.5 shadow-[0_50px_100px_rgba(0,0,0,0.4),0_0_0_4px_rgba(255,255,255,0.05)] border-4 border-slate-800">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#020617] rounded-b-3xl z-20" />
-                <div className="rounded-[44px] overflow-hidden w-full h-full relative flex flex-col shadow-inner transition-all duration-700"
-                    style={theme.bgStyle}>
-                    <ThemeAnimationStyles />
-                    <ThemeEffectsLayer theme={theme} />
-                    <div className="flex-1 overflow-y-auto no-scrollbar pt-10 px-5 pb-20 relative z-10">
-                        <div className="flex flex-col items-center pt-6 pb-8">
-                            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="mb-4">
-                                <div className="w-[84px] h-[84px] rounded-full p-[3px] mx-auto shadow-xl"
-                                    style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}60, ${theme.textColor}30)` }}>
-                                    <div className="w-full h-full rounded-full overflow-hidden"
-                                        style={{ backgroundColor: `${theme.textColor}08` }}>
-                                        {profile?.avatar ? <img src={profile.avatar} className="w-full h-full rounded-full object-cover" /> :
-                                            <div className="w-full h-full flex items-center justify-center rounded-full" style={{ color: `${theme.textColor}50` }}><User size={32} /></div>}
-                                    </div>
-                                </div>
-                            </motion.div>
-                            <div className="backdrop-blur-md rounded-2xl px-8 py-2.5 shadow-xl"
-                                style={{ backgroundColor: `${theme.textColor}0D`, border: `1px solid ${theme.textColor}18` }}>
-                                <p className="text-[14px] font-semibold tracking-normal" style={{ color: theme.textColor }}>{profile?.title || "Your Brand"}</p>
-                            </div>
-                            {profile?.description && (
-                                <p className="text-[11px] mt-2.5 max-w-[200px] text-center leading-relaxed font-normal"
-                                    style={{ color: `${theme.textColor}80` }}>{profile.description}</p>
-                            )}
-                        </div>
-                        <div className="space-y-4">
-                            {previewSections.map((sec: any) => (
-                                <div key={sec.id}>
-                                    <div className="space-y-3">
-                                        {sec.blocks?.map((block: any) => {
-                                            const type = getUiTypeFromBlock(block, uiTypeOverrides);
-                                            const isMediaBlock = isMediaType(type);
-
-                                            return (block.items || []).map((item: any, i: number) => {
-                                                if (isMediaBlock) {
-                                                    const mediaUrl = item?.image_url || item?.url;
-                                                    const mediaHeight = type === "horizontal_media" ? "h-28" : type === "square_media" ? "h-44" : "h-52";
-
-                                                    return (
-                                                        <motion.div
-                                                            key={`${block.id}-media-${i}`}
-                                                            whileHover={{ scale: 1.01, y: -2 }}
-                                                            className={cn("w-full overflow-hidden rounded-2xl border", mediaHeight)}
-                                                            style={{
-                                                                borderColor: `${theme.textColor}25`,
-                                                                backgroundColor: `${theme.textColor}0A`,
-                                                            }}
-                                                        >
-                                                            {mediaUrl ? (
-                                                                <img src={mediaUrl} className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center" style={{ color: `${theme.textColor}70` }}>
-                                                                    <ImageIcon size={22} />
-                                                                </div>
-                                                            )}
-                                                        </motion.div>
-                                                    );
-                                                }
-
-                                                if (type === "heading") {
-                                                    return (
-                                                        <div key={`${block.id}-item-${i}`} className="px-4 py-2 rounded-xl" style={{ backgroundColor: `${theme.textColor}0A` }}>
-                                                            <p className="text-[13px] font-black tracking-wide" style={{ color: theme.textColor }}>{item.title || "Heading"}</p>
-                                                        </div>
-                                                    );
-                                                }
-
-                                                if (["paragraph", "modal_text", "business_hours", "contact_form", "email_collector", "phone_collector"].includes(type)) {
-                                                    return (
-                                                        <div key={`${block.id}-item-${i}`} className="px-4 py-3 rounded-xl border" style={{ borderColor: `${theme.textColor}20`, backgroundColor: `${theme.textColor}08` }}>
-                                                            <p className="text-[11px] leading-relaxed" style={{ color: `${theme.textColor}CC` }}>{item.description || item.title || "Text block"}</p>
-                                                        </div>
-                                                    );
-                                                }
-
-                                                return (
-                                                    <motion.a key={`${block.id}-item-${i}`} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                                                        href={item.url || "#"} className={cn("block w-full flex items-center justify-center transition-all", theme.fontClass)}
-                                                        style={theme.btnStyle}>
-                                                        {item.title || "Open Link"}
-                                                    </motion.a>
-                                                );
-                                            });
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="absolute top-6 left-6 w-10 h-10 rounded-full flex items-center justify-center border z-10"
-                        style={{ backgroundColor: `${theme.textColor}10`, borderColor: `${theme.textColor}20`, color: theme.textColor }}>
-                        <ChevronLeft size={18} />
-                    </div>
-                    <div className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center border z-10"
-                        style={{ backgroundColor: `${theme.textColor}10`, borderColor: `${theme.textColor}20`, color: theme.textColor }}>
-                        <Share2 size={16} />
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const SectionCard = ({ section, sidx, sectionsLength, isArranging, onReorder, onDeleteSection, onDeleteBlock, onOpenEditor, onAddBlock }: any) => (
-    <motion.div layout key={section.id}
-        className="group/sec rounded-3xl border border-slate-200/60 dark:border-slate-800/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500">
-        <div className="flex items-center gap-4 px-8 py-5 bg-slate-50/50 dark:bg-slate-950/30 border-b border-slate-100 dark:border-slate-800/50">
-            {isArranging ? (
-                <div className="flex items-center gap-1.5 mr-2">
-                    <button disabled={sidx === 0} onClick={() => onReorder(sidx, sidx - 1)}
-                        className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-slate-900 hover:text-white transition-all border border-slate-200 dark:border-slate-700">
-                        <ChevronLeft size={14} />
-                    </button>
-                    <button disabled={sidx === sectionsLength - 1} onClick={() => onReorder(sidx, sidx + 1)}
-                        className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-slate-900 hover:text-white transition-all border border-slate-200 dark:border-slate-700">
-                        <ChevronRight size={14} />
-                    </button>
-                </div>
-            ) : (
-                <div className="w-9 h-9 rounded-xl  flex items-center justify-center text-slate-900 dark:text-white shadow-inner ring-1 ring-slate-900/20">
-                    <Layers size={16} />
-                </div>
-            )}
-            <div className="flex-1">
-                <span className="text-[14px] font-black text-slate-900 dark:text-white uppercase tracking-[0.1em]">{section.title}</span>
-                <div className="flex items-center gap-2 mt-1">
-                    <div className="w-1.5 h-1.5 rounded-full  animate-pulse" />
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{section.blocks?.length || 0} Items linked</span>
-                </div>
-            </div>
-            <button onClick={() => onDeleteSection(section.id)}
-                className="w-10 h-10 rounded-xl opacity-0 group-hover/sec:opacity-100 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 text-slate-300 flex items-center justify-center transition-all">
-                <Trash2 size={16} />
-            </button>
-        </div>
-
-        <div className="p-8 space-y-4">
-            {section.blocks?.length === 0 ? (
-                <div className="py-12 text-center rounded-[28px] border-2 border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/30">
-                    <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.2em] text-slate-400">Empty Category</p>
-                </div>
-            ) : (
-                <div className="grid gap-4">
-                    {section.blocks?.map((block: any) => {
-                        const color = BLOCK_COLORS[block.type] || "#6B7280";
-                        const icon = BLOCK_ICONS[block.type] || <LayoutTemplate size={20} />;
-                        const isEditable = ['links_carousel', 'hero_single_link', 'links_grid', 'add_products', 'add_apps', 'vertical_media', 'square_media', 'horizontal_media', 'add_logos'].includes(block.type);
-
-                        return (
-                            <motion.div layout key={block.id} onClick={() => isEditable && onOpenEditor(block)}
-                                className={cn("flex items-center gap-5 p-6 rounded-3xl border-2 transition-all group/block relative overflow-hidden",
-                                    isEditable ? "cursor-pointer bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xl hover:translate-x-1"
-                                        : "bg-slate-50 dark:bg-slate-950 opacity-60")}>
-                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style={{ backgroundColor: `${color}15`, color }}>
-                                    {icon}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize">{block.type.replace(/_/g, " ")}</p>
-                                    <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{isEditable ? "Tap to Edit Settings" : "System Content"}</p>
-                                </div>
-                                {!isArranging && (
-                                    <button onClick={e => { e.stopPropagation(); onDeleteBlock(block.id); }}
-                                        className="w-10 h-10 rounded-xl opacity-0 group-hover/block:opacity-100 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 text-slate-300 flex items-center justify-center transition-all shrink-0">
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
-                            </motion.div>
-                        );
-                    })}
-                </div>
-            )}
-            <button onClick={() => onAddBlock(section.id)}
-                className="w-full flex items-center justify-center gap-3 h-16 rounded-[28px] border-2 border-primary/10 bg-primary/[0.02] text-primary hover:bg-primary hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em] mt-4 shadow-sm">
-                <Plus size={20} /> Add New Link / Photo
-            </button>
-        </div>
-    </motion.div>
-);
-
 
 export default function BioLinkBuilder() {
     const searchParams = useSearchParams();

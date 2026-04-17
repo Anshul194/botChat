@@ -273,8 +273,8 @@ export function AiAgentSettingsPanel({
                                     </div>
                                 </FormField>
 
-                                <PinkToggle label="Automated Department Assignment" enabled={settings.enable_assignment} onToggle={() => setSettings(s => ({ ...s, enable_assignment: !s.enable_assignment }))} />
-                                <PinkToggle label="Real-time Typing Simulator" enabled={settings.enable_typing_indicator} onToggle={() => setSettings(s => ({ ...s, enable_typing_indicator: !s.enable_typing_indicator }))} />
+                                <ThemeToggle label="Automated Department Assignment" enabled={settings.enable_assignment} onToggle={() => setSettings(s => ({ ...s, enable_assignment: !s.enable_assignment }))} />
+                                <ThemeToggle label="Real-time Typing Simulator" enabled={settings.enable_typing_indicator} onToggle={() => setSettings(s => ({ ...s, enable_typing_indicator: !s.enable_typing_indicator }))} />
 
                                 <FormField label="Intelligence Reasoning Depth">
                                     <div className="grid grid-cols-3 gap-3">

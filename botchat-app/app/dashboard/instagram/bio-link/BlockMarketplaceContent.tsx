@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { ArrowRight, Image as ImageIcon, Layers, Link as LinkIcon, Megaphone, Search, Sparkles, Video, Loader2, Globe, Wand2, CreditCard, Music, Plus, Zap } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, Layers, Link as LinkIcon, Megaphone, Search, Sparkles, Video, Loader2, Globe, Wand2, CreditCard, Music, Plus, Zap, LayoutTemplate } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 
@@ -33,14 +33,14 @@ const getLucideIcon = (id: string, category: string) => {
     if (val.includes("heading")) return Layers;
     if (val.includes("paragraph")) return Megaphone;
     if (val.includes("avatar") || val.includes("header")) return Sparkles;
-    if (val.includes("image")) return ImageIcon;
+    if (val.includes("image") || val.includes("media") || val.includes("photo")) return ImageIcon;
     if (val.includes("socials")) return Globe;
-    if (val.includes("collector")) return Megaphone;
+    if (val.includes("collector") || val.includes("form")) return Megaphone;
     if (val.includes("paypal")) return CreditCard;
     if (val.includes("soundcloud") || val.includes("spotify") || val.includes("music")) return Music;
-    if (val.includes("youtube") || val.includes("tiktok") || val.includes("video") || val.includes("vimeo") || val.includes("twitch")) return Video;
+    if (val.includes("youtube") || val.includes("tiktok") || val.includes("video") || val.includes("vimeo") || val.includes("twitch") || val.includes("reels") || val.includes("shorts")) return Video;
     
-    if (category === "standard") return Zap;
+    if (category === "standard") return LayoutTemplate;
     if (category === "advanced") return Wand2;
     if (category === "payments") return CreditCard;
     if (category === "embeds") return Music;
@@ -97,110 +97,97 @@ export default function BlockMarketplaceContent({
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 bg-slate-50/50 dark:bg-slate-900/50 rounded-[40px] border-2 border-dashed border-slate-200 dark:border-slate-800 animate-pulse">
-                <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-                    <Loader2 className="w-12 h-12 text-primary animate-spin relative" />
-                </div>
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Syncing Modules...</p>
+            <div className="flex flex-col items-center justify-center py-20 min-h-[400px]">
+                <Loader2 className="w-8 h-8 text-slate-400 animate-spin mb-4" />
+                <p className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">Loading Library...</p>
             </div>
         );
     }
 
     return (
-        <div className="relative">
-            <div className="bg-white/50 dark:bg-slate-900/50 -mx-6 px-6 py-6 mb-8 border-b border-slate-100 dark:border-slate-800/50">
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-5">
-                    <div className="flex-1 relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={16} />
-                        <input
-                            type="text"
-                            placeholder="Type to find modules..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full h-12 pl-12 pr-4 rounded-2xl bg-white dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 focus:border-primary/20 text-[13px] font-bold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 shadow-sm"
-                        />
-                    </div>
-                    
-                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+        <div className="flex flex-col h-full bg-white dark:bg-[#020617]">
+            {/* Professional Header & Search */}
+            <div className="px-8 pt-8 pb-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#020617] sticky top-0 z-20">
+                <div className="relative mb-6">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search for links, embeds, or tools..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full h-12 pl-12 pr-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-primary/50 text-[14px] font-medium text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-950"
+                    />
+                </div>
+                
+                {/* Minimalist Tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+                    <button
+                        type="button"
+                        onClick={() => setActiveCategory("all")}
+                        className={cn(
+                            "px-4 py-2 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap",
+                            activeCategory === "all"
+                                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                                : "bg-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        )}
+                    >
+                        All Modules <span className="opacity-50 ml-1">({allCount})</span>
+                    </button>
+                    {categoriesList.map(([category, data]) => (
                         <button
                             type="button"
-                            onClick={() => setActiveCategory("all")}
+                            key={category}
+                            onClick={() => setActiveCategory(category)}
                             className={cn(
-                                "h-10 px-5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
-                                activeCategory === "all"
-                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                    : "bg-white dark:bg-slate-950 text-slate-500 border border-slate-100 dark:border-slate-800 hover:border-primary/30"
+                                "px-4 py-2 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap capitalize",
+                                activeCategory === category
+                                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                                    : "bg-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
                             )}
                         >
-                            All ({allCount})
+                            {category} <span className="opacity-50 ml-1">({data.blocks.length})</span>
                         </button>
-                        {categoriesList.map(([category, data]) => (
-                            <button
-                                type="button"
-                                key={category}
-                                onClick={() => setActiveCategory(category)}
-                                className={cn(
-                                    "h-10 px-5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
-                                    activeCategory === category
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "bg-white dark:bg-slate-950 text-slate-500 border border-slate-100 dark:border-slate-800 hover:border-primary/30"
-                                )}
-                            >
-                                {category} ({data.blocks.length})
-                            </button>
-                        ))}
-                    </div>
+                    ))}
                 </div>
             </div>
 
-            <div className="space-y-12 pb-12">
+            {/* Dense Professional Grid */}
+            <div className="p-8 space-y-10">
                 {filteredCategories.map(([category, data]) => (
-                    <div key={category} className="space-y-6">
-                        <div className="flex items-center gap-4 px-2">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: data.info.color }} />
-                                {category}
-                            </h3>
-                            <div className="flex-1 h-[1px] bg-slate-100 dark:bg-slate-800" />
-                        </div>
+                    <div key={category} className="space-y-4">
+                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-400 pl-1">
+                            {category}
+                        </h3>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {data.blocks.map((item) => {
                                 const Icon = getLucideIcon(item.id, category);
-                                const itemColor = item.color || data.info.color;
+                                const itemColor = item.color || data.info.color || "#64748b";
+                                
                                 return (
                                     <button
                                         key={item.id}
                                         onClick={() => onSelect(item.id, item.defaults)}
-                                        className="group relative flex flex-col items-start p-5 rounded-[28px] bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300 text-left overflow-hidden active:scale-[0.98]"
+                                        className="group flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#020617] hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all text-left w-full relative overflow-hidden active:scale-[0.98]"
                                     >
-                                        <div className="absolute -top-10 -right-10 w-24 h-24 blur-[40px] opacity-0 group-hover:opacity-30 transition-opacity duration-700"
-                                            style={{ backgroundColor: itemColor }} />
-                                            
-                                        <div className="relative z-10 w-16 h-16 rounded-[22px] flex items-center justify-center mb-6 transition-all duration-700 group-hover:scale-110 group-hover:rotate-[8deg] ring-8 ring-transparent group-hover:ring-primary/5 shadow-inner overflow-hidden"
-                                            style={{ backgroundColor: `${itemColor}15`, color: itemColor }}>
-                                            <Icon size={24} className="transition-transform group-hover:scale-110" />
-                                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute inset-0 bg-slate-50 dark:bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                        
+                                        <div className="relative z-10 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-slate-100 dark:bg-slate-800 transition-transform group-hover:scale-[1.05]"
+                                             style={{ color: itemColor }}>
+                                            <Icon size={20} />
                                         </div>
 
-                                        <div className="relative z-10 space-y-2">
-                                            <h4 className="text-[16px] font-black text-slate-900 dark:text-white capitalize tracking-tight flex items-center gap-2">
+                                        <div className="relative z-10 flex-1 min-w-0 pr-2">
+                                            <h4 className="text-[14px] font-bold text-slate-900 dark:text-white capitalize flex items-center gap-2 truncate">
                                                 {item.id.replace(/_/g, " ")}
-                                                {item.id === 'link' && <Sparkles size={12} className="text-amber-400 animate-pulse" />}
                                             </h4>
-                                            <p className="text-[11px] font-bold text-slate-400 group-hover:text-slate-500 dark:text-slate-500 dark:group-hover:text-slate-400 uppercase tracking-widest leading-relaxed transition-colors">
-                                                Add {item.id.replace(/_/g, " ")} module to your dashboard
+                                            <p className="text-[12px] font-medium text-slate-500 truncate mt-0.5">
+                                                {item.desc || `Add a ${item.id.replace(/_/g, " ")} block`}
                                             </p>
                                         </div>
 
-                                        <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-800/50 w-full flex items-center justify-between opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                                                Select Module <ArrowRight size={14} />
-                                            </span>
-                                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                                                <Plus size={16} />
-                                            </div>
+                                        <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-slate-300 group-hover:bg-primary group-hover:text-white transition-all flex-shrink-0">
+                                            <Plus size={16} />
                                         </div>
                                     </button>
                                 );
@@ -210,12 +197,12 @@ export default function BlockMarketplaceContent({
                 ))}
 
                 {filteredCategories.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-32 bg-slate-50/50 dark:bg-slate-900/50 rounded-[40px] border-2 border-dashed border-slate-200 dark:border-slate-800">
-                        <div className="w-20 h-20 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-xl mb-6">
-                            <Search className="w-10 h-10 text-slate-300" />
+                    <div className="flex flex-col items-center justify-center py-24 text-center">
+                        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+                            <Search className="w-6 h-6 text-slate-400" />
                         </div>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">No Modules Found</h3>
-                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Try adjusting your search filters for "{search}"</p>
+                        <h3 className="text-[16px] font-bold text-slate-900 dark:text-white mb-1">No Modules Found</h3>
+                        <p className="text-[13px] font-medium text-slate-500">We couldn't find any blocks matching "{search}"</p>
                     </div>
                 )}
             </div>
