@@ -899,7 +899,7 @@ export default function BioLinkBuilder() {
                                     </div>
                                 )}
 
-                                {view === "visuals" && <VisualsLab profile={profile} updateProfile={handleUpdateProfile} />}
+                                {view === "visuals" && <VisualsLab profile={profile} updateProfile={(u: any) => setProfile(prev => prev ? ({ ...prev, ...u }) : prev)} />}
 
                                 {view === "advanced" && (
                                     <div className="max-w-3xl space-y-6">

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Search, Clock, MoreHorizontal, Globe, Mail, Smartphone, SmartphoneNfc, Camera, Sparkles, Youtube, Video, Grid, Play, DollarSign, Music, MapPin, ShieldAlert } from "lucide-react";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
 import { getUiTypeFromBlock, isMediaType } from "./builder-utils";
@@ -150,8 +151,11 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
 
                 {/* Heading Block */}
                 {type === "heading" && (
-                    <div className="pt-8 pb-3" style={{ textAlign: alignment as any }}>
-                        <h2 className="text-[24px] font-black tracking-tighter leading-none" style={{ color: settings.text_color || theme.textColor }}>
+                    <div className={cn("pt-8 pb-3", profile.theme === 'modern_fisher' && "text-center")} style={{ textAlign: alignment as any }}>
+                        <h2 className={cn(
+                            "text-[24px] font-black tracking-tighter leading-tight",
+                            profile.theme === 'modern_fisher' && "text-[32px] first-of-type:text-[#FF6B00]"
+                        )} style={{ color: profile.theme === 'modern_fisher' ? undefined : (settings.text_color || theme.textColor) }}>
                             {displayLabel || "Untitled Section"}
                         </h2>
                     </div>
@@ -159,8 +163,11 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
 
                 {/* Paragraph Block */}
                 {type === "paragraph" && (
-                    <div className="pb-2" style={{ textAlign: alignment as any }}>
-                        <p className="text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line" style={{ color: settings.text_color || theme.textColor }}>
+                    <div className={cn("pb-2", profile.theme === 'modern_fisher' && "text-center")} style={{ textAlign: alignment as any }}>
+                        <p className={cn(
+                            "text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line",
+                            profile.theme === 'modern_fisher' && "text-[16px] opacity-80"
+                        )} style={{ color: settings.text_color || theme.textColor }}>
                             {settings.description || settings.text}
                         </p>
                     </div>
@@ -182,8 +189,14 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
                 {type === "avatar" && (
                     <div className="flex flex-col items-center py-6 group">
                         <div className="relative">
-                           <div className="absolute -inset-4 bg-white/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                           <div className="relative overflow-hidden border-[4px] border-white/10 shadow-2xl" style={{ borderRadius: buttonStyle.borderRadius === '9999px' ? '9999px' : '40px', width: settings.size || 140, height: settings.size || 140 }}>
+                           <div className={cn(
+                               "absolute -inset-4 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity",
+                               profile.theme === 'modern_fisher' ? "bg-orange-500/10" : "bg-white/5"
+                           )} />
+                           <div className={cn(
+                               "relative overflow-hidden border-[4px] shadow-2xl transition-all duration-500",
+                               profile.theme === 'modern_fisher' ? "border-white bg-[#f5eadb]" : "border-white/10"
+                           )} style={{ borderRadius: buttonStyle.borderRadius === '9999px' ? '9999px' : '40px', width: settings.size || 140, height: settings.size || 140 }}>
                               <img src={settings.image || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"} className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700" />
                            </div>
                         </div>
@@ -271,24 +284,30 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
 
                         <div className="flex flex-col gap-2">
                              {groupedRows.map((row, ridx) => {
+                                 const isFisher = profile.theme === 'modern_fisher';
+                                 const cardClass = isFisher ? "bg-white/90 backdrop-blur-sm p-7 rounded-[40px] shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-white/50 mb-8" : "mb-10";
+
                                  if (row.type === 'section') {
                                      return (
-                                        <div key={ridx} className="flex flex-col mb-4">
-                                            {renderBlockUI(row.heading, false, ridx)}
-                                            <div className="mt-2 flex flex-col gap-4">
-                                                {row.blocks.map((b:any, bidx:number) => renderBlockUI(b, false, ridx + bidx + 1))}
-                                            </div>
-                                        </div>
+                                         <div key={ridx} className={cardClass}>
+                                             {renderBlockUI(row.heading, true, ridx)}
+                                             <div className="space-y-3 mt-4">
+                                                 {row.blocks.map((b: any, bidx: number) => renderBlockUI(b, false, bidx))}
+                                             </div>
+                                         </div>
                                      );
-                                 } else if (row.type === 'grid') {
-                                     return (
-                                        <div key={ridx} className={`grid gap-3 mb-4 ${row.blocks.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                                            {row.blocks.map((b:any, bidx:number) => renderBlockUI(b, row.blocks.length > 1, ridx + bidx))}
-                                        </div>
-                                     );
-                                 } else {
-                                     return <div key={ridx} className="mb-4">{renderBlockUI(row.block, false, ridx)}</div>;
                                  }
+                                 if (row.type === 'grid') {
+                                     return (
+                                         <div key={ridx} className={cn(
+                                            row.blocks.length > 1 ? 'grid grid-cols-2 gap-3' : 'flex flex-col gap-3',
+                                            cardClass
+                                         )}>
+                                             {row.blocks.map((b: any, bidx: number) => renderBlockUI(b, row.blocks.length > 1, bidx))}
+                                         </div>
+                                     );
+                                 }
+                                 return null;
                              })}
                         </div>
                     </div>

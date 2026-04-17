@@ -138,6 +138,24 @@ export const ThemeEffectsLayer = ({ theme, mini = false }: { theme: ThemeConfig;
                     animation: 'bio-spin 12s linear infinite',
                 }} />
             )}
+            {fx.includes('neural-wave') && (
+                <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden opacity-50">
+                    <svg className="w-full h-full" viewBox="0 0 400 600" preserveAspectRatio="none">
+                        <path d="M0,200 Q100,280 200,200 T400,200 V600 H0 Z" fill={theme.accent} fillOpacity="0.05" />
+                        <path d="M0,250 Q100,320 200,250 T400,250 V600 H0 Z" fill={theme.accent} fillOpacity="0.08" />
+                        {[...Array(15)].map((_, i) => (
+                            <circle key={i} 
+                                cx={10 + Math.sin(i) * 380} 
+                                cy={200 + Math.cos(i) * 300} 
+                                r={Math.random() * 2 + 1} 
+                                fill={theme.accent} 
+                                className="animate-pulse"
+                                style={{ animationDelay: `${i * 0.2}s` }}
+                            />
+                        ))}
+                    </svg>
+                </div>
+            )}
         </>
     );
 };
@@ -154,6 +172,7 @@ export const NICHE_CATEGORIES = [
     { id: 'art', name: 'Creative', icon: <Palette size={16} /> },
     { id: 'gaming', name: 'Gaming', icon: <Gamepad2 size={16} /> },
     { id: 'business', name: 'Creator Pro', icon: <Briefcase size={16} /> },
+    { id: 'modern', name: 'Modern', icon: <Sparkles size={16} /> },
 ];
 
 export interface TemplateItem { id: string; name: string; style: string; badge?: string; }
@@ -230,6 +249,17 @@ export const NICHE_TEMPLATES: Record<string, TemplateItem[]> = {
         { id: 'biz_paper', name: 'Paper', style: 'Clean' },
         { id: 'biz_glass', name: 'Glass UI', style: 'Modern', badge: 'Animated' },
         { id: 'biz_skyline', name: 'Skyline', style: 'Urban', badge: 'Image' },
+    ],
+    modern: [
+        { id: 'modern_fisher', name: 'Fisher', style: 'Designer', badge: 'Popular' },
+        { id: 'modern_clay', name: 'Claymorphic', style: 'Soft 3D', badge: 'Trending' },
+        { id: 'modern_nebula', name: 'Nebula', style: 'Cosmic', badge: 'Animated' },
+        { id: 'modern_sunset', name: 'Sunset Aura', style: 'Mesh', badge: 'Popular' },
+        { id: 'modern_tech_wave', name: 'Tech Wave', style: 'Deep Blue', badge: 'Pro' },
+        { id: 'modern_watercolor', name: 'Watercolor', style: 'Soft', badge: 'Artistic' },
+        { id: 'modern_glass_neon', name: 'Cyber Glass', style: 'Glass', badge: 'Animated' },
+        { id: 'modern_brutalist', name: 'Neo Brutalist', style: 'Bold' },
+        { id: 'modern_minimal', name: 'Ghost', style: 'Minimal' },
     ],
 };
 
@@ -749,6 +779,159 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#60a5fa',
         bgImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80',
         overlayStyle: { background: 'linear-gradient(180deg, rgba(5,5,16,0.25) 0%, rgba(5,5,16,0.9) 100%)' },
+    },
+    
+    // ═══════════════════ MODERN PORTFOLIO ═══════════════════
+    modern_fisher: {
+        bgStyle: { background: '#f5eadb' },
+        textColor: '#1a1a1a',
+        btnStyle: { 
+            background: '#ffffff', 
+            border: 'none', 
+            borderRadius: '16px', 
+            color: '#1a1a1a', 
+            padding: '16px 24px', 
+            fontSize: '13px', 
+            fontWeight: 800, 
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)' 
+        },
+        fontClass: 'font-sans', 
+        accent: '#FF6B00',
+        meshGlow: 'radial-gradient(circle at 50% 12%, #FF6B00 0%, #FF6B00 28%, transparent 68%)',
+        overlayStyle: { opacity: 0.1 },
+        effects: ['shimmer', 'grain'],
+    },
+    modern_minimal: {
+        bgStyle: { background: '#ffffff' },
+        textColor: '#0a0a0a',
+        btnStyle: { background: '#f4f4f5', border: '1px solid #e4e4e7', borderRadius: '14px', color: '#18181b', padding: '15px 24px', fontSize: '13px', fontWeight: 600 },
+        fontClass: 'font-sans', accent: '#18181b',
+    },
+
+    modern_clay: {
+        bgStyle: { background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' },
+        textColor: '#0369a1',
+        btnStyle: { 
+            background: '#ffffff', 
+            border: 'none', 
+            borderRadius: '24px', 
+            color: '#0ea5e9', 
+            padding: '16px 24px', 
+            fontSize: '13px', 
+            fontWeight: 800, 
+            boxShadow: 'inset 0 -4px 0 rgba(14,165,233,0.1), 0 10px 20px rgba(14,165,233,0.15)' 
+        },
+        fontClass: 'font-sans', accent: '#0ea5e9',
+        effects: ['shimmer'],
+    },
+
+    modern_nebula: {
+        bgStyle: { background: '#0a0515' },
+        textColor: '#e9d5ff',
+        btnStyle: { 
+            background: 'rgba(168,85,247,0.1)', 
+            backdropFilter: 'blur(16px)', 
+            border: '1px solid rgba(168,85,247,0.3)', 
+            borderRadius: '16px', 
+            color: '#f5f3ff', 
+            padding: '15px 24px', 
+            fontSize: '13px', 
+            fontWeight: 700 
+        },
+        fontClass: 'font-sans', accent: '#a855f7',
+        meshGlow: 'radial-gradient(circle at 20% 30%, rgba(168,85,247,0.2), transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.15), transparent 50%)',
+        effects: ['orbs', 'particles', 'scanbeam'], particleColor: '#c084fc',
+    },
+
+    modern_glass_neon: {
+        bgStyle: { background: 'linear-gradient(160deg, #020617 0%, #0f172a 100%)' },
+        textColor: '#22d3ee',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.03)', 
+            backdropFilter: 'blur(20px)', 
+            border: '1px solid rgba(34,211,238,0.2)', 
+            borderRadius: '12px', 
+            color: '#22d3ee', 
+            padding: '15px 24px', 
+            fontSize: '12px', 
+            fontWeight: 900, 
+            textTransform: 'uppercase' as const, 
+            letterSpacing: '0.1em',
+            boxShadow: '0 0 15px rgba(34,211,238,0.1)'
+        },
+        fontClass: 'font-mono', accent: '#06b6d4',
+        effects: ['neon-border', 'scanlines'],
+    },
+
+    modern_brutalist: {
+        bgStyle: { background: '#ffde00' },
+        textColor: '#000000',
+        btnStyle: { 
+            background: '#ffffff', 
+            border: '3px solid #000000', 
+            borderRadius: '0px', 
+            color: '#000000', 
+            padding: '16px 24px', 
+            fontSize: '12px', 
+            fontWeight: 900, 
+            textTransform: 'uppercase' as const, 
+            boxShadow: '6px 6px 0px #000000' 
+        },
+        fontClass: 'font-mono', accent: '#000000',
+    },
+
+    modern_sunset: {
+        bgStyle: { background: 'linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #FF8E53 100%)' },
+        textColor: '#4a342e',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.7)', 
+            backdropFilter: 'blur(20px)', 
+            border: '1px solid rgba(255,255,255,0.4)', 
+            borderRadius: '16px', 
+            color: '#c2410c', 
+            padding: '16px 24px', 
+            fontSize: '13px', 
+            fontWeight: 800, 
+            boxShadow: '0 10px 30px rgba(255,107,107,0.1)' 
+        },
+        fontClass: 'font-sans', accent: '#FF6B6B',
+        meshGlow: 'radial-gradient(circle at 50% 50%, #FFD93D 0%, transparent 70%)',
+        effects: ['grain', 'shimmer'],
+    },
+
+    modern_tech_wave: {
+        bgStyle: { background: '#050b1a' },
+        textColor: '#e0f2fe',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.05)', 
+            backdropFilter: 'blur(16px)', 
+            border: '1px solid rgba(56,189,248,0.2)', 
+            borderRadius: '12px', 
+            color: '#38bdf8', 
+            padding: '15px 24px', 
+            fontSize: '12px', 
+            fontWeight: 700 
+        },
+        fontClass: 'font-mono', accent: '#38bdf8',
+        effects: ['neural-wave', 'particles', 'scanlines'],
+    },
+
+    modern_watercolor: {
+        bgStyle: { background: '#ffffff' },
+        textColor: '#0369a1',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.7)', 
+            border: 'none', 
+            borderRadius: '24px', 
+            color: '#0284c7', 
+            padding: '15px 24px', 
+            fontSize: '13px', 
+            fontWeight: 800, 
+            boxShadow: '0 2px 10px rgba(0,0,0,0.02)' 
+        },
+        fontClass: 'font-serif', accent: '#0ea5e9',
+        meshGlow: 'radial-gradient(circle at 20% 10%, #0284c715 0%, #0284c730 40%, transparent 70%), radial-gradient(circle at 80% 40%, #0ea5e910 0%, #0ea5e920 50%, transparent 80%), radial-gradient(circle at 30% 80%, #7dd3fc30 0%, transparent 60%)',
+        effects: ['grain'],
     },
 };
 
