@@ -486,11 +486,47 @@ export default function BioLinkBuilder() {
     const openEditor = (block: any) => {
         const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
         
-        // Map the single settings object from the new API into the 'items' array expected by CarouselEditor
-        const settings = block.settings || {};
-        const items = [{ ...settings, builder_type: settings.builder_type || uiType }];
+        // Deep clone settings so edits don't mutate original block
+        const settings = JSON.parse(JSON.stringify(block.settings || {}));
+
+        if (uiType === "socials") {
+            if (Array.isArray(settings.socials)) { settings.socials = {}; }
+            if (settings.socials && typeof settings.socials === "object") {
+                const px = { facebook: "facebook.com/", instagram: "instagram.com/", twitter: "x.com/", youtube: "youtube.com/", tiktok: "tiktok.com/@", linkedin: "linkedin.com/", discord: "discord.gg/", telegram: "t.me/" };
+                Object.entries(settings.socials).forEach(([k, v]) => {
+                    if (typeof v === "string" && px[k]) {
+                        let cln = v.replace(/^https?:\/\/(www\.)?/, "");
+                        if (cln.startsWith(px[k])) cln = cln.substring(px[k].length);
+                        settings.socials[k] = cln;
+                    }
+                });
+            }
+        }
         
-        setEditingBlock({ ...block, _uiType: uiType, items });
+        // For embed/link types, map the top-level location_url into settings so the form shows it
+        if (block.location_url && block.location_url !== "https://") {
+            settings.url = block.location_url;
+            settings.location_url = block.location_url;
+        }
+        
+        // For heading blocks: ensure 'title' is synced with 'text' for the form display
+        if (uiType === "heading" && settings.title && !settings.text) {
+            settings.text = settings.title;
+        }
+        
+        // For paragraph blocks: ensure 'description' is synced with 'text' for the form
+        if (uiType === "paragraph" && settings.description && !settings.text) {
+            settings.text = settings.description;
+        }
+
+        const items = [{ ...settings, builder_type: uiType }];
+        
+        setEditingBlock({
+            ...block,
+            _uiType: uiType,
+            _originalSettings: { ...block.settings },
+            items
+        });
         setShowCarouselEditor(true);
     };
 
@@ -532,7 +568,7 @@ export default function BioLinkBuilder() {
     const saveEditor = async () => {
         if (!editingBlock) return;
         
-        // Data usually lives in editingBlock.items[0] from CarouselEditor
+        // Data lives in editingBlock.items[0] from the editor form
         const editorSettings = editingBlock.items?.[0] || editingBlock.settings || {};
         
         if (editingBlock._isNew) {
@@ -541,23 +577,65 @@ export default function BioLinkBuilder() {
         }
 
         const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
-        const locationUrl = editorSettings.location_url || editorSettings.url || "";
         
+        // Build a CLEAN settings object — strip internal/editor-only fields
+        const cleanSettings = { ...editorSettings };
+        delete cleanSettings.builder_type;
+        delete cleanSettings._uiType;
+        delete cleanSettings.url;          // url goes as top-level location_url
+        delete cleanSettings.location_url; // location_url goes at top level
+
+        if (uiType === "socials" && cleanSettings.socials && typeof cleanSettings.socials === "object") {
+            const prefixes = {
+                facebook: "https://facebook.com/", instagram: "https://instagram.com/", twitter: "https://x.com/",
+                youtube: "https://youtube.com/", tiktok: "https://tiktok.com/@", linkedin: "https://linkedin.com/",
+                discord: "https://discord.gg/", telegram: "https://t.me/",
+            };
+            const rebuiltSocials = {};
+            Object.entries(cleanSettings.socials).forEach(([key, val]) => {
+                if (typeof val === "string" && val.trim() !== "") {
+                    if (val.startsWith("http") || !prefixes[key]) {
+                        rebuiltSocials[key] = val;
+                    } else {
+                        rebuiltSocials[key] = prefixes[key] + val;
+                    }
+                }
+            });
+            cleanSettings.socials = rebuiltSocials;
+        }
+        
+        // Build the payload per the Biolink Blocks API
         const payload: any = {
-            settings: { ...editorSettings }
+            settings: cleanSettings
         };
 
-        if (["link", "image", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"].includes(uiType)) {
-            payload.location_url = locationUrl;
-            delete payload.settings.url;
-            delete payload.settings.location_url;
+        // For types that use top-level location_url
+        const locationUrlTypes = ["link", "image", "soundcloud", "spotify", "youtube", "twitch", "vimeo", "tiktok_video"];
+        if (locationUrlTypes.includes(uiType)) {
+            const locationUrl = editorSettings.url || editorSettings.location_url || "";
+            if (locationUrl) {
+                payload.location_url = locationUrl;
+            }
         }
 
-        // Local sync
-        const items = [{ ...editorSettings }];
-        syncBlockItemsLocally(editingBlock.id, items);
+        // Optimistic local update — merge edited settings into the block
+        const mergedSettings = { ...(editingBlock._originalSettings || editingBlock.settings), ...cleanSettings };
+        setTabs((prevTabs) =>
+            prevTabs.map((tab) => ({
+                ...tab,
+                sections: (tab.sections || []).map((section) => ({
+                    ...section,
+                    blocks: (section.blocks || []).map((block) =>
+                        block.id === editingBlock.id
+                            ? { ...block, settings: mergedSettings, location_url: payload.location_url || block.location_url }
+                            : block
+                    ),
+                })),
+            }))
+        );
         setUiTypeOverrides((prev) => ({ ...prev, [editingBlock.id]: uiType }));
         setShowCarouselEditor(false);
+        setEditingBlock(null);
 
         try {
             await api.put(`/bio/blocks/${editingBlock.id}`, payload);
@@ -865,8 +943,10 @@ export default function BioLinkBuilder() {
                                                                         {icon}
                                                                     </div>
                                                                     <div className="flex-1 min-w-0">
-                                                                        <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize">{uiType.replace(/_/g, " ")}</p>
-                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{isEditable ? "Tap to Edit Settings" : "System Content"}</p>
+                                                                        <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize truncate">
+                                                                            {block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ")}
+                                                                        </p>
+                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{uiType.replace(/_/g, " ")} · Tap to Edit</p>
                                                                     </div>
                                                                     {!isArranging && (
                                                                         <button
