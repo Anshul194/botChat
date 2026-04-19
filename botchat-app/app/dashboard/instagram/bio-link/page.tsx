@@ -9,7 +9,7 @@ import {
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
     Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail,
-    Instagram, Twitter, Facebook
+    Instagram, Twitter, Facebook, EyeOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
@@ -43,53 +43,101 @@ interface BioBlock { id: number; section_id: number; type: string; is_active: nu
 type PhaseIconType = React.ComponentType<{ size?: number; className?: string }>;
 
 interface BioAdvancedSettings {
+    // SEO
+    seoBlock: boolean;
+    seoTitle: string;
+    seoDescription: string;
+    seoKeywords: string;
+    seoOpenGraphImage: string;
+    seoLanguage: string;
+    // Branding
     displayBranding: boolean;
     brandingName: string;
     brandingUrl: string;
     brandingTextColor: string;
+    // Pixels
     pixelFacebookEnabled: boolean;
     pixelGoogleEnabled: boolean;
+    // UTM
     utmSource: string;
     utmMedium: string;
     utmCampaign: string;
+    // Visual
+    backgroundType: string;
+    background: string;
+    textColor: string;
+    fontSize: number;
+    width: number;
+    blockSpacing: number;
+    hoverAnimation: string;
+    // Protection
     password: string;
     sensitiveContentWarning: boolean;
+    // Buttons
+    enableShareButton: boolean;
+    enableScrollButtons: boolean;
+    // Branded button
     brandedButtonEnabled: boolean;
     brandedIconUrl: string;
     brandedModalTitle: string;
     brandedModalContent: string;
-    enableShareButton: boolean;
-    enableScrollButtons: boolean;
+    // Directory
     enableDirectoryDisplaying: boolean;
+    // Links
     projectName: string;
     splashPageName: string;
     leapLinkUrl: string;
+    // Code
     customCss: string;
     customJs: string;
 }
 
 const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
+    // SEO
+    seoBlock: false,
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
+    seoOpenGraphImage: "",
+    seoLanguage: "en",
+    // Branding
     displayBranding: true,
     brandingName: "",
     brandingUrl: "",
     brandingTextColor: "",
+    // Pixels
     pixelFacebookEnabled: true,
     pixelGoogleEnabled: true,
+    // UTM
     utmSource: "",
     utmMedium: "",
     utmCampaign: "",
+    // Visual
+    backgroundType: "color",
+    background: "",
+    textColor: "",
+    fontSize: 16,
+    width: 8,
+    blockSpacing: 2,
+    hoverAnimation: "smooth",
+    // Protection
     password: "",
     sensitiveContentWarning: false,
+    // Buttons
+    enableShareButton: true,
+    enableScrollButtons: true,
+    // Branded button
     brandedButtonEnabled: false,
     brandedIconUrl: "",
     brandedModalTitle: "",
     brandedModalContent: "",
-    enableShareButton: true,
-    enableScrollButtons: true,
+    // Directory
     enableDirectoryDisplaying: true,
+    // Links
     projectName: "None",
     splashPageName: "None",
     leapLinkUrl: "",
+    // Code
     customCss: "",
     customJs: "",
 };
@@ -189,6 +237,8 @@ export default function BioLinkBuilder() {
     const [view, setView] = useState("blocks");
     const [advancedSettings, setAdvancedSettings] = useState<BioAdvancedSettings>(DEFAULT_ADVANCED_SETTINGS);
     const [isSavingAdvanced, setIsSavingAdvanced] = useState(false);
+    const [growthTab, setGrowthTab] = useState("seo");
+    const [showPassword, setShowPassword] = useState(false);
 
     const instagramUsername = accounts.find(a => String(a.id) === selectedPageId)?.username || "username";
     const publicUrl = typeof window !== "undefined"
@@ -290,10 +340,43 @@ export default function BioLinkBuilder() {
             setAdvancedSettings(DEFAULT_ADVANCED_SETTINGS);
             return;
         }
+        // Hydrate all settings from the profile.settings object (API response)
+        const s = profile.settings || {};
         setAdvancedSettings(prev => ({
-            ...prev,
-            brandingName: profile.title || prev.brandingName,
-            brandingUrl: prev.brandingUrl || (typeof window !== "undefined" ? window.location.origin : ""),
+            ...DEFAULT_ADVANCED_SETTINGS,
+            // SEO
+            seoBlock: s.seo?.block ?? prev.seoBlock,
+            seoTitle: s.seo?.title ?? (profile.title || ""),
+            seoDescription: s.seo?.meta_description ?? prev.seoDescription,
+            seoKeywords: s.seo?.meta_keywords ?? prev.seoKeywords,
+            seoOpenGraphImage: s.seo?.opengraph_image ?? prev.seoOpenGraphImage,
+            seoLanguage: s.seo?.language ?? prev.seoLanguage,
+            // Branding
+            displayBranding: s.display_branding ?? prev.displayBranding,
+            brandingName: s.branding?.name ?? profile.title ?? prev.brandingName,
+            brandingUrl: s.branding?.url ?? (typeof window !== "undefined" ? window.location.origin : ""),
+            brandingTextColor: s.branding?.text_color ?? prev.brandingTextColor,
+            // UTM
+            utmSource: s.utm?.source ?? prev.utmSource,
+            utmMedium: s.utm?.medium ?? prev.utmMedium,
+            // Visual
+            backgroundType: s.background_type ?? prev.backgroundType,
+            background: s.background ?? prev.background,
+            textColor: s.text_color ?? prev.textColor,
+            fontSize: s.font_size ?? prev.fontSize,
+            width: s.width ?? prev.width,
+            blockSpacing: s.block_spacing ?? prev.blockSpacing,
+            hoverAnimation: s.hover_animation ?? prev.hoverAnimation,
+            // Toggles
+            enableShareButton: s.share_is_enabled ?? prev.enableShareButton,
+            enableScrollButtons: s.scroll_buttons_is_enabled ?? prev.enableScrollButtons,
+            password: s.password ?? prev.password,
+            sensitiveContentWarning: s.sensitive_content ?? prev.sensitiveContentWarning,
+            // Branded button
+            brandedButtonEnabled: s.branded_button_is_enabled ?? prev.brandedButtonEnabled,
+            brandedIconUrl: s.branded_button_icon ?? prev.brandedIconUrl,
+            brandedModalTitle: s.branded_button_title ?? prev.brandedModalTitle,
+            brandedModalContent: s.branded_button_content ?? prev.brandedModalContent,
         }));
     }, [profile]);
 
@@ -578,7 +661,7 @@ export default function BioLinkBuilder() {
 
         const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
         
-        // Build a CLEAN settings object — strip internal/editor-only fields
+        // Build a CLEAN settings object ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â strip internal/editor-only fields
         const cleanSettings = { ...editorSettings };
         delete cleanSettings.builder_type;
         delete cleanSettings._uiType;
@@ -618,7 +701,7 @@ export default function BioLinkBuilder() {
             }
         }
 
-        // Optimistic local update — merge edited settings into the block
+        // Optimistic local update ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â merge edited settings into the block
         const mergedSettings = { ...(editingBlock._originalSettings || editingBlock.settings), ...cleanSettings };
         setTabs((prevTabs) =>
             prevTabs.map((tab) => ({
@@ -694,9 +777,53 @@ export default function BioLinkBuilder() {
 
     const handleSaveAdvanced = async () => {
         if (!profile) return;
+        const linkId = profile.link_id || profile.id;
         setIsSavingAdvanced(true);
         try {
-            await api.put(`/bio-builder/profile/${profile.id}`, advancedSettings);
+            // Build the exact payload expected by PUT /bio/pages/{link_id}
+            const payload = {
+                url: profile.url,
+                is_enabled: true,
+                biolink_theme_id: (profile as any).biolink_theme_id ?? null,
+                settings: {
+                    seo: {
+                        block: advancedSettings.seoBlock,
+                        title: advancedSettings.seoTitle,
+                        meta_description: advancedSettings.seoDescription,
+                        meta_keywords: advancedSettings.seoKeywords,
+                        opengraph_image: advancedSettings.seoOpenGraphImage,
+                        language: advancedSettings.seoLanguage,
+                    },
+                    branding: {
+                        name: advancedSettings.brandingName,
+                        url: advancedSettings.brandingUrl,
+                    },
+                    display_branding: advancedSettings.displayBranding,
+                    utm: {
+                        source: advancedSettings.utmSource,
+                        medium: advancedSettings.utmMedium,
+                    },
+                    background_type: advancedSettings.backgroundType,
+                    background: advancedSettings.background,
+                    text_color: advancedSettings.textColor,
+                    font_size: advancedSettings.fontSize,
+                    width: advancedSettings.width,
+                    block_spacing: advancedSettings.blockSpacing,
+                    hover_animation: advancedSettings.hoverAnimation,
+                    share_is_enabled: advancedSettings.enableShareButton,
+                    scroll_buttons_is_enabled: advancedSettings.enableScrollButtons,
+                    password: advancedSettings.password || null,
+                    sensitive_content: advancedSettings.sensitiveContentWarning,
+                    branded_button_is_enabled: advancedSettings.brandedButtonEnabled,
+                    branded_button_icon: advancedSettings.brandedIconUrl,
+                    branded_button_title: advancedSettings.brandedModalTitle,
+                    branded_button_content: advancedSettings.brandedModalContent,
+                },
+            };
+            await api.put(`/bio/pages/${linkId}`, payload);
+            // Refresh profile to sync hydrated state
+            await fetchBuilderData();
+            showModal("success", "Saved", "Growth settings saved successfully.");
         } catch {
             showModal("error", "Error", "Failed to save advanced settings.");
         } finally {
@@ -750,7 +877,7 @@ export default function BioLinkBuilder() {
         <div className="min-h-screen bg-transparent font-sans selection:bg-primary/10 flex flex-col relative"
              style={{ background: 'var(--app-surface-bg, var(--background))' }}>
 
-            {/* ── STABLE TOP BAR ── */}
+            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ STABLE TOP BAR ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
             <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white/85 dark:bg-black/70 backdrop-blur-2xl border-b border-slate-100 dark:border-slate-800 shadow-sm">
                 <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
@@ -774,13 +901,13 @@ export default function BioLinkBuilder() {
                 </div>
             </header>
 
-            {/* ── CREATOR WORKSPACE ── */}
+            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ CREATOR WORKSPACE ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
             <div className="relative flex-1 flex overflow-hidden">
 
                 <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[440px] pb-56 sm:pb-60 xl:pb-64", activePanel === "preview" ? "hidden xl:block" : "block")}>
                     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 xl:pl-4">
 
-                        {/* ── FLOATING STEP GUIDE + BAR ── */}
+                        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ FLOATING STEP GUIDE + BAR ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
                         <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(460px,calc(100%-1rem))] sm:w-[min(560px,calc(100%-1.5rem))] rounded-full border border-slate-200 dark:border-white/10 bg-white/96 dark:bg-slate-900/90 backdrop-blur-2xl px-1 py-1 shadow-[0_16px_34px_rgba(0,0,0,0.05)]">
                             <div className="grid grid-cols-4 gap-1">
                                 {PHASES.map((p, idx) => (
@@ -845,7 +972,7 @@ export default function BioLinkBuilder() {
                             </div>
                         </div>
 
-                        {/* ── PHASE CONTENT AREA ── */}
+                        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PHASE CONTENT AREA ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
                         <AnimatePresence mode="wait">
                             <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}>
 
@@ -946,7 +1073,7 @@ export default function BioLinkBuilder() {
                                                                         <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize truncate">
                                                                             {block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ")}
                                                                         </p>
-                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{uiType.replace(/_/g, " ")} · Tap to Edit</p>
+                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{uiType.replace(/_/g, " ")} Ãƒâ€šÃ‚Â· Tap to Edit</p>
                                                                     </div>
                                                                     {!isArranging && (
                                                                         <button
@@ -981,362 +1108,456 @@ export default function BioLinkBuilder() {
 
                                 {view === "visuals" && <VisualsLab profile={profile} updateProfile={(u: any) => setProfile(prev => prev ? ({ ...prev, ...u }) : prev)} />}
 
-                                {view === "advanced" && (
-                                    <div className="max-w-3xl space-y-6">
-                                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-                                                <div>
-                                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Make it clear for your visitors</h3>
-                                                    <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">These options control trust, tracking, protection, and advanced behavior.</p>
-                                                </div>
-                                                <div className="px-3 py-2 rounded-xl bg-white/80 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                                                    {enabledAdvancedFlags.length} active options
-                                                </div>
-                                            </div>
+                                {view === "advanced" && (() => {
+                                    const GROWTH_TABS = [
+                                        { id: "seo",        label: "SEO",        icon: Globe,        color: "emerald", bg: "bg-emerald-500",  ring: "ring-emerald-200 dark:ring-emerald-800",  text: "text-emerald-600 dark:text-emerald-400",  light: "bg-emerald-50 dark:bg-emerald-950/30"  },
+                                        { id: "branding",   label: "Branding",   icon: Shuffle,      color: "violet",  bg: "bg-violet-500",   ring: "ring-violet-200 dark:ring-violet-800",    text: "text-violet-600 dark:text-violet-400",    light: "bg-violet-50 dark:bg-violet-950/30"    },
+                                        { id: "pixels",     label: "Pixels",     icon: CircleDot,    color: "blue",    bg: "bg-blue-500",     ring: "ring-blue-200 dark:ring-blue-800",        text: "text-blue-600 dark:text-blue-400",        light: "bg-blue-50 dark:bg-blue-950/30"        },
+                                        { id: "utm",        label: "UTM",        icon: Grid,         color: "amber",   bg: "bg-amber-500",    ring: "ring-amber-200 dark:ring-amber-800",      text: "text-amber-600 dark:text-amber-400",      light: "bg-amber-50 dark:bg-amber-950/30"      },
+                                        { id: "protection", label: "Protection", icon: ShieldAlert,  color: "red",     bg: "bg-red-500",      ring: "ring-red-200 dark:ring-red-800",          text: "text-red-600 dark:text-red-400",          light: "bg-red-50 dark:bg-red-950/30"          },
+                                        { id: "popup",      label: "Popup",      icon: SmartphoneNfc,color: "fuchsia", bg: "bg-fuchsia-500",  ring: "ring-fuchsia-200 dark:ring-fuchsia-800",  text: "text-fuchsia-600 dark:text-fuchsia-400",  light: "bg-fuchsia-50 dark:bg-fuchsia-950/30"  },
+                                        { id: "more",       label: "Advanced",   icon: Orbit,        color: "slate",   bg: "bg-slate-500",    ring: "ring-slate-200 dark:ring-slate-700",      text: "text-slate-600 dark:text-slate-400",      light: "bg-slate-50 dark:bg-slate-800/30"      },
+                                    ];
+                                    const activeGT = GROWTH_TABS.find(t => t.id === growthTab) || GROWTH_TABS[0];
+                                    const GtIcon = activeGT.icon;
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                                                <div className="rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2"><Info size={14} /> How it works</p>
-                                                    <div className="space-y-2">
-                                                        {advancedFlowTips.map((tip) => (
-                                                            <p key={tip} className="text-sm text-slate-700 dark:text-slate-200">{tip}</p>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="rounded-2xl bg-white/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4">
-                                                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Currently enabled</p>
-                                                    {enabledAdvancedFlags.length > 0 ? (
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {enabledAdvancedFlags.map((flag) => (
-                                                                <span key={flag} className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 text-xs font-bold">
-                                                                    {flag}
-                                                                </span>
-                                                            ))}
+                                    return (
+                                    <div className="max-w-4xl space-y-0">
+
+                                        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ GROWTH HERO HEADER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-6 sm:p-8 mb-6 border border-white/10">
+                                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+                                            <div className="relative flex flex-wrap items-center justify-between gap-4">
+                                                <div>
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <div className="w-10 h-10 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
+                                                            <Sparkles size={20} />
                                                         </div>
-                                                    ) : (
-                                                        <p className="text-sm text-slate-500">No advanced options enabled yet.</p>
-                                                    )}
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Growth Workstation</span>
+                                                    </div>
+                                                    <h3 className="text-2xl font-black text-white tracking-tight">Launch Gear</h3>
+                                                    <p className="text-sm text-slate-400 mt-1 max-w-sm">SEO, tracking pixels, UTM parameters, and advanced protection for your bio page.</p>
                                                 </div>
-                                            </div>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                <a href="#advanced-branding" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Branding</a>
-                                                <a href="#advanced-pixels" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Pixels</a>
-                                                <a href="#advanced-utm" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">UTM</a>
-                                                <a href="#advanced-protection" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Protection</a>
-                                                <a href="#advanced-branded-button" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Branded Button</a>
-                                                <a href="#advanced-more" className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Advanced</a>
-                                            </div>
-                                        </div>
-
-                                        <div id="advanced-branding" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
-                                                <Shuffle size={16} className="text-slate-700 dark:text-slate-300" />
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Branding</h3>
-                                            </div>
-
-                                            <div className="space-y-5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-xl font-semibold text-slate-900 dark:text-white">Display branding</span>
-                                                    <ToggleSwitch
-                                                        checked={advancedSettings.displayBranding}
-                                                        onChange={(value) => setAdvancedSettings({ ...advancedSettings, displayBranding: value })}
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Shuffle size={16} /> Branding name</label>
-                                                    <input
-                                                        value={advancedSettings.brandingName}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="Brand name"
-                                                    />
-                                                    <p className="text-sm text-slate-500 mt-2">Leave empty to have the default site branding.</p>
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><LinkIcon size={16} /> Branding URL</label>
-                                                    <input
-                                                        value={advancedSettings.brandingUrl}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingUrl: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="https://example.com/"
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Palette size={16} /> Text color</label>
-                                                    <input
-                                                        value={advancedSettings.brandingTextColor}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="#1f2937"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="advanced-pixels" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
-                                                <CircleDot size={16} className="text-slate-700 dark:text-slate-300" />
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Pixels</h3>
-                                            </div>
-                                            <div className="flex flex-wrap gap-8">
-                                                <label className="flex items-center gap-3 text-xl font-semibold text-slate-900 dark:text-white">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={advancedSettings.pixelFacebookEnabled}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, pixelFacebookEnabled: e.target.checked })}
-                                                        className="w-5 h-5 accent-primary"
-                                                    />
-                                                    Facebook Pixel
-                                                </label>
-                                                <label className="flex items-center gap-3 text-xl font-semibold text-slate-900 dark:text-white">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={advancedSettings.pixelGoogleEnabled}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, pixelGoogleEnabled: e.target.checked })}
-                                                        className="w-5 h-5 accent-primary"
-                                                    />
-                                                    Google Analytics
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <div id="advanced-utm" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
-                                                <Grid size={16} className="text-slate-700 dark:text-slate-300" />
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">UTM Parameters</h3>
-                                            </div>
-                                            <div className="space-y-5">
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white mb-2 block">Source</label>
-                                                    <input
-                                                        value={advancedSettings.utmSource}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="e.g. newsletter, bing, google, youtube"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white mb-2 block">Medium</label>
-                                                    <input
-                                                        value={advancedSettings.utmMedium}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="e.g. link, banner, email, social"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white mb-2 block">Campaign</label>
-                                                    <div className="h-12 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-base flex items-center">
-                                                        Automatically set for each link based on the name.
+                                                <div className="flex items-center gap-3">
+                                                    <div className="text-center">
+                                                        <p className="text-3xl font-black text-white">{enabledAdvancedFlags.length}</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active</p>
+                                                    </div>
+                                                    <div className="h-10 w-px bg-white/10" />
+                                                    <div className="text-center">
+                                                        <p className="text-3xl font-black text-white">6</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sections</p>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-lg font-semibold text-slate-900 dark:text-white">UTM preview</p>
-                                                    <p className="text-base text-slate-700 dark:text-slate-300 mt-2">
-                                                        {advancedSettings.utmSource || advancedSettings.utmMedium
-                                                            ? `?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`
-                                                            : "None"}
-                                                    </p>
-                                                    <p className="text-sm text-slate-500 mt-2">This query parameter will be appended to your destination URL.</p>
+                                            </div>
+                                            {enabledAdvancedFlags.length > 0 && (
+                                                <div className="relative mt-5 flex flex-wrap gap-2">
+                                                    {enabledAdvancedFlags.map((flag) => (
+                                                        <span key={flag} className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wide">{flag}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ TABS + CONTENT PANEL ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                        <div className="flex gap-4 sm:gap-6">
+
+                                            {/* LEFT SIDEBAR TABS */}
+                                            <div className="flex flex-col gap-1.5 w-[52px] sm:w-[160px] shrink-0">
+                                                {GROWTH_TABS.map((tab) => {
+                                                    const Icon = tab.icon;
+                                                    const isActive = growthTab === tab.id;
+                                                    return (
+                                                        <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
+                                                            className={cn(
+                                                                "group relative flex items-center gap-3 h-12 sm:h-11 rounded-2xl border transition-all duration-200 overflow-hidden text-left",
+                                                                isActive
+                                                                    ? `${tab.light} border-transparent ring-2 ${tab.ring} shadow-sm`
+                                                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700"
+                                                            )}>
+                                                            {/* Active stripe */}
+                                                            {isActive && <div className={cn("absolute left-0 top-2 bottom-2 w-1 rounded-r-full", tab.bg)} />}
+                                                            <div className={cn(
+                                                                "w-full sm:w-auto flex items-center justify-center sm:justify-start gap-3 px-3 sm:pl-4 sm:pr-3",
+                                                            )}>
+                                                                <Icon size={16} className={isActive ? tab.text : "text-slate-400"} />
+                                                                <span className={cn(
+                                                                    "hidden sm:block text-[11px] font-black uppercase tracking-widest truncate",
+                                                                    isActive ? tab.text : "text-slate-500 dark:text-slate-400"
+                                                                )}>{tab.label}</span>
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* RIGHT CONTENT PANEL */}
+                                            <div className="flex-1 min-w-0">
+                                                <AnimatePresence mode="wait">
+                                                    <motion.div key={growthTab} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.15 }}
+                                                        className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+
+                                                        {/* Panel header */}
+                                                        <div className={cn("px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3", activeGT.light)}>
+                                                            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm", activeGT.bg)}>
+                                                                <GtIcon size={18} />
+                                                            </div>
+                                                            <div>
+                                                                <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", activeGT.text)}>Growth Workstation</p>
+                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{activeGT.label}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Panel body */}
+                                                        <div className="p-5 sm:p-7 space-y-6">
+
+                                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ SEO ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                            {growthTab === "seo" && (<>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Block from search engines</p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Adds noindex, nofollow meta tags to this page.</p>
+                                                                    </div>
+                                                                    <ToggleSwitch checked={advancedSettings.seoBlock} onChange={(v) => setAdvancedSettings({ ...advancedSettings, seoBlock: v })} />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">SEO Title</label>
+                                                                    <input value={advancedSettings.seoTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoTitle: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="My Awesome Bio Page" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Appears in browser tabs and search results.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Description</label>
+                                                                    <textarea value={advancedSettings.seoDescription} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoDescription: e.target.value })}
+                                                                        rows={3} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="Brief description of your page for search results." />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Recommended: 120ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“160 characters.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Keywords</label>
+                                                                    <input value={advancedSettings.seoKeywords} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoKeywords: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="bio, links, creator, profile" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Comma-separated. Optional.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <ImageIcon size={12} /> Open graph image
+                                                                    </label>
+                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
+                                                                        <div className="flex-1">
+                                                                            <input 
+                                                                                type="file" 
+                                                                                id="og-image-upload" 
+                                                                                className="hidden" 
+                                                                                accept=".jpg,.jpeg,.png,.svg,.gif,.webp,.avif"
+                                                                                onChange={async (e) => {
+                                                                                    if (e.target.files && e.target.files[0]) {
+                                                                                        const url = await handleUploadImage(e.target.files[0]);
+                                                                                        if (url) setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: url });
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            <label htmlFor="og-image-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                                                                                Choose File
+                                                                            </label>
+                                                                            <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
+                                                                                {advancedSettings.seoOpenGraphImage ? advancedSettings.seoOpenGraphImage.split('/').pop() : 'No file chosen'}
+                                                                            </span>
+                                                                        </div>
+                                                                        {advancedSettings.seoOpenGraphImage && (
+                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
+                                                                                <img src={advancedSettings.seoOpenGraphImage} alt="OG Preview" className="w-full h-full object-cover" />
+                                                                                <button onClick={() => setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
+                                                                                    <X size={10} />
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB maximum.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Globe size={12} /> Language
+                                                                    </label>
+                                                                    <select value={advancedSettings.seoLanguage} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoLanguage: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                                    >
+                                                                        <option value="en">English</option>
+                                                                        <option value="es">Spanish</option>
+                                                                        <option value="fr">French</option>
+                                                                        <option value="de">German</option>
+                                                                        <option value="it">Italian</option>
+                                                                        <option value="pt">Portuguese</option>
+                                                                        <option value="hi">Hindi</option>
+                                                                        <option value="ar">Arabic</option>
+                                                                        <option value="ja">Japanese</option>
+                                                                        <option value="ko">Korean</option>
+                                                                        <option value="zh">Chinese</option>
+                                                                    </select>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Set the meta language of your page to help browsers and search engines identify its language.</p>
+                                                                </div>
+                                                            </>)}
+
+
+                                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ BRANDING ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                            {growthTab === "branding" && (<>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Display branding</p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Show the BotChat branding badge on your public page.</p>
+                                                                    </div>
+                                                                    <ToggleSwitch checked={advancedSettings.displayBranding} onChange={(v) => setAdvancedSettings({ ...advancedSettings, displayBranding: v })} />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Name</label>
+                                                                    <input value={advancedSettings.brandingName} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="Your brand name" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Leave empty to use the default site branding.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding URL</label>
+                                                                    <input value={advancedSettings.brandingUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingUrl: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="https://yourbrand.com" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Text Color</label>
+                                                                    <div className="flex gap-3">
+                                                                        <input type="color" value={advancedSettings.brandingTextColor || "#ffffff"}
+                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
+                                                                            className="h-12 w-16 rounded-xl cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-transparent" />
+                                                                        <input value={advancedSettings.brandingTextColor} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
+                                                                            className="flex-1 h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all font-mono"
+                                                                            placeholder="#1f2937" />
+                                                                    </div>
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PIXELS ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                            {growthTab === "pixels" && (<>
+                                                                <p className="text-[11px] text-slate-500">Connect your analytics pixels to track bio page visits and conversions.</p>
+                                                                <div className="space-y-3">
+                                                                    {[
+                                                                        { key: "pixelFacebookEnabled", label: "Facebook Pixel", desc: "Track events with the Meta Pixel", icon: Facebook, color: "bg-blue-600" },
+                                                                        { key: "pixelGoogleEnabled",   label: "Google Analytics", desc: "Connect Google Analytics to this page", icon: Globe, color: "bg-red-500" },
+                                                                    ].map(({ key, label, desc, icon: Ico, color }) => (
+                                                                        <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs", color)}>
+                                                                                    <Ico size={16} />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
+                                                                                    <p className="text-[11px] text-slate-500">{desc}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ UTM ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                            {growthTab === "utm" && (<>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Shuffle size={12} /> Source
+                                                                    </label>
+                                                                    <input value={advancedSettings.utmSource} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="e.g. instagram, newsletter, google" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Monitor size={12} /> Medium
+                                                                    </label>
+                                                                    <input value={advancedSettings.utmMedium} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="e.g. social, link, banner, email" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Megaphone size={12} /> Campaign
+                                                                    </label>
+                                                                    <div className="w-full h-12 px-4 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-2 border-transparent text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center italic">
+                                                                        Automatically set for each link based on the name.
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div className="pt-4 space-y-1.5 border-t border-slate-100 dark:border-slate-800">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Eye size={12} /> UTM preview
+                                                                    </label>
+                                                                    <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                                                                        <p className="text-xs font-mono text-amber-800 dark:text-amber-300 break-all leading-relaxed">
+                                                                            {`?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`}
+                                                                        </p>
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">This query parameter will be appended to your destination URL.</p>
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PROTECTION ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                            {growthTab === "protection" && (<>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <KeyRound size={12} /> Page Password
+                                                                    </label>
+                                                                    <div className="relative group">
+                                                                        <input 
+                                                                            type={showPassword ? "text" : "password"} 
+                                                                            value={advancedSettings.password} 
+                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
+                                                                            className="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-red-300 dark:focus:border-red-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
+                                                                        <button 
+                                                                            type="button"
+                                                                            onClick={() => setShowPassword(!showPassword)}
+                                                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500 transition-colors"
+                                                                        >
+                                                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                                        </button>
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Require visitors to enter a password to access your page.</p>
+                                                                </div>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                                                            <ShieldAlert size={14} className="text-red-500" /> Sensitive content warning
+                                                                        </p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5 ml-5">Ask visitors to confirm before accessing potentially sensitive content.</p>
+                                                                    </div>
+                                                                    <ToggleSwitch checked={advancedSettings.sensitiveContentWarning} onChange={(v) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: v })} />
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ── POPUP (BRANDED BUTTON) ── */}
+                                                            {growthTab === "popup" && (<>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Enable branded button</p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Show a floating button that opens a modal popup.</p>
+                                                                    </div>
+                                                                    <ToggleSwitch checked={advancedSettings.brandedButtonEnabled} onChange={(v) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: v })} />
+                                                                </div>
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <ImageIcon size={12} /> Branded icon
+                                                                    </label>
+                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
+                                                                        <div className="flex-1">
+                                                                            <input 
+                                                                                type="file" 
+                                                                                id="branded-icon-upload" 
+                                                                                className="hidden" 
+                                                                                accept=".jpg,.jpeg,.png,.ico,.svg,.gif,.webp"
+                                                                                onChange={async (e) => {
+                                                                                    if (e.target.files && e.target.files[0]) {
+                                                                                        const url = await handleUploadImage(e.target.files[0]);
+                                                                                        if (url) setAdvancedSettings({ ...advancedSettings, brandedIconUrl: url });
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                                                                                Choose File
+                                                                            </label>
+                                                                            <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
+                                                                                {advancedSettings.brandedIconUrl ? advancedSettings.brandedIconUrl.split('/').pop() : 'No file chosen'}
+                                                                            </span>
+                                                                        </div>
+                                                                        {advancedSettings.brandedIconUrl && (
+                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
+                                                                                <img src={advancedSettings.brandedIconUrl} alt="Icon Preview" className="w-full h-full object-cover" />
+                                                                                <button onClick={() => setAdvancedSettings({ ...advancedSettings, brandedIconUrl: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
+                                                                                    <X size={10} />
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Make sure it's a 1:1 ratio sized image with transparent background. .jpg, .jpeg, .png, .ico, .svg, .gif, .webp allowed. 2 MB maximum.</p>
+                                                                </div>
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal title</label>
+                                                                    <input value={advancedSettings.brandedModalTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="Your Modal Title" />
+                                                                </div>
+                                                                
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal content</label>
+                                                                    <textarea value={advancedSettings.brandedModalContent} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
+                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="Write your modal content here..." />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">This field accepts the usage of HTML.</p>
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ ADVANCED / MORE ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                            {growthTab === "more" && (<>
+                                                                {[
+                                                                    { key: "enableShareButton",       label: "Share button",        desc: "Show a share button at the top of your page." },
+                                                                    { key: "enableScrollButtons",     label: "Scroll buttons",      desc: "Add scroll-to-top and scroll-to-bottom buttons." },
+                                                                    { key: "enableDirectoryDisplaying", label: "Directory listing", desc: "Make your bio page public in BotChat's directory." },
+                                                                ].map(({ key, label, desc }) => (
+                                                                    <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                        <div>
+                                                                            <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
+                                                                            <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
+                                                                        </div>
+                                                                        <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
+                                                                    </div>
+                                                                ))}
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Leap Link URL</label>
+                                                                    <input value={advancedSettings.leapLinkUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="https://example.com/" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Redirect all visitors to this URL. Leave empty to disable.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom CSS</label>
+                                                                    <textarea value={advancedSettings.customCss} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
+                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="body { background: blue !important; }" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom JS</label>
+                                                                    <textarea value={advancedSettings.customJs} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
+                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder={"<script>console.log('Hello world');</script>"} />
+                                                                </div>
+                                                            </>)}
+
+                                                        </div>
+                                                    </motion.div>
+                                                </AnimatePresence>
+
+                                                {/* SAVE BUTTON */}
+                                                <div className="mt-5">
+                                                    <button onClick={handleSaveAdvanced} disabled={isSavingAdvanced}
+                                                        className={cn("w-full h-13 py-3.5 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-60",
+                                                            `${activeGT.bg} hover:opacity-90 shadow-${activeGT.color}-500/20`)}>
+                                                        {isSavingAdvanced ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><Save size={14} /> Save Growth Settings</>}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div id="advanced-protection" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
-                                                <ShieldAlert size={16} className="text-slate-700 dark:text-slate-300" />
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Protection</h3>
-                                            </div>
-                                            <div className="space-y-5">
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><KeyRound size={16} /> Password</label>
-                                                    <input
-                                                        type="password"
-                                                        value={advancedSettings.password}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="Enter password"
-                                                    />
-                                                    <p className="text-sm text-slate-500 mt-2">Require users to enter a password before accessing the link.</p>
-                                                </div>
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div>
-                                                        <p className="text-xl font-semibold text-slate-900 dark:text-white">Sensitive content warning</p>
-                                                        <p className="text-sm text-slate-500 mt-1">Require users to confirm that they want to access your link and let them know the link might be sensitive.</p>
-                                                    </div>
-                                                    <ToggleSwitch
-                                                        checked={advancedSettings.sensitiveContentWarning}
-                                                        onChange={(value) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: value })}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="advanced-branded-button" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
-                                                <CircleDot size={16} className="text-slate-700 dark:text-slate-300" />
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Branded button</h3>
-                                            </div>
-                                            <div className="space-y-5">
-                                                <div className="flex items-center justify-between">
-                                                    <p className="text-xl font-semibold text-slate-900 dark:text-white">Enable branded button</p>
-                                                    <ToggleSwitch
-                                                        checked={advancedSettings.brandedButtonEnabled}
-                                                        onChange={(value) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: value })}
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white block">Branded icon</label>
-                                                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-3">
-                                                        <input
-                                                            type="file"
-                                                            disabled={!advancedSettings.brandedButtonEnabled}
-                                                            onChange={async (e) => {
-                                                                if (!e.target.files?.[0]) return;
-                                                                const uploaded = await handleUploadImage(e.target.files[0]);
-                                                                if (uploaded) {
-                                                                    setAdvancedSettings({ ...advancedSettings, brandedIconUrl: uploaded });
-                                                                }
-                                                            }}
-                                                            className="w-full text-sm"
-                                                        />
-                                                    </div>
-                                                    <p className="text-sm text-slate-500">Use a 1:1 transparent image. jpg, jpeg, png, ico, svg, gif, webp allowed. 2 MB maximum.</p>
-                                                </div>
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white block mb-2">Modal title</label>
-                                                    <input
-                                                        value={advancedSettings.brandedModalTitle}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
-                                                        disabled={!advancedSettings.brandedButtonEnabled}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base disabled:opacity-50"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white block mb-2">Modal content</label>
-                                                    <textarea
-                                                        value={advancedSettings.brandedModalContent}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
-                                                        disabled={!advancedSettings.brandedButtonEnabled}
-                                                        rows={4}
-                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base resize-none disabled:opacity-50"
-                                                    />
-                                                    <p className="text-sm text-slate-500 mt-2">This field accepts usage of HTML.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="advanced-more" className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                                            <div className="h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center gap-2 mb-6">
-                                                <Orbit size={16} className="text-slate-700 dark:text-slate-300" />
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Advanced</h3>
-                                            </div>
-                                            <div className="space-y-5">
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div>
-                                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">Enable share button</p>
-                                                        <p className="text-sm text-slate-500">Display a button in the top right of the page that opens a share modal.</p>
-                                                    </div>
-                                                    <ToggleSwitch checked={advancedSettings.enableShareButton} onChange={(value) => setAdvancedSettings({ ...advancedSettings, enableShareButton: value })} />
-                                                </div>
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div>
-                                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">Enable scroll buttons</p>
-                                                        <p className="text-sm text-slate-500">Display scroll top and bottom buttons in the left of the page. They will only show up when the page is long enough.</p>
-                                                    </div>
-                                                    <ToggleSwitch checked={advancedSettings.enableScrollButtons} onChange={(value) => setAdvancedSettings({ ...advancedSettings, enableScrollButtons: value })} />
-                                                </div>
-                                                <div className="flex items-start justify-between gap-4">
-                                                    <div>
-                                                        <p className="text-lg font-semibold text-slate-900 dark:text-white">Enable directory displaying</p>
-                                                        <p className="text-sm text-slate-500">If enabled, your biolink page will be public in our Directory.</p>
-                                                    </div>
-                                                    <ToggleSwitch checked={advancedSettings.enableDirectoryDisplaying} onChange={(value) => setAdvancedSettings({ ...advancedSettings, enableDirectoryDisplaying: value })} />
-                                                </div>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Megaphone size={14} /> Project</label>
-                                                        <select
-                                                            value={advancedSettings.projectName}
-                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, projectName: e.target.value })}
-                                                            className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        >
-                                                            <option value="None">None</option>
-                                                        </select>
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Sparkles size={14} /> Splash page</label>
-                                                        <select
-                                                            value={advancedSettings.splashPageName}
-                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, splashPageName: e.target.value })}
-                                                            className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        >
-                                                            <option value="None">None</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><ArrowRight size={14} /> Leap Link URL</label>
-                                                    <input
-                                                        value={advancedSettings.leapLinkUrl}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
-                                                        className="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="https://example.com/"
-                                                    />
-                                                    <p className="text-sm text-slate-500 mt-2">Fully redirect all users that access the biolink page to this URL. Leave empty to disable the feature.</p>
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><Code2 size={14} /> Custom CSS</label>
-                                                    <textarea
-                                                        value={advancedSettings.customCss}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
-                                                        rows={4}
-                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="body { background: blue !important; }"
-                                                    />
-                                                    <p className="text-sm text-slate-500 mt-2">Your CSS code to modify the existing page style.</p>
-                                                </div>
-
-                                                <div>
-                                                    <label className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-2"><FileCode2 size={14} /> Custom JS</label>
-                                                    <textarea
-                                                        value={advancedSettings.customJs}
-                                                        onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
-                                                        rows={4}
-                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-base"
-                                                        placeholder="<script>console.log('Hello world');</script>"
-                                                    />
-                                                    <p className="text-sm text-slate-500 mt-2">Your custom JS code to enhance your page capability.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-end">
-                                            <button
-                                                onClick={handleSaveAdvanced}
-                                                disabled={isSavingAdvanced}
-                                                className="h-12 px-8 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 disabled:opacity-60 shadow-lg shadow-primary/10"
-                                            >
-                                                {isSavingAdvanced ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                                                {isSavingAdvanced ? "Saving..." : "Save Advanced Settings"}
-                                            </button>
-                                        </div>
-                                        <p className="text-sm text-slate-500">Tip: enable only what you need for this campaign to keep your page clean and fast.</p>
                                     </div>
-                                )}
+                                    );
+                                })()}
                             </motion.div>
                         </AnimatePresence>
                     </div>
                 </main>
 
-                {/* ── MOBILE SWITCHER ── */}
+
+                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MOBILE SWITCHER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
                 <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-slate-950/92 backdrop-blur-xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/10">
                     <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
                         <Edit3 size={16} /> Studio
@@ -1346,7 +1567,7 @@ export default function BioLinkBuilder() {
                     </button>
                 </div>
 
-                {/* ── PHONE PREVIEW PORTAL (PERMANENTLY VISIBLE ON XL) ── */}
+                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PHONE PREVIEW PORTAL (PERMANENTLY VISIBLE ON XL) ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
                 <aside className={cn("fixed right-0 top-14 z-50 hidden xl:flex w-[440px] flex-col p-6 bg-slate-50/95 dark:bg-[#020617]/95 backdrop-blur-2xl border-l border-slate-200 dark:border-slate-800 transition-all duration-500 h-[calc(100vh-56px)] shadow-[-24px_0_60px_rgba(0,0,0,0.05)]",
                     activePanel === "preview" ? "translate-x-0 opacity-100" : "translate-x-0 opacity-100")}>
                     <div className="flex-1 rounded-[34px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.05)] relative overflow-hidden">
@@ -1358,7 +1579,7 @@ export default function BioLinkBuilder() {
                 </aside>
             </div>
 
-            {/* ── MOBILE SWITCHER ── */}
+            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MOBILE SWITCHER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
             <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-slate-950/92 backdrop-blur-xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/10">
                 <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
                     <Edit3 size={16} /> Studio
