@@ -62,13 +62,58 @@ export const deleteBioPage = createAsyncThunk(
     'bio/deleteBioPage',
     async (link_id: string, { rejectWithValue }) => {
         try {
-            const response = await api.delete(`/bio-builder/profile/${link_id}`);
+            const response = await api.delete(`/bio/pages/${link_id}`);
             if (response.data.success) {
                 return link_id;
             }
             return rejectWithValue(response.data.message || 'Failed to delete bio page');
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete bio page');
+        }
+    }
+);
+
+export const duplicateBioPage = createAsyncThunk(
+    'bio/duplicateBioPage',
+    async (link_id: string, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/bio/pages/${link_id}/duplicate`);
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message || 'Failed to duplicate bio page');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to duplicate bio page');
+        }
+    }
+);
+
+export const resetBioPage = createAsyncThunk(
+    'bio/resetBioPage',
+    async (link_id: string, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/bio/pages/${link_id}/reset`);
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message || 'Failed to reset bio page');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to reset bio page');
+        }
+    }
+);
+
+export const toggleBioPageStatus = createAsyncThunk(
+    'bio/toggleBioPageStatus',
+    async (link_id: string, { rejectWithValue }) => {
+        try {
+            const response = await api.patch(`/bio/pages/${link_id}/toggle`);
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message || 'Failed to toggle bio page status');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to toggle bio page status');
         }
     }
 );
@@ -112,6 +157,29 @@ const bioSlice = createSlice({
             })
             .addCase(createBioPage.rejected, (state, action) => {
                 state.error = action.payload as string;
+            })
+            .addCase(duplicateBioPage.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.pages.unshift(action.payload);
+                }
+            })
+            .addCase(resetBioPage.fulfilled, (state, action) => {
+                const targetId = action.payload?.link_id || action.payload?.id;
+                if (targetId) {
+                    const index = state.pages.findIndex(p => p.link_id == targetId || (p as any).id == targetId);
+                    if (index !== -1) {
+                        state.pages[index] = { ...state.pages[index], ...action.payload };
+                    }
+                }
+            })
+            .addCase(toggleBioPageStatus.fulfilled, (state, action) => {
+                const targetId = action.payload?.link_id || action.payload?.id;
+                if (targetId) {
+                    const index = state.pages.findIndex(p => p.link_id == targetId || (p as any).id == targetId);
+                    if (index !== -1) {
+                        state.pages[index] = { ...state.pages[index], ...action.payload, is_enabled: action.payload.is_enabled };
+                    }
+                }
             });
     },
 });

@@ -2,13 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon, Image as ImageIcon, CheckCircle2, X, Globe, ArrowRight, Info, Copy, Sparkles, Crown } from "lucide-react";
+import { Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon, Image as ImageIcon, CheckCircle2, X, Globe, ArrowRight, Info, Copy, Sparkles, Crown, MoreVertical, BarChart2, QrCode, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useModal } from "@/components/providers/ModalProvider";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchBioPages, deleteBioPage, createBioPage } from "@/store/slices/bioSlice";
+import { fetchBioPages, deleteBioPage, createBioPage, duplicateBioPage, resetBioPage, toggleBioPageStatus } from "@/store/slices/bioSlice";
 
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
@@ -58,6 +66,7 @@ type BioLinkRow = {
     profileId: string | number;
     slug?: string;
     title?: string;
+    is_enabled?: boolean;
 };
 
 export default function InstagramBioLinksPage() {
@@ -71,6 +80,7 @@ export default function InstagramBioLinksPage() {
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [actionModal, setActionModal] = useState<{ isOpen: boolean; type: 'delete' | 'duplicate' | 'reset' | 'toggle'; row: BioLinkRow | null }>({ isOpen: false, type: 'delete', row: null });
     const [newBio, setNewBio] = useState({ url: "", name: "", description: "" });
 
     const handleCreate = async () => {
@@ -121,7 +131,8 @@ export default function InstagramBioLinksPage() {
                 profileId: page.link_id as any,
                 username: page.url,
                 slug: page.url,
-                title: page.title
+                title: page.title,
+                is_enabled: page.is_enabled === "1" || page.is_enabled === true || page.is_enabled === "true"
             } as BioLinkRow;
         });
     }, [pages]);
@@ -147,16 +158,28 @@ export default function InstagramBioLinksPage() {
         router.push(`/dashboard/instagram/bio-link?page=${row.pageId}`);
     };
 
-    const handleDelete = async (row: BioLinkRow) => {
-        if (typeof window !== "undefined") {
-            const ok = window.confirm("Delete this bio link?");
-            if (!ok) return;
-        }
+    const confirmAction = async () => {
+        if (!actionModal.row) return;
+        const linkId = actionModal.row.profileId as string;
 
         try {
-            await dispatch(deleteBioPage(row.profileId)).unwrap();
-        } catch {
-            showModal("error", "Error", "Failed to delete bio link.");
+            if (actionModal.type === 'delete') {
+                await dispatch(deleteBioPage(linkId)).unwrap();
+                showModal("success", "Deleted", "Bio link deleted successfully.");
+            } else if (actionModal.type === 'duplicate') {
+                await dispatch(duplicateBioPage(linkId)).unwrap();
+                showModal("success", "Duplicated", "Bio link duplicated successfully.");
+            } else if (actionModal.type === 'reset') {
+                await dispatch(resetBioPage(linkId)).unwrap();
+                showModal("success", "Reset", "Bio link reset successfully.");
+            } else if (actionModal.type === 'toggle') {
+                await dispatch(toggleBioPageStatus(linkId)).unwrap();
+                showModal("success", "Updated", "Bio link status updated.");
+            }
+        } catch (err: any) {
+            showModal("error", "Error", err || `Failed to ${actionModal.type} bio link.`);
+        } finally {
+            setActionModal({ isOpen: false, type: 'delete', row: null });
         }
     };
 
@@ -168,7 +191,7 @@ export default function InstagramBioLinksPage() {
 
     return (
         <div className="min-h-screen bg-transparent px-4 sm:px-6 py-6 relative overflow-hidden"
-             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
+            style={{ background: 'var(--app-surface-bg, var(--background))' }}>
             <div className="max-w-5xl mx-auto space-y-5 relative">
                 {/* Header Card */}
                 <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-7 shadow-[0_18px_40px_rgba(0,0,0,0.05)]">
@@ -218,19 +241,61 @@ export default function InstagramBioLinksPage() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{row.title || `@${row.username}`}</p>
-                                                <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wide">Live</span>
+                                                {row.is_enabled && <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wide">Live</span>}
                                             </div>
                                             <p className="text-[11px] text-slate-500 truncate">{publicUrl}</p>
                                         </div>
-                                        <button onClick={() => handleEdit(row)} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:border-primary hover:text-primary transition-colors" title="Edit">
-                                            <Edit3 size={14} />
-                                        </button>
-                                        <button onClick={() => handleCopy(row)} className={cn("w-9 h-9 rounded-xl border flex items-center justify-center transition-colors", copiedId === row.pageId ? "border-emerald-300 text-emerald-600" : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-primary hover:text-primary")} title="Copy">
-                                            {copiedId === row.pageId ? <CheckCircle2 size={14} /> : <Copy size={14} />}
-                                        </button>
-                                        <button onClick={() => handleDelete(row)} className="w-9 h-9 rounded-xl border border-red-200 dark:border-red-500/30 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10" title="Delete">
-                                            <Trash2 size={14} />
-                                        </button>
+
+                                        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+                                            {/* Status Toggle */}
+                                            <button
+                                                className={cn(
+                                                    "relative inline-flex h-[20px] w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                                                    row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"
+                                                )}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActionModal({ isOpen: true, type: 'toggle', row });
+                                                }}
+                                            >
+                                                <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow ring-0 transition-transform", row.is_enabled ? "translate-x-2" : "translate-x-[-0.3rem]")} />
+                                            </button>
+
+                                            {/* Copy Button */}
+                                            <button onClick={(e) => { e.stopPropagation(); handleCopy(row); }} className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-colors", copiedId === row.pageId ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800")} title="Copy">
+                                                {copiedId === row.pageId ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                                            </button>
+
+                                            {/* Dropdown Menu */}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button onClick={(e) => e.stopPropagation()} className="w-8 h-8 rounded-lg border border-slate-200 text-blue-500 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors data-[state=open]:bg-blue-50 data-[state=open]:border-blue-200 dark:data-[state=open]:bg-blue-900/30">
+                                                        <MoreVertical size={14} className="text-slate-500" />
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-48 font-medium">
+                                                    <DropdownMenuItem onClick={() => handleEdit(row)} className="gap-2 cursor-pointer">
+                                                        <Edit3 size={14} className="text-slate-500" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
+                                                        <BarChart2 size={14} className="text-slate-500" /> Statistics
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => showModal("info", "Feature Pending", "QR Code Generation coming soon.")}>
+                                                        <QrCode size={14} className="text-slate-500" /> Create QR
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'duplicate', row })}>
+                                                        <Copy size={14} className="text-slate-500" /> Duplicate
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'reset', row })}>
+                                                        <RefreshCw size={14} className="text-slate-500" /> Reset
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => setActionModal({ isOpen: true, type: 'delete', row })} className="gap-2 text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 cursor-pointer">
+                                                        <Trash2 size={14} className="text-red-500" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -262,16 +327,16 @@ export default function InstagramBioLinksPage() {
             </div>
 
             {/* ADDS NEW MODAL */}
-            <ModalShell 
-                open={showAddModal} 
+            <ModalShell
+                open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 title="Create New Bio Page"
                 icon={<Globe size={20} />}
                 footer={
                     <div className="flex gap-3">
                         <button onClick={() => setShowAddModal(false)} className="flex-1 h-14 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-black uppercase tracking-widest text-[12px]">Cancel</button>
-                        <button 
-                            onClick={handleCreate} 
+                        <button
+                            onClick={handleCreate}
                             disabled={isCreating}
                             className="flex-2 h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[12px] shadow-xl flex items-center justify-center gap-2"
                         >
@@ -282,22 +347,22 @@ export default function InstagramBioLinksPage() {
                 }
             >
                 <div className="space-y-6">
-                    <InputField 
-                        label="Unique URL (Slug)" 
-                        value={newBio.url} 
+                    <InputField
+                        label="Unique URL (Slug)"
+                        value={newBio.url}
                         onChange={(e: any) => setNewBio({ ...newBio, url: e.target.value })}
                         placeholder="my-new-bio"
                     />
-                    <InputField 
-                        label="Account Name / Title" 
-                        value={newBio.name} 
+                    <InputField
+                        label="Account Name / Title"
+                        value={newBio.name}
                         onChange={(e: any) => setNewBio({ ...newBio, name: e.target.value })}
                         placeholder="John Doe Profile"
                     />
                     <div className="space-y-2">
                         <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Description</label>
-                        <textarea 
-                            value={newBio.description} 
+                        <textarea
+                            value={newBio.description}
                             onChange={(e: any) => setNewBio({ ...newBio, description: e.target.value })}
                             rows={3}
                             className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600"
@@ -312,6 +377,21 @@ export default function InstagramBioLinksPage() {
                     </div>
                 </div>
             </ModalShell>
+
+            <ConfirmModal
+                isOpen={actionModal.isOpen}
+                onClose={() => setActionModal({ ...actionModal, isOpen: false })}
+                onConfirm={confirmAction}
+                title={actionModal.type === 'delete' ? 'Delete Bio Page?' : actionModal.type === 'duplicate' ? 'Duplicate Bio Page?' : actionModal.type === 'toggle' ? 'Change Status?' : 'Reset Bio Page?'}
+                message={
+                    actionModal.type === 'delete' ? 'This action is permanent and cannot be undone.' :
+                        actionModal.type === 'duplicate' ? 'This will create an exact copy of this bio link page.' :
+                            actionModal.type === 'toggle' ? `Are you sure you want to ${actionModal.row?.is_enabled ? 'disable' : 'enable'} this bio link?` :
+                                'This will reset your bio link back to default settings.'
+                }
+                type={actionModal.type === 'delete' ? 'danger' : 'warning'}
+                confirmText={actionModal.type === 'delete' ? 'Delete' : actionModal.type === 'duplicate' ? 'Duplicate' : actionModal.type === 'toggle' ? 'Confirm' : 'Reset'}
+            />
         </div>
     );
 }

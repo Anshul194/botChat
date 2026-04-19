@@ -273,11 +273,17 @@ export default function BioLinkBuilder() {
                 const res = await api.get("/social/instagram-connect");
                 const accs = res.data?.data?.instagram_accounts || [];
                 setAccounts(accs);
-                if (accs.length > 0) {
-                    const preferredId = requestedPageId || accs[0].id.toString();
-                    setSelectedPageId(preferredId);
+                if (requestedPageId) {
+                    setSelectedPageId(requestedPageId);
+                } else if (accs.length > 0) {
+                    setSelectedPageId(accs[0].id.toString());
+                } else {
+                    // Navigate back or handle no page selected if needed, but we don't block
+                    setSelectedPageId("fallback");
                 }
-            } catch { }
+            } catch { 
+                if (requestedPageId) setSelectedPageId(requestedPageId);
+            }
         };
         fetchAccounts();
     }, [requestedPageId]);
@@ -856,22 +862,16 @@ export default function BioLinkBuilder() {
         }],
     }];
 
-    if (!selectedPageId) return (
-        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6"
-             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
-            <div className="w-full max-w-6xl grid gap-6 xl:grid-cols-[minmax(0,1fr)_auto] items-center">
-                <div className="rounded-[32px] border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.05)] p-6 sm:p-10">
-                    <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary shadow-inner mb-6"><Monitor size={40} /></div>
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Deployment Required</h2>
-                    <p className="mt-3 max-w-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed">Please connect your Instagram account first to unlock the Creator Studio. A demo preview is shown beside this message so you can still verify the layout.</p>
-                    <button onClick={() => window.location.href = '/dashboard/instagram/connect'} className="mt-6 h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all shadow-lg shadow-primary/20">Connect Now</button>
-                </div>
-                <div className="w-full flex justify-center">
-                    <PhonePreview profile={previewDemoProfile} tabs={previewDemoTabs} selectedTabId={1} setSelectedTabId={() => { }} viewportOffset={220} previewWidth={360} uiTypeOverrides={{}} />
+    if (!selectedPageId && !requestedPageId) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-6">
+                <div className="text-center space-y-4">
+                    <Loader2 size={32} className="mx-auto text-primary animate-spin" />
+                    <p className="text-slate-500 font-medium">Initializing Builder...</p>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 
     return (
         <div className="min-h-screen bg-transparent font-sans selection:bg-primary/10 flex flex-col relative"
