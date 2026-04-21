@@ -277,13 +277,97 @@ export interface ThemeConfig {
     particleColor?: string;
 }
 
-export function isColorLight(hex: string): boolean {
-    const c = hex.replace('#', '');
-    if (c.length < 6) return false;
-    const r = parseInt(c.substring(0, 2), 16);
-    const g = parseInt(c.substring(2, 4), 16);
-    const b = parseInt(c.substring(4, 6), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 > 128;
+export function isColorLight(color: string): boolean {
+    if (!color || color === 'transparent') return false;
+    
+    let r, g, b;
+    
+    if (color.startsWith('#')) {
+        const c = color.replace('#', '');
+        if (c.length === 3) {
+            r = parseInt(c[0] + c[0], 16);
+            g = parseInt(c[1] + c[1], 16);
+            b = parseInt(c[2] + c[2], 16);
+        } else {
+            r = parseInt(c.substring(0, 2), 16);
+            g = parseInt(c.substring(2, 4), 16);
+            b = parseInt(c.substring(4, 6), 16);
+        }
+    } else if (color.startsWith('rgb')) {
+        const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (match) {
+            r = parseInt(match[1]);
+            g = parseInt(match[2]);
+            b = parseInt(match[3]);
+        }
+    }
+    
+    if (r === undefined || g === undefined || b === undefined) return false;
+    
+    // Perceptive luminance formula
+    return (r * 0.299 + g * 0.587 + b * 0.114) > 186; // Standard threshold for dark text
+}
+
+/**
+ * Returns true if a CSS background string (solid color or gradient) is visually
+ * bright/light. For gradients, checks ALL hex color stops and returns true if
+ * the LIGHTEST stop exceeds the luminance threshold. This handles animated
+ * gradients like Chrome Y2K that cycle through near-white.
+ */
+export function isBgLight(bg: string): boolean {
+    if (!bg) return false;
+
+    // Collect all hex colors in the string
+    const hexMatches = bg.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g) || [];
+    // Collect all rgb/rgba colors
+    const rgbMatches = bg.match(/rgba?\(\d+,\s*\d+,\s*\d+/g) || [];
+
+    const allColors = [
+        ...hexMatches,
+        ...rgbMatches.map(m => m + ')'),
+    ];
+
+    if (allColors.length === 0) return false;
+
+    // Find the maximum luminance among all colors
+    let maxLuminance = 0;
+    for (const color of allColors) {
+        const isLight = isColorLight(color);
+        // Also compute exact luminance to find the brightest
+        let r: number | undefined, g_: number | undefined, b: number | undefined;
+        if (color.startsWith('#')) {
+            const c = color.replace('#', '');
+            if (c.length === 3) {
+                r = parseInt(c[0] + c[0], 16);
+                g_ = parseInt(c[1] + c[1], 16);
+                b = parseInt(c[2] + c[2], 16);
+            } else {
+                r = parseInt(c.substring(0, 2), 16);
+                g_ = parseInt(c.substring(2, 4), 16);
+                b = parseInt(c.substring(4, 6), 16);
+            }
+        } else if (color.startsWith('rgb')) {
+            const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+            if (match) { r = parseInt(match[1]); g_ = parseInt(match[2]); b = parseInt(match[3]); }
+        }
+        if (r !== undefined && g_ !== undefined && b !== undefined) {
+            const lum = r * 0.299 + g_ * 0.587 + b * 0.114;
+            if (lum > maxLuminance) maxLuminance = lum;
+        }
+    }
+
+    // Light if the brightest stop exceeds threshold
+    return maxLuminance > 186;
+}
+
+/** @deprecated Use isBgLight instead */
+export function extractPrimaryBgColor(bg: string): string | null {
+    if (!bg) return null;
+    const hexMatch = bg.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/);
+    if (hexMatch) return hexMatch[0];
+    const rgbMatch = bg.match(/rgba?\(\d+,\s*\d+,\s*\d+/);
+    if (rgbMatch) return rgbMatch[0] + ')';
+    return null;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -943,7 +1027,18 @@ const DEFAULT_THEME: ThemeConfig = {
 };
 
 export const getTheme = (id: string = 'photo_aura'): ThemeConfig => {
-    return THEMES[id] || DEFAULT_THEME;
+    const theme = THEMES[id] || DEFAULT_THEME;
+
+    // Auto-correct text to black when background is bright (checks ALL gradient stops)
+    const bgStr = (theme.bgStyle.background as string) || '';
+    if (isBgLight(bgStr)) {
+        return {
+            ...theme,
+            textColor: '#000000',
+        };
+    }
+
+    return theme;
 };
 
 // ══════════════════════════════════════════════════════════

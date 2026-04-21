@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Search, Clock, MoreHorizontal, Globe, Mail, Smartphone, SmartphoneNfc, Camera, Sparkles, Youtube, Video, Grid, Play, DollarSign, Music, MapPin, ShieldAlert } from "lucide-react";
-import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
+import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles, isColorLight, isBgLight } from "./TemplateSystem";
 import { getUiTypeFromBlock, isMediaType } from "./builder-utils";
 
 export const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
@@ -122,6 +122,13 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
         const type = getUiTypeFromBlock(block, uiTypeOverrides);
         const settings = block.settings || {};
         const alignment = settings.text_alignment || (isTiled ? "left" : "center");
+
+        // ── Detect if the template background is bright (checks ALL gradient stops) ──
+        const themeBgStr = (theme.bgStyle.background as string) || '';
+        const themeBgIsLight = isBgLight(themeBgStr);
+
+        // ── Effective page text color: if bg bright, always use black ──
+        const effectiveTextColor = themeBgIsLight ? '#000000' : theme.textColor;
         
         const baseStyle: any = { ...(theme.btnStyle || {}) };
         if (settings.background_color && settings.background_color.length > 7 && settings.background_color.endsWith("00")) {
@@ -129,8 +136,18 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
         } else if (settings.background_color && settings.background_color !== "#ffffff" && settings.background_color !== "#000000") {
             baseStyle.background = settings.background_color;
         }
-        
-        if (settings.text_color && settings.text_color !== "#020617") { baseStyle.color = settings.text_color; }
+
+        // ── Auto Contrast Logic for buttons ──
+        // If template bg is bright, always force dark text (ignore saved light text_color)
+        const finalBg = baseStyle.background || theme.btnStyle?.background;
+        if (themeBgIsLight) {
+            // Template is bright — force dark text regardless of saved color
+            baseStyle.color = "#000000";
+        } else if (settings.text_color && settings.text_color !== "#020617" && settings.text_color !== "inherit") {
+            baseStyle.color = settings.text_color;
+        } else if (finalBg && typeof finalBg === "string" && isColorLight(finalBg)) {
+            baseStyle.color = "#000000";
+        }
         if (settings.border_radius === "straight") baseStyle.borderRadius = "0px";
         else if (settings.border_radius === "rounded") baseStyle.borderRadius = "20px";
         else if (settings.border_radius === "round") baseStyle.borderRadius = "9999px";
@@ -155,7 +172,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
                         <h2 className={cn(
                             "text-[24px] font-black tracking-tighter leading-tight",
                             profile.theme === 'modern_fisher' && "text-[32px] first-of-type:text-[#FF6B00]"
-                        )} style={{ color: profile.theme === 'modern_fisher' ? undefined : (settings.text_color || theme.textColor) }}>
+                        )} style={{ color: profile.theme === 'modern_fisher' ? undefined : effectiveTextColor }}>
                             {displayLabel || "Untitled Section"}
                         </h2>
                     </div>
@@ -167,7 +184,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
                         <p className={cn(
                             "text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line",
                             profile.theme === 'modern_fisher' && "text-[16px] opacity-80"
-                        )} style={{ color: settings.text_color || theme.textColor }}>
+                        )} style={{ color: effectiveTextColor }}>
                             {settings.description || settings.text}
                         </p>
                     </div>
@@ -201,7 +218,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
                            </div>
                         </div>
                         {displayLabel && !hideLabel && (
-                            <p className="mt-5 text-[17px] font-black tracking-tight" style={{ color: theme.textColor }}>{displayLabel}</p>
+                            <p className="mt-5 text-[17px] font-black tracking-tight" style={{ color: effectiveTextColor }}>{displayLabel}</p>
                         )}
                     </div>
                 )}
