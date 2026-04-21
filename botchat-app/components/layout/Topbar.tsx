@@ -139,7 +139,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
             <div className="w-px h-5 flex-shrink-0"
                 style={{ background: "var(--topbar-item-border)" }} />
 
-            {/* ── Breadcrumb — page name visible on mobile too ── */}
+            {/* ── Breadcrumb ── */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
                 <span className="hidden sm:inline text-[11px] font-semibold" style={{ color: "var(--foreground)", opacity: 0.78 }}>BotChat</span>
                 <span className="hidden sm:inline" style={{ color: "var(--muted-foreground)", opacity: 0.35, fontSize: 13 }}>/</span>

@@ -298,18 +298,29 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
     };
 
     return (
-        <div className="relative mx-auto flex items-center justify-center p-4" style={{ width: `min(${previewWidth}px, calc(100vw-2rem))`, height: `min(760px, calc(100vh - ${viewportOffset}px))` }}>
-            <div className="relative w-full h-full bg-[#020617] rounded-[3.2rem] p-[12px] shadow-[0_20px_60px_-10px_rgba(0,0,0,0.5)] border border-slate-700/50">
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-40 h-7 bg-[#020617] rounded-b-[24px] z-50 flex items-center justify-center"><div className="w-16 h-1.5 bg-slate-800 rounded-full" /></div>
+        <div className="relative mx-auto flex items-center justify-center p-2" style={{ width: `min(${previewWidth}px, 100%)`, height: `min(820px, calc(100vh - ${viewportOffset}px))` }}>
+            {/* iPhone 16 Pro Frame */}
+            <div className="relative w-full h-full bg-[#080808] rounded-[4rem] p-[10px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/10 overflow-hidden">
+                {/* Metallic bezel highlights */}
+                <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-b from-white/10 to-transparent z-20" />
+                <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/5 to-transparent z-20" />
+                <div className="absolute inset-y-0 right-0 w-0.5 bg-gradient-to-l from-white/5 to-transparent z-20" />
+
+                {/* Dynamic Island */}
+                <div className="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-[20px] z-[100] flex items-center justify-center border border-white/5 shadow-inner">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500/20 mr-1.5 blur-[1px]" />
+                    <div className="w-1 h-1 rounded-full bg-white/5" />
+                </div>
                 
-                <div className="rounded-[2.4rem] overflow-hidden w-full h-full relative flex flex-col" style={{ background: theme.bgStyle.background || "#F3F4F6", color: theme.textColor || "#0F172A" }}>
+                {/* Screen Content */}
+                <div className="rounded-[3.2rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" style={{ background: theme.bgStyle.background || "#F3F4F6", color: theme.textColor || "#0F172A" }}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
                     
-                    <div className="flex-1 overflow-y-auto no-scrollbar pt-10 px-6 pb-24 relative z-10 w-[calc(100%+6px)] -ml-1 pr-[6px]">
+                    <div className="flex-1 overflow-y-auto no-scrollbar pt-12 px-6 pb-24 relative z-10 w-[calc(100%+6px)] -ml-1 pr-[6px]">
                         {/* Always Pin the single primary Avatar to top */}
                         {topAvatar && renderBlockUI(topAvatar, false, -1, true)}
-
+                        
                         <div className="flex flex-col gap-2">
                              {groupedRows.map((row, ridx) => {
                                  const isFisher = profile.theme === 'modern_fisher';
@@ -339,6 +350,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
                              })}
                         </div>
                     </div>
+
+                    {/* Bottom Indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/20 dark:bg-white/10 rounded-full z-[100]" />
                 </div>
             </div>
         </div>

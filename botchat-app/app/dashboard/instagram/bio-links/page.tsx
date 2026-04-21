@@ -190,33 +190,37 @@ export default function InstagramBioLinksPage() {
     const availableAccounts = accounts.filter((acc) => !rowsMap.has(String(acc.id)));
 
     return (
-        <div className="min-h-screen bg-transparent px-4 sm:px-6 py-6 relative overflow-hidden"
+        <div className="min-h-screen bg-transparent px-2 sm:px-6 py-6 relative overflow-hidden"
             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
-            <div className="max-w-5xl mx-auto space-y-5 relative">
+            <div className="max-w-5xl mx-auto space-y-4 relative">
                 {/* Header Card */}
-                <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-7 shadow-[0_18px_40px_rgba(0,0,0,0.05)]">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/25">
-                                <Sparkles size={20} />
+                <div className="rounded-[28px] border border-slate-200/80 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 p-4 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8">
+                        <div className="flex items-start gap-4 sm:gap-5">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[18px] sm:rounded-[22px] bg-primary text-white flex items-center justify-center shadow-2xl shadow-primary/40 shrink-0">
+                                <Sparkles size={20} className="sm:w-6 sm:h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">Instagram Premium</p>
-                                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Bio Link Manager</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">Create, edit, copy, and maintain all your bio links in one place.</p>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Instagram Premium</p>
+                                </div>
+                                <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Bio Link Manager</h1>
+                                <p className="hidden sm:block text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-2 font-medium max-w-xl">Create, edit, copy, and maintain all your bio links in one place.</p>
+                                <p className="sm:hidden text-[12px] text-slate-500 mt-1 font-medium italic">Manage all bio links here.</p>
                             </div>
                         </div>
                         <button
                             onClick={handleAddNew}
-                            className="h-11 px-5 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all font-bold"
+                            className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-2xl bg-primary text-white text-[11px] sm:text-[12px] font-black uppercase tracking-[0.12em] flex items-center justify-center gap-2 sm:gap-3 shadow-[0_10px_30px_rgba(108,92,231,0.3)] hover:scale-[1.02] hover:shadow-[0_15px_40px_rgba(108,92,231,0.4)] active:scale-[0.98] transition-all"
                         >
-                            <Plus size={16} /> Add New Bio
+                            <Plus size={16} className="sm:w-5 sm:h-5" /> Add New Bio
                         </button>
                     </div>
                 </div>
 
                 {/* List Card */}
-                <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 p-4 sm:p-5">
+                <div className="rounded-[32px] border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-slate-900/60 p-2 sm:p-5">
                     {isLoading ? (
                         <div className="py-16 text-center text-sm text-slate-500">Loading bio links...</div>
                     ) : rows.length === 0 ? (
@@ -234,64 +238,80 @@ export default function InstagramBioLinksPage() {
                                     ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
                                     : `/p?u=${row.username}&id=${row.pageId}`;
                                 return (
-                                    <div key={row.pageId} className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-all">
-                                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary font-black flex items-center justify-center text-sm">
-                                            {(row.username?.[0] || "B").toUpperCase()}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{row.title || `@${row.username}`}</p>
-                                                {row.is_enabled && <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wide">Live</span>}
+                                    <div key={row.pageId} className="group rounded-[22px] border border-slate-100 dark:border-white/5 bg-white dark:bg-white/[0.03] px-2.5 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center gap-4 transition-all hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:shadow-xl hover:shadow-slate-200/20 dark:hover:shadow-none hover:-translate-y-0.5">
+                                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-primary/5 dark:bg-primary/10 text-primary font-black flex items-center justify-center text-sm sm:text-lg shadow-inner shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                {(row.username?.[0] || "B").toUpperCase()}
                                             </div>
-                                            <p className="text-[11px] text-slate-500 truncate">{publicUrl}</p>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate tracking-tight">{row.title || `@${row.username}`}</p>
+                                                    {row.is_enabled && (
+                                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-none">
+                                                            <span className="w-1 h-1 rounded-full bg-primary animate-pulse" /> Live
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 break-all sm:truncate mt-0.5 font-medium leading-tight">{publicUrl}</p>
+                                            </div>
                                         </div>
 
-                                        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
-                                            {/* Status Toggle */}
-                                            <button
-                                                className={cn(
-                                                    "relative inline-flex h-[20px] w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-                                                    row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"
-                                                )}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setActionModal({ isOpen: true, type: 'toggle', row });
-                                                }}
-                                            >
-                                                <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow ring-0 transition-transform", row.is_enabled ? "translate-x-2" : "translate-x-[-0.3rem]")} />
-                                            </button>
+                                        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                                            <div className="flex items-center gap-2 sm:gap-4">
+                                                {/* Status Toggle */}
+                                                <div className="flex flex-col sm:flex-col items-center gap-1 sm:gap-1.5 px-0 sm:px-2">
+                                                    <button
+                                                        className={cn(
+                                                            "relative inline-flex h-[18px] w-[34px] sm:h-[22px] sm:w-[42px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300 focus:outline-none",
+                                                            row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                                                        )}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setActionModal({ isOpen: true, type: 'toggle', row });
+                                                        }}
+                                                    >
+                                                        <span className={cn("pointer-events-none block h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-4 sm:translate-x-5" : "translate-x-0.5")} />
+                                                    </button>
+                                                    <span className="hidden sm:block text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
+                                                </div>
 
-                                            {/* Copy Button */}
-                                            <button onClick={(e) => { e.stopPropagation(); handleCopy(row); }} className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-colors", copiedId === row.pageId ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800")} title="Copy">
-                                                {copiedId === row.pageId ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                                                {/* Copy Button */}
+                                                <button onClick={(e) => { e.stopPropagation(); handleCopy(row); }} className={cn("w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 border", copiedId === row.pageId ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 dark:hover:border-white/10")} title="Copy Link">
+                                                    {copiedId === row.pageId ? <CheckCircle2 size={14} className="sm:w-4 sm:h-4" /> : <Copy size={14} className="sm:w-4 sm:h-4" />}
+                                                </button>
+                                            </div>
+
+                                            {/* Primary Edit Button (Desktop) */}
+                                            <button onClick={() => handleEdit(row)} className="hidden md:flex h-10 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black uppercase tracking-widest items-center gap-2 hover:opacity-90 transition-all">
+                                                Edit Page <ArrowRight size={12} />
                                             </button>
 
                                             {/* Dropdown Menu */}
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <button onClick={(e) => e.stopPropagation()} className="w-8 h-8 rounded-lg border border-slate-200 text-blue-500 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors data-[state=open]:bg-blue-50 data-[state=open]:border-blue-200 dark:data-[state=open]:bg-blue-900/30">
-                                                        <MoreVertical size={14} className="text-slate-500" />
+                                                    <button onClick={(e) => e.stopPropagation()} className="w-10 h-10 rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all">
+                                                        <MoreVertical size={16} className="text-slate-500" />
                                                     </button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-48 font-medium">
-                                                    <DropdownMenuItem onClick={() => handleEdit(row)} className="gap-2 cursor-pointer">
-                                                        <Edit3 size={14} className="text-slate-500" /> Edit
+                                                <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl">
+                                                    <DropdownMenuItem onClick={() => handleEdit(row)} className="h-11 rounded-xl gap-3 px-3 cursor-pointer md:hidden">
+                                                        <Edit3 size={15} className="text-slate-500" /> Edit Page
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
-                                                        <BarChart2 size={14} className="text-slate-500" /> Statistics
+                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
+                                                        <BarChart2 size={15} className="text-slate-500" /> View Analytics
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => showModal("info", "Feature Pending", "QR Code Generation coming soon.")}>
-                                                        <QrCode size={14} className="text-slate-500" /> Create QR
+                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => showModal("info", "Feature Pending", "QR Code Generation coming soon.")}>
+                                                        <QrCode size={15} className="text-slate-500" /> Generate QR Code
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'duplicate', row })}>
-                                                        <Copy size={14} className="text-slate-500" /> Duplicate
+                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'duplicate', row })}>
+                                                        <Copy size={15} className="text-slate-500" /> Duplicate Page
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'reset', row })}>
-                                                        <RefreshCw size={14} className="text-slate-500" /> Reset
+                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'reset', row })}>
+                                                        <RefreshCw size={15} className="text-slate-500" /> Reset to Default
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => setActionModal({ isOpen: true, type: 'delete', row })} className="gap-2 text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 cursor-pointer">
-                                                        <Trash2 size={14} className="text-red-500" /> Delete
+                                                    <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                                                    <DropdownMenuItem onClick={() => setActionModal({ isOpen: true, type: 'delete', row })} className="h-11 rounded-xl gap-3 px-3 text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
+                                                        <Trash2 size={15} className="text-red-500" /> Delete Page
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
