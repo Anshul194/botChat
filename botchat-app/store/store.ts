@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import authReducer from './slices/authSlice';
 import settingsReducer from './slices/settingsSlice';
 import usersReducer from './slices/usersSlice';
@@ -6,6 +7,7 @@ import plansReducer from './slices/plansSlice';
 import modulesReducer from './slices/modulesSlice';
 import aiTrainingReducer from './slices/aiTrainingSlice';
 import bioReducer from './slices/bioSlice';
+import linksReducer from './slices/linksSlice';
 
 export const store = configureStore({
     reducer: {
@@ -16,6 +18,7 @@ export const store = configureStore({
         modules: modulesReducer,
         aiTraining: aiTrainingReducer,
         bio: bioReducer,
+        links: linksReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 

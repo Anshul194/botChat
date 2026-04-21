@@ -1,10 +1,12 @@
-import EditorClient from "./EditorClient";
-import { SEEDED_SLUGS } from "./data";
 
 type Params = { params: any };
 
-export function generateStaticParams() {
-    return SEEDED_SLUGS.map((slug) => ({ slug }));
+export async function generateStaticParams() {
+    // Fetch all links from your API
+    const res = await fetch("http://localhost:3001/api/v1/links", { cache: "no-store" });
+    const data = await res.json();
+    // Return all slugs for static generation
+    return data.data.map((link: any) => ({ slug: link.url }));
 }
 
 export default async function Page({ params }: Params) {

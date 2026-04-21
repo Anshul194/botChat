@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchLinks, createLink } from "@/store/slices/linksSlice";
 import { useRouter } from "next/navigation";
 import {
     CirclePlus,
@@ -16,24 +18,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ShortLinkItem = {
-    id: number;
-    slug: string;
-    title: string;
-    destinationUrl: string;
-    clicks: number;
-    category?: string;
-    active: boolean;
-};
 
-const INITIAL_LINKS: ShortLinkItem[] = [
-    { id: 1, slug: "test21", title: "test21", destinationUrl: "https://nullphpscript.com/post/66biolink", clicks: 5, category: "General", active: true },
-    { id: 2, slug: "kev5kim", title: "kev5kim", destinationUrl: "https://www.instagram.com/p/C9F67hI9Hb", clicks: 4, category: "Instagram", active: true },
-    { id: 3, slug: "tdl5hw3", title: "tdl5hw3", destinationUrl: "https://vnexpress.net", clicks: 7, category: "News", active: true },
-    { id: 4, slug: "plhs18c", title: "plhs18c", destinationUrl: "https://zetpanel.com", clicks: 2, category: "Premium", active: true },
-    { id: 5, slug: "iqw86mb", title: "iqw86mb", destinationUrl: "https://codecanyon.net/item/biolink-booster", clicks: 0, category: "Store", active: true },
-    { id: 6, slug: "abc", title: "abc", destinationUrl: "https://mail.google.com/mail/u/0/#inbox", clicks: 1, category: "Mail", active: false },
-];
+
 
 const getHost = (raw: string) => {
     try {
@@ -76,86 +62,76 @@ const ensureUniqueSlug = (slug: string, items: ShortLinkItem[]) => {
 export default function ShortenedLinksPage() {
     const router = useRouter();
 
-    const [links, setLinks] = useState<ShortLinkItem[]>(INITIAL_LINKS);
+    const dispatch = useAppDispatch();
+    const { links, isLoading, error } = useAppSelector((state) => state.links);
     const [query, setQuery] = useState("");
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [draft, setDraft] = useState({ title: "", destinationUrl: "", slug: "" });
+    const [createdShortUrl, setCreatedShortUrl] = useState<string | null>(null);
     const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+
+    useEffect(() => {
+        dispatch(fetchLinks({ sort_by: 'link_id', sort_dir: 'desc', per_page: 15, page: 1 }));
+    }, [dispatch]);
+
+    // Map API links to UI fields, always show location_url
+    const mappedLinks = useMemo(() => {
+        return links.map((item: any) => ({
+            id: item.link_id ?? item.id ?? 0,
+            url: item.url ?? '',
+            slug: item.slug ?? item.url ?? '',
+            full_url: item.full_url ?? '',
+            location_url: item.location_url ?? '',
+            clicks: item.clicks ?? 0,
+            category: item.category ?? '',
+            active: item.active ?? item.status === 1 ?? true,
+        }));
+    }, [links]);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
-        if (!q) return links;
-        return links.filter((item) => {
+        if (!q) return mappedLinks;
+        return mappedLinks.filter((item) => {
             return (
-                item.title.toLowerCase().includes(q) ||
-                item.slug.toLowerCase().includes(q) ||
-                item.destinationUrl.toLowerCase().includes(q)
+                (item.url?.toLowerCase() || '').includes(q) ||
+                (item.slug?.toLowerCase() || '').includes(q) ||
+                (item.location_url?.toLowerCase() || '').includes(q)
             );
         });
-    }, [links, query]);
+    }, [mappedLinks, query]);
 
-    const shortBase = "https://66biolinks.com/";
+    // Removed shortBase; always use API response for short URL
 
-    const onCreate = () => {
-        const title = draft.title.trim();
+    const onCreate = async () => {
         const url = draft.destinationUrl.trim();
         let rawSlug = draft.slug.trim();
-        if (!title || !url) return;
+        if (!url) return;
         if (!isValidUrl(url)) return;
 
-        if (!rawSlug) {
-            rawSlug = slugify(title) || `link-${Date.now().toString(36)}`;
-        }
-        rawSlug = slugify(rawSlug);
+        // If slug is empty, let backend generate it
+        rawSlug = rawSlug ? slugify(rawSlug) : '';
 
-        setLinks((prev) => {
-            const unique = ensureUniqueSlug(rawSlug, prev);
-            return [
-                {
-                    id: Date.now(),
-                    title,
-                    slug: unique,
-                    destinationUrl: url,
-                    clicks: 0,
-                    category: "New",
-                    active: true,
-                },
-                ...prev,
-            ];
-        });
-        setDraft({ title: "", destinationUrl: "", slug: "" });
+        const resultAction = await dispatch(createLink({
+            location_url: url,
+            url: rawSlug,
+        }));
+        if (createLink.fulfilled.match(resultAction)) {
+            const shortUrl = resultAction.payload.data.full_url;
+            setCreatedShortUrl(shortUrl);
+        }
+        setDraft({ title: '', destinationUrl: '', slug: '' });
         setShowCreateModal(false);
     };
 
-    const onToggle = (id: number) => {
-        setLinks((prev) => prev.map((item) => (item.id === id ? { ...item, active: !item.active } : item)));
-    };
+    // TODO: Implement onToggle, onDelete, onDuplicate with API if needed
+    // TODO: Implement onToggle, onDelete, onDuplicate with API if needed
+    const onToggle = (_id: number) => {};
+    const onDelete = (_id: number) => {};
+    const onDuplicate = (_item: ShortLinkItem) => {};
 
-    const onDelete = (id: number) => {
-        setLinks((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    const onDuplicate = (item: ShortLinkItem) => {
-        setLinks((prev) => {
-            const baseSlug = slugify(`${item.slug}-copy`);
-            const unique = ensureUniqueSlug(baseSlug, prev);
-            return [
-                {
-                    ...item,
-                    id: Date.now(),
-                    slug: unique,
-                    title: `${item.title} copy`,
-                    clicks: 0,
-                },
-                ...prev,
-            ];
-        });
-    };
-
-    const onCopy = async (slug: string) => {
-        const value = `${shortBase}${slug}`;
+    const onCopy = async (fullUrl: string, slug: string) => {
         if (typeof navigator !== "undefined" && navigator.clipboard) {
-            await navigator.clipboard.writeText(value);
+            await navigator.clipboard.writeText(fullUrl);
             setCopiedSlug(slug);
             window.setTimeout(() => setCopiedSlug((s) => (s === slug ? null : s)), 2000);
         }
@@ -222,18 +198,21 @@ export default function ShortenedLinksPage() {
                                     <Link2 size={16} />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="font-bold text-slate-900 dark:text-white truncate">{item.title}</p>
-                                    <p className="text-xs text-slate-500 truncate">{getHost(item.destinationUrl)}</p>
-                                    <a
-                                        href={`${shortBase}${item.slug}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-xs text-primary mt-1 block truncate"
-                                        title={`${shortBase}${item.slug}`}
-                                    >
-                                        {shortBase}
-                                        <span className="font-mono">{item.slug}</span>
-                                    </a>
+                                    {/* Show the short URL or slug as the main label */}
+                                    <p className="font-bold text-slate-900 dark:text-white truncate">{item.url || item.slug || item.full_url}</p>
+                                    {/* Show location_url as the subtitle/destination */}
+                                    <p className="text-xs text-slate-500 truncate">{item.location_url}</p>
+                                    {item.full_url && (
+                                        <a
+                                            href={item.full_url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-xs text-primary mt-1 block truncate"
+                                            title={item.full_url}
+                                        >
+                                            <span className="font-mono">{item.full_url}</span>
+                                        </a>
+                                    )}
                                 </div>
 
                                 <div className="hidden md:flex items-center gap-2">
@@ -264,7 +243,7 @@ export default function ShortenedLinksPage() {
                                         />
                                     </button>
                                     <button
-                                        onClick={() => onCopy(item.slug)}
+                                        onClick={() => onCopy(item.full_url, item.slug)}
                                         className="h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 grid place-items-center"
                                         title="Copy shortened URL"
                                     >
@@ -307,12 +286,6 @@ export default function ShortenedLinksPage() {
                     <div className="w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 space-y-4">
                         <h2 className="text-xl font-black text-slate-900 dark:text-white">Create shortened URL</h2>
                         <input
-                            value={draft.title}
-                            onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
-                            placeholder="Display title"
-                            className="w-full h-11 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
-                        />
-                        <input
                             value={draft.destinationUrl}
                             onChange={(e) => setDraft((prev) => ({ ...prev, destinationUrl: e.target.value }))}
                             placeholder="Destination URL"
@@ -334,6 +307,12 @@ export default function ShortenedLinksPage() {
                             </button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {createdShortUrl && (
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded text-center">
+                    <strong>Short URL:</strong> <a href={createdShortUrl} target="_blank" rel="noopener">{createdShortUrl}</a>
                 </div>
             )}
         </div>
