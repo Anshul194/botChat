@@ -916,7 +916,7 @@ export default function BioLinkBuilder() {
                                         <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+12px)] w-[200px] sm:w-[240px] hidden group-hover:block">
                                             <div className="rounded-[22px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-slate-950 p-2.5 shadow-[0_16px_34px_rgba(0,0,0,0.08)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
                                                 <div className="flex items-start gap-3">
-                                                    <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-slate-900 text-white" : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300")}>
+                                                    <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-primary text-white" : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300")}>
                                                         <p.Icon size={18} />
                                                     </div>
                                                     <div className="min-w-0">
@@ -1012,7 +1012,7 @@ export default function BioLinkBuilder() {
                                                         placeholder="Write a few lines about what you do..." />
                                                 </div>
                                                 <div className="flex justify-end pt-4">
-                                                    <button onClick={() => setView('blocks')} className="h-11 px-8 rounded-xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-slate-800 transition-all">
+                                                    <button onClick={() => setView('blocks')} className="h-11 px-8 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
                                                         Next: Add Content <ArrowRight size={14} />
                                                     </button>
                                                 </div>
@@ -1096,7 +1096,7 @@ export default function BioLinkBuilder() {
                                                             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
                                                             Create Block
                                                         </button>
-                                                        <button onClick={() => setView('visuals')} className="h-16 px-8 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                                                        <button onClick={() => setView('visuals')} className="h-16 px-8 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-primary/25 hover:bg-primary/90 transition-all">
                                                             Next: Style <ArrowRight size={16} />
                                                         </button>
                                                     </div>
@@ -1584,11 +1584,11 @@ export default function BioLinkBuilder() {
             </div>
 
             {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MOBILE SWITCHER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-            <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-slate-950/92 backdrop-blur-xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/10">
-                <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
+            <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-primary backdrop-blur-2xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/20">
+                <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-primary shadow-lg' : 'text-white/60')}>
                     <Edit3 size={16} /> Studio
                 </button>
-                <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
+                <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-white text-primary shadow-lg' : 'text-white/60')}>
                     <Eye size={16} /> Portal
                 </button>
             </div>
