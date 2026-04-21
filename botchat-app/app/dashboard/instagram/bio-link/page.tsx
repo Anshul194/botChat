@@ -904,8 +904,8 @@ export default function BioLinkBuilder() {
             {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ CREATOR WORKSPACE ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
             <div className="relative flex-1 flex overflow-hidden">
 
-                <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[440px] pb-56 sm:pb-60 xl:pb-64", activePanel === "preview" ? "hidden xl:block" : "block")}>
-                    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 xl:pl-4">
+                <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[520px] pb-56 sm:pb-60 xl:pb-64", activePanel === "preview" ? "hidden xl:block" : "block")}>
+                    <div className="max-w-4xl mx-auto px-4 sm:px-10 py-8 xl:pl-8">
 
                         {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ FLOATING STEP GUIDE + BAR ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
                         <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(460px,calc(100%-1rem))] sm:w-[min(560px,calc(100%-1.5rem))] rounded-full border border-slate-200 dark:border-white/10 bg-white/96 dark:bg-slate-900/90 backdrop-blur-2xl px-1 py-1 shadow-[0_16px_34px_rgba(0,0,0,0.05)]">
@@ -1073,7 +1073,7 @@ export default function BioLinkBuilder() {
                                                                         <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize truncate">
                                                                             {block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ")}
                                                                         </p>
-                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{uiType.replace(/_/g, " ")} Ãƒâ€šÃ‚Â· Tap to Edit</p>
+                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{uiType.replace(/_/g, " ")} · Tap to Edit</p>
                                                                     </div>
                                                                     {!isArranging && (
                                                                         <button
@@ -1232,7 +1232,7 @@ export default function BioLinkBuilder() {
                                                                         <textarea value={advancedSettings.seoDescription} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoDescription: e.target.value })}
                                                                             rows={3} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
                                                                             placeholder="Brief description of your page for search results." />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Recommended: 120ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“160 characters.</p>
+                                                                        <p className="text-[11px] text-slate-400 ml-1">Recommended: 120–160 characters.</p>
                                                                     </div>
                                                                     <div className="space-y-1.5">
                                                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Keywords</label>
@@ -1412,7 +1412,7 @@ export default function BioLinkBuilder() {
                                                                                 value={advancedSettings.password}
                                                                                 onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
                                                                                 className="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-red-300 dark:focus:border-red-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
+                                                                                placeholder="••••••••" />
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => setShowPassword(!showPassword)}
