@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 import { usePathname } from "next/navigation";
-import { applyAppearanceVariables, loadSavedAppearance } from "@/lib/appearance";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -38,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }, []);
 
     useEffect(() => {
-        applyAppearanceVariables(loadSavedAppearance());
+        // Theme and appearance are handled by ThemeProvider at the root layout level
     }, []);
 
     return (

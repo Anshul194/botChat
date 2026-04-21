@@ -83,9 +83,9 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
     };
 
     return (
-        <div className="min-h-screen w-full px-6 py-8 bg-white dark:bg-slate-900">
-            <div className="w-full">
-                <div className="w-full rounded-none overflow-hidden shadow-sm bg-white dark:bg-slate-900 p-6 mb-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="min-h-screen w-full px-6 py-8 bg-slate-50 dark:bg-[#020617]">
+            <div className="w-full max-w-7xl mx-auto">
+                <div className="w-full rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-slate-900/50 p-6 mb-6 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl">
                     <div className="flex items-start gap-4">
                         <div className="w-16 h-16 rounded-lg bg-primary grid place-items-center text-white font-black text-lg">FL</div>
                         <div className="flex-1">
@@ -98,7 +98,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                     <button onClick={() => setDraft((prev) => ({ ...prev, active: !prev.active }))} className={toggleClass(draft.active)} title="Toggle active">
                                         <span className={thumbClass(draft.active)} />
                                     </button>
-                                    <Link href="/dashboard/shortened-links" className="inline-flex items-center gap-2 px-3 py-2 bg-white rounded-xl border">
+                                    <Link href="/dashboard/shortened-links" className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm font-bold">
                                         <ArrowLeft size={14} /> Back
                                     </Link>
                                 </div>
@@ -109,14 +109,14 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div className="bg-white dark:bg-slate-900/50 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl">
                         <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Destination URL</label>
                         <input value={draft.destinationUrl} onChange={(e) => setDraft((prev) => ({ ...prev, destinationUrl: e.target.value }))} className="w-full mt-2 h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent text-sm" aria-invalid={!isValidUrl(draft.destinationUrl)} />
 
                         <div className="mt-4">
                             <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Short URL</label>
                                     <div className="mt-2 flex items-center gap-3">
-                                    <div className="flex-1 rounded-lg bg-slate-50 dark:bg-slate-800 px-4 py-3 border border-slate-100 dark:border-slate-800 font-mono text-sm truncate">{shortUrl}</div>
+                                    <div className="flex-1 rounded-lg bg-slate-50 dark:bg-slate-800/80 px-4 py-3 border border-slate-100 dark:border-slate-800/50 font-mono text-sm truncate text-slate-600 dark:text-slate-300">{shortUrl}</div>
                                     <button
                                         onClick={() => {
                                             try {
@@ -137,20 +137,23 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-[220px_1fr] gap-6">
-                        <nav className="space-y-2 p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+                        <nav className="space-y-1.5 p-2 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl h-fit">
                             {SECTION_META.map(({ key, label, icon: Icon }) => (
                                 <button
                                     key={key}
                                     onClick={() => setOpenSection(key)}
                                                 className={cn(
-                                                    "w-full flex items-center gap-3 p-3 rounded-lg text-left",
+                                                    "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all",
                                                     openSection === key
-                                                        ? "bg-primary text-white shadow-sm"
-                                                        : "hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                        ? "bg-primary text-white shadow-md shadow-primary/20 scale-[1.02]"
+                                                        : "hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400"
                                                 )}
                                 >
-                                    <div className="w-10 h-10 rounded-md grid place-items-center bg-slate-50 dark:bg-slate-800 overflow-hidden">
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-lg grid place-items-center overflow-hidden transition-colors",
+                                        openSection === key ? "bg-white/20" : "bg-slate-50 dark:bg-slate-800"
+                                    )}>
                                         <img
                                             src={`/icons/${key}.svg`}
                                             alt={label}
@@ -170,14 +173,14 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         <Icon size={16} />
                                     </div>
                                     <div>
-                                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{label}</div>
-                                        <div className="text-xs text-slate-500">{key === openSection ? "Editing" : ""}</div>
+                                        <div className={cn("text-sm font-bold", openSection === key ? "text-white" : "text-slate-800 dark:text-slate-200")}>{label}</div>
+                                        <div className={cn("text-[10px] uppercase tracking-wider font-bold", openSection === key ? "text-white/60" : "text-slate-400")}>{key === openSection ? "Active" : ""}</div>
                                     </div>
                                 </button>
                             ))}
                         </nav>
 
-                        <div className="form-section">
+                        <div className="bg-white dark:bg-slate-900/50 rounded-2xl p-8 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl shadow-sm">
                             {/* Header */}
                             <div className="flex items-start justify-between mb-4">
                                 <div>
@@ -212,11 +215,11 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             {/* Tab content area */}
                             {openSection === "app" && (
                                 <>
-                                    <div className="card-surface p-4 mb-4">
-                                        <div className="form-label">Supported operating systems</div>
-                                        <div className="mt-2 flex gap-3">
-                                            <span className="px-3 py-1 rounded-lg bg-slate-50">Apple</span>
-                                            <span className="px-3 py-1 rounded-lg bg-slate-50">Android</span>
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
+                                        <div className="form-label text-slate-900 dark:text-slate-100">Supported operating systems</div>
+                                        <div className="mt-3 flex gap-3">
+                                            <span className="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-sm font-bold shadow-sm">Apple</span>
+                                            <span className="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-sm font-bold shadow-sm">Android</span>
                                         </div>
                                         <div className="form-label mt-4">Supported apps</div>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-slate-600 mt-2">
@@ -224,18 +227,18 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                                 "AliExpress","Reddit","YouTube","WhatsApp","Facebook Messenger","Telegram","Apple Music","Pinterest","Netflix","Google Docs","Google Maps","TripAdvisor","StockX",
                                                 "TikTok","X","Instagram","Snapchat","Spotify","LinkedIn","Twitch","Google Sheets","Google Slides","Airbnb","Amazon","Booking.com",
                                             ].map((a) => (
-                                                <div key={a} className="flex items-center gap-2 text-sm">
-                                                    <div className="w-6 h-6 rounded-md bg-slate-50 grid place-items-center text-xs">{a[0]}</div>
-                                                    <span>{a}</span>
+                                                <div key={a} className="flex items-center gap-3 text-sm">
+                                                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 grid place-items-center text-xs font-bold border border-slate-100 dark:border-slate-800 shadow-sm">{a[0]}</div>
+                                                    <span className="text-slate-600 dark:text-slate-400 font-medium">{a}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="card-surface p-3 text-emerald-800 bg-emerald-50">Your destination URL is not matching any of the supported apps for automatic app opening.</div>
+                                    <div className="p-4 rounded-xl text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 text-sm font-medium">Your destination URL is not matching any of the supported apps for automatic app opening.</div>
                                 </>
                             )}
                             {openSection === "pixels" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="flex items-center justify-between">
                                         <div className="form-label">Pixels</div>
                                         <button className="text-sm text-primary">+ Create pixel</button>
@@ -254,7 +257,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             )}
 
                             {openSection === "temporary" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">Schedule & Expiration</div>
                                     <div className="mt-3">
                                         <label className="text-xs text-slate-500">Click limit</label>
@@ -268,7 +271,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             )}
 
                             {openSection === "utm" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">UTM Parameters</div>
                                     <div className="grid sm:grid-cols-3 gap-3 mt-3">
                                         <input value={draft.utmSource} onChange={(e) => setDraft((prev) => ({ ...prev, utmSource: e.target.value }))} placeholder="e.g. newsletter, google" className="input-field" />
@@ -280,7 +283,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             )}
 
                             {openSection === "password" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">Protection</div>
                                     <input value={draft.password} onChange={(e) => setDraft((prev) => ({ ...prev, password: e.target.value }))} placeholder="Optional password" className="input-field mt-3" />
                                     <div className="flex items-center gap-3 mt-3">
@@ -293,7 +296,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             )}
 
                             {openSection === "seo" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">SEO</div>
                                     <label className="flex items-center gap-3 mt-3">
                                         <input type="checkbox" />
@@ -304,7 +307,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             )}
 
                             {openSection === "cloaking" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">Cloaking</div>
                                     <label className="flex items-center gap-3 mt-3">
                                         <input type="checkbox" checked={draft.cloakingEnabled} onChange={() => setDraft((p) => ({ ...p, cloakingEnabled: !p.cloakingEnabled }))} />
@@ -325,12 +328,12 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         </label>
                                     </div>
 
-                                    <textarea value={(draft as any).customJs || ""} onChange={(e) => setDraft((p:any) => ({ ...p, customJs: e.target.value }))} placeholder="<script>...</script>" className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-transparent text-sm mt-3" />
+                                    <textarea value={(draft as any).customJs || ""} onChange={(e) => setDraft((p:any) => ({ ...p, customJs: e.target.value }))} placeholder="<script>...</script>" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent text-sm mt-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all h-32 font-mono" />
                                 </div>
                             )}
 
                             {openSection === "advanced" && (
-                                <div className="card-surface p-4 mb-4">
+                                <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">Advanced</div>
                                     <label className="block mt-3">Project</label>
                                     <select className="input-field mt-2">

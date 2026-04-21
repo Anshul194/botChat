@@ -47,13 +47,14 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
 };
 
 function hexToRgb(hex: string): [number, number, number] {
+    if (!hex || typeof hex !== 'string') return [29, 110, 245];
     const clean = hex.replace("#", "").trim();
     const full = clean.length === 3
         ? clean.split("").map((c) => c + c).join("")
         : clean;
 
     const value = Number.parseInt(full, 16);
-    if (Number.isNaN(value)) return [108, 92, 231];
+    if (Number.isNaN(value)) return [29, 110, 245];
 
     return [
         (value >> 16) & 255,
@@ -150,32 +151,42 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
     root.style.setProperty("--radius", `${Math.max(settings.borderRadius / 16, 0.4)}rem`);
 
     if (settings.darkMode) {
-        root.style.setProperty("--background", "#0b1020");
-        root.style.setProperty("--foreground", "#e8ecff");
-        root.style.setProperty("--card", "#11182b");
-        root.style.setProperty("--card-foreground", "#e8ecff");
-        root.style.setProperty("--popover", "#11182b");
-        root.style.setProperty("--popover-foreground", "#e8ecff");
-        root.style.setProperty("--sidebar", "#0a1124");
-        root.style.setProperty("--sidebar-foreground", "#c6d1ec");
-        root.style.setProperty("--sidebar-border", "rgba(255,255,255,0.07)");
-        root.style.setProperty("--glass-bg", rgba("#11182b", 0.82));
+        root.style.setProperty("--background", "#020617");
+        root.style.setProperty("--foreground", "#e2e8f8");
+        root.style.setProperty("--card", "#080d1a");
+        root.style.setProperty("--card-foreground", "#e2e8f8");
+        root.style.setProperty("--popover", "#080d1a");
+        root.style.setProperty("--popover-foreground", "#e2e8f8");
+        root.style.setProperty("--sidebar", "#050914");
+        root.style.setProperty("--sidebar-foreground", "#6b7fa8");
+        root.style.setProperty("--sidebar-border", "rgba(255,255,255,0.05)");
+        root.style.setProperty("--topbar-bg", "rgba(9, 11, 20, 0.95)");
+        root.style.setProperty("--topbar-border", "rgba(255, 255, 255, 0.05)");
+        root.style.setProperty("--topbar-item-bg", "rgba(255, 255, 255, 0.07)");
+        root.style.setProperty("--topbar-item-border", "rgba(255, 255, 255, 0.09)");
+        root.style.setProperty("--topbar-item-hover", "rgba(255, 255, 255, 0.12)");
+        root.style.setProperty("--glass-bg", rgba("#080911", 0.75));
         root.style.setProperty("--glass-border", "rgba(255,255,255,0.08)");
-        root.style.setProperty("--muted-foreground", "#9aa6c7");
+        root.style.setProperty("--muted-foreground", "#64748b");
         root.classList.add("dark");
         root.classList.remove("light");
     } else {
         root.style.setProperty("--background", "#f8fafc");
-        root.style.setProperty("--foreground", "#111827");
+        root.style.setProperty("--foreground", "#0f172a");
         root.style.setProperty("--card", "#ffffff");
-        root.style.setProperty("--card-foreground", "#111827");
+        root.style.setProperty("--card-foreground", "#0f172a");
         root.style.setProperty("--popover", "#ffffff");
-        root.style.setProperty("--popover-foreground", "#111827");
-        root.style.setProperty("--sidebar", "#ffffff");
-        root.style.setProperty("--sidebar-foreground", "#374151");
-        root.style.setProperty("--sidebar-border", "rgba(15,23,42,0.08)");
+        root.style.setProperty("--popover-foreground", "#0f172a");
+        root.style.setProperty("--sidebar", "#ffffff"); // Consistent with light theme sidebar
+        root.style.setProperty("--sidebar-foreground", "#334155");
+        root.style.setProperty("--sidebar-border", "rgba(0,0,0,0.06)");
+        root.style.setProperty("--topbar-bg", "rgba(255, 255, 255, 0.94)");
+        root.style.setProperty("--topbar-border", "rgba(0, 0, 0, 0.07)");
+        root.style.setProperty("--topbar-item-bg", "rgba(0, 0, 0, 0.05)");
+        root.style.setProperty("--topbar-item-border", "rgba(0, 0, 0, 0.08)");
+        root.style.setProperty("--topbar-item-hover", "rgba(0, 0, 0, 0.09)");
         root.style.setProperty("--glass-bg", "rgba(255,255,255,0.92)");
-        root.style.setProperty("--glass-border", "rgba(15,23,42,0.08)");
+        root.style.setProperty("--glass-border", "rgba(0,0,0,0.07)");
         root.style.setProperty("--muted-foreground", "#64748b");
         root.classList.add("light");
         root.classList.remove("dark");
@@ -197,9 +208,14 @@ export function loadSavedAppearance(): AppearanceSettings {
 export function saveAppearance(settings: AppearanceSettings): void {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(APPEARANCE_STORAGE_KEY, JSON.stringify(settings));
+    previewAppearance(settings);
+}
 
-    // Dispatch to ThemeProvider so it syncs its internal state
-    const newTheme = settings.darkMode ? "dark" : "light";
-    const event = new CustomEvent("botchat-appearance-updated", { detail: newTheme });
+export function previewAppearance(settings: AppearanceSettings): void {
+    if (typeof document === "undefined") return;
+    applyAppearanceVariables(settings);
+    
+    // Dispatch the full settings object to listeners (like ThemeProvider)
+    const event = new CustomEvent("botchat-appearance-updated", { detail: settings });
     window.dispatchEvent(event);
 }

@@ -12,7 +12,6 @@ import {
     Settings, CreditCard, Plus, LogOut, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import theme from "@/lib/theme";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import {
@@ -220,7 +219,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div
                             whileHover={{ rotate: 12, scale: 1.1 }}
                             className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
-                            style={{ background: theme.primary }}
+                            style={{ background: "var(--primary)" }}
                         >
                             <MessageSquare className="w-4 h-4 text-white" />
                         </motion.div>
@@ -606,7 +605,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div
                             whileHover={{ scale: 1.1 }}
                             className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold shadow-sm flex-shrink-0"
-                            style={{ background: theme.primary }}
+                            style={{ background: "var(--primary)" }}
                         >
                             {user?.name?.[0]?.toUpperCase() || "U"}
                         </motion.div>
@@ -657,7 +656,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             onClick={handleLogout}
                             disabled={isLoggingOut}
                             className="flex-1 py-4 rounded-2xl text-white font-black active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
-                            style={{ background: theme.primary, boxShadow: "var(--shadow-card)" }}
+                            style={{ background: "var(--primary)", boxShadow: "var(--shadow-card)" }}
                         >
                             {isLoggingOut ? (
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

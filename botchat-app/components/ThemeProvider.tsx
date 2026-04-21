@@ -21,6 +21,7 @@ export function useTheme() {
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setTheme] = useState<Theme>("dark");
     const [mounted, setMounted] = useState(false);
+    const [activeAppearance, setActiveAppearance] = useState<any>(null);
 
     useEffect(() => {
         // Init theme from appearance if it exists, else botchat-theme
@@ -40,15 +41,47 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         document.documentElement.classList.remove("dark", "light");
         document.documentElement.classList.add(initialTheme);
         localStorage.setItem("botchat-theme", initialTheme);
+        
+        // Initial application of all variables
+        import("@/lib/appearance").then(({ previewAppearance, loadSavedAppearance }) => {
+            const currentApp = loadSavedAppearance();
+            setActiveAppearance(currentApp);
+            previewAppearance(currentApp);
+        });
+        
         setMounted(true);
 
         const syncTheme = (e: any) => {
-            if (e.detail && typeof e.detail === "string") {
-                const incomingTheme = e.detail as Theme;
-                setTheme(incomingTheme);
-                document.documentElement.classList.remove("dark", "light");
-                document.documentElement.classList.add(incomingTheme);
-                localStorage.setItem("botchat-theme", incomingTheme);
+            if (e.detail) {
+                // If the event provides the whole appearance object, use it
+                if (typeof e.detail === "object") {
+                    const settings = e.detail;
+                    setActiveAppearance(settings);
+                    const incomingTheme = settings.darkMode ? "dark" : "light";
+                    setTheme(incomingTheme);
+                    document.documentElement.classList.remove("dark", "light");
+                    document.documentElement.classList.add(incomingTheme);
+                    localStorage.setItem("botchat-theme", incomingTheme);
+                    import("@/lib/appearance").then(({ applyAppearanceVariables }) => {
+                        applyAppearanceVariables(settings);
+                    });
+                } else if (typeof e.detail === "string") {
+                    const incomingTheme = e.detail as Theme;
+                    setTheme(incomingTheme);
+                    document.documentElement.classList.remove("dark", "light");
+                    document.documentElement.classList.add(incomingTheme);
+                    localStorage.setItem("botchat-theme", incomingTheme);
+                    
+                    // Re-apply variables based on the new theme state
+                    setActiveAppearance((prev: any) => {
+                        if (!prev) return prev;
+                        const updated = { ...prev, darkMode: incomingTheme === "dark" };
+                        import("@/lib/appearance").then(({ applyAppearanceVariables }) => {
+                            applyAppearanceVariables(updated);
+                        });
+                        return updated;
+                    });
+                }
             }
         };
 
@@ -63,19 +96,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         document.documentElement.classList.add(next);
         localStorage.setItem("botchat-theme", next);
         
-        // Re-read and apply appearance variables
-        const rawApp = localStorage.getItem("botchat.appearance");
-        if (rawApp) {
-            try {
-                const parsed = JSON.parse(rawApp);
-                parsed.darkMode = next === "dark";
-                localStorage.setItem("botchat.appearance", JSON.stringify(parsed));
-                
-                // Dynamically import to avoid circular dependency loops if any
-                import("@/lib/appearance").then(({ applyAppearanceVariables }) => {
-                    applyAppearanceVariables(parsed);
-                });
-            } catch(e) {}
+        // Update the current active appearance by merging the new mode
+        if (activeAppearance) {
+            const updated = { ...activeAppearance, darkMode: next === "dark" };
+            setActiveAppearance(updated);
+            localStorage.setItem("botchat.appearance", JSON.stringify(updated));
+            import("@/lib/appearance").then(({ applyAppearanceVariables, previewAppearance }) => {
+                applyAppearanceVariables(updated);
+                // Also dispatch for any other listeners (like Settings page)
+                const event = new CustomEvent("botchat-appearance-updated", { detail: updated });
+                window.dispatchEvent(event);
+            });
         }
     }
 

@@ -31,9 +31,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             <Sun
                 className="absolute left-1.5 w-3.5 h-3.5 transition-all duration-300"
                 style={{
-                    color: isDark ? "rgba(56,178,255,0.4)" : "#1e5fd4",
-                    opacity: isDark ? 0.5 : 0.9,
-                    transform: isDark ? "rotate(0deg)" : "rotate(20deg)",
+                    color: isDark ? "rgba(255,255,255,0.2)" : "#1e5fd4",
+                    opacity: isDark ? 0.3 : 1,
+                    transform: isDark ? "rotate(-20deg)" : "rotate(0deg)",
                 }}
             />
 
@@ -41,29 +41,28 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             <Moon
                 className="absolute right-1.5 w-3.5 h-3.5 transition-all duration-300"
                 style={{
-                    color: isDark ? "#5b9bff" : "rgba(30,95,212,0.3)",
-                    opacity: isDark ? 0.8 : 0.3,
+                    color: isDark ? "#fff" : "rgba(30,95,212,0.2)",
+                    opacity: isDark ? 1 : 0.3,
                 }}
             />
 
             {/* Sliding thumb */}
             <span
-                className="absolute w-[22px] h-[22px] rounded-full flex items-center justify-center shadow-md"
+                className="absolute w-[22px] h-[22px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ease-[cubic-bezier(.4,0,.2,1)]"
                 style={{
-                    left: isDark ? "2px" : "calc(100% - 24px)",
+                    left: isDark ? "calc(100% - 24px)" : "2px",
                     background: isDark
                         ? "linear-gradient(135deg, #1d6ef5, #38b2ff)"
-                        : "linear-gradient(135deg, #1e5fd4, #4580e8)",
+                        : "linear-gradient(135deg, #ffffff, #eff2ff)",
                     boxShadow: isDark
                         ? "0 2px 10px rgba(29,110,245,0.70)"
-                        : "0 2px 10px rgba(30,95,212,0.50)",
-                    transition: "left 0.35s cubic-bezier(.4,0,.2,1), background 0.35s ease, box-shadow 0.35s ease",
+                        : "0 2px 10px rgba(0,0,0,0.15)",
                 }}
             >
                 {isDark ? (
                     <Moon className="w-3 h-3 text-white" />
                 ) : (
-                    <Sun className="w-3 h-3 text-white" />
+                    <Sun className="w-3 h-3 text-[#1e5fd4]" />
                 )}
             </span>
         </button>

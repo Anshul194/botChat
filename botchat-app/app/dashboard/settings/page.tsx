@@ -20,13 +20,15 @@ import {
     User, Bell, Shield, Key, Database, Save,
     Eye, EyeOff, Plus, Trash2, Copy, Check,
     Globe, Palette, UploadCloud, AlertCircle, Link2,
-    Mail, Smartphone, Facebook, Sparkles, CreditCard, MessageSquare, Zap
+    Mail, Smartphone, Facebook, Sparkles, CreditCard, MessageSquare, Zap, Sun, Moon
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
     DEFAULT_APPEARANCE,
     applyAppearanceVariables,
     loadSavedAppearance,
     saveAppearance,
+    previewAppearance,
 } from "@/lib/appearance";
 
 const navigationGroups = [
@@ -629,13 +631,33 @@ export default function SettingsPage() {
         const saved = loadSavedAppearance();
         setAppearance(saved);
         setAppearancePreview(saved);
-        applyAppearanceVariables(saved);
+        previewAppearance(saved);
     }, []);
 
     useEffect(() => {
         setAppearancePreview(appearance);
-        applyAppearanceVariables(appearance);
+        previewAppearance(appearance);
     }, [appearance]);
+
+    // Handle external updates (like Topbar theme toggle)
+    useEffect(() => {
+        const handleExternalUpdate = (e: any) => {
+            if (e.detail && typeof e.detail === "object") {
+                // Prevent infinite loops by checking if it's actually different
+                const incoming = e.detail;
+                setAppearance(prev => {
+                    if (JSON.stringify(prev) === JSON.stringify(incoming)) return prev;
+                    return incoming;
+                });
+                setAppearancePreview(prev => {
+                    if (JSON.stringify(prev) === JSON.stringify(incoming)) return prev;
+                    return incoming;
+                });
+            }
+        };
+        window.addEventListener("botchat-appearance-updated", handleExternalUpdate);
+        return () => window.removeEventListener("botchat-appearance-updated", handleExternalUpdate);
+    }, []);
 
     const AppearanceTab = (
         <div className="space-y-8 slide-up">
@@ -652,16 +674,30 @@ export default function SettingsPage() {
                         </div>
                     ))}
                 </div>
-                <div className="mb-4">
-                    <label className="text-xs font-semibold mb-1 block">Mode</label>
-                    <select
-                        value={appearance.darkMode ? "dark" : "light"}
-                        onChange={(e) => setAppearance({ ...appearance, darkMode: e.target.value === "dark" })}
-                        className="px-2 py-1 rounded border text-xs"
-                    >
-                        <option value="light">Light (White)</option>
-                        <option value="dark">Dark (Black)</option>
-                    </select>
+                <div className="mb-6">
+                    <label className="text-xs font-semibold mb-3 block" style={{ color: "var(--foreground)" }}>Dashboard Mode</label>
+                    <div className="flex bg-[var(--glass-bg)] border border-[var(--glass-border)] p-1 rounded-2xl w-fit gap-1">
+                        <button
+                            type="button"
+                            onClick={() => setAppearance({ ...appearance, darkMode: false })}
+                            className={cn(
+                                "flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300",
+                                !appearance.darkMode ? "bg-white dark:bg-slate-800 shadow-lg scale-[1.02] text-amber-500" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                            )}
+                        >
+                            <Sun className="w-4 h-4" /> Light
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setAppearance({ ...appearance, darkMode: true })}
+                            className={cn(
+                                "flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300",
+                                appearance.darkMode ? "bg-white dark:bg-slate-800 shadow-lg scale-[1.02] text-indigo-400" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                            )}
+                        >
+                            <Moon className="w-4 h-4" /> Dark
+                        </button>
+                    </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {creatorPresets.map((preset) => (

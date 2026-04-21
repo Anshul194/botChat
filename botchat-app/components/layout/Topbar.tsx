@@ -93,10 +93,10 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
         <header
             className="h-[60px] flex items-center px-4 gap-3 flex-shrink-0 relative z-[100]"
             style={{
-                background: isLight ? "rgba(255,255,255,0.94)" : "rgba(9,11,20,0.95)",
+                background: "var(--topbar-bg)",
                 backdropFilter: "blur(24px)",
                 WebkitBackdropFilter: "blur(24px)",
-                borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.06)"}`,
+                borderBottom: "1px solid var(--topbar-border)",
             }}
         >
             {/* Top gradient accent */}
@@ -108,8 +108,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                 onClick={onMenuToggle}
                 className="md:hidden w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
                 style={{
-                    background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)",
-                    border: `1px solid ${isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.09)"}`,
+                    background: "var(--topbar-item-bg)",
+                    border: "1px solid var(--topbar-item-border)",
                     color: "var(--muted-foreground)",
                 }}
                 title="Toggle menu"
@@ -124,8 +124,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                 onClick={onToggleSidebar}
                 className="hidden md:flex w-9 h-9 items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
                 style={{
-                    background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)",
-                    border: `1px solid ${isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.09)"}`,
+                    background: "var(--topbar-item-bg)",
+                    border: "1px solid var(--topbar-item-border)",
                     color: "var(--muted-foreground)",
                 }}
                 title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -137,7 +137,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
             {/* Separator */}
             <div className="w-px h-5 flex-shrink-0"
-                style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
+                style={{ background: "var(--topbar-item-border)" }} />
 
             {/* ── Breadcrumb — page name visible on mobile too ── */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -154,15 +154,15 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
             <div className="hidden sm:flex flex-1 max-w-[460px]">
                 <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-full cursor-pointer group transition-all duration-200"
                     style={{
-                        background: isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.05)",
-                        border: `1.5px solid ${isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.07)"}`,
+                        background: "var(--topbar-item-bg)",
+                        border: "1.5px solid var(--topbar-item-border)",
                     }}
                     onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = "rgba(108,92,231,0.45)";
+                        e.currentTarget.style.borderColor = "var(--nav-active-color)";
                         e.currentTarget.style.boxShadow = "0 0 0 3px rgba(108,92,231,0.08)";
                     }}
                     onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.07)";
+                        e.currentTarget.style.borderColor = "var(--topbar-item-border)";
                         e.currentTarget.style.boxShadow = "none";
                     }}
                 >
@@ -360,10 +360,10 @@ function TopBtn({ children, title, onClick, active, isLight }: {
             className="relative w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-110"
             style={{
                 color: active ? "var(--foreground)" : "var(--muted-foreground)",
-                background: active ? (isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.09)") : "transparent",
+                background: active ? "var(--topbar-item-hover)" : "transparent",
             }}
             onMouseEnter={e => {
-                e.currentTarget.style.background = isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.08)";
+                e.currentTarget.style.background = "var(--topbar-item-bg)";
                 e.currentTarget.style.color = "var(--foreground)";
             }}
             onMouseLeave={e => {

@@ -317,10 +317,10 @@ export function isColorLight(color: string): boolean {
 export function isBgLight(bg: string): boolean {
     if (!bg) return false;
 
-    // Collect all hex colors in the string
-    const hexMatches = bg.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g) || [];
-    // Collect all rgb/rgba colors
-    const rgbMatches = bg.match(/rgba?\(\d+,\s*\d+,\s*\d+/g) || [];
+    // Collect all hex colors (3 or 6 chars)
+    const hexMatches = bg.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g) || [];
+    // Collect all rgb/rgba colors including capturing numbers
+    const rgbMatches = bg.match(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+/g) || [];
 
     const allColors = [
         ...hexMatches,
@@ -329,35 +329,38 @@ export function isBgLight(bg: string): boolean {
 
     if (allColors.length === 0) return false;
 
-    // Find the maximum luminance among all colors
     let maxLuminance = 0;
     for (const color of allColors) {
-        const isLight = isColorLight(color);
-        // Also compute exact luminance to find the brightest
-        let r: number | undefined, g_: number | undefined, b: number | undefined;
+        let r: number | undefined, g: number | undefined, b: number | undefined;
+        
         if (color.startsWith('#')) {
-            const c = color.replace('#', '');
-            if (c.length === 3) {
-                r = parseInt(c[0] + c[0], 16);
-                g_ = parseInt(c[1] + c[1], 16);
-                b = parseInt(c[2] + c[2], 16);
-            } else {
-                r = parseInt(c.substring(0, 2), 16);
-                g_ = parseInt(c.substring(2, 4), 16);
-                b = parseInt(c.substring(4, 6), 16);
+            const hex = color.replace('#', '');
+            if (hex.length === 3) {
+                r = parseInt(hex[0] + hex[0], 16);
+                g = parseInt(hex[1] + hex[1], 16);
+                b = parseInt(hex[2] + hex[2], 16);
+            } else if (hex.length === 6) {
+                r = parseInt(hex.substring(0, 2), 16);
+                g = parseInt(hex.substring(2, 4), 16);
+                b = parseInt(hex.substring(4, 6), 16);
             }
-        } else if (color.startsWith('rgb')) {
-            const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-            if (match) { r = parseInt(match[1]); g_ = parseInt(match[2]); b = parseInt(match[3]); }
+        } else if (color.toLowerCase().startsWith('rgb')) {
+            const m = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+            if (m) {
+                r = parseInt(m[1]);
+                g = parseInt(m[2]);
+                b = parseInt(m[3]);
+            }
         }
-        if (r !== undefined && g_ !== undefined && b !== undefined) {
-            const lum = r * 0.299 + g_ * 0.587 + b * 0.114;
+
+        if (r !== undefined && g !== undefined && b !== undefined) {
+            const lum = (r * 0.299 + g * 0.587 + b * 0.114);
             if (lum > maxLuminance) maxLuminance = lum;
         }
     }
 
-    // Light if the brightest stop exceeds threshold
-    return maxLuminance > 186;
+    // Return true if the brightest color in the gradient is "light"
+    return maxLuminance > 180; // Slightly lower threshold for safer black-text switching
 }
 
 /** @deprecated Use isBgLight instead */

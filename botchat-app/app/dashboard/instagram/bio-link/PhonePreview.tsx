@@ -140,12 +140,23 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, v
         // ── Auto Contrast Logic for buttons ──
         // If template bg is bright, always force dark text (ignore saved light text_color)
         const finalBg = baseStyle.background || theme.btnStyle?.background;
+        const blockBgIsLight = finalBg && typeof finalBg === "string" ? isColorLight(finalBg) : true;
+
         if (themeBgIsLight) {
             // Template is bright — force dark text regardless of saved color
             baseStyle.color = "#000000";
         } else if (settings.text_color && settings.text_color !== "#020617" && settings.text_color !== "inherit") {
-            baseStyle.color = settings.text_color;
-        } else if (finalBg && typeof finalBg === "string" && isColorLight(finalBg)) {
+            // User saved a color — check if it's readable against the block background
+            if (!blockBgIsLight && (settings.text_color === "#000000" || settings.text_color === "#020617")) {
+                baseStyle.color = "#ffffff"; // Force white on dark bg if saved color is black
+            } else {
+                baseStyle.color = settings.text_color;
+            }
+        } else if (!blockBgIsLight) {
+            // Dark button background — force light text
+            baseStyle.color = "#ffffff";
+        } else if (blockBgIsLight) {
+            // Light button background — force dark text
             baseStyle.color = "#000000";
         }
         if (settings.border_radius === "straight") baseStyle.borderRadius = "0px";
