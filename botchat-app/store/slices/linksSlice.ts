@@ -49,7 +49,7 @@ export const fetchLinks = createAsyncThunk(
 
 export const createLink = createAsyncThunk(
     'links/createLink',
-    async (data: Partial<Link>, { rejectWithValue }) => {
+    async (data: any, { rejectWithValue }) => {
         try {
             const response = await api.post('/links', data);
             if (response.data) {
@@ -58,6 +58,18 @@ export const createLink = createAsyncThunk(
             return rejectWithValue('Failed to create link');
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create link');
+        }
+    }
+);
+
+export const deleteLink = createAsyncThunk(
+    'links/deleteLink',
+    async (linkId: number | string, { rejectWithValue }) => {
+        try {
+            await api.delete(`/links/${linkId}`);
+            return linkId;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete link');
         }
     }
 );
@@ -146,6 +158,10 @@ const linksSlice = createSlice({
             .addCase(updateLink.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(deleteLink.fulfilled, (state, action) => {
+                state.links = state.links.filter(l => (l.link_id || (l as any).id) !== action.payload);
+                state.total -= 1;
             });
     },
 });

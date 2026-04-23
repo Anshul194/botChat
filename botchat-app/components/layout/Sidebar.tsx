@@ -9,7 +9,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
     ChevronDown, ChevronRight, LayoutDashboard, Inbox, Zap, GitBranch,
     Instagram, Facebook, MessageSquare, BarChart3, Users, Target, Link2,
-    Settings, CreditCard, Plus, LogOut, Layers,
+    Settings, CreditCard, Plus, LogOut, Layers, Contact
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -35,6 +35,7 @@ const growthNav = [
     { label: "Contacts", icon: Users, href: "/dashboard/contacts" },
     { label: "Campaigns", icon: Target, href: "/dashboard/campaigns" },
     { label: "Shortened Links", icon: Link2, href: "/dashboard/shortened-links" },
+    { label: "Vcard Links", icon: Contact, href: "/dashboard/vcard-links" },
     { label: "AI Training", icon: MessageSquare, href: "/dashboard/ai-training", badge: "New" },
 ];
 

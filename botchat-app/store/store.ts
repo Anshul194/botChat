@@ -8,6 +8,7 @@ import modulesReducer from './slices/modulesSlice';
 import aiTrainingReducer from './slices/aiTrainingSlice';
 import bioReducer from './slices/bioSlice';
 import linksReducer from './slices/linksSlice';
+import vcardsReducer from './slices/vcardsSlice';
 
 export const store = configureStore({
     reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
         aiTraining: aiTrainingReducer,
         bio: bioReducer,
         links: linksReducer,
+        vcards: vcardsReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 
