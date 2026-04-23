@@ -4,7 +4,9 @@ export type LinkDraft = {
     appLinking: boolean;
     pixelsEnabled: boolean;
     temporaryEnabled: boolean;
-    temporaryUntil: string;
+    temporaryStart?: string;
+    temporaryEnd?: string;
+    temporaryUntil: string; // Keep for backwards compatibility if needed
     utmSource: string;
     utmMedium: string;
     utmCampaign: string;
@@ -13,6 +15,20 @@ export type LinkDraft = {
     cloakingEnabled: boolean;
     advancedNotes: string;
     active: boolean;
+    targetingType?: string;
+    targeting?: { key: string; value: string }[];
+    expirationUrl?: string;
+    clicksLimit?: string | number;
+    cloakedTitle?: string;
+    cloakedMeta?: string;
+    customJs?: string;
+    cloaking_title?: string;
+    cloaking_meta_description?: string;
+    cloaking_favicon?: any;
+    cloaking_opengraph?: any;
+    cloaking_custom_js?: string;
+    http_status_code?: number | string;
+    splash_page_id?: number | string;
 };
 
 export const SEEDED: Record<string, LinkDraft> = {

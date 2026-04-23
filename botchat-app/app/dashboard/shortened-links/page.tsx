@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchLinks, createLink } from "@/store/slices/linksSlice";
+import { fetchLinks, createLink, fetchLinkById } from "@/store/slices/linksSlice";
 import { useRouter } from "next/navigation";
 import {
     CirclePlus,
@@ -257,7 +257,10 @@ export default function ShortenedLinksPage() {
                                         <List size={13} />
                                     </button>
                                     <button
-                                        onClick={() => router.push(`/dashboard/shortened-links/${item.slug}`)}
+                                        onClick={() => {
+                                            dispatch(fetchLinkById(item.id));
+                                            router.push(`/dashboard/shortened-links/${item.slug}`);
+                                        }}
                                         className="h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 grid place-items-center"
                                         title="Edit"
                                     >

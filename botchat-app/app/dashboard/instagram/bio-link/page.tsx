@@ -38,7 +38,7 @@ export interface BioProfile {
 }
 export interface BioTab { id: number; title: string; is_active: number; sections: BioSection[]; }
 interface BioSection { id: number; tab_id: number; title: string; type: string; is_active: number; blocks: BioBlock[]; }
-interface BioBlock { id: number; section_id: number; type: string; is_active: number; items: any[]; }
+interface BioBlock { id: number; section_id: number; type: string; is_active: number; items: any[]; location_url?: string; settings?: any; }
 
 type PhaseIconType = React.ComponentType<{ size?: number; className?: string }>;
 
@@ -310,12 +310,12 @@ export default function BioLinkBuilder() {
                 }));
 
                 // Ensure we have a tab/section structure to show blocks in panel/canvas
-                const activeTabs = payload.tabs?.length > 0 ? payload.tabs : [{ id: 1, title: "Main", sections: [{ id: 1, title: "Standard", blocks: [] }] }];
+                const activeTabs = payload.tabs?.length > 0 ? payload.tabs : [{ id: 1, title: "Main", is_active: 1, sections: [{ id: 1, tab_id: 1, title: "Standard", type: "standard", is_active: 1, blocks: [] }] }];
 
                 const finalTabs = activeTabs.map((tab: any, idx: number) => {
                     // For now, if it's the first tab, inject the fetched blocks into the first section
                     if (idx === 0) {
-                        const sections = tab.sections?.length > 0 ? tab.sections : [{ id: 1, title: "Standard", blocks: [] }];
+                        const sections = tab.sections?.length > 0 ? tab.sections : [{ id: 1, tab_id: tab.id, title: "Standard", type: "standard", is_active: 1, blocks: [] }];
                         sections[0].blocks = mappedBlocks;
                         return { ...tab, sections };
                     }
@@ -539,7 +539,7 @@ export default function BioLinkBuilder() {
             // Sync the refreshed blocks into the tabs state
             setTabs(prev => prev.map((tab, idx) => {
                 if (idx === 0) {
-                    const sections = tab.sections?.length > 0 ? tab.sections : [{ id: 1, title: "Standard", blocks: [] }];
+                    const sections = tab.sections?.length > 0 ? tab.sections : [{ id: 1, tab_id: tab.id, title: "Standard", type: "standard", is_active: 1, blocks: [] }];
                     sections[0].blocks = refreshedBlocks;
                     return { ...tab, sections };
                 }
@@ -581,7 +581,7 @@ export default function BioLinkBuilder() {
         if (uiType === "socials") {
             if (Array.isArray(settings.socials)) { settings.socials = {}; }
             if (settings.socials && typeof settings.socials === "object") {
-                const px = { facebook: "facebook.com/", instagram: "instagram.com/", twitter: "x.com/", youtube: "youtube.com/", tiktok: "tiktok.com/@", linkedin: "linkedin.com/", discord: "discord.gg/", telegram: "t.me/" };
+                const px: Record<string, string> = { facebook: "facebook.com/", instagram: "instagram.com/", twitter: "x.com/", youtube: "youtube.com/", tiktok: "tiktok.com/@", linkedin: "linkedin.com/", discord: "discord.gg/", telegram: "t.me/" };
                 Object.entries(settings.socials).forEach(([k, v]) => {
                     if (typeof v === "string" && px[k]) {
                         let cln = v.replace(/^https?:\/\/(www\.)?/, "");
@@ -675,12 +675,12 @@ export default function BioLinkBuilder() {
         delete cleanSettings.location_url; // location_url goes at top level
 
         if (uiType === "socials" && cleanSettings.socials && typeof cleanSettings.socials === "object") {
-            const prefixes = {
+            const prefixes: Record<string, string> = {
                 facebook: "https://facebook.com/", instagram: "https://instagram.com/", twitter: "https://x.com/",
                 youtube: "https://youtube.com/", tiktok: "https://tiktok.com/@", linkedin: "https://linkedin.com/",
                 discord: "https://discord.gg/", telegram: "https://t.me/",
             };
-            const rebuiltSocials = {};
+            const rebuiltSocials: Record<string, string> = {};
             Object.entries(cleanSettings.socials).forEach(([key, val]) => {
                 if (typeof val === "string" && val.trim() !== "") {
                     if (val.startsWith("http") || !prefixes[key]) {

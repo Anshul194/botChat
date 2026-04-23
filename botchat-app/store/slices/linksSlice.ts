@@ -21,6 +21,7 @@ interface LinksState {
     total: number;
     isLoading: boolean;
     error: string | null;
+    currentLink: Link | null;
 }
 
 const initialState: LinksState = {
@@ -28,6 +29,7 @@ const initialState: LinksState = {
     total: 0,
     isLoading: false,
     error: null,
+    currentLink: null,
 };
 
 export const fetchLinks = createAsyncThunk(
@@ -60,6 +62,36 @@ export const createLink = createAsyncThunk(
     }
 );
 
+export const fetchLinkById = createAsyncThunk(
+    'links/fetchLinkById',
+    async (linkId: number | string, { rejectWithValue }) => {
+        try {
+            const response = await api.get(`/links/${linkId}`);
+            if (response.data) {
+                return response.data;
+            }
+            return rejectWithValue('Failed to fetch link details');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch link details');
+        }
+    }
+);
+
+export const updateLink = createAsyncThunk(
+    'links/updateLink',
+    async ({ linkId, data }: { linkId: number | string; data: any }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/links/${linkId}`, data);
+            if (response.data) {
+                return response.data;
+            }
+            return rejectWithValue('Failed to update link');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to update link');
+        }
+    }
+);
+
 const linksSlice = createSlice({
     name: 'links',
     initialState,
@@ -84,6 +116,35 @@ const linksSlice = createSlice({
                 state.total += 1;
             })
             .addCase(createLink.rejected, (state, action) => {
+                state.error = action.payload as string;
+            })
+            .addCase(fetchLinkById.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+                state.currentLink = null;
+            })
+            .addCase(fetchLinkById.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.currentLink = action.payload.data;
+            })
+            .addCase(fetchLinkById.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updateLink.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updateLink.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.currentLink = action.payload.data;
+                const index = state.links.findIndex(l => l.link_id === action.payload.data.link_id || l.id === action.payload.data.id);
+                if (index !== -1) {
+                    state.links[index] = action.payload.data;
+                }
+            })
+            .addCase(updateLink.rejected, (state, action) => {
+                state.isLoading = false;
                 state.error = action.payload as string;
             });
     },
