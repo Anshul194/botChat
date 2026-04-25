@@ -1028,7 +1028,23 @@ export default function BioLinkBuilder() {
                                                 <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">Content Area</p>
                                                 <p className="text-sm font-semibold text-slate-900 dark:text-white">Blocks</p>
                                             </div>
-                                            <span className="text-xs text-slate-500">{visibleBlocks.length} items</span>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+                                                    <button 
+                                                        onClick={() => setProfile(prev => prev ? { ...prev, settings: { ...(prev.settings || {}), layoutStyle: "standard" } } : prev)}
+                                                        className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-all", (!profile?.settings?.layoutStyle || profile?.settings?.layoutStyle === "standard") ? "bg-white dark:bg-slate-700 shadow text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700")}
+                                                    >
+                                                        Standard
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setProfile(prev => prev ? { ...prev, settings: { ...(prev.settings || {}), layoutStyle: "portfolio" } } : prev)}
+                                                        className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-all", profile?.settings?.layoutStyle === "portfolio" ? "bg-white dark:bg-slate-700 shadow text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700")}
+                                                    >
+                                                        Portfolio
+                                                    </button>
+                                                </div>
+                                                <span className="text-xs text-slate-500 hidden sm:block ml-2">{visibleBlocks.length} items</span>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-6">
@@ -1577,7 +1593,7 @@ export default function BioLinkBuilder() {
 
                         <div className="relative z-10 w-full h-full flex items-center justify-center">
                             <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId}
-                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={180} previewWidth={340} uiTypeOverrides={uiTypeOverrides} />
+                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={180} previewWidth={340} uiTypeOverrides={uiTypeOverrides} layoutStyle={profile?.settings?.layoutStyle || "standard"} />
                         </div>
                     </div>
                 </aside>
