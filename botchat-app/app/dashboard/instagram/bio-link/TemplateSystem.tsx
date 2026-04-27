@@ -1054,6 +1054,51 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
         <div className="space-y-6">
             <ThemeAnimationStyles />
 
+            {/* ── Layout Style Selector ── */}
+            <div className="mb-8">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-4 block">Layout Structure</label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                        { id: 'standard', name: 'Standard', desc: 'Classic Bio-Link list', icon: <Layers size={18} /> },
+                        { id: 'portfolio', name: 'Portfolio', desc: 'Continuous Template', icon: <Grid size={18} /> },
+                        { id: 'ugc', name: 'UGC Creator', desc: 'Elegant & Aesthetic', icon: <Sparkles size={18} /> },
+                        { id: 'olivia', name: 'Olivia Warren', desc: 'Sage Green organic', icon: <Palette size={18} /> },
+                        { id: 'universal', name: 'Universal Pro', desc: 'Modern & High-End', icon: <Zap size={18} /> },
+                    ].map((layout) => (
+                        <button
+                            key={layout.id}
+                            onClick={() => {
+                                const newSettings = { ...(profile.settings || {}), layoutStyle: layout.id };
+                                updateProfile({ settings: newSettings });
+                            }}
+                            className={cn(
+                                "flex flex-col p-4 rounded-2xl border-2 transition-all text-left group relative overflow-hidden",
+                                (profile.settings?.layoutStyle || 'standard') === layout.id
+                                    ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-xl shadow-primary/10"
+                                    : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-md"
+                            )}
+                        >
+                            <div className={cn(
+                                "w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors",
+                                (profile.settings?.layoutStyle || 'standard') === layout.id ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:text-primary group-hover:bg-primary/10"
+                            )}>
+                                {layout.icon}
+                            </div>
+                            <p className={cn("text-xs font-black uppercase tracking-widest", (profile.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
+                                {layout.name}
+                            </p>
+                            <p className="text-[10px] font-medium text-slate-400 mt-1">{layout.desc}</p>
+                            
+                            {(profile.settings?.layoutStyle || 'standard') === layout.id && (
+                                <div className="absolute top-2 right-2">
+                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                </div>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {/* ── Category Pills ── */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                 {NICHE_CATEGORIES.map(cat => (
