@@ -33,16 +33,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCtaTypes, fetchAutoReplyTemplates } from '@/store/slices/socialPostingSlice';
 import type { AppDispatch, RootState } from '@/store/store';
-
 interface ComposerProps {
   onContentChange: (val: string) => void;
   onMediaChange: (val: string[]) => void;
   type: string | null;
   onPublish: (data: any) => void;
   isPublishing: boolean;
+  accounts: any[];
+  selectedParentAccounts: string[];
 }
 
-export function Composer({ onContentChange, onMediaChange, type, onPublish, isPublishing }: ComposerProps) {
+export function Composer({ 
+  onContentChange, 
+  onMediaChange, 
+  type, 
+  onPublish, 
+  isPublishing,
+  accounts = [],
+  selectedParentAccounts = []
+}: ComposerProps) {
   const [campaignName, setCampaignName] = useState('');
   const [caption, setCaption] = useState('');
   const [media, setMedia] = useState<string[]>([]);
@@ -61,6 +70,8 @@ export function Composer({ onContentChange, onMediaChange, type, onPublish, isPu
   const [timeZone, setTimeZone] = useState('UTC');
   const [repeatTimes, setRepeatTimes] = useState('0');
   const [timeInterval, setTimeInterval] = useState('0');
+  const [selectedPageId, setSelectedPageId] = useState<string>('');
+  const filteredPages = accounts.filter(a => selectedParentAccounts.includes(a.accountId));
 
   const dispatch = useDispatch<AppDispatch>();
   const { ctaTypes, autoReplyTemplates } = useSelector((state: RootState) => state.socialPosting);
@@ -109,7 +120,8 @@ export function Composer({ onContentChange, onMediaChange, type, onPublish, isPu
         autoReplyTemplate,
         timeZone,
         repeatTimes,
-        timeInterval
+        timeInterval,
+        selectedPageId
     });
   };
 
@@ -129,6 +141,32 @@ export function Composer({ onContentChange, onMediaChange, type, onPublish, isPu
         </div>
 
         <div className="space-y-6">
+          <div className="space-y-2">
+            <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Select Page to Post</Label>
+            <Select value={selectedPageId} onValueChange={setSelectedPageId}>
+              <SelectTrigger className="bg-[var(--background)] border-[var(--border)] h-11 rounded-xl shadow-sm">
+                <SelectValue placeholder={selectedParentAccounts.length === 0 ? "Select account in top header first" : "Select a page to post"} />
+              </SelectTrigger>
+              <SelectContent position="popper" sideOffset={4} className="rounded-xl border-[var(--border)] bg-[var(--card)] shadow-2xl z-[100]">
+                {filteredPages.length > 0 ? filteredPages.map(page => (
+                  <SelectItem key={page.id} value={String(page.id)} className="rounded-lg py-2.5">
+                    <div className="flex items-center gap-2">
+                      <img src={page.image} className="w-5 h-5 rounded-full object-cover" alt="" />
+                      <div className="flex flex-col">
+                        <span className="font-bold text-xs">{page.name}</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)]">{page.accountName}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                )) : (
+                  <div className="p-4 text-center text-xs text-[var(--muted-foreground)]">
+                    {selectedParentAccounts.length === 0 ? "Please select an account from the top bar" : "No pages found for selected account"}
+                  </div>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Campaign name</Label>
             <Input 

@@ -171,13 +171,21 @@ export default function PostStudioPage() {
       if (postType === 'carousel') {
         finalSelectedPages = composerData.selectedPages;
       } else if (postType === 'cta') {
-        // For CTA, we take all pages belonging to the selected parent accounts
-        finalSelectedPages = accounts
-          .filter(a => selectedParentAccounts.includes(a.accountId))
-          .map(a => ({
-            id: a.id,
-            platform_id: String(a.platformId)
-          }));
+        // If a specific page is selected in the composer, use it. Otherwise use all pages of parent accounts.
+        if (composerData.selectedPageId) {
+          const acc = accounts.find(a => String(a.id) === String(composerData.selectedPageId));
+          finalSelectedPages = [{
+            id: acc?.id || composerData.selectedPageId,
+            platform_id: String(acc?.platformId || composerData.selectedPageId)
+          }];
+        } else {
+          finalSelectedPages = accounts
+            .filter(a => selectedParentAccounts.includes(a.accountId))
+            .map(a => ({
+              id: a.id,
+              platform_id: String(a.platformId)
+            }));
+        }
       } else {
         finalSelectedPages = selectedAccounts.map(id => {
           const acc = accounts.find(a => a.id === id);
@@ -203,7 +211,7 @@ export default function PostStudioPage() {
           schedule_type: composerData.isScheduling ? 'later' : 'now',
           selected_pages: finalSelectedPages,
           repeat_times: parseInt(composerData.repeatTimes) || 0,
-          time_interval: parseInt(composerData.timeInterval) || 0,
+          time_interval: parseInt(composerData.timeInterval) || null,
           auto_reply_template: composerData.autoReplyTemplate,
           timezone: composerData.timeZone
         };
@@ -510,6 +518,8 @@ export default function PostStudioPage() {
                 type={postType}
                 onPublish={handlePublish}
                 isPublishing={isPublishing}
+                accounts={accounts}
+                selectedParentAccounts={selectedParentAccounts}
               />
             )}
           </section>
