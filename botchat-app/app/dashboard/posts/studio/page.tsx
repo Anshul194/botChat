@@ -130,7 +130,7 @@ export default function PostStudioPage() {
         accountId: a.id,
         type: 'instagram',
         image: a.profile_picture_url || `https://api.dicebear.com/7.x/initials/svg?seed=${a.username}`,
-        platformId: a.id
+        platformId: String(a.instagram_id || a.id)
       }));
 
       setAccounts([...normalizedFb, ...normalizedIg]);
