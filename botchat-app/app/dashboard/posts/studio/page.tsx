@@ -25,7 +25,12 @@ import {
   Instagram,
   Plus,
   Clock,
-  Search
+  Search,
+  Grid,
+  Layout,
+  MoreHorizontal,
+  ExternalLink,
+  X
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +55,7 @@ export default function PostStudioPage() {
   const [globalSidebarCollapsed, setGlobalSidebarCollapsed] = useState(true);
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
+  const [listView, setListView] = useState<'row' | 'card'>('row');
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
@@ -314,30 +320,231 @@ export default function PostStudioPage() {
   }
 
   if (step === 'list') {
+    const activeCampaigns = (postType === 'carousel' ? carouselCampaigns : (postType === 'cta' ? ctaCampaigns : campaigns)) || [];
+    const filteredCampaigns = activeCampaigns.filter((c: any) => 
+      c.campaign_name?.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
       <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30">
-        <div className="h-16 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md flex items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => setStep('select')}><ChevronLeft className="w-5 h-5" /></Button>
-            <h1 className="text-xl font-bold capitalize">{postType?.replace('-', ' ')} Campaigns</h1>
+        <div className="h-20 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md flex items-center justify-between px-8">
+          <div className="flex items-center gap-6">
+            <Button variant="ghost" size="icon" onClick={() => setStep('select')} className="rounded-xl hover:bg-primary/10">
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight capitalize">{postType?.replace('-', ' ')} Campaigns</h1>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">Manage and track your social media campaigns</p>
+            </div>
           </div>
-          <Button onClick={() => setStep('studio')}><Plus className="w-4 h-4 mr-2" /> Create Post</Button>
+          
+          <div className="flex items-center gap-4">
+            <div className="relative w-64 group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="Search campaigns..."
+                className="pl-10 h-10 bg-[var(--background)] border-[var(--border)] rounded-xl focus-visible:ring-1 focus-visible:ring-primary"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10 shadow-sm">
+              <button
+                onClick={() => setListView('row')}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-2",
+                  listView === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                )}
+              >
+                <Layout className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-wider">Row</span>
+              </button>
+              <button
+                onClick={() => setListView('card')}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-2",
+                  listView === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                )}
+              >
+                <Grid className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-wider">Card</span>
+              </button>
+            </div>
+
+            <Button onClick={() => setStep('studio')} className="rounded-xl h-10 px-6 font-bold shadow-lg shadow-primary/20">
+              <Plus className="w-4 h-4 mr-2" /> New Campaign
+            </Button>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {((postType === 'carousel' ? carouselCampaigns : (postType === 'cta' ? ctaCampaigns : campaigns)) || []).map((camp: any, idx: number) => (
-              <div key={camp.id || idx} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 transition-all">
-                <h3 className="font-bold mb-2">{camp.campaign_name}</h3>
-                <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {camp.schedule_type === 'later' && camp.schedule_time ? new Date(camp.schedule_time).toLocaleString() : 'Now'}
-                  </div>
-                </div>
+        <div className="flex-1 overflow-y-auto p-8 bg-[var(--background)]/50">
+          {filteredCampaigns.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-40 grayscale pointer-events-none">
+              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Send className="w-10 h-10 text-primary" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-xl font-bold">No campaigns found</h3>
+              <p className="text-sm">Start by creating your first {postType} campaign</p>
+            </div>
+          ) : listView === 'card' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {filteredCampaigns.map((camp: any, idx: number) => (
+                <div key={camp.id || idx} className="group bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/50 transition-all duration-500 flex flex-col gap-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                    <Send className="w-20 h-20" />
+                  </div>
+                  
+                  <div className="flex items-start justify-between relative z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                      <Layers className="w-6 h-6" />
+                    </div>
+                    <Badge variant="secondary" className="bg-[var(--background)] text-[10px] font-bold tracking-tighter uppercase px-2 py-0.5 rounded-lg border-[var(--border)]">
+                      {camp.post_type || postType}
+                    </Badge>
+                  </div>
+
+                  <div className="relative z-10">
+                    <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors truncate">{camp.campaign_name}</h3>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted-foreground)]">
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[var(--background)] rounded-full border border-[var(--border)]">
+                        <Clock className="w-3 h-3" />
+                        {camp.schedule_type === 'later' ? 'Scheduled' : 'Posted Now'}
+                      </div>
+                      <div className={cn(
+                        "flex items-center gap-1.5 px-2 py-0.5 rounded-full border font-bold text-[10px] uppercase",
+                        camp.posting_status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                        camp.posting_status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                        "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                      )}>
+                        {camp.posting_status || 'Pending'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-2">
+                       <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold overflow-hidden">
+                          {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                       </div>
+                       <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase truncate max-w-[100px]">
+                          {camp.social_account_id || 'Page ID: ' + camp.page_group_user_id}
+                       </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {camp.post_url && (
+                        <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary" onClick={() => window.open(camp.post_url, '_blank')}>
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </div>
+                  {camp.error_message && (
+                    <div className="mt-2 text-[10px] text-red-500 bg-red-500/5 p-2 rounded-lg border border-red-500/10 line-clamp-2">
+                       {camp.error_message}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+               <table className="w-full text-left border-collapse">
+                  <thead>
+                     <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Campaign & Account</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Type</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Schedule</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Status</th>
+                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Actions</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {filteredCampaigns.map((camp: any, idx: number) => (
+                        <tr key={camp.id || idx} className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none">
+                           <td className="px-6 py-5">
+                              <div className="flex items-center gap-4">
+                                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform relative">
+                                    <Layers className="w-6 h-6" />
+                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center">
+                                       {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                                    </div>
+                                 </div>
+                                 <div className="min-w-0">
+                                    <p className="font-bold text-sm truncate group-hover:text-primary transition-colors">{camp.campaign_name}</p>
+                                    <p className="text-[10px] text-[var(--muted-foreground)] font-bold flex items-center gap-1">
+                                       ID: #{camp.id} <span className="opacity-30">•</span> {camp.media_type?.toUpperCase()} ACCOUNT #{camp.social_account_id}
+                                    </p>
+                                 </div>
+                              </div>
+                           </td>
+                           <td className="px-6 py-5 text-center">
+                              <Badge variant="outline" className="rounded-lg text-[10px] font-bold tracking-tight uppercase px-3 py-1 bg-[var(--background)]">
+                                 {camp.post_type || postType}
+                              </Badge>
+                           </td>
+                           <td className="px-6 py-5">
+                              <div className="flex flex-col gap-0.5">
+                                 <div className="flex items-center gap-1.5 text-xs font-medium">
+                                    <Clock className="w-3.5 h-3.5 text-primary" />
+                                    {camp.schedule_type === 'later' ? 'Scheduled' : 'Direct Post'}
+                                 </div>
+                                 <p className="text-[10px] text-[var(--muted-foreground)] pl-5">
+                                    {camp.schedule_time ? new Date(camp.schedule_time).toLocaleString() : 'Executed immediately'}
+                                 </p>
+                              </div>
+                           </td>
+                           <td className="px-6 py-5">
+                              <div className={cn(
+                                 "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-tighter",
+                                 camp.posting_status === 'completed' 
+                                   ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+                                   : camp.posting_status === 'failed'
+                                   ? "bg-red-500/10 text-red-500 border-red-500/20"
+                                   : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                              )}>
+                                 <div className={cn(
+                                   "w-1.5 h-1.5 rounded-full", 
+                                   camp.posting_status === 'completed' ? "bg-emerald-500" : 
+                                   camp.posting_status === 'failed' ? "bg-red-500" : "bg-amber-500 animate-pulse"
+                                 )} />
+                                 {camp.posting_status || 'Pending'}
+                              </div>
+                              {camp.error_message && (
+                                <div className="mt-2 text-[10px] text-red-500 font-medium max-w-[200px] truncate hover:whitespace-normal hover:overflow-visible hover:bg-[var(--background)] hover:p-2 hover:rounded hover:shadow-lg transition-all" title={camp.error_message}>
+                                   {camp.error_message}
+                                </div>
+                              )}
+                           </td>
+                           <td className="px-6 py-5 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                 {camp.post_url && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
+                                      onClick={() => window.open(camp.post_url, '_blank')}
+                                    >
+                                       <ExternalLink className="w-4 h-4" />
+                                    </Button>
+                                 )}
+                                 <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
+                                    <Send className="w-4 h-4" />
+                                 </Button>
+                                 <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all">
+                                    <X className="w-4 h-4" />
+                                 </Button>
+                              </div>
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            </div>
+          )}
         </div>
       </div>
     );
