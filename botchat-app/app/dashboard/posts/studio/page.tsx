@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AccountSelector } from './components/AccountSelector';
 import { PostPreview } from './components/PostPreview';
 import { Composer } from './components/Composer';
+import { CarouselComposer } from "./components/CarouselComposer";
 import { 
   ChevronLeft, 
   Settings, 
@@ -34,6 +35,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { createCampaign, fetchCampaigns, createCtaCampaign, fetchCtaCampaigns } from "@/store/slices/socialPostingSlice";
+import { fetchCarouselCampaigns, createCarouselCampaign } from "@/store/slices/carouselSlice";
 import type { AppDispatch, RootState } from "@/store/store";
 import api from "@/lib/api";
 
@@ -47,18 +49,20 @@ export default function PostStudioPage() {
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
   
-  // Real Account State
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
-  const [selectedParentAccounts, setSelectedParentAccounts] = useState<string[]>([]); // For filtering pages by account
+  const [selectedParentAccounts, setSelectedParentAccounts] = useState<string[]>([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const { campaigns, ctaCampaigns, isLoading: isLoadingCampaigns } = useSelector((state: RootState) => state.socialPosting);
+  const { campaigns: carouselCampaigns, isPublishing: isPublishingCarousel } = useSelector((state: RootState) => state.carousel);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (step === 'list') {
-      if (postType === 'cta') {
+      if (postType === 'carousel') {
+        dispatch(fetchCarouselCampaigns());
+      } else if (postType === 'cta') {
         dispatch(fetchCtaCampaigns({ per_page: 50 }));
       } else {
         dispatch(fetchCampaigns({ per_page: 50 }));
@@ -71,7 +75,7 @@ export default function PostStudioPage() {
     return () => {
         window.dispatchEvent(new Event("expandDesktopSidebar"));
     };
-  }, [step, dispatch]);
+  }, [step, dispatch, postType]);
 
   const toggleGlobalSidebar = () => {
       if (globalSidebarCollapsed) {
@@ -94,17 +98,17 @@ export default function PostStudioPage() {
       const igAccounts = igRes.data.data.instagram_accounts || [];
 
       const normalizedFb = fbAccounts.flatMap((acc: any) => (acc.pages || []).map((p: any) => ({
-        id: p.page_id,
+        id: p.id,
         name: p.page_name,
         accountName: acc.name,
         accountId: acc.id,
         type: 'facebook',
         image: p.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${p.page_name}`,
-        platformId: p.id
+        platformId: String(p.page_id)
       })));
 
       const normalizedIg = igAccounts.map((a: any) => ({
-        id: a.username,
+        id: a.id,
         name: a.name || a.username,
         accountName: a.name || a.username,
         accountId: a.id,
@@ -129,29 +133,58 @@ export default function PostStudioPage() {
   };
 
   const handlePublish = async (composerData: any) => {
-    if (!composerData.campaignName) {
+    if (!composerData.campaignName && !composerData.campaign_name) {
         showModal("error", "Validation Error", "Please provide a campaign name.");
         return;
     }
-    if (selectedAccounts.length === 0) {
-        showModal("error", "Validation Error", "Please select at least one account.");
-        return;
+    // Validation based on post type
+    if (postType === 'carousel') {
+        if (!composerData.selected_pages || composerData.selected_pages.length === 0) {
+            showModal("error", "Validation Error", "Please select a page to post in the form.");
+            return;
+        }
+    } else if (postType === 'cta') {
+        if (selectedParentAccounts.length === 0) {
+            showModal("error", "Validation Error", "Please select at least one account in the top header.");
+            return;
+        }
+    } else {
+        if (selectedAccounts.length === 0) {
+            showModal("error", "Validation Error", "Please select at least one account.");
+            return;
+        }
     }
 
     setIsPublishing(true);
 
     try {
-        const selectedPages = selectedAccounts.map(id => {
-            const acc = accounts.find(a => a.id === id);
-            return {
-                id: acc?.platformId || id,
-                platform_id: String(acc?.platformId || id)
-            };
-        });
+        let finalSelectedPages = [];
+        
+        if (postType === 'carousel') {
+            finalSelectedPages = composerData.selectedPages;
+        } else if (postType === 'cta') {
+            // For CTA, we take all pages belonging to the selected parent accounts
+            finalSelectedPages = accounts
+                .filter(a => selectedParentAccounts.includes(a.accountId))
+                .map(a => ({
+                    id: a.id,
+                    platform_id: String(a.platformId)
+                }));
+        } else {
+            finalSelectedPages = selectedAccounts.map(id => {
+                const acc = accounts.find(a => a.id === id);
+                return {
+                    id: acc?.id || id,
+                    platform_id: String(acc?.platformId || id)
+                };
+            });
+        }
 
-        const primaryAccountType = accounts.find(a => a.id === selectedAccounts[0])?.type || 'facebook';
+        const primaryAccountType = accounts.find(a => a.id === (selectedAccounts[0] || selectedParentAccounts[0]))?.type || 'facebook';
 
-        if (postType === 'cta' || composerData.postType === 'link') {
+        if (postType === 'carousel') {
+             await dispatch(createCarouselCampaign(composerData)).unwrap();
+        } else if (postType === 'cta' || composerData.postType === 'link') {
             const ctaPayload: any = {
                 campaign_name: composerData.campaignName,
                 publisher_type: primaryAccountType === 'facebook' ? 'page' : 'account',
@@ -160,7 +193,7 @@ export default function PostStudioPage() {
                 cta_type: composerData.ctaType,
                 cta_value: composerData.ctaValue || composerData.linkUrl,
                 schedule_type: composerData.isScheduling ? 'later' : 'now',
-                selected_pages: selectedPages,
+                selected_pages: finalSelectedPages,
                 repeat_times: parseInt(composerData.repeatTimes) || 0,
                 time_interval: parseInt(composerData.timeInterval) || 0,
                 auto_reply_template: composerData.autoReplyTemplate,
@@ -227,22 +260,14 @@ export default function PostStudioPage() {
   if (step === 'select') {
     return (
       <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-8 flex flex-col items-center justify-center relative overflow-hidden">
-        {/* Decorative Background */}
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12 relative z-10"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12 relative z-10">
           <Badge variant="secondary" className="mb-4 px-4 py-1">Choose Campaign Type</Badge>
           <h1 className="text-5xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-foreground)]">
             What are we creating today?
           </h1>
-          <p className="text-[var(--muted-foreground)] text-lg max-w-2xl mx-auto">
-            Select the type of post you want to publish across your social channels.
-          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full relative z-10">
@@ -268,48 +293,6 @@ export default function PostStudioPage() {
             onClick={() => handleSelectType('carousel')}
           />
         </div>
-
-        <div className="mt-12 w-full max-w-6xl relative z-10">
-            <div className="flex items-center gap-4 mb-6">
-                <div className="h-px flex-1 bg-[var(--border)]" />
-                <span className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-widest">Automation Sources</span>
-                <div className="h-px flex-1 bg-[var(--border)]" />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div 
-                    onClick={() => handleSelectType('auto')}
-                    className="group relative bg-[var(--card)] border border-[var(--border)] p-8 rounded-[2rem] hover:bg-[var(--secondary)] hover:border-primary/30 transition-all cursor-pointer overflow-hidden shadow-sm"
-                >
-                    <div className="flex items-center gap-6 relative z-10">
-                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                            <Rss className="w-8 h-8" />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-1 text-[var(--foreground)]">RSS Auto-Post</h3>
-                            <p className="text-[var(--muted-foreground)] text-sm">Automatically sync and post from your blog or news feed.</p>
-                        </div>
-                        <ArrowRight className="w-6 h-6 text-[var(--muted-foreground)] group-hover:text-primary transform group-hover:translate-x-2 transition-all" />
-                    </div>
-                </div>
-
-                <div 
-                    onClick={() => handleSelectType('auto')}
-                    className="group relative bg-[var(--card)] border border-[var(--border)] p-8 rounded-[2rem] hover:bg-[var(--secondary)] hover:border-destructive/30 transition-all cursor-pointer overflow-hidden shadow-sm"
-                >
-                    <div className="flex items-center gap-6 relative z-10">
-                        <div className="w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center text-destructive group-hover:scale-110 transition-transform">
-                            <Youtube className="w-8 h-8" />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-1 text-[var(--foreground)]">Youtube Sync</h3>
-                            <p className="text-[var(--muted-foreground)] text-sm">Share your new Youtube videos on Facebook & Instagram instantly.</p>
-                        </div>
-                        <ArrowRight className="w-6 h-6 text-[var(--muted-foreground)] group-hover:text-destructive transform group-hover:translate-x-2 transition-all" />
-                    </div>
-                </div>
-            </div>
-        </div>
       </div>
     );
   }
@@ -319,92 +302,28 @@ export default function PostStudioPage() {
       <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30">
         <div className="h-16 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-              onClick={() => setStep('select')}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-bold tracking-tight text-[var(--foreground)] capitalize">
-              {postType?.replace('-', ' ')} Campaigns
-            </h1>
+            <Button variant="ghost" size="icon" onClick={() => setStep('select')}><ChevronLeft className="w-5 h-5" /></Button>
+            <h1 className="text-xl font-bold capitalize">{postType?.replace('-', ' ')} Campaigns</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Button 
-              onClick={() => setStep('studio')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-            >
-              <Plus className="w-4 h-4 mr-2" /> Create Post
-            </Button>
-          </div>
+          <Button onClick={() => setStep('studio')}><Plus className="w-4 h-4 mr-2" /> Create Post</Button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight">Recent Posts</h2>
-              <div className="flex gap-2">
-                 <Badge variant="outline" className="border-[var(--border)] text-[var(--muted-foreground)]">All</Badge>
-                 <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">Scheduled</Badge>
-                 <Badge variant="outline" className="border-[var(--border)] text-[var(--muted-foreground)]">Published</Badge>
-              </div>
-            </div>
-
-            {isLoadingCampaigns ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              </div>
-            ) : (postType === 'cta' ? ctaCampaigns : campaigns).length === 0 ? (
-              <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-2xl bg-[var(--card)]/50">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                  <Send className="w-8 h-8" />
-                </div>
-                <h3 className="text-lg font-bold mb-2">No campaigns yet</h3>
-                <p className="text-[var(--muted-foreground)] max-w-sm mx-auto mb-6">
-                  Get started by creating your first multi-platform social media post.
-                </p>
-                <Button onClick={() => setStep('studio')} className="bg-primary">
-                  Create First Post
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(postType === 'cta' ? ctaCampaigns : campaigns).map((camp, idx) => (
-                  <div key={camp.id || `camp-${idx}`} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 transition-all group">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex gap-2">
-                        {camp.media_type === 'facebook' && <div className="p-2 bg-[#1877F2]/10 rounded-lg text-[#1877F2]"><Facebook className="w-4 h-4" /></div>}
-                        {camp.media_type === 'instagram' && <div className="p-2 bg-[#E1306C]/10 rounded-lg text-[#E1306C]"><Instagram className="w-4 h-4" /></div>}
-                      </div>
-                      <Badge variant="outline" className={cn(
-                        "capitalize text-xs font-semibold",
-                        camp.posting_status === 'published' ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-orange-500/10 text-orange-500 border-orange-500/20"
-                      )}>
-                        {camp.posting_status}
-                      </Badge>
-                    </div>
-                    <h3 className="font-bold text-lg mb-2 text-[var(--foreground)] truncate">{camp.campaign_name}</h3>
-                    <p className="text-sm text-[var(--muted-foreground)] line-clamp-2 mb-4">{camp.message || "No caption provided"}</p>
-                    
-                    <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)] pt-4 border-t border-[var(--border)]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {((postType === 'carousel' ? carouselCampaigns : (postType === 'cta' ? ctaCampaigns : campaigns)) || []).map((camp: any, idx: number) => (
+                  <div key={camp.id || idx} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 transition-all">
+                    <h3 className="font-bold mb-2">{camp.campaign_name}</h3>
+                    <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" /> 
-                        {camp.schedule_type === 'later' && camp.schedule_time 
-                          ? new Date(camp.schedule_time).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) 
-                          : 'Publish Now'}
+                        {camp.schedule_type === 'later' && camp.schedule_time ? new Date(camp.schedule_time).toLocaleString() : 'Now'}
                       </div>
-                      <div className="font-medium capitalize">{camp.post_type}</div>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
           </div>
         </div>
-      </div>
     );
   }
 
@@ -450,7 +369,7 @@ export default function PostStudioPage() {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
-                Select Accounts ({selectedAccounts.length})
+                Select {postType === 'multimedia' ? 'Pages' : 'Accounts'} ({(postType === 'cta' || postType === 'carousel') ? selectedParentAccounts.length : selectedAccounts.length})
               </div>
               <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-1 h-8">
                 <button 
@@ -463,14 +382,14 @@ export default function PostStudioPage() {
                   onClick={() => setPlatform('facebook')}
                   className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
                 >
-                  <Facebook className="w-3 h-3" /> FB ({fbCount})
+                  <Facebook className="w-3 h-3" /> FB ({uniqueAccounts.filter(a => a.type === 'facebook').length})
                 </button>
-                {postType !== 'cta' && (
+                {(postType !== 'cta' && postType !== 'carousel') && (
                   <button 
                     onClick={() => setPlatform('instagram')}
                     className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
                   >
-                    <Instagram className="w-3 h-3" /> IG ({igCount})
+                    <Instagram className="w-3 h-3" /> IG ({uniqueAccounts.filter(a => a.type === 'instagram').length})
                   </button>
                 )}
               </div>
@@ -492,17 +411,20 @@ export default function PostStudioPage() {
               <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
                 <Loader2 className="w-4 h-4 animate-spin text-primary" /> Loading accounts...
               </div>
-            ) : postType === 'cta' ? (
-              // CTA Mode: Show ONLY parent accounts
+            ) : (postType === 'cta' || postType === 'carousel') ? (
+              // CTA/Carousel Mode: Show ONLY parent accounts (FB ONLY as requested)
               uniqueAccounts
-                .filter(acc => platform === 'all' || acc.type === platform)
+                .filter(acc => acc.type === 'facebook')
                 .map((acc) => (
                 <button
                   key={acc.accountId}
-                  onClick={() => setSelectedAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
+                  onClick={() => {
+                    // Selection logic: toggle the parent account
+                    setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId]);
+                  }}
                   className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all whitespace-nowrap shrink-0",
-                    selectedAccounts.includes(acc.accountId) 
+                    selectedParentAccounts.includes(acc.accountId) 
                       ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm" 
                       : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
                   )}
@@ -564,13 +486,23 @@ export default function PostStudioPage() {
         <main className="flex-1 flex h-full overflow-hidden">
           {/* Center - Composer */}
           <section className="flex-[1.2] border-r border-[var(--border)] h-full">
-            <Composer 
-              onContentChange={setCaption}
-              onMediaChange={setMedia}
-              type={postType}
-              onPublish={handlePublish}
-              isPublishing={isPublishing}
-            />
+            {step === 'studio' && postType === 'carousel' ? (
+                <CarouselComposer 
+                    onPublish={handlePublish} 
+                    isPublishing={isPublishingCarousel} 
+                    accounts={accounts}
+                    isLoadingAccounts={isLoadingAccounts}
+                    selectedParentAccounts={selectedParentAccounts}
+                />
+            ) : (
+              <Composer 
+                onContentChange={setCaption}
+                onMediaChange={setMedia}
+                type={postType}
+                onPublish={handlePublish}
+                isPublishing={isPublishing}
+              />
+            )}
           </section>
 
           {/* Right - Preview */}

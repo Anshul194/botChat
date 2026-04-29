@@ -10,6 +10,7 @@ import bioReducer from './slices/bioSlice';
 import linksReducer from './slices/linksSlice';
 import vcardsReducer from './slices/vcardsSlice';
 import socialPostingReducer from './slices/socialPostingSlice';
+import carouselReducer from './slices/carouselSlice';
 
 export const store = configureStore({
     reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
         links: linksReducer,
         vcards: vcardsReducer,
         socialPosting: socialPostingReducer,
+        carousel: carouselReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 
