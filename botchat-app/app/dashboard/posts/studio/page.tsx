@@ -30,6 +30,7 @@ import {
   Layout,
   MoreHorizontal,
   ExternalLink,
+  Trash2,
   X
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ import type { AppDispatch, RootState } from "@/store/store";
 import api from "@/lib/api";
 
 export default function PostStudioPage() {
-  const { showModal } = useModal();
+  const { showModal, showConfirm } = useModal();
   const [step, setStep] = useState<'select' | 'list' | 'studio'>('select');
   const [postType, setPostType] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
@@ -144,6 +145,32 @@ export default function PostStudioPage() {
     setPostType(type);
     setStep('list');
     fetchAccounts();
+  };
+
+  const handleDeleteCampaign = (campId: number) => {
+    showConfirm({
+      title: "Delete Campaign",
+      message: "Are you sure you want to delete this campaign? This action cannot be undone.",
+      confirmText: "Delete",
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          let endpoint = '';
+          if (postType === 'carousel') endpoint = `/social-posting/carousel/${campId}`;
+          else if (postType === 'cta') endpoint = `/social-posting/cta/${campId}`;
+          else endpoint = `/social-posting/multimedia/${campId}`;
+
+          await api.delete(endpoint);
+          showModal("success", "Deleted", "Campaign deleted successfully.");
+          // Refresh list
+          if (postType === 'carousel') dispatch(fetchCarouselCampaigns());
+          else if (postType === 'cta') dispatch(fetchCtaCampaigns());
+          else dispatch(fetchCampaigns());
+        } catch (err: any) {
+          showModal("error", "Failed", err.message || "Failed to delete campaign");
+        }
+      }
+    });
   };
 
   const handlePublish = async (composerData: any) => {
@@ -437,6 +464,9 @@ export default function PostStudioPage() {
                           <ExternalLink className="w-4 h-4" />
                         </Button>
                       )}
+                      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-red-500/10 hover:text-red-500" onClick={() => handleDeleteCampaign(camp.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary">
                         <MoreHorizontal className="w-5 h-5" />
                       </Button>
@@ -534,8 +564,13 @@ export default function PostStudioPage() {
                                  <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
                                     <Send className="w-4 h-4" />
                                  </Button>
-                                 <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all">
-                                    <X className="w-4 h-4" />
+                                 <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="w-9 h-9 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all"
+                                    onClick={() => handleDeleteCampaign(camp.id)}
+                                 >
+                                    <Trash2 className="w-4 h-4" />
                                  </Button>
                               </div>
                            </td>
