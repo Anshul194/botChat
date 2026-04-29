@@ -164,31 +164,77 @@ const CarouselPreview = ({ items }: { items: any[] }) => (
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
         {open && (
-            <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
-                    <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-                        {icon && <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">{icon}</div>}
-                        <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
-                        <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-                            <X size={18} />
-                        </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-8">{children}</div>
-                    {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
-                </motion.div>
+            <div className="fixed inset-0 z-[500] pointer-events-none">
+                {/* ── MOBILE / TABLET OVERLAY ── */}
+                <div className="xl:hidden pointer-events-auto absolute inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
+                        <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
+                            {icon && <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">{icon}</div>}
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
+                            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-8 no-scrollbar">{children}</div>
+                        {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shrink-0">{footer}</div>}
+                    </motion.div>
+                </div>
+
+                {/* ── DESKTOP SIDEBAR (INSPECTOR) ── */}
+                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[400px] flex-col bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
+                    <motion.div 
+                        initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 20, opacity: 0 }}
+                        className="flex flex-col h-full"
+                    >
+                        <div className="flex items-center gap-4 px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                {icon || <Edit3 size={18} />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest truncate">{title}</h3>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Bio Studio Editor</p>
+                            </div>
+                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                                <X size={16} />
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
+                            {children}
+                        </div>
+
+                        {footer && (
+                            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shrink-0">
+                                {footer}
+                            </div>
+                        )}
+                    </motion.div>
+                </aside>
             </div>
         )}
     </AnimatePresence>
 );
 
-const InputField = ({ label, ...props }: any) => (
+const InputField = ({ label, icon, textarea, ...props }: any) => (
     <div className="space-y-2">
-        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">{label}</label>
-        <input {...props} className="w-full h-12 px-5 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner" />
+        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
+            {icon} {label}
+        </label>
+        {textarea ? (
+            <textarea
+                {...props}
+                className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner min-h-[120px] resize-none"
+            />
+        ) : (
+            <input
+                {...props}
+                className="w-full h-12 px-5 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner"
+            />
+        )}
     </div>
 );
 
@@ -230,6 +276,7 @@ export default function BioLinkBuilder() {
     const [targetSectionId, setTargetSectionId] = useState<number | null>(null);
     const [showCarouselEditor, setShowCarouselEditor] = useState(false);
     const [editingBlock, setEditingBlock] = useState<any>(null);
+    const [isSavingBlock, setIsSavingBlock] = useState(false);
 
     const [isArranging, setIsArranging] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
@@ -247,7 +294,13 @@ export default function BioLinkBuilder() {
 
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
     const flatBlocks = (tabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
-    const visibleBlocks = flatBlocks;
+    const layoutFilter = profile?.settings?.layoutStyle || 'standard';
+    const visibleBlocks = flatBlocks.filter(b => {
+        if (layoutFilter === 'all') return true;
+        // If the block is not active and we are not in 'all', we might still want to show it?
+        // Actually, the tabs in the screenshot are likely for layout-specific filtering or just categorization.
+        return true; 
+    });
     const requestedPageId = searchParams.get("page");
     const advancedFlowTips = [
         "1. Turn features ON that you want visitors to use.",
@@ -386,6 +439,13 @@ export default function BioLinkBuilder() {
         }));
     }, [profile]);
 
+    useEffect(() => {
+        // Auto-close specific block editors when switching between top-level Phases (Info, Visuals, Content, Growth)
+        setShowCarouselEditor(false);
+        setShowAddBlock(false);
+        setEditingBlock(null);
+    }, [view]);
+
     const handleUpdateProfile = async (updates: Partial<BioProfile>) => {
         if (!profile) return;
         const previousProfile = profile;
@@ -393,6 +453,8 @@ export default function BioLinkBuilder() {
         setProfile(nextProfile);
         try {
             await api.put(`/bio-builder/profile/${profile.id}`, updates);
+            // Optionally show a subtle success indicator or nothing if it's too frequent
+            // showModal("success", "Saved", "Theme updated successfully.");
         } catch {
             setProfile(previousProfile);
             showModal("error", "Error", "Failed to update profile.");
@@ -490,7 +552,8 @@ export default function BioLinkBuilder() {
 
 
     const handleAddBlock = async (type: string, settings: any = {}) => {
-        if (!profile) return;
+        if (!profile || isSavingBlock) return;
+        setIsSavingBlock(true);
         const linkId = profile.link_id || profile.id;
 
         // Extract location_url (some modules have it at top level)
@@ -547,12 +610,14 @@ export default function BioLinkBuilder() {
             }));
 
             await fetchBuilderData(); // Also refresh overall data
+            setIsSavingBlock(false);
             setShowAddBlock(false);
             setShowCarouselEditor(false);
             setEditingBlock(null);
             showModal("success", "Success", "Block created successfully.");
         } catch (err: any) {
             console.error("Failed to add block via /bio/blocks", err);
+            setIsSavingBlock(false);
             const msg = err.response?.data?.message || "Failed to add block.";
             showModal("error", "Error", msg);
         }
@@ -655,7 +720,8 @@ export default function BioLinkBuilder() {
     };
 
     const saveEditor = async () => {
-        if (!editingBlock) return;
+        if (!editingBlock || isSavingBlock) return;
+        setIsSavingBlock(true);
 
         // Data lives in editingBlock.items[0] from the editor form
         const editorSettings = editingBlock.items?.[0] || editingBlock.settings || {};
@@ -723,14 +789,20 @@ export default function BioLinkBuilder() {
             }))
         );
         setUiTypeOverrides((prev) => ({ ...prev, [editingBlock.id]: uiType }));
-        setShowCarouselEditor(false);
-        setEditingBlock(null);
+        // Note: we don't close immediately now, we wait for API success
 
         try {
             await api.put(`/bio/blocks/${editingBlock.id}`, payload);
             await fetchBuilderData();
+            // Show success state briefly before closing
+            setTimeout(() => {
+                setIsSavingBlock(false);
+                setShowCarouselEditor(false);
+                setEditingBlock(null);
+            }, 500);
         }
         catch {
+            setIsSavingBlock(false);
             showModal("error", "Error", "Failed to update block on server.");
             await fetchBuilderData();
         }
@@ -839,8 +911,8 @@ export default function BioLinkBuilder() {
 
     const PHASES: Array<{ id: string; label: string; desc: string; hint: string; Icon: PhaseIconType; details: string[] }> = [
         { id: "identity", label: "1. Info", desc: "Name & Bio", hint: "Set your title, avatar, and short intro.", Icon: User, details: ["Upload your profile image.", "Add your brand title.", "Write a short bio visitors understand fast."] },
-        { id: "blocks", label: "2. Content", desc: "Links & Photos", hint: "Add sections, buttons, and media blocks.", Icon: Layers, details: ["Create content sections.", "Add links, photos, or products.", "Arrange items in the order you want."] },
-        { id: "visuals", label: "3. Style", desc: "Colors & Design", hint: "Pick the look, theme, and visual mood.", Icon: Palette, details: ["Choose the page look and feel.", "Match colors to your brand.", "Preview the design before launch."] },
+        { id: "visuals", label: "2. Style", desc: "Colors & Design", hint: "Pick the look, theme, and visual mood.", Icon: Palette, details: ["Choose the page look and feel.", "Match colors to your brand.", "Preview the design before launch."] },
+        { id: "blocks", label: "3. Content", desc: "Links & Photos", hint: "Add sections, buttons, and media blocks.", Icon: Layers, details: ["Create content sections.", "Add links, photos, or products.", "Arrange items in the order you want."] },
         { id: "advanced", label: "4. Growth", desc: "Launch Gear", hint: "Turn on tracking, protection, and extras.", Icon: Sparkles, details: ["Enable pixels and analytics.", "Turn on password or warning protection.", "Add advanced brand controls and redirects."] }
     ];
     const currentPhase = PHASES.find((p) => p.id === view) || PHASES[0];
@@ -874,7 +946,7 @@ export default function BioLinkBuilder() {
     }
 
     return (
-        <div className="min-h-screen bg-transparent font-sans selection:bg-primary/10 flex flex-col relative"
+        <div className="h-screen bg-transparent font-sans selection:bg-primary/10 flex flex-col relative overflow-hidden"
             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
 
             {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ STABLE TOP BAR ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
@@ -901,78 +973,32 @@ export default function BioLinkBuilder() {
                 </div>
             </header>
 
-            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ CREATOR WORKSPACE ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+            {/* CREATOR WORKSPACE */}
             <div className="relative flex-1 flex overflow-hidden">
+                {/* LEFT PANEL: TOOLS & PHASES */}
+                <aside className={cn(
+                    "w-full bg-white dark:bg-slate-950 flex flex-col sticky top-0 h-screen z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl",
+                    activePanel === "preview" ? "hidden xl:flex" : "flex",
+                    (showCarouselEditor || showAddBlock) ? "xl:w-[360px]" : "xl:w-[45%]"
+                )}>
+                        <div className="flex-1 overflow-y-auto px-6 pt-8 pb-10 no-scrollbar">
 
-                <main className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 xl:pr-[520px] pb-56 sm:pb-60 xl:pb-64", activePanel === "preview" ? "hidden xl:block" : "block")}>
-                    <div className="max-w-4xl mx-auto px-4 sm:px-10 py-8 xl:pl-8">
-
-                        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ FLOATING STEP GUIDE + BAR ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-                        <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 w-[min(460px,calc(100%-1rem))] sm:w-[min(560px,calc(100%-1.5rem))] rounded-full border border-slate-200 dark:border-white/10 bg-white/96 dark:bg-slate-900/90 backdrop-blur-2xl px-1 py-1 shadow-[0_16px_34px_rgba(0,0,0,0.05)]">
-                            <div className="grid grid-cols-4 gap-1">
-                                {PHASES.map((p, idx) => (
-                                    <button key={p.id} onClick={() => setView(p.id)}
-                                        className="group relative outline-none">
-                                        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+12px)] w-[200px] sm:w-[240px] hidden group-hover:block">
-                                            <div className="rounded-[22px] border border-slate-200/80 dark:border-white/10 bg-white/98 dark:bg-slate-950 p-2.5 shadow-[0_16px_34px_rgba(0,0,0,0.08)] text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-                                                <div className="flex items-start gap-3">
-                                                    <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0", p.id === view ? "bg-primary text-white" : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300")}>
-                                                        <p.Icon size={18} />
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Step {idx + 1}</p>
-                                                        <p className="text-[13px] font-semibold text-slate-900 dark:text-white mt-1 leading-snug">{p.desc}</p>
-                                                        <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-1 leading-relaxed">{p.hint}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-2.5 space-y-1.5 border-t border-slate-100 dark:border-white/10 pt-2.5">
-                                                    {p.details.map((detail) => (
-                                                        <div key={detail} className="flex items-start gap-2 text-[11px] text-slate-600 dark:text-slate-300">
-                                                            <span className="mt-1 w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
-                                                            <span>{detail}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className={cn("flex flex-col items-center justify-center gap-0.5 min-h-[44px] sm:min-h-[48px] px-1.5 rounded-full transition-all duration-300 border",
-                                            view === p.id
-                                                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-[1.02]"
-                                                : "bg-white/80 dark:bg-white/5 text-slate-500 border-transparent hover:border-slate-200 dark:hover:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10")}>
-                                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[11px] font-black", view === p.id ? "bg-white/20 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500")}>{idx + 1}</div>
-                                            <span className={cn("hidden lg:block text-[8px] font-black uppercase tracking-[0.12em] truncate", view === p.id ? "text-white" : "text-slate-600 dark:text-slate-300")}>{p.label}</span>
-                                            {view === p.id && <div className="absolute inset-x-6 -bottom-1 h-1 bg-white/40 rounded-full" />}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-white/5 px-4 py-3 shadow-sm mt-4">
+                        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 px-4 py-3 shadow-sm">
                             <div>
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Step {currentPhaseNumber} of {PHASES.length}</p>
-                                <p className="text-sm font-medium text-slate-900 dark:text-white mt-1">Current: {currentPhase.desc}</p>
-                                <p className="text-xs text-slate-500 mt-1 leading-relaxed">Use the steps above to move through setup in order. Each step shows what to complete next.</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Phase {currentPhaseNumber} of {PHASES.length}</p>
+                                <p className="text-[13px] font-bold text-slate-900 dark:text-white mt-1">{currentPhase.desc}</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="hidden sm:block w-44 h-2 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                    <div className="h-full rounded-full bg-slate-400 dark:bg-slate-600" style={{ width: `${completionPercent}%` }} />
-                                </div>
                                 <span className="text-xs font-black text-slate-900 dark:text-white">{completionPercent}%</span>
-                                {nextPhase ? (
-                                    <button
-                                        onClick={() => setView(nextPhase.id)}
-                                        className="h-9 px-4 rounded-full bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-md shadow-primary/20 hover:opacity-90 transition-all"
-                                    >
-                                        Next <ArrowRight size={12} />
+                                {nextPhase && (
+                                    <button onClick={() => setView(nextPhase.id)} className="h-8 px-4 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-sm">
+                                        Next
                                     </button>
-                                ) : (
-                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Final step ready</span>
                                 )}
                             </div>
                         </div>
 
-                        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PHASE CONTENT AREA ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                        {/* PHASE CONTENT AREA */}
                         <AnimatePresence mode="wait">
                             <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}>
 
@@ -1022,107 +1048,176 @@ export default function BioLinkBuilder() {
                                 )}
 
                                 {view === "blocks" && (
-                                    <div className="space-y-6 pb-28 sm:pb-32">
-                                        <div className="flex items-center justify-between rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/40 px-4 py-3">
-                                            <div>
-                                                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">Content Area</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">Blocks</p>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-                                                    <button 
-                                                        onClick={() => setProfile(prev => prev ? { ...prev, settings: { ...(prev.settings || {}), layoutStyle: "standard" } } : prev)}
-                                                        className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-all", (!profile?.settings?.layoutStyle || profile?.settings?.layoutStyle === "standard") ? "bg-white dark:bg-slate-700 shadow text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700")}
-                                                    >
-                                                        Standard
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => setProfile(prev => prev ? { ...prev, settings: { ...(prev.settings || {}), layoutStyle: "portfolio" } } : prev)}
-                                                        className={cn("px-3 py-1.5 text-xs font-bold rounded-md transition-all", profile?.settings?.layoutStyle === "portfolio" ? "bg-white dark:bg-slate-700 shadow text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700")}
-                                                    >
-                                                        Portfolio
-                                                    </button>
+                                    <div className="space-y-0 pb-28 sm:pb-32">
+
+                                        {/* ── Shopify-style current layout badge ── */}
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                                                    <Layers size={16} />
                                                 </div>
-                                                <span className="text-xs text-slate-500 hidden sm:block ml-2">{visibleBlocks.length} items</span>
+                                                <div>
+                                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Content</p>
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white capitalize">{profile?.settings?.layoutStyle || 'Standard'} Layout</p>
+                                                </div>
                                             </div>
+                                            <button
+                                                onClick={() => setView('visuals')}
+                                                className="h-8 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 flex items-center gap-1.5 transition-all"
+                                            >
+                                                <Palette size={12} /> Change Style
+                                            </button>
                                         </div>
 
-                                        <div className="space-y-6">
-                                            {(!currentTab || visibleBlocks.length === 0) ? (
-                                                <div className="py-20 text-center bg-white dark:bg-slate-950 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center">
-                                                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400 mb-6">
-                                                        <Grid size={28} />
+                                        {/* ── Shopify-style block list ── */}
+                                        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+
+                                            {/* Section Header */}
+                                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="w-5 h-5 rounded flex items-center justify-center bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                                                        <Grid size={12} />
                                                     </div>
-                                                    <h3 className="text-xl font-black text-slate-950 dark:text-white mb-2 tracking-tight">Ready to Start?</h3>
-                                                    <p className="text-[13px] text-slate-400 mb-8 max-w-xs mx-auto font-medium">Create your first block to start building your content canvas.</p>
-                                                    <button onClick={() => openBlockMarketplace()}
-                                                        className="h-12 px-10 rounded-xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all animate-bounce">
-                                                        Create Block
+                                                    <span className="text-[12px] font-semibold text-slate-700 dark:text-slate-200">Blocks</span>
+                                                    <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{visibleBlocks.length}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => setIsArranging(v => !v)}
+                                                        className={cn("h-7 px-2.5 rounded-md text-[10px] font-semibold transition-all flex items-center gap-1",
+                                                            isArranging
+                                                                ? "bg-primary/10 text-primary"
+                                                                : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                                                        )}
+                                                    >
+                                                        <GripVertical size={12} />
+                                                        {isArranging ? "Done" : "Reorder"}
                                                     </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Block Rows */}
+                                            {(!currentTab || visibleBlocks.length === 0) ? (
+                                                <div className="py-16 text-center flex flex-col items-center gap-3">
+                                                    <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300">
+                                                        <Plus size={24} />
+                                                    </div>
+                                                    <p className="text-sm font-semibold text-slate-400">No blocks yet</p>
+                                                    <p className="text-[11px] text-slate-400 max-w-[200px]">Add a block to start building your bio link page</p>
                                                 </div>
                                             ) : (
-                                                <div className="space-y-6">
-                                                    <div className="grid gap-4">
-                                                        {visibleBlocks.map((block: any) => {
-                                                            const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
-                                                            const color = BLOCK_COLORS[uiType] || "#6B7280";
-                                                            const icon = BLOCK_ICONS[uiType] || <LayoutTemplate size={20} />;
-                                                            const isEditable = true;
+                                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                                                    {visibleBlocks.map((block: any, idx: number) => {
+                                                        const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
+                                                        const color = BLOCK_COLORS[uiType] || "#6B7280";
+                                                        const icon = BLOCK_ICONS[uiType] || <LayoutTemplate size={14} />;
+                                                        const isInactive = block.is_active === 0;
+                                                        const label = block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ");
 
-                                                            return (
-                                                                <motion.div
-                                                                    layout
-                                                                    key={block.id}
-                                                                    onClick={(e) => {
-                                                                        if (!isEditable) return;
-                                                                        const target = e.target as HTMLElement;
-                                                                        if (target.closest("button, a, input, textarea, select, label, [data-no-edit='true']")) return;
-                                                                        openEditor(block);
-                                                                    }}
-                                                                    className={cn("flex items-center gap-5 p-6 rounded-3xl border-2 transition-all group/block relative overflow-hidden",
-                                                                        isEditable ? "cursor-pointer bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-xl hover:translate-x-1"
-                                                                            : "bg-slate-50 dark:bg-slate-950 content-none opacity-60")}>
-                                                                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style={{ backgroundColor: `${color}15`, color }}>
-                                                                        {icon}
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight capitalize truncate">
-                                                                            {block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ")}
-                                                                        </p>
-                                                                        <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">{uiType.replace(/_/g, " ")} · Tap to Edit</p>
-                                                                    </div>
-                                                                    {!isArranging && (
-                                                                        <button
-                                                                            onClick={e => { e.stopPropagation(); handleDeleteBlock(block.id); }}
-                                                                            data-no-edit="true"
-                                                                            className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 dark:hover:border-red-500/30 hover:text-red-500 text-slate-400 flex items-center justify-center transition-all shrink-0"
-                                                                            aria-label="Delete block"
-                                                                            title="Delete block"
-                                                                        >
-                                                                            <Trash2 size={16} />
-                                                                        </button>
-                                                                    )}
-                                                                </motion.div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                                                        <button onClick={() => openBlockMarketplace()}
-                                                            className="flex-1 h-16 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-3 text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white transition-all text-[11px] font-black uppercase tracking-widest group">
-                                                            <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-                                                            Create Block
-                                                        </button>
-                                                        <button onClick={() => setView('visuals')} className="h-16 px-8 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-primary/25 hover:bg-primary/90 transition-all">
-                                                            Next: Style <ArrowRight size={16} />
-                                                        </button>
-                                                    </div>
+                                                        return (
+                                                            <motion.div
+                                                                layout
+                                                                key={block.id}
+                                                                initial={{ opacity: 0 }}
+                                                                animate={{ opacity: 1 }}
+                                                                className={cn(
+                                                                    "group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 relative",
+                                                                    isInactive && "opacity-50"
+                                                                )}
+                                                                onClick={(e) => {
+                                                                    const target = e.target as HTMLElement;
+                                                                    if (target.closest("button, [data-no-click]")) return;
+                                                                    openEditor(block);
+                                                                }}
+                                                            >
+                                                                {/* Drag Handle */}
+                                                                <div className="text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing group-hover:text-slate-400 transition-colors">
+                                                                    <GripVertical size={16} />
+                                                                </div>
+
+                                                                {/* Block Icon */}
+                                                                <div
+                                                                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
+                                                                    style={{ backgroundColor: `${color}18`, color }}
+                                                                >
+                                                                    <div className="[&>*]:w-[14px] [&>*]:h-[14px]">{icon}</div>
+                                                                </div>
+
+                                                                {/* Label & type */}
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 truncate capitalize">
+                                                                        {label}
+                                                                    </p>
+                                                                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">
+                                                                        {uiType.replace(/_/g, " ")}
+                                                                    </p>
+                                                                </div>
+
+                                                                {/* Actions */}
+                                                                <div className="flex items-center gap-2 shrink-0" data-no-click>
+                                                                    {/* Visibility toggle */}
+                                                                    <button
+                                                                        data-no-click
+                                                                        onClick={async (e) => {
+                                                                            e.stopPropagation();
+                                                                            const newStatus = isInactive ? 1 : 0;
+                                                                            setTabs(prev => prev.map(tab => ({
+                                                                                ...tab,
+                                                                                sections: (tab.sections || []).map(sec => ({
+                                                                                    ...sec,
+                                                                                    blocks: (sec.blocks || []).map(b => b.id === block.id ? { ...b, is_active: newStatus } : b)
+                                                                                }))
+                                                                            })));
+                                                                            try { await api.put(`/bio/blocks/${block.id}`, { is_active: newStatus }); } catch { /* silent */ }
+                                                                        }}
+                                                                        title={isInactive ? "Show block" : "Hide block"}
+                                                                        className={cn(
+                                                                            "w-7 h-7 rounded-md flex items-center justify-center transition-all",
+                                                                            isInactive
+                                                                                ? "text-slate-300 dark:text-slate-600 hover:text-slate-500"
+                                                                                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100"
+                                                                        )}
+                                                                    >
+                                                                        {isInactive ? <EyeOff size={14} /> : <Eye size={14} />}
+                                                                    </button>
+
+                                                                    {/* Delete */}
+                                                                    <button
+                                                                        data-no-click
+                                                                        onClick={e => { e.stopPropagation(); handleDeleteBlock(block.id); }}
+                                                                        title="Delete block"
+                                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all opacity-0 group-hover:opacity-100"
+                                                                    >
+                                                                        <Trash2 size={13} />
+                                                                    </button>
+
+                                                                    {/* Chevron */}
+                                                                    <ChevronRight size={14} className="text-slate-300 dark:text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                                                </div>
+                                                            </motion.div>
+                                                        );
+                                                    })}
                                                 </div>
                                             )}
+
+                                            {/* Add block row — Shopify style */}
+                                            <div className="border-t border-slate-100 dark:border-slate-800">
+                                                <button
+                                                    onClick={() => openBlockMarketplace()}
+                                                    className="w-full flex items-center gap-3 px-4 py-3.5 text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group"
+                                                >
+                                                    <div className="w-6 h-6 rounded-md border border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center group-hover:border-primary group-hover:text-primary group-hover:bg-primary/5 transition-all">
+                                                        <Plus size={12} />
+                                                    </div>
+                                                    Add block
+                                                </button>
+                                            </div>
                                         </div>
+
                                     </div>
                                 )}
 
-                                {view === "visuals" && <VisualsLab profile={profile} updateProfile={(u: any) => setProfile(prev => prev ? ({ ...prev, ...u }) : prev)} />}
+                                {view === "visuals" && <VisualsLab profile={profile} updateProfile={handleUpdateProfile} />}
 
                                 {view === "advanced" && (() => {
                                     const GROWTH_TABS = [
@@ -1138,80 +1233,28 @@ export default function BioLinkBuilder() {
                                     const GtIcon = activeGT.icon;
 
                                     return (
-                                        <div className="max-w-4xl space-y-0">
-
-                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ GROWTH HERO HEADER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-                                            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-6 sm:p-8 mb-6 border border-white/10">
-                                                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
-                                                <div className="relative flex flex-wrap items-center justify-between gap-4">
-                                                    <div>
-                                                        <div className="flex items-center gap-3 mb-2">
-                                                            <div className="w-10 h-10 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
-                                                                <Sparkles size={20} />
-                                                            </div>
-                                                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Growth Workstation</span>
-                                                        </div>
-                                                        <h3 className="text-2xl font-black text-white tracking-tight">Launch Gear</h3>
-                                                        <p className="text-sm text-slate-400 mt-1 max-w-sm">SEO, tracking pixels, UTM parameters, and advanced protection for your bio page.</p>
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="text-center">
-                                                            <p className="text-3xl font-black text-white">{enabledAdvancedFlags.length}</p>
-                                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active</p>
-                                                        </div>
-                                                        <div className="h-10 w-px bg-white/10" />
-                                                        <div className="text-center">
-                                                            <p className="text-3xl font-black text-white">6</p>
-                                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sections</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {enabledAdvancedFlags.length > 0 && (
-                                                    <div className="relative mt-5 flex flex-wrap gap-2">
-                                                        {enabledAdvancedFlags.map((flag) => (
-                                                            <span key={flag} className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wide">{flag}</span>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                        <div className="space-y-6">
+                                            {/* Category Grid for Mobile-Friendly Sidebar */}
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
+                                                {GROWTH_TABS.map((tab) => (
+                                                    <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
+                                                        className={cn(
+                                                            "flex flex-col items-center justify-center p-3 rounded-2xl border transition-all",
+                                                            growthTab === tab.id 
+                                                                ? `${tab.light} border-transparent ring-2 ${tab.ring}` 
+                                                                : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800"
+                                                        )}>
+                                                        <tab.icon size={16} className={cn("mb-1", growthTab === tab.id ? tab.text : "text-slate-400")} />
+                                                        <span className={cn("text-[9px] font-black uppercase tracking-widest", growthTab === tab.id ? tab.text : "text-slate-500")}>{tab.label}</span>
+                                                    </button>
+                                                ))}
                                             </div>
 
-                                            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ TABS + CONTENT PANEL ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-                                            <div className="flex gap-4 sm:gap-6">
-
-                                                {/* LEFT SIDEBAR TABS */}
-                                                <div className="flex flex-col gap-1.5 w-[52px] sm:w-[160px] shrink-0">
-                                                    {GROWTH_TABS.map((tab) => {
-                                                        const Icon = tab.icon;
-                                                        const isActive = growthTab === tab.id;
-                                                        return (
-                                                            <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
-                                                                className={cn(
-                                                                    "group relative flex items-center gap-3 h-12 sm:h-11 rounded-2xl border transition-all duration-200 overflow-hidden text-left",
-                                                                    isActive
-                                                                        ? `${tab.light} border-transparent ring-2 ${tab.ring} shadow-sm`
-                                                                        : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700"
-                                                                )}>
-                                                                {/* Active stripe */}
-                                                                {isActive && <div className={cn("absolute left-0 top-2 bottom-2 w-1 rounded-r-full", tab.bg)} />}
-                                                                <div className={cn(
-                                                                    "w-full sm:w-auto flex items-center justify-center sm:justify-start gap-3 px-3 sm:pl-4 sm:pr-3",
-                                                                )}>
-                                                                    <Icon size={16} className={isActive ? tab.text : "text-slate-400"} />
-                                                                    <span className={cn(
-                                                                        "hidden sm:block text-[11px] font-black uppercase tracking-widest truncate",
-                                                                        isActive ? tab.text : "text-slate-500 dark:text-slate-400"
-                                                                    )}>{tab.label}</span>
-                                                                </div>
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-
-                                                {/* RIGHT CONTENT PANEL */}
-                                                <div className="flex-1 min-w-0">
-                                                    <AnimatePresence mode="wait">
-                                                        <motion.div key={growthTab} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.15 }}
-                                                            className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                                            {/* Active Content */}
+                                            <div className="min-w-0">
+                                                <AnimatePresence mode="wait">
+                                                    <motion.div key={growthTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }}
+                                                        className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
 
                                                             {/* Panel header */}
                                                             <div className={cn("px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3", activeGT.light)}>
@@ -1227,7 +1270,7 @@ export default function BioLinkBuilder() {
                                                             {/* Panel body */}
                                                             <div className="p-5 sm:p-7 space-y-6">
 
-                                                                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ SEO ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                                {/* SEO */}
                                                                 {growthTab === "seo" && (<>
                                                                     <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                                                                         <div>
@@ -1317,7 +1360,7 @@ export default function BioLinkBuilder() {
                                                                 </>)}
 
 
-                                                                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ BRANDING ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                                {/* BRANDING */}
                                                                 {growthTab === "branding" && (<>
                                                                     <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                                                                         <div>
@@ -1352,7 +1395,7 @@ export default function BioLinkBuilder() {
                                                                     </div>
                                                                 </>)}
 
-                                                                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PIXELS ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                                {/* PIXELS */}
                                                                 {growthTab === "pixels" && (<>
                                                                     <p className="text-[11px] text-slate-500">Connect your analytics pixels to track bio page visits and conversions.</p>
                                                                     <div className="space-y-3">
@@ -1376,7 +1419,7 @@ export default function BioLinkBuilder() {
                                                                     </div>
                                                                 </>)}
 
-                                                                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ UTM ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                                {/* UTM */}
                                                                 {growthTab === "utm" && (<>
                                                                     <div className="space-y-1.5">
                                                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
@@ -1416,7 +1459,7 @@ export default function BioLinkBuilder() {
                                                                     </div>
                                                                 </>)}
 
-                                                                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PROTECTION ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                                {/* PROTECTION */}
                                                                 {growthTab === "protection" && (<>
                                                                     <div className="space-y-1.5">
                                                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
@@ -1513,7 +1556,7 @@ export default function BioLinkBuilder() {
                                                                     </div>
                                                                 </>)}
 
-                                                                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ ADVANCED / MORE ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+                                                                {/* ADVANCED / MORE */}
                                                                 {growthTab === "more" && (<>
                                                                     {[
                                                                         { key: "enableShareButton", label: "Share button", desc: "Show a share button at the top of your page." },
@@ -1546,7 +1589,7 @@ export default function BioLinkBuilder() {
                                                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom JS</label>
                                                                         <textarea value={advancedSettings.customJs} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
                                                                             rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                            placeholder={"<script>console.log('Hello world');</script>"} />
+                                                                            placeholder="console.log('Hello world');" />
                                                                     </div>
                                                                 </>)}
 
@@ -1558,45 +1601,98 @@ export default function BioLinkBuilder() {
                                                     <div className="mt-5">
                                                         <button onClick={handleSaveAdvanced} disabled={isSavingAdvanced}
                                                             className={cn("w-full h-13 py-3.5 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-60",
-                                                                `${activeGT.bg} hover:opacity-90 shadow-${activeGT.color}-500/20`)}>
+                                                                activeGT.bg, "hover:opacity-90", "shadow-" + activeGT.color + "-500/20")}>
                                                             {isSavingAdvanced ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><Save size={14} /> Save Growth Settings</>}
                                                         </button>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                     );
                                 })()}
                             </motion.div>
                         </AnimatePresence>
+                        </div>
+                </aside>
+
+                <main className={cn(
+                    "flex-1 bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-700 ease-in-out z-10",
+                    "sticky top-0 h-screen",
+                    activePanel === "preview" ? "flex" : "hidden xl:flex",
+                    (showCarouselEditor || showAddBlock) && "xl:pr-[400px]"
+                )}>
+                    {/* Live Preview Status Badge */}
+                    <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-2.5 rounded-full border border-slate-200 dark:border-white/10 shadow-lg z-20 animate-in fade-in slide-in-from-top-4 duration-1000">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Portal</span>
+                        </div>
+                        <div className="w-px h-3 bg-slate-200 dark:bg-slate-800" />
+                        <span className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-tight">@{instagramUsername || 'yourpage'}</span>
+                    </div>
+
+                    {/* Premium Decorative Background */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 dark:opacity-100">
+                         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] dark:bg-primary/10" />
+                         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[120px] dark:bg-indigo-500/10" />
+                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent dark:from-white/5" />
+                    </div>
+                    
+                    <div className="relative z-10 scale-[0.8] xl:scale-[0.85] 2xl:scale-100 origin-center transition-all duration-700 ease-in-out drop-shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+                        <PhonePreview
+                            profile={profile}
+                            tabs={tabs}
+                            selectedTabId={selectedTabId}
+                            setSelectedTabId={setSelectedTabId}
+                            instagramUsername={instagramUsername}
+                            viewportOffset={180}
+                            previewWidth={320}
+                            uiTypeOverrides={uiTypeOverrides}
+                            layoutStyle={profile?.settings?.layoutStyle || "standard"}
+                        />
                     </div>
                 </main>
 
+                <AnimatePresence>
+                    {showAddBlock && (
+                        <aside className="fixed inset-x-0 bottom-0 top-0 xl:top-14 xl:bottom-0 xl:left-auto xl:right-0 z-[60] w-full xl:w-[400px] bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl overflow-hidden absolute">
+                            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Add Content</h3>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Studio Marketplace</p>
+                                </div>
+                                <button onClick={() => setShowAddBlock(false)} className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-red-500 transition-colors"><X size={16} /></button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto no-scrollbar">
+                                <BlockMarketplaceContent onSelect={(type: string) => handleAddBlock(type)} />
+                            </div>
+                        </aside>
+                    )}
+                </AnimatePresence>
 
-                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MOBILE SWITCHER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-                <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-slate-950/92 backdrop-blur-xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/10">
-                    <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
-                        <Edit3 size={16} /> Studio
-                    </button>
-                    <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40')}>
-                        <Eye size={16} /> Portal
-                    </button>
-                </div>
-
-                {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PHONE PREVIEW PORTAL (PERMANENTLY VISIBLE ON XL) ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-                <aside className={cn("fixed right-0 top-14 z-50 hidden xl:flex w-[480px] flex-col p-8 bg-[#f8fafc] dark:bg-[#020617] border-l border-slate-200 dark:border-slate-800 transition-all duration-500 h-[calc(100vh-56px)]",
-                    activePanel === "preview" ? "translate-x-0 opacity-100" : "translate-x-0 opacity-100")}>
-                    <div className="flex-1 relative flex items-center justify-center">
-                        {/* Decorative background Elements */}
-                        <div className="absolute top-1/4 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[120px]" />
-                        <div className="absolute bottom-1/4 -left-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[120px]" />
-
-                        <div className="relative z-10 w-full h-full flex items-center justify-center">
-                            <PhonePreview profile={profile} tabs={tabs} selectedTabId={selectedTabId}
-                                setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} viewportOffset={180} previewWidth={340} uiTypeOverrides={uiTypeOverrides} layoutStyle={profile?.settings?.layoutStyle || "standard"} />
+                {/* ── GLOBAL FLOATING PHASE DOCK ── */}
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[999] w-full max-w-[650px] px-6">
+                    <div className="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-3xl rounded-[32px] p-2.5 shadow-[0_30px_70px_rgba(0,0,0,0.5)] flex items-center gap-2 border border-white/10 ring-1 ring-white/10">
+                        <div className="flex-1 flex items-center gap-1">
+                            {PHASES.map((p, idx) => (
+                                <button key={p.id} onClick={() => setView(p.id)} className={cn(
+                                    "flex-1 h-14 rounded-[22px] flex flex-col items-center justify-center gap-1 transition-all relative group",
+                                    view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xl scale-[1.05] z-10" : "text-slate-400 hover:bg-white/5"
+                                )}>
+                                    <p.Icon size={18} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100 opacity-60 group-hover:opacity-100")} />
+                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] leading-none">{p.label.split('.')[1]}</span>
+                                    {view === p.id && <motion.div layoutId="phase-dot-global" className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_theme(colors.primary.DEFAULT)]" />}
+                                </button>
+                            ))}
                         </div>
+                        {nextPhase && (
+                            <button onClick={() => setView(nextPhase.id)} 
+                                className="h-14 px-6 rounded-[22px] bg-primary text-white flex flex-col items-center justify-center gap-1 hover:opacity-90 transition-all shadow-lg group">
+                                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] leading-none">Next</span>
+                            </button>
+                        )}
                     </div>
-                </aside>
+                </div>
             </div>
 
             {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MOBILE SWITCHER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
@@ -1634,8 +1730,19 @@ export default function BioLinkBuilder() {
                                 Delete Block
                             </button>
                         )}
-                        <button onClick={saveEditor} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[12px] shadow-xl">
-                            {editingBlock?._isNew ? "Create block" : "Save Changes"}
+                        <button 
+                            onClick={saveEditor} 
+                            disabled={isSavingBlock}
+                            className={cn(
+                                "flex-1 h-14 rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-xl transition-all flex items-center justify-center gap-2",
+                                isSavingBlock ? "bg-slate-100 text-slate-400" : "bg-primary text-white hover:opacity-90 active:scale-[0.98]"
+                            )}
+                        >
+                            {isSavingBlock ? (
+                                <><Loader2 size={16} className="animate-spin" /> Saving...</>
+                            ) : (
+                                editingBlock?._isNew ? "Create block" : "Save Changes"
+                            )}
                         </button>
                     </div>
                 }>
@@ -1674,6 +1781,101 @@ export default function BioLinkBuilder() {
                                                 icon={<LinkIcon size={14} />}
                                             />
                                         </>
+                                    )}
+
+                                    {/* Paragraph Type */}
+                                    {uiType === "paragraph" && (
+                                        <InputField
+                                            label="Content"
+                                            value={item.text || item.description || ""}
+                                            onChange={(e: any) => {
+                                                updateItem(idx, 'text', e.target.value);
+                                                updateItem(idx, 'description', e.target.value);
+                                            }}
+                                            placeholder="Write your content here..."
+                                            textarea
+                                            icon={<FileCode2 size={14} />}
+                                        />
+                                    )}
+
+                                    {/* Avatar Type */}
+                                    {uiType === "avatar" && (
+                                        <div className="space-y-6">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                    <User size={14} className="text-slate-400" /> Avatar Image
+                                                </label>
+                                                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
+                                                    {item.image && (
+                                                        <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-700 shadow-md mb-2">
+                                                            <img src={item.image} className="w-full h-full object-cover" />
+                                                        </div>
+                                                    )}
+                                                    <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
+                                                        Choose Avatar
+                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Size</label>
+                                                    <select
+                                                        value={item.size || 140}
+                                                        onChange={(e) => updateItem(idx, 'size', parseInt(e.target.value))}
+                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 text-sm font-bold outline-none"
+                                                    >
+                                                        <option value={80}>Small (80px)</option>
+                                                        <option value={140}>Medium (140px)</option>
+                                                        <option value={200}>Large (200px)</option>
+                                                    </select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Shape</label>
+                                                    <select
+                                                        value={item.border_radius || "round"}
+                                                        onChange={(e) => updateItem(idx, 'border_radius', e.target.value)}
+                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 text-sm font-bold outline-none"
+                                                    >
+                                                        <option value="round">Circle</option>
+                                                        <option value="rounded">Rounded Square</option>
+                                                        <option value="straight">Square</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* vCard Type */}
+                                    {uiType === "vcard" && (
+                                        <div className="space-y-5">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="First Name" value={item.first_name || ""} onChange={(e: any) => updateItem(idx, 'first_name', e.target.value)} placeholder="Jane" />
+                                                <InputField label="Last Name" value={item.last_name || ""} onChange={(e: any) => updateItem(idx, 'last_name', e.target.value)} placeholder="Doe" />
+                                            </div>
+                                            <InputField label="Email" value={item.email || ""} onChange={(e: any) => updateItem(idx, 'email', e.target.value)} placeholder="jane@example.com" icon={<Mail size={14} />} />
+                                            <InputField label="Phone" value={item.phone || ""} onChange={(e: any) => updateItem(idx, 'phone', e.target.value)} placeholder="+1 234 567 890" icon={<Smartphone size={14} />} />
+                                            <InputField label="Organization" value={item.organization || ""} onChange={(e: any) => updateItem(idx, 'organization', e.target.value)} placeholder="Acme Inc." icon={<Hexagon size={14} />} />
+                                            <InputField label="Button Label" value={item.name || item.title || ""} onChange={(e: any) => { updateItem(idx, 'name', e.target.value); updateItem(idx, 'title', e.target.value); }} placeholder="Save Contact" />
+                                        </div>
+                                    )}
+
+                                    {/* Newsletter Type */}
+                                    {uiType === "newsletter" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Join our newsletter" />
+                                            <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Get the latest updates directly in your inbox." textarea />
+                                            <InputField label="Input Placeholder" value={item.placeholder || ""} onChange={(e: any) => updateItem(idx, 'placeholder', e.target.value)} placeholder="Your email address" />
+                                            <InputField label="Button Text" value={item.button_text || ""} onChange={(e: any) => updateItem(idx, 'button_text', e.target.value)} placeholder="Subscribe" />
+                                        </div>
+                                    )}
+
+                                    {/* Divider Type */}
+                                    {uiType === "divider" && (
+                                        <div className="py-10 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center gap-3 text-slate-400">
+                                            <MoreHorizontal size={24} />
+                                            <p className="text-[11px] font-black uppercase tracking-widest">Horizontal Divider</p>
+                                        </div>
                                     )}
 
                                     {/* Socials Type */}
@@ -1835,16 +2037,45 @@ export default function BioLinkBuilder() {
 
                                     {/* Collectors */}
                                     {["email_collector", "phone_collector", "contact_collector"].includes(uiType) && (
-                                        <InputField
-                                            label="Name"
-                                            value={item.name || item.title || ""}
-                                            onChange={(e: any) => {
-                                                updateItem(idx, 'name', e.target.value);
-                                                updateItem(idx, 'title', e.target.value);
-                                            }}
-                                            placeholder="Enter form name"
-                                            icon={<Megaphone size={14} />}
-                                        />
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label="Form Title"
+                                                value={item.name || item.title || ""}
+                                                onChange={(e: any) => {
+                                                    updateItem(idx, 'name', e.target.value);
+                                                    updateItem(idx, 'title', e.target.value);
+                                                }}
+                                                placeholder="e.g. Join the waitlist"
+                                                icon={<Megaphone size={14} />}
+                                            />
+                                            <InputField
+                                                label="Description"
+                                                value={item.description || ""}
+                                                onChange={(e: any) => updateItem(idx, 'description', e.target.value)}
+                                                placeholder="Enter a brief description for this form..."
+                                                textarea
+                                            />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField
+                                                    label="Input Placeholder"
+                                                    value={item.placeholder || ""}
+                                                    onChange={(e: any) => updateItem(idx, 'placeholder', e.target.value)}
+                                                    placeholder="e.g. Your email..."
+                                                />
+                                                <InputField
+                                                    label="Button Text"
+                                                    value={item.button_text || "Submit"}
+                                                    onChange={(e: any) => updateItem(idx, 'button_text', e.target.value)}
+                                                    placeholder="Submit"
+                                                />
+                                            </div>
+                                            <InputField
+                                                label="Success Message"
+                                                value={item.success_message || ""}
+                                                onChange={(e: any) => updateItem(idx, 'success_message', e.target.value)}
+                                                placeholder="Thank you! We'll be in touch."
+                                            />
+                                        </div>
                                     )}
 
                                     {/* Embeds */}

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import {
     Camera, ShoppingBag, Sparkles, Coffee,
     Music, Laptop, Palette, Gamepad2, Briefcase,
-    HeartPulse, Dumbbell, Zap, ImageIcon
+    HeartPulse, Dumbbell, Zap, ImageIcon, Layers, Grid
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -308,12 +308,6 @@ export function isColorLight(color: string): boolean {
     return (r * 0.299 + g * 0.587 + b * 0.114) > 186; // Standard threshold for dark text
 }
 
-/**
- * Returns true if a CSS background string (solid color or gradient) is visually
- * bright/light. For gradients, checks ALL hex color stops and returns true if
- * the LIGHTEST stop exceeds the luminance threshold. This handles animated
- * gradients like Chrome Y2K that cycle through near-white.
- */
 export function isBgLight(bg: string): boolean {
     if (!bg) return false;
 
@@ -373,19 +367,9 @@ export function extractPrimaryBgColor(bg: string): string | null {
     return null;
 }
 
-// ══════════════════════════════════════════════════════════
-// 52 UNIQUE GEN-Z THEMES
-// Every theme has a RADICALLY different button style
-// Styles: Glass Pill, 3D Brutalist, Neon Glow, Gradient Fill,
-//         Soft Cloud, Chrome, Outlined, Elevated Card,
-//         Frosted Dark, Sharp Block, Thick Frame, Minimal,
-//         Floating, Skewed, etc.
-// ══════════════════════════════════════════════════════════
 const THEMES: Record<string, ThemeConfig> = {
 
     // ═══════════════════ PHOTOGRAPHY ═══════════════════
-
-    // ✦ Aura — Ethereal purple, glass pill buttons
     photo_aura: {
         bgStyle: { background: 'linear-gradient(145deg, #1a0533 0%, #2e1065 35%, #4c1d95 65%, #1a0533 100%)' },
         textColor: '#e9d5ff',
@@ -393,8 +377,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#a78bfa',
         meshGlow: 'radial-gradient(circle at 30% 70%, rgba(167,139,250,0.2), transparent 50%), radial-gradient(circle at 70% 20%, rgba(192,132,252,0.15), transparent 50%)',
     },
-
-    // ✦ Film Burn — Warm vintage, elevated card buttons with shadow
     photo_film: {
         bgStyle: { background: 'linear-gradient(160deg, #451a03 0%, #78350f 40%, #92400e 100%)' },
         textColor: '#fef3c7',
@@ -402,16 +384,12 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-serif', accent: '#f59e0b',
         effects: ['grain'],
     },
-
-    // ✦ Dark Academia — Moody B&W, outlined sharp serif buttons
     photo_academia: {
         bgStyle: { background: 'linear-gradient(180deg, #0c0a09 0%, #1c1917 50%, #0c0a09 100%)' },
         textColor: '#d6d3d1',
         btnStyle: { background: 'transparent', border: '1.5px solid #a8a29e', borderRadius: '0px', color: '#d6d3d1', padding: '15px 24px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, fontFamily: 'Georgia, serif' },
         fontClass: 'font-serif', accent: '#a8a29e',
     },
-
-    // ✦ Golden Hour — Amber warmth, gradient-fill pill buttons
     photo_golden: {
         bgStyle: { background: 'linear-gradient(135deg, #92400e 0%, #d97706 50%, #fbbf24 100%)' },
         textColor: '#fffbeb',
@@ -419,8 +397,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-serif', accent: '#fbbf24',
         meshGlow: 'radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.25), transparent 60%)',
     },
-
-    // ★ Chrome Y2K — Animated metallic gradient, chrome buttons [ANIMATED]
     photo_chrome: {
         bgStyle: { background: 'linear-gradient(90deg, #64748b, #94a3b8, #e2e8f0, #f8fafc, #e2e8f0, #94a3b8, #64748b)', backgroundSize: '300% 100%', animation: 'bio-chrome 5s linear infinite' },
         textColor: '#1e293b',
@@ -428,8 +404,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#475569',
         effects: ['shimmer'],
     },
-
-    // ★ Into the Wild — Forest image backdrop, frosted dark buttons [IMAGE]
     photo_wild: {
         bgStyle: { background: '#0a1a0f' },
         textColor: '#d1fae5',
@@ -440,32 +414,24 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ WELLNESS ═══════════════════
-
-    // ✦ Clean Girl — White/blue minimal, soft cloud buttons
     health_clean: {
         bgStyle: { background: 'linear-gradient(160deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%)' },
         textColor: '#0c4a6e',
         btnStyle: { background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '16px', color: '#0369a1', padding: '16px 24px', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 16px rgba(14,165,233,0.08)' },
         fontClass: 'font-sans', accent: '#0ea5e9',
     },
-
-    // ✦ Sage Life — Earthy sage, outlined round buttons
     health_sage: {
         bgStyle: { background: 'linear-gradient(145deg, #f0fdf4 0%, #dcfce7 40%, #bbf7d0 100%)' },
         textColor: '#14532d',
         btnStyle: { background: 'transparent', border: '2px solid #16a34a', borderRadius: '9999px', color: '#15803d', padding: '14px 28px', fontSize: '13px', fontWeight: 700 },
         fontClass: 'font-sans', accent: '#22c55e',
     },
-
-    // ✦ Rose Quartz — Crystal pink glow, neumorphic buttons
     health_rose: {
         bgStyle: { background: 'linear-gradient(145deg, #fdf2f8 0%, #fce7f3 40%, #fbcfe8 100%)' },
         textColor: '#831843',
         btnStyle: { background: '#fce7f3', border: 'none', borderRadius: '18px', color: '#be185d', padding: '15px 24px', fontSize: '13px', fontWeight: 700, boxShadow: '6px 6px 16px rgba(190,24,93,0.08), -4px -4px 12px rgba(255,255,255,0.8)' },
         fontClass: 'font-sans', accent: '#ec4899',
     },
-
-    // ★ Zen Garden — Animated teal aurora with floating orbs [ANIMATED]
     health_zen: {
         bgStyle: { background: 'radial-gradient(ellipse at 50% 50%, #2dd4bf, #0d9488, #115e59)', backgroundSize: '120% 120%', backgroundPosition: 'center', animation: 'bio-breathe 6s ease-in-out infinite' },
         textColor: '#f0fdfa',
@@ -473,8 +439,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-serif', accent: '#2dd4bf',
         effects: ['orbs', 'shimmer'], particleColor: '#99f6e4',
     },
-
-    // ★ Botanical — Garden image backdrop [IMAGE]
     health_botanical: {
         bgStyle: { background: '#0a1510' },
         textColor: '#ecfdf5',
@@ -485,24 +449,18 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ STYLE / FASHION ═══════════════════
-
-    // ✦ The Edit — B&W editorial, 3D brutalist buttons
     fashion_edit: {
         bgStyle: { background: '#fafafa' },
         textColor: '#0a0a0a',
         btnStyle: { background: '#0a0a0a', border: '3px solid #0a0a0a', borderRadius: '0px', color: '#fafafa', padding: '16px 24px', fontSize: '11px', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase' as const, boxShadow: '5px 5px 0px #d4d4d4' },
         fontClass: 'font-serif', accent: '#0a0a0a',
     },
-
-    // ✦ Y2K Baby — Bubblegum pink, soft cloud pill buttons
     fashion_y2k: {
         bgStyle: { background: 'linear-gradient(160deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 60%, #f9a8d4 100%)' },
         textColor: '#831843',
         btnStyle: { background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(8px)', border: 'none', borderRadius: '9999px', color: '#be185d', padding: '15px 28px', fontSize: '13px', fontWeight: 700, boxShadow: '0 4px 20px rgba(244,114,182,0.15)' },
         fontClass: 'font-sans', accent: '#f472b6',
     },
-
-    // ✦ Noir Luxe — Black gold, sharp outlined buttons
     fashion_noir: {
         bgStyle: { background: 'linear-gradient(145deg, #0c0a09 0%, #1c1917 50%, #0c0a09 100%)' },
         textColor: '#d4a574',
@@ -510,16 +468,12 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-serif', accent: '#d4a574',
         meshGlow: 'radial-gradient(ellipse at 50% 0%, rgba(212,165,116,0.08), transparent 70%)',
     },
-
-    // ✦ Street Core — Dark/red, thick frame buttons
     fashion_street: {
         bgStyle: { background: 'linear-gradient(180deg, #18181b 0%, #27272a 100%)' },
         textColor: '#fafafa',
         btnStyle: { background: 'transparent', border: '3px solid #ef4444', borderRadius: '0px', color: '#fafafa', padding: '14px 24px', fontSize: '12px', fontWeight: 900, textTransform: 'uppercase' as const, letterSpacing: '0.08em' },
         fontClass: 'font-sans', accent: '#ef4444',
     },
-
-    // ★ Holographic — Animated rainbow shimmer, glass buttons [ANIMATED]
     fashion_holo: {
         bgStyle: { background: 'linear-gradient(135deg, #fdf4ff, #dbeafe, #faf5ff, #ecfdf5, #fef9c3, #fce7f3)', backgroundSize: '300% 300%', animation: 'bio-holo 5s ease-in-out infinite' },
         textColor: '#374151',
@@ -527,8 +481,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#a855f7',
         effects: ['shimmer', 'particles'], particleColor: '#c084fc',
     },
-
-    // ★ Front Row — Fashion image backdrop, sharp glass buttons [IMAGE]
     fashion_runway: {
         bgStyle: { background: '#0a0a0a' },
         textColor: '#fafafa',
@@ -539,8 +491,6 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ FITNESS ═══════════════════
-
-    // ✦ Beast Mode — Dark red, skewed gradient-fill buttons
     fit_beast: {
         bgStyle: { background: 'linear-gradient(145deg, #1a0000 0%, #450a0a 40%, #7f1d1d 100%)' },
         textColor: '#fca5a5',
@@ -548,16 +498,12 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#ef4444',
         meshGlow: 'radial-gradient(circle at 50% 80%, rgba(239,68,68,0.15), transparent 60%)',
     },
-
-    // ✦ Flow State — Calm indigo, soft outlined pills
     fit_flow: {
         bgStyle: { background: 'linear-gradient(145deg, #e0e7ff 0%, #c7d2fe 40%, #a5b4fc 100%)' },
         textColor: '#312e81',
         btnStyle: { background: 'transparent', border: '2px solid #6366f1', borderRadius: '9999px', color: '#4338ca', padding: '14px 28px', fontSize: '13px', fontWeight: 700 },
         fontClass: 'font-serif', accent: '#6366f1',
     },
-
-    // ✦ Fire Walk — Orange fire, floating card buttons
     fit_fire: {
         bgStyle: { background: 'linear-gradient(135deg, #431407 0%, #c2410c 50%, #fb923c 100%)' },
         textColor: '#fff7ed',
@@ -565,8 +511,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#f97316',
         meshGlow: 'radial-gradient(circle at 80% 80%, rgba(251,146,60,0.3), transparent 50%)',
     },
-
-    // ★ Electric — Cyan neon animated, neon glow buttons [ANIMATED]
     fit_electric: {
         bgStyle: { background: 'linear-gradient(145deg, #020617 0%, #0f172a 50%, #1e1b4b 100%)', animation: 'bio-zap 4s ease-in-out infinite' },
         textColor: '#22d3ee',
@@ -574,8 +518,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#22d3ee',
         effects: ['particles', 'neon-border', 'scanlines'], particleColor: '#67e8f9',
     },
-
-    // ★ Iron Temple — Gym image, bold solid buttons [IMAGE]
     fit_iron: {
         bgStyle: { background: '#0a0f14' },
         textColor: '#f0f9ff',
@@ -586,8 +528,6 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ FOODIE ═══════════════════
-
-    // ✦ Espresso — Dark roast, warm glass pill buttons
     food_espresso: {
         bgStyle: { background: 'linear-gradient(145deg, #1c1210 0%, #3d2820 40%, #5c3a28 100%)' },
         textColor: '#f5e6d3',
@@ -595,24 +535,18 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-serif', accent: '#d4a574',
         meshGlow: 'radial-gradient(circle at 30% 20%, rgba(212,165,116,0.15), transparent 60%)',
     },
-
-    // ✦ Omakase — Clean white, minimal solid button with red accent
     food_omakase: {
         bgStyle: { background: '#fafaf9' },
         textColor: '#1c1917',
         btnStyle: { background: '#1c1917', border: 'none', borderRadius: '10px', color: '#fafaf9', padding: '16px 24px', fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em' },
         fontClass: 'font-sans', accent: '#dc2626',
     },
-
-    // ✦ Earth Bowl — Green organic, outlined green pills
     food_earth: {
         bgStyle: { background: 'linear-gradient(160deg, #f7fee7 0%, #ecfccb 40%, #d9f99d 100%)' },
         textColor: '#1a2e05',
         btnStyle: { background: 'transparent', border: '2px solid #65a30d', borderRadius: '9999px', color: '#3f6212', padding: '14px 28px', fontSize: '13px', fontWeight: 700 },
         fontClass: 'font-sans', accent: '#65a30d',
     },
-
-    // ★ Neon Bites — Retro pink diner, neon glow pill buttons [ANIMATED]
     food_neon: {
         bgStyle: { background: 'linear-gradient(145deg, #1a0a0a 0%, #2d0a1e 40%, #1a0a0a 100%)', animation: 'bio-flicker 5s ease-in-out infinite' },
         textColor: '#fb7185',
@@ -620,8 +554,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#fb7185',
         effects: ['particles', 'shimmer', 'neon-border'], particleColor: '#fb7185',
     },
-
-    // ★ Farm Table — Rustic food image, warm card buttons [IMAGE]
     food_farm: {
         bgStyle: { background: '#1a1510' },
         textColor: '#fef3c7',
@@ -632,8 +564,6 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ MUSIC ═══════════════════
-
-    // ✦ Synthwave — Deep purple, retro neon outlined buttons
     music_synth: {
         bgStyle: { background: 'linear-gradient(135deg, #0f0326 0%, #1e0845 30%, #2e1065 60%, #1e0845 100%)' },
         textColor: '#e879f9',
@@ -641,8 +571,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#d946ef',
         meshGlow: 'radial-gradient(circle at 20% 80%, rgba(192,38,211,0.15), transparent 50%), radial-gradient(circle at 80% 20%, rgba(139,92,246,0.15), transparent 50%)',
     },
-
-    // ✦ Subwoofer — Navy/cyan, frosted dark card buttons
     music_sub: {
         bgStyle: { background: 'linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%)' },
         textColor: '#38bdf8',
@@ -650,8 +578,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#0ea5e9',
         meshGlow: 'radial-gradient(circle at 50% 100%, rgba(14,165,233,0.12), transparent 60%)',
     },
-
-    // ✦ Analog — Warm stone/gold, warm serif pill buttons
     music_analog: {
         bgStyle: { background: 'linear-gradient(145deg, #292524 0%, #44403c 50%, #57534e 100%)' },
         textColor: '#fde68a',
@@ -659,8 +585,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-serif', accent: '#fbbf24',
         effects: ['grain'],
     },
-
-    // ★ Equalizer — Animated bars + particles, glass buttons [ANIMATED]
     music_eq: {
         bgStyle: { background: 'linear-gradient(145deg, #020617, #1e1b4b, #4c1d95, #2e1065)', backgroundSize: '200% 200%', animation: 'bio-wave 8s ease-in-out infinite' },
         textColor: '#c084fc',
@@ -668,8 +592,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#a855f7',
         effects: ['bars', 'particles', 'scanbeam'], particleColor: '#c084fc',
     },
-
-    // ★ Backstage — Concert image, frosted buttons [IMAGE]
     music_stage: {
         bgStyle: { background: '#0a0510' },
         textColor: '#faf5ff',
@@ -681,8 +603,6 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ TECH ═══════════════════
-
-    // ✦ Terminal — Green on black, monospace outlined buttons
     tech_terminal: {
         bgStyle: { background: 'linear-gradient(180deg, #0a0f14 0%, #0d1117 50%, #0a0f14 100%)' },
         textColor: '#4ade80',
@@ -690,8 +610,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#22c55e',
         meshGlow: 'radial-gradient(circle at 50% 0%, rgba(74,222,128,0.06), transparent 50%)',
     },
-
-    // ✦ Neural Net — Indigo/purple, gradient-fill card buttons
     tech_neural: {
         bgStyle: { background: 'linear-gradient(145deg, #0c0a20 0%, #1e1b4b 35%, #312e81 70%, #1e1b4b 100%)' },
         textColor: '#a5b4fc',
@@ -699,16 +617,12 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#6366f1',
         meshGlow: 'radial-gradient(circle at 70% 30%, rgba(99,102,241,0.15), transparent 50%), radial-gradient(circle at 30% 70%, rgba(168,85,247,0.1), transparent 50%)',
     },
-
-    // ✦ Launch Day — Blue SaaS, elevated white card buttons
     tech_launch: {
         bgStyle: { background: 'linear-gradient(135deg, #0369a1 0%, #0284c7 35%, #0ea5e9 70%, #38bdf8 100%)' },
         textColor: '#ffffff',
         btnStyle: { background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '12px', color: '#0369a1', padding: '15px 24px', fontSize: '13px', fontWeight: 700, boxShadow: '0 8px 30px rgba(0,0,0,0.15)' },
         fontClass: 'font-sans', accent: '#38bdf8',
     },
-
-    // ★ Matrix — Animated green rain, scanlines + glow buttons [ANIMATED]
     tech_matrix: {
         bgStyle: { background: '#020a02', position: 'relative' as const },
         textColor: '#4ade80',
@@ -716,8 +630,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#22c55e',
         effects: ['rain', 'scanlines', 'particles', 'grain'], particleColor: '#4ade80',
     },
-
-    // ★ Dev Stack — Code image, monospace buttons [IMAGE]
     tech_stack: {
         bgStyle: { background: '#050810' },
         textColor: '#e0f2fe',
@@ -729,24 +641,18 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ CREATIVE / ART ═══════════════════
-
-    // ✦ White Cube — Gallery minimal, thin outlined serif buttons
     art_cube: {
         bgStyle: { background: '#ffffff' },
         textColor: '#171717',
         btnStyle: { background: 'transparent', border: '1.5px solid #171717', borderRadius: '0px', color: '#171717', padding: '15px 24px', fontSize: '10px', fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase' as const, fontFamily: 'Georgia, serif' },
         fontClass: 'font-serif', accent: '#171717',
     },
-
-    // ✦ Watercolor — Pastel wash, soft frosted pills
     art_wash: {
         bgStyle: { background: 'linear-gradient(135deg, #fdf2f8 0%, #dbeafe 25%, #faf5ff 50%, #ecfdf5 75%, #fef9c3 100%)' },
         textColor: '#374151',
         btnStyle: { background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', border: 'none', borderRadius: '9999px', color: '#4b5563', padding: '15px 28px', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' },
         fontClass: 'font-serif', accent: '#8b5cf6',
     },
-
-    // ✦ Pixel Neon — Black + neon green, hard-edge glow buttons
     art_neon: {
         bgStyle: { background: '#000000' },
         textColor: '#00ff88',
@@ -754,8 +660,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#00ff88',
         meshGlow: 'radial-gradient(circle at 50% 50%, rgba(0,255,136,0.05), transparent 70%)',
     },
-
-    // ★ Kaleidoscope — Animated color-shifting, white glass buttons [ANIMATED]
     art_kaleid: {
         bgStyle: { background: 'linear-gradient(135deg, #f43f5e, #8b5cf6, #06b6d4, #f59e0b, #10b981, #ec4899)', backgroundSize: '400% 400%', animation: 'bio-kaleid 12s ease-in-out infinite' },
         textColor: '#ffffff',
@@ -763,8 +667,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#a78bfa',
         effects: ['orbs', 'grain'], particleColor: '#ffffff',
     },
-
-    // ★ Atelier — Art studio image, warm glass buttons [IMAGE]
     art_atelier: {
         bgStyle: { background: '#0a0a0a' },
         textColor: '#fef3c7',
@@ -775,8 +677,6 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ GAMING ═══════════════════
-
-    // ✦ RGB — Black with conic RGB glow, emerald glow buttons
     game_rgb: {
         bgStyle: { background: '#0a0a0a' },
         textColor: '#34d399',
@@ -784,8 +684,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#10b981',
         meshGlow: 'conic-gradient(from 0deg at 50% 50%, rgba(239,68,68,0.06), rgba(250,204,21,0.06), rgba(74,222,128,0.06), rgba(56,189,248,0.06), rgba(168,85,247,0.06), rgba(239,68,68,0.06))',
     },
-
-    // ✦ Twitch — Purple gradient, purple glass pill buttons
     game_twitch: {
         bgStyle: { background: 'linear-gradient(145deg, #1a0a2e 0%, #2d1b69 40%, #5b21b6 100%)' },
         textColor: '#e9d5ff',
@@ -793,16 +691,12 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#a855f7',
         meshGlow: 'radial-gradient(circle at 50% 0%, rgba(147,51,234,0.2), transparent 60%)',
     },
-
-    // ✦ 8-Bit — Pixel retro, blocky bordered buttons
     game_8bit: {
         bgStyle: { background: '#1a1a2e' },
         textColor: '#eab308',
         btnStyle: { background: '#16213e', border: '3px solid #eab308', borderRadius: '0px', color: '#eab308', padding: '14px 24px', fontSize: '12px', fontWeight: 700, fontFamily: 'monospace', textTransform: 'uppercase' as const, letterSpacing: '0.08em', boxShadow: '4px 4px 0px #eab30850' },
         fontClass: 'font-mono', accent: '#eab308',
     },
-
-    // ★ Cyberpunk — Animated neon city, full-effect buttons [ANIMATED]
     game_cyber: {
         bgStyle: { background: 'linear-gradient(135deg, #0a0a2e, #1a0a3e, #2a0a4e, #1a0a2e)', animation: 'bio-glitch 3s steps(1) infinite' },
         textColor: '#f9a8d4',
@@ -810,8 +704,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#ec4899',
         effects: ['particles', 'scanlines', 'neon-border', 'scanbeam', 'spotlight'], particleColor: '#f472b6',
     },
-
-    // ★ Battle Station — Gaming setup image, glass buttons [IMAGE]
     game_arena: {
         bgStyle: { background: '#050510' },
         textColor: '#e0f2fe',
@@ -823,16 +715,12 @@ const THEMES: Record<string, ThemeConfig> = {
     },
 
     // ═══════════════════ CREATOR PRO ═══════════════════
-
-    // ✦ Obsidian — Dark premium, minimal glass card buttons
     biz_obsidian: {
         bgStyle: { background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)' },
         textColor: '#e2e8f0',
         btnStyle: { background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(16px)', border: '1px solid rgba(148,163,184,0.15)', borderRadius: '12px', color: '#cbd5e1', padding: '15px 24px', fontSize: '13px', fontWeight: 600 },
         fontClass: 'font-sans', accent: '#3b82f6',
     },
-
-    // ✦ Gradient — Vibrant gradient, white pill buttons
     biz_gradient: {
         bgStyle: { background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 30%, #ec4899 60%, #f43f5e 100%)' },
         textColor: '#ffffff',
@@ -840,16 +728,12 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#f472b6',
         meshGlow: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 50%)',
     },
-
-    // ✦ Paper — Light clean, solid dark card buttons
     biz_paper: {
         bgStyle: { background: '#f8fafc' },
         textColor: '#0f172a',
         btnStyle: { background: '#0f172a', border: 'none', borderRadius: '10px', color: '#f8fafc', padding: '16px 24px', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 8px rgba(15,23,42,0.08)' },
         fontClass: 'font-sans', accent: '#0f172a',
     },
-
-    // ★ Glass UI — Animated glass morphism, orbs + shimmer [ANIMATED]
     biz_glass: {
         bgStyle: { background: 'linear-gradient(135deg, #1e293b, #334155, #475569, #334155)', backgroundSize: '200% 200%', animation: 'bio-morph 12s ease-in-out infinite' },
         textColor: '#f1f5f9',
@@ -857,8 +741,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#60a5fa',
         effects: ['orbs', 'shimmer'], particleColor: '#93c5fd',
     },
-
-    // ★ Skyline — City image, glass buttons [IMAGE]
     biz_skyline: {
         bgStyle: { background: '#050510' },
         textColor: '#f1f5f9',
@@ -894,7 +776,6 @@ const THEMES: Record<string, ThemeConfig> = {
         btnStyle: { background: '#f4f4f5', border: '1px solid #e4e4e7', borderRadius: '14px', color: '#18181b', padding: '15px 24px', fontSize: '13px', fontWeight: 600 },
         fontClass: 'font-sans', accent: '#18181b',
     },
-
     modern_clay: {
         bgStyle: { background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' },
         textColor: '#0369a1',
@@ -911,7 +792,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#0ea5e9',
         effects: ['shimmer'],
     },
-
     modern_nebula: {
         bgStyle: { background: '#0a0515' },
         textColor: '#e9d5ff',
@@ -929,7 +809,57 @@ const THEMES: Record<string, ThemeConfig> = {
         meshGlow: 'radial-gradient(circle at 20% 30%, rgba(168,85,247,0.2), transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.15), transparent 50%)',
         effects: ['orbs', 'particles', 'scanbeam'], particleColor: '#c084fc',
     },
-
+    modern_sunset: {
+        bgStyle: { background: 'linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #FF8E53 100%)' },
+        textColor: '#4a342e',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.7)', 
+            backdropFilter: 'blur(20px)', 
+            border: '1px solid rgba(255,255,255,0.4)', 
+            borderRadius: '16px', 
+            color: '#c2410c', 
+            padding: '16px 24px', 
+            fontSize: '13px', 
+            fontWeight: 800, 
+            boxShadow: '0 10px 30px rgba(255,107,107,0.1)' 
+        },
+        fontClass: 'font-sans', accent: '#FF6B6B',
+        meshGlow: 'radial-gradient(circle at 50% 50%, #FFD93D 0%, transparent 70%)',
+        effects: ['grain', 'shimmer'],
+    },
+    modern_tech_wave: {
+        bgStyle: { background: '#050b1a' },
+        textColor: '#e0f2fe',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.05)', 
+            backdropFilter: 'blur(16px)', 
+            border: '1px solid rgba(56,189,248,0.2)', 
+            borderRadius: '12px', 
+            color: '#38bdf8', 
+            padding: '15px 24px', 
+            fontSize: '12px', 
+            fontWeight: 700 
+        },
+        fontClass: 'font-mono', accent: '#38bdf8',
+        effects: ['neural-wave', 'particles', 'scanlines'],
+    },
+    modern_watercolor: {
+        bgStyle: { background: '#ffffff' },
+        textColor: '#0369a1',
+        btnStyle: { 
+            background: 'rgba(255,255,255,0.7)', 
+            border: 'none', 
+            borderRadius: '24px', 
+            color: '#0284c7', 
+            padding: '15px 24px', 
+            fontSize: '13px', 
+            fontWeight: 800, 
+            boxShadow: '0 2px 10px rgba(0,0,0,0.02)' 
+        },
+        fontClass: 'font-serif', accent: '#0ea5e9',
+        meshGlow: 'radial-gradient(circle at 20% 10%, #0284c715 0%, #0284c730 40%, transparent 70%), radial-gradient(circle at 80% 40%, #0ea5e910 0%, #0ea5e920 50%, transparent 80%), radial-gradient(circle at 30% 80%, #7dd3fc30 0%, transparent 60%)',
+        effects: ['grain'],
+    },
     modern_glass_neon: {
         bgStyle: { background: 'linear-gradient(160deg, #020617 0%, #0f172a 100%)' },
         textColor: '#22d3ee',
@@ -949,7 +879,6 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-mono', accent: '#06b6d4',
         effects: ['neon-border', 'scanlines'],
     },
-
     modern_brutalist: {
         bgStyle: { background: '#ffde00' },
         textColor: '#000000',
@@ -965,60 +894,6 @@ const THEMES: Record<string, ThemeConfig> = {
             boxShadow: '6px 6px 0px #000000' 
         },
         fontClass: 'font-mono', accent: '#000000',
-    },
-
-    modern_sunset: {
-        bgStyle: { background: 'linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #FF8E53 100%)' },
-        textColor: '#4a342e',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.7)', 
-            backdropFilter: 'blur(20px)', 
-            border: '1px solid rgba(255,255,255,0.4)', 
-            borderRadius: '16px', 
-            color: '#c2410c', 
-            padding: '16px 24px', 
-            fontSize: '13px', 
-            fontWeight: 800, 
-            boxShadow: '0 10px 30px rgba(255,107,107,0.1)' 
-        },
-        fontClass: 'font-sans', accent: '#FF6B6B',
-        meshGlow: 'radial-gradient(circle at 50% 50%, #FFD93D 0%, transparent 70%)',
-        effects: ['grain', 'shimmer'],
-    },
-
-    modern_tech_wave: {
-        bgStyle: { background: '#050b1a' },
-        textColor: '#e0f2fe',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.05)', 
-            backdropFilter: 'blur(16px)', 
-            border: '1px solid rgba(56,189,248,0.2)', 
-            borderRadius: '12px', 
-            color: '#38bdf8', 
-            padding: '15px 24px', 
-            fontSize: '12px', 
-            fontWeight: 700 
-        },
-        fontClass: 'font-mono', accent: '#38bdf8',
-        effects: ['neural-wave', 'particles', 'scanlines'],
-    },
-
-    modern_watercolor: {
-        bgStyle: { background: '#ffffff' },
-        textColor: '#0369a1',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.7)', 
-            border: 'none', 
-            borderRadius: '24px', 
-            color: '#0284c7', 
-            padding: '15px 24px', 
-            fontSize: '13px', 
-            fontWeight: 800, 
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)' 
-        },
-        fontClass: 'font-serif', accent: '#0ea5e9',
-        meshGlow: 'radial-gradient(circle at 20% 10%, #0284c715 0%, #0284c730 40%, transparent 70%), radial-gradient(circle at 80% 40%, #0ea5e910 0%, #0ea5e920 50%, transparent 80%), radial-gradient(circle at 30% 80%, #7dd3fc30 0%, transparent 60%)',
-        effects: ['grain'],
     },
 };
 
@@ -1055,15 +930,14 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
             <ThemeAnimationStyles />
 
             {/* ── Layout Style Selector ── */}
-            <div className="mb-8">
+            <div className="mb-10">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-4 block">Layout Structure</label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
                     {[
-                        { id: 'standard', name: 'Standard', desc: 'Classic Bio-Link list', icon: <Layers size={18} /> },
-                        { id: 'portfolio', name: 'Portfolio', desc: 'Continuous Template', icon: <Grid size={18} /> },
-                        { id: 'ugc', name: 'UGC Creator', desc: 'Elegant & Aesthetic', icon: <Sparkles size={18} /> },
-                        { id: 'olivia', name: 'Olivia Warren', desc: 'Sage Green organic', icon: <Palette size={18} /> },
-                        { id: 'universal', name: 'Universal Pro', desc: 'Modern & High-End', icon: <Zap size={18} /> },
+                        { id: 'standard', name: 'Standard Links', desc: 'Classic bio-link list with themes', image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&q=80' },
+                        { id: 'portfolio', name: 'Portfolio', desc: 'Continuous showcase template', image: 'https://images.unsplash.com/photo-1481481600465-bbaeb5e45a2d?w=500&q=80' },
+                        { id: 'ugc', name: 'UGC Creator', desc: 'Elegant & aesthetic layout', image: 'https://images.unsplash.com/photo-1616469829581-73993eb86b02?w=500&q=80' },
+                        { id: 'olivia', name: 'Olivia Warren', desc: 'Minimalist image-focused layout', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80' },
                     ].map((layout) => (
                         <button
                             key={layout.id}
@@ -1072,113 +946,116 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                                 updateProfile({ settings: newSettings });
                             }}
                             className={cn(
-                                "flex flex-col p-4 rounded-2xl border-2 transition-all text-left group relative overflow-hidden",
+                                "text-left group relative overflow-hidden rounded-3xl border-2 transition-all duration-300 flex flex-col h-full",
                                 (profile.settings?.layoutStyle || 'standard') === layout.id
-                                    ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-xl shadow-primary/10"
-                                    : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-md"
+                                    ? "border-primary shadow-xl shadow-primary/10 ring-2 ring-primary ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950 scale-[1.02] z-10"
+                                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md"
                             )}
                         >
-                            <div className={cn(
-                                "w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors",
-                                (profile.settings?.layoutStyle || 'standard') === layout.id ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:text-primary group-hover:bg-primary/10"
-                            )}>
-                                {layout.icon}
+                            <div className="h-28 w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                <img src={layout.image} alt={layout.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                                {(profile.settings?.layoutStyle || 'standard') === layout.id && (
+                                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 animate-pulse">
+                                        <Sparkles size={12} />
+                                    </div>
+                                )}
                             </div>
-                            <p className={cn("text-xs font-black uppercase tracking-widest", (profile.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
-                                {layout.name}
-                            </p>
-                            <p className="text-[10px] font-medium text-slate-400 mt-1">{layout.desc}</p>
-                            
-                            {(profile.settings?.layoutStyle || 'standard') === layout.id && (
-                                <div className="absolute top-2 right-2">
-                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                </div>
-                            )}
+                            <div className="p-4 flex-1 flex flex-col justify-end bg-white dark:bg-slate-900">
+                                <p className={cn("text-xs font-black uppercase tracking-widest", (profile.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
+                                    {layout.name}
+                                </p>
+                                <p className="text-[10px] font-medium text-slate-400 mt-1">{layout.desc}</p>
+                            </div>
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* ── Category Pills ── */}
-            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                {NICHE_CATEGORIES.map(cat => (
-                    <button key={cat.id} onClick={() => setSelectedNiche(cat.id)}
-                        className={cn(
-                            "flex-shrink-0 h-10 px-5 rounded-xl flex items-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all",
-                            selectedNiche === cat.id
-                                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                : "bg-white dark:bg-slate-900 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800"
-                        )}>
-                        {cat.icon} {cat.name}
-                    </button>
-                ))}
-            </div>
-
-            {/* ── Template Grid ── */}
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-                {NICHE_TEMPLATES[selectedNiche]?.map((tpl) => {
-                    const tCfg = getTheme(tpl.id);
-                    const isSelected = profile?.theme === tpl.id;
-                    const isAnimated = tpl.badge === 'Animated';
-                    const isImage = tpl.badge === 'Image';
-
-                    return (
-                        <button key={tpl.id} onClick={() => updateProfile({ theme: tpl.id })}
-                            className={cn(
-                                "group relative aspect-[9/16] rounded-2xl overflow-hidden border-2 transition-all duration-300 outline-none cursor-pointer",
-                                isSelected
-                                    ? "border-primary shadow-2xl shadow-primary/20 scale-[1.02]"
-                                    : "border-transparent hover:border-primary/30 dark:hover:border-primary/20 hover:shadow-xl"
-                            )}>
-
-                            <div className="absolute inset-0" style={tCfg.bgStyle}>
-                                <ThemeEffectsLayer theme={tCfg} mini />
-                                <div className="absolute inset-0 flex flex-col items-center pt-8 px-4 opacity-50 group-hover:opacity-80 transition-opacity duration-500 z-[5]">
-                                    <div className="w-10 h-10 rounded-full mb-2" style={{ border: `2px solid ${tCfg.textColor}30`, backgroundColor: `${tCfg.textColor}10` }} />
-                                    <div className="w-14 h-1.5 rounded-full mb-1" style={{ backgroundColor: `${tCfg.textColor}25` }} />
-                                    <div className="w-10 h-1 rounded-full mb-5" style={{ backgroundColor: `${tCfg.textColor}15` }} />
-                                    <div className="w-full space-y-2">
-                                        {[1, 2, 3].map(n => (
-                                            <div key={n} className="w-full h-7 transition-all duration-500"
-                                                style={{ ...tCfg.btnStyle, padding: 0, fontSize: 0 }} />
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {isSelected && (
-                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-20 shadow-lg">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                                </div>
-                            )}
-
-                            {tpl.badge && (
-                                <div className={cn(
-                                    "absolute top-3 left-3 px-2.5 py-1 text-white text-[8px] font-black uppercase rounded-full shadow-lg flex items-center gap-1 z-20",
-                                    isAnimated ? "bg-gradient-to-r from-amber-500 to-orange-500" :
-                                        isImage ? "bg-gradient-to-r from-cyan-500 to-blue-500" :
-                                            "bg-gradient-to-r from-slate-600 to-slate-800"
+            {(!profile.settings?.layoutStyle || profile.settings.layoutStyle === 'standard') && (
+                <>
+                    {/* ── Category Pills ── */}
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                        {NICHE_CATEGORIES.map(cat => (
+                            <button key={cat.id} onClick={() => setSelectedNiche(cat.id)}
+                                className={cn(
+                                    "flex-shrink-0 h-10 px-5 rounded-xl flex items-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all",
+                                    selectedNiche === cat.id
+                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                        : "bg-white dark:bg-slate-900 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800"
                                 )}>
-                                    {isAnimated ? <Zap size={8} /> : isImage ? <ImageIcon size={8} /> : <Sparkles size={8} />}
-                                    {tpl.badge}
-                                </div>
-                            )}
+                                {cat.icon} {cat.name}
+                            </button>
+                        ))}
+                    </div>
 
-                            <div className="absolute bottom-0 inset-x-0 p-2.5 z-10">
-                                <div className="bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl p-3 rounded-xl border border-white/20 shadow-2xl group-hover:translate-y-[-2px] transition-transform duration-300">
-                                    <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">{tpl.name}</p>
-                                    <div className="flex items-center justify-between mt-1.5">
-                                        <span className="text-[8px] font-black uppercase tracking-[0.15em]" style={{ color: tCfg.accent }}>{tpl.style}</span>
-                                        <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ backgroundColor: `${tCfg.accent}20` }}>
-                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tCfg.accent }} />
+                    {/* ── Template Grid ── */}
+                    <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                        {NICHE_TEMPLATES[selectedNiche]?.map((tpl) => {
+                            const tCfg = getTheme(tpl.id);
+                            const isSelected = profile?.theme === tpl.id;
+                            const isAnimated = tpl.badge === 'Animated';
+                            const isImage = tpl.badge === 'Image';
+
+                            return (
+                                <button key={tpl.id} onClick={() => updateProfile({ theme: tpl.id })}
+                                    className={cn(
+                                        "group relative aspect-[9/16] rounded-2xl overflow-hidden border-2 transition-all duration-300 outline-none cursor-pointer",
+                                        isSelected
+                                            ? "border-primary shadow-2xl shadow-primary/20 scale-[1.02]"
+                                            : "border-transparent hover:border-primary/30 dark:hover:border-primary/20 hover:shadow-xl"
+                                    )}>
+
+                                    <div className="absolute inset-0" style={tCfg.bgStyle}>
+                                        <ThemeEffectsLayer theme={tCfg} mini />
+                                        <div className="absolute inset-0 flex flex-col items-center pt-8 px-4 opacity-50 group-hover:opacity-80 transition-opacity duration-500 z-[5]">
+                                            <div className="w-10 h-10 rounded-full mb-2" style={{ border: `2px solid ${tCfg.textColor}30`, backgroundColor: `${tCfg.textColor}10` }} />
+                                            <div className="w-14 h-1.5 rounded-full mb-1" style={{ backgroundColor: `${tCfg.textColor}25` }} />
+                                            <div className="w-10 h-1 rounded-full mb-5" style={{ backgroundColor: `${tCfg.textColor}15` }} />
+                                            <div className="w-full space-y-2">
+                                                {[1, 2, 3].map(n => (
+                                                    <div key={n} className="w-full h-7 transition-all duration-500"
+                                                        style={{ ...tCfg.btnStyle, padding: 0, fontSize: 0 }} />
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </button>
-                    );
-                })}
-            </div>
+
+                                    {isSelected && (
+                                        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-20 shadow-lg">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                        </div>
+                                    )}
+
+                                    {tpl.badge && (
+                                        <div className={cn(
+                                            "absolute top-3 left-3 px-2.5 py-1 text-white text-[8px] font-black uppercase rounded-full shadow-lg flex items-center gap-1 z-20",
+                                            isAnimated ? "bg-gradient-to-r from-amber-500 to-orange-500" :
+                                                isImage ? "bg-gradient-to-r from-cyan-500 to-blue-500" :
+                                                    "bg-gradient-to-r from-slate-600 to-slate-800"
+                                        )}>
+                                            {isAnimated ? <Zap size={8} /> : isImage ? <ImageIcon size={8} /> : <Sparkles size={8} />}
+                                            {tpl.badge}
+                                        </div>
+                                    )}
+
+                                    <div className="absolute bottom-0 inset-x-0 p-2.5 z-10">
+                                        <div className="bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl p-3 rounded-xl border border-white/20 shadow-2xl group-hover:translate-y-[-2px] transition-transform duration-300">
+                                            <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">{tpl.name}</p>
+                                            <div className="flex items-center justify-between mt-1.5">
+                                                <span className="text-[8px] font-black uppercase tracking-[0.15em]" style={{ color: tCfg.accent }}>{tpl.style}</span>
+                                                <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ backgroundColor: `${tCfg.accent}20` }}>
+                                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tCfg.accent }} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 };

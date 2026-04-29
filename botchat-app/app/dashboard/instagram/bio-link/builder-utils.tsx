@@ -1,7 +1,8 @@
 import React from "react";
-import { LinkIcon, FileCode2, User, ImageIcon, Share2, CircleDot, Info, Megaphone, ShoppingBag, Orbit, Youtube, Video, Layers, Grid, MonitorPlay, Smartphone, Monitor, Hexagon, SmartphoneNfc, Globe, Mail, Camera, Sparkles } from "lucide-react";
+import { LinkIcon, FileCode2, User, ImageIcon, Share2, CircleDot, Info, Megaphone, ShoppingBag, Orbit, Youtube, Video, Layers, Grid, MonitorPlay, Smartphone, Monitor, Hexagon, SmartphoneNfc, Globe, Mail, Camera, Sparkles, MoreHorizontal } from "lucide-react";
 
 export const BLOCK_ICONS: Record<string, React.ReactNode> = {
+    vcard: <User size={16} />, newsletter: <Mail size={16} />, divider: <MoreHorizontal size={16} />,
     link: <LinkIcon size={16} />, heading: <FileCode2 size={16} />, paragraph: <FileCode2 size={16} />,
     avatar: <User size={16} />, image: <ImageIcon size={16} />, socials: <Share2 size={16} />,
     business_hours: <CircleDot size={16} />, modal_text: <Info size={16} />,
@@ -53,7 +54,9 @@ export const getUiTypeFromBlock = (block: any, uiTypeOverrides?: Record<number, 
 export const getDefaultItemForType = (value: unknown) => {
     const type = normalizeBlockType(value);
     if (isMediaType(type)) return { title: "", url: "", image_url: "", builder_type: type };
-    if (["paragraph", "modal_text", "business_hours"].includes(type)) return { title: "", description: "", url: "", builder_type: type };
+    if (["paragraph", "modal_text", "business_hours", "newsletter"].includes(type)) return { title: "", description: "", url: "", builder_type: type };
+    if (type === "vcard") return { first_name: "", last_name: "", email: "", phone: "", organization: "", builder_type: type };
+    if (type === "divider") return { builder_type: type };
     if (type === "heading") return { title: "", builder_type: type };
     if (["email_collector", "phone_collector", "contact_form"].includes(type)) return { title: "", description: "", builder_type: type };
     return { title: "", url: "https://", builder_type: type };

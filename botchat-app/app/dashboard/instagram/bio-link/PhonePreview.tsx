@@ -52,67 +52,47 @@ export const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) 
 
 export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, instagramUsername, viewportOffset = 280, previewWidth = 300, uiTypeOverrides = {}, layoutStyle = "standard" }: any) => {
     const [activePortfolioTab, setActivePortfolioTab] = React.useState("portfolio");
-    const [portfolioSubView, setPortfolioSubView] = React.useState("main"); // 'main' or 'projects'
-    // Use only the sections from the selected tab to prevent cross-tab duplication
+    const [portfolioSubView, setPortfolioSubView] = React.useState("main");
     const currentTab = tabs.find((t: any) => t.id === selectedTabId) || tabs[0];
     const previewSections = currentTab?.sections || [];
     const theme = getTheme(profile?.theme);
 
     const allBlocks = previewSections.flatMap((s: any) => s.blocks || []);
-
-    // Extraction: Only pin the VERY FIRST avatar block found to the top
     const topAvatar = allBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "avatar");
-
-    // Aggressive Deduplication: Hide all avatar blocks. 
-    // Also hide any image block that appears significantly early or has the same URL.
     const avatarUrls = topAvatar ? [topAvatar.settings?.image || topAvatar.settings?.url].filter(Boolean) : [];
 
     let firstActualContentFound = false;
     const otherBlocks = allBlocks.filter((b, idx) => {
         const type = getUiTypeFromBlock(b, uiTypeOverrides);
         if (type === "avatar") return false;
-
         const url = b.settings?.image || b.settings?.url;
         const isDuplicateUrl = url && avatarUrls.includes(url);
-
-        // If we have a pinned avatar and this is an early image block without a custom URL destination, treat it as a duplicate
         if (type === "image" && topAvatar && !firstActualContentFound && (isDuplicateUrl || !b.location_url || b.location_url === "https://")) {
             return false;
         }
-
         if (['link', 'socials', 'heading', 'business_hours'].includes(type)) {
             firstActualContentFound = true;
         }
-
         return true;
     });
 
-    // Intelligent Logic for Professional Portfolio Stacking
     const groupedRows: any[] = [];
     let linkGrid: any[] = [];
     let activeSection: { heading: any; blocks: any[] } | null = null;
 
     otherBlocks.forEach((block: any) => {
         const type = getUiTypeFromBlock(block, uiTypeOverrides);
-        const settings = block.settings || {};
-
         if (type === "heading") {
             if (linkGrid.length > 0) { groupedRows.push({ type: 'grid', blocks: linkGrid }); linkGrid = []; }
             if (activeSection) { groupedRows.push({ type: 'section', ...activeSection }); }
             activeSection = { heading: block, blocks: [] };
         } else if (type === "link") {
-            if (activeSection) {
-                activeSection.blocks.push(block);
-            } else {
-                linkGrid.push(block);
-            }
+            if (activeSection) activeSection.blocks.push(block);
+            else linkGrid.push(block);
         } else {
             if (linkGrid.length > 0) { groupedRows.push({ type: 'grid', blocks: linkGrid }); linkGrid = []; }
-            if (activeSection) {
-                activeSection.blocks.push(block);
-            } else {
-                groupedRows.push({ type: 'single', block });
-            }
+            if (activeSection) activeSection.blocks.push(block);
+            else groupedRows.push({ type: 'single', block });
         }
     });
     if (linkGrid.length > 0) groupedRows.push({ type: 'grid', blocks: linkGrid });
@@ -129,53 +109,36 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
         const type = getUiTypeFromBlock(block, uiTypeOverrides);
         const settings = block.settings || {};
         const alignment = settings.text_alignment || (isTiled ? "left" : "center");
-
-        // ── Detect if the template background is bright (checks ALL gradient stops) ──
         const themeBgStr = (theme.bgStyle.background as string) || '';
         const themeBgIsLight = isBgLight(themeBgStr);
-
-        // ── Effective page text color: if bg bright, always use black ──
         const effectiveTextColor = themeBgIsLight ? '#000000' : theme.textColor;
-
         const baseStyle: any = { ...(theme.btnStyle || {}) };
+        
         if (settings.background_color && settings.background_color.length > 7 && settings.background_color.endsWith("00")) {
             baseStyle.background = "rgba(0,0,0,0.05)";
         } else if (settings.background_color && settings.background_color !== "#ffffff" && settings.background_color !== "#000000") {
             baseStyle.background = settings.background_color;
         }
 
-        // ── Auto Contrast Logic for buttons ──
-        // If template bg is bright, always force dark text (ignore saved light text_color)
         const finalBg = baseStyle.background || theme.btnStyle?.background;
         const blockBgIsLight = finalBg && typeof finalBg === "string" ? isColorLight(finalBg) : true;
 
-        if (themeBgIsLight) {
-            // Template is bright — force dark text regardless of saved color
-            baseStyle.color = "#000000";
-        } else if (settings.text_color && settings.text_color !== "#020617" && settings.text_color !== "inherit") {
-            // User saved a color — check if it's readable against the block background
-            if (!blockBgIsLight && (settings.text_color === "#000000" || settings.text_color === "#020617")) {
-                baseStyle.color = "#ffffff"; // Force white on dark bg if saved color is black
-            } else {
-                baseStyle.color = settings.text_color;
-            }
-        } else if (!blockBgIsLight) {
-            // Dark button background — force light text
-            baseStyle.color = "#ffffff";
-        } else if (blockBgIsLight) {
-            // Light button background — force dark text
-            baseStyle.color = "#000000";
-        }
+        if (themeBgIsLight) baseStyle.color = "#000000";
+        else if (settings.text_color && settings.text_color !== "#020617" && settings.text_color !== "inherit") {
+            if (!blockBgIsLight && (settings.text_color === "#000000" || settings.text_color === "#020617")) baseStyle.color = "#ffffff";
+            else baseStyle.color = settings.text_color;
+        } else if (!blockBgIsLight) baseStyle.color = "#ffffff";
+        else if (blockBgIsLight) baseStyle.color = "#000000";
+
         if (settings.border_radius === "straight") baseStyle.borderRadius = "0px";
         else if (settings.border_radius === "rounded") baseStyle.borderRadius = "20px";
         else if (settings.border_radius === "round") baseStyle.borderRadius = "9999px";
 
         const buttonStyle = { ...baseStyle, textAlign: alignment as any };
-        const displayLabel = hideLabel ? null : (settings.title || ((!/heading|paragraph|avatar|image|socials|links/i.test(settings.text || "")) ? settings.text : null) || ((!/heading|paragraph|avatar|image|socials|links/i.test(settings.name || "")) ? settings.name : null));
+        const displayLabel = hideLabel ? null : (settings.title || settings.text || settings.name);
 
         return (
             <motion.div key={block.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 * gidx }} className={isTiled ? "h-full" : "w-full"}>
-                {/* Link Block */}
                 {type === "link" && (
                     <a href={block.location_url} className={`w-full group transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex ${isTiled ? 'flex-col items-start min-h-[120px] justify-between p-5' : 'items-center justify-center min-h-[64px] py-4 px-8 shadow-md'}`} style={{ ...buttonStyle, borderRadius: isTiled && buttonStyle.borderRadius === '9999px' ? '32px' : buttonStyle.borderRadius }}>
                         {settings.icon ? <i className={`${settings.icon} ${isTiled ? 'text-2xl mb-2 opacity-100' : 'absolute left-8 text-xl opacity-80'} group-hover:scale-110 transition-transform`}></i> : (isTiled && <Globe size={24} className="mb-2 opacity-40" />)}
@@ -184,31 +147,22 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </a>
                 )}
 
-                {/* Heading Block */}
                 {type === "heading" && (
                     <div className={cn("pt-8 pb-3", profile.theme === 'modern_fisher' && "text-center")} style={{ textAlign: alignment as any }}>
-                        <h2 className={cn(
-                            "text-[24px] font-black tracking-tighter leading-tight",
-                            profile.theme === 'modern_fisher' && "text-[32px] first-of-type:text-[#FF6B00]"
-                        )} style={{ color: profile.theme === 'modern_fisher' ? undefined : effectiveTextColor }}>
+                        <h2 className={cn("text-[24px] font-black tracking-tighter leading-tight", profile.theme === 'modern_fisher' && "text-[32px] first-of-type:text-[#FF6B00]")} style={{ color: profile.theme === 'modern_fisher' ? undefined : effectiveTextColor }}>
                             {displayLabel || "Untitled Section"}
                         </h2>
                     </div>
                 )}
 
-                {/* Paragraph Block */}
                 {type === "paragraph" && (
                     <div className={cn("pb-2", profile.theme === 'modern_fisher' && "text-center")} style={{ textAlign: alignment as any }}>
-                        <p className={cn(
-                            "text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line",
-                            profile.theme === 'modern_fisher' && "text-[16px] opacity-80"
-                        )} style={{ color: effectiveTextColor }}>
+                        <p className={cn("text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line", profile.theme === 'modern_fisher' && "text-[16px] opacity-80")} style={{ color: effectiveTextColor }}>
                             {settings.description || settings.text}
                         </p>
                     </div>
                 )}
 
-                {/* Socials Block */}
                 {type === "socials" && settings.socials && (
                     <div className="flex flex-wrap items-center gap-4 py-6" style={{ justifyContent: alignment === 'left' ? 'flex-start' : alignment === 'right' ? 'flex-end' : 'center' }}>
                         {Object.entries(settings.socials).map(([key, value]: any) => value && (
@@ -220,18 +174,11 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </div>
                 )}
 
-                {/* Avatar Block */}
                 {type === "avatar" && (
                     <div className="flex flex-col items-center py-6 group">
                         <div className="relative">
-                            <div className={cn(
-                                "absolute -inset-4 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity",
-                                profile.theme === 'modern_fisher' ? "bg-orange-500/10" : "bg-white/5"
-                            )} />
-                            <div className={cn(
-                                "relative overflow-hidden border-[4px] shadow-2xl transition-all duration-500",
-                                profile.theme === 'modern_fisher' ? "border-white bg-[#f5eadb]" : "border-white/10"
-                            )} style={{ borderRadius: buttonStyle.borderRadius === '9999px' ? '9999px' : '40px', width: settings.size || 140, height: settings.size || 140 }}>
+                            <div className={cn("absolute -inset-4 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity", profile.theme === 'modern_fisher' ? "bg-orange-500/10" : "bg-white/5")} />
+                            <div className={cn("relative overflow-hidden border-[4px] shadow-2xl transition-all duration-500", profile.theme === 'modern_fisher' ? "border-white bg-[#f5eadb]" : "border-white/10")} style={{ borderRadius: buttonStyle.borderRadius === '9999px' ? '9999px' : '40px', width: settings.size || 140, height: settings.size || 140 }}>
                                 <img src={settings.image || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"} className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700" />
                             </div>
                         </div>
@@ -241,7 +188,19 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </div>
                 )}
 
-                {/* Embed Modules */}
+                {["email_collector", "phone_collector", "contact_form"].includes(type) && (
+                    <div className="w-full p-6 rounded-[28px] border border-white/5 shadow-2xl space-y-4" style={{ ...buttonStyle, background: 'rgba(0,0,0,0.1)' }}>
+                        <div className="text-center space-y-1">
+                            <h3 className="font-black text-lg tracking-tight" style={{ color: effectiveTextColor }}>{settings.title || settings.name || "Sign Up"}</h3>
+                            <p className="text-[13px] opacity-60 font-medium" style={{ color: effectiveTextColor }}>{settings.description}</p>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <input readOnly placeholder={settings.placeholder || `Enter your email...`} className="w-full h-12 px-5 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold outline-none placeholder:opacity-30" style={{ color: effectiveTextColor }} />
+                            <button className="w-full h-12 rounded-2xl bg-white text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg">{settings.button_text || "Submit"}</button>
+                        </div>
+                    </div>
+                )}
+
                 {(isMediaType(type) || ['youtube', 'spotify', 'soundcloud', 'paypal'].includes(type)) && (
                     <div className="overflow-hidden w-full relative group mt-4 mb-2 shadow-2xl border border-white/5" style={{ ...buttonStyle, padding: 0, borderRadius: '28px', background: 'rgba(0,0,0,0.1)' }}>
                         {type === 'youtube' && (block.location_url || settings.url) ? (
@@ -257,16 +216,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         <DollarSign size={32} className="text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
                                     </div>
                                     <h3 className="text-xl font-black tracking-tight mb-1 text-white">{settings.title || "Support My Work"}</h3>
-                                    <p className="text-[13px] font-bold text-blue-300/60 uppercase tracking-widest mb-6">
-                                        {settings.price} {settings.currency === "US" ? "USD" : settings.currency}
-                                    </p>
+                                    <p className="text-[13px] font-bold text-blue-300/60 uppercase tracking-widest mb-6">{settings.price} {settings.currency === "US" ? "USD" : settings.currency}</p>
                                     <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
-                                    <button className="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] text-white shadow-[0_10px_20px_-5px_rgba(59,130,246,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all">
-                                        Send Secure Payment
-                                    </button>
-                                    <p className="mt-4 text-[9px] font-bold text-white/20 uppercase tracking-widest flex items-center gap-2">
-                                        <ShieldAlert size={10} /> Secure PayPal Checkout
-                                    </p>
+                                    <button className="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] text-white shadow-[0_10px_20px_-5px_rgba(59,130,246,0.5)]">Send Secure Payment</button>
                                 </div>
                             </div>
                         ) : (
@@ -283,7 +235,38 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </div>
                 )}
 
-                {/* Business Hours */}
+                {type === "newsletter" && (
+                    <div className="w-full p-6 rounded-[28px] border border-white/5 shadow-2xl space-y-4" style={{ ...buttonStyle, background: 'rgba(0,0,0,0.1)' }}>
+                        <div className="text-center space-y-1">
+                            <h3 className="font-black text-lg tracking-tight" style={{ color: effectiveTextColor }}>{settings.title || "Newsletter"}</h3>
+                            <p className="text-[13px] opacity-60 font-medium" style={{ color: effectiveTextColor }}>{settings.description}</p>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <input readOnly placeholder={settings.placeholder || "Enter your email..."} className="w-full h-12 px-5 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold outline-none placeholder:opacity-30" style={{ color: effectiveTextColor }} />
+                            <button className="w-full h-12 rounded-2xl bg-white text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg">Subscribe</button>
+                        </div>
+                    </div>
+                )}
+
+                {type === "vcard" && (
+                    <div className="w-full p-6 rounded-[28px] border border-white/5 shadow-2xl flex items-center gap-4" style={{ ...buttonStyle, background: 'rgba(0,0,0,0.1)' }}>
+                        <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10">
+                            <User size={24} className="opacity-40" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-black text-[16px] truncate" style={{ color: effectiveTextColor }}>{settings.first_name} {settings.last_name}</h3>
+                            <p className="text-[11px] font-bold opacity-40 uppercase tracking-widest truncate">{settings.organization || "Contact Details"}</p>
+                        </div>
+                        <button className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 hover:bg-white/20 transition-all"><ArrowUpRight size={18} /></button>
+                    </div>
+                )}
+
+                {type === "divider" && (
+                    <div className="w-full py-4 flex items-center justify-center">
+                        <div className="w-full h-px bg-white/10" />
+                    </div>
+                )}
+
                 {type === "business_hours" && (
                     <div className="p-8 mt-4 mb-2 border border-white/5 shadow-xl" style={{ ...buttonStyle, background: 'rgba(255,255,255,0.03)' }}>
                         <div className="flex items-center gap-3 mb-6 justify-center">
@@ -305,75 +288,60 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
     };
 
     return (
-        <div className="relative mx-auto flex items-center justify-center p-2" style={{ width: `min(${previewWidth}px, 100%)`, height: `min(820px, calc(100vh - ${viewportOffset}px))` }}>
-            {/* iPhone 16 Pro Frame */}
-            <div className="relative w-full h-full bg-[#080808] rounded-[4rem] p-[10px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/10 overflow-hidden">
-                {/* Metallic bezel highlights */}
-                <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-b from-white/10 to-transparent z-20" />
-                <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-r from-white/5 to-transparent z-20" />
-                <div className="absolute inset-y-0 right-0 w-0.5 bg-gradient-to-l from-white/5 to-transparent z-20" />
+        <div className="relative mx-auto flex items-center justify-center p-4 h-full w-full pointer-events-auto overflow-visible">
+            {/* iPhone 17 Pro Concept Shell — Ultra Thin Bezels & Titanium Frame */}
+            <div className="relative aspect-[9/19.5] h-[88vh] max-h-[840px] w-auto bg-black rounded-[4rem] p-[4px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/20 overflow-hidden group/phone transition-all duration-700 shrink-0 border-[1px] border-white/5">
+                
+                {/* Titanium Frame Reflections */}
+                <div className="absolute inset-0 rounded-[4rem] border-[4px] border-[#1c1c1e] z-0" />
+                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/[0.08] to-transparent z-10 pointer-events-none" />
+                
+                {/* Minimalist Side Buttons (iPhone 17 Style) */}
+                <div className="absolute -left-[3px] top-32 w-1 h-12 bg-zinc-800 rounded-r-lg z-20 border-r border-white/5" />
+                <div className="absolute -left-[3px] top-48 w-1 h-20 bg-zinc-800 rounded-r-lg z-20 border-r border-white/5" />
+                <div className="absolute -left-[3px] top-72 w-1 h-20 bg-zinc-800 rounded-r-lg z-20 border-r border-white/5" />
+                <div className="absolute -right-[3px] top-48 w-1 h-28 bg-zinc-800 rounded-l-lg z-20 border-l border-white/5" />
 
-                {/* Dynamic Island */}
-                <div className="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-[20px] z-[100] flex items-center justify-center border border-white/5 shadow-inner">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500/20 mr-1.5 blur-[1px]" />
-                    <div className="w-1 h-1 rounded-full bg-white/5" />
+                {/* Integrated Dynamic Island (Smaller & Sleeker) */}
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-[100] flex items-center justify-center border border-white/[0.05] shadow-2xl">
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/30 mr-1.5 blur-[2px]" />
+                    <div className="w-0.5 h-0.5 rounded-full bg-white/10" />
                 </div>
+                
+                {/* Edge-to-Edge Screen Content */}
+                <div className="rounded-[3.8rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" 
+                    style={{ background: theme.bgStyle.background || "#F3F4F6", color: theme.textColor || "#0F172A" }}>
+                    
+                    {/* Screen Surface Reflection */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-transparent z-30 pointer-events-none" />
 
-                {/* Screen Content */}
-                <div className="rounded-[3.2rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" style={{ background: theme.bgStyle.background || "#F3F4F6", color: theme.textColor || "#0F172A" }}>
                     <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (layoutStyle === "portfolio" || layoutStyle === "ugc" || layoutStyle === "olivia" || layoutStyle === "universal") ? "p-0" : "p-6")}>
+                        {/* Default Header if no blocks exist */}
+                        {otherBlocks.length === 0 && !topAvatar && (
+                            <div className="flex flex-col items-center pt-20 pb-8 space-y-5 animate-in fade-in zoom-in-95 duration-1000">
+                                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/20 flex items-center justify-center backdrop-blur-3xl shadow-2xl">
+                                    <User size={36} className="opacity-30 text-white" />
+                                </div>
+                                <div className="text-center space-y-1.5">
+                                    <h3 className="text-2xl font-black tracking-tight text-white/50">@{instagramUsername || 'username'}</h3>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30">Studio Active</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {layoutStyle === "portfolio" ? (
-                            <PortfolioLayout
-                                profile={profile}
-                                tabs={tabs}
-                                selectedTabId={selectedTabId}
-                                setSelectedTabId={setSelectedTabId}
-                                instagramUsername={instagramUsername}
-                                otherBlocks={otherBlocks}
-                                topAvatar={topAvatar}
-                                getUiTypeFromBlock={getUiTypeFromBlock}
-                                uiTypeOverrides={uiTypeOverrides}
-                                isMediaType={isMediaType}
-                                getYouTubeId={getYouTubeId}
-                                renderBlockUI={renderBlockUI}
-                            />
+                            <PortfolioLayout profile={profile} tabs={tabs} selectedTabId={selectedTabId} setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} otherBlocks={otherBlocks} topAvatar={topAvatar} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} isMediaType={isMediaType} getYouTubeId={getYouTubeId} renderBlockUI={renderBlockUI} />
                         ) : layoutStyle === "ugc" ? (
-                            <UGCLayout
-                                profile={profile}
-                                otherBlocks={otherBlocks}
-                                topAvatar={topAvatar}
-                                instagramUsername={instagramUsername}
-                                getUiTypeFromBlock={getUiTypeFromBlock}
-                                uiTypeOverrides={uiTypeOverrides}
-                                isMediaType={isMediaType}
-                                renderBlockUI={renderBlockUI}
-                            />
+                            <UGCLayout profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} instagramUsername={instagramUsername} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} isMediaType={isMediaType} renderBlockUI={renderBlockUI} />
                         ) : layoutStyle === "olivia" ? (
-                            <OliviaLayout
-                                profile={profile}
-                                otherBlocks={otherBlocks}
-                                topAvatar={topAvatar}
-                                isMediaType={isMediaType}
-                                getUiTypeFromBlock={getUiTypeFromBlock}
-                                uiTypeOverrides={uiTypeOverrides}
-                                renderBlockUI={renderBlockUI}
-                            />
+                            <OliviaLayout profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} isMediaType={isMediaType} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} />
                         ) : layoutStyle === "universal" ? (
-                            <UniversalLayout
-                                profile={profile}
-                                otherBlocks={otherBlocks}
-                                topAvatar={topAvatar}
-                                getUiTypeFromBlock={getUiTypeFromBlock}
-                                uiTypeOverrides={uiTypeOverrides}
-                                renderBlockUI={renderBlockUI}
-                            />
+                            <UniversalLayout profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} />
                         ) : (
-                            <StandardLayout
-                                topAvatar={topAvatar}
-                                groupedRows={groupedRows}
-                                profile={profile}
-                                renderBlockUI={renderBlockUI}
-                            />
+                            <StandardLayout topAvatar={topAvatar} groupedRows={groupedRows} profile={profile} renderBlockUI={renderBlockUI} />
                         )}
                     </div>
                 </div>
