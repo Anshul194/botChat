@@ -33,7 +33,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { createCampaign, fetchCampaigns } from "@/store/slices/socialPostingSlice";
+import { createCampaign, fetchCampaigns, createCtaCampaign, fetchCtaCampaigns } from "@/store/slices/socialPostingSlice";
 import type { AppDispatch, RootState } from "@/store/store";
 import api from "@/lib/api";
 
@@ -50,14 +50,19 @@ export default function PostStudioPage() {
   // Real Account State
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
+  const [selectedParentAccounts, setSelectedParentAccounts] = useState<string[]>([]); // For filtering pages by account
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const { campaigns, isLoading: isLoadingCampaigns } = useSelector((state: RootState) => state.socialPosting);
+  const { campaigns, ctaCampaigns, isLoading: isLoadingCampaigns } = useSelector((state: RootState) => state.socialPosting);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (step === 'list') {
-      dispatch(fetchCampaigns({ per_page: 50 }));
+      if (postType === 'cta') {
+        dispatch(fetchCtaCampaigns({ per_page: 50 }));
+      } else {
+        dispatch(fetchCampaigns({ per_page: 50 }));
+      }
     }
     
     window.dispatchEvent(new Event("collapseDesktopSidebar"));
@@ -88,17 +93,21 @@ export default function PostStudioPage() {
       const fbAccounts = fbRes.data.data.facebook_accounts || [];
       const igAccounts = igRes.data.data.instagram_accounts || [];
 
-      const normalizedFb = fbAccounts.flatMap((acc: any) => acc.pages || []).map((p: any) => ({
+      const normalizedFb = fbAccounts.flatMap((acc: any) => (acc.pages || []).map((p: any) => ({
         id: p.page_id,
         name: p.page_name,
+        accountName: acc.name,
+        accountId: acc.id,
         type: 'facebook',
         image: p.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${p.page_name}`,
         platformId: p.id
-      }));
+      })));
 
       const normalizedIg = igAccounts.map((a: any) => ({
         id: a.username,
         name: a.name || a.username,
+        accountName: a.name || a.username,
+        accountId: a.id,
         type: 'instagram',
         image: a.profile_picture_url || `https://api.dicebear.com/7.x/initials/svg?seed=${a.username}`,
         platformId: a.id
@@ -135,39 +144,60 @@ export default function PostStudioPage() {
         const selectedPages = selectedAccounts.map(id => {
             const acc = accounts.find(a => a.id === id);
             return {
-                id: acc?.platformId || id, // Mapping to platform_id needed by API
+                id: acc?.platformId || id,
                 platform_id: String(acc?.platformId || id)
             };
         });
 
-        // Use the first selected account to determine media_type for simplicity,
-        // or loop through to send separate requests if mixed.
-        // Assuming Postman body: "media_type": "facebook" | "instagram"
         const primaryAccountType = accounts.find(a => a.id === selectedAccounts[0])?.type || 'facebook';
 
-        const payload: any = {
-            campaign_name: composerData.campaignName,
-            media_type: primaryAccountType,
-            publisher_type: primaryAccountType === 'facebook' ? 'page' : 'account',
-            post_type: composerData.postType, // mapped from activeTab ('text', 'link', 'image', 'video')
-            message: composerData.caption,
-            schedule_type: composerData.isScheduling ? 'later' : 'now',
-            selected_pages: selectedPages
-        };
+        if (postType === 'cta' || composerData.postType === 'link') {
+            const ctaPayload: any = {
+                campaign_name: composerData.campaignName,
+                publisher_type: primaryAccountType === 'facebook' ? 'page' : 'account',
+                message: composerData.caption,
+                link: composerData.linkUrl,
+                cta_type: composerData.ctaType,
+                cta_value: composerData.ctaValue || composerData.linkUrl,
+                schedule_type: composerData.isScheduling ? 'later' : 'now',
+                selected_pages: selectedPages,
+                repeat_times: parseInt(composerData.repeatTimes) || 0,
+                time_interval: parseInt(composerData.timeInterval) || 0,
+                auto_reply_template: composerData.autoReplyTemplate,
+                timezone: composerData.timeZone
+            };
 
-        if (payload.post_type === 'image') {
-            payload.image_urls = composerData.media;
-        } else if (payload.post_type === 'video') {
-            payload.video_url = composerData.media[0]; // Assuming video tab sets media array to [videoUrl]
-        } else if (payload.post_type === 'link') {
-            payload.link = composerData.linkUrl;
+            if (ctaPayload.schedule_type === 'later') {
+                ctaPayload.schedule_time = `${composerData.scheduleDate} ${composerData.scheduleTime}:00`;
+            }
+
+            await dispatch(createCtaCampaign(ctaPayload)).unwrap();
+        } else {
+            const payload: any = {
+                campaign_name: composerData.campaignName,
+                media_type: primaryAccountType,
+                publisher_type: primaryAccountType === 'facebook' ? 'page' : 'account',
+                post_type: composerData.postType,
+                message: composerData.caption,
+                schedule_type: composerData.isScheduling ? 'later' : 'now',
+                selected_pages: selectedPages
+            };
+
+            if (payload.post_type === 'image') {
+                payload.image_urls = composerData.media;
+            } else if (payload.post_type === 'video') {
+                payload.video_url = composerData.media[0];
+            } else if (payload.post_type === 'link') {
+                payload.link = composerData.linkUrl;
+            }
+
+            if (payload.schedule_type === 'later') {
+                payload.schedule_time = `${composerData.scheduleDate} ${composerData.scheduleTime}:00`;
+            }
+
+            await dispatch(createCampaign(payload)).unwrap();
         }
 
-        if (payload.schedule_type === 'later') {
-            payload.schedule_time = `${composerData.scheduleDate} ${composerData.scheduleTime}:00`;
-        }
-
-        const result = await dispatch(createCampaign(payload)).unwrap();
         showModal("success", "Success", "Campaign created successfully!");
         setStep('select');
         setCaption('');
@@ -180,10 +210,15 @@ export default function PostStudioPage() {
     }
   };
 
+  const uniqueAccounts = Array.from(new Map(accounts.map(a => [a.accountId, a])).values())
+    .filter(a => postType !== 'cta' || a.type === 'facebook');
+
   const filteredAccounts = accounts.filter(a => {
-    const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.accountName.toLowerCase().includes(search.toLowerCase());
     const matchesPlatform = platform === 'all' || a.type === platform;
-    return matchesSearch && matchesPlatform;
+    const matchesAccountFilter = selectedParentAccounts.length === 0 || selectedParentAccounts.includes(a.accountId);
+    const isAllowedForType = postType !== 'cta' || a.type === 'facebook';
+    return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType;
   });
 
   const fbCount = accounts.filter(a => a.type === 'facebook').length;
@@ -322,7 +357,7 @@ export default function PostStudioPage() {
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            ) : campaigns.length === 0 ? (
+            ) : (postType === 'cta' ? ctaCampaigns : campaigns).length === 0 ? (
               <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-2xl bg-[var(--card)]/50">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
                   <Send className="w-8 h-8" />
@@ -337,7 +372,7 @@ export default function PostStudioPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {campaigns.map((camp, idx) => (
+                {(postType === 'cta' ? ctaCampaigns : campaigns).map((camp, idx) => (
                   <div key={camp.id || `camp-${idx}`} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 transition-all group">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex gap-2">
@@ -430,12 +465,14 @@ export default function PostStudioPage() {
                 >
                   <Facebook className="w-3 h-3" /> FB ({fbCount})
                 </button>
-                <button 
-                  onClick={() => setPlatform('instagram')}
-                  className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                >
-                  <Instagram className="w-3 h-3" /> IG ({igCount})
-                </button>
+                {postType !== 'cta' && (
+                  <button 
+                    onClick={() => setPlatform('instagram')}
+                    className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                  >
+                    <Instagram className="w-3 h-3" /> IG ({igCount})
+                  </button>
+                )}
               </div>
             </div>
             
@@ -455,25 +492,68 @@ export default function PostStudioPage() {
               <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
                 <Loader2 className="w-4 h-4 animate-spin text-primary" /> Loading accounts...
               </div>
-            ) : filteredAccounts.length > 0 ? (
-              filteredAccounts.map((acc) => (
+            ) : postType === 'cta' ? (
+              // CTA Mode: Show ONLY parent accounts
+              uniqueAccounts
+                .filter(acc => platform === 'all' || acc.type === platform)
+                .map((acc) => (
                 <button
-                  key={acc.id}
-                  onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
+                  key={acc.accountId}
+                  onClick={() => setSelectedAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
                   className={cn(
                     "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all whitespace-nowrap shrink-0",
-                    selectedAccounts.includes(acc.id) 
+                    selectedAccounts.includes(acc.accountId) 
                       ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm" 
                       : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
                   )}
                 >
                   <img src={acc.image} alt="" className="w-5 h-5 rounded-full object-cover" />
                   {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                  <span className="text-sm font-medium">{acc.name}</span>
+                  <span className="text-sm font-medium">{acc.accountName}</span>
                 </button>
               ))
             ) : (
-              <div className="text-sm text-[var(--muted-foreground)]">No matching accounts found.</div>
+              // Multimedia Mode: Show Account filters + Page list
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                  <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mr-2">Filter by Acc:</span>
+                  {uniqueAccounts
+                    .filter(acc => platform === 'all' || acc.type === platform)
+                    .map(acc => (
+                    <button
+                      key={acc.accountId}
+                      onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] border transition-all whitespace-nowrap",
+                        selectedParentAccounts.includes(acc.accountId) ? "bg-primary text-white border-primary" : "border-[var(--border)] text-[var(--muted-foreground)]"
+                      )}
+                    >
+                      {acc.accountName}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                  {filteredAccounts.length > 0 ? (
+                    filteredAccounts.map((acc) => (
+                      <button
+                        key={acc.id}
+                        onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-1 rounded-full border transition-all whitespace-nowrap shrink-0",
+                          selectedAccounts.includes(acc.id) 
+                            ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm" 
+                            : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
+                        )}
+                      >
+                        <img src={acc.image} alt="" className="w-4 h-4 rounded-full object-cover" />
+                        <span className="text-xs font-medium">{acc.name}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-xs text-[var(--muted-foreground)]">No matching pages found.</div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
