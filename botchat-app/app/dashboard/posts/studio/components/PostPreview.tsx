@@ -18,20 +18,48 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { useResizeObserver } from '@/hooks/use-resize-observer'; // I'll assume this exists or create a simple one
 
 interface PostPreviewProps {
   content: string;
   media: string[];
   type: string | null;
+  carouselItems?: any[];
 }
 
-export function PostPreview({ content, media, type }: PostPreviewProps) {
+export function PostPreview({ content, media, type, carouselItems }: PostPreviewProps) {
   const [platform, setPlatform] = useState<'facebook' | 'instagram'>('instagram');
   const [device, setDevice] = useState<'mobile' | 'desktop'>('mobile');
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
 
-  const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % media.length);
-  const prevMedia = () => setCurrentMediaIndex((prev) => (prev - 1 + media.length) % media.length);
+  React.useEffect(() => {
+    const updateScale = () => {
+      if (!containerRef.current) return;
+      const container = containerRef.current;
+      const shellHeight = device === 'mobile' ? 650 : 400; // Expected height of mockup
+      const padding = 40;
+      const availableHeight = container.clientHeight - padding;
+      
+      if (availableHeight < shellHeight) {
+        setScale(availableHeight / shellHeight);
+      } else {
+        setScale(1);
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, [device]);
+
+  const displayMedia = type === 'carousel' && carouselItems 
+    ? carouselItems.map(item => item.image).filter(Boolean)
+    : media;
+
+  const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % displayMedia.length);
+  const prevMedia = () => setCurrentMediaIndex((prev) => (prev - 1 + displayMedia.length) % displayMedia.length);
 
   return (
     <div className="flex flex-col h-full bg-[var(--background)] p-6 gap-6 overflow-hidden">
@@ -66,10 +94,12 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center relative">
+      <div ref={containerRef} className="flex-1 flex items-center justify-center relative min-h-0">
         {/* Device Shell */}
-        <div className={`relative transition-all duration-500 ease-out border-[8px] border-[var(--foreground)] rounded-[3rem] bg-[var(--background)] shadow-2xl overflow-hidden ${
-          device === 'mobile' ? 'w-[320px] aspect-[9/19.5]' : 'w-[500px] aspect-[4/3] rounded-xl'
+        <div 
+          style={{ transform: `scale(${scale})` }}
+          className={`relative transition-all duration-500 ease-out border-[8px] border-[var(--foreground)] rounded-[3rem] bg-[var(--background)] shadow-2xl overflow-hidden shrink-0 origin-center ${
+          device === 'mobile' ? 'w-[320px] h-[640px]' : 'w-[500px] h-[375px] rounded-xl'
         }`}>
           
           <div className="h-full bg-[var(--background)] text-[var(--foreground)] flex flex-col overflow-y-auto hide-scrollbar">
@@ -92,10 +122,10 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                 </div>
 
                 <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
-                  {media.length > 0 ? (
+                  {displayMedia.length > 0 ? (
                     <>
-                        <img src={media[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
-                        {media.length > 1 && (
+                        <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
+                        {displayMedia.length > 1 && (
                             <>
                                 <button onClick={prevMedia} className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
                                     <ChevronLeft className="w-4 h-4" />
@@ -103,12 +133,21 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                                 <button onClick={nextMedia} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
-                                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1">
-                                    {media.map((_, i) => (
-                                        <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentMediaIndex ? 'bg-blue-500 w-3' : 'bg-white/50'}`} />
+                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                    {displayMedia.map((_, i) => (
+                                        <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === currentMediaIndex ? 'bg-primary' : 'bg-white/50'}`} />
                                     ))}
                                 </div>
                             </>
+                        )}
+                        {/* Carousel Title Overlay (Instagram style bottom) */}
+                        {type === 'carousel' && carouselItems?.[currentMediaIndex]?.title && (
+                          <div className="absolute bottom-8 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent text-white">
+                             <p className="text-xs font-bold truncate">{carouselItems[currentMediaIndex].title}</p>
+                             {carouselItems[currentMediaIndex].description && (
+                               <p className="text-[10px] opacity-80 line-clamp-1">{carouselItems[currentMediaIndex].description}</p>
+                             )}
+                          </div>
                         )}
                     </>
                   ) : (
@@ -166,13 +205,32 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                 </div>
 
                 <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
-                   {media.length > 0 ? (
+                   {displayMedia.length > 0 ? (
                         <>
-                            <img src={media[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
-                             {media.length > 1 && (
+                            <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
+                             {displayMedia.length > 1 && (
                                 <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px]">
-                                    {currentMediaIndex + 1}/{media.length}
+                                    {currentMediaIndex + 1}/{displayMedia.length}
                                 </Badge>
+                             )}
+                             {/* Facebook Carousel Content Area */}
+                             {type === 'carousel' && carouselItems?.[currentMediaIndex] && (
+                               <div className="absolute bottom-0 left-0 right-0 bg-[var(--card)] p-3 border-t border-[var(--border)]">
+                                  <p className="text-xs font-bold text-[var(--foreground)] truncate">
+                                    {carouselItems[currentMediaIndex].title || 'Card Title'}
+                                  </p>
+                                  <p className="text-[10px] text-[var(--muted-foreground)] line-clamp-1">
+                                    {carouselItems[currentMediaIndex].description || 'Card description goes here...'}
+                                  </p>
+                                  {carouselItems[currentMediaIndex].link && (
+                                    <div className="mt-1 flex items-center justify-between">
+                                      <span className="text-[10px] text-[var(--muted-foreground)] uppercase">
+                                        {new URL(carouselItems[currentMediaIndex].link).hostname.replace('www.', '')}
+                                      </span>
+                                      <button className="px-2 py-0.5 bg-[var(--border)] rounded text-[10px] font-bold">Learn More</button>
+                                    </div>
+                                  )}
+                               </div>
                              )}
                         </>
                     ) : (

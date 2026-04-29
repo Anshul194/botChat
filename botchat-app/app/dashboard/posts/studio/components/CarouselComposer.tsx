@@ -12,6 +12,7 @@ import {
   Globe,
   Layout
 } from 'lucide-react';
+import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,9 +27,10 @@ interface CarouselComposerProps {
   accounts: any[];
   isLoadingAccounts: boolean;
   selectedParentAccounts: string[];
+  onChange?: (data: any) => void;
 }
 
-export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingAccounts, selectedParentAccounts }: CarouselComposerProps) {
+export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingAccounts, selectedParentAccounts, onChange }: CarouselComposerProps) {
   const [activeTab, setActiveTab] = useState<'carousel' | 'video'>('carousel');
   const [campaignName, setCampaignName] = useState('');
   const [message, setMessage] = useState('');
@@ -40,8 +42,24 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
   const [scheduleTime, setScheduleTime] = useState('');
   const [repeatTimes, setRepeatTimes] = useState('0');
   const [timeInterval, setTimeInterval] = useState('0');
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [isVideoUploading, setIsVideoUploading] = useState(false);
 
   const [selectedPageId, setSelectedPageId] = useState<string>('');
+
+  React.useEffect(() => {
+    if (onChange) {
+      onChange({
+        campaignName,
+        message,
+        carouselItems,
+        activeTab,
+        imageDuration,
+        transitionDuration,
+        selectedPageId
+      });
+    }
+  }, [campaignName, message, carouselItems, activeTab, imageDuration, transitionDuration, selectedPageId, onChange]);
 
   const filteredPages = accounts.filter(a => selectedParentAccounts.includes(a.accountId));
 
@@ -60,21 +78,51 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
     setCarouselItems(updated);
   };
 
-  const handleFileUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // For now, we use a placeholder or object URL to simulate the upload
-      const url = URL.createObjectURL(file);
+    if (!file) return;
+
+    setUploadingIndex(index);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'image');
+
+    try {
+      const response = await api.post('/facebook/bot-replies/media/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const url = response.data.url || response.data.data?.url || response.data;
       updateItemValue(index, 'image', url);
+    } catch (err) {
+      console.error('Upload failed', err);
+    } finally {
+      setUploadingIndex(null);
     }
   };
 
-  const handleVideoImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      // Logic for adding images to the video slideshow
-      // For now, we'll just log or handle as needed
-      console.log(`${files.length} images selected for video`);
+    if (!files || files.length === 0) return;
+
+    setIsVideoUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData();
+        formData.append('file', files[i]);
+        formData.append('type', 'image');
+        const response = await api.post('/facebook/bot-replies/media/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        const url = response.data.url || response.data.data?.url || response.data;
+        uploadedUrls.push(url);
+      }
+      console.log('Uploaded video images:', uploadedUrls);
+      // Batch update or handle video images state here
+    } catch (err) {
+      console.error('Video images upload failed', err);
+    } finally {
+      setIsVideoUploading(false);
     }
   };
 
@@ -82,17 +130,19 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
     // Correctly find the selected page by converting both to string for safe comparison
     const selectedPage = accounts.find(a => String(a.id) === String(selectedPageId));
 
+    console?.log("my page", selectedPage)
+
     const baseData = {
       campaign_name: campaignName,
       publisher_type: 'page',
       message: message,
       schedule_type: isScheduling ? 'later' : 'now',
       schedule_time: isScheduling && scheduleDate && scheduleTime ? `${scheduleDate} ${scheduleTime}:00` : null,
-      repeat_times: isScheduling ? (parseInt(repeatTimes) || 0) : null,
+      repeat_times: isScheduling ? (parseInt(repeatTimes) || 0) : 0,
       time_interval: isScheduling ? (parseInt(timeInterval) || 0) : null,
       selected_pages: selectedPage ? [{
-        id: selectedPage.platformId,
-        platform_id: String(selectedPage.id)
+        id: selectedPage.id,
+        platform_id: String(selectedPage.platformId)
       }] : []
     };
 
@@ -283,8 +333,10 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
                               size="sm"
                               className="rounded-xl h-10 px-4 whitespace-nowrap"
                               onClick={() => document.getElementById(`file-upload-${idx}`)?.click()}
+                              disabled={uploadingIndex === idx}
                             >
-                              Upload
+                              {uploadingIndex === idx ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                              {uploadingIndex === idx ? 'Uploading...' : 'Upload'}
                             </Button>
                           </div>
                         </div>
@@ -364,8 +416,10 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
                   variant="outline"
                   className="rounded-xl h-10 px-8 bg-white font-bold border-[var(--border)]"
                   onClick={() => document.getElementById('video-images-upload')?.click()}
+                  disabled={isVideoUploading}
                 >
-                  Upload Images
+                  {isVideoUploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  {isVideoUploading ? 'Uploading...' : 'Upload Images'}
                 </Button>
               </div>
             </div>

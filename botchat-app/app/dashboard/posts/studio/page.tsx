@@ -45,6 +45,7 @@ export default function PostStudioPage() {
   const [postType, setPostType] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
   const [media, setMedia] = useState<string[]>([]);
+  const [carouselItemsPreview, setCarouselItemsPreview] = useState<any[]>([]);
   const [globalSidebarCollapsed, setGlobalSidebarCollapsed] = useState(true);
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
@@ -84,6 +85,11 @@ export default function PostStudioPage() {
           window.dispatchEvent(new Event("collapseDesktopSidebar"));
       }
       setGlobalSidebarCollapsed(!globalSidebarCollapsed);
+  };
+
+  const handleCarouselChange = (data: any) => {
+    setCaption(data.message);
+    setCarouselItemsPreview(data.carouselItems);
   };
 
   const fetchAccounts = async () => {
@@ -493,6 +499,7 @@ export default function PostStudioPage() {
                     accounts={accounts}
                     isLoadingAccounts={isLoadingAccounts}
                     selectedParentAccounts={selectedParentAccounts}
+                    onChange={handleCarouselChange}
                 />
             ) : (
               <Composer 
@@ -511,6 +518,7 @@ export default function PostStudioPage() {
               content={caption}
               media={media}
               type={postType}
+              carouselItems={carouselItemsPreview}
             />
           </section>
         </main>
