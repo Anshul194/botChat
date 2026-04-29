@@ -977,9 +977,9 @@ export default function BioLinkBuilder() {
             <div className="relative flex-1 flex overflow-hidden">
                 {/* LEFT PANEL: TOOLS & PHASES */}
                 <aside className={cn(
-                    "w-full bg-white dark:bg-slate-950 flex flex-col sticky top-0 h-screen z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl",
+                    "bg-white dark:bg-slate-950 flex flex-col sticky top-0 h-screen z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl",
                     activePanel === "preview" ? "hidden xl:flex" : "flex",
-                    (showCarouselEditor || showAddBlock) ? "xl:w-[360px]" : "xl:w-[45%]"
+                    showCarouselEditor ? "xl:w-[360px]" : "xl:w-[45%]"
                 )}>
                         <div className="flex-1 overflow-y-auto px-6 pt-8 pb-10 no-scrollbar">
 
@@ -1615,10 +1615,10 @@ export default function BioLinkBuilder() {
                 </aside>
 
                 <main className={cn(
-                    "flex-1 bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-700 ease-in-out z-10",
-                    "sticky top-0 h-screen",
+                    "flex-1 bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
+                    "sticky top-0 h-screen overflow-hidden",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
-                    (showCarouselEditor || showAddBlock) && "xl:pr-[400px]"
+                    showCarouselEditor && "xl:pr-[400px]"
                 )}>
                     {/* Live Preview Status Badge */}
                     <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-2.5 rounded-full border border-slate-200 dark:border-white/10 shadow-lg z-20 animate-in fade-in slide-in-from-top-4 duration-1000">
@@ -1637,15 +1637,18 @@ export default function BioLinkBuilder() {
                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent dark:from-white/5" />
                     </div>
                     
-                    <div className="relative z-10 scale-[0.8] xl:scale-[0.85] 2xl:scale-100 origin-center transition-all duration-700 ease-in-out drop-shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+                    <div className={cn(
+                        "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full",
+                        showCarouselEditor ? "scale-[0.85]" : "scale-100"
+                    )}>
                         <PhonePreview
                             profile={profile}
                             tabs={tabs}
                             selectedTabId={selectedTabId}
                             setSelectedTabId={setSelectedTabId}
                             instagramUsername={instagramUsername}
-                            viewportOffset={180}
-                            previewWidth={320}
+                            viewportOffset={0}
+                            previewWidth={360}
                             uiTypeOverrides={uiTypeOverrides}
                             layoutStyle={profile?.settings?.layoutStyle || "standard"}
                         />
@@ -1670,7 +1673,10 @@ export default function BioLinkBuilder() {
                 </AnimatePresence>
 
                 {/* ── GLOBAL FLOATING PHASE DOCK ── */}
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[999] w-full max-w-[650px] px-6">
+                <div className={cn(
+                    "fixed bottom-8 left-1/2 -translate-x-1/2 z-[999] w-full px-6 transition-all duration-700 ease-in-out",
+                    showCarouselEditor ? "max-w-[550px]" : "max-w-[650px]"
+                )}>
                     <div className="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-3xl rounded-[32px] p-2.5 shadow-[0_30px_70px_rgba(0,0,0,0.5)] flex items-center gap-2 border border-white/10 ring-1 ring-white/10">
                         <div className="flex-1 flex items-center gap-1">
                             {PHASES.map((p, idx) => (

@@ -9,6 +9,7 @@ import aiTrainingReducer from './slices/aiTrainingSlice';
 import bioReducer from './slices/bioSlice';
 import linksReducer from './slices/linksSlice';
 import vcardsReducer from './slices/vcardsSlice';
+import socialPostingReducer from './slices/socialPostingSlice';
 
 export const store = configureStore({
     reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
         bio: bioReducer,
         links: linksReducer,
         vcards: vcardsReducer,
+        socialPosting: socialPostingReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 

@@ -1,0 +1,240 @@
+"use client";
+
+import React, { useState } from 'react';
+import { 
+  Facebook, 
+  Instagram, 
+  Heart, 
+  MessageCircle, 
+  Send, 
+  Bookmark, 
+  MoreHorizontal, 
+  Monitor, 
+  Smartphone, 
+  Layout,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+
+interface PostPreviewProps {
+  content: string;
+  media: string[];
+  type: string | null;
+}
+
+export function PostPreview({ content, media, type }: PostPreviewProps) {
+  const [platform, setPlatform] = useState<'facebook' | 'instagram'>('instagram');
+  const [device, setDevice] = useState<'mobile' | 'desktop'>('mobile');
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+
+  const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % media.length);
+  const prevMedia = () => setCurrentMediaIndex((prev) => (prev - 1 + media.length) % media.length);
+
+  return (
+    <div className="flex flex-col h-full bg-zinc-950/30 backdrop-blur-md p-6 gap-6 overflow-hidden">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Live Preview</h3>
+        <div className="flex gap-2">
+          <Tabs value={platform} onValueChange={(v: any) => setPlatform(v)} className="w-auto">
+            <TabsList className="bg-zinc-900/50 border border-white/5 h-8">
+              <TabsTrigger value="instagram" className="px-3 text-xs data-[state=active]:bg-zinc-800">
+                Instagram
+              </TabsTrigger>
+              <TabsTrigger value="facebook" className="px-3 text-xs data-[state=active]:bg-zinc-800">
+                Facebook
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <div className="flex bg-zinc-900/50 border border-white/5 rounded-lg p-1 h-8">
+            <button 
+              onClick={() => setDevice('mobile')}
+              className={`px-2 rounded ${device === 'mobile' ? 'bg-zinc-800 text-white' : 'text-zinc-500'}`}
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+            </button>
+            <button 
+              onClick={() => setDevice('desktop')}
+              className={`px-2 rounded ${device === 'desktop' ? 'bg-zinc-800 text-white' : 'text-zinc-500'}`}
+            >
+              <Monitor className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center relative">
+        {/* Device Shell */}
+        <div className={`relative transition-all duration-500 ease-out border-[8px] border-zinc-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ${
+          device === 'mobile' ? 'w-[320px] aspect-[9/19.5]' : 'w-[500px] aspect-[4/3] rounded-xl'
+        }`}>
+          
+          <div className="h-full bg-white text-black flex flex-col overflow-y-auto hide-scrollbar">
+            {platform === 'instagram' ? (
+              /* Instagram Mockup */
+              <>
+                <div className="p-3 border-b flex items-center justify-between sticky top-0 bg-white z-10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[1.5px]">
+                        <div className="w-full h-full rounded-full bg-white p-[1.5px]">
+                            <div className="w-full h-full rounded-full bg-zinc-200" />
+                        </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold leading-tight">your_page</p>
+                      <p className="text-[10px] text-zinc-500">Sponsored</p>
+                    </div>
+                  </div>
+                  <MoreHorizontal className="w-4 h-4 text-zinc-400" />
+                </div>
+
+                <div className="aspect-square bg-zinc-100 flex items-center justify-center relative group">
+                  {media.length > 0 ? (
+                    <>
+                        <img src={media[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
+                        {media.length > 1 && (
+                            <>
+                                <button onClick={prevMedia} className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <ChevronLeft className="w-4 h-4" />
+                                </button>
+                                <button onClick={nextMedia} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
+                                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1">
+                                    {media.map((_, i) => (
+                                        <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentMediaIndex ? 'bg-blue-500 w-3' : 'bg-white/50'}`} />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 opacity-20">
+                      <Layout className="w-12 h-12" />
+                      <span className="text-[10px] font-medium uppercase tracking-widest">Media Placeholder</span>
+                    </div>
+                  )}
+                  {type === 'cta' && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-blue-500 p-2 flex items-center justify-between text-white animate-in slide-in-from-bottom-2">
+                        <span className="text-[10px] font-bold">Learn More</span>
+                        <ExternalLink className="w-3 h-3" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-3 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-3">
+                      <Heart className="w-6 h-6" />
+                      <MessageCircle className="w-6 h-6" />
+                      <Send className="w-6 h-6" />
+                    </div>
+                    <Bookmark className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-bold">1,234 likes</p>
+                    <p className="text-[11px] whitespace-pre-wrap">
+                      <span className="font-bold mr-1">your_page</span>
+                      {content || 'Your caption will appear here...'}
+                    </p>
+                    <p className="text-[9px] text-zinc-400 uppercase">Just now</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              /* Facebook Mockup */
+              <>
+                <div className="p-3 border-b flex flex-col gap-3 sticky top-0 bg-white z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-zinc-200" />
+                        <div>
+                            <p className="text-sm font-bold leading-tight">Your Page Name</p>
+                            <p className="text-[10px] text-zinc-500 flex items-center gap-1">
+                                Just now · <GlobeIcon className="w-2 h-2" />
+                            </p>
+                        </div>
+                    </div>
+                    <MoreHorizontal className="w-5 h-5 text-zinc-400" />
+                  </div>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                    {content || 'Your post text will appear here...'}
+                  </p>
+                </div>
+
+                <div className="aspect-square bg-zinc-100 flex items-center justify-center relative group">
+                   {media.length > 0 ? (
+                        <>
+                            <img src={media[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
+                             {media.length > 1 && (
+                                <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px]">
+                                    {currentMediaIndex + 1}/{media.length}
+                                </Badge>
+                             )}
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center gap-2 opacity-20">
+                            <Layout className="w-12 h-12" />
+                            <span className="text-[10px] font-medium uppercase tracking-widest">Media Placeholder</span>
+                        </div>
+                    )}
+                </div>
+
+                {type === 'cta' && (
+                    <div className="p-3 bg-zinc-100 flex items-center justify-between border-t border-b">
+                        <div className="flex-1 min-w-0 pr-4">
+                            <p className="text-[10px] text-zinc-500 uppercase font-medium">EXAMPLE.COM</p>
+                            <p className="text-sm font-bold truncate">Learn more about our services</p>
+                        </div>
+                        <button className="px-4 py-1.5 bg-zinc-200 rounded font-bold text-sm">Learn More</button>
+                    </div>
+                )}
+
+                <div className="p-2 px-4 flex items-center justify-between border-t text-zinc-500">
+                    <div className="flex items-center gap-1 text-xs">
+                        <div className="flex -space-x-1">
+                            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center border border-white">
+                                <span className="text-[8px] text-white">👍</span>
+                            </div>
+                        </div>
+                        <span>0</span>
+                    </div>
+                    <div className="flex gap-3 text-xs">
+                        <span>0 comments</span>
+                        <span>0 shares</span>
+                    </div>
+                </div>
+
+                <div className="px-2 pb-2 grid grid-cols-3 border-t border-zinc-100 pt-1">
+                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-zinc-50 rounded cursor-pointer">
+                        <span className="text-zinc-500 text-xs font-bold">Like</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-zinc-50 rounded cursor-pointer">
+                        <span className="text-zinc-500 text-xs font-bold">Comment</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-zinc-50 rounded cursor-pointer">
+                        <span className="text-zinc-500 text-xs font-bold">Share</span>
+                    </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Decorative elements */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+      </div>
+    </div>
+  );
+}
+
+function GlobeIcon({ className }: { className: string }) {
+    return (
+        <svg className={className} fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.048.05-.188.017-.441-.047-1.13-.286-2.547-.188-2.83.13-.204.228-.158.465.131.673.35.25.96.25 1.488.225.53-.024 1.157-.123 1.442.277.164.23.111.458-.154.67-.32.256-.75.434-1.21.616-.46.182-.958.364-1.168.64-.176.23-.105.47.211.677.566.37 1.74.225 2.533.15.537-.05 1.018-.095 1.343.153.253.193.266.42.04.62-.224.198-.56.273-.896.353-.336.08-.663.158-.813.33-.11.127-.087.252.063.376.544.448 1.942.27 2.875.143.93-.127 1.83-.25 2.193.182.203.242.146.46-.17.653-.314.192-.767.33-1.258.468-.49.138-.996.275-1.168.497-.131.17-.06.341.214.51.583.358 1.88.2 2.658.07 1.042-.174 1.823-.304 2.115.112.186.265.111.48-.22.65-.33.17-.8.293-1.305.416-.505.123-1.045.255-1.218.442-.114.123-.086.234.083.344.482.312 1.54.183 2.378.076.843-.107 1.59-.202 1.84.095.18.214.11.41-.21.564-.32.154-.77.265-1.257.376-.487.11-1.013.23-1.176.398-.112.115-.084.218.084.32a37.2 37.2 0 0 0 2.215.122c.844-.047 1.57-.09 1.8-.02.176.054.168.192-.023.313-.365.23-1.272.196-2.093.164a35.84 35.84 0 0 0-2.315-.09c-.843.013-1.64.026-1.898.175-.19.11-.168.225.068.34a17.2 17.2 0 0 0 2.18.106c.843-.03 1.58-.06 1.777.01.177.063.14.2-.103.32-.464.23-1.464.204-2.368.178-.9-.026-1.748-.052-2.016.142-.196.142-.162.29.1.44 1.134.654 4.542.483 6.305.29 1.763-.193 3.033-.386 3.4-.04.283.266-.027.643-.918.995-.89.352-2.283.655-3.618.96-.133.03-.267.06-.4.09a8 8 0 1 1-13.96-7.31c.1.1.2.2.3.293ZM3.3 5.2a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+        </svg>
+    );
+}

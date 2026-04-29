@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
-    const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies") || pathname?.includes("/comment-manager");
+    const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies") || pathname?.includes("/comment-manager") || pathname?.includes("/dashboard/posts/studio");
 
     // Handle global sidebar toggle events
     useEffect(() => {
