@@ -57,6 +57,7 @@ export default function PostStudioPage() {
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
   const [listView, setListView] = useState<'row' | 'card'>('row');
+  const [multimediaTab, setMultimediaTab] = useState('text');
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
@@ -262,7 +263,7 @@ export default function PostStudioPage() {
           post_type: composerData.postType,
           message: composerData.caption,
           schedule_type: composerData.isScheduling ? 'later' : 'now',
-          selected_pages: selectedPages
+          selected_pages: finalSelectedPages
         };
 
         if (payload.post_type === 'image') {
@@ -299,8 +300,12 @@ export default function PostStudioPage() {
     const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.accountName.toLowerCase().includes(search.toLowerCase());
     const matchesPlatform = platform === 'all' || a.type === platform;
     const matchesAccountFilter = selectedParentAccounts.length === 0 || selectedParentAccounts.includes(a.accountId);
+    
+    // Multimedia rule: text/link posts are Facebook only
+    const isAllowedForMultimediaTab = postType !== 'multimedia' || (multimediaTab !== 'text' && multimediaTab !== 'link') || a.type === 'facebook';
     const isAllowedForType = postType !== 'cta' || a.type === 'facebook';
-    return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType;
+    
+    return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType && isAllowedForMultimediaTab;
   });
 
   const fbCount = accounts.filter(a => a.type === 'facebook').length;
@@ -762,6 +767,7 @@ export default function PostStudioPage() {
                 isPublishing={isPublishing}
                 accounts={accounts}
                 selectedParentAccounts={selectedParentAccounts}
+                onTabChange={setMultimediaTab}
               />
             )}
           </section>

@@ -19,7 +19,8 @@ import {
   Rss,
   Globe,
   HelpCircle,
-  Loader2
+  Loader2,
+  Upload
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,9 +34,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCtaTypes, fetchAutoReplyTemplates } from '@/store/slices/socialPostingSlice';
 import type { AppDispatch, RootState } from '@/store/store';
+import api from "@/lib/api";
 interface ComposerProps {
   onContentChange: (val: string) => void;
   onMediaChange: (val: string[]) => void;
+  onTabChange?: (tab: string) => void;
   type: string | null;
   onPublish: (data: any) => void;
   isPublishing: boolean;
@@ -46,6 +49,7 @@ interface ComposerProps {
 export function Composer({ 
   onContentChange, 
   onMediaChange, 
+  onTabChange,
   type, 
   onPublish, 
   isPublishing,
@@ -71,6 +75,9 @@ export function Composer({
   const [repeatTimes, setRepeatTimes] = useState('0');
   const [timeInterval, setTimeInterval] = useState('0');
   const [selectedPageId, setSelectedPageId] = useState<string>('');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const videoInputRef = React.useRef<HTMLInputElement>(null);
   const filteredPages = accounts.filter(a => selectedParentAccounts.includes(a.accountId));
 
   const dispatch = useDispatch<AppDispatch>();
@@ -90,6 +97,46 @@ export function Composer({
     onContentChange(val);
   };
 
+  const handleTabChange = (val: string) => {
+    setActiveTab(val);
+    onTabChange?.(val);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData();
+        formData.append('file', files[i]);
+        formData.append('type', activeTab === 'video' ? 'video' : 'image');
+        
+        const response = await api.post('/facebook/bot-replies/media/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        
+        const url = response.data.url || response.data.data?.url || response.data;
+        uploadedUrls.push(url);
+      }
+      
+      const updated = [...media, ...uploadedUrls];
+      setMedia(updated);
+      onMediaChange(updated);
+    } catch (err) {
+      console.error('Upload failed', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const triggerUpload = () => {
+    if (activeTab === 'video') videoInputRef.current?.click();
+    else fileInputRef.current?.click();
+  };
+
   const handleAddMedia = () => {
     const newMedia = `https://picsum.photos/seed/${Math.random()}/800/800`;
     const updated = [...media, newMedia];
@@ -107,7 +154,7 @@ export function Composer({
     onPublish({
         campaignName,
         caption,
-        media: activeTab === 'video' ? [videoUrl] : media,
+        media,
         isScheduling,
         scheduleDate,
         scheduleTime,
@@ -141,6 +188,22 @@ export function Composer({
         </div>
 
         <div className="space-y-6">
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileUpload} 
+            className="hidden" 
+            multiple 
+            accept="image/*"
+          />
+          <input 
+            type="file" 
+            ref={videoInputRef} 
+            onChange={handleFileUpload} 
+            className="hidden" 
+            accept="video/*"
+          />
+
           <div className="space-y-2">
             <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Select Page to Post</Label>
             <Select value={selectedPageId} onValueChange={setSelectedPageId}>
@@ -338,7 +401,22 @@ export function Composer({
 
   return (
     <div className="flex flex-col h-full bg-[var(--card)] p-6 gap-6 overflow-y-auto">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleFileUpload} 
+        className="hidden" 
+        multiple 
+        accept="image/*"
+      />
+      <input 
+        type="file" 
+        ref={videoInputRef} 
+        onChange={handleFileUpload} 
+        className="hidden" 
+        accept="video/*"
+      />
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="flex items-center justify-between border-b border-[var(--border)] mb-6 pb-2">
             <TabsList className="bg-transparent p-0 h-auto gap-4">
               <TabsTrigger 
@@ -433,8 +511,13 @@ export function Composer({
                 </div>
                 
                 <div className="flex items-start gap-4">
-                  <Button className="bg-primary hover:bg-primary/90">
-                    <Send className="w-4 h-4 mr-2 transform -rotate-90" /> Upload
+                  <Button 
+                    className="bg-primary hover:bg-primary/90 rounded-xl"
+                    onClick={triggerUpload}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+                    {isUploading ? "Uploading..." : "Upload from computer"}
                   </Button>
                   
                   {activeTab === 'video' && (
@@ -445,18 +528,24 @@ export function Composer({
                   )}
                 </div>
 
-                {activeTab === 'image' && media.length > 0 && (
-                   <div className="flex gap-2 flex-wrap">
-                      {media.map((url, i) => (
-                        <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden border border-[var(--border)]">
-                          <img src={url} alt="" className="w-full h-full object-cover" />
-                          <button onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5">
-                            <X className="w-3 h-3 text-white" />
-                          </button>
-                        </div>
-                      ))}
-                   </div>
-                )}
+                <div className="flex flex-wrap gap-3">
+                   {media.map((url, idx) => (
+                     <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[var(--border)] group shadow-sm">
+                        {activeTab === 'video' ? (
+                           <video src={url} className="w-full h-full object-cover" />
+                        ) : (
+                           <img src={url} alt="" className="w-full h-full object-cover" />
+                        )}
+                        <button 
+                          onClick={() => removeMedia(idx)}
+                          className="absolute top-1 right-1 p-0.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-white z-10"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                     </div>
+                   ))}
+                </div>
+
                 {activeTab === 'image' && (
                   <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-md text-xs">
                     Multi Image Post Limit: 10 Images. In Facebook it will be posted as multi images post, Instagram as carousel. Instagram Carousel post also supports images+videos. For Facebook multi image post, videos will be ignored.
