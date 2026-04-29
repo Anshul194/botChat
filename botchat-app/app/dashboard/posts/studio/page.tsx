@@ -337,8 +337,8 @@ export default function PostStudioPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {campaigns.map(camp => (
-                  <div key={camp.id} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 transition-all group">
+                {campaigns.map((camp, idx) => (
+                  <div key={camp.id || `camp-${idx}`} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 hover:border-primary/50 transition-all group">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex gap-2">
                         {camp.media_type === 'facebook' && <div className="p-2 bg-[#1877F2]/10 rounded-lg text-[#1877F2]"><Facebook className="w-4 h-4" /></div>}
