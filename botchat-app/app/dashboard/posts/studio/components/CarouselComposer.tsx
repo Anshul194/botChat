@@ -40,10 +40,10 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
   const [isScheduling, setIsScheduling] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
-  const [repeatTimes, setRepeatTimes] = useState('0');
   const [timeInterval, setTimeInterval] = useState('0');
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [videoImages, setVideoImages] = useState<string[]>([]);
 
   const [selectedPageId, setSelectedPageId] = useState<string>('');
 
@@ -56,10 +56,11 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
         activeTab,
         imageDuration,
         transitionDuration,
-        selectedPageId
+        selectedPageId,
+        videoImages
       });
     }
-  }, [campaignName, message, carouselItems, activeTab, imageDuration, transitionDuration, selectedPageId, onChange]);
+  }, [campaignName, message, carouselItems, activeTab, imageDuration, transitionDuration, selectedPageId, videoImages, onChange]);
 
   const filteredPages = accounts.filter(a => selectedParentAccounts.includes(a.accountId));
 
@@ -117,8 +118,7 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
         const url = response.data.url || response.data.data?.url || response.data;
         uploadedUrls.push(url);
       }
-      console.log('Uploaded video images:', uploadedUrls);
-      // Batch update or handle video images state here
+      setVideoImages(prev => [...prev, ...uploadedUrls]);
     } catch (err) {
       console.error('Video images upload failed', err);
     } finally {
@@ -163,7 +163,7 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
       onPublish({
         ...baseData,
         post_type: 'slider',
-        slider_images: [] // TODO: Add logic for video slideshow images if applicable
+        slider_images: videoImages
       });
     }
   };
@@ -192,6 +192,32 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
               onChange={(e) => setCampaignName(e.target.value)}
               placeholder="Enter campaign name"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Select Page to Post</Label>
+            <Select value={selectedPageId} onValueChange={setSelectedPageId}>
+              <SelectTrigger className="bg-[var(--background)] border-[var(--border)] h-11 rounded-xl">
+                <SelectValue placeholder={selectedParentAccounts.length === 0 ? "Select account in top header first" : "Select a page to post"} />
+              </SelectTrigger>
+              <SelectContent position="popper" sideOffset={4} className="rounded-xl border-[var(--border)] bg-[var(--card)] shadow-2xl z-50">
+                {filteredPages.length > 0 ? filteredPages.map(page => (
+                  <SelectItem key={page.id} value={page.id} className="rounded-lg py-2.5">
+                    <div className="flex items-center gap-2">
+                      <img src={page.image} className="w-4 h-4 rounded-full" />
+                      <div className="flex flex-col">
+                        <span className="font-bold text-xs">{page.name}</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)]">{page.accountName}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                )) : (
+                  <div className="p-4 text-center text-xs text-[var(--muted-foreground)]">
+                    {selectedParentAccounts.length === 0 ? "Please select an account from the top bar" : "No pages found for selected account"}
+                  </div>
+                )}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -222,34 +248,8 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
         {activeTab === 'carousel' ? (
           <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
             <div className="space-y-2">
-              <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Select Page to Post</Label>
-              <Select value={selectedPageId} onValueChange={setSelectedPageId}>
-                <SelectTrigger className="bg-[var(--background)] border-[var(--border)] h-11 rounded-xl">
-                  <SelectValue placeholder={selectedParentAccounts.length === 0 ? "Select account in top header first" : "Select a page to post"} />
-                </SelectTrigger>
-                <SelectContent position="popper" sideOffset={4} className="rounded-xl border-[var(--border)] bg-[var(--card)] shadow-2xl z-50">
-                  {filteredPages.length > 0 ? filteredPages.map(page => (
-                    <SelectItem key={page.id} value={page.id} className="rounded-lg py-2.5">
-                      <div className="flex items-center gap-2">
-                        <img src={page.image} className="w-4 h-4 rounded-full" />
-                        <div className="flex flex-col">
-                          <span className="font-bold text-xs">{page.name}</span>
-                          <span className="text-[10px] text-[var(--muted-foreground)]">{page.accountName}</span>
-                        </div>
-                      </div>
-                    </SelectItem>
-                  )) : (
-                    <div className="p-4 text-center text-xs text-[var(--muted-foreground)]">
-                      {selectedParentAccounts.length === 0 ? "Please select an account from the top bar" : "No pages found for selected account"}
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <div className="flex items-center gap-1">
-                <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Message</Label>
+                <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Campaign Message</Label>
                 <HelpCircle className="w-3 h-3 text-primary" />
               </div>
               <Textarea
