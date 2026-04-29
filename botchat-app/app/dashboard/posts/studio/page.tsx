@@ -38,6 +38,7 @@ import type { AppDispatch, RootState } from "@/store/store";
 import api from "@/lib/api";
 
 export default function PostStudioPage() {
+  const { showModal } = useModal();
   const [step, setStep] = useState<'select' | 'list' | 'studio'>('select');
   const [postType, setPostType] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
