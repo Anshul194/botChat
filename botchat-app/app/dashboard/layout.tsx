@@ -16,10 +16,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const handleToggle = () => setMobileSidebarOpen(prev => !prev);
         const handleClose = () => setMobileSidebarOpen(false);
         const handleOpen = () => setMobileSidebarOpen(true);
+        const handleDesktopCollapse = () => setSidebarCollapsed(true);
+        const handleDesktopExpand = () => setSidebarCollapsed(false);
 
         window.addEventListener("toggleMobileSidebar", handleToggle);
         window.addEventListener("closeMobileSidebar", handleClose);
         window.addEventListener("openMobileSidebar", handleOpen);
+        window.addEventListener("collapseDesktopSidebar", handleDesktopCollapse);
+        window.addEventListener("expandDesktopSidebar", handleDesktopExpand);
 
         const handleResize = () => {
             if (window.innerWidth >= 768) {
@@ -32,6 +36,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             window.removeEventListener("toggleMobileSidebar", handleToggle);
             window.removeEventListener("closeMobileSidebar", handleClose);
             window.removeEventListener("openMobileSidebar", handleOpen);
+            window.removeEventListener("collapseDesktopSidebar", handleDesktopCollapse);
+            window.removeEventListener("expandDesktopSidebar", handleDesktopExpand);
             window.removeEventListener("resize", handleResize);
         };
     }, []);

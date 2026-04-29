@@ -17,9 +17,9 @@ import {
   ChevronDown,
   MousePointer2,
   Rss,
-  Youtube,
   Globe,
-  HelpCircle
+  HelpCircle,
+  Loader2
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -90,9 +90,8 @@ export function Composer({ onContentChange, onMediaChange, type, onPublish, isPu
 
   return (
     <div className="flex flex-col h-full bg-[var(--card)] p-6 gap-6 overflow-y-auto">
-      <div className="flex items-center justify-between">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex items-center justify-between border-b border-[var(--border)] mb-6 pb-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex items-center justify-between border-b border-[var(--border)] mb-6 pb-2">
             <TabsList className="bg-transparent p-0 h-auto gap-4">
               <TabsTrigger 
                 value="text" 
@@ -282,8 +281,6 @@ export function Composer({ onContentChange, onMediaChange, type, onPublish, isPu
             </div>
           </div>
         </Tabs>
-      </div>
-
     </div>
   );
 }

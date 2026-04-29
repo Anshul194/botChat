@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { AccountSelector } from './components/AccountSelector';
-import { Composer } from './components/Composer';
-import { PostPreview } from './components/PostPreview';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AccountSelector } from './components/AccountSelector';
+import { PostPreview } from './components/PostPreview';
+import { Composer } from './components/Composer';
 import { 
   ChevronLeft, 
   Settings, 
@@ -23,10 +23,12 @@ import {
   Facebook,
   Instagram,
   Plus,
-  Clock
+  Clock,
+  Search
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
@@ -38,9 +40,11 @@ import api from "@/lib/api";
 export default function PostStudioPage() {
   const [step, setStep] = useState<'select' | 'list' | 'studio'>('select');
   const [postType, setPostType] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [caption, setCaption] = useState('');
   const [media, setMedia] = useState<string[]>([]);
+  const [globalSidebarCollapsed, setGlobalSidebarCollapsed] = useState(true);
+  const [search, setSearch] = useState('');
+  const [platform, setPlatform] = useState('all');
   
   // Real Account State
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -54,7 +58,23 @@ export default function PostStudioPage() {
     if (step === 'list') {
       dispatch(fetchCampaigns({ per_page: 50 }));
     }
+    
+    window.dispatchEvent(new Event("collapseDesktopSidebar"));
+    setGlobalSidebarCollapsed(true);
+    
+    return () => {
+        window.dispatchEvent(new Event("expandDesktopSidebar"));
+    };
   }, [step, dispatch]);
+
+  const toggleGlobalSidebar = () => {
+      if (globalSidebarCollapsed) {
+          window.dispatchEvent(new Event("expandDesktopSidebar"));
+      } else {
+          window.dispatchEvent(new Event("collapseDesktopSidebar"));
+      }
+      setGlobalSidebarCollapsed(!globalSidebarCollapsed);
+  };
 
   const fetchAccounts = async () => {
     setIsLoadingAccounts(true);
@@ -158,6 +178,15 @@ export default function PostStudioPage() {
         setIsPublishing(false);
     }
   };
+
+  const filteredAccounts = accounts.filter(a => {
+    const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase());
+    const matchesPlatform = platform === 'all' || a.type === platform;
+    return matchesSearch && matchesPlatform;
+  });
+
+  const fbCount = accounts.filter(a => a.type === 'facebook').length;
+  const igCount = accounts.filter(a => a.type === 'instagram').length;
 
   if (step === 'select') {
     return (
@@ -350,6 +379,14 @@ export default function PostStudioPage() {
         <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--border)]/50">
           <div className="flex items-center gap-4">
             <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleGlobalSidebar}
+                className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            >
+                {globalSidebarCollapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+            </Button>
+            <Button 
               variant="ghost" 
               size="icon" 
               className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -373,17 +410,52 @@ export default function PostStudioPage() {
         </div>
 
         {/* Top Bar Account Selector */}
-        <div className="h-16 flex items-center px-6 gap-6 bg-[var(--card)]">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0">
-            Select Accounts ({selectedAccounts.length})
+        <div className="flex flex-col border-t border-[var(--border)] bg-[var(--card)] px-6 py-2 gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
+                Select Accounts ({selectedAccounts.length})
+              </div>
+              <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-1 h-8">
+                <button 
+                  onClick={() => setPlatform('all')}
+                  className={cn("px-3 text-xs rounded transition-colors font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                >
+                  All
+                </button>
+                <button 
+                  onClick={() => setPlatform('facebook')}
+                  className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                >
+                  <Facebook className="w-3 h-3" /> FB ({fbCount})
+                </button>
+                <button 
+                  onClick={() => setPlatform('instagram')}
+                  className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                >
+                  <Instagram className="w-3 h-3" /> IG ({igCount})
+                </button>
+              </div>
+            </div>
+            
+            <div className="relative w-64">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+              <Input 
+                placeholder="Quick find..." 
+                className="h-8 bg-[var(--background)] border-[var(--border)] pl-8 text-xs focus-visible:ring-1 focus-visible:ring-primary"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
+          
+          <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
             {isLoadingAccounts ? (
               <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
                 <Loader2 className="w-4 h-4 animate-spin text-primary" /> Loading accounts...
               </div>
-            ) : accounts.length > 0 ? (
-              accounts.map((acc) => (
+            ) : filteredAccounts.length > 0 ? (
+              filteredAccounts.map((acc) => (
                 <button
                   key={acc.id}
                   onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
@@ -400,7 +472,7 @@ export default function PostStudioPage() {
                 </button>
               ))
             ) : (
-              <div className="text-sm text-[var(--muted-foreground)]">No accounts connected.</div>
+              <div className="text-sm text-[var(--muted-foreground)]">No matching accounts found.</div>
             )}
           </div>
         </div>

@@ -34,31 +34,31 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
   const prevMedia = () => setCurrentMediaIndex((prev) => (prev - 1 + media.length) % media.length);
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950/30 backdrop-blur-md p-6 gap-6 overflow-hidden">
+    <div className="flex flex-col h-full bg-[var(--background)] p-6 gap-6 overflow-hidden">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Live Preview</h3>
+        <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Live Preview</h3>
         <div className="flex gap-2">
           <Tabs value={platform} onValueChange={(v: any) => setPlatform(v)} className="w-auto">
-            <TabsList className="bg-zinc-900/50 border border-white/5 h-8">
-              <TabsTrigger value="instagram" className="px-3 text-xs data-[state=active]:bg-zinc-800">
+            <TabsList className="bg-[var(--card)] border border-[var(--border)] h-8">
+              <TabsTrigger value="instagram" className="px-3 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 Instagram
               </TabsTrigger>
-              <TabsTrigger value="facebook" className="px-3 text-xs data-[state=active]:bg-zinc-800">
+              <TabsTrigger value="facebook" className="px-3 text-xs data-[state=active]:bg-[#1877F2] data-[state=active]:text-white">
                 Facebook
               </TabsTrigger>
             </TabsList>
           </Tabs>
           
-          <div className="flex bg-zinc-900/50 border border-white/5 rounded-lg p-1 h-8">
+          <div className="flex bg-[var(--card)] border border-[var(--border)] rounded-lg p-1 h-8">
             <button 
               onClick={() => setDevice('mobile')}
-              className={`px-2 rounded ${device === 'mobile' ? 'bg-zinc-800 text-white' : 'text-zinc-500'}`}
+              className={`px-2 rounded transition-colors ${device === 'mobile' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`}
             >
               <Smartphone className="w-3.5 h-3.5" />
             </button>
             <button 
               onClick={() => setDevice('desktop')}
-              className={`px-2 rounded ${device === 'desktop' ? 'bg-zinc-800 text-white' : 'text-zinc-500'}`}
+              className={`px-2 rounded transition-colors ${device === 'desktop' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`}
             >
               <Monitor className="w-3.5 h-3.5" />
             </button>
@@ -68,30 +68,30 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
 
       <div className="flex-1 flex items-center justify-center relative">
         {/* Device Shell */}
-        <div className={`relative transition-all duration-500 ease-out border-[8px] border-zinc-900 rounded-[3rem] bg-black shadow-2xl overflow-hidden ${
+        <div className={`relative transition-all duration-500 ease-out border-[8px] border-[var(--foreground)] rounded-[3rem] bg-[var(--background)] shadow-2xl overflow-hidden ${
           device === 'mobile' ? 'w-[320px] aspect-[9/19.5]' : 'w-[500px] aspect-[4/3] rounded-xl'
         }`}>
           
-          <div className="h-full bg-white text-black flex flex-col overflow-y-auto hide-scrollbar">
+          <div className="h-full bg-[var(--background)] text-[var(--foreground)] flex flex-col overflow-y-auto hide-scrollbar">
             {platform === 'instagram' ? (
               /* Instagram Mockup */
               <>
-                <div className="p-3 border-b flex items-center justify-between sticky top-0 bg-white z-10">
+                <div className="p-3 border-b border-[var(--border)] flex items-center justify-between sticky top-0 bg-[var(--background)] z-10">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[1.5px]">
-                        <div className="w-full h-full rounded-full bg-white p-[1.5px]">
-                            <div className="w-full h-full rounded-full bg-zinc-200" />
+                        <div className="w-full h-full rounded-full bg-[var(--background)] p-[1.5px]">
+                            <div className="w-full h-full rounded-full bg-[var(--border)]" />
                         </div>
                     </div>
                     <div>
                       <p className="text-xs font-bold leading-tight">your_page</p>
-                      <p className="text-[10px] text-zinc-500">Sponsored</p>
+                      <p className="text-[10px] text-[var(--muted-foreground)]">Sponsored</p>
                     </div>
                   </div>
-                  <MoreHorizontal className="w-4 h-4 text-zinc-400" />
+                  <MoreHorizontal className="w-4 h-4 text-[var(--muted-foreground)]" />
                 </div>
 
-                <div className="aspect-square bg-zinc-100 flex items-center justify-center relative group">
+                <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
                   {media.length > 0 ? (
                     <>
                         <img src={media[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
@@ -125,14 +125,14 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                   )}
                 </div>
 
-                <div className="p-3 space-y-3">
+                <div className="p-3 pb-10 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-3">
-                      <Heart className="w-6 h-6" />
-                      <MessageCircle className="w-6 h-6" />
-                      <Send className="w-6 h-6" />
+                      <Heart className="w-6 h-6 hover:text-red-500 transition-colors" />
+                      <MessageCircle className="w-6 h-6 hover:text-[var(--muted-foreground)] transition-colors" />
+                      <Send className="w-6 h-6 hover:text-[var(--muted-foreground)] transition-colors" />
                     </div>
-                    <Bookmark className="w-6 h-6" />
+                    <Bookmark className="w-6 h-6 hover:text-[var(--muted-foreground)] transition-colors" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-[11px] font-bold">1,234 likes</p>
@@ -140,32 +140,32 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                       <span className="font-bold mr-1">your_page</span>
                       {content || 'Your caption will appear here...'}
                     </p>
-                    <p className="text-[9px] text-zinc-400 uppercase">Just now</p>
+                    <p className="text-[9px] text-[var(--muted-foreground)] uppercase">Just now</p>
                   </div>
                 </div>
               </>
             ) : (
               /* Facebook Mockup */
               <>
-                <div className="p-3 border-b flex flex-col gap-3 sticky top-0 bg-white z-10">
+                <div className="p-3 border-b border-[var(--border)] flex flex-col gap-3 sticky top-0 bg-[var(--background)] z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-zinc-200" />
+                        <div className="w-10 h-10 rounded-full bg-[var(--border)]" />
                         <div>
                             <p className="text-sm font-bold leading-tight">Your Page Name</p>
-                            <p className="text-[10px] text-zinc-500 flex items-center gap-1">
+                            <p className="text-[10px] text-[var(--muted-foreground)] flex items-center gap-1">
                                 Just now · <GlobeIcon className="w-2 h-2" />
                             </p>
                         </div>
                     </div>
-                    <MoreHorizontal className="w-5 h-5 text-zinc-400" />
+                    <MoreHorizontal className="w-5 h-5 text-[var(--muted-foreground)]" />
                   </div>
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">
                     {content || 'Your post text will appear here...'}
                   </p>
                 </div>
 
-                <div className="aspect-square bg-zinc-100 flex items-center justify-center relative group">
+                <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
                    {media.length > 0 ? (
                         <>
                             <img src={media[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
@@ -184,19 +184,19 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                 </div>
 
                 {type === 'cta' && (
-                    <div className="p-3 bg-zinc-100 flex items-center justify-between border-t border-b">
+                    <div className="p-3 bg-[var(--card)] flex items-center justify-between border-b border-[var(--border)]">
                         <div className="flex-1 min-w-0 pr-4">
-                            <p className="text-[10px] text-zinc-500 uppercase font-medium">EXAMPLE.COM</p>
-                            <p className="text-sm font-bold truncate">Learn more about our services</p>
+                            <p className="text-[10px] text-[var(--muted-foreground)] uppercase font-medium">EXAMPLE.COM</p>
+                            <p className="text-sm font-bold truncate text-[var(--foreground)]">Learn more about our services</p>
                         </div>
-                        <button className="px-4 py-1.5 bg-zinc-200 rounded font-bold text-sm">Learn More</button>
+                        <button className="px-4 py-1.5 bg-[var(--border)] rounded font-bold text-sm text-[var(--foreground)]">Learn More</button>
                     </div>
                 )}
 
-                <div className="p-2 px-4 flex items-center justify-between border-t text-zinc-500">
+                <div className="p-2 px-4 flex items-center justify-between border-b border-[var(--border)] text-[var(--muted-foreground)]">
                     <div className="flex items-center gap-1 text-xs">
                         <div className="flex -space-x-1">
-                            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center border border-white">
+                            <div className="w-4 h-4 rounded-full bg-[#1877F2] flex items-center justify-center border border-[var(--background)]">
                                 <span className="text-[8px] text-white">👍</span>
                             </div>
                         </div>
@@ -208,15 +208,15 @@ export function PostPreview({ content, media, type }: PostPreviewProps) {
                     </div>
                 </div>
 
-                <div className="px-2 pb-2 grid grid-cols-3 border-t border-zinc-100 pt-1">
-                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-zinc-50 rounded cursor-pointer">
-                        <span className="text-zinc-500 text-xs font-bold">Like</span>
+                <div className="px-2 pb-10 grid grid-cols-3 pt-1">
+                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-[var(--card)] rounded cursor-pointer transition-colors">
+                        <span className="text-[var(--muted-foreground)] text-xs font-bold">Like</span>
                     </div>
-                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-zinc-50 rounded cursor-pointer">
-                        <span className="text-zinc-500 text-xs font-bold">Comment</span>
+                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-[var(--card)] rounded cursor-pointer transition-colors">
+                        <span className="text-[var(--muted-foreground)] text-xs font-bold">Comment</span>
                     </div>
-                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-zinc-50 rounded cursor-pointer">
-                        <span className="text-zinc-500 text-xs font-bold">Share</span>
+                    <div className="flex items-center justify-center gap-2 py-2 hover:bg-[var(--card)] rounded cursor-pointer transition-colors">
+                        <span className="text-[var(--muted-foreground)] text-xs font-bold">Share</span>
                     </div>
                 </div>
               </>
