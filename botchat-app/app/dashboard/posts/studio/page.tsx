@@ -56,6 +56,8 @@ export default function PostStudioPage() {
   const [carouselItemsPreview, setCarouselItemsPreview] = useState<any[]>([]);
   const [sliderImagesPreview, setSliderImagesPreview] = useState<string[]>([]);
   const [carouselTab, setCarouselTab] = useState<string>('carousel');
+  const [linkUrlPreview, setLinkUrlPreview] = useState('');
+  const [ctaTypePreview, setCtaTypePreview] = useState('LEARN_MORE');
   const [globalSidebarCollapsed, setGlobalSidebarCollapsed] = useState(true);
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
@@ -798,6 +800,8 @@ export default function PostStudioPage() {
                 accounts={accounts}
                 selectedParentAccounts={selectedParentAccounts}
                 onTabChange={setMultimediaTab}
+                onLinkChange={setLinkUrlPreview}
+                onCtaTypeChange={setCtaTypePreview}
               />
             )}
           </section>
@@ -811,6 +815,8 @@ export default function PostStudioPage() {
               carouselItems={carouselItemsPreview}
               sliderImages={sliderImagesPreview}
               carouselTab={carouselTab}
+              linkUrl={linkUrlPreview}
+              ctaTypeLabel={ctaTypePreview}
             />
           </section>
         </main>

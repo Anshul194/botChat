@@ -39,6 +39,8 @@ interface ComposerProps {
   onContentChange: (val: string) => void;
   onMediaChange: (val: string[]) => void;
   onTabChange?: (tab: string) => void;
+  onLinkChange?: (val: string) => void;
+  onCtaTypeChange?: (val: string) => void;
   type: string | null;
   onPublish: (data: any) => void;
   isPublishing: boolean;
@@ -50,6 +52,8 @@ export function Composer({
   onContentChange, 
   onMediaChange, 
   onTabChange,
+  onLinkChange,
+  onCtaTypeChange,
   type, 
   onPublish, 
   isPublishing,
@@ -259,13 +263,19 @@ export function Composer({
                 <Input 
                     className="bg-[var(--background)] border-[var(--border)]"
                     value={linkUrl}
-                    onChange={(e) => setLinkUrl(e.target.value)}
+                    onChange={(e) => {
+                      setLinkUrl(e.target.value);
+                      onLinkChange?.(e.target.value);
+                    }}
                     placeholder="https://example.com"
                 />
              </div>
              <div className="space-y-2">
                 <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">CTA Button Type</Label>
-                <Select value={ctaType} onValueChange={setCtaType}>
+                <Select value={ctaType} onValueChange={(val) => {
+                  setCtaType(val);
+                  onCtaTypeChange?.(val);
+                }}>
                   <SelectTrigger className="bg-[var(--background)] border-[var(--border)] h-11 rounded-xl shadow-sm focus:ring-primary/20 transition-all hover:border-primary/50">
                     <SelectValue placeholder="Select Button" />
                   </SelectTrigger>
@@ -462,7 +472,10 @@ export function Composer({
                       placeholder="Paste link" 
                       className="bg-[var(--background)] border-[var(--border)] text-[var(--foreground)] pr-24"
                       value={linkUrl}
-                      onChange={(e) => setLinkUrl(e.target.value)}
+                      onChange={(e) => {
+                        setLinkUrl(e.target.value);
+                        onLinkChange?.(e.target.value);
+                      }}
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-primary cursor-pointer hover:underline">Fetch Info</div>
                 </div>
@@ -470,7 +483,10 @@ export function Composer({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-[var(--muted-foreground)]">CTA Button Type</Label>
-                    <Select value={ctaType} onValueChange={setCtaType}>
+                    <Select value={ctaType} onValueChange={(val) => {
+                      setCtaType(val);
+                      onCtaTypeChange?.(val);
+                    }}>
                       <SelectTrigger className="bg-[var(--background)] border-[var(--border)]">
                         <SelectValue placeholder="Select Button" />
                       </SelectTrigger>

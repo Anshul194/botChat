@@ -27,9 +27,16 @@ interface PostPreviewProps {
   carouselItems?: any[];
   sliderImages?: string[];
   carouselTab?: string;
+  linkUrl?: string;
+  ctaTypeLabel?: string;
 }
 
-export function PostPreview({ content, media, type, carouselItems, sliderImages, carouselTab }: PostPreviewProps) {
+export function PostPreview({ content, media, type, carouselItems, sliderImages, carouselTab, linkUrl, ctaTypeLabel }: PostPreviewProps) {
+  const formatCta = (val: string) => {
+    if (!val) return 'Learn More';
+    return val.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  };
+  const displayCtaLabel = formatCta(ctaTypeLabel || 'LEARN_MORE');
   const [platform, setPlatform] = useState<'facebook' | 'instagram'>('instagram');
   const [device, setDevice] = useState<'mobile' | 'desktop'>('mobile');
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -152,6 +159,26 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                           </div>
                         )}
                     </>
+                  ) : type === 'cta' || type === 'link' ? (
+                    <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center border-y border-[var(--border)] overflow-hidden">
+                       {linkUrl ? (
+                          <div className="w-full h-full flex flex-col bg-white">
+                             <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                                <ExternalLink className="w-8 h-8 mb-2 opacity-50" />
+                                <span className="text-xs font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
+                             </div>
+                             <div className="p-3 bg-slate-50 border-t border-[var(--border)]">
+                                <p className="text-xs font-bold text-slate-800 line-clamp-1">{linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'Link Preview'}</p>
+                                <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">{content || 'A summary of the linked content will appear here.'}</p>
+                             </div>
+                          </div>
+                       ) : (
+                          <div className="flex flex-col items-center gap-2 opacity-30 p-6 text-center">
+                            <ExternalLink className="w-10 h-10" />
+                            <span className="text-[10px] font-medium uppercase tracking-widest">Link Preview</span>
+                          </div>
+                       )}
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center gap-2 opacity-20">
                       <Layout className="w-12 h-12" />
@@ -159,9 +186,9 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                     </div>
                   )}
                   {type === 'cta' && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-blue-500 p-2 flex items-center justify-between text-white animate-in slide-in-from-bottom-2">
-                        <span className="text-[10px] font-bold">Learn More</span>
-                        <ExternalLink className="w-3 h-3" />
+                    <div className="absolute bottom-0 left-0 right-0 bg-[#3897f0] p-2.5 flex items-center justify-between text-white animate-in slide-in-from-bottom-2 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+                        <span className="text-[11px] font-bold tracking-wide">{displayCtaLabel}</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
                     </div>
                   )}
                 </div>
@@ -235,6 +262,20 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                                </div>
                              )}
                         </>
+                    ) : type === 'cta' || type === 'link' ? (
+                        <div className="w-full h-full flex flex-col bg-slate-100">
+                           {linkUrl ? (
+                              <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                                  <ExternalLink className="w-10 h-10 mb-3 opacity-50" />
+                                  <span className="text-sm font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
+                              </div>
+                           ) : (
+                              <div className="flex-1 flex flex-col items-center justify-center gap-2 opacity-30">
+                                  <ExternalLink className="w-12 h-12" />
+                                  <span className="text-[10px] font-medium uppercase tracking-widest">Link Image</span>
+                              </div>
+                           )}
+                        </div>
                     ) : (
                         <div className="flex flex-col items-center gap-2 opacity-20">
                             <Layout className="w-12 h-12" />
@@ -243,13 +284,19 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                     )}
                 </div>
 
-                {type === 'cta' && (
-                    <div className="p-3 bg-[var(--card)] flex items-center justify-between border-b border-[var(--border)]">
+                {(type === 'cta' || type === 'link') && (
+                    <div className="p-3 bg-[var(--card)] flex items-center justify-between border-b border-[var(--border)] cursor-pointer hover:bg-slate-50 transition-colors">
                         <div className="flex-1 min-w-0 pr-4">
-                            <p className="text-[10px] text-[var(--muted-foreground)] uppercase font-medium">EXAMPLE.COM</p>
-                            <p className="text-sm font-bold truncate text-[var(--foreground)]">Learn more about our services</p>
+                            <p className="text-[10px] text-[var(--muted-foreground)] uppercase font-bold tracking-wider mb-0.5">
+                               {linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'EXAMPLE.COM'}
+                            </p>
+                            <p className="text-sm font-bold truncate text-[var(--foreground)]">{content || 'Learn more about our services'}</p>
                         </div>
-                        <button className="px-4 py-1.5 bg-[var(--border)] rounded font-bold text-sm text-[var(--foreground)]">Learn More</button>
+                        {type === 'cta' && (
+                           <button className="px-4 py-1.5 bg-[#E4E6EB] hover:bg-[#D8DADF] text-[#050505] rounded-md font-semibold text-sm transition-colors">
+                              {displayCtaLabel}
+                           </button>
+                        )}
                     </div>
                 )}
 
