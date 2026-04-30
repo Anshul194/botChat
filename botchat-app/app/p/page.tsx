@@ -50,7 +50,7 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
     if (!id) return null;
     try {
         const baseUrl = resolveApiBaseUrl();
-        const url = `${baseUrl}/bio/pages/${id}`;
+        const url = `${baseUrl}/public/bio/pages/${id}`;
         console.log("Fetching public profile directly from:", url);
 
         const res = await fetch(url, {
@@ -366,7 +366,7 @@ function PublicBioContent() {
     const [activeTab, setActiveTab] = useState<number | null>(null);
 
     useEffect(() => {
-        const targetId = id || username;
+        const targetId = username || id;
         if (!targetId) {
             setNotFound(true);
             setLoading(false);
@@ -410,16 +410,17 @@ function PublicBioContent() {
         </div>
     );
 
-    const currentTab = profile.tabs.find(t => t.id === activeTab) || profile.tabs[0];
+    const rawTabs = profile.tabs || [{ id: 1, title: 'Main', sections: [{ id: 1, blocks: profile.blocks || [] }] }];
+    const currentTab = rawTabs.find((t: any) => t.id === activeTab) || rawTabs[0];
     const theme = getTheme(profile.theme);
 
-    const allBlocks = profile.tabs.flatMap(t => t.sections || []).flatMap(s => s.blocks || []);
-    const otherBlocks = currentTab?.sections?.flatMap(s => s.blocks || []) || [];
+    const allBlocks = rawTabs.flatMap((t: any) => t.sections || []).flatMap((s: any) => s.blocks || []).filter((b: any) => !b.is_hidden);
+    const otherBlocks = currentTab?.sections?.flatMap((s: any) => s.blocks || [])?.filter((b: any) => !b.is_hidden) || [];
     
     // For PortfolioLayout specifically
     const topAvatar = otherBlocks.find(b => getUiTypeFromBlock(b) === "avatar");
     
-    const layoutStyle = (profile as any).settings?.layoutStyle || "standard";
+    const layoutStyle = (profile as any).template_name || (profile as any).layout || (profile as any).settings?.layoutStyle || "standard";
 
     if (layoutStyle === "portfolio") {
         return (
@@ -537,7 +538,7 @@ function PublicBioContent() {
                                         {section.title}
                                     </h3>
                                 )}
-                                {section.blocks?.map(block => (
+                                {section.blocks?.filter((b: any) => !b.is_hidden).map(block => (
                                     <BlockRenderer key={block.id} block={block} theme={theme} />
                                 ))}
                                 {!hasContent && (

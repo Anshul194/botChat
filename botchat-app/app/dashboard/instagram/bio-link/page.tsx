@@ -288,9 +288,10 @@ export default function BioLinkBuilder() {
     const [showPassword, setShowPassword] = useState(false);
 
     const instagramUsername = accounts.find(a => String(a.id) === selectedPageId)?.username || "username";
+    const shareSlug = profile?.url || profile?.url || instagramUsername;
     const publicUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/p?u=${instagramUsername}&id=${selectedPageId}`
-        : `/p?u=${instagramUsername}&id=${selectedPageId}`;
+        ? `${window.location.origin}/p?u=${shareSlug}&id=${selectedPageId}`
+        : `/p?u=${shareSlug}&id=${selectedPageId}`;
 
     const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
     const flatBlocks = (tabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
@@ -355,12 +356,12 @@ export default function BioLinkBuilder() {
                 // Rule: if template_name is 'custom', we select 'standard'. Otherwise use the name.
                 const rawLayout = payload.layout || payload.template_name;
                 const layoutName = rawLayout === 'custom' ? 'standard' : rawLayout;
-                
+
                 if (layoutName) {
                     if (!payload.settings) payload.settings = {};
                     payload.settings.layoutStyle = layoutName;
                 }
-                
+
                 setProfile(payload);
                 const linkId = payload.link_id || payload.id;
 
@@ -1303,10 +1304,10 @@ export default function BioLinkBuilder() {
                                 )}
 
                                 {view === "visuals" && (
-                                    <VisualsLab 
-                                        profile={profile} 
-                                        updateProfile={handleUpdateProfile} 
-                                        applyTemplate={handleApplyTemplate} 
+                                    <VisualsLab
+                                        profile={profile}
+                                        updateProfile={handleUpdateProfile}
+                                        applyTemplate={handleApplyTemplate}
                                     />
                                 )}
 
@@ -1810,6 +1811,23 @@ export default function BioLinkBuilder() {
                 }>
                 {editingBlock && (
                     <div className="space-y-6">
+                        {/* HIDE BLOCK TOGGLE */}
+                        <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                                    <EyeOff size={14} className="text-slate-500 dark:text-slate-400" />
+                                </div>
+                                <div>
+                                    <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Hide Block</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold tracking-tight">Hide from the public page</p>
+                                </div>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" checked={editingBlock.is_hidden || false} onChange={(e) => setEditingBlock({ ...editingBlock, is_hidden: e.target.checked })} />
+                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
                         {(editingBlock.items || []).map((item: any, idx: number) => {
                             const uiType = getUiTypeFromBlock(editingBlock);
 
@@ -1876,7 +1894,7 @@ export default function BioLinkBuilder() {
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats Items</p>
                                             {(item.items || []).map((stat: any, sIdx: number) => (
                                                 <div key={sIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
-                                                    <button 
+                                                    <button
                                                         onClick={() => {
                                                             const newItems = [...item.items];
                                                             newItems.splice(sIdx, 1);
@@ -1900,7 +1918,7 @@ export default function BioLinkBuilder() {
                                                     </div>
                                                 </div>
                                             ))}
-                                            <button 
+                                            <button
                                                 onClick={() => {
                                                     const newItems = [...(item.items || []), { label: "", value: "" }];
                                                     updateItem(idx, 'items', newItems);
@@ -1931,7 +1949,7 @@ export default function BioLinkBuilder() {
                                                 {(item.logos || []).map((logo: any, lIdx: number) => (
                                                     <div key={lIdx} className="relative group aspect-square rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 overflow-hidden">
                                                         <img src={logo.image} className="w-full h-full object-contain p-2" />
-                                                        <button 
+                                                        <button
                                                             onClick={() => {
                                                                 const newLogos = [...item.logos];
                                                                 newLogos.splice(lIdx, 1);
@@ -1957,7 +1975,7 @@ export default function BioLinkBuilder() {
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Section Items</p>
                                             {(item.items || []).map((sItem: any, siIdx: number) => (
                                                 <div key={siIdx} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
-                                                    <button 
+                                                    <button
                                                         onClick={() => {
                                                             const newItems = [...item.items];
                                                             newItems.splice(siIdx, 1);
@@ -1967,7 +1985,7 @@ export default function BioLinkBuilder() {
                                                     >
                                                         <X size={12} />
                                                     </button>
-                                                    
+
                                                     {uiType === "faq_section" ? (
                                                         <>
                                                             <InputField label="Question" value={sItem.question || ""} onChange={(e: any) => {
@@ -1990,11 +2008,15 @@ export default function BioLinkBuilder() {
                                                                 <div className="flex-1 space-y-2">
                                                                     <label className="cursor-pointer inline-block px-3 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold">
                                                                         Upload Image
-                                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) {
-                                                                            const newItems = [...item.items];
-                                                                            newItems[siIdx] = { ...sItem, image: url };
-                                                                            updateItem(idx, 'items', newItems);
-                                                                        } } }} />
+                                                                        <input type="file" className="hidden" onChange={async e => {
+                                                                            if (e.target.files?.[0]) {
+                                                                                const url = await handleUploadImage(e.target.files[0]); if (url) {
+                                                                                    const newItems = [...item.items];
+                                                                                    newItems[siIdx] = { ...sItem, image: url };
+                                                                                    updateItem(idx, 'items', newItems);
+                                                                                }
+                                                                            }
+                                                                        }} />
                                                                     </label>
                                                                     <InputField label="Title" value={sItem.title || ""} onChange={(e: any) => {
                                                                         const newItems = [...item.items];
@@ -2024,7 +2046,7 @@ export default function BioLinkBuilder() {
                                                     )}
                                                 </div>
                                             ))}
-                                            <button 
+                                            <button
                                                 onClick={() => {
                                                     const newItem = uiType === "faq_section" ? { question: "", answer: "" } : { title: "", description: "", image: "" };
                                                     const newItems = [...(item.items || []), newItem];
