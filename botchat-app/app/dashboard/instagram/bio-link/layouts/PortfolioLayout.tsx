@@ -113,18 +113,9 @@ export const PortfolioLayout = ({
 
                                 {/* User Info overlay at bottom */}
                                 <div className="absolute bottom-8 left-0 right-0 px-6 z-10 min-w-0">
-                                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                                        <span className="px-2 py-0.5 bg-orange-600 text-white text-[9px] font-bold uppercase tracking-widest rounded-sm shrink-0">Featured</span>
-                                        <span className="px-2 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold uppercase tracking-widest rounded-sm shrink-0">Open to work</span>
-                                    </div>
-                                    <h1 className="text-2xl font-black text-white tracking-tight leading-tight mb-2 break-words max-w-full">
+                                    <h1 className="text-2xl font-black text-white tracking-tight leading-tight mb-5 break-words max-w-full">
                                         {heroBlock?.settings?.title || profile?.title || instagramUsername || "Anshul"}
                                     </h1>
-                                    <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-gray-300 mb-5">
-                                        <span className="truncate max-w-[140px]">@{instagramUsername || "username"}</span>
-                                        <span className="w-1 h-1 rounded-full bg-gray-500 hidden sm:block"></span>
-                                        <span className="flex items-center gap-1 shrink-0"><MapPin size={10} /> Global</span>
-                                    </div>
 
                                     <div className="flex items-center gap-3">
                                         <a 

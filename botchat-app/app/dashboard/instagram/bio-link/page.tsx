@@ -293,8 +293,19 @@ export default function BioLinkBuilder() {
         ? `${window.location.origin}/p?u=${shareSlug}&id=${selectedPageId}`
         : `/p?u=${shareSlug}&id=${selectedPageId}`;
 
-    const currentTab = tabs.find(t => t.id === selectedTabId) || tabs[0];
-    const flatBlocks = (tabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
+    const previewTabs = React.useMemo(() => {
+        if (!editingBlock) return tabs;
+        return tabs.map(tab => ({
+            ...tab,
+            sections: tab.sections?.map((sec: any) => ({
+                ...sec,
+                blocks: sec.blocks?.map((b: any) => (b.id === editingBlock.id) ? editingBlock : b)
+            }))
+        }));
+    }, [tabs, editingBlock]);
+
+    const currentTab = previewTabs.find(t => t.id === selectedTabId) || previewTabs[0];
+    const flatBlocks = (previewTabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
     const layoutFilter = profile?.settings?.layoutStyle || 'standard';
     const visibleBlocks = flatBlocks.filter(b => {
         if (layoutFilter === 'all') return true;
@@ -1728,7 +1739,7 @@ export default function BioLinkBuilder() {
                     )}>
                         <PhonePreview
                             profile={profile}
-                            tabs={tabs}
+                            tabs={previewTabs}
                             selectedTabId={selectedTabId}
                             setSelectedTabId={setSelectedTabId}
                             instagramUsername={instagramUsername}
