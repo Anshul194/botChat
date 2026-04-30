@@ -8,6 +8,10 @@ import {
 } from "lucide-react";
 import { resolveApiBaseUrl, resolveXHost } from "@/lib/config";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "@/app/dashboard/instagram/bio-link/TemplateSystem";
+import { getUiTypeFromBlock, isMediaType, BLOCK_ICONS } from "@/app/dashboard/instagram/bio-link/builder-utils";
+import { PortfolioLayout } from "@/app/dashboard/instagram/bio-link/layouts/PortfolioLayout";
+import { Globe, MoreHorizontal, Instagram, MapPin, ArrowUpRight, Camera, Sparkles, Youtube, Video, Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // ─────────────────────────────────────────────────────────
 // Types
@@ -46,8 +50,8 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
     if (!id) return null;
     try {
         const baseUrl = resolveApiBaseUrl();
-        const url = `${baseUrl}/bio/pages`;
-        console.log("Fetching public profile from:", url);
+        const url = `${baseUrl}/bio/pages/${id}`;
+        console.log("Fetching public profile directly from:", url);
 
         const res = await fetch(url, {
             headers: { 
@@ -58,15 +62,22 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
         });
 
         if (!res.ok) {
+            console.error("API fetch failed with status:", res.status);
             return null;
         }
         
         const json = await res.json();
-        const pages = json?.data || json || [];
-        // Find the page that matches the link_id or url (slug)
-        const profile = pages.find((p: any) => String(p.link_id) === id || p.url === id);
-        return profile || null;
+        // The single page API usually returns the page object in a 'data' wrapper
+        const profile = json?.data || json;
+        
+        if (!profile || (!profile.link_id && !profile.id)) {
+            console.warn("Invalid profile data received from:", url);
+            return null;
+        }
+        
+        return profile;
     } catch (err) {
+        console.error("fetchPublicProfile error:", err);
         return null;
     }
 }
@@ -263,9 +274,18 @@ function LogosBlockView({ items }: { items: any[] }) {
     );
 }
 
-function BlockRenderer({ block }: { block: PublicBlock }) {
+function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
+    const type = getUiTypeFromBlock(block);
+    const settings = block.settings || {};
     const items = block.items || [];
-    switch (block.type) {
+    
+    // We'll reuse the logic from PhonePreview for better consistency
+    const alignment = settings.text_alignment || "center";
+    const effectiveTextColor = theme.textColor || "#000000";
+    
+    const displayLabel = settings.title || settings.text || settings.name;
+
+    switch (type) {
         case "links_carousel": return <CarouselBlockView items={items} />;
         case "hero_single_link": return <HeroBlockView item={items[0]} />;
         case "links_grid": return <GridBlockView items={items} />;
@@ -273,8 +293,61 @@ function BlockRenderer({ block }: { block: PublicBlock }) {
         case "add_apps": return <AppsBlockView items={items} />;
         case "vertical_media":
         case "square_media":
-        case "horizontal_media": return <MediaBlockView items={items} type={block.type} />;
+        case "horizontal_media": return <MediaBlockView items={items} type={type} />;
         case "add_logos": return <LogosBlockView items={items} />;
+        
+        case "link":
+            return (
+                <a href={block.location_url || "#"} className="w-full flex items-center justify-center min-h-[64px] py-4 px-8 shadow-md transition-all hover:scale-[1.01] active:scale-95" 
+                   style={{ background: theme.btnStyle?.background || "white", color: theme.btnStyle?.color || theme.textColor, borderRadius: theme.btnStyle?.borderRadius || "20px" }}>
+                    {settings.icon && <i className={`${settings.icon} absolute left-8 text-xl opacity-80`}></i>}
+                    <span className="font-bold text-[16px] truncate max-w-[80%]">{displayLabel || "Open Website"}</span>
+                    <MoreHorizontal size={18} className="absolute right-8 opacity-20" />
+                </a>
+            );
+
+        case "heading":
+            return (
+                <div className="pt-8 pb-3" style={{ textAlign: alignment as any }}>
+                    <h2 className="text-[24px] font-black tracking-tighter leading-tight" style={{ color: effectiveTextColor }}>
+                        {displayLabel || "Untitled Section"}
+                    </h2>
+                </div>
+            );
+
+        case "paragraph":
+            return (
+                <div className="pb-2" style={{ textAlign: alignment as any }}>
+                    <p className="text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line" style={{ color: effectiveTextColor }}>
+                        {settings.description || settings.text}
+                    </p>
+                </div>
+            );
+
+        case "avatar":
+            return (
+                <div className="flex flex-col items-center py-6">
+                    <div className="relative overflow-hidden border-[4px] shadow-2xl border-white/10" style={{ borderRadius: '9999px', width: settings.size || 140, height: settings.size || 140 }}>
+                        <img src={settings.image || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"} className="w-full h-full object-cover" />
+                    </div>
+                    {displayLabel && (
+                        <p className="mt-5 text-[17px] font-black tracking-tight" style={{ color: effectiveTextColor }}>{displayLabel}</p>
+                    )}
+                </div>
+            );
+
+        case "socials":
+            return (
+                <div className="flex flex-wrap items-center gap-4 py-6" style={{ justifyContent: alignment === 'left' ? 'flex-start' : alignment === 'right' ? 'flex-end' : 'center' }}>
+                    {settings.socials && Object.entries(settings.socials).map(([key, value]: any) => value && (
+                        <a key={key} href={value.includes("@") ? `mailto:${value}` : value.startsWith("+") || (value.length > 5 && /^\d+$/.test(value)) ? `tel:${value}` : value} target="_blank" rel="noopener noreferrer"
+                            className="w-12 h-12 flex items-center justify-center bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg rounded-full hover:scale-110 active:scale-95 transition-all">
+                            <span className="text-white"><Globe size={22} /></span>
+                        </a>
+                    ))}
+                </div>
+            );
+
         default: return null;
     }
 }
@@ -293,21 +366,26 @@ function PublicBioContent() {
     const [activeTab, setActiveTab] = useState<number | null>(null);
 
     useEffect(() => {
-        if (!id) {
+        const targetId = id || username;
+        if (!targetId) {
             setNotFound(true);
             setLoading(false);
             return;
         }
 
-        fetchPublicProfile(id).then(data => {
-            if (!data) { setNotFound(true); }
+        fetchPublicProfile(targetId).then(data => {
+            if (!data) { 
+                console.error("Profile not found after fetch for:", targetId);
+                setNotFound(true); 
+            }
             else {
+                console.log("Profile data loaded successfully:", data.title);
                 setProfile(data);
                 if (data.tabs?.length) setActiveTab(data.tabs[0].id);
             }
             setLoading(false);
         });
-    }, [username]);
+    }, [id, username]);
 
     // ── Loading ───────────────────────────────────────────
     if (loading) return (
@@ -334,6 +412,44 @@ function PublicBioContent() {
 
     const currentTab = profile.tabs.find(t => t.id === activeTab) || profile.tabs[0];
     const theme = getTheme(profile.theme);
+
+    const allBlocks = profile.tabs.flatMap(t => t.sections || []).flatMap(s => s.blocks || []);
+    const otherBlocks = currentTab?.sections?.flatMap(s => s.blocks || []) || [];
+    
+    // For PortfolioLayout specifically
+    const topAvatar = otherBlocks.find(b => getUiTypeFromBlock(b) === "avatar");
+    
+    const layoutStyle = (profile as any).settings?.layoutStyle || "standard";
+
+    if (layoutStyle === "portfolio") {
+        return (
+            <>
+                <title>{profile.title || username} · Portfolio</title>
+                <div className="min-h-screen bg-[#f4f6f8]">
+                    <PortfolioLayout
+                        profile={profile}
+                        tabs={profile.tabs}
+                        selectedTabId={activeTab}
+                        setSelectedTabId={setActiveTab}
+                        instagramUsername={username}
+                        otherBlocks={otherBlocks}
+                        topAvatar={topAvatar}
+                        getUiTypeFromBlock={getUiTypeFromBlock}
+                        uiTypeOverrides={{}}
+                        isMediaType={isMediaType}
+                        getYouTubeId={(url: string) => {
+                            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                            const match = url?.match(regExp);
+                            return (match && match[2].length === 11) ? match[2] : null;
+                        }}
+                        renderBlockUI={(block: any, isTiled: boolean, idx: number) => (
+                            <BlockRenderer key={block.id} block={block} theme={theme} />
+                        )}
+                    />
+                </div>
+            </>
+        );
+    }
 
     return (
         <>
@@ -422,7 +538,7 @@ function PublicBioContent() {
                                     </h3>
                                 )}
                                 {section.blocks?.map(block => (
-                                    <BlockRenderer key={block.id} block={block} />
+                                    <BlockRenderer key={block.id} block={block} theme={theme} />
                                 ))}
                                 {!hasContent && (
                                     <div className="py-8 text-center text-slate-300 dark:text-slate-600 text-xs font-bold uppercase tracking-widest">
