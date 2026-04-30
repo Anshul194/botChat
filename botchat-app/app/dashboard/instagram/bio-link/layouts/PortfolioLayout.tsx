@@ -62,10 +62,10 @@ export const PortfolioLayout = ({
                 <div className="p-4 py-6 w-full h-full flex-1">
                     <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 flex flex-col items-center">
                         <img
-                            src={topAvatar?.settings?.image || profile?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80"}
+                            src={heroBlock?.settings?.image || topAvatar?.settings?.image || profile?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80"}
                             className="w-[120px] h-[120px] rounded-full object-cover mb-5 shadow-sm"
                         />
-                        <h2 className="text-2xl font-black text-gray-900 mb-1 text-center">{profile?.title || "Your Name"}</h2>
+                        <h2 className="text-2xl font-black text-gray-900 mb-1 text-center">{profile?.title || instagramUsername || "Anshul"}</h2>
                         <p className="text-[12px] font-bold text-gray-900 uppercase tracking-widest mb-6 text-center">
                             {heroBlock?.settings?.title || "Creative Director"}
                         </p>
@@ -118,7 +118,7 @@ export const PortfolioLayout = ({
                                         <span className="px-2 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold uppercase tracking-widest rounded-sm shrink-0">Open to work</span>
                                     </div>
                                     <h1 className="text-2xl font-black text-white tracking-tight leading-tight mb-2 break-words max-w-full">
-                                        {heroBlock?.settings?.title || profile?.title || "Your Name"}
+                                        {heroBlock?.settings?.title || profile?.title || instagramUsername || "Anshul"}
                                     </h1>
                                     <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-gray-300 mb-5">
                                         <span className="truncate max-w-[140px]">@{instagramUsername || "username"}</span>
@@ -374,7 +374,7 @@ export const PortfolioLayout = ({
                                     <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Mail size={16} /></div>
                                 </div>
 
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">© 2026 {profile?.title || "Creator"}. All rights reserved.</p>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">© 2026 {profile?.title || instagramUsername || "Anshul"}. All rights reserved.</p>
                             </div>
                         </>
                     ) : (

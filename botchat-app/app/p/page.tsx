@@ -426,27 +426,29 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Portfolio</title>
-                <div className="min-h-screen bg-[#f4f6f8]">
-                    <PortfolioLayout
-                        profile={profile}
-                        tabs={profile.tabs}
-                        selectedTabId={activeTab}
-                        setSelectedTabId={setActiveTab}
-                        instagramUsername={username}
-                        otherBlocks={otherBlocks}
-                        topAvatar={topAvatar}
-                        getUiTypeFromBlock={getUiTypeFromBlock}
-                        uiTypeOverrides={{}}
-                        isMediaType={isMediaType}
-                        getYouTubeId={(url: string) => {
-                            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                            const match = url?.match(regExp);
-                            return (match && match[2].length === 11) ? match[2] : null;
-                        }}
-                        renderBlockUI={(block: any, isTiled: boolean, idx: number) => (
-                            <BlockRenderer key={block.id} block={block} theme={theme} />
-                        )}
-                    />
+                <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
+                    <div className="w-full max-w-[480px] min-h-screen shadow-2xl relative bg-[#f4f6f8] overflow-hidden flex flex-col">
+                        <PortfolioLayout
+                            profile={profile}
+                            tabs={profile.tabs}
+                            selectedTabId={activeTab}
+                            setSelectedTabId={setActiveTab}
+                            instagramUsername={username}
+                            otherBlocks={otherBlocks}
+                            topAvatar={topAvatar}
+                            getUiTypeFromBlock={getUiTypeFromBlock}
+                            uiTypeOverrides={{}}
+                            isMediaType={isMediaType}
+                            getYouTubeId={(url: string) => {
+                                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                                const match = url?.match(regExp);
+                                return (match && match[2].length === 11) ? match[2] : null;
+                            }}
+                            renderBlockUI={(block: any, isTiled: boolean, idx: number) => (
+                                <BlockRenderer key={block.id} block={block} theme={theme} />
+                            )}
+                        />
+                    </div>
                 </div>
             </>
         );
@@ -455,8 +457,9 @@ function PublicBioContent() {
     return (
         <>
             <title>{profile.title || username} · Bio Link</title>
-            <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
-                {/* ── Hero Header ──────────────────────────────────── */}
+            <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
+                <div className="w-full max-w-[480px] min-h-screen shadow-2xl relative bg-white dark:bg-[#0a0a0a] overflow-x-hidden flex flex-col">
+                    {/* ── Hero Header ──────────────────────────────────── */}
                 <div className="relative pt-16 pb-10 px-6 flex flex-col items-center text-center"
                     style={theme.bgStyle}>
 
@@ -566,6 +569,7 @@ function PublicBioContent() {
                         Made with BotChat Bio
                     </a>
                 </div>
+            </div>
             </div>
         </>
     );
