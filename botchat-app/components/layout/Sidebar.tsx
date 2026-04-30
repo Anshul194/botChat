@@ -341,6 +341,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             items={[
                                 { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
                                 { label: "Shortened Links", href: "/dashboard/shortened-links", badge: "Premium" },
+                                { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", badge: "" },
                                 { label: "Analytics", href: "/dashboard/instagram/bio-links/analytics", badge: "" },
                             ]}
                             pathname={currentPath}
