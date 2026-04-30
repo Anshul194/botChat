@@ -40,6 +40,15 @@ const getLucideIcon = (id: string, category: string) => {
     if (val.includes("soundcloud") || val.includes("spotify") || val.includes("music")) return Music;
     if (val.includes("youtube") || val.includes("tiktok") || val.includes("video") || val.includes("vimeo") || val.includes("twitch") || val.includes("reels") || val.includes("shorts")) return Video;
     
+    if (val.includes("hero")) return LayoutTemplate;
+    if (val.includes("stats")) return CircleDot;
+    if (val.includes("brands") || val.includes("logos")) return Hexagon;
+    if (val.includes("portfolio")) return Grid;
+    if (val.includes("services")) return ShoppingBag;
+    if (val.includes("testimonials")) return User;
+    if (val.includes("faq")) return Info;
+    if (val.includes("cta")) return Zap;
+    
     if (category === "standard") return LayoutTemplate;
     if (category === "advanced") return Wand2;
     if (category === "payments") return CreditCard;

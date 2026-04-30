@@ -829,6 +829,8 @@ export default function BioLinkBuilder() {
 
         // Build the payload per the Biolink Blocks API
         const payload: any = {
+            link_id: profile?.link_id || profile?.id,
+            type: uiType,
             settings: cleanSettings
         };
 
@@ -1856,6 +1858,199 @@ export default function BioLinkBuilder() {
                                         </>
                                     )}
 
+                                    {/* Hero Section */}
+                                    {uiType === "hero_section" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Creative Director" />
+                                            <InputField label="Subtitle" value={item.subtitle || ""} onChange={(e: any) => updateItem(idx, 'subtitle', e.target.value)} placeholder="Global Branding Expert" />
+                                            <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Transforming ideas into visual identities" textarea />
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Hero Image</label>
+                                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                    {item.image && <img src={item.image} className="w-12 h-12 rounded-lg object-cover" />}
+                                                    <label className="flex-1 cursor-pointer">
+                                                        <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                                            {item.image ? "Change Image" : "Upload Image"}
+                                                        </div>
+                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="CTA Text" value={item.cta_text || ""} onChange={(e: any) => updateItem(idx, 'cta_text', e.target.value)} placeholder="Hire Me" />
+                                                <InputField label="CTA Link" value={item.cta_link || ""} onChange={(e: any) => updateItem(idx, 'cta_link', e.target.value)} placeholder="#contact" />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Stats Section */}
+                                    {uiType === "stats_section" && (
+                                        <div className="space-y-5">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats Items</p>
+                                            {(item.items || []).map((stat: any, sIdx: number) => (
+                                                <div key={sIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                    <button 
+                                                        onClick={() => {
+                                                            const newItems = [...item.items];
+                                                            newItems.splice(sIdx, 1);
+                                                            updateItem(idx, 'items', newItems);
+                                                        }}
+                                                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <InputField label="Label" value={stat.label || ""} onChange={(e: any) => {
+                                                            const newItems = [...item.items];
+                                                            newItems[sIdx] = { ...stat, label: e.target.value };
+                                                            updateItem(idx, 'items', newItems);
+                                                        }} placeholder="Projects" />
+                                                        <InputField label="Value" value={stat.value || ""} onChange={(e: any) => {
+                                                            const newItems = [...item.items];
+                                                            newItems[sIdx] = { ...stat, value: e.target.value };
+                                                            updateItem(idx, 'items', newItems);
+                                                        }} placeholder="200+" />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <button 
+                                                onClick={() => {
+                                                    const newItems = [...(item.items || []), { label: "", value: "" }];
+                                                    updateItem(idx, 'items', newItems);
+                                                }}
+                                                className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-bold text-xs"
+                                            >
+                                                <Plus size={14} /> Add Stat Item
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* CTA Section */}
+                                    {uiType === "cta_section" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Ready to stand out?" />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="Button Text" value={item.button_text || ""} onChange={(e: any) => updateItem(idx, 'button_text', e.target.value)} placeholder="Get Started" />
+                                                <InputField label="Button Link" value={item.button_link || ""} onChange={(e: any) => updateItem(idx, 'button_link', e.target.value)} placeholder="#contact" />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Brands / Logos Section */}
+                                    {uiType === "brands_section" && (
+                                        <div className="space-y-5">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Brand Logos</p>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                {(item.logos || []).map((logo: any, lIdx: number) => (
+                                                    <div key={lIdx} className="relative group aspect-square rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 overflow-hidden">
+                                                        <img src={logo.image} className="w-full h-full object-contain p-2" />
+                                                        <button 
+                                                            onClick={() => {
+                                                                const newLogos = [...item.logos];
+                                                                newLogos.splice(lIdx, 1);
+                                                                updateItem(idx, 'logos', newLogos);
+                                                            }}
+                                                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <X size={10} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary cursor-pointer transition-all">
+                                                    <Plus size={20} />
+                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'logos', [...(item.logos || []), { image: url }]); } }} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Portfolio / Services / Testimonials / FAQ Sections */}
+                                    {["portfolio_section", "services_section", "testimonials_section", "faq_section"].includes(uiType) && (
+                                        <div className="space-y-5">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Section Items</p>
+                                            {(item.items || []).map((sItem: any, siIdx: number) => (
+                                                <div key={siIdx} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                    <button 
+                                                        onClick={() => {
+                                                            const newItems = [...item.items];
+                                                            newItems.splice(siIdx, 1);
+                                                            updateItem(idx, 'items', newItems);
+                                                        }}
+                                                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                    
+                                                    {uiType === "faq_section" ? (
+                                                        <>
+                                                            <InputField label="Question" value={sItem.question || ""} onChange={(e: any) => {
+                                                                const newItems = [...item.items];
+                                                                newItems[siIdx] = { ...sItem, question: e.target.value };
+                                                                updateItem(idx, 'items', newItems);
+                                                            }} />
+                                                            <InputField label="Answer" value={sItem.answer || ""} onChange={(e: any) => {
+                                                                const newItems = [...item.items];
+                                                                newItems[siIdx] = { ...sItem, answer: e.target.value };
+                                                                updateItem(idx, 'items', newItems);
+                                                            }} textarea />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="flex gap-4">
+                                                                <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
+                                                                    {sItem.image ? <img src={sItem.image} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
+                                                                </div>
+                                                                <div className="flex-1 space-y-2">
+                                                                    <label className="cursor-pointer inline-block px-3 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold">
+                                                                        Upload Image
+                                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) {
+                                                                            const newItems = [...item.items];
+                                                                            newItems[siIdx] = { ...sItem, image: url };
+                                                                            updateItem(idx, 'items', newItems);
+                                                                        } } }} />
+                                                                    </label>
+                                                                    <InputField label="Title" value={sItem.title || ""} onChange={(e: any) => {
+                                                                        const newItems = [...item.items];
+                                                                        newItems[siIdx] = { ...sItem, title: e.target.value };
+                                                                        updateItem(idx, 'items', newItems);
+                                                                    }} />
+                                                                </div>
+                                                            </div>
+                                                            <InputField label="Description" value={sItem.description || ""} onChange={(e: any) => {
+                                                                const newItems = [...item.items];
+                                                                newItems[siIdx] = { ...sItem, description: e.target.value };
+                                                                updateItem(idx, 'items', newItems);
+                                                            }} textarea />
+                                                            {uiType === "testimonials_section" && <InputField label="Author" value={sItem.author || ""} onChange={(e: any) => {
+                                                                const newItems = [...item.items];
+                                                                newItems[siIdx] = { ...sItem, author: e.target.value };
+                                                                updateItem(idx, 'items', newItems);
+                                                            }} />}
+                                                            {(uiType === "portfolio_section" || uiType === "services_section") && (
+                                                                <InputField label="Link" value={sItem.link || ""} onChange={(e: any) => {
+                                                                    const newItems = [...item.items];
+                                                                    newItems[siIdx] = { ...sItem, link: e.target.value };
+                                                                    updateItem(idx, 'items', newItems);
+                                                                }} />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            <button 
+                                                onClick={() => {
+                                                    const newItem = uiType === "faq_section" ? { question: "", answer: "" } : { title: "", description: "", image: "" };
+                                                    const newItems = [...(item.items || []), newItem];
+                                                    updateItem(idx, 'items', newItems);
+                                                }}
+                                                className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-bold text-xs"
+                                            >
+                                                <Plus size={14} /> Add {uiType.split('_')[0]} Item
+                                            </button>
+                                        </div>
+                                    )}
+
+
                                     {/* Paragraph Type */}
                                     {uiType === "paragraph" && (
                                         <InputField
@@ -2272,7 +2467,7 @@ export default function BioLinkBuilder() {
                                     )}
 
                                     {/* Fallback for other types */}
-                                    {!["heading", "link", "paragraph", "avatar", "image", "socials", "business_hours", "paypal", "email_collector", "phone_collector", "contact_collector", "spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video"].includes(uiType) && (
+                                    {!["heading", "link", "paragraph", "avatar", "image", "socials", "business_hours", "paypal", "email_collector", "phone_collector", "contact_collector", "spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video", "hero_section", "stats_section", "cta_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section"].includes(uiType) && (
                                         <div className="space-y-4">
                                             <InputField
                                                 label="Primary Text"
