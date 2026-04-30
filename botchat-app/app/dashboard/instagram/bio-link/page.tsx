@@ -1031,7 +1031,22 @@ export default function BioLinkBuilder() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                {/* ── CENTRAL FLOATING PHASE DOCK ── */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100] w-auto">
+                    <div className="bg-slate-100 dark:bg-slate-800 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                        {PHASES.map((p, idx) => (
+                            <button key={p.id} onClick={() => setView(p.id)} className={cn(
+                                "h-9 px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
+                                view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm z-10" : "text-slate-500 hover:text-slate-900 hover:bg-white/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5"
+                            )}>
+                                <p.Icon size={14} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100")} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3 relative z-[110]">
                     <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         {instagramUsername}
@@ -1047,9 +1062,9 @@ export default function BioLinkBuilder() {
             <div className="relative flex-1 flex overflow-hidden">
                 {/* LEFT PANEL: TOOLS & PHASES */}
                 <aside className={cn(
-                    "bg-white dark:bg-slate-950 flex flex-col sticky top-0 h-screen z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl",
+                    "bg-white dark:bg-slate-950 flex flex-col sticky top-0 h-screen z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl shrink-0",
                     activePanel === "preview" ? "hidden xl:flex" : "flex",
-                    showCarouselEditor ? "xl:w-[360px]" : "xl:w-[45%]"
+                    "flex-1"
                 )}>
                     <div className="flex-1 overflow-y-auto px-6 pt-8 pb-10 no-scrollbar">
 
@@ -1691,10 +1706,10 @@ export default function BioLinkBuilder() {
                 </aside>
 
                 <main className={cn(
-                    "flex-1 bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
+                    "w-full xl:w-[500px] xl:shrink-0 bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
                     "sticky top-0 h-screen overflow-hidden",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
-                    showCarouselEditor && "xl:pr-[400px]"
+                    showCarouselEditor && "xl:mr-[400px]"
                 )}>
                     {/* Live Preview Status Badge */}
 
@@ -1707,8 +1722,8 @@ export default function BioLinkBuilder() {
                     </div>
 
                     <div className={cn(
-                        "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full",
-                        showCarouselEditor ? "scale-[0.85]" : "scale-100"
+                        "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full pt-4",
+                        "scale-[1.05] xl:scale-[1.1]"
                     )}>
                         <PhonePreview
                             profile={profile}
@@ -1740,37 +1755,9 @@ export default function BioLinkBuilder() {
                         </aside>
                     )}
                 </AnimatePresence>
-
-                {/* ── GLOBAL FLOATING PHASE DOCK ── */}
-                <div className={cn(
-                    "fixed bottom-8 left-1/2 -translate-x-1/2 z-[999] w-full px-6 transition-all duration-700 ease-in-out",
-                    showCarouselEditor ? "max-w-[550px]" : "max-w-[650px]"
-                )}>
-                    <div className="bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-3xl rounded-[32px] p-2.5 shadow-[0_30px_70px_rgba(0,0,0,0.5)] flex items-center gap-2 border border-white/10 ring-1 ring-white/10">
-                        <div className="flex-1 flex items-center gap-1">
-                            {PHASES.map((p, idx) => (
-                                <button key={p.id} onClick={() => setView(p.id)} className={cn(
-                                    "flex-1 h-14 rounded-[22px] flex flex-col items-center justify-center gap-1 transition-all relative group",
-                                    view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xl scale-[1.05] z-10" : "text-slate-400 hover:bg-white/5"
-                                )}>
-                                    <p.Icon size={18} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100 opacity-60 group-hover:opacity-100")} />
-                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] leading-none">{p.label.split('.')[1]}</span>
-                                    {view === p.id && <motion.div layoutId="phase-dot-global" className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_theme(colors.primary.DEFAULT)]" />}
-                                </button>
-                            ))}
-                        </div>
-                        {nextPhase && (
-                            <button onClick={() => setView(nextPhase.id)}
-                                className="h-14 px-6 rounded-[22px] bg-primary text-white flex flex-col items-center justify-center gap-1 hover:opacity-90 transition-all shadow-lg group">
-                                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                <span className="text-[8px] font-black uppercase tracking-[0.2em] leading-none">Next</span>
-                            </button>
-                        )}
-                    </div>
-                </div>
             </div>
 
-            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MOBILE SWITCHER ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
+            {/* MOBILE SWITCHER */}
             <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-primary backdrop-blur-2xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/20">
                 <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-primary shadow-lg' : 'text-white/60')}>
                     <Edit3 size={16} /> Studio
