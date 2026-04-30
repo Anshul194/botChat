@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { ArrowRight, Image as ImageIcon, Layers, Link as LinkIcon, Megaphone, Search, Sparkles, Video, Loader2, Globe, Wand2, CreditCard, Music, Plus, Zap, LayoutTemplate } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, Layers, Link as LinkIcon, Megaphone, Search, Sparkles, Video, Loader2, Globe, Wand2, CreditCard, Music, Plus, Zap, LayoutTemplate, CircleDot, Hexagon, Grid, ShoppingBag, User, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 
