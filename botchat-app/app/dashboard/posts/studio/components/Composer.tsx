@@ -445,10 +445,12 @@ export function Composer({
               </TabsTrigger>
             </TabsList>
             
-            <div className="flex items-center gap-2">
-              <Label htmlFor="ig-toggle" className="text-xs text-[var(--muted-foreground)] font-semibold">Instagram</Label>
-              <Switch id="ig-toggle" checked={isInstagram} onCheckedChange={setIsInstagram} className="data-[state=checked]:bg-primary" />
-            </div>
+            {activeTab !== 'text' && activeTab !== 'link' && (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="ig-toggle" className="text-xs text-[var(--muted-foreground)] font-semibold">Instagram</Label>
+                <Switch id="ig-toggle" checked={isInstagram} onCheckedChange={setIsInstagram} className="data-[state=checked]:bg-primary" />
+              </div>
+            )}
           </div>
 
           <div className="space-y-6">

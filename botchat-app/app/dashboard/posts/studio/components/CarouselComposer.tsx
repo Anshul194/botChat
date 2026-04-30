@@ -41,6 +41,7 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [timeInterval, setTimeInterval] = useState('0');
+  const [repeatTimes, setRepeatTimes] = useState('0');
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [videoImages, setVideoImages] = useState<string[]>([]);
@@ -396,31 +397,55 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
                   <Plus className="w-3 h-3 mr-1" /> Add Images
                 </Button>
               </div>
-              <div className="p-10 border-2 border-dashed border-[var(--border)] rounded-2xl bg-primary/5 flex flex-col items-center justify-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <Layers className="w-6 h-6 text-primary" />
+              <div className="p-6 border-2 border-dashed border-[var(--border)] rounded-2xl bg-primary/5 flex flex-col gap-4">
+                {videoImages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center text-center gap-3 py-4">
+                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
+                      <Layers className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">No images selected</p>
+                      <p className="text-xs text-[var(--muted-foreground)]">Upload at least 2 images to create a slideshow video</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    {videoImages.map((url, idx) => (
+                      <div key={idx} className="relative w-24 h-24 rounded-xl overflow-hidden border border-[var(--border)] group shadow-sm bg-black/5">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => setVideoImages(videoImages.filter((_, i) => i !== idx))}
+                          className="absolute top-1 right-1 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-white z-10"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        <div className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[8px] text-white font-bold backdrop-blur-md">
+                          Slide {idx + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="flex justify-center mt-2">
+                  <input
+                    type="file"
+                    id="video-images-upload"
+                    className="hidden"
+                    multiple
+                    accept="image/*"
+                    onChange={handleVideoImagesUpload}
+                  />
+                  <Button
+                    variant="outline"
+                    className="rounded-xl h-10 px-8 bg-white font-bold border-[var(--border)] shadow-sm"
+                    onClick={() => document.getElementById('video-images-upload')?.click()}
+                    disabled={isVideoUploading}
+                  >
+                    {isVideoUploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    {isVideoUploading ? 'Uploading...' : (videoImages.length > 0 ? 'Add More Images' : 'Upload Images')}
+                  </Button>
                 </div>
-                <div>
-                  <p className="text-sm font-bold">No images selected</p>
-                  <p className="text-xs text-[var(--muted-foreground)]">Upload at least 2 images to create a slideshow video</p>
-                </div>
-                <input
-                  type="file"
-                  id="video-images-upload"
-                  className="hidden"
-                  multiple
-                  accept="image/*"
-                  onChange={handleVideoImagesUpload}
-                />
-                <Button
-                  variant="outline"
-                  className="rounded-xl h-10 px-8 bg-white font-bold border-[var(--border)]"
-                  onClick={() => document.getElementById('video-images-upload')?.click()}
-                  disabled={isVideoUploading}
-                >
-                  {isVideoUploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  {isVideoUploading ? 'Uploading...' : 'Upload Images'}
-                </Button>
               </div>
             </div>
           </div>

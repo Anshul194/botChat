@@ -31,7 +31,9 @@ import {
   MoreHorizontal,
   ExternalLink,
   Trash2,
-  X
+  X,
+  Filter,
+  CheckCircle2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +55,7 @@ export default function PostStudioPage() {
   const [media, setMedia] = useState<string[]>([]);
   const [carouselItemsPreview, setCarouselItemsPreview] = useState<any[]>([]);
   const [sliderImagesPreview, setSliderImagesPreview] = useState<string[]>([]);
+  const [carouselTab, setCarouselTab] = useState<string>('carousel');
   const [globalSidebarCollapsed, setGlobalSidebarCollapsed] = useState(true);
   const [search, setSearch] = useState('');
   const [platform, setPlatform] = useState('all');
@@ -100,6 +103,7 @@ export default function PostStudioPage() {
     setCaption(data.message);
     setCarouselItemsPreview(data.carouselItems);
     setSliderImagesPreview(data.videoImages || []);
+    if (data.activeTab) setCarouselTab(data.activeTab);
   };
 
   const fetchAccounts = async () => {
@@ -301,11 +305,9 @@ export default function PostStudioPage() {
     const matchesPlatform = platform === 'all' || a.type === platform;
     const matchesAccountFilter = selectedParentAccounts.length === 0 || selectedParentAccounts.includes(a.accountId);
     
-    // Multimedia rule: text/link posts are Facebook only
-    const isAllowedForMultimediaTab = postType !== 'multimedia' || (multimediaTab !== 'text' && multimediaTab !== 'link') || a.type === 'facebook';
     const isAllowedForType = postType !== 'cta' || a.type === 'facebook';
     
-    return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType && isAllowedForMultimediaTab;
+    return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType;
   });
 
   const fbCount = accounts.filter(a => a.type === 'facebook').length;
@@ -700,42 +702,70 @@ export default function PostStudioPage() {
             ) : (
               // Multimedia Mode: Show Account filters + Page list
               <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                  <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase mr-2">Filter by Acc:</span>
-                  {uniqueAccounts
-                    .filter(acc => platform === 'all' || acc.type === platform)
-                    .map(acc => (
-                      <button
-                        key={acc.accountId}
-                        onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
-                        className={cn(
-                          "px-2 py-0.5 rounded text-[10px] border transition-all whitespace-nowrap",
-                          selectedParentAccounts.includes(acc.accountId) ? "bg-primary text-white border-primary" : "border-[var(--border)] text-[var(--muted-foreground)]"
-                        )}
-                      >
-                        {acc.accountName}
-                      </button>
-                    ))}
+                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+                  <div className="flex items-center gap-2 bg-[var(--background)] px-3 py-1.5 rounded-full border border-[var(--border)] shadow-sm shrink-0">
+                    <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase flex items-center gap-1.5">
+                      <Filter className="w-3 h-3" /> Filter by Account:
+                    </span>
+                    <div className="h-3 w-px bg-[var(--border)] mx-1" />
+                    <div className="flex items-center gap-1.5">
+                      {uniqueAccounts
+                        .filter(acc => platform === 'all' || acc.type === platform)
+                        .map(acc => (
+                          <button
+                            key={acc.accountId}
+                            onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
+                            className={cn(
+                              "px-3 py-1 rounded-full text-[10px] font-bold transition-all whitespace-nowrap flex items-center gap-1.5",
+                              selectedParentAccounts.includes(acc.accountId) 
+                                ? "bg-primary text-primary-foreground shadow-sm" 
+                                : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
+                            )}
+                          >
+                            {acc.type === 'facebook' ? <Facebook className="w-3 h-3" /> : <Instagram className="w-3 h-3" />}
+                            {acc.accountName}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
                   {filteredAccounts.length > 0 ? (
                     filteredAccounts.map((acc) => (
                       <button
                         key={acc.id}
                         onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
                         className={cn(
-                          "flex items-center gap-2 px-3 py-1 rounded-full border transition-all whitespace-nowrap shrink-0",
+                          "relative flex items-center gap-3 pl-3 pr-8 py-2.5 rounded-xl border transition-all whitespace-nowrap shrink-0 overflow-hidden group",
                           selectedAccounts.includes(acc.id)
-                            ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm"
-                            : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
+                            ? "bg-primary/5 border-primary shadow-[0_0_0_1px_var(--theme-primary)]"
+                            : "bg-[var(--card)] border-[var(--border)] hover:border-[var(--muted-foreground)] hover:bg-[var(--background)]"
                         )}
                       >
-                        <img src={acc.image} alt="" className="w-4 h-4 rounded-full object-cover" />
-                        <span className="text-xs font-medium">{acc.name}</span>
+                        {selectedAccounts.includes(acc.id) && (
+                          <div className="absolute inset-0 bg-primary/5" />
+                        )}
+                        <div className="relative z-10 flex items-center justify-center">
+                           <img src={acc.image} alt="" className="w-7 h-7 rounded-full object-cover shadow-sm ring-2 ring-[var(--background)]" />
+                           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--background)] rounded-full flex items-center justify-center shadow-sm">
+                             {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                           </div>
+                        </div>
+                        <div className="flex flex-col items-start relative z-10">
+                           <span className="text-sm font-bold leading-none mb-1 text-[var(--foreground)]">{acc.name}</span>
+                           <span className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{acc.accountName}</span>
+                        </div>
+                        {selectedAccounts.includes(acc.id) && (
+                           <div className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
+                              <CheckCircle2 className="w-3 h-3" />
+                           </div>
+                        )}
                       </button>
                     ))
                   ) : (
-                    <div className="text-xs text-[var(--muted-foreground)]">No matching pages found.</div>
+                    <div className="text-xs font-medium text-[var(--muted-foreground)] flex items-center gap-2 py-2">
+                       <Loader2 className="w-3 h-3 animate-pulse opacity-50" /> No matching pages found for this post type.
+                    </div>
                   )}
                 </div>
               </div>
@@ -780,6 +810,7 @@ export default function PostStudioPage() {
               type={postType}
               carouselItems={carouselItemsPreview}
               sliderImages={sliderImagesPreview}
+              carouselTab={carouselTab}
             />
           </section>
         </main>

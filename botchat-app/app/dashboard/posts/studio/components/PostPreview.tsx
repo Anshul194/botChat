@@ -25,9 +25,11 @@ interface PostPreviewProps {
   media: string[];
   type: string | null;
   carouselItems?: any[];
+  sliderImages?: string[];
+  carouselTab?: string;
 }
 
-export function PostPreview({ content, media, type, carouselItems }: PostPreviewProps) {
+export function PostPreview({ content, media, type, carouselItems, sliderImages, carouselTab }: PostPreviewProps) {
   const [platform, setPlatform] = useState<'facebook' | 'instagram'>('instagram');
   const [device, setDevice] = useState<'mobile' | 'desktop'>('mobile');
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -54,8 +56,8 @@ export function PostPreview({ content, media, type, carouselItems }: PostPreview
     return () => window.removeEventListener('resize', updateScale);
   }, [device]);
 
-  const displayMedia = type === 'carousel' && carouselItems 
-    ? carouselItems.map(item => item.image).filter(Boolean)
+  const displayMedia = type === 'carousel' 
+    ? (carouselTab === 'video' ? (sliderImages || []) : (carouselItems?.map(item => item.image).filter(Boolean) || []))
     : media;
 
   const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % displayMedia.length);
