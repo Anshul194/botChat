@@ -315,7 +315,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
     return (
         <div className="relative mx-auto flex items-center justify-center p-4 h-full w-full pointer-events-auto overflow-visible">
             {/* iPhone 17 Pro Concept Shell — Ultra Thin Bezels & Titanium Frame */}
-            <div className="relative aspect-[9/19.5] h-[88vh] max-h-[840px] w-auto bg-black rounded-[4rem] p-[4px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/20 overflow-hidden group/phone transition-all duration-700 shrink-0 border-[1px] border-white/5">
+            <div className="relative aspect-[9/19.5] h-full max-h-[840px] w-auto max-w-full bg-black rounded-[4rem] p-[4px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/20 overflow-hidden group/phone transition-all duration-700 border-[1px] border-white/5">
                 
                 {/* Titanium Frame Reflections */}
                 <div className="absolute inset-0 rounded-[4rem] border-[4px] border-[#1c1c1e] z-0" />

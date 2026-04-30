@@ -36,9 +36,9 @@ export const PortfolioLayout = ({
     const feedBlocks = otherBlocks.filter((b: any) => !specialTypes.includes(getUiTypeFromBlock(b, uiTypeOverrides)));
 
     return (
-        <div className="flex flex-col bg-[#f4f6f8] min-h-full w-full">
+        <div className="flex flex-col bg-[#f4f6f8] min-h-full w-full overflow-x-hidden">
             {/* Wall of Portfolios Sticky Tabs */}
-            <div className="sticky top-0 z-50 bg-white border-b border-gray-200 flex px-6 pt-4 gap-6 shrink-0">
+            <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 flex justify-center px-4 pt-3 gap-8 shrink-0 w-full">
                 <button
                     type="button"
                     onClick={() => setActivePortfolioTab("profile")}
@@ -112,12 +112,12 @@ export const PortfolioLayout = ({
                                 <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
 
                                 {/* User Info overlay at bottom */}
-                                <div className="absolute bottom-8 left-6 pr-6 w-full z-10 min-w-0">
+                                <div className="absolute bottom-8 left-0 right-0 px-6 z-10 min-w-0">
                                     <div className="flex flex-wrap items-center gap-2 mb-3">
                                         <span className="px-2 py-0.5 bg-orange-600 text-white text-[9px] font-bold uppercase tracking-widest rounded-sm shrink-0">Featured</span>
                                         <span className="px-2 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold uppercase tracking-widest rounded-sm shrink-0">Open to work</span>
                                     </div>
-                                    <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-2 break-words max-w-[240px]">
+                                    <h1 className="text-2xl font-black text-white tracking-tight leading-tight mb-2 break-words max-w-full">
                                         {heroBlock?.settings?.title || profile?.title || "Your Name"}
                                     </h1>
                                     <div className="flex flex-wrap items-center gap-2 text-[12px] font-medium text-gray-300 mb-5">
@@ -126,7 +126,7 @@ export const PortfolioLayout = ({
                                         <span className="flex items-center gap-1 shrink-0"><MapPin size={10} /> Global</span>
                                     </div>
 
-                                    <div className="flex items-center gap-3 pr-6">
+                                    <div className="flex items-center gap-3">
                                         <a 
                                             href={heroBlock?.settings?.cta_link || "#contact"} 
                                             className="flex-1 bg-white text-black rounded-full py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition font-bold text-[12px] shadow-lg no-underline"
@@ -141,9 +141,9 @@ export const PortfolioLayout = ({
                             </div>
 
                             {/* Intro & Logos Section */}
-                            <div className="p-6 pt-10 text-center border-b border-gray-100">
+                            <div className="p-6 pt-10 text-center border-b border-gray-100 w-full">
                                 <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">About</p>
-                                <h2 className="text-xl font-bold text-gray-900 leading-tight mb-8">
+                                <h2 className="text-lg font-bold text-gray-900 leading-tight mb-8">
                                     {heroBlock?.settings?.description || profile?.bio || "Stand Out Design & Visual Identities for Global Creators, Startups & Clean Tech Mavericks."}
                                 </h2>
                                 
@@ -269,9 +269,9 @@ export const PortfolioLayout = ({
 
                             {/* Services Section */}
                             {servicesBlock && (
-                                <div className="p-6 py-12 border-b border-gray-100 bg-gray-50/50">
+                                <div className="p-6 py-10 border-b border-gray-100 bg-gray-50/50 w-full">
                                     <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4 text-center">Services</p>
-                                    <h3 className="text-2xl font-black text-gray-900 text-center mb-8 leading-tight">Services that transform brands</h3>
+                                    <h3 className="text-xl font-black text-gray-900 text-center mb-6 leading-tight">Services that transform brands</h3>
 
                                     <div className="flex flex-col">
                                         {(servicesBlock.settings?.items || []).map((service: any, i: number) => (
@@ -291,9 +291,9 @@ export const PortfolioLayout = ({
 
                             {/* Stats Section / About */}
                             {statsBlock && (
-                                <div className="p-6 py-12 border-b border-gray-100">
+                                <div className="p-6 py-10 border-b border-gray-100 w-full">
                                     <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">Performance</p>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-6 leading-tight">Delivering results that matter.</h3>
+                                    <h3 className="text-xl font-black text-gray-900 mb-6 leading-tight">Delivering results that matter.</h3>
 
                                     <div className="grid grid-cols-2 gap-4 mb-8">
                                         {(statsBlock.settings?.items || []).map((stat: any, i: number) => (
@@ -310,9 +310,9 @@ export const PortfolioLayout = ({
 
                             {/* Testimonials Section */}
                             {testimonialsBlock && (
-                                <div className="p-6 py-12 border-b border-gray-100">
+                                <div className="p-6 py-10 border-b border-gray-100 w-full">
                                     <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4 text-center">Testimonials</p>
-                                    <h3 className="text-2xl font-black text-gray-900 text-center mb-8 leading-tight">Client Success Stories</h3>
+                                    <h3 className="text-xl font-black text-gray-900 text-center mb-6 leading-tight">Client Success Stories</h3>
 
                                     <div className="flex flex-col gap-6">
                                         {(testimonialsBlock.settings?.items || []).map((t: any, i: number) => (
@@ -338,9 +338,9 @@ export const PortfolioLayout = ({
 
                             {/* FAQ Section */}
                             {faqBlock && (
-                                <div className="p-6 py-12 border-b border-gray-100">
+                                <div className="p-6 py-10 border-b border-gray-100 w-full">
                                     <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">FAQ</p>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-8 leading-tight">Answers to your questions</h3>
+                                    <h3 className="text-xl font-black text-gray-900 mb-6 leading-tight">Answers to your questions</h3>
 
                                     <div className="flex flex-col divide-y divide-gray-100 border-t border-gray-100">
                                         {(faqBlock.settings?.items || []).map((faq: any, i: number) => (
@@ -357,8 +357,8 @@ export const PortfolioLayout = ({
                             )}
 
                             {/* Footer / CTA Section */}
-                            <div className="p-8 py-12 bg-[#0a0a0a] text-center flex flex-col items-center">
-                                <h3 className="text-2xl font-black text-white mb-6 leading-tight max-w-[240px]">
+                            <div className="p-8 py-12 bg-[#0a0a0a] text-center flex flex-col items-center w-full">
+                                <h3 className="text-xl font-black text-white mb-6 leading-tight max-w-[240px]">
                                     {ctaBlock?.settings?.title || "Ready to stand out from everyone?"}
                                 </h3>
                                 <a 
