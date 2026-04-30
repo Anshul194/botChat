@@ -19,21 +19,24 @@ export const PortfolioLayout = ({
     const [activePortfolioTab, setActivePortfolioTab] = React.useState("portfolio");
     const [portfolioSubView, setPortfolioSubView] = React.useState("main");
 
+    // Filter out inactive blocks
+    const activeBlocks = otherBlocks.filter((b: any) => b.is_active !== 0 && b.is_Enabled !== 0);
+
     // Extract specific section blocks
-    const heroBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "hero_section");
-    const statsBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "stats_section");
-    const brandsBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "brands_section");
-    const portfolioBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "portfolio_section");
-    const servicesBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "services_section");
-    const testimonialsBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "testimonials_section");
-    const faqBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "faq_section");
-    const ctaBlock = otherBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "cta_section");
+    const heroBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "hero_section");
+    const statsBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "stats_section");
+    const brandsBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "brands_section");
+    const portfolioBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "portfolio_section");
+    const servicesBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "services_section");
+    const testimonialsBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "testimonials_section");
+    const faqBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "faq_section");
+    const ctaBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "cta_section");
 
     // Filter out these special sections from the general feed if needed, 
     // or keep them if they should appear in both places. 
     // For this template, we'll use them in their specific slots.
     const specialTypes = ["hero_section", "stats_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section", "cta_section"];
-    const feedBlocks = otherBlocks.filter((b: any) => !specialTypes.includes(getUiTypeFromBlock(b, uiTypeOverrides)));
+    const feedBlocks = activeBlocks.filter((b: any) => !specialTypes.includes(getUiTypeFromBlock(b, uiTypeOverrides)));
 
     return (
         <div className="flex flex-col bg-[#f4f6f8] min-h-full w-full overflow-x-hidden">
@@ -61,14 +64,18 @@ export const PortfolioLayout = ({
                 /* Profile Tab - White Card Overlay */
                 <div className="p-4 py-6 w-full h-full flex-1">
                     <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 flex flex-col items-center">
-                        <img
-                            src={heroBlock?.settings?.image || topAvatar?.settings?.image || profile?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80"}
-                            className="w-[120px] h-[120px] rounded-full object-cover mb-5 shadow-sm"
-                        />
-                        <h2 className="text-2xl font-black text-gray-900 mb-1 text-center">{profile?.title || instagramUsername || "Anshul"}</h2>
-                        <p className="text-[12px] font-bold text-gray-900 uppercase tracking-widest mb-6 text-center">
-                            {heroBlock?.settings?.title || "Creative Director"}
-                        </p>
+                        {heroBlock && (
+                            <>
+                                <img
+                                    src={heroBlock?.settings?.image || topAvatar?.settings?.image || profile?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80"}
+                                    className="w-[120px] h-[120px] rounded-full object-cover mb-5 shadow-sm"
+                                />
+                                <h2 className="text-2xl font-black text-gray-900 mb-1 text-center">{profile?.title || instagramUsername || "Anshul"}</h2>
+                                <p className="text-[12px] font-bold text-gray-900 uppercase tracking-widest mb-6 text-center">
+                                    {heroBlock?.settings?.title || "Creative Director"}
+                                </p>
+                            </>
+                        )}
 
                         <div className="w-full flex gap-3 mb-6">
                             <button type="button" className="flex-1 bg-gray-900 text-white rounded-full py-3.5 font-bold text-sm hover:bg-black transition shadow-md">Message</button>
@@ -76,10 +83,14 @@ export const PortfolioLayout = ({
                         </div>
 
                         <div className="text-left w-full pt-6 border-t border-gray-100">
-                            <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-3">About</p>
-                            <p className="text-sm text-gray-600 leading-relaxed mb-6">
-                                {profile?.bio || heroBlock?.settings?.description || "Digital creator focused on brand identity and visual storytelling."}
-                            </p>
+                            {heroBlock && (
+                                <>
+                                    <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-3">About</p>
+                                    <p className="text-sm text-gray-600 leading-relaxed mb-6">
+                                        {profile?.bio || heroBlock?.settings?.description || "Digital creator focused on brand identity and visual storytelling."}
+                                    </p>
+                                </>
+                            )}
 
                             {brandsBlock && (
                                 <>
@@ -102,52 +113,58 @@ export const PortfolioLayout = ({
                     {portfolioSubView === "main" ? (
                         <>
                             {/* Hero Banner Section */}
-                            <div className="relative w-full aspect-[4/5] bg-black flex-shrink-0">
-                                <img
-                                    src={heroBlock?.settings?.image || topAvatar?.settings?.image || profile?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80"}
-                                    alt="Cover"
-                                    className="w-full h-full object-cover opacity-90"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
+                            {heroBlock && (
+                                <div className="relative w-full aspect-[4/5] bg-black flex-shrink-0">
+                                    <img
+                                        src={heroBlock?.settings?.image || topAvatar?.settings?.image || profile?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80"}
+                                        alt="Cover"
+                                        className="w-full h-full object-cover opacity-90"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
 
-                                {/* User Info overlay at bottom */}
-                                <div className="absolute bottom-8 left-0 right-0 px-6 z-10 min-w-0">
-                                    <h1 className="text-2xl font-black text-white tracking-tight leading-tight mb-5 break-words max-w-full">
-                                        {heroBlock?.settings?.title || profile?.title || instagramUsername || "Anshul"}
-                                    </h1>
+                                    {/* User Info overlay at bottom */}
+                                    <div className="absolute bottom-8 left-0 right-0 px-6 z-10 min-w-0">
+                                        <h1 className="text-2xl font-black text-white tracking-tight leading-tight mb-5 break-words max-w-full">
+                                            {heroBlock?.settings?.title || profile?.title || instagramUsername || "Anshul"}
+                                        </h1>
 
-                                    <div className="flex items-center gap-3">
-                                        <a 
-                                            href={heroBlock?.settings?.cta_link || "#contact"} 
-                                            className="flex-1 bg-white text-black rounded-full py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition font-bold text-[12px] shadow-lg no-underline"
-                                        >
-                                            <Mail size={14} /> {heroBlock?.settings?.cta_text || "Contact Me"}
-                                        </a>
-                                        <button type="button" className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition flex-shrink-0">
-                                            <MoreHorizontal size={16} />
-                                        </button>
+                                        <div className="flex items-center gap-3">
+                                            <a 
+                                                href={heroBlock?.settings?.cta_link || "#contact"} 
+                                                className="flex-1 bg-white text-black rounded-full py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition font-bold text-[12px] shadow-lg no-underline"
+                                            >
+                                                <Mail size={14} /> {heroBlock?.settings?.cta_text || "Contact Me"}
+                                            </a>
+                                            <button type="button" className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition flex-shrink-0">
+                                                <MoreHorizontal size={16} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Intro & Logos Section */}
-                            <div className="p-6 pt-10 text-center border-b border-gray-100 w-full">
-                                <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">About</p>
-                                <h2 className="text-lg font-bold text-gray-900 leading-tight mb-8">
-                                    {heroBlock?.settings?.description || profile?.bio || "Stand Out Design & Visual Identities for Global Creators, Startups & Clean Tech Mavericks."}
-                                </h2>
+                            {heroBlock && (
+                                <div className="p-6 pt-10 text-center border-b border-gray-100 w-full">
+                                    <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">About</p>
+                                    <h2 className="text-lg font-bold text-gray-900 leading-tight mb-8">
+                                        {heroBlock?.settings?.description || profile?.bio || "Stand Out Design & Visual Identities for Global Creators, Startups & Clean Tech Mavericks."}
+                                    </h2>
+                                </div>
+                            )}
                                 
                                 {brandsBlock && (
-                                    <div className="flex flex-wrap items-center justify-center gap-6 opacity-60">
-                                        {(brandsBlock.settings?.logos || []).map((logo: any, i: number) => (
-                                            <div key={i} className="h-8 flex items-center justify-center">
-                                                {logo.image ? <img src={logo.image} className="h-full object-contain grayscale" /> : <span className="text-[10px] font-bold">BRAND</span>}
-                                            </div>
-                                        ))}
+                                    <div className="p-6 pt-0 text-center border-b border-gray-100 w-full">
+                                        <div className="flex flex-wrap items-center justify-center gap-6 opacity-60">
+                                            {(brandsBlock.settings?.logos || []).map((logo: any, i: number) => (
+                                                <div key={i} className="h-8 flex items-center justify-center">
+                                                    {logo.image ? <img src={logo.image} className="h-full object-contain grayscale" /> : <span className="text-[10px] font-bold">BRAND</span>}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
-                            </div>
 
                             {/* Featured Work Section */}
                             {(portfolioBlock || feedBlocks.length > 0) && (
@@ -348,25 +365,27 @@ export const PortfolioLayout = ({
                             )}
 
                             {/* Footer / CTA Section */}
-                            <div className="p-8 py-12 bg-[#0a0a0a] text-center flex flex-col items-center w-full">
-                                <h3 className="text-xl font-black text-white mb-6 leading-tight max-w-[240px]">
-                                    {ctaBlock?.settings?.title || "Ready to stand out from everyone?"}
-                                </h3>
-                                <a 
-                                    href={ctaBlock?.settings?.button_link || "#contact"} 
-                                    className="bg-orange-600 text-white rounded-full py-3 px-8 font-bold text-sm mb-12 hover:bg-orange-700 transition no-underline"
-                                >
-                                    {ctaBlock?.settings?.button_text || "Let's Talk"}
-                                </a>
+                            {ctaBlock && (
+                                <div className="p-8 py-12 bg-[#0a0a0a] text-center flex flex-col items-center w-full">
+                                    <h3 className="text-xl font-black text-white mb-6 leading-tight max-w-[240px]">
+                                        {ctaBlock?.settings?.title || "Ready to stand out from everyone?"}
+                                    </h3>
+                                    <a 
+                                        href={ctaBlock?.settings?.button_link || "#contact"} 
+                                        className="bg-orange-600 text-white rounded-full py-3 px-8 font-bold text-sm mb-12 hover:bg-orange-700 transition no-underline"
+                                    >
+                                        {ctaBlock?.settings?.button_text || "Let's Talk"}
+                                    </a>
 
-                                <div className="flex gap-4 mb-8">
-                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Globe size={16} /></div>
-                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Instagram size={16} /></div>
-                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Mail size={16} /></div>
+                                    <div className="flex gap-4 mb-8">
+                                        <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Globe size={16} /></div>
+                                        <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Instagram size={16} /></div>
+                                        <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Mail size={16} /></div>
+                                    </div>
+
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">© 2026 {profile?.title || instagramUsername || "Anshul"}. All rights reserved.</p>
                                 </div>
-
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">© 2026 {profile?.title || instagramUsername || "Anshul"}. All rights reserved.</p>
-                            </div>
+                            )}
                         </>
                     ) : (
                         /* Dedicated Projects View (Page 2) */

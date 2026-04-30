@@ -1208,7 +1208,7 @@ export default function BioLinkBuilder() {
                                                         const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
                                                         const color = BLOCK_COLORS[uiType] || "#6B7280";
                                                         const icon = BLOCK_ICONS[uiType] || <LayoutTemplate size={14} />;
-                                                        const isInactive = block.is_active === 0;
+                                                        const isInactive = block.is_active === 0 || block.is_Enabled === 0;
                                                         const label = block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ");
 
                                                         return (
@@ -1262,10 +1262,10 @@ export default function BioLinkBuilder() {
                                                                                 ...tab,
                                                                                 sections: (tab.sections || []).map(sec => ({
                                                                                     ...sec,
-                                                                                    blocks: (sec.blocks || []).map(b => b.id === block.id ? { ...b, is_active: newStatus } : b)
+                                                                                    blocks: (sec.blocks || []).map(b => b.id === block.id ? { ...b, is_active: newStatus, is_Enabled: newStatus } : b)
                                                                                 }))
                                                                             })));
-                                                                            try { await api.put(`/bio/blocks/${block.id}`, { is_active: newStatus }); } catch { /* silent */ }
+                                                                            try { await api.put(`/bio/blocks/${block.id}`, { is_Enabled: newStatus, is_active: newStatus }); } catch { /* silent */ }
                                                                         }}
                                                                         title={isInactive ? "Show block" : "Hide block"}
                                                                         className={cn(
