@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Search, Clock, MoreHorizontal, Globe, Mail, Smartphone, SmartphoneNfc, Camera, Sparkles, Youtube, Video, Grid, Play, DollarSign, Music, MapPin, ShieldAlert, User, ArrowUpRight } from "lucide-react";
+import { Search, Clock, MoreHorizontal, Globe, Mail, Smartphone, SmartphoneNfc, Camera, Sparkles, Youtube, Video, Grid, Play, DollarSign, Music, MapPin, ShieldAlert, User, ArrowUpRight, Rss, Link as LinkIcon } from "lucide-react";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles, isColorLight, isBgLight } from "./TemplateSystem";
-import { getUiTypeFromBlock, isMediaType } from "./builder-utils";
+import { getUiTypeFromBlock, isMediaType, BLOCK_ICONS } from "./builder-utils";
 import { StandardLayout } from "./layouts/StandardLayout";
 import { PortfolioLayout } from "./layouts/PortfolioLayout";
 import { UGCLayout } from "./layouts/UGCLayout";
@@ -282,6 +282,31 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             ))}
                         </div>
                     </div>
+                )}
+
+                {type === "rss" && (
+                    <div className="w-full space-y-3 mt-4">
+                        <div className="flex items-center gap-2 px-2 opacity-50">
+                            <Rss size={14} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Latest Updates</span>
+                        </div>
+                        {(settings.items || []).slice(0, 3).map((item: any, idx: number) => (
+                            <a key={idx} href={item.link} target="_blank" className="block p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                                <p className="text-[14px] font-bold truncate" style={{ color: effectiveTextColor }}>{item.title}</p>
+                                <p className="text-[10px] opacity-50 mt-1">{new Date(item.pubDate).toLocaleDateString()}</p>
+                            </a>
+                        ))}
+                    </div>
+                )}
+
+                {!["link", "heading", "paragraph", "socials", "avatar", "email_collector", "phone_collector", "contact_form", "youtube", "spotify", "paypal", "newsletter", "vcard", "divider", "business_hours", "rss"].includes(type) && (
+                    <a href={block.location_url || "#"} className="w-full group transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex items-center justify-center min-h-[64px] py-4 px-8 shadow-md" style={buttonStyle}>
+                         <div className="absolute left-8 opacity-80 group-hover:scale-110 transition-transform">
+                            {BLOCK_ICONS[type] || <LinkIcon size={18} />}
+                         </div>
+                         <span className="text-[16px] font-bold truncate max-w-[80%]">{displayLabel || "Open Module"}</span>
+                         <MoreHorizontal size={18} className="absolute right-8 opacity-20 group-hover:opacity-100 transition-opacity" />
+                    </a>
                 )}
             </motion.div>
         );

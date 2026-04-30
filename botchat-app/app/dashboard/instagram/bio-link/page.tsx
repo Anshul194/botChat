@@ -186,7 +186,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
                 {/* ── DESKTOP SIDEBAR (INSPECTOR) ── */}
                 <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[400px] flex-col bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
-                    <motion.div 
+                    <motion.div
                         initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 20, opacity: 0 }}
                         className="flex flex-col h-full"
                     >
@@ -202,7 +202,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                                 <X size={16} />
                             </button>
                         </div>
-                        
+
                         <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
                             {children}
                         </div>
@@ -299,7 +299,7 @@ export default function BioLinkBuilder() {
         if (layoutFilter === 'all') return true;
         // If the block is not active and we are not in 'all', we might still want to show it?
         // Actually, the tabs in the screenshot are likely for layout-specific filtering or just categorization.
-        return true; 
+        return true;
     });
     const requestedPageId = searchParams.get("page");
     const advancedFlowTips = [
@@ -346,13 +346,66 @@ export default function BioLinkBuilder() {
         if (!selectedPageId) return;
         setIsLoading(true);
         try {
-            const res = await api.get("/bio/pages");
-            const pages = res.data?.data || res.data || [];
-            const payload = pages.find((p: any) => String(p.link_id) === selectedPageId || p.url === selectedPageId);
+            // Using the single page API as requested (Reference: curl .../bio/pages/33)
+            const res = await api.get(`/bio/pages/${selectedPageId}`);
+            const payload = res.data?.data || res.data;
 
-            if (payload?.link_id) {
+            if (payload?.link_id || payload?.id) {
+                // Ensure layoutStyle is synchronized with the 'layout' or 'template_name' from backend
+                // Rule: if template_name is 'custom', we select 'standard'. Otherwise use the name.
+                const rawLayout = payload.layout || payload.template_name;
+                const layoutName = rawLayout === 'custom' ? 'standard' : rawLayout;
+                
+                if (layoutName) {
+                    if (!payload.settings) payload.settings = {};
+                    payload.settings.layoutStyle = layoutName;
+                }
+                
                 setProfile(payload);
-                const linkId = payload.link_id;
+                const linkId = payload.link_id || payload.id;
+
+                // Sync advanced settings from profile settings (hydrated state)
+                if (payload.settings) {
+                    const s = payload.settings;
+                    setAdvancedSettings({
+                        seoBlock: !!s.seo?.block,
+                        seoTitle: s.seo?.title || "",
+                        seoDescription: s.seo?.meta_description || "",
+                        seoKeywords: s.seo?.meta_keywords || "",
+                        seoOpenGraphImage: s.seo?.opengraph_image || "",
+                        seoLanguage: s.seo?.language || "en",
+                        displayBranding: s.display_branding !== false,
+                        brandingName: s.branding?.name || "",
+                        brandingUrl: s.branding?.url || "",
+                        brandingTextColor: s.branding?.text_color || "",
+                        pixelFacebookEnabled: !!s.pixel_facebook,
+                        pixelGoogleEnabled: !!s.pixel_google,
+                        utmSource: s.utm?.source || "",
+                        utmMedium: s.utm?.medium || "",
+                        utmCampaign: s.utm?.campaign || "",
+                        backgroundType: s.background_type || "color",
+                        background: s.background || "",
+                        textColor: s.text_color || "",
+                        fontSize: s.font_size || 16,
+                        width: s.width || 8,
+                        blockSpacing: s.block_spacing || 2,
+                        hoverAnimation: s.hover_animation || "smooth",
+                        password: s.password || "",
+                        sensitiveContentWarning: !!s.sensitive_content,
+                        enableShareButton: s.share_is_enabled !== false,
+                        enableScrollButtons: s.scroll_buttons_is_enabled !== false,
+                        brandedButtonEnabled: !!s.branded_button_is_enabled,
+                        brandedIconUrl: s.branded_button_icon || "",
+                        brandedModalTitle: s.branded_button_title || "",
+                        brandedModalContent: s.branded_button_content || "",
+                        enableDirectoryDisplaying: s.directory_is_enabled !== false,
+                        projectName: s.project_name || "None",
+                        splashPageName: s.splash_page_name || "None",
+                        leapLinkUrl: s.leap_link_url || "",
+                        customCss: s.custom_css || "",
+                        customJs: s.custom_js || "",
+                    });
+                }
 
                 // Fetch blocks for this specific page
                 const bRes = await api.get(`/bio/pages/${linkId}/blocks`);
@@ -451,13 +504,28 @@ export default function BioLinkBuilder() {
         const previousProfile = profile;
         const nextProfile = { ...profile, ...updates };
         setProfile(nextProfile);
+        const targetId = profile.id || profile.link_id;
         try {
-            await api.put(`/bio-builder/profile/${profile.id}`, updates);
+            await api.put(`/bio-builder/profile/${targetId}`, updates);
             // Optionally show a subtle success indicator or nothing if it's too frequent
             // showModal("success", "Saved", "Theme updated successfully.");
         } catch {
             setProfile(previousProfile);
             showModal("error", "Error", "Failed to update profile.");
+        }
+    };
+
+    const handleApplyTemplate = async (templateId: string) => {
+        if (!profile) return;
+        const linkId = profile.link_id || profile.id;
+        try {
+            await api.post(`/bio/pages/${linkId}/apply-template`, {
+                template: templateId
+            });
+            await fetchBuilderData();
+            showModal("success", "Template Applied", `Successfully switched to ${templateId} layout.`);
+        } catch {
+            showModal("error", "Error", "Failed to apply template.");
         }
     };
 
@@ -981,7 +1049,7 @@ export default function BioLinkBuilder() {
                     activePanel === "preview" ? "hidden xl:flex" : "flex",
                     showCarouselEditor ? "xl:w-[360px]" : "xl:w-[45%]"
                 )}>
-                        <div className="flex-1 overflow-y-auto px-6 pt-8 pb-10 no-scrollbar">
+                    <div className="flex-1 overflow-y-auto px-6 pt-8 pb-10 no-scrollbar">
 
                         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 px-4 py-3 shadow-sm">
                             <div>
@@ -1217,7 +1285,13 @@ export default function BioLinkBuilder() {
                                     </div>
                                 )}
 
-                                {view === "visuals" && <VisualsLab profile={profile} updateProfile={handleUpdateProfile} />}
+                                {view === "visuals" && (
+                                    <VisualsLab 
+                                        profile={profile} 
+                                        updateProfile={handleUpdateProfile} 
+                                        applyTemplate={handleApplyTemplate} 
+                                    />
+                                )}
 
                                 {view === "advanced" && (() => {
                                     const GROWTH_TABS = [
@@ -1240,8 +1314,8 @@ export default function BioLinkBuilder() {
                                                     <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
                                                         className={cn(
                                                             "flex flex-col items-center justify-center p-3 rounded-2xl border transition-all",
-                                                            growthTab === tab.id 
-                                                                ? `${tab.light} border-transparent ring-2 ${tab.ring}` 
+                                                            growthTab === tab.id
+                                                                ? `${tab.light} border-transparent ring-2 ${tab.ring}`
                                                                 : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800"
                                                         )}>
                                                         <tab.icon size={16} className={cn("mb-1", growthTab === tab.id ? tab.text : "text-slate-400")} />
@@ -1256,362 +1330,362 @@ export default function BioLinkBuilder() {
                                                     <motion.div key={growthTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }}
                                                         className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
 
-                                                            {/* Panel header */}
-                                                            <div className={cn("px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3", activeGT.light)}>
-                                                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm", activeGT.bg)}>
-                                                                    <GtIcon size={18} />
-                                                                </div>
-                                                                <div>
-                                                                    <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", activeGT.text)}>Growth Workstation</p>
-                                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{activeGT.label}</p>
-                                                                </div>
+                                                        {/* Panel header */}
+                                                        <div className={cn("px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3", activeGT.light)}>
+                                                            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm", activeGT.bg)}>
+                                                                <GtIcon size={18} />
                                                             </div>
+                                                            <div>
+                                                                <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", activeGT.text)}>Growth Workstation</p>
+                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{activeGT.label}</p>
+                                                            </div>
+                                                        </div>
 
-                                                            {/* Panel body */}
-                                                            <div className="p-5 sm:p-7 space-y-6">
+                                                        {/* Panel body */}
+                                                        <div className="p-5 sm:p-7 space-y-6">
 
-                                                                {/* SEO */}
-                                                                {growthTab === "seo" && (<>
-                                                                    <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-slate-900 dark:text-white">Block from search engines</p>
-                                                                            <p className="text-[11px] text-slate-500 mt-0.5">Adds noindex, nofollow meta tags to this page.</p>
-                                                                        </div>
-                                                                        <ToggleSwitch checked={advancedSettings.seoBlock} onChange={(v) => setAdvancedSettings({ ...advancedSettings, seoBlock: v })} />
+                                                            {/* SEO */}
+                                                            {growthTab === "seo" && (<>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Block from search engines</p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Adds noindex, nofollow meta tags to this page.</p>
                                                                     </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">SEO Title</label>
-                                                                        <input value={advancedSettings.seoTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoTitle: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="My Awesome Bio Page" />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Appears in browser tabs and search results.</p>
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Description</label>
-                                                                        <textarea value={advancedSettings.seoDescription} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoDescription: e.target.value })}
-                                                                            rows={3} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                            placeholder="Brief description of your page for search results." />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Recommended: 120–160 characters.</p>
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Keywords</label>
-                                                                        <input value={advancedSettings.seoKeywords} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoKeywords: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="bio, links, creator, profile" />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Comma-separated. Optional.</p>
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <ImageIcon size={12} /> Open graph image
-                                                                        </label>
-                                                                        <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
-                                                                            <div className="flex-1">
-                                                                                <input
-                                                                                    type="file"
-                                                                                    id="og-image-upload"
-                                                                                    className="hidden"
-                                                                                    accept=".jpg,.jpeg,.png,.svg,.gif,.webp,.avif"
-                                                                                    onChange={async (e) => {
-                                                                                        if (e.target.files && e.target.files[0]) {
-                                                                                            const url = await handleUploadImage(e.target.files[0]);
-                                                                                            if (url) setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: url });
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                                <label htmlFor="og-image-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
-                                                                                    Choose File
-                                                                                </label>
-                                                                                <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
-                                                                                    {advancedSettings.seoOpenGraphImage ? advancedSettings.seoOpenGraphImage.split('/').pop() : 'No file chosen'}
-                                                                                </span>
-                                                                            </div>
-                                                                            {advancedSettings.seoOpenGraphImage && (
-                                                                                <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
-                                                                                    <img src={advancedSettings.seoOpenGraphImage} alt="OG Preview" className="w-full h-full object-cover" />
-                                                                                    <button onClick={() => setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
-                                                                                        <X size={10} />
-                                                                                    </button>
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                        <p className="text-[11px] text-slate-400 ml-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB maximum.</p>
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <Globe size={12} /> Language
-                                                                        </label>
-                                                                        <select value={advancedSettings.seoLanguage} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoLanguage: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
-                                                                        >
-                                                                            <option value="en">English</option>
-                                                                            <option value="es">Spanish</option>
-                                                                            <option value="fr">French</option>
-                                                                            <option value="de">German</option>
-                                                                            <option value="it">Italian</option>
-                                                                            <option value="pt">Portuguese</option>
-                                                                            <option value="hi">Hindi</option>
-                                                                            <option value="ar">Arabic</option>
-                                                                            <option value="ja">Japanese</option>
-                                                                            <option value="ko">Korean</option>
-                                                                            <option value="zh">Chinese</option>
-                                                                        </select>
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Set the meta language of your page to help browsers and search engines identify its language.</p>
-                                                                    </div>
-                                                                </>)}
-
-
-                                                                {/* BRANDING */}
-                                                                {growthTab === "branding" && (<>
-                                                                    <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-slate-900 dark:text-white">Display branding</p>
-                                                                            <p className="text-[11px] text-slate-500 mt-0.5">Show the BotChat branding badge on your public page.</p>
-                                                                        </div>
-                                                                        <ToggleSwitch checked={advancedSettings.displayBranding} onChange={(v) => setAdvancedSettings({ ...advancedSettings, displayBranding: v })} />
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Name</label>
-                                                                        <input value={advancedSettings.brandingName} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="Your brand name" />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Leave empty to use the default site branding.</p>
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding URL</label>
-                                                                        <input value={advancedSettings.brandingUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingUrl: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="https://yourbrand.com" />
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Text Color</label>
-                                                                        <div className="flex gap-3">
-                                                                            <input type="color" value={advancedSettings.brandingTextColor || "#ffffff"}
-                                                                                onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
-                                                                                className="h-12 w-16 rounded-xl cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-transparent" />
-                                                                            <input value={advancedSettings.brandingTextColor} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
-                                                                                className="flex-1 h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all font-mono"
-                                                                                placeholder="#1f2937" />
-                                                                        </div>
-                                                                    </div>
-                                                                </>)}
-
-                                                                {/* PIXELS */}
-                                                                {growthTab === "pixels" && (<>
-                                                                    <p className="text-[11px] text-slate-500">Connect your analytics pixels to track bio page visits and conversions.</p>
-                                                                    <div className="space-y-3">
-                                                                        {[
-                                                                            { key: "pixelFacebookEnabled", label: "Facebook Pixel", desc: "Track events with the Meta Pixel", icon: Facebook, color: "bg-blue-600" },
-                                                                            { key: "pixelGoogleEnabled", label: "Google Analytics", desc: "Connect Google Analytics to this page", icon: Globe, color: "bg-red-500" },
-                                                                        ].map(({ key, label, desc, icon: Ico, color }) => (
-                                                                            <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                                <div className="flex items-center gap-3">
-                                                                                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs", color)}>
-                                                                                        <Ico size={16} />
-                                                                                    </div>
-                                                                                    <div>
-                                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
-                                                                                        <p className="text-[11px] text-slate-500">{desc}</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                </>)}
-
-                                                                {/* UTM */}
-                                                                {growthTab === "utm" && (<>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <Shuffle size={12} /> Source
-                                                                        </label>
-                                                                        <input value={advancedSettings.utmSource} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="e.g. instagram, newsletter, google" />
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <Monitor size={12} /> Medium
-                                                                        </label>
-                                                                        <input value={advancedSettings.utmMedium} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="e.g. social, link, banner, email" />
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <Megaphone size={12} /> Campaign
-                                                                        </label>
-                                                                        <div className="w-full h-12 px-4 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-2 border-transparent text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center italic">
-                                                                            Automatically set for each link based on the name.
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="pt-4 space-y-1.5 border-t border-slate-100 dark:border-slate-800">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <Eye size={12} /> UTM preview
-                                                                        </label>
-                                                                        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
-                                                                            <p className="text-xs font-mono text-amber-800 dark:text-amber-300 break-all leading-relaxed">
-                                                                                {`?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`}
-                                                                            </p>
-                                                                        </div>
-                                                                        <p className="text-[11px] text-slate-400 ml-1">This query parameter will be appended to your destination URL.</p>
-                                                                    </div>
-                                                                </>)}
-
-                                                                {/* PROTECTION */}
-                                                                {growthTab === "protection" && (<>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <KeyRound size={12} /> Page Password
-                                                                        </label>
-                                                                        <div className="relative group">
+                                                                    <ToggleSwitch checked={advancedSettings.seoBlock} onChange={(v) => setAdvancedSettings({ ...advancedSettings, seoBlock: v })} />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">SEO Title</label>
+                                                                    <input value={advancedSettings.seoTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoTitle: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="My Awesome Bio Page" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Appears in browser tabs and search results.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Description</label>
+                                                                    <textarea value={advancedSettings.seoDescription} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoDescription: e.target.value })}
+                                                                        rows={3} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="Brief description of your page for search results." />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Recommended: 120–160 characters.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Keywords</label>
+                                                                    <input value={advancedSettings.seoKeywords} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoKeywords: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="bio, links, creator, profile" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Comma-separated. Optional.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <ImageIcon size={12} /> Open graph image
+                                                                    </label>
+                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
+                                                                        <div className="flex-1">
                                                                             <input
-                                                                                type={showPassword ? "text" : "password"}
-                                                                                value={advancedSettings.password}
-                                                                                onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
-                                                                                className="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-red-300 dark:focus:border-red-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                                placeholder="••••••••" />
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => setShowPassword(!showPassword)}
-                                                                                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500 transition-colors"
-                                                                            >
-                                                                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                                                            </button>
+                                                                                type="file"
+                                                                                id="og-image-upload"
+                                                                                className="hidden"
+                                                                                accept=".jpg,.jpeg,.png,.svg,.gif,.webp,.avif"
+                                                                                onChange={async (e) => {
+                                                                                    if (e.target.files && e.target.files[0]) {
+                                                                                        const url = await handleUploadImage(e.target.files[0]);
+                                                                                        if (url) setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: url });
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            <label htmlFor="og-image-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                                                                                Choose File
+                                                                            </label>
+                                                                            <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
+                                                                                {advancedSettings.seoOpenGraphImage ? advancedSettings.seoOpenGraphImage.split('/').pop() : 'No file chosen'}
+                                                                            </span>
                                                                         </div>
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Require visitors to enter a password to access your page.</p>
-                                                                    </div>
-                                                                    <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                                                                                <ShieldAlert size={14} className="text-red-500" /> Sensitive content warning
-                                                                            </p>
-                                                                            <p className="text-[11px] text-slate-500 mt-0.5 ml-5">Ask visitors to confirm before accessing potentially sensitive content.</p>
-                                                                        </div>
-                                                                        <ToggleSwitch checked={advancedSettings.sensitiveContentWarning} onChange={(v) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: v })} />
-                                                                    </div>
-                                                                </>)}
-
-                                                                {/* ── POPUP (BRANDED BUTTON) ── */}
-                                                                {growthTab === "popup" && (<>
-                                                                    <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-slate-900 dark:text-white">Enable branded button</p>
-                                                                            <p className="text-[11px] text-slate-500 mt-0.5">Show a floating button that opens a modal popup.</p>
-                                                                        </div>
-                                                                        <ToggleSwitch checked={advancedSettings.brandedButtonEnabled} onChange={(v) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: v })} />
-                                                                    </div>
-
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                            <ImageIcon size={12} /> Branded icon
-                                                                        </label>
-                                                                        <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
-                                                                            <div className="flex-1">
-                                                                                <input
-                                                                                    type="file"
-                                                                                    id="branded-icon-upload"
-                                                                                    className="hidden"
-                                                                                    accept=".jpg,.jpeg,.png,.ico,.svg,.gif,.webp"
-                                                                                    onChange={async (e) => {
-                                                                                        if (e.target.files && e.target.files[0]) {
-                                                                                            const url = await handleUploadImage(e.target.files[0]);
-                                                                                            if (url) setAdvancedSettings({ ...advancedSettings, brandedIconUrl: url });
-                                                                                        }
-                                                                                    }}
-                                                                                />
-                                                                                <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
-                                                                                    Choose File
-                                                                                </label>
-                                                                                <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
-                                                                                    {advancedSettings.brandedIconUrl ? advancedSettings.brandedIconUrl.split('/').pop() : 'No file chosen'}
-                                                                                </span>
+                                                                        {advancedSettings.seoOpenGraphImage && (
+                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
+                                                                                <img src={advancedSettings.seoOpenGraphImage} alt="OG Preview" className="w-full h-full object-cover" />
+                                                                                <button onClick={() => setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
+                                                                                    <X size={10} />
+                                                                                </button>
                                                                             </div>
-                                                                            {advancedSettings.brandedIconUrl && (
-                                                                                <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
-                                                                                    <img src={advancedSettings.brandedIconUrl} alt="Icon Preview" className="w-full h-full object-cover" />
-                                                                                    <button onClick={() => setAdvancedSettings({ ...advancedSettings, brandedIconUrl: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
-                                                                                        <X size={10} />
-                                                                                    </button>
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Make sure it's a 1:1 ratio sized image with transparent background. .jpg, .jpeg, .png, .ico, .svg, .gif, .webp allowed. 2 MB maximum.</p>
+                                                                        )}
                                                                     </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB maximum.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Globe size={12} /> Language
+                                                                    </label>
+                                                                    <select value={advancedSettings.seoLanguage} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoLanguage: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                                    >
+                                                                        <option value="en">English</option>
+                                                                        <option value="es">Spanish</option>
+                                                                        <option value="fr">French</option>
+                                                                        <option value="de">German</option>
+                                                                        <option value="it">Italian</option>
+                                                                        <option value="pt">Portuguese</option>
+                                                                        <option value="hi">Hindi</option>
+                                                                        <option value="ar">Arabic</option>
+                                                                        <option value="ja">Japanese</option>
+                                                                        <option value="ko">Korean</option>
+                                                                        <option value="zh">Chinese</option>
+                                                                    </select>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Set the meta language of your page to help browsers and search engines identify its language.</p>
+                                                                </div>
+                                                            </>)}
 
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal title</label>
-                                                                        <input value={advancedSettings.brandedModalTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="Your Modal Title" />
+
+                                                            {/* BRANDING */}
+                                                            {growthTab === "branding" && (<>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Display branding</p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Show the BotChat branding badge on your public page.</p>
                                                                     </div>
-
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal content</label>
-                                                                        <textarea value={advancedSettings.brandedModalContent} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
-                                                                            rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                            placeholder="Write your modal content here..." />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">This field accepts the usage of HTML.</p>
+                                                                    <ToggleSwitch checked={advancedSettings.displayBranding} onChange={(v) => setAdvancedSettings({ ...advancedSettings, displayBranding: v })} />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Name</label>
+                                                                    <input value={advancedSettings.brandingName} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="Your brand name" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Leave empty to use the default site branding.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding URL</label>
+                                                                    <input value={advancedSettings.brandingUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingUrl: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="https://yourbrand.com" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Text Color</label>
+                                                                    <div className="flex gap-3">
+                                                                        <input type="color" value={advancedSettings.brandingTextColor || "#ffffff"}
+                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
+                                                                            className="h-12 w-16 rounded-xl cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-transparent" />
+                                                                        <input value={advancedSettings.brandingTextColor} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
+                                                                            className="flex-1 h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all font-mono"
+                                                                            placeholder="#1f2937" />
                                                                     </div>
-                                                                </>)}
+                                                                </div>
+                                                            </>)}
 
-                                                                {/* ADVANCED / MORE */}
-                                                                {growthTab === "more" && (<>
+                                                            {/* PIXELS */}
+                                                            {growthTab === "pixels" && (<>
+                                                                <p className="text-[11px] text-slate-500">Connect your analytics pixels to track bio page visits and conversions.</p>
+                                                                <div className="space-y-3">
                                                                     {[
-                                                                        { key: "enableShareButton", label: "Share button", desc: "Show a share button at the top of your page." },
-                                                                        { key: "enableScrollButtons", label: "Scroll buttons", desc: "Add scroll-to-top and scroll-to-bottom buttons." },
-                                                                        { key: "enableDirectoryDisplaying", label: "Directory listing", desc: "Make your bio page public in BotChat's directory." },
-                                                                    ].map(({ key, label, desc }) => (
+                                                                        { key: "pixelFacebookEnabled", label: "Facebook Pixel", desc: "Track events with the Meta Pixel", icon: Facebook, color: "bg-blue-600" },
+                                                                        { key: "pixelGoogleEnabled", label: "Google Analytics", desc: "Connect Google Analytics to this page", icon: Globe, color: "bg-red-500" },
+                                                                    ].map(({ key, label, desc, icon: Ico, color }) => (
                                                                         <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                            <div>
-                                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
-                                                                                <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs", color)}>
+                                                                                    <Ico size={16} />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
+                                                                                    <p className="text-[11px] text-slate-500">{desc}</p>
+                                                                                </div>
                                                                             </div>
                                                                             <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
                                                                         </div>
                                                                     ))}
+                                                                </div>
+                                                            </>)}
 
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Leap Link URL</label>
-                                                                        <input value={advancedSettings.leapLinkUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
-                                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="https://example.com/" />
-                                                                        <p className="text-[11px] text-slate-400 ml-1">Redirect all visitors to this URL. Leave empty to disable.</p>
+                                                            {/* UTM */}
+                                                            {growthTab === "utm" && (<>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Shuffle size={12} /> Source
+                                                                    </label>
+                                                                    <input value={advancedSettings.utmSource} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="e.g. instagram, newsletter, google" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Monitor size={12} /> Medium
+                                                                    </label>
+                                                                    <input value={advancedSettings.utmMedium} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="e.g. social, link, banner, email" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Megaphone size={12} /> Campaign
+                                                                    </label>
+                                                                    <div className="w-full h-12 px-4 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-2 border-transparent text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center italic">
+                                                                        Automatically set for each link based on the name.
                                                                     </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom CSS</label>
-                                                                        <textarea value={advancedSettings.customCss} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
-                                                                            rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                            placeholder="body { background: blue !important; }" />
-                                                                    </div>
-                                                                    <div className="space-y-1.5">
-                                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom JS</label>
-                                                                        <textarea value={advancedSettings.customJs} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
-                                                                            rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                            placeholder="console.log('Hello world');" />
-                                                                    </div>
-                                                                </>)}
+                                                                </div>
 
-                                                            </div>
-                                                        </motion.div>
-                                                    </AnimatePresence>
+                                                                <div className="pt-4 space-y-1.5 border-t border-slate-100 dark:border-slate-800">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <Eye size={12} /> UTM preview
+                                                                    </label>
+                                                                    <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                                                                        <p className="text-xs font-mono text-amber-800 dark:text-amber-300 break-all leading-relaxed">
+                                                                            {`?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`}
+                                                                        </p>
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">This query parameter will be appended to your destination URL.</p>
+                                                                </div>
+                                                            </>)}
 
-                                                    {/* SAVE BUTTON */}
-                                                    <div className="mt-5">
-                                                        <button onClick={handleSaveAdvanced} disabled={isSavingAdvanced}
-                                                            className={cn("w-full h-13 py-3.5 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-60",
-                                                                activeGT.bg, "hover:opacity-90", "shadow-" + activeGT.color + "-500/20")}>
-                                                            {isSavingAdvanced ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><Save size={14} /> Save Growth Settings</>}
-                                                        </button>
-                                                    </div>
+                                                            {/* PROTECTION */}
+                                                            {growthTab === "protection" && (<>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <KeyRound size={12} /> Page Password
+                                                                    </label>
+                                                                    <div className="relative group">
+                                                                        <input
+                                                                            type={showPassword ? "text" : "password"}
+                                                                            value={advancedSettings.password}
+                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
+                                                                            className="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-red-300 dark:focus:border-red-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                            placeholder="••••••••" />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setShowPassword(!showPassword)}
+                                                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500 transition-colors"
+                                                                        >
+                                                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                                        </button>
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Require visitors to enter a password to access your page.</p>
+                                                                </div>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                                                            <ShieldAlert size={14} className="text-red-500" /> Sensitive content warning
+                                                                        </p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5 ml-5">Ask visitors to confirm before accessing potentially sensitive content.</p>
+                                                                    </div>
+                                                                    <ToggleSwitch checked={advancedSettings.sensitiveContentWarning} onChange={(v) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: v })} />
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ── POPUP (BRANDED BUTTON) ── */}
+                                                            {growthTab === "popup" && (<>
+                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                    <div>
+                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Enable branded button</p>
+                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Show a floating button that opens a modal popup.</p>
+                                                                    </div>
+                                                                    <ToggleSwitch checked={advancedSettings.brandedButtonEnabled} onChange={(v) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: v })} />
+                                                                </div>
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                        <ImageIcon size={12} /> Branded icon
+                                                                    </label>
+                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
+                                                                        <div className="flex-1">
+                                                                            <input
+                                                                                type="file"
+                                                                                id="branded-icon-upload"
+                                                                                className="hidden"
+                                                                                accept=".jpg,.jpeg,.png,.ico,.svg,.gif,.webp"
+                                                                                onChange={async (e) => {
+                                                                                    if (e.target.files && e.target.files[0]) {
+                                                                                        const url = await handleUploadImage(e.target.files[0]);
+                                                                                        if (url) setAdvancedSettings({ ...advancedSettings, brandedIconUrl: url });
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                            <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                                                                                Choose File
+                                                                            </label>
+                                                                            <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
+                                                                                {advancedSettings.brandedIconUrl ? advancedSettings.brandedIconUrl.split('/').pop() : 'No file chosen'}
+                                                                            </span>
+                                                                        </div>
+                                                                        {advancedSettings.brandedIconUrl && (
+                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
+                                                                                <img src={advancedSettings.brandedIconUrl} alt="Icon Preview" className="w-full h-full object-cover" />
+                                                                                <button onClick={() => setAdvancedSettings({ ...advancedSettings, brandedIconUrl: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
+                                                                                    <X size={10} />
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Make sure it's a 1:1 ratio sized image with transparent background. .jpg, .jpeg, .png, .ico, .svg, .gif, .webp allowed. 2 MB maximum.</p>
+                                                                </div>
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal title</label>
+                                                                    <input value={advancedSettings.brandedModalTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="Your Modal Title" />
+                                                                </div>
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal content</label>
+                                                                    <textarea value={advancedSettings.brandedModalContent} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
+                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="Write your modal content here..." />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">This field accepts the usage of HTML.</p>
+                                                                </div>
+                                                            </>)}
+
+                                                            {/* ADVANCED / MORE */}
+                                                            {growthTab === "more" && (<>
+                                                                {[
+                                                                    { key: "enableShareButton", label: "Share button", desc: "Show a share button at the top of your page." },
+                                                                    { key: "enableScrollButtons", label: "Scroll buttons", desc: "Add scroll-to-top and scroll-to-bottom buttons." },
+                                                                    { key: "enableDirectoryDisplaying", label: "Directory listing", desc: "Make your bio page public in BotChat's directory." },
+                                                                ].map(({ key, label, desc }) => (
+                                                                    <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                                                        <div>
+                                                                            <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
+                                                                            <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
+                                                                        </div>
+                                                                        <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
+                                                                    </div>
+                                                                ))}
+
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Leap Link URL</label>
+                                                                    <input value={advancedSettings.leapLinkUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
+                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        placeholder="https://example.com/" />
+                                                                    <p className="text-[11px] text-slate-400 ml-1">Redirect all visitors to this URL. Leave empty to disable.</p>
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom CSS</label>
+                                                                    <textarea value={advancedSettings.customCss} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
+                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="body { background: blue !important; }" />
+                                                                </div>
+                                                                <div className="space-y-1.5">
+                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom JS</label>
+                                                                    <textarea value={advancedSettings.customJs} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
+                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                                        placeholder="console.log('Hello world');" />
+                                                                </div>
+                                                            </>)}
+
+                                                        </div>
+                                                    </motion.div>
+                                                </AnimatePresence>
+
+                                                {/* SAVE BUTTON */}
+                                                <div className="mt-5">
+                                                    <button onClick={handleSaveAdvanced} disabled={isSavingAdvanced}
+                                                        className={cn("w-full h-13 py-3.5 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-60",
+                                                            activeGT.bg, "hover:opacity-90", "shadow-" + activeGT.color + "-500/20")}>
+                                                        {isSavingAdvanced ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><Save size={14} /> Save Growth Settings</>}
+                                                    </button>
                                                 </div>
                                             </div>
+                                        </div>
                                     );
                                 })()}
                             </motion.div>
                         </AnimatePresence>
-                        </div>
+                    </div>
                 </aside>
 
                 <main className={cn(
@@ -1621,22 +1695,15 @@ export default function BioLinkBuilder() {
                     showCarouselEditor && "xl:pr-[400px]"
                 )}>
                     {/* Live Preview Status Badge */}
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-2.5 rounded-full border border-slate-200 dark:border-white/10 shadow-lg z-20 animate-in fade-in slide-in-from-top-4 duration-1000">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Portal</span>
-                        </div>
-                        <div className="w-px h-3 bg-slate-200 dark:bg-slate-800" />
-                        <span className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-tight">@{instagramUsername || 'yourpage'}</span>
-                    </div>
+
 
                     {/* Premium Decorative Background */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 dark:opacity-100">
-                         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] dark:bg-primary/10" />
-                         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[120px] dark:bg-indigo-500/10" />
-                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent dark:from-white/5" />
+                        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] dark:bg-primary/10" />
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[120px] dark:bg-indigo-500/10" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent dark:from-white/5" />
                     </div>
-                    
+
                     <div className={cn(
                         "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full",
                         showCarouselEditor ? "scale-[0.85]" : "scale-100"
@@ -1691,7 +1758,7 @@ export default function BioLinkBuilder() {
                             ))}
                         </div>
                         {nextPhase && (
-                            <button onClick={() => setView(nextPhase.id)} 
+                            <button onClick={() => setView(nextPhase.id)}
                                 className="h-14 px-6 rounded-[22px] bg-primary text-white flex flex-col items-center justify-center gap-1 hover:opacity-90 transition-all shadow-lg group">
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 <span className="text-[8px] font-black uppercase tracking-[0.2em] leading-none">Next</span>
@@ -1736,8 +1803,8 @@ export default function BioLinkBuilder() {
                                 Delete Block
                             </button>
                         )}
-                        <button 
-                            onClick={saveEditor} 
+                        <button
+                            onClick={saveEditor}
                             disabled={isSavingBlock}
                             className={cn(
                                 "flex-1 h-14 rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-xl transition-all flex items-center justify-center gap-2",
