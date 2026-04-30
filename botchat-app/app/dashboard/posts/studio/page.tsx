@@ -306,9 +306,9 @@ export default function PostStudioPage() {
     const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.accountName.toLowerCase().includes(search.toLowerCase());
     const matchesPlatform = platform === 'all' || a.type === platform;
     const matchesAccountFilter = selectedParentAccounts.length === 0 || selectedParentAccounts.includes(a.accountId);
-    
+
     const isAllowedForType = postType !== 'cta' || a.type === 'facebook';
-    
+
     return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType;
   });
 
@@ -357,7 +357,7 @@ export default function PostStudioPage() {
 
   if (step === 'list') {
     const activeCampaigns = (postType === 'carousel' ? carouselCampaigns : (postType === 'cta' ? ctaCampaigns : campaigns)) || [];
-    const filteredCampaigns = activeCampaigns.filter((c: any) => 
+    const filteredCampaigns = activeCampaigns.filter((c: any) =>
       c.campaign_name?.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -373,7 +373,7 @@ export default function PostStudioPage() {
               <p className="text-xs text-[var(--muted-foreground)] font-medium">Manage and track your social media campaigns</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="relative w-64 group">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
@@ -430,7 +430,7 @@ export default function PostStudioPage() {
                   <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                     <Send className="w-20 h-20" />
                   </div>
-                  
+
                   <div className="flex items-start justify-between relative z-10">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                       <Layers className="w-6 h-6" />
@@ -449,9 +449,9 @@ export default function PostStudioPage() {
                       </div>
                       <div className={cn(
                         "flex items-center gap-1.5 px-2 py-0.5 rounded-full border font-bold text-[10px] uppercase",
-                        camp.posting_status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
-                        camp.posting_status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                        "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                        camp.posting_status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                          camp.posting_status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                            "bg-amber-500/10 text-amber-500 border-amber-500/20"
                       )}>
                         {camp.posting_status || 'Pending'}
                       </div>
@@ -460,12 +460,12 @@ export default function PostStudioPage() {
 
                   <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-2">
-                       <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold overflow-hidden">
-                          {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                       </div>
-                       <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase truncate max-w-[100px]">
-                          {camp.social_account_id || 'Page ID: ' + camp.page_group_user_id}
-                       </span>
+                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold overflow-hidden">
+                        {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                      </div>
+                      <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase truncate max-w-[100px]">
+                        {camp.social_account_id || 'Page ID: ' + camp.page_group_user_id}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       {camp.post_url && (
@@ -483,7 +483,7 @@ export default function PostStudioPage() {
                   </div>
                   {camp.error_message && (
                     <div className="mt-2 text-[10px] text-red-500 bg-red-500/5 p-2 rounded-lg border border-red-500/10 line-clamp-2">
-                       {camp.error_message}
+                      {camp.error_message}
                     </div>
                   )}
                 </div>
@@ -491,102 +491,102 @@ export default function PostStudioPage() {
             </div>
           ) : (
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-               <table className="w-full text-left border-collapse">
-                  <thead>
-                     <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Campaign & Account</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Type</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Schedule</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Status</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Actions</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     {filteredCampaigns.map((camp: any, idx: number) => (
-                        <tr key={camp.id || idx} className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none">
-                           <td className="px-6 py-5">
-                              <div className="flex items-center gap-4">
-                                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform relative">
-                                    <Layers className="w-6 h-6" />
-                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center">
-                                       {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                                    </div>
-                                 </div>
-                                 <div className="min-w-0">
-                                    <p className="font-bold text-sm truncate group-hover:text-primary transition-colors">{camp.campaign_name}</p>
-                                    <p className="text-[10px] text-[var(--muted-foreground)] font-bold flex items-center gap-1">
-                                       ID: #{camp.id} <span className="opacity-30">•</span> {camp.media_type?.toUpperCase()} ACCOUNT #{camp.social_account_id}
-                                    </p>
-                                 </div>
-                              </div>
-                           </td>
-                           <td className="px-6 py-5 text-center">
-                              <Badge variant="outline" className="rounded-lg text-[10px] font-bold tracking-tight uppercase px-3 py-1 bg-[var(--background)]">
-                                 {camp.post_type || postType}
-                              </Badge>
-                           </td>
-                           <td className="px-6 py-5">
-                              <div className="flex flex-col gap-0.5">
-                                 <div className="flex items-center gap-1.5 text-xs font-medium">
-                                    <Clock className="w-3.5 h-3.5 text-primary" />
-                                    {camp.schedule_type === 'later' ? 'Scheduled' : 'Direct Post'}
-                                 </div>
-                                 <p className="text-[10px] text-[var(--muted-foreground)] pl-5">
-                                    {camp.schedule_time ? new Date(camp.schedule_time).toLocaleString() : 'Executed immediately'}
-                                 </p>
-                              </div>
-                           </td>
-                           <td className="px-6 py-5">
-                              <div className={cn(
-                                 "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-tighter",
-                                 camp.posting_status === 'completed' 
-                                   ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
-                                   : camp.posting_status === 'failed'
-                                   ? "bg-red-500/10 text-red-500 border-red-500/20"
-                                   : "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                              )}>
-                                 <div className={cn(
-                                   "w-1.5 h-1.5 rounded-full", 
-                                   camp.posting_status === 'completed' ? "bg-emerald-500" : 
-                                   camp.posting_status === 'failed' ? "bg-red-500" : "bg-amber-500 animate-pulse"
-                                 )} />
-                                 {camp.posting_status || 'Pending'}
-                              </div>
-                              {camp.error_message && (
-                                <div className="mt-2 text-[10px] text-red-500 font-medium max-w-[200px] truncate hover:whitespace-normal hover:overflow-visible hover:bg-[var(--background)] hover:p-2 hover:rounded hover:shadow-lg transition-all" title={camp.error_message}>
-                                   {camp.error_message}
-                                </div>
-                              )}
-                           </td>
-                           <td className="px-6 py-5 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                 {camp.post_url && (
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
-                                      onClick={() => window.open(camp.post_url, '_blank')}
-                                    >
-                                       <ExternalLink className="w-4 h-4" />
-                                    </Button>
-                                 )}
-                                 <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
-                                    <Send className="w-4 h-4" />
-                                 </Button>
-                                 <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="w-9 h-9 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all"
-                                    onClick={() => handleDeleteCampaign(camp.id)}
-                                 >
-                                    <Trash2 className="w-4 h-4" />
-                                 </Button>
-                              </div>
-                           </td>
-                        </tr>
-                     ))}
-                  </tbody>
-               </table>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
+                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Campaign & Account</th>
+                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Type</th>
+                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Schedule</th>
+                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Status</th>
+                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCampaigns.map((camp: any, idx: number) => (
+                    <tr key={camp.id || idx} className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform relative">
+                            <Layers className="w-6 h-6" />
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center">
+                              {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                            </div>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-sm truncate group-hover:text-primary transition-colors">{camp.campaign_name}</p>
+                            <p className="text-[10px] text-[var(--muted-foreground)] font-bold flex items-center gap-1">
+                              ID: #{camp.id} <span className="opacity-30">•</span> {camp.media_type?.toUpperCase()} ACCOUNT #{camp.social_account_id}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-center">
+                        <Badge variant="outline" className="rounded-lg text-[10px] font-bold tracking-tight uppercase px-3 py-1 bg-[var(--background)]">
+                          {camp.post_type || postType}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-1.5 text-xs font-medium">
+                            <Clock className="w-3.5 h-3.5 text-primary" />
+                            {camp.schedule_type === 'later' ? 'Scheduled' : 'Direct Post'}
+                          </div>
+                          <p className="text-[10px] text-[var(--muted-foreground)] pl-5">
+                            {camp.schedule_time ? new Date(camp.schedule_time).toLocaleString() : 'Executed immediately'}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className={cn(
+                          "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-tighter",
+                          camp.posting_status === 'completed'
+                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                            : camp.posting_status === 'failed'
+                              ? "bg-red-500/10 text-red-500 border-red-500/20"
+                              : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                        )}>
+                          <div className={cn(
+                            "w-1.5 h-1.5 rounded-full",
+                            camp.posting_status === 'completed' ? "bg-emerald-500" :
+                              camp.posting_status === 'failed' ? "bg-red-500" : "bg-amber-500 animate-pulse"
+                          )} />
+                          {camp.posting_status || 'Pending'}
+                        </div>
+                        {camp.error_message && (
+                          <div className="mt-2 text-[10px] text-red-500 font-medium max-w-[200px] truncate hover:whitespace-normal hover:overflow-visible hover:bg-[var(--background)] hover:p-2 hover:rounded hover:shadow-lg transition-all" title={camp.error_message}>
+                            {camp.error_message}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {camp.post_url && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
+                              onClick={() => window.open(camp.post_url, '_blank')}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                          )}
+                          <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
+                            <Send className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-9 h-9 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all"
+                            onClick={() => handleDeleteCampaign(camp.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -630,9 +630,15 @@ export default function PostStudioPage() {
             </Button>
           </div>
         </div>
+      </div>
 
-        {/* Top Bar Account Selector */}
-        <div className="flex flex-col border-t border-[var(--border)] bg-[var(--card)] px-6 py-2 gap-2">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Main Content Area */}
+        <main className="flex-1 flex h-full overflow-hidden">
+          {/* Left - Account Selector & Composer */}
+          <section className="flex-1 border-r border-[var(--border)] h-full flex flex-col overflow-hidden bg-[var(--background)]">
+            {/* Account Selector */}
+            <div className="flex flex-col border-b border-[var(--border)] bg-[var(--card)] px-6 py-3 gap-3 shrink-0 z-10">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
@@ -719,8 +725,8 @@ export default function PostStudioPage() {
                             onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
                             className={cn(
                               "px-3 py-1 rounded-full text-[10px] font-bold transition-all whitespace-nowrap flex items-center gap-1.5",
-                              selectedParentAccounts.includes(acc.accountId) 
-                                ? "bg-primary text-primary-foreground shadow-sm" 
+                              selectedParentAccounts.includes(acc.accountId)
+                                ? "bg-primary text-primary-foreground shadow-sm"
                                 : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
                             )}
                           >
@@ -748,39 +754,35 @@ export default function PostStudioPage() {
                           <div className="absolute inset-0 bg-primary/5" />
                         )}
                         <div className="relative z-10 flex items-center justify-center">
-                           <img src={acc.image} alt="" className="w-7 h-7 rounded-full object-cover shadow-sm ring-2 ring-[var(--background)]" />
-                           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--background)] rounded-full flex items-center justify-center shadow-sm">
-                             {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                           </div>
+                          <img src={acc.image} alt="" className="w-7 h-7 rounded-full object-cover shadow-sm ring-2 ring-[var(--background)]" />
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--background)] rounded-full flex items-center justify-center shadow-sm">
+                            {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                          </div>
                         </div>
                         <div className="flex flex-col items-start relative z-10">
-                           <span className="text-sm font-bold leading-none mb-1 text-[var(--foreground)]">{acc.name}</span>
-                           <span className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{acc.accountName}</span>
+                          <span className="text-sm font-bold leading-none mb-1 text-[var(--foreground)]">{acc.name}</span>
+                          <span className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{acc.accountName}</span>
                         </div>
                         {selectedAccounts.includes(acc.id) && (
-                           <div className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
-                              <CheckCircle2 className="w-3 h-3" />
-                           </div>
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
+                            <CheckCircle2 className="w-3 h-3" />
+                          </div>
                         )}
                       </button>
                     ))
                   ) : (
                     <div className="text-xs font-medium text-[var(--muted-foreground)] flex items-center gap-2 py-2">
-                       <Loader2 className="w-3 h-3 animate-pulse opacity-50" /> No matching pages found for this post type.
+                      <Loader2 className="w-3 h-3 animate-pulse opacity-50" /> No matching pages found for this post type.
                     </div>
                   )}
                 </div>
               </div>
             )}
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Main Content Area */}
-        <main className="flex-1 flex h-full overflow-hidden">
-          {/* Center - Composer */}
-          <section className="flex-[1.2] border-r border-[var(--border)] h-full">
+            {/* Composer */}
+            <div className="flex-1 overflow-y-auto no-scrollbar relative">
             {step === 'studio' && postType === 'carousel' ? (
               <CarouselComposer
                 onPublish={handlePublish}
@@ -804,14 +806,15 @@ export default function PostStudioPage() {
                 onCtaTypeChange={setCtaTypePreview}
               />
             )}
+            </div>
           </section>
 
           {/* Right - Preview */}
-          <section className="flex-1 h-full bg-[var(--background)]">
+          <section className="w-[400px] xl:w-[480px] shrink-0 h-full bg-[var(--background)] shadow-[-10px_0_30px_rgba(0,0,0,0.02)] relative z-20">
             <PostPreview
               content={caption}
               media={media}
-              type={postType}
+              type={postType === 'multimedia' ? multimediaTab : postType}
               carouselItems={carouselItemsPreview}
               sliderImages={sliderImagesPreview}
               carouselTab={carouselTab}

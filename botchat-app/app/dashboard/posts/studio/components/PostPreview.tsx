@@ -130,68 +130,77 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                   <MoreHorizontal className="w-4 h-4 text-[var(--muted-foreground)]" />
                 </div>
 
-                <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
-                  {displayMedia.length > 0 ? (
-                    <>
-                        <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
-                        {displayMedia.length > 1 && (
-                            <>
-                                <button onClick={prevMedia} className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <ChevronLeft className="w-4 h-4" />
-                                </button>
-                                <button onClick={nextMedia} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
-                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                                    {displayMedia.map((_, i) => (
-                                        <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === currentMediaIndex ? 'bg-primary' : 'bg-white/50'}`} />
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                        {/* Carousel Title Overlay (Instagram style bottom) */}
-                        {type === 'carousel' && carouselItems?.[currentMediaIndex]?.title && (
-                          <div className="absolute bottom-8 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent text-white">
-                             <p className="text-xs font-bold truncate">{carouselItems[currentMediaIndex].title}</p>
-                             {carouselItems[currentMediaIndex].description && (
-                               <p className="text-[10px] opacity-80 line-clamp-1">{carouselItems[currentMediaIndex].description}</p>
-                             )}
-                          </div>
-                        )}
-                    </>
-                  ) : type === 'cta' || type === 'link' ? (
-                    <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center border-y border-[var(--border)] overflow-hidden">
-                       {linkUrl ? (
-                          <div className="w-full h-full flex flex-col bg-white">
-                             <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
-                                <ExternalLink className="w-8 h-8 mb-2 opacity-50" />
-                                <span className="text-xs font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
-                             </div>
-                             <div className="p-3 bg-slate-50 border-t border-[var(--border)]">
-                                <p className="text-xs font-bold text-slate-800 line-clamp-1">{linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'Link Preview'}</p>
-                                <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">{content || 'A summary of the linked content will appear here.'}</p>
-                             </div>
-                          </div>
-                       ) : (
-                          <div className="flex flex-col items-center gap-2 opacity-30 p-6 text-center">
-                            <ExternalLink className="w-10 h-10" />
-                            <span className="text-[10px] font-medium uppercase tracking-widest">Link Preview</span>
-                          </div>
-                       )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2 opacity-20">
-                      <Layout className="w-12 h-12" />
-                      <span className="text-[10px] font-medium uppercase tracking-widest">Media Placeholder</span>
-                    </div>
-                  )}
-                  {type === 'cta' && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-[#3897f0] p-2.5 flex items-center justify-between text-white animate-in slide-in-from-bottom-2 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
-                        <span className="text-[11px] font-bold tracking-wide">{displayCtaLabel}</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                </div>
+                {type === 'text' ? (
+                  <div 
+                    className="aspect-square flex items-center justify-center p-6 text-center shadow-inner border-y border-[var(--border)]"
+                    style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}
+                  >
+                    <p className="text-white font-bold text-[14px] leading-relaxed whitespace-pre-wrap">{content || 'Your text post here'}</p>
+                  </div>
+                ) : (
+                  <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
+                    {displayMedia.length > 0 ? (
+                      <>
+                          <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
+                          {displayMedia.length > 1 && (
+                              <>
+                                  <button onClick={prevMedia} className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <ChevronLeft className="w-4 h-4" />
+                                  </button>
+                                  <button onClick={nextMedia} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <ChevronRight className="w-4 h-4" />
+                                  </button>
+                                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                      {displayMedia.map((_, i) => (
+                                          <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === currentMediaIndex ? 'bg-primary' : 'bg-white/50'}`} />
+                                      ))}
+                                  </div>
+                              </>
+                          )}
+                          {/* Carousel Title Overlay (Instagram style bottom) */}
+                          {type === 'carousel' && carouselItems?.[currentMediaIndex]?.title && (
+                            <div className="absolute bottom-8 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent text-white">
+                               <p className="text-xs font-bold truncate">{carouselItems[currentMediaIndex].title}</p>
+                               {carouselItems[currentMediaIndex].description && (
+                                 <p className="text-[10px] opacity-80 line-clamp-1">{carouselItems[currentMediaIndex].description}</p>
+                               )}
+                            </div>
+                          )}
+                      </>
+                    ) : type === 'cta' || type === 'link' ? (
+                      <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center border-y border-[var(--border)] overflow-hidden">
+                         {linkUrl ? (
+                            <div className="w-full h-full flex flex-col bg-white">
+                               <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                                  <ExternalLink className="w-8 h-8 mb-2 opacity-50" />
+                                  <span className="text-xs font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
+                               </div>
+                               <div className="p-3 bg-slate-50 border-t border-[var(--border)]">
+                                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'Link Preview'}</p>
+                                  <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">{content || 'A summary of the linked content will appear here.'}</p>
+                               </div>
+                            </div>
+                         ) : (
+                            <div className="flex flex-col items-center gap-2 opacity-30 p-6 text-center">
+                              <ExternalLink className="w-10 h-10" />
+                              <span className="text-[10px] font-medium uppercase tracking-widest">Link Preview</span>
+                            </div>
+                         )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 opacity-20">
+                        <Layout className="w-12 h-12" />
+                        <span className="text-[10px] font-medium uppercase tracking-widest">Media Placeholder</span>
+                      </div>
+                    )}
+                    {type === 'cta' && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-[#3897f0] p-2.5 flex items-center justify-between text-white animate-in slide-in-from-bottom-2 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+                          <span className="text-[11px] font-bold tracking-wide">{displayCtaLabel}</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="p-3 pb-10 space-y-3">
                   <div className="flex items-center justify-between">
@@ -204,10 +213,12 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                   </div>
                   <div className="space-y-1">
                     <p className="text-[11px] font-bold">1,234 likes</p>
-                    <p className="text-[11px] whitespace-pre-wrap">
-                      <span className="font-bold mr-1">your_page</span>
-                      {content || 'Your caption will appear here...'}
-                    </p>
+                    {type !== 'text' && (
+                        <p className="text-[11px] whitespace-pre-wrap">
+                          <span className="font-bold mr-1">your_page</span>
+                          {content || 'Your caption will appear here...'}
+                        </p>
+                    )}
                     <p className="text-[9px] text-[var(--muted-foreground)] uppercase">Just now</p>
                   </div>
                 </div>
@@ -233,56 +244,58 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                   </p>
                 </div>
 
-                <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
-                   {displayMedia.length > 0 ? (
-                        <>
-                            <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
-                             {displayMedia.length > 1 && (
-                                <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px]">
-                                    {currentMediaIndex + 1}/{displayMedia.length}
-                                </Badge>
+                {type !== 'text' && (
+                  <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
+                     {displayMedia.length > 0 ? (
+                          <>
+                              <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
+                               {displayMedia.length > 1 && (
+                                  <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px]">
+                                      {currentMediaIndex + 1}/{displayMedia.length}
+                                  </Badge>
+                               )}
+                               {/* Facebook Carousel Content Area */}
+                               {type === 'carousel' && carouselItems?.[currentMediaIndex] && (
+                                 <div className="absolute bottom-0 left-0 right-0 bg-[var(--card)] p-3 border-t border-[var(--border)]">
+                                    <p className="text-xs font-bold text-[var(--foreground)] truncate">
+                                      {carouselItems[currentMediaIndex].title || 'Card Title'}
+                                    </p>
+                                    <p className="text-[10px] text-[var(--muted-foreground)] line-clamp-1">
+                                      {carouselItems[currentMediaIndex].description || 'Card description goes here...'}
+                                    </p>
+                                    {carouselItems[currentMediaIndex].link && (
+                                      <div className="mt-1 flex items-center justify-between">
+                                        <span className="text-[10px] text-[var(--muted-foreground)] uppercase">
+                                          {new URL(carouselItems[currentMediaIndex].link).hostname.replace('www.', '')}
+                                        </span>
+                                        <button className="px-2 py-0.5 bg-[var(--border)] rounded text-[10px] font-bold">Learn More</button>
+                                      </div>
+                                    )}
+                                 </div>
+                               )}
+                          </>
+                      ) : type === 'cta' || type === 'link' ? (
+                          <div className="w-full h-full flex flex-col bg-slate-100">
+                             {linkUrl ? (
+                                <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                                    <ExternalLink className="w-10 h-10 mb-3 opacity-50" />
+                                    <span className="text-sm font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
+                                </div>
+                             ) : (
+                                <div className="flex-1 flex flex-col items-center justify-center gap-2 opacity-30">
+                                    <ExternalLink className="w-12 h-12" />
+                                    <span className="text-[10px] font-medium uppercase tracking-widest">Link Image</span>
+                                </div>
                              )}
-                             {/* Facebook Carousel Content Area */}
-                             {type === 'carousel' && carouselItems?.[currentMediaIndex] && (
-                               <div className="absolute bottom-0 left-0 right-0 bg-[var(--card)] p-3 border-t border-[var(--border)]">
-                                  <p className="text-xs font-bold text-[var(--foreground)] truncate">
-                                    {carouselItems[currentMediaIndex].title || 'Card Title'}
-                                  </p>
-                                  <p className="text-[10px] text-[var(--muted-foreground)] line-clamp-1">
-                                    {carouselItems[currentMediaIndex].description || 'Card description goes here...'}
-                                  </p>
-                                  {carouselItems[currentMediaIndex].link && (
-                                    <div className="mt-1 flex items-center justify-between">
-                                      <span className="text-[10px] text-[var(--muted-foreground)] uppercase">
-                                        {new URL(carouselItems[currentMediaIndex].link).hostname.replace('www.', '')}
-                                      </span>
-                                      <button className="px-2 py-0.5 bg-[var(--border)] rounded text-[10px] font-bold">Learn More</button>
-                                    </div>
-                                  )}
-                               </div>
-                             )}
-                        </>
-                    ) : type === 'cta' || type === 'link' ? (
-                        <div className="w-full h-full flex flex-col bg-slate-100">
-                           {linkUrl ? (
-                              <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
-                                  <ExternalLink className="w-10 h-10 mb-3 opacity-50" />
-                                  <span className="text-sm font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
-                              </div>
-                           ) : (
-                              <div className="flex-1 flex flex-col items-center justify-center gap-2 opacity-30">
-                                  <ExternalLink className="w-12 h-12" />
-                                  <span className="text-[10px] font-medium uppercase tracking-widest">Link Image</span>
-                              </div>
-                           )}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center gap-2 opacity-20">
-                            <Layout className="w-12 h-12" />
-                            <span className="text-[10px] font-medium uppercase tracking-widest">Media Placeholder</span>
-                        </div>
-                    )}
-                </div>
+                          </div>
+                      ) : (
+                          <div className="flex flex-col items-center gap-2 opacity-20">
+                              <Layout className="w-12 h-12" />
+                              <span className="text-[10px] font-medium uppercase tracking-widest">Media Placeholder</span>
+                          </div>
+                      )}
+                  </div>
+                )}
 
                 {(type === 'cta' || type === 'link') && (
                     <div className="p-3 bg-[var(--card)] flex items-center justify-between border-b border-[var(--border)] cursor-pointer hover:bg-slate-50 transition-colors">
