@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, HelpCircle, MessageCircle, ShieldCheck, Zap, Sparkles, ArrowRight } from "lucide-react";
+import { Plus, Minus, HelpCircle, MessageCircle, ShieldCheck, Zap, Sparkles, ArrowRight, Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
 
 const faqs = [
@@ -29,6 +29,11 @@ const faqs = [
     question: "Do I need any technical skill or coding to set this up?",
     answer: "Zero. If you can type a message, you can use LinkDM. Our 'Logic-Mapper' is a visual drag-and-drop system. You can have your first Reel fully automated in less than 3 minutes.",
     icon: <Sparkles className="text-purple-500" />
+  },
+  {
+    question: "Can I use my own domain for my Bio Link?",
+    answer: "Absolutely. You can use your custom domain or a subdomain to maintain brand consistency. We also provide SEO-optimized slugs (e.g., botchat.com/yourname) that load in under 1 second.",
+    icon: <LinkIcon className="text-cyan-500" />
   }
 ];
 

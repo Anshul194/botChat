@@ -3,6 +3,7 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import FeaturesOverview from "./components/FeaturesOverview";
+import BioLinkShowcase from "./components/BioLinkShowcase";
 import MotiveSection from "./components/MotiveSection";
 import Features from "./components/Features";
 import ScrollWritingSection from "./components/ScrollWritingSection";
@@ -31,7 +32,7 @@ export default function LandingPage() {
         {/* Social Proof handled inside Hero/CreatorProof */}
 
         <FeaturesOverview />
-
+        <BioLinkShowcase />
         <MotiveSection />
         <Features />
         <ScrollWritingSection />
