@@ -136,7 +136,7 @@ export default function PostStudioPage() {
             const acc = accounts.find(a => a.id === id);
             return {
                 id: acc?.platformId || id, // Mapping to platform_id needed by API
-                platform_id: String(acc?.platformId || id)
+                platform_id: String(acc?.page_id || id)
             };
         });
 
