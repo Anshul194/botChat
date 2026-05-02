@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { ArrowRight, Image as ImageIcon, Layers, Link as LinkIcon, Megaphone, Search, Sparkles, Video, Loader2, Globe, Wand2, CreditCard, Music, Plus, Zap, LayoutTemplate } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, Layers, Link as LinkIcon, Megaphone, Search, Sparkles, Video, Loader2, Globe, Wand2, CreditCard, Music, Plus, Zap, LayoutTemplate, CircleDot, Hexagon, Grid, ShoppingBag, User, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 
@@ -39,6 +39,15 @@ const getLucideIcon = (id: string, category: string) => {
     if (val.includes("paypal")) return CreditCard;
     if (val.includes("soundcloud") || val.includes("spotify") || val.includes("music")) return Music;
     if (val.includes("youtube") || val.includes("tiktok") || val.includes("video") || val.includes("vimeo") || val.includes("twitch") || val.includes("reels") || val.includes("shorts")) return Video;
+    
+    if (val.includes("hero")) return LayoutTemplate;
+    if (val.includes("stats")) return CircleDot;
+    if (val.includes("brands") || val.includes("logos")) return Hexagon;
+    if (val.includes("portfolio")) return Grid;
+    if (val.includes("services")) return ShoppingBag;
+    if (val.includes("testimonials")) return User;
+    if (val.includes("faq")) return Info;
+    if (val.includes("cta")) return Zap;
     
     if (category === "standard") return LayoutTemplate;
     if (category === "advanced") return Wand2;

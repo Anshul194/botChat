@@ -922,7 +922,7 @@ export const getTheme = (id: string = 'photo_aura'): ThemeConfig => {
 // ══════════════════════════════════════════════════════════
 // VISUALS LAB — Gen-Z Template Picker
 // ══════════════════════════════════════════════════════════
-export const VisualsLab = ({ profile, updateProfile }: any) => {
+export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
     const [selectedNiche, setSelectedNiche] = useState('photography');
 
     return (
@@ -937,17 +937,18 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                         { id: 'standard', name: 'Standard Links', desc: 'Classic bio-link list with themes', image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&q=80' },
                         { id: 'portfolio', name: 'Portfolio', desc: 'Continuous showcase template', image: 'https://images.unsplash.com/photo-1481481600465-bbaeb5e45a2d?w=500&q=80' },
                         { id: 'ugc', name: 'UGC Creator', desc: 'Elegant & aesthetic layout', image: 'https://images.unsplash.com/photo-1616469829581-73993eb86b02?w=500&q=80' },
-                        { id: 'olivia', name: 'Olivia Warren', desc: 'Minimalist image-focused layout', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&q=80' },
+                        { id: 'olivia', name: 'Olivia Warren', desc: 'Minimalist image-focused layout', image: 'https://images.unsplash.com/photo-1534528741775-53994a69dadaeb?w=500&q=80' },
                     ].map((layout) => (
                         <button
                             key={layout.id}
                             onClick={() => {
-                                const newSettings = { ...(profile.settings || {}), layoutStyle: layout.id };
-                                updateProfile({ settings: newSettings });
+                                if (applyTemplate) {
+                                    applyTemplate(layout.id);
+                                }
                             }}
                             className={cn(
                                 "text-left group relative overflow-hidden rounded-3xl border-2 transition-all duration-300 flex flex-col h-full",
-                                (profile.settings?.layoutStyle || 'standard') === layout.id
+                                (profile?.settings?.layoutStyle || 'standard') === layout.id
                                     ? "border-primary shadow-xl shadow-primary/10 ring-2 ring-primary ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950 scale-[1.02] z-10"
                                     : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md"
                             )}
@@ -955,14 +956,14 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                             <div className="h-28 w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
                                 <img src={layout.image} alt={layout.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
-                                {(profile.settings?.layoutStyle || 'standard') === layout.id && (
+                                {(profile?.settings?.layoutStyle || 'standard') === layout.id && (
                                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 animate-pulse">
                                         <Sparkles size={12} />
                                     </div>
                                 )}
                             </div>
                             <div className="p-4 flex-1 flex flex-col justify-end bg-white dark:bg-slate-900">
-                                <p className={cn("text-xs font-black uppercase tracking-widest", (profile.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
+                                <p className={cn("text-xs font-black uppercase tracking-widest", (profile?.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
                                     {layout.name}
                                 </p>
                                 <p className="text-[10px] font-medium text-slate-400 mt-1">{layout.desc}</p>
@@ -972,7 +973,7 @@ export const VisualsLab = ({ profile, updateProfile }: any) => {
                 </div>
             </div>
 
-            {(!profile.settings?.layoutStyle || profile.settings.layoutStyle === 'standard') && (
+            {(!profile?.settings?.layoutStyle || profile?.settings?.layoutStyle === 'standard') && (
                 <>
                     {/* ── Category Pills ── */}
                     <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">

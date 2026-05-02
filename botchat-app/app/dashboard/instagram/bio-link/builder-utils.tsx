@@ -1,5 +1,5 @@
 import React from "react";
-import { LinkIcon, FileCode2, User, ImageIcon, Share2, CircleDot, Info, Megaphone, ShoppingBag, Orbit, Youtube, Video, Layers, Grid, MonitorPlay, Smartphone, Monitor, Hexagon, SmartphoneNfc, Globe, Mail, Camera, Sparkles, MoreHorizontal } from "lucide-react";
+import { LinkIcon, FileCode2, User, ImageIcon, Share2, CircleDot, Info, Megaphone, ShoppingBag, Orbit, Youtube, Video, Layers, Grid, MonitorPlay, Smartphone, Monitor, Hexagon, SmartphoneNfc, Globe, Mail, Camera, Sparkles, MoreHorizontal, LayoutTemplate, Zap } from "lucide-react";
 
 export const BLOCK_ICONS: Record<string, React.ReactNode> = {
     vcard: <User size={16} />, newsletter: <Mail size={16} />, divider: <MoreHorizontal size={16} />,
@@ -14,6 +14,9 @@ export const BLOCK_ICONS: Record<string, React.ReactNode> = {
     long_form_videos: <MonitorPlay size={16} />, long_video: <MonitorPlay size={16} />,
     vertical_media: <Smartphone size={16} />, square_media: <ImageIcon size={16} />, horizontal_media: <Monitor size={16} />,
     add_logos: <Hexagon size={16} />, add_products: <ShoppingBag size={16} />, add_apps: <SmartphoneNfc size={16} />,
+    hero_section: <LayoutTemplate size={16} />, stats_section: <CircleDot size={16} />, brands_section: <Hexagon size={16} />,
+    portfolio_section: <Grid size={16} />, services_section: <ShoppingBag size={16} />, testimonials_section: <User size={16} />,
+    faq_section: <Info size={16} />, cta_section: <Zap size={16} />,
 };
 
 export const BLOCK_COLORS: Record<string, string> = {

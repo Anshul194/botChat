@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon, Image as ImageIcon, CheckCircle2, X, Globe, ArrowRight, Info, Copy, Sparkles, Crown, MoreVertical, BarChart2, QrCode, RefreshCw } from "lucide-react";
+import { Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon, Image as ImageIcon, CheckCircle2, X, Globe, ArrowRight, Info, Copy, Sparkles, Crown, MoreVertical, BarChart2, QrCode, RefreshCw, Search, Layout, Grid } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     DropdownMenu,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/providers/ModalProvider";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -82,6 +83,8 @@ export default function InstagramBioLinksPage() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [actionModal, setActionModal] = useState<{ isOpen: boolean; type: 'delete' | 'duplicate' | 'reset' | 'toggle'; row: BioLinkRow | null }>({ isOpen: false, type: 'delete', row: null });
     const [newBio, setNewBio] = useState({ url: "", name: "", description: "" });
+    const [search, setSearch] = useState("");
+    const [view, setView] = useState<'row' | 'card'>('row');
 
     const handleCreate = async () => {
         if (!newBio.url || !newBio.name) {
@@ -125,17 +128,22 @@ export default function InstagramBioLinksPage() {
     }, [showModal]);
 
     const rows = useMemo(() => {
-        return pages.map(page => {
-            return {
-                pageId: page.link_id,
-                profileId: page.link_id as any,
-                username: page.url,
-                slug: page.url,
-                title: page.title,
-                is_enabled: page.is_enabled === "1" || page.is_enabled === true || page.is_enabled === "true"
-            } as BioLinkRow;
-        });
+        return pages.map(page => ({
+            pageId: page.link_id,
+            profileId: page.link_id as any,
+            username: page.url,
+            slug: page.url,
+            title: page.title,
+            is_enabled: page.is_enabled === "1" || page.is_enabled === true || page.is_enabled === "true"
+        } as BioLinkRow));
     }, [pages]);
+
+    const filteredRows = useMemo(() => {
+        return rows.filter(r => 
+            r.title?.toLowerCase().includes(search.toLowerCase()) || 
+            r.username?.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [rows, search]);
 
     const rowsMap = useMemo(() => {
         const map = new Map<string, BioLinkRow>();
@@ -183,150 +191,176 @@ export default function InstagramBioLinksPage() {
         }
     };
 
-    const handleAddNew = () => {
-        setShowAddModal(true);
-    };
-
     const availableAccounts = accounts.filter((acc) => !rowsMap.has(String(acc.id)));
 
     return (
-        <div className="min-h-screen bg-transparent px-2 sm:px-6 py-6 relative overflow-hidden"
-            style={{ background: 'var(--app-surface-bg, var(--background))' }}>
-            <div className="max-w-5xl mx-auto space-y-4 relative">
-                {/* Header Card */}
-                <div className="rounded-[28px] border border-slate-200/80 dark:border-white/10 bg-white/90 dark:bg-slate-900/80 p-4 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] backdrop-blur-xl">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8">
-                        <div className="flex items-start gap-4 sm:gap-5">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[18px] sm:rounded-[22px] bg-primary text-white flex items-center justify-center shadow-2xl shadow-primary/40 shrink-0">
-                                <Sparkles size={20} className="sm:w-6 sm:h-6" />
+        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30 relative overflow-hidden">
+            {/* Decorative Background Glows */}
+            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0" />
+            <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none z-0" />
+
+            <div className="max-w-full space-y-8 relative z-10 p-6">
+                {/* Header Section */}
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+                >
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-xl shadow-primary/10">
+                                <Sparkles size={24} />
                             </div>
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Instagram Premium</p>
-                                </div>
-                                <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">Bio Link Manager</h1>
-                                <p className="hidden sm:block text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-2 font-medium max-w-xl">Create, edit, copy, and maintain all your bio links in one place.</p>
-                                <p className="sm:hidden text-[12px] text-slate-500 mt-1 font-medium italic">Manage all bio links here.</p>
+                            <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+                                Bio Link Studio
                             </div>
                         </div>
-                        <button
-                            onClick={handleAddNew}
-                            className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-2xl bg-primary text-white text-[11px] sm:text-[12px] font-black uppercase tracking-[0.12em] flex items-center justify-center gap-2 sm:gap-3 shadow-[0_10px_30px_rgba(108,92,231,0.3)] hover:scale-[1.02] hover:shadow-[0_15px_40px_rgba(108,92,231,0.4)] active:scale-[0.98] transition-all"
-                        >
-                            <Plus size={16} className="sm:w-5 sm:h-5" /> Add New Bio
-                        </button>
+                        <div className="space-y-1">
+                            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                                Bio Link Manager
+                            </h1>
+                            <p className="text-[var(--muted-foreground)] font-medium max-w-xl">
+                                Create and maintain your high-conversion bio links in one professional dashboard.
+                            </p>
+                        </div>
                     </div>
-                </div>
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+                    >
+                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" /> 
+                        Add New Bio
+                    </button>
+                </motion.div>
 
-                {/* List Card */}
-                <div className="rounded-[32px] border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-slate-900/60 p-2 sm:p-5">
+                {/* Search & View Toggle Bar */}
+                <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="h-16 rounded-3xl border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl flex items-center justify-between px-6 shadow-sm"
+                >
+                    <div className="flex items-center gap-4 flex-1">
+                        <div className="relative w-full max-w-md group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
+                            <input
+                                placeholder="Search your bio links..."
+                                className="w-full pl-10 h-10 bg-transparent text-sm font-medium focus:outline-none"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10">
+                            <button
+                                onClick={() => setView('row')}
+                                className={cn(
+                                    "px-4 py-1.5 rounded-lg transition-all flex items-center gap-2",
+                                    view === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                                )}
+                            >
+                                <Layout className="w-3.5 h-3.5" />
+                                <span className="text-[10px] font-black uppercase tracking-wider">List</span>
+                            </button>
+                            <button
+                                onClick={() => setView('card')}
+                                className={cn(
+                                    "px-4 py-1.5 rounded-lg transition-all flex items-center gap-2",
+                                    view === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                                )}
+                            >
+                                <Grid className="w-3.5 h-3.5" />
+                                <span className="text-[10px] font-black uppercase tracking-wider">Cards</span>
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Main Content Area */}
+                <div className="min-h-[400px]">
                     {isLoading ? (
-                        <div className="py-16 text-center text-sm text-slate-500">Loading bio links...</div>
-                    ) : rows.length === 0 ? (
-                        <div className="py-16 text-center space-y-2">
-                            <div className="mx-auto w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                                <LinkIcon size={20} />
+                        <div className="h-[400px] flex flex-col items-center justify-center gap-4 text-[var(--muted-foreground)]">
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                            <p className="text-sm font-bold uppercase tracking-widest">Synchronizing Studio...</p>
+                        </div>
+                    ) : filteredRows.length === 0 ? (
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-[3rem] border-2 border-dashed border-[var(--border)]"
+                        >
+                            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                                <LinkIcon className="w-8 h-8 text-primary" />
                             </div>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">No bio links created yet</p>
-                            <p className="text-sm text-slate-500">Connect an account and create your first bio link.</p>
+                            <h3 className="text-xl font-bold mb-2">No Bio Links Found</h3>
+                            <p className="text-[var(--muted-foreground)] max-w-xs mx-auto mb-8">
+                                {search ? "Try adjusting your search query to find what you're looking for." : "Start your journey by creating your first professional bio link."}
+                            </p>
+                            {!search && (
+                                <Button onClick={() => setShowAddModal(true)} className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest">
+                                    <Plus className="w-4 h-4 mr-2" /> Create First Bio
+                                </Button>
+                            )}
+                        </motion.div>
+                    ) : view === 'card' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {filteredRows.map((row) => (
+                                <BioLinkCard 
+                                    key={row.pageId} 
+                                    row={row} 
+                                    onEdit={handleEdit} 
+                                    onCopy={handleCopy} 
+                                    onAction={(type) => setActionModal({ isOpen: true, type, row })}
+                                    copied={copiedId === row.pageId}
+                                />
+                            ))}
                         </div>
                     ) : (
-                        <div className="grid gap-3">
-                            {rows.map((row) => {
-                                const publicUrl = typeof window !== "undefined"
-                                    ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
-                                    : `/p?u=${row.username}&id=${row.pageId}`;
-                                return (
-                                    <div key={row.pageId} className="group rounded-[22px] border border-slate-100 dark:border-white/5 bg-white dark:bg-white/[0.03] px-2.5 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center gap-4 transition-all hover:bg-slate-50 dark:hover:bg-white/[0.06] hover:shadow-xl hover:shadow-slate-200/20 dark:hover:shadow-none hover:-translate-y-0.5">
-                                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                                            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-primary/5 dark:bg-primary/10 text-primary font-black flex items-center justify-center text-sm sm:text-lg shadow-inner shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                                {(row.username?.[0] || "B").toUpperCase()}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate tracking-tight">{row.title || `@${row.username}`}</p>
-                                                    {row.is_enabled && (
-                                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-none">
-                                                            <span className="w-1 h-1 rounded-full bg-primary animate-pulse" /> Live
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 break-all sm:truncate mt-0.5 font-medium leading-tight">{publicUrl}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-                                            <div className="flex items-center gap-2 sm:gap-4">
-                                                {/* Status Toggle */}
-                                                <div className="flex flex-col sm:flex-col items-center gap-1 sm:gap-1.5 px-0 sm:px-2">
-                                                    <button
-                                                        className={cn(
-                                                            "relative inline-flex h-[18px] w-[34px] sm:h-[22px] sm:w-[42px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300 focus:outline-none",
-                                                            row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
-                                                        )}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setActionModal({ isOpen: true, type: 'toggle', row });
-                                                        }}
-                                                    >
-                                                        <span className={cn("pointer-events-none block h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-4 sm:translate-x-5" : "translate-x-0.5")} />
-                                                    </button>
-                                                    <span className="hidden sm:block text-[8px] font-black uppercase tracking-widest text-slate-400">Status</span>
-                                                </div>
-
-                                                {/* Copy Button */}
-                                                <button onClick={(e) => { e.stopPropagation(); handleCopy(row); }} className={cn("w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 border", copiedId === row.pageId ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 dark:hover:border-white/10")} title="Copy Link">
-                                                    {copiedId === row.pageId ? <CheckCircle2 size={14} className="sm:w-4 sm:h-4" /> : <Copy size={14} className="sm:w-4 sm:h-4" />}
-                                                </button>
-                                            </div>
-
-                                            {/* Primary Edit Button (Desktop) */}
-                                            <button onClick={() => handleEdit(row)} className="hidden md:flex h-10 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black uppercase tracking-widest items-center gap-2 hover:opacity-90 transition-all">
-                                                Edit Page <ArrowRight size={12} />
-                                            </button>
-
-                                            {/* Dropdown Menu */}
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <button onClick={(e) => e.stopPropagation()} className="w-10 h-10 rounded-xl border border-slate-100 dark:border-white/10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all">
-                                                        <MoreVertical size={16} className="text-slate-500" />
-                                                    </button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl">
-                                                    <DropdownMenuItem onClick={() => handleEdit(row)} className="h-11 rounded-xl gap-3 px-3 cursor-pointer md:hidden">
-                                                        <Edit3 size={15} className="text-slate-500" /> Edit Page
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
-                                                        <BarChart2 size={15} className="text-slate-500" /> View Analytics
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => showModal("info", "Feature Pending", "QR Code Generation coming soon.")}>
-                                                        <QrCode size={15} className="text-slate-500" /> Generate QR Code
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'duplicate', row })}>
-                                                        <Copy size={15} className="text-slate-500" /> Duplicate Page
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => setActionModal({ isOpen: true, type: 'reset', row })}>
-                                                        <RefreshCw size={15} className="text-slate-500" /> Reset to Default
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
-                                                    <DropdownMenuItem onClick={() => setActionModal({ isOpen: true, type: 'delete', row })} className="h-11 rounded-xl gap-3 px-3 text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
-                                                        <Trash2 size={15} className="text-red-500" /> Delete Page
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Portfolio & URL</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Status</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Management</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredRows.map((row) => (
+                                        <BioLinkRow 
+                                            key={row.pageId} 
+                                            row={row} 
+                                            onEdit={handleEdit} 
+                                            onCopy={handleCopy} 
+                                            onAction={(type) => setActionModal({ isOpen: true, type, row })}
+                                            copied={copiedId === row.pageId}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </div>
 
-                {availableAccounts.length > 0 && (
-                    <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/30 p-4 sm:p-5">
-                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">Available Accounts</p>
-                        <div className="flex flex-wrap gap-2">
+                {/* Available Accounts Footer */}
+                {availableAccounts.length > 0 && !search && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }}
+                        className="p-8 rounded-[2.5rem] border border-[var(--border)] bg-primary/5 dark:bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-6"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                <Crown size={20} />
+                            </div>
+                            <div>
+                                <p className="text-xs font-black uppercase tracking-widest text-primary/70">Unused Connections</p>
+                                <p className="text-sm font-medium text-[var(--muted-foreground)]">You have connected accounts waiting for a bio link.</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-2">
                             {availableAccounts.map((acc) => (
                                 <button
                                     key={String(acc.id)}
@@ -334,65 +368,63 @@ export default function InstagramBioLinksPage() {
                                         setNewBio({ ...newBio, url: acc.username || "", name: acc.name || acc.username || "" });
                                         setShowAddModal(true);
                                     }}
-                                    className="px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 flex items-center gap-1.5"
+                                    className="px-4 py-2 rounded-xl text-xs font-bold border border-primary/20 text-primary bg-white dark:bg-slate-900 flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
                                 >
-                                    <Sparkles size={12} />
-                                    @{acc.username || acc.name || `account-${acc.id}`}
-                                    <ArrowRight size={12} />
+                                    <Plus size={14} /> @{acc.username || acc.name}
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
                 )}
             </div>
 
-            {/* ADDS NEW MODAL */}
+            {/* Modals */}
             <ModalShell
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                title="Create New Bio Page"
+                title="Create Bio Page"
                 icon={<Globe size={20} />}
                 footer={
-                    <div className="flex gap-3">
-                        <button onClick={() => setShowAddModal(false)} className="flex-1 h-14 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-black uppercase tracking-widest text-[12px]">Cancel</button>
+                    <div className="flex gap-4">
+                        <button onClick={() => setShowAddModal(false)} className="flex-1 h-14 rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Cancel</button>
                         <button
                             onClick={handleCreate}
                             disabled={isCreating}
-                            className="flex-2 h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[12px] shadow-xl flex items-center justify-center gap-2"
+                            className="flex-[1.5] h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50"
                         >
-                            {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-                            {isCreating ? "Creating..." : "Create Bio Page"}
+                            {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                            {isCreating ? "Creating Studio..." : "Create Now"}
                         </button>
                     </div>
                 }
             >
-                <div className="space-y-6">
+                <div className="space-y-8 py-2">
                     <InputField
-                        label="Unique URL (Slug)"
+                        label="Unique Username (Slug)"
                         value={newBio.url}
                         onChange={(e: any) => setNewBio({ ...newBio, url: e.target.value })}
-                        placeholder="my-new-bio"
+                        placeholder="e.g. myportfolio"
                     />
                     <InputField
-                        label="Account Name / Title"
+                        label="Portfolio Title"
                         value={newBio.name}
                         onChange={(e: any) => setNewBio({ ...newBio, name: e.target.value })}
-                        placeholder="John Doe Profile"
+                        placeholder="e.g. John Doe - Designer"
                     />
                     <div className="space-y-2">
-                        <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Description</label>
+                        <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Bio Description</label>
                         <textarea
                             value={newBio.description}
                             onChange={(e: any) => setNewBio({ ...newBio, description: e.target.value })}
                             rows={3}
-                            className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600"
-                            placeholder="A short intro about yourself..."
+                            className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/50 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
+                            placeholder="A professional intro for your bio..."
                         />
                     </div>
-                    <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex items-start gap-3">
-                        <Info size={16} className="text-primary mt-0.5" />
-                        <p className="text-[11px] text-primary/80 font-medium leading-relaxed uppercase tracking-tight">
-                            The URL must be unique and can only contain letters, numbers, and hyphens. This will be your public link address.
+                    <div className="p-5 rounded-[2rem] bg-amber-500/5 border border-amber-500/10 flex items-start gap-4">
+                        <Info size={18} className="text-amber-600 mt-1 shrink-0" />
+                        <p className="text-[11px] text-amber-700/80 dark:text-amber-500/80 font-bold uppercase tracking-tight leading-relaxed">
+                            Your slug will be your public link. Choose something memorable as it cannot be changed easily after the studio is launched.
                         </p>
                     </div>
                 </div>
@@ -402,12 +434,12 @@ export default function InstagramBioLinksPage() {
                 isOpen={actionModal.isOpen}
                 onClose={() => setActionModal({ ...actionModal, isOpen: false })}
                 onConfirm={confirmAction}
-                title={actionModal.type === 'delete' ? 'Delete Bio Page?' : actionModal.type === 'duplicate' ? 'Duplicate Bio Page?' : actionModal.type === 'toggle' ? 'Change Status?' : 'Reset Bio Page?'}
+                title={actionModal.type === 'delete' ? 'Delete Bio Page?' : actionModal.type === 'duplicate' ? 'Duplicate Studio?' : actionModal.type === 'toggle' ? 'Update Status?' : 'Reset Studio?'}
                 message={
-                    actionModal.type === 'delete' ? 'This action is permanent and cannot be undone.' :
-                        actionModal.type === 'duplicate' ? 'This will create an exact copy of this bio link page.' :
-                            actionModal.type === 'toggle' ? `Are you sure you want to ${actionModal.row?.is_enabled ? 'disable' : 'enable'} this bio link?` :
-                                'This will reset your bio link back to default settings.'
+                    actionModal.type === 'delete' ? 'This action is permanent and will destroy all content blocks in this studio.' :
+                        actionModal.type === 'duplicate' ? 'This will create an exact replica of your blocks and theme settings.' :
+                            actionModal.type === 'toggle' ? `Are you sure you want to ${actionModal.row?.is_enabled ? 'take this studio offline' : 'publish this studio to the web'}?` :
+                                'This will restore your bio link back to its initial system default state.'
                 }
                 type={actionModal.type === 'delete' ? 'danger' : 'warning'}
                 confirmText={actionModal.type === 'delete' ? 'Delete' : actionModal.type === 'duplicate' ? 'Duplicate' : actionModal.type === 'toggle' ? 'Confirm' : 'Reset'}
@@ -415,3 +447,137 @@ export default function InstagramBioLinksPage() {
         </div>
     );
 }
+
+function BioLinkCard({ row, onEdit, onCopy, onAction, copied }: any) {
+    const publicUrl = typeof window !== "undefined"
+        ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
+        : `/p?u=${row.username}&id=${row.pageId}`;
+
+    return (
+        <div 
+            onClick={() => onEdit(row)}
+            className="group bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] p-6 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/50 transition-all duration-500 flex flex-col gap-5 relative overflow-hidden cursor-pointer"
+        >
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                <Globe className="w-24 h-24" />
+            </div>
+
+            <div className="flex items-start justify-between relative z-10">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                    <span className="text-xl font-black">{(row.username?.[0] || "B").toUpperCase()}</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--background)] border border-[var(--border)] shadow-sm">
+                    <span className={cn("w-1.5 h-1.5 rounded-full", row.is_enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-400")} />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">
+                        {row.is_enabled ? "Active" : "Draft"}
+                    </span>
+                </div>
+            </div>
+
+            <div className="space-y-1 relative z-10">
+                <h3 className="font-bold text-lg group-hover:text-primary transition-colors truncate">{row.title || `@${row.username}`}</h3>
+                <p className="text-xs text-[var(--muted-foreground)] font-medium truncate opacity-60 group-hover:opacity-100 transition-opacity">{publicUrl}</p>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] relative z-10">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button 
+                        onClick={() => onAction('toggle')}
+                        className={cn(
+                            "relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300",
+                            row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                        )}
+                    >
+                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-5" : "translate-x-0.5")} />
+                    </button>
+                    <span className="text-[9px] font-black uppercase tracking-[0.15em] text-slate-400">Status</span>
+                </div>
+
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={() => onCopy(row)} className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all border", copied ? "bg-primary text-white border-primary" : "bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 text-slate-500")}>
+                        {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+                    </button>
+                    <ActionDropdown row={row} onAction={onAction} onEdit={onEdit} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function BioLinkRow({ row, onEdit, onCopy, onAction, copied }: any) {
+    const publicUrl = typeof window !== "undefined"
+        ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
+        : `/p?u=${row.username}&id=${row.pageId}`;
+
+    return (
+        <tr 
+            onClick={() => onEdit(row)}
+            className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none cursor-pointer"
+        >
+            <td className="px-8 py-5">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                        <span className="text-lg font-black">{(row.username?.[0] || "B").toUpperCase()}</span>
+                    </div>
+                    <div className="min-w-0">
+                        <p className="font-bold text-base truncate group-hover:text-primary transition-colors leading-tight">{row.title || `@${row.username}`}</p>
+                        <p className="text-[11px] text-[var(--muted-foreground)] font-bold flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <Globe size={10} className="text-primary" /> {publicUrl}
+                        </p>
+                    </div>
+                </div>
+            </td>
+            <td className="px-8 py-5 text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-tighter bg-[var(--background)]">
+                    <div className={cn("w-1.5 h-1.5 rounded-full", row.is_enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-400")} />
+                    {row.is_enabled ? 'Live' : 'Draft'}
+                </div>
+            </td>
+            <td className="px-8 py-5 text-right">
+                <div className="flex items-center justify-end gap-3" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={() => onCopy(row)} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-white dark:bg-white/5 border-[var(--border)] text-slate-500 hover:text-primary hover:border-primary/30")}>
+                        {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+                    </button>
+                    <ActionDropdown row={row} onAction={onAction} onEdit={onEdit} />
+                </div>
+            </td>
+        </tr>
+    );
+}
+
+function ActionDropdown({ row, onAction, onEdit }: any) {
+    const router = useRouter();
+    const { showModal } = useModal();
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className="w-10 h-10 rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-400 hover:text-slate-600">
+                    <MoreVertical size={18} />
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+                <DropdownMenuItem onClick={() => onEdit(row)} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
+                    <Edit3 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Edit Studio</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
+                    <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Analytics</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => showModal("info", "Feature Pending", "QR Code Generation coming soon.")}>
+                    <QrCode size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">QR Code</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => onAction('duplicate')}>
+                    <Copy size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => onAction('reset')}>
+                    <RefreshCw size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Base</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                <DropdownMenuItem onClick={() => onAction('delete')} className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
+                    <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Destroy Page</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+

@@ -6,7 +6,7 @@ import Topbar from "@/components/layout/Topbar";
 import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
     const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies") || pathname?.includes("/comment-manager") || pathname?.includes("/dashboard/posts/studio");
@@ -45,6 +45,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     useEffect(() => {
         // Theme and appearance are handled by ThemeProvider at the root layout level
     }, []);
+
+    // Collapse sidebar on navigation
+    useEffect(() => {
+        setSidebarCollapsed(true);
+        setMobileSidebarOpen(false);
+    }, [pathname]);
 
     return (
         <div

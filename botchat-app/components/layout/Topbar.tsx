@@ -183,22 +183,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
             {/* ── Right cluster ── */}
             <div className="flex items-center gap-1.5 ml-auto flex-shrink-0">
 
-                {/* Live pill */}
-                <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-black mr-1.5"
-                    style={{ background: "rgba(16,185,129,0.08)", color: "#10b981", border: "1px solid rgba(16,185,129,0.2)" }}>
-                    <span className={cn(
-                        "w-1.5 h-1.5 rounded-full bg-emerald-500 transition-all duration-500",
-                        pulse ? "scale-150 opacity-40" : "scale-100 opacity-100"
-                    )} style={{ boxShadow: "0 0 4px #10b981" }} />
-                    All systems live
-                </div>
 
-                {/* Upgrade */}
-                <button className="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[11px] font-black transition-all duration-200 hover:opacity-90 hover:scale-[1.03] active:scale-[0.97]"
-                    style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 2px 14px rgba(108,92,231,0.38)" }}>
-                    <Zap className="w-3.5 h-3.5" />
-                    Upgrade
-                </button>
 
                 {/* Divider */}
                 <div className="w-px h-5 mx-1"

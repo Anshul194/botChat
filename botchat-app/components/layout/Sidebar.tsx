@@ -18,6 +18,12 @@ import {
     Dialog, DialogContent, DialogDescription,
     DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SidebarProps {
     collapsed: boolean;
@@ -64,6 +70,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const [instagramOpen, setInstagramOpen] = useState(false);
     const [bioLinksOpen, setBioLinksOpen] = useState(false);
     const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
     // Centralized navigate helper: sets pending route, fires nav:start, calls router.push,
     // and falls back to a full redirect if router doesn't complete within timeout.
@@ -204,7 +211,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     };
 
     return (
-        <>
+        <TooltipProvider delayDuration={0}>
             <motion.aside
                 initial={false}
                 animate={collapsed ? "collapsed" : "expanded"}
@@ -291,274 +298,58 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         )}
 
                         {/* Facebook Accordion */}
-                        <div>
-                            <motion.button
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => {
-                                    setFacebookOpen(prev => !prev);
-                                        if (!facebookOpen && !isFacebookActive) {
-                                            const href = "/dashboard/facebook";
-                                            if (onClose) onClose();
-                                            navigate(href);
-                                        }
-                                }}
-                                className={cn(
-                                    "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                                    isFacebookActive
-                                        ? "font-medium shadow-sm"
-                                        : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
-                                )}
-                                    style={isFacebookActive ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : { color: "var(--sidebar-foreground)" }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                                        isFacebookActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
-                                    )}>
-                                        <Facebook className={cn(
-                                            "w-4.5 h-4.5",
-                                            isFacebookActive ? "" : "text-neutral-600 dark:text-neutral-400"
-                                        )} style={isFacebookActive ? { color: "var(--nav-active-color)" } : undefined} />
-                                    </div>
-                                    {!collapsed && <span className="font-medium">Facebook</span>}
-                                </div>
-
-                                {!collapsed && (
-                                    <motion.div
-                                        animate={{ rotate: facebookOpen ? 180 : 0 }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                    >
-                                        <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-                                    </motion.div>
-                                )}
-                            </motion.button>
-
-                            {/* Submenu – with smooth accordion animation */}
-                            <AnimatePresence>
-                                {facebookOpen && !collapsed && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
-                                            {[
-                                                { label: "Connect Account", href: "/dashboard/facebook" },
-                                                { label: "Bot Replies", href: "/dashboard/facebook/bot-replies" },
-                                                { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", badge: "Live" },
-                                            ].map(sub => {
-                                                const isActive = sub.href === "/dashboard/facebook" ? currentPath === "/dashboard/facebook" : currentPath.startsWith(sub.href);
-                                                return (
-                                                    <Link
-                                                        key={sub.href}
-                                                        href={sub.href}
-                                                        prefetch={false}
-                                                        onClick={(e) => { e.preventDefault(); const href = sub.href; if (onClose) onClose(); navigate(href); }}
-                                                        className={cn(
-                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                                            isActive
-                                                                ? ""
-                                                                : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                                                        )}
-                                                            style={isActive ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" } : { color: "var(--sidebar-foreground)" }}
-                                                    >
-                                                        <div className="absolute left-0 w-1 h-1 rounded-full transition-colors" style={{ background: "var(--nav-active-border)" }} />
-                                                        <span className="flex-1 truncate">{sub.label}</span>
-                                                        {sub.badge && (
-                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                                {sub.badge}
-                                                            </span>
-                                                        )}
-                                                    </Link>
-                                                );
-                                            })}
-
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                        <NavAccordion
+                            label="Facebook"
+                            icon={Facebook}
+                            isOpen={facebookOpen}
+                            onToggle={() => setFacebookOpen(!facebookOpen)}
+                            collapsed={collapsed}
+                            items={[
+                                { label: "Connect Account", href: "/dashboard/facebook" },
+                                { label: "Bot Replies", href: "/dashboard/facebook/bot-replies" },
+                                { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", badge: "Live" },
+                            ]}
+                            pathname={currentPath}
+                            navigate={navigate}
+                            onClose={onClose}
+                        />
 
                         {/* Instagram Accordion */}
-                        <div>
-                            <motion.button
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => {
-                                    setInstagramOpen(prev => !prev);
-                                    if (!instagramOpen && !isInstagramActive) {
-                                        const href = "/dashboard/instagram";
-                                        if (onClose) onClose();
-                                        navigate(href);
-                                    }
-                                }}
-                                className={cn(
-                                    "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                                    isInstagramActive
-                                        ? "font-medium shadow-sm"
-                                        : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
-                                )}
-                                    style={isInstagramActive ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : { color: "var(--sidebar-foreground)" }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                                        isInstagramActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
-                                    )}>
-                                        <Instagram className={cn(
-                                            "w-4.5 h-4.5",
-                                            isInstagramActive ? "" : "text-neutral-600 dark:text-neutral-400"
-                                        )} style={isInstagramActive ? { color: "var(--nav-active-color)" } : undefined} />
-                                    </div>
-                                    {!collapsed && <span className="font-medium">Instagram</span>}
-                                </div>
-
-                                {!collapsed && (
-                                    <motion.div
-                                        animate={{ rotate: instagramOpen ? 180 : 0 }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                    >
-                                        <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-                                    </motion.div>
-                                )}
-                            </motion.button>
-
-                            <AnimatePresence>
-                                {instagramOpen && !collapsed && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
-                                            {[
-                                                { label: "Connect Account", href: "/dashboard/instagram" },
-                                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
-                                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
-                                            ].map(sub => {
-                                                const isActive = sub.href === "/dashboard/instagram" ? currentPath === "/dashboard/instagram" : currentPath.startsWith(sub.href);
-                                                return (
-                                                    <Link
-                                                        key={sub.href}
-                                                        href={sub.href}
-                                                        prefetch={false}
-                                                        onClick={(e) => { e.preventDefault(); const href = sub.href; if (onClose) onClose(); navigate(href); }}
-                                                        className={cn(
-                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                                            isActive
-                                                                ? ""
-                                                                : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                                                        )}
-                                                            style={isActive ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" } : { color: "var(--sidebar-foreground)" }}
-                                                    >
-                                                        <div className="absolute left-0 w-1 h-1 rounded-full transition-colors" style={{ background: "var(--nav-active-border)" }} />
-                                                        <span className="flex-1 truncate">{sub.label}</span>
-                                                        {sub.badge && (
-                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                                {sub.badge}
-                                                            </span>
-                                                        )}
-                                                    </Link>
-                                                );
-                                            })}
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                        <NavAccordion
+                            label="Instagram"
+                            icon={Instagram}
+                            isOpen={instagramOpen}
+                            onToggle={() => setInstagramOpen(!instagramOpen)}
+                            collapsed={collapsed}
+                            items={[
+                                { label: "Connect Account", href: "/dashboard/instagram" },
+                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
+                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
+                            ]}
+                            pathname={currentPath}
+                            navigate={navigate}
+                            onClose={onClose}
+                        />
 
                         {/* Bio Links Accordion */}
-                        <div>
-                            <motion.button
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => {
-                                    setBioLinksOpen(prev => !prev);
-                                    if (!bioLinksOpen && !isBioLinksActive) {
-                                        const href = "/dashboard/instagram/bio-links";
-                                        if (onClose) onClose();
-                                        navigate(href);
-                                    }
-                                }}
-                                className={cn(
-                                    "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                                    isBioLinksActive
-                                        ? "font-medium shadow-sm"
-                                        : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
-                                )}
-                                style={isBioLinksActive ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : { color: "var(--sidebar-foreground)" }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                                        isBioLinksActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
-                                    )}>
-                                        <Link2 className={cn(
-                                            "w-4.5 h-4.5",
-                                            isBioLinksActive ? "" : "text-neutral-600 dark:text-neutral-400"
-                                        )} style={isBioLinksActive ? { color: "var(--nav-active-color)" } : undefined} />
-                                    </div>
-                                    {!collapsed && <span className="font-medium">Bio Links</span>}
-                                </div>
-
-                                {!collapsed && (
-                                    <motion.div
-                                        animate={{ rotate: bioLinksOpen ? 180 : 0 }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                    >
-                                        <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
-                                    </motion.div>
-                                )}
-                            </motion.button>
-
-                            <AnimatePresence>
-                                {bioLinksOpen && !collapsed && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
-                                            {[
-                                                { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
-                                                 { label: "Shortened Links", href: "/dashboard/shortened-links", badge: "Premium" },
-                                                 { label: "Analytics", href: "/dashboard/instagram/bio-links/analytics", badge: "" },
-
-                                            ].map(sub => {
-                                                const isActive = currentPath.startsWith(sub.href);
-                                                return (
-                                                    <Link
-                                                        key={sub.href}
-                                                        href={sub.href}
-                                                        prefetch={false}
-                                                        onClick={(e) => { e.preventDefault(); const href = sub.href; if (onClose) onClose(); navigate(href); }}
-                                                        className={cn(
-                                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                                            isActive
-                                                                ? ""
-                                                                : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                                                        )}
-                                                        style={isActive ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" } : { color: "var(--sidebar-foreground)" }}
-                                                    >
-                                                        <div className="absolute left-0 w-1 h-1 rounded-full transition-colors" style={{ background: "var(--nav-active-border)" }} />
-                                                        <span className="flex-1 truncate">{sub.label}</span>
-                                                        {sub.badge && (
-                                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                                {sub.badge}
-                                                            </span>
-                                                        )}
-                                                    </Link>
-                                                );
-                                            })}
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                        <NavAccordion
+                            label="Bio Links"
+                            icon={Link2}
+                            isOpen={bioLinksOpen}
+                            onToggle={() => setBioLinksOpen(!bioLinksOpen)}
+                            collapsed={collapsed}
+                            items={[
+                                { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
+                                { label: "Shortened Links", href: "/dashboard/shortened-links", badge: "Premium" },
+                                { label: "Vcard Links", href: "/dashboard/vcard-links", badge: "Premium" },
+                                { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", badge: "" },
+                                { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", badge: "" },
+                                { label: "Analytics", href: "/dashboard/instagram/bio-links/analytics", badge: "" },
+                            ]}
+                            pathname={currentPath}
+                            navigate={navigate}
+                            onClose={onClose}
+                        />
                     </motion.div>
 
                     {/* GROWTH */}
@@ -669,7 +460,173 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </>
+        </TooltipProvider>
+    );
+}
+
+// Reusable Accordion with hover support for collapsed state
+function NavAccordion({
+    label,
+    icon: Icon,
+    isOpen,
+    onToggle,
+    collapsed,
+    items,
+    pathname,
+    navigate,
+    onClose
+}: {
+    label: string;
+    icon: any;
+    isOpen: boolean;
+    onToggle: () => void;
+    collapsed: boolean;
+    items: { label: string; href: string; badge?: string }[];
+    pathname: string;
+    navigate: (href: string) => void;
+    onClose?: () => void;
+}) {
+    const isActive = items.some(item => 
+        item.href === "/dashboard/facebook" || item.href === "/dashboard/instagram" 
+            ? pathname === item.href 
+            : pathname.startsWith(item.href)
+    );
+
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <div 
+            className="relative"
+            onMouseEnter={() => collapsed && setIsHovered(true)}
+            onMouseLeave={() => collapsed && setIsHovered(false)}
+        >
+            <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                    if (collapsed) {
+                        const firstHref = items[0].href;
+                        if (onClose) onClose();
+                        navigate(firstHref);
+                    } else {
+                        onToggle();
+                    }
+                }}
+                className={cn(
+                    "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
+                    isActive
+                        ? "font-medium shadow-sm"
+                        : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
+                )}
+                style={isActive ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : { color: "var(--sidebar-foreground)" }}
+            >
+                <div className="flex items-center gap-3">
+                    <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                        isActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
+                    )}>
+                        <Icon className={cn(
+                            "w-4.5 h-4.5",
+                            isActive ? "" : "text-neutral-600 dark:text-neutral-400"
+                        )} style={isActive ? { color: "var(--nav-active-color)" } : undefined} />
+                    </div>
+                    {!collapsed && <span className="font-medium">{label}</span>}
+                </div>
+
+                {!collapsed && (
+                    <motion.div
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    >
+                        <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+                    </motion.div>
+                )}
+            </motion.button>
+
+            {/* Normal Submenu (Expanded) */}
+            <AnimatePresence>
+                {isOpen && !collapsed && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                    >
+                        <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
+                            {items.map(sub => {
+                                const isSubActive = sub.href === "/dashboard/facebook" || sub.href === "/dashboard/instagram" 
+                                    ? pathname === sub.href 
+                                    : pathname.startsWith(sub.href);
+                                return (
+                                    <Link
+                                        key={sub.href}
+                                        href={sub.href}
+                                        prefetch={false}
+                                        onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(sub.href); }}
+                                        className={cn(
+                                            "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
+                                            isSubActive ? "" : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                                        )}
+                                        style={isSubActive ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" } : { color: "var(--sidebar-foreground)" }}
+                                    >
+                                        <div className="absolute left-0 w-1 h-1 rounded-full transition-colors" style={{ background: "var(--nav-active-border)" }} />
+                                        <span className="flex-1 truncate">{sub.label}</span>
+                                        {sub.badge && (
+                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                {sub.badge}
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Hover Floating Panel (Collapsed) - Now using Tooltip Portal to prevent clipping */}
+            <AnimatePresence>
+                {collapsed && (
+                    <Tooltip open={isHovered} onOpenChange={setIsHovered}>
+                        <TooltipTrigger asChild>
+                            <div className="absolute inset-0 z-10" />
+                        </TooltipTrigger>
+                        <TooltipContent 
+                            side="right" 
+                            sideOffset={10} 
+                            className="p-2 min-w-[200px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden"
+                        >
+                            <div className="px-3 py-2 mb-1 border-b border-neutral-100 dark:border-neutral-800">
+                                <span className="text-xs font-black uppercase tracking-widest text-neutral-400">{label}</span>
+                            </div>
+                            <div className="space-y-0.5">
+                                {items.map(sub => {
+                                    const isSubActive = pathname.startsWith(sub.href);
+                                    return (
+                                        <button
+                                            key={sub.href}
+                                            onClick={() => { if (onClose) onClose(); navigate(sub.href); setIsHovered(false); }}
+                                            className={cn(
+                                                "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left",
+                                                isSubActive ? "bg-neutral-100 dark:bg-neutral-800" : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                                            )}
+                                            style={{ color: isSubActive ? "var(--nav-active-color)" : "var(--sidebar-foreground)" }}
+                                        >
+                                            <span className="truncate">{sub.label}</span>
+                                            {sub.badge && (
+                                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                    {sub.badge}
+                                                </span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </TooltipContent>
+                    </Tooltip>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }
 
@@ -727,7 +684,7 @@ function NavItem({
                 </div>
 
                 <AnimatePresence mode="wait">
-                    {!collapsed && (
+                    {!collapsed ? (
                         <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -752,6 +709,15 @@ function NavItem({
                                 </motion.span>
                             )}
                         </motion.div>
+                    ) : (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className="absolute inset-0 z-10" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" sideOffset={10} className="bg-neutral-900 text-white border-none font-bold">
+                                {item.label}
+                            </TooltipContent>
+                        </Tooltip>
                     )}
                 </AnimatePresence>
             </Link>
