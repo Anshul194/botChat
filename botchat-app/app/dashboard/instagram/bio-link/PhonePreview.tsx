@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Search, Clock, MoreHorizontal, Globe, Mail, Smartphone, SmartphoneNfc, Camera, Sparkles, Youtube, Video, Grid, Play, DollarSign, Music, MapPin, ShieldAlert, User, ArrowUpRight, Rss, Link as LinkIcon } from "lucide-react";
+import { Search, Clock, MoreHorizontal, Globe, Mail, Phone, MessageCircle, Smartphone, SmartphoneNfc, Camera, Sparkles, Youtube, Video, Grid, Play, DollarSign, Music, MapPin, ShieldAlert, User, ArrowUpRight, Rss, Link as LinkIcon } from "lucide-react";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles, isColorLight, isBgLight } from "./TemplateSystem";
 import { getUiTypeFromBlock, isMediaType, BLOCK_ICONS } from "./builder-utils";
 import { StandardLayout } from "./layouts/StandardLayout";
@@ -136,10 +136,10 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
         else if (settings.border_radius === "round") baseStyle.borderRadius = "9999px";
 
         const buttonStyle = { ...baseStyle, textAlign: alignment as any };
-        const displayLabel = hideLabel ? null : (settings.title || settings.text || settings.name);
+        const displayLabel = hideLabel ? null : (settings.name || settings.title || settings.text || settings.headline || settings.brand_name);
 
         return (
-            <motion.div key={block.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 * gidx }} className={isTiled ? "h-full" : "w-full"}>
+            <motion.div key={block.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 * gidx }} className={isTiled ? "h-full" : "w-full min-w-0"}>
                 {type === "link" && (
                     <a href={block.location_url} className={`w-full group transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex ${isTiled ? 'flex-col items-start min-h-[120px] justify-between p-5' : 'items-center justify-center min-h-[64px] py-4 px-8 shadow-md'}`} style={{ ...buttonStyle, borderRadius: isTiled && buttonStyle.borderRadius === '9999px' ? '32px' : buttonStyle.borderRadius }}>
                         {settings.icon ? <i className={`${settings.icon} ${isTiled ? 'text-2xl mb-2 opacity-100' : 'absolute left-8 text-xl opacity-80'} group-hover:scale-110 transition-transform`}></i> : (isTiled && <Globe size={24} className="mb-2 opacity-40" />)}
@@ -150,7 +150,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                 {type === "heading" && (
                     <div className={cn("pt-8 pb-3", profile.theme === 'modern_fisher' && "text-center")} style={{ textAlign: alignment as any }}>
-                        <h2 className={cn("text-[24px] font-black tracking-tighter leading-tight", profile.theme === 'modern_fisher' && "text-[32px] first-of-type:text-[#FF6B00]")} style={{ color: profile.theme === 'modern_fisher' ? undefined : effectiveTextColor }}>
+                        <h2 className={cn("text-[24px] font-black tracking-tighter leading-tight break-words", profile.theme === 'modern_fisher' && "text-[32px] first-of-type:text-[#FF6B00]")} style={{ color: profile.theme === 'modern_fisher' ? undefined : effectiveTextColor }}>
                             {displayLabel || "Untitled Section"}
                         </h2>
                     </div>
@@ -158,7 +158,10 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                 {type === "paragraph" && (
                     <div className={cn("pb-2", profile.theme === 'modern_fisher' && "text-center")} style={{ textAlign: alignment as any }}>
-                        <p className={cn("text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line", profile.theme === 'modern_fisher' && "text-[16px] opacity-80")} style={{ color: effectiveTextColor }}>
+                        <p
+                            className={cn("text-[15px] leading-relaxed opacity-70 font-medium whitespace-pre-line break-words", profile.theme === 'modern_fisher' && "text-[16px] opacity-80")}
+                            style={{ color: effectiveTextColor, overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+                        >
                             {settings.description || settings.text}
                         </p>
                     </div>
@@ -300,13 +303,383 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </div>
                 )}
 
-                {!["link", "heading", "paragraph", "socials", "avatar", "email_collector", "phone_collector", "contact_form", "youtube", "spotify", "paypal", "newsletter", "vcard", "divider", "business_hours", "rss"].includes(type) && (
-                    <a href={block.location_url || "#"} className="w-full group transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex items-center justify-center min-h-[64px] py-4 px-8 shadow-md" style={buttonStyle}>
-                         <div className="absolute left-8 opacity-80 group-hover:scale-110 transition-transform">
-                            {BLOCK_ICONS[type] || <LinkIcon size={18} />}
+                {/* ── HERO SECTION (Edge-to-Edge Website Style) ── */}
+                {(type === "hero_section" || type === "hero_aesthetic_section") && (
+                    <div className="relative w-[calc(100%+3rem)] -mx-6 mt-0 mb-8 overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.1)] bg-black group min-h-[400px] flex items-end">
+                        {settings.image ? (
+                            <img src={settings.image} className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                        ) : (
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 to-black" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                        
+                        <div className="relative z-10 p-8 w-full text-left">
+                            {(settings.brand_name || settings.headline) && (
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 mb-3">{settings.brand_name || settings.headline}</p>
+                            )}
+                            <h2 className="text-[36px] font-black leading-[1.05] tracking-tight text-white mb-4">
+                                {settings.title || "Elevate Your Vision"}
+                            </h2>
+                            {(settings.subtitle || settings.subheadline || settings.description) && (
+                                <p className="text-[15px] text-white/80 leading-relaxed max-w-[90%] mb-6">
+                                    {settings.subtitle || settings.subheadline || settings.description}
+                                </p>
+                            )}
+                            {settings.cta_text && (
+                                <button className="px-8 py-3.5 rounded-full bg-white text-black text-[13px] font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform">
+                                    {settings.cta_text}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── STATS (Clean Minimal) ── */}
+                {(type === "stats_section" || type === "stats_minimal_section") && (
+                    <div className="w-full mt-4 mb-8 py-6 border-y border-white/10">
+                        {(settings.items || []).length > 0 ? (
+                            <div className="grid grid-cols-3 gap-4 divide-x divide-white/10">
+                                {(settings.items || []).slice(0, 3).map((s: any, i: number) => (
+                                    <div key={i} className="flex flex-col items-center text-center px-2">
+                                        <span className="text-[28px] font-black tracking-tight" style={{ color: effectiveTextColor }}>{s.value || "—"}</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1" style={{ color: effectiveTextColor }}>{s.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-8 opacity-40">
+                                {["200+", "50K", "4.9★"].map((v, i) => (
+                                    <div key={i} className="text-center">
+                                        <p className="text-[28px] font-black tracking-tight">{v}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── BRANDS (Clean Slider) ── */}
+                {type === "brands_section" && (
+                    <div className="w-full mt-4 mb-8 py-4">
+                        <p className="text-[11px] font-bold uppercase tracking-widest opacity-40 text-center mb-6" style={{ color: effectiveTextColor }}>Trusted By</p>
+                        {(settings.logos || []).length > 0 ? (
+                            <div className="flex flex-wrap items-center justify-center gap-8">
+                                {(settings.logos || []).slice(0, 6).map((l: any, i: number) => (
+                                    <img key={i} src={l.image} className="h-6 object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all" />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-8 opacity-20">
+                                {[40, 60, 45].map((w, i) => <div key={i} className="h-4 rounded-full bg-current" style={{ width: w, color: effectiveTextColor }} />)}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── PORTFOLIO (Clean Grid) ── */}
+                {(type === "portfolio_section" || type === "portfolio_minimal_section") && (
+                    <div className="w-full mt-4 mb-8 space-y-4">
+                        <h3 className="text-[22px] font-black tracking-tight px-1" style={{ color: effectiveTextColor }}>{settings.title || "Selected Works"}</h3>
+                        {(settings.items || []).length > 0 ? (
+                            <div className="grid grid-cols-2 gap-3">
+                                {(settings.items || []).slice(0, 4).map((item: any, i: number) => (
+                                    <div key={i} className={`relative rounded-2xl overflow-hidden bg-black/5 group ${i === 0 ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`}>
+                                        {item.image && <img src={item.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-4">
+                                            <p className="text-[14px] font-bold text-white tracking-tight">{item.title}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-3 opacity-20">
+                                {[0, 1, 2].map(i => <div key={i} className={`rounded-2xl bg-current ${i === 0 ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}`} style={{ color: effectiveTextColor }} />)}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── SERVICES (Minimal List) ── */}
+                {type === "services_section" && (
+                    <div className="w-full mt-4 mb-8 space-y-4">
+                        {(settings.items || []).length > 0 ? (settings.items || []).slice(0, 3).map((s: any, i: number) => (
+                            <div key={i} className="flex items-start gap-4 py-3 border-b border-white/5 last:border-0 group cursor-pointer">
+                                {s.image ? (
+                                    <img src={s.image} className="w-16 h-16 rounded-2xl object-cover shrink-0" />
+                                ) : (
+                                    <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center shrink-0"><Sparkles size={20} className="opacity-50" /></div>
+                                )}
+                                <div className="flex-1 min-w-0 pt-1">
+                                    <p className="text-[16px] font-bold tracking-tight mb-1" style={{ color: effectiveTextColor }}>{s.title}</p>
+                                    <p className="text-[13px] opacity-60 leading-relaxed">{s.description}</p>
+                                </div>
+                            </div>
+                        )) : (
+                            <div className="space-y-4 opacity-20">
+                                {[0, 1].map(i => <div key={i} className="h-16 rounded-2xl bg-current" style={{ color: effectiveTextColor }} />)}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── TESTIMONIALS (Clean Typography) ── */}
+                {(type === "testimonials_section" || type === "testimonial_highlight_section") && (
+                    <div className="w-full mt-6 mb-8 px-2 flex flex-col items-center text-center">
+                        <div className="w-10 h-10 mb-4 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center">
+                            <span className="text-xl font-serif opacity-50" style={{ color: effectiveTextColor }}>"</span>
+                        </div>
+                        {(settings.items || []).length > 0 ? (settings.items || []).slice(0, 1).map((t: any, i: number) => (
+                            <div key={i}>
+                                <p className="text-[18px] font-medium leading-relaxed opacity-90 break-words mb-6" style={{ color: effectiveTextColor }}>{t.description || t.quote}</p>
+                                {t.author_image && <img src={t.author_image} className="w-10 h-10 rounded-full mx-auto mb-2 object-cover" />}
+                                <p className="text-[12px] font-bold tracking-widest uppercase" style={{ color: effectiveTextColor }}>{t.author || t.author_name}</p>
+                            </div>
+                        )) : (
+                            <div>
+                                <p className="text-[18px] font-medium leading-relaxed opacity-40">The most incredible experience.</p>
+                                {settings.author_name && <p className="text-[12px] font-bold tracking-widest uppercase opacity-40 mt-4">— {settings.author_name}</p>}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── FAQ (Minimal Accordion) ── */}
+                {(type === "faq_section" || type === "faq_cards_section") && (
+                    <div className="w-full mt-4 mb-8 space-y-4">
+                        <h3 className="text-[22px] font-black tracking-tight mb-2" style={{ color: effectiveTextColor }}>{settings.title || "FAQ"}</h3>
+                        <div className="divide-y divide-black/5 dark:divide-white/5 border-y border-black/5 dark:border-white/5">
+                            {(settings.items || []).length > 0 ? (settings.items || []).slice(0, 3).map((f: any, i: number) => (
+                                <div key={i} className="py-4">
+                                    <p className="text-[15px] font-bold tracking-tight mb-2" style={{ color: effectiveTextColor }}>{f.question}</p>
+                                    {f.answer && <p className="text-[13px] opacity-60 leading-relaxed">{f.answer}</p>}
+                                </div>
+                            )) : (
+                                <div className="space-y-3 opacity-20 py-4">{[0,1].map(i => <div key={i} className="h-6 w-3/4 rounded bg-current" style={{ color: effectiveTextColor }} />)}</div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── CTA SECTION (Solid Block) ── */}
+                {(type === "cta_section" || type === "cta_fullscreen_section") && (
+                    <div className="w-full mt-6 mb-8 p-8 rounded-3xl bg-black dark:bg-white text-center flex flex-col items-center">
+                        <h3 className="text-[26px] font-black leading-tight tracking-tight text-white dark:text-black mb-3">{settings.title || "Ready to get started?"}</h3>
+                        {settings.subtitle && <p className="text-[14px] text-white/70 dark:text-black/70 mb-8 max-w-[80%]">{settings.subtitle}</p>}
+                        {settings.button_text && (
+                            <button className="px-8 py-3.5 rounded-full bg-white dark:bg-black text-black dark:text-white text-[13px] font-bold hover:scale-105 transition-transform w-full max-w-[200px]">
+                                {settings.button_text}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* ── SOCIAL MEDIA SECTION (Clean Row) ── */}
+                {type === "social_medias_section" && (
+                    <div className="w-full mt-4 mb-8 py-4">
+                        <div className="flex flex-wrap items-center justify-center gap-5">
+                            {(settings.items || []).slice(0, 6).map((s: any, i: number) => (
+                                <a key={i} href={s.link} className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                                    <i className={`${s.icon} text-xl`} style={{ color: effectiveTextColor }} />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── HEADER PROFILE SECTION (Edge-to-Edge) ── */}
+                {type === "header_profile_section" && (
+                    <div className="relative w-[calc(100%+3rem)] -mx-6 -mt-6 mb-8 overflow-hidden rounded-b-[40px] bg-black/5 dark:bg-white/5 pb-8">
+                        {settings.cover_image ? (
+                            <img src={settings.cover_image} className="w-full h-[160px] object-cover" />
+                        ) : (
+                            <div className="w-full h-[160px] bg-gradient-to-br from-indigo-500/20 to-purple-500/20" />
+                        )}
+                        <div className="flex flex-col items-center text-center -mt-12 relative z-10 px-6">
+                            {settings.avatar ? (
+                                <img src={settings.avatar} className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-[#0a0a0a] shadow-lg mb-4" />
+                            ) : (
+                                <div className="w-24 h-24 rounded-full bg-white border-4 border-slate-100 flex items-center justify-center mb-4"><User size={32} className="opacity-50" /></div>
+                            )}
+                            <p className="text-[24px] font-black tracking-tight mb-2" style={{ color: effectiveTextColor }}>{settings.name || "Profile Name"}</p>
+                            {settings.bio && <p className="text-[14px] opacity-70 leading-relaxed max-w-[90%]">{settings.bio}</p>}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── HERO PRODUCT SECTION (Clean Showcase) ── */}
+                {type === "hero_product_section" && (
+                    <div className="w-full mt-4 mb-8 group cursor-pointer">
+                        <div className="relative aspect-square w-full rounded-3xl overflow-hidden mb-5 bg-black/5">
+                            {settings.product_image && <img src={settings.product_image} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />}
+                            <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-white text-black text-[10px] font-bold uppercase tracking-widest shadow-sm">Featured</div>
+                        </div>
+                        <div className="px-2">
+                            <div className="flex items-start justify-between gap-4 mb-2">
+                                <h3 className="text-[20px] font-black tracking-tight leading-tight" style={{ color: effectiveTextColor }}>{settings.title || "Premium Product"}</h3>
+                                {settings.price && <span className="text-[20px] font-black shrink-0" style={{ color: effectiveTextColor }}>{settings.price}</span>}
+                            </div>
+                            {settings.subtitle && <p className="text-[14px] opacity-60 mb-5">{settings.subtitle}</p>}
+                            {settings.cta_text && (
+                                <button className="w-full py-3.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-[13px] font-bold">
+                                    {settings.cta_text}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── FEATURED PRODUCT (List Item) ── */}
+                {type === "featured_product_section" && (
+                    <div className="w-full mt-4 mb-8 flex gap-5 items-center group cursor-pointer">
+                        {settings.image ? (
+                            <img src={settings.image} className="w-24 h-24 rounded-2xl object-cover shadow-sm bg-black/5" />
+                        ) : (
+                            <div className="w-24 h-24 rounded-2xl bg-black/5 dark:bg-white/5" />
+                        )}
+                        <div className="flex-1 min-w-0 pr-2">
+                            <p className="text-[16px] font-bold tracking-tight mb-1 truncate" style={{ color: effectiveTextColor }}>{settings.name || "Product"}</p>
+                            <p className="text-[13px] opacity-50 truncate mb-2">{settings.description}</p>
+                            {settings.price && <p className="text-[16px] font-black" style={{ color: effectiveTextColor }}>{settings.price}</p>}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── PRODUCT LIST (Clean List) ── */}
+                {type === "product_list_section" && (
+                    <div className="w-full mt-4 mb-8 space-y-4">
+                        <h3 className="text-[22px] font-black tracking-tight mb-4 px-1" style={{ color: effectiveTextColor }}>Shop</h3>
+                        <div className="divide-y divide-black/5 dark:divide-white/5 border-y border-black/5 dark:border-white/5">
+                            {(settings.items || []).length > 0 ? (settings.items || []).slice(0, 3).map((p: any, i: number) => (
+                                <div key={i} className="flex gap-4 py-4 items-center group cursor-pointer">
+                                    {p.image ? (
+                                        <img src={p.image} className="w-16 h-16 rounded-xl object-cover shrink-0 bg-black/5" />
+                                    ) : (
+                                        <div className="w-16 h-16 rounded-xl bg-black/5 shrink-0" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[15px] font-bold tracking-tight truncate" style={{ color: effectiveTextColor }}>{p.name}</p>
+                                    </div>
+                                    {p.price && <p className="text-[15px] font-black pl-2" style={{ color: effectiveTextColor }}>{p.price}</p>}
+                                </div>
+                            )) : (
+                                <div className="h-20 opacity-20 py-4 flex items-center">Empty List</div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── TRUST BADGES (Minimal Text) ── */}
+                {type === "trust_badges_section" && (
+                    <div className="w-full mt-4 mb-8 py-4 border-y border-black/5 dark:border-white/5">
+                        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                            {(settings.items || []).map((b: any, i: number) => (
+                                <div key={i} className="flex items-center gap-2">
+                                    <i className={`${b.icon} text-[14px]`} style={{ color: effectiveTextColor }} />
+                                    <span className="text-[11px] font-bold uppercase tracking-widest opacity-70" style={{ color: effectiveTextColor }}>{b.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── URGENCY OFFER (Clean Banner) ── */}
+                {type === "urgency_offer_section" && (
+                    <div className="w-[calc(100%+3rem)] -mx-6 mt-4 mb-8 p-8 bg-red-500 text-white text-center">
+                        <div className="inline-flex items-center gap-2 mb-4 opacity-80">
+                            <Clock size={14} className="animate-pulse" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Limited Time Offer</p>
+                        </div>
+                        <h3 className="text-[24px] font-black tracking-tight leading-tight mb-3">{settings.title || "Special Offer"}</h3>
+                        {settings.description && <p className="text-[14px] opacity-90 leading-relaxed max-w-[90%] mx-auto mb-6">{settings.description}</p>}
+                        {settings.button_text && (
+                            <button className="px-8 py-3.5 rounded-full bg-white text-red-500 text-[12px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-transform">
+                                {settings.button_text}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* ── CONTACT SECTION (Clean Links) ── */}
+                {type === "contact_section" && (
+                    <div className="w-full mt-4 mb-8 space-y-2">
+                        {settings.email && (
+                            <a href={`mailto:${settings.email}`} className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                                <Mail size={18} style={{ color: effectiveTextColor }} />
+                                <span className="text-[15px] font-bold truncate" style={{ color: effectiveTextColor }}>{settings.email}</span>
+                            </a>
+                        )}
+                        {settings.phone && (
+                            <a href={`tel:${settings.phone}`} className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                                <Phone size={18} style={{ color: effectiveTextColor }} />
+                                <span className="text-[15px] font-bold truncate" style={{ color: effectiveTextColor }}>{settings.phone}</span>
+                            </a>
+                        )}
+                        {settings.whatsapp && (
+                            <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors">
+                                <MessageCircle size={18} className="text-[#25D366]" />
+                                <span className="text-[15px] font-bold truncate text-[#25D366]">{settings.whatsapp}</span>
+                            </a>
+                        )}
+                    </div>
+                )}
+
+                {/* ── IMPACT SECTION (Checklist) ── */}
+                {type === "impact_section" && (
+                    <div className="w-full mt-3 mb-4 p-7 rounded-[32px] bg-white/[0.03] backdrop-blur-xl border border-white/10 space-y-5">
+                        <h3 className="text-[20px] font-black tracking-tight text-white leading-tight">{settings.title || "Our Impact"}</h3>
+                        {settings.description && <p className="text-[13px] text-white/50 leading-relaxed">{settings.description}</p>}
+                        <div className="space-y-3 pt-2">
+                            {(settings.points || []).slice(0, 3).map((pt: any, i: number) => (
+                                <div key={i} className="flex items-start gap-3">
+                                    <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5 border border-white/20">
+                                        <div className="w-2 h-2 rounded-full bg-white/80" />
+                                    </div>
+                                    <p className="text-[14px] font-medium text-white/80 leading-relaxed">{pt}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── PRICING CARDS (Premium Tiers) ── */}
+                {type === "pricing_cards_section" && (
+                    <div className="w-full mt-3 mb-4 space-y-4">
+                        {settings.title && <p className="text-[18px] font-black text-center text-white tracking-tight">{settings.title}</p>}
+                        <div className="flex gap-4 overflow-x-auto pb-2 snap-x no-scrollbar">
+                            {(settings.plans || []).slice(0, 2).map((plan: any, i: number) => (
+                                <div key={i} className="w-[85%] shrink-0 snap-center p-6 rounded-[32px] bg-gradient-to-br from-white/[0.05] to-white/[0.01] border border-white/10 backdrop-blur-xl flex flex-col justify-between min-h-[160px]">
+                                    <div>
+                                        <p className="text-[12px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">{plan.name}</p>
+                                        <p className="text-[28px] font-black text-white tracking-tighter">{plan.price}</p>
+                                    </div>
+                                    {plan.description && <p className="text-[12px] text-white/60 leading-relaxed mt-4">{plan.description}</p>}
+                                </div>
+                            ))}
+                            {(settings.plans || []).length === 0 && (
+                                <div className="w-full h-40 rounded-[32px] bg-white/5 border border-white/10 opacity-20" />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── GENERIC CATCH-ALL for remaining block types (Hyper Trendy Links) ── */}
+                {!["link", "heading", "paragraph", "socials", "avatar", "email_collector", "phone_collector", "contact_form", "contact_collector", "youtube", "spotify", "paypal", "newsletter", "vcard", "divider", "business_hours", "rss", "soundcloud", "vimeo", "twitch", "tiktok_video",
+                    "hero_section", "hero_aesthetic_section", "stats_section", "stats_minimal_section", "brands_section", "portfolio_section", "portfolio_minimal_section", "services_section", "testimonials_section", "testimonial_highlight_section", "faq_section", "faq_cards_section",
+                    "cta_section", "cta_fullscreen_section", "social_medias_section", "header_profile_section", "hero_product_section", "featured_product_section", "product_list_section", "trust_badges_section", "urgency_offer_section", "contact_section", "impact_section", "pricing_cards_section"
+                ].includes(type) && (
+                    <a href={block.location_url || "#"} className="relative w-full group overflow-hidden transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex items-center justify-center min-h-[64px] py-4 px-8 mt-3 mb-3 rounded-full shadow-sm border border-black/5 dark:border-white/5" style={{ ...buttonStyle, background: buttonStyle.background ? buttonStyle.background : 'rgba(0,0,0,0.05)' }}>
+                         
+                         <div className="absolute left-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center opacity-80 group-hover:scale-110 transition-all duration-300">
+                            {BLOCK_ICONS[type] || <LinkIcon size={16} />}
                          </div>
-                         <span className="text-[16px] font-bold truncate max-w-[80%]">{displayLabel || "Open Module"}</span>
-                         <MoreHorizontal size={18} className="absolute right-8 opacity-20 group-hover:opacity-100 transition-opacity" />
+                         
+                         <span className="text-[15px] font-bold tracking-tight truncate max-w-[70%] z-10" style={{ color: effectiveTextColor }}>
+                            {displayLabel || type.replace(/_/g, " ")}
+                         </span>
+                         
+                         <div className="absolute right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <ArrowUpRight size={16} style={{ color: effectiveTextColor }} />
+                         </div>
                     </a>
                 )}
             </motion.div>

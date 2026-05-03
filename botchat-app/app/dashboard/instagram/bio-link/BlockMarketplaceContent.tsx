@@ -116,8 +116,8 @@ export default function BlockMarketplaceContent({
     return (
         <div className="flex flex-col h-full bg-white dark:bg-[#020617]">
             {/* Professional Header & Search */}
-            <div className="px-8 pt-8 pb-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#020617] sticky top-0 z-20">
-                <div className="relative mb-6">
+            <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#020617] sticky top-0 z-20">
+                <div className="relative mb-3">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input
                         type="text"
@@ -161,14 +161,14 @@ export default function BlockMarketplaceContent({
             </div>
 
             {/* Dense Professional Grid */}
-            <div className="p-8 space-y-10">
+            <div className="p-4 space-y-6">
                 {filteredCategories.map(([category, data]) => (
                     <div key={category} className="space-y-4">
                         <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-400 pl-1">
                             {category}
                         </h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-2">
                             {data.blocks.map((item) => {
                                 const Icon = getLucideIcon(item.id, category);
                                 const itemColor = item.color || data.info.color || "#64748b";

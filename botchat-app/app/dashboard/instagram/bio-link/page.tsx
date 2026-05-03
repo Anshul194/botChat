@@ -296,11 +296,30 @@ export default function BioLinkBuilder() {
 
     const previewTabs = React.useMemo(() => {
         if (!editingBlock) return tabs;
-        return tabs.map(tab => ({
+
+        // Always merge items[0] into settings so the preview reflects the latest typed values
+        const liveSettings = { ...(editingBlock.settings || {}), ...(editingBlock.items?.[0] || {}) };
+        delete (liveSettings as any).builder_type;
+        const liveBlock = { ...editingBlock, settings: liveSettings };
+
+        if (editingBlock._isNew) {
+            // Append a preview ghost of the new block at the bottom of the first section
+            return tabs.map((tab: any, tIdx: number) => ({
+                ...tab,
+                sections: tab.sections?.map((sec: any, sIdx: number) => ({
+                    ...sec,
+                    blocks: tIdx === 0 && sIdx === 0
+                        ? [...(sec.blocks || []), { ...liveBlock, id: '__preview_new__', is_active: 1 }]
+                        : sec.blocks
+                }))
+            }));
+        }
+
+        return tabs.map((tab: any) => ({
             ...tab,
             sections: tab.sections?.map((sec: any) => ({
                 ...sec,
-                blocks: sec.blocks?.map((b: any) => (b.id === editingBlock.id) ? editingBlock : b)
+                blocks: sec.blocks?.map((b: any) => b.id === editingBlock.id ? liveBlock : b)
             }))
         }));
     }, [tabs, editingBlock]);
@@ -896,8 +915,11 @@ export default function BioLinkBuilder() {
         if (!editingBlock) return;
         const items = [...(editingBlock.items || [])];
         items[idx] = { ...items[idx], [field]: value };
-        setEditingBlock({ ...editingBlock, items });
-        syncBlockItemsLocally(editingBlock.id, items);
+        // Patch settings too so previewTabs reflects the change in real-time.
+        // Do NOT call syncBlockItemsLocally here — that triggers setTabs which
+        // causes a parent re-render and steals keyboard focus after every keystroke.
+        const newSettings = { ...(editingBlock.settings || {}), [field]: value };
+        setEditingBlock({ ...editingBlock, items, settings: newSettings });
     };
 
     // For blocks that store data in settings (not items) — e.g. aesthetic_influencer
@@ -1905,6 +1927,137 @@ export default function BioLinkBuilder() {
                                                 icon={<LinkIcon size={14} />}
                                             />
                                         </>
+                                    )}
+
+                                    {/* ── LINK BLOCK ── */}
+                                    {uiType === "link" && (
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label="Button Label"
+                                                value={item.name || ""}
+                                                onChange={(e: any) => updateItem(idx, 'name', e.target.value)}
+                                                placeholder="e.g. Visit my website"
+                                                icon={<LinkIcon size={14} />}
+                                            />
+                                            <InputField
+                                                label="Destination URL"
+                                                value={item.url || item.location_url || ""}
+                                                onChange={(e: any) => updateItem(idx, 'url', e.target.value)}
+                                                placeholder="https://example.com/"
+                                                icon={<Globe size={14} />}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* ── HEADING BLOCK ── */}
+                                    {uiType === "heading" && (
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label="Heading Text"
+                                                value={item.text || ""}
+                                                onChange={(e: any) => updateItem(idx, 'text', e.target.value)}
+                                                placeholder="e.g. About Me"
+                                            />
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Size</label>
+                                                <select
+                                                    value={item.heading_type || "h1"}
+                                                    onChange={(e) => updateItem(idx, 'heading_type', e.target.value)}
+                                                    className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                >
+                                                    <option value="h1">H1 — Large</option>
+                                                    <option value="h2">H2 — Medium</option>
+                                                    <option value="h3">H3 — Small</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ── PARAGRAPH BLOCK ── */}
+                                    {uiType === "paragraph" && (
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label="Paragraph Text"
+                                                value={item.description || item.text || ""}
+                                                onChange={(e: any) => updateItem(idx, 'description', e.target.value)}
+                                                placeholder="Write your paragraph content here..."
+                                                textarea
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* ── MODAL TEXT BLOCK ── */}
+                                    {uiType === "modal_text" && (
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label="Button Label"
+                                                value={item.name || ""}
+                                                onChange={(e: any) => updateItem(idx, 'name', e.target.value)}
+                                                placeholder="e.g. Read More"
+                                            />
+                                            <InputField
+                                                label="Popup Title"
+                                                value={item.modal_text_title || ""}
+                                                onChange={(e: any) => updateItem(idx, 'modal_text_title', e.target.value)}
+                                                placeholder="Modal heading"
+                                            />
+                                            <InputField
+                                                label="Popup Content"
+                                                value={item.modal_text_description || item.description || ""}
+                                                onChange={(e: any) => updateItem(idx, 'modal_text_description', e.target.value)}
+                                                placeholder="Full text shown inside the popup..."
+                                                textarea
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* ── EMAIL / PHONE / CONTACT COLLECTOR ── */}
+                                    {["email_collector", "phone_collector", "contact_collector", "contact_form"].includes(uiType) && (
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label="Button Label"
+                                                value={item.name || ""}
+                                                onChange={(e: any) => updateItem(idx, 'name', e.target.value)}
+                                                placeholder="e.g. Subscribe to my newsletter"
+                                            />
+                                            <InputField
+                                                label="Button Text"
+                                                value={item.button_text || ""}
+                                                onChange={(e: any) => updateItem(idx, 'button_text', e.target.value)}
+                                                placeholder="Submit"
+                                            />
+                                            <InputField
+                                                label="Success Message"
+                                                value={item.success_text || ""}
+                                                onChange={(e: any) => updateItem(idx, 'success_text', e.target.value)}
+                                                placeholder="Thank you!"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* ── PAYPAL BLOCK ── */}
+                                    {uiType === "paypal" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Product Name" value={item.name || ""} onChange={(e: any) => updateItem(idx, 'name', e.target.value)} placeholder="e.g. My Course" />
+                                            <InputField label="PayPal Email" value={item.email || ""} onChange={(e: any) => updateItem(idx, 'email', e.target.value)} placeholder="you@paypal.com" icon={<Mail size={14} />} />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="Price" value={String(item.price || "")} onChange={(e: any) => updateItem(idx, 'price', e.target.value)} placeholder="9.99" />
+                                                <InputField label="Currency" value={item.currency || "USD"} onChange={(e: any) => updateItem(idx, 'currency', e.target.value)} placeholder="USD" />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ── EMBED BLOCKS (YouTube, Spotify, Soundcloud, etc.) ── */}
+                                    {["youtube", "spotify", "soundcloud", "vimeo", "twitch", "tiktok_video"].includes(uiType) && (
+                                        <div className="space-y-5">
+                                            <InputField
+                                                label={`${uiType.charAt(0).toUpperCase() + uiType.slice(1)} URL`}
+                                                value={item.url || item.location_url || ""}
+                                                onChange={(e: any) => updateItem(idx, 'url', e.target.value)}
+                                                placeholder={`Paste your ${uiType} link here`}
+                                                icon={<LinkIcon size={14} />}
+                                            />
+                                        </div>
                                     )}
 
                                     {/* Hero Section */}
