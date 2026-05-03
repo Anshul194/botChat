@@ -966,7 +966,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                         { id: 'custom', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
                         { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
-                        { id: 'influencer', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+                        // { id: 'influencer', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
                         { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Aesthetic Influencer', icon: <ImageIcon size={18} className="text-emerald-500" /> },
 
                     ].map((layout) => (
