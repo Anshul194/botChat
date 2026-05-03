@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { format, subDays } from "date-fns";
 import api from "@/lib/api";
@@ -23,7 +23,7 @@ const FILTERS = [
     { id: 'visit_hour', label: 'Visit hours', icon: Clock },
 ];
 
-export default function BioLinksAnalyticsPage() {
+function BioLinksAnalyticsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pageId = searchParams.get("page");
@@ -231,5 +231,17 @@ export default function BioLinksAnalyticsPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function BioLinksAnalyticsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-950 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        }>
+            <BioLinksAnalyticsContent />
+        </Suspense>
     );
 }

@@ -206,14 +206,13 @@ export default function PostStudioPage() {
     setIsPublishing(true);
 
     try {
-        const selectedPages = selectedAccounts.map(id => {
+        const finalSelectedPages = selectedAccounts.map(id => {
             const acc = accounts.find(a => a.id === id);
             return {
                 id: acc?.platformId || id, // Mapping to platform_id needed by API
                 platform_id: String(acc?.platformId || id)
             };
         });
-      }
 
       const primaryAccountType = accounts.find(a => a.id === (selectedAccounts[0] || selectedParentAccounts[0]))?.type || 'facebook';
 

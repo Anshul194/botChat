@@ -63,7 +63,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
     const avatarUrls = topAvatar ? [topAvatar.settings?.image || topAvatar.settings?.url].filter(Boolean) : [];
 
     let firstActualContentFound = false;
-    const otherBlocks = allBlocks.filter((b, idx) => {
+    const otherBlocks = allBlocks.filter((b: any, idx: number) => {
         const type = getUiTypeFromBlock(b, uiTypeOverrides);
         if (type === "avatar") return false;
         const url = b.settings?.image || b.settings?.url;
@@ -79,7 +79,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
     const groupedRows: any[] = [];
     let linkGrid: any[] = [];
-    let activeSection: { heading: any; blocks: any[] } | null = null;
+    let activeSection: any = null;
 
     otherBlocks.forEach((block: any) => {
         const type = getUiTypeFromBlock(block, uiTypeOverrides);
@@ -212,7 +212,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                 <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${getYouTubeId(block.location_url || settings.url)}`} frameBorder="0" allowFullScreen />
                             </div>
                         ) : type === 'spotify' && settings.url ? (
-                            <iframe className="w-full" src={`https://open.spotify.com/embed/${settings.url.includes('track') ? 'track' : 'playlist'}/${settings.url.split('/').pop()}`} height="152" frameBorder="0" allowTransparency="true" allow="encrypted-media" />
+                            <iframe className="w-full" src={`https://open.spotify.com/embed/${settings.url.includes('track') ? 'track' : 'playlist'}/${settings.url.split('/').pop()}`} height="152" frameBorder="0" allowTransparency={true} allow="encrypted-media" />
                         ) : type === 'paypal' ? (
                             <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-indigo-900/40 p-1">
                                 <div className="bg-white/5 backdrop-blur-3xl rounded-[24px] p-8 flex flex-col items-center text-center border border-white/10 shadow-inner">

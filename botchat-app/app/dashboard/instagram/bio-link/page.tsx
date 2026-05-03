@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import {
     Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon,
     Image as ImageIcon, GripVertical, RefreshCw, LayoutTemplate,
@@ -258,7 +258,7 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
     </button>
 );
 
-export default function BioLinkBuilder() {
+function BioLinkBuilderContent() {
     const searchParams = useSearchParams();
     const { showModal } = useModal();
     const [isLoading, setIsLoading] = useState(true);
@@ -2977,4 +2977,12 @@ export default function BioLinkBuilder() {
             )}
         </div>
     );
+}
+
+export default function BioLinkBuilder() { 
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <BioLinkBuilderContent />
+        </Suspense>
+    ); 
 }
