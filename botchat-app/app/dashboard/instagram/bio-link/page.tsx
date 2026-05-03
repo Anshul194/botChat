@@ -1773,19 +1773,14 @@ export default function BioLinkBuilder() {
                 </aside>
 
                 <main className={cn(
-                    "w-full xl:w-[500px] xl:shrink-0 bg-[#121418] relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
+                    "w-full xl:w-[500px] xl:shrink-0 bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
                     "sticky top-0 h-full overflow-hidden",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
                     showCarouselEditor && "xl:mr-[400px]"
                 )}>
                     {/* Live Preview Status Badge */}
 
-
-                    {/* Premium Decorative Background */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 dark:opacity-100">
-                        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/2 rounded-full blur-[120px]" />
-                        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-white/2 rounded-full blur-[120px]" />
-                    </div>
+                    {/* Background is now matched exactly to the left panel */}
 
                     <div className={cn(
                         "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full pt-4",
