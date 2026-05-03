@@ -277,6 +277,7 @@ export default function BioLinkBuilder() {
     const [showCarouselEditor, setShowCarouselEditor] = useState(false);
     const [editingBlock, setEditingBlock] = useState<any>(null);
     const [isSavingBlock, setIsSavingBlock] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     const [isArranging, setIsArranging] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
@@ -876,6 +877,7 @@ export default function BioLinkBuilder() {
         try {
             await api.put(`/bio/blocks/${editingBlock.id}`, payload);
             await fetchBuilderData();
+            showModal("success", "Saved", "Block updated successfully.");
             // Show success state briefly before closing
             setTimeout(() => {
                 setIsSavingBlock(false);
@@ -948,12 +950,20 @@ export default function BioLinkBuilder() {
     const handleReorderSections = handleReorderBlocks as any;
 
     const handleUploadImage = async (file: File) => {
+        setIsUploadingImage(true);
         try {
             const fd = new FormData(); fd.append("image", file);
             // This endpoint might also change? Assuming /bio/upload-image for now
             const res = await api.post("/bio-builder/upload-image", fd, { headers: { "Content-Type": "multipart/form-data" } });
-            return res.data?.url;
-        } catch { showModal("error", "Error", "Failed to upload image."); return null; }
+            const url = res.data?.url || res.data?.data?.url || res.data || null;
+            return url;
+        } catch (err) {
+            console.error("Image upload failed:", err);
+            showModal("error", "Error", "Failed to upload image.");
+            return null;
+        } finally {
+            setIsUploadingImage(false);
+        }
     };
 
     const handleShareLink = () => { navigator.clipboard.writeText(publicUrl); setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); };
@@ -2811,6 +2821,12 @@ export default function BioLinkBuilder() {
                     </div>
                 )}
             </ModalShell>
+            {isUploadingImage && (
+                <div className="fixed bottom-6 right-6 z-[600] flex items-center gap-3 bg-black/80 text-white px-4 py-2 rounded-full shadow-lg">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm font-bold">Uploading image...</span>
+                </div>
+            )}
         </div>
     );
 }
