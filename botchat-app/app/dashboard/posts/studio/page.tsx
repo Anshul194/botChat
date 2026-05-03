@@ -206,33 +206,12 @@ export default function PostStudioPage() {
     setIsPublishing(true);
 
     try {
-      let finalSelectedPages = [];
-
-      if (postType === 'carousel') {
-        finalSelectedPages = composerData.selectedPages;
-      } else if (postType === 'cta') {
-        // If a specific page is selected in the composer, use it. Otherwise use all pages of parent accounts.
-        if (composerData.selectedPageId) {
-          const acc = accounts.find(a => String(a.id) === String(composerData.selectedPageId));
-          finalSelectedPages = [{
-            id: acc?.id || composerData.selectedPageId,
-            platform_id: String(acc?.platformId || composerData.selectedPageId)
-          }];
-        } else {
-          finalSelectedPages = accounts
-            .filter(a => selectedParentAccounts.includes(a.accountId))
-            .map(a => ({
-              id: a.id,
-              platform_id: String(a.platformId)
-            }));
-        }
-      } else {
-        finalSelectedPages = selectedAccounts.map(id => {
-          const acc = accounts.find(a => a.id === id);
-          return {
-            id: acc?.id || id,
-            platform_id: String(acc?.platformId || id)
-          };
+        const selectedPages = selectedAccounts.map(id => {
+            const acc = accounts.find(a => a.id === id);
+            return {
+                id: acc?.platformId || id, // Mapping to platform_id needed by API
+                platform_id: String(acc?.platformId || id)
+            };
         });
       }
 
