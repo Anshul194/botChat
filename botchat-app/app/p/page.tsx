@@ -13,6 +13,7 @@ import { PortfolioLayout } from "@/app/dashboard/instagram/bio-link/layouts/Port
 import { UGCLayout } from "@/app/dashboard/instagram/bio-link/layouts/UGCLayout";
 import { OliviaLayout } from "@/app/dashboard/instagram/bio-link/layouts/OliviaLayout";
 import { UniversalLayout } from "@/app/dashboard/instagram/bio-link/layouts/UniversalLayout";
+import { CreatorStoreLayout } from "@/app/dashboard/instagram/bio-link/layouts/CreatorStoreLayout";
 import { Globe, MoreHorizontal, Instagram, MapPin, ArrowUpRight, Camera, Sparkles, Youtube, Video, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -533,6 +534,26 @@ function PublicBioContent() {
         );
     }
 
+    if (layoutStyle === "creator_store") {
+        return (
+            <>
+                <title>{profile.title || username} · Store</title>
+                <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
+                    <div className="w-full max-w-[480px] min-h-screen shadow-2xl relative bg-white overflow-hidden flex flex-col">
+                        <CreatorStoreLayout
+                            profile={profile}
+                            otherBlocks={otherBlocks}
+                            getUiTypeFromBlock={getUiTypeFromBlock}
+                            renderBlockUI={(block: any, isInside: boolean, idx: number) => (
+                                <BlockRenderer key={block.id} block={block} theme={theme} />
+                            )}
+                        />
+                    </div>
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <title>{profile.title || username} · Bio Link</title>
@@ -590,7 +611,7 @@ function PublicBioContent() {
                 </div>
 
                 {/* ── Tab Bar ──────────────────────────────────────── */}
-                {profile.tabs.length > 1 && (
+                {(profile.tabs || []).length > 1 && (
                     <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3">
                         <div className="flex gap-2 overflow-x-auto no-scrollbar justify-start max-w-lg mx-auto">
                             {profile.tabs.map(tab => (
