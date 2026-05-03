@@ -341,7 +341,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     {/* Screen Surface Reflection */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-transparent z-30 pointer-events-none" />
 
-                    <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (layoutStyle === "portfolio" || layoutStyle === "ugc" || layoutStyle === "olivia" || layoutStyle === "universal" || layoutStyle === "creator_store") ? "p-0" : "p-6")}>
+                    <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (layoutStyle === "portfolio" || layoutStyle === "ugc" || layoutStyle === "aesthetic_influencer" || layoutStyle === "olivia" || layoutStyle === "universal" || layoutStyle === "creator_store") ? "p-0" : "p-6")}>
                         {/* Default Header if no blocks exist */}
                         {otherBlocks.length === 0 && !topAvatar && (
                             <div className="flex flex-col items-center pt-20 pb-8 space-y-5 animate-in fade-in zoom-in-95 duration-1000">
@@ -362,7 +362,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             <PortfolioLayout profile={profile} tabs={tabs} selectedTabId={selectedTabId} setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} otherBlocks={otherBlocks} topAvatar={topAvatar} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} isMediaType={isMediaType} getYouTubeId={getYouTubeId} renderBlockUI={renderBlockUI} />
                         ) : layoutStyle === "creator_store" ? (
                             <CreatorStoreLayout profile={profile} otherBlocks={otherBlocks} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} openEditor={openEditor} />
-                        ) : layoutStyle === "ugc" ? (
+                        ) : layoutStyle === "ugc" || layoutStyle === "aesthetic_influencer" ? (
                             <UGCLayout theme={theme} profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} instagramUsername={instagramUsername} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} isMediaType={isMediaType} renderBlockUI={renderBlockUI} />
                         ) : layoutStyle === "olivia" ? (
                             <OliviaLayout profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} isMediaType={isMediaType} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} />

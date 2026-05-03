@@ -898,6 +898,29 @@ export default function BioLinkBuilder() {
         syncBlockItemsLocally(editingBlock.id, items);
     };
 
+    // For blocks that store data in settings (not items) — e.g. aesthetic_influencer
+    const updateBlockSettings = (field: string, value: any) => {
+        if (!editingBlock) return;
+        const newSettings = { ...(editingBlock.settings || {}), [field]: value };
+        // Also sync into items[0] so saveEditor's `editingBlock.items?.[0]` picks it up
+        const newItems = (editingBlock.items || []).map((it: any, i: number) =>
+            i === 0 ? { ...it, ...newSettings } : it
+        );
+        const updated = { ...editingBlock, settings: newSettings, items: newItems };
+        setEditingBlock(updated);
+        setTabs((prevTabs) =>
+            prevTabs.map((tab) => ({
+                ...tab,
+                sections: (tab.sections || []).map((section) => ({
+                    ...section,
+                    blocks: (section.blocks || []).map((block) =>
+                        block.id === editingBlock.id ? { ...block, settings: newSettings } : block
+                    ),
+                })),
+            }))
+        );
+    };
+
     const handleReorderBlocks = async (newTabs: any) => {
         if (!profile) return;
         setTabs(newTabs);
@@ -2602,7 +2625,9 @@ export default function BioLinkBuilder() {
                                     )}
 
                                     {/* Fallback for other types */}
-                                    {!["heading", "link", "paragraph", "avatar", "image", "socials", "business_hours", "paypal", "email_collector", "phone_collector", "contact_collector", "spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video", "hero_section", "stats_section", "cta_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section"].includes(uiType) && (
+                                    {!["heading", "link", "paragraph", "avatar", "image", "socials", "business_hours", "paypal", "email_collector", "phone_collector", "contact_collector", "spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video", "hero_section", "stats_section", "cta_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section",
+                                        "hero_aesthetic_section", "stats_minimal_section", "impact_section", "testimonial_highlight_section", "pricing_cards_section", "portfolio_minimal_section", "faq_cards_section", "cta_fullscreen_section"
+                                    ].includes(uiType) && (
                                         <div className="space-y-4">
                                             <InputField
                                                 label="Primary Text"
@@ -2623,6 +2648,166 @@ export default function BioLinkBuilder() {
                                 </div>
                             );
                         })}
+
+                        {/* ── Aesthetic Influencer forms (settings-based, outside items.map) ── */}
+                        {(() => {
+                            if (!editingBlock) return null;
+                            const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
+                            const s = editingBlock.settings || {};
+                            const upd = (field: string, value: any) => updateBlockSettings(field, value);
+                            const aestheticTypes = ["hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section"];
+                            if (!aestheticTypes.includes(uiType)) return null;
+                            return (
+                                <div className="space-y-6 mt-2">
+
+                                {/* Hero Aesthetic */}
+                                {uiType === "hero_aesthetic_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Brand Name" value={s.brand_name || ""} onChange={(e: any) => upd('brand_name', e.target.value)} placeholder="Your Brand" />
+                                        <InputField label="Headline" value={s.headline || ""} onChange={(e: any) => upd('headline', e.target.value)} placeholder="Aesthetic Authority" />
+                                        <InputField label="Subheadline" value={s.subheadline || ""} onChange={(e: any) => upd('subheadline', e.target.value)} placeholder="Build your presence." />
+                                        <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} placeholder="Helping creators grow..." textarea />
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Profile Image</label>
+                                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                {s.profile_image && <img src={s.profile_image} className="w-12 h-12 rounded-lg object-cover" />}
+                                                <label className="flex-1 cursor-pointer">
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.profile_image ? "Change" : "Upload Image"}</div>
+                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('profile_image', url); }}} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">CTA Buttons</p>
+                                        {(s.buttons || []).map((btn: any, bIdx: number) => (
+                                            <div key={bIdx} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                                <InputField label="Text" value={btn.text || ""} onChange={(e: any) => { const b = [...(s.buttons||[])]; b[bIdx]={...btn,text:e.target.value}; upd('buttons',b); }} />
+                                                <InputField label="Link" value={btn.link || ""} onChange={(e: any) => { const b = [...(s.buttons||[])]; b[bIdx]={...btn,link:e.target.value}; upd('buttons',b); }} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Stats Minimal */}
+                                {uiType === "stats_minimal_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats</p>
+                                        {(s.items || []).map((stat: any, i: number) => (
+                                            <div key={i} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
+                                                <InputField label="Value" value={stat.value||""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...stat,value:e.target.value}; upd('items',it); }} placeholder="124K" />
+                                                <InputField label="Label" value={stat.label||""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...stat,label:e.target.value}; upd('items',it); }} placeholder="Followers" />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{value:"",label:""}])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12}/> Add Stat</button>
+                                    </div>
+                                )}
+
+                                {/* Impact */}
+                                {uiType === "impact_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Title" value={s.title||""} onChange={(e: any) => upd('title',e.target.value)} placeholder="Impact Over Impressions" />
+                                        <InputField label="Description" value={s.description||""} onChange={(e: any) => upd('description',e.target.value)} placeholder="We focus on real results." textarea />
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Points</p>
+                                        {(s.points||[]).map((pt: any, i: number) => (
+                                            <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-3 relative group">
+                                                <button onClick={() => { const pts=[...(s.points||[])]; pts.splice(i,1); upd('points',pts); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
+                                                <InputField label="Title" value={pt.title||""} onChange={(e: any) => { const pts=[...(s.points||[])]; pts[i]={...pt,title:e.target.value}; upd('points',pts); }} />
+                                                <InputField label="Description" value={pt.description||""} onChange={(e: any) => { const pts=[...(s.points||[])]; pts[i]={...pt,description:e.target.value}; upd('points',pts); }} textarea />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('points',[...(s.points||[]),{title:"",description:""}])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12}/> Add Point</button>
+                                    </div>
+                                )}
+
+                                {/* Testimonial */}
+                                {uiType === "testimonial_highlight_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Quote" value={s.quote||""} onChange={(e: any) => upd('quote',e.target.value)} placeholder="Working together transformed our brand..." textarea />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <InputField label="Author Name" value={s.author_name||""} onChange={(e: any) => upd('author_name',e.target.value)} placeholder="Sarah Chen" />
+                                            <InputField label="Author Role" value={s.author_role||""} onChange={(e: any) => upd('author_role',e.target.value)} placeholder="Founder & CEO" />
+                                        </div>
+                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                            {s.author_image && <img src={s.author_image} className="w-10 h-10 rounded-full object-cover" />}
+                                            <label className="flex-1 cursor-pointer">
+                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.author_image ? "Change Photo" : "Upload Photo"}</div>
+                                                <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('author_image',url); }}} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Pricing Cards */}
+                                {uiType === "pricing_cards_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Section Title" value={s.title||""} onChange={(e: any) => upd('title',e.target.value)} placeholder="Select Your Tier" />
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Plans</p>
+                                        {(s.plans||[]).map((plan: any, i: number) => (
+                                            <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-3 relative group">
+                                                <button onClick={() => { const pl=[...(s.plans||[])]; pl.splice(i,1); upd('plans',pl); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Name" value={plan.name||""} onChange={(e: any) => { const pl=[...(s.plans||[])]; pl[i]={...plan,name:e.target.value}; upd('plans',pl); }} placeholder="Pro" />
+                                                    <InputField label="Price" value={plan.price||""} onChange={(e: any) => { const pl=[...(s.plans||[])]; pl[i]={...plan,price:e.target.value}; upd('plans',pl); }} placeholder="$2,400" />
+                                                </div>
+                                                <InputField label="Button Text" value={plan.button?.text||""} onChange={(e: any) => { const pl=[...(s.plans||[])]; pl[i]={...plan,button:{...(plan.button||{}),text:e.target.value}}; upd('plans',pl); }} placeholder="Get Started" />
+                                                <InputField label="Button Link" value={plan.button?.link||""} onChange={(e: any) => { const pl=[...(s.plans||[])]; pl[i]={...plan,button:{...(plan.button||{}),link:e.target.value}}; upd('plans',pl); }} placeholder="#contact" />
+                                                <InputField label="Features (one per line)" value={(plan.features||[]).join('\n')} onChange={(e: any) => { const pl=[...(s.plans||[])]; pl[i]={...plan,features:e.target.value.split('\n')}; upd('plans',pl); }} textarea />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('plans',[...(s.plans||[]),{name:"",price:"",features:[],button:{text:"Get Started",link:"#"},highlight:false}])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12}/> Add Plan</button>
+                                    </div>
+                                )}
+
+                                {/* Portfolio Minimal */}
+                                {uiType === "portfolio_minimal_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Section Title" value={s.title||""} onChange={(e: any) => upd('title',e.target.value)} placeholder="Style Showcase" />
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Images</p>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {(s.items||[]).map((img: any, i: number) => (
+                                                <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800">
+                                                    <img src={img.image||img} className="w-full h-full object-cover" />
+                                                    <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
+                                                </div>
+                                            ))}
+                                            <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary cursor-pointer transition-all">
+                                                <Plus size={18}/>
+                                                <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('items',[...(s.items||[]),{image:url}]); }}} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* FAQ Cards */}
+                                {uiType === "faq_cards_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Section Title" value={s.title||""} onChange={(e: any) => upd('title',e.target.value)} placeholder="Your Questions, Answered" />
+                                        {(s.items||[]).map((faq: any, i: number) => (
+                                            <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-3 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
+                                                <InputField label="Question" value={faq.question||""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...faq,question:e.target.value}; upd('items',it); }} />
+                                                <InputField label="Answer" value={faq.answer||""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...faq,answer:e.target.value}; upd('items',it); }} textarea />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{question:"",answer:""}])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12}/> Add FAQ</button>
+                                    </div>
+                                )}
+
+                                {/* CTA Fullscreen */}
+                                {uiType === "cta_fullscreen_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Title" value={s.title||""} onChange={(e: any) => upd('title',e.target.value)} placeholder="Ready for Chic Impact?" />
+                                        <InputField label="Subtitle" value={s.subtitle||""} onChange={(e: any) => upd('subtitle',e.target.value)} placeholder="Your audience is waiting." />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <InputField label="Button Text" value={s.button?.text||""} onChange={(e: any) => upd('button',{...(s.button||{}),text:e.target.value})} placeholder="Start Your Journey" />
+                                            <InputField label="Button Link" value={s.button?.link||""} onChange={(e: any) => upd('button',{...(s.button||{}),link:e.target.value})} placeholder="#contact" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                </div>
+                            );
+                        })()}
                     </div>
                 )}
             </ModalShell>

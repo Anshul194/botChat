@@ -458,7 +458,7 @@ function PublicBioContent() {
         );
     }
 
-    if (layoutStyle === "ugc") {
+    if (layoutStyle === "ugc" || layoutStyle === "aesthetic_influencer") {
         return (
             <>
                 <title>{profile.title || username} · UGC</title>

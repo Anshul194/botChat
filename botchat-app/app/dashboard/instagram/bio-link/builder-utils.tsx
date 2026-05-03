@@ -20,6 +20,11 @@ export const BLOCK_ICONS: Record<string, React.ReactNode> = {
     hero_product_section: <ShoppingBag size={16} />, featured_product_section: <Star size={16} />,
     product_list_section: <Layers size={16} />, trust_badges_section: <ShieldCheck size={16} />,
     urgency_offer_section: <Clock size={16} />, contact_section: <Mail size={16} />,
+    // Aesthetic Influencer sections
+    hero_aesthetic_section: <Sparkles size={16} />, stats_minimal_section: <CircleDot size={16} />,
+    impact_section: <Zap size={16} />, testimonial_highlight_section: <User size={16} />,
+    pricing_cards_section: <ShoppingBag size={16} />, portfolio_minimal_section: <Grid size={16} />,
+    faq_cards_section: <Info size={16} />, cta_fullscreen_section: <Zap size={16} />,
 };
 
 export const BLOCK_COLORS: Record<string, string> = {
