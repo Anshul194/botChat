@@ -967,6 +967,8 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
                         { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
                         { id: 'influencer', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+                        { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Aesthetic Influencer', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+
                     ].map((layout) => (
                         <button
                             key={layout.id}
