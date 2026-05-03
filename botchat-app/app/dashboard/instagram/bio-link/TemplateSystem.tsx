@@ -144,11 +144,11 @@ export const ThemeEffectsLayer = ({ theme, mini = false }: { theme: ThemeConfig;
                         <path d="M0,200 Q100,280 200,200 T400,200 V600 H0 Z" fill={theme.accent} fillOpacity="0.05" />
                         <path d="M0,250 Q100,320 200,250 T400,250 V600 H0 Z" fill={theme.accent} fillOpacity="0.08" />
                         {[...Array(15)].map((_, i) => (
-                            <circle key={i} 
-                                cx={10 + Math.sin(i) * 380} 
-                                cy={200 + Math.cos(i) * 300} 
-                                r={Math.random() * 2 + 1} 
-                                fill={theme.accent} 
+                            <circle key={i}
+                                cx={10 + Math.sin(i) * 380}
+                                cy={200 + Math.cos(i) * 300}
+                                r={Math.random() * 2 + 1}
+                                fill={theme.accent}
                                 className="animate-pulse"
                                 style={{ animationDelay: `${i * 0.2}s` }}
                             />
@@ -279,9 +279,9 @@ export interface ThemeConfig {
 
 export function isColorLight(color: string): boolean {
     if (!color || color === 'transparent') return false;
-    
+
     let r, g, b;
-    
+
     if (color.startsWith('#')) {
         const c = color.replace('#', '');
         if (c.length === 3) {
@@ -301,9 +301,9 @@ export function isColorLight(color: string): boolean {
             b = parseInt(match[3]);
         }
     }
-    
+
     if (r === undefined || g === undefined || b === undefined) return false;
-    
+
     // Perceptive luminance formula
     return (r * 0.299 + g * 0.587 + b * 0.114) > 186; // Standard threshold for dark text
 }
@@ -326,7 +326,7 @@ export function isBgLight(bg: string): boolean {
     let maxLuminance = 0;
     for (const color of allColors) {
         let r: number | undefined, g: number | undefined, b: number | undefined;
-        
+
         if (color.startsWith('#')) {
             const hex = color.replace('#', '');
             if (hex.length === 3) {
@@ -749,22 +749,22 @@ const THEMES: Record<string, ThemeConfig> = {
         bgImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80',
         overlayStyle: { background: 'linear-gradient(180deg, rgba(5,5,16,0.25) 0%, rgba(5,5,16,0.9) 100%)' },
     },
-    
+
     // ═══════════════════ MODERN PORTFOLIO ═══════════════════
     modern_fisher: {
         bgStyle: { background: '#f5eadb' },
         textColor: '#1a1a1a',
-        btnStyle: { 
-            background: '#ffffff', 
-            border: 'none', 
-            borderRadius: '16px', 
-            color: '#1a1a1a', 
-            padding: '16px 24px', 
-            fontSize: '13px', 
-            fontWeight: 800, 
-            boxShadow: '0 4px 12px rgba(0,0,0,0.03)' 
+        btnStyle: {
+            background: '#ffffff',
+            border: 'none',
+            borderRadius: '16px',
+            color: '#1a1a1a',
+            padding: '16px 24px',
+            fontSize: '13px',
+            fontWeight: 800,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
         },
-        fontClass: 'font-sans', 
+        fontClass: 'font-sans',
         accent: '#FF6B00',
         meshGlow: 'radial-gradient(circle at 50% 12%, #FF6B00 0%, #FF6B00 28%, transparent 68%)',
         overlayStyle: { opacity: 0.1 },
@@ -779,15 +779,15 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_clay: {
         bgStyle: { background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' },
         textColor: '#0369a1',
-        btnStyle: { 
-            background: '#ffffff', 
-            border: 'none', 
-            borderRadius: '24px', 
-            color: '#0ea5e9', 
-            padding: '16px 24px', 
-            fontSize: '13px', 
-            fontWeight: 800, 
-            boxShadow: 'inset 0 -4px 0 rgba(14,165,233,0.1), 0 10px 20px rgba(14,165,233,0.15)' 
+        btnStyle: {
+            background: '#ffffff',
+            border: 'none',
+            borderRadius: '24px',
+            color: '#0ea5e9',
+            padding: '16px 24px',
+            fontSize: '13px',
+            fontWeight: 800,
+            boxShadow: 'inset 0 -4px 0 rgba(14,165,233,0.1), 0 10px 20px rgba(14,165,233,0.15)'
         },
         fontClass: 'font-sans', accent: '#0ea5e9',
         effects: ['shimmer'],
@@ -795,15 +795,15 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_nebula: {
         bgStyle: { background: '#0a0515' },
         textColor: '#e9d5ff',
-        btnStyle: { 
-            background: 'rgba(168,85,247,0.1)', 
-            backdropFilter: 'blur(16px)', 
-            border: '1px solid rgba(168,85,247,0.3)', 
-            borderRadius: '16px', 
-            color: '#f5f3ff', 
-            padding: '15px 24px', 
-            fontSize: '13px', 
-            fontWeight: 700 
+        btnStyle: {
+            background: 'rgba(168,85,247,0.1)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(168,85,247,0.3)',
+            borderRadius: '16px',
+            color: '#f5f3ff',
+            padding: '15px 24px',
+            fontSize: '13px',
+            fontWeight: 700
         },
         fontClass: 'font-sans', accent: '#a855f7',
         meshGlow: 'radial-gradient(circle at 20% 30%, rgba(168,85,247,0.2), transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.15), transparent 50%)',
@@ -812,16 +812,16 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_sunset: {
         bgStyle: { background: 'linear-gradient(135deg, #FF6B6B 0%, #FFD93D 50%, #FF8E53 100%)' },
         textColor: '#4a342e',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.7)', 
-            backdropFilter: 'blur(20px)', 
-            border: '1px solid rgba(255,255,255,0.4)', 
-            borderRadius: '16px', 
-            color: '#c2410c', 
-            padding: '16px 24px', 
-            fontSize: '13px', 
-            fontWeight: 800, 
-            boxShadow: '0 10px 30px rgba(255,107,107,0.1)' 
+        btnStyle: {
+            background: 'rgba(255,255,255,0.7)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.4)',
+            borderRadius: '16px',
+            color: '#c2410c',
+            padding: '16px 24px',
+            fontSize: '13px',
+            fontWeight: 800,
+            boxShadow: '0 10px 30px rgba(255,107,107,0.1)'
         },
         fontClass: 'font-sans', accent: '#FF6B6B',
         meshGlow: 'radial-gradient(circle at 50% 50%, #FFD93D 0%, transparent 70%)',
@@ -830,15 +830,15 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_tech_wave: {
         bgStyle: { background: '#050b1a' },
         textColor: '#e0f2fe',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.05)', 
-            backdropFilter: 'blur(16px)', 
-            border: '1px solid rgba(56,189,248,0.2)', 
-            borderRadius: '12px', 
-            color: '#38bdf8', 
-            padding: '15px 24px', 
-            fontSize: '12px', 
-            fontWeight: 700 
+        btnStyle: {
+            background: 'rgba(255,255,255,0.05)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(56,189,248,0.2)',
+            borderRadius: '12px',
+            color: '#38bdf8',
+            padding: '15px 24px',
+            fontSize: '12px',
+            fontWeight: 700
         },
         fontClass: 'font-mono', accent: '#38bdf8',
         effects: ['neural-wave', 'particles', 'scanlines'],
@@ -846,15 +846,15 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_watercolor: {
         bgStyle: { background: '#ffffff' },
         textColor: '#0369a1',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.7)', 
-            border: 'none', 
-            borderRadius: '24px', 
-            color: '#0284c7', 
-            padding: '15px 24px', 
-            fontSize: '13px', 
-            fontWeight: 800, 
-            boxShadow: '0 2px 10px rgba(0,0,0,0.02)' 
+        btnStyle: {
+            background: 'rgba(255,255,255,0.7)',
+            border: 'none',
+            borderRadius: '24px',
+            color: '#0284c7',
+            padding: '15px 24px',
+            fontSize: '13px',
+            fontWeight: 800,
+            boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
         },
         fontClass: 'font-serif', accent: '#0ea5e9',
         meshGlow: 'radial-gradient(circle at 20% 10%, #0284c715 0%, #0284c730 40%, transparent 70%), radial-gradient(circle at 80% 40%, #0ea5e910 0%, #0ea5e920 50%, transparent 80%), radial-gradient(circle at 30% 80%, #7dd3fc30 0%, transparent 60%)',
@@ -863,16 +863,16 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_glass_neon: {
         bgStyle: { background: 'linear-gradient(160deg, #020617 0%, #0f172a 100%)' },
         textColor: '#22d3ee',
-        btnStyle: { 
-            background: 'rgba(255,255,255,0.03)', 
-            backdropFilter: 'blur(20px)', 
-            border: '1px solid rgba(34,211,238,0.2)', 
-            borderRadius: '12px', 
-            color: '#22d3ee', 
-            padding: '15px 24px', 
-            fontSize: '12px', 
-            fontWeight: 900, 
-            textTransform: 'uppercase' as const, 
+        btnStyle: {
+            background: 'rgba(255,255,255,0.03)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(34,211,238,0.2)',
+            borderRadius: '12px',
+            color: '#22d3ee',
+            padding: '15px 24px',
+            fontSize: '12px',
+            fontWeight: 900,
+            textTransform: 'uppercase' as const,
             letterSpacing: '0.1em',
             boxShadow: '0 0 15px rgba(34,211,238,0.1)'
         },
@@ -882,16 +882,16 @@ const THEMES: Record<string, ThemeConfig> = {
     modern_brutalist: {
         bgStyle: { background: '#ffde00' },
         textColor: '#000000',
-        btnStyle: { 
-            background: '#ffffff', 
-            border: '3px solid #000000', 
-            borderRadius: '0px', 
-            color: '#000000', 
-            padding: '16px 24px', 
-            fontSize: '12px', 
-            fontWeight: 900, 
-            textTransform: 'uppercase' as const, 
-            boxShadow: '6px 6px 0px #000000' 
+        btnStyle: {
+            background: '#ffffff',
+            border: '3px solid #000000',
+            borderRadius: '0px',
+            color: '#000000',
+            padding: '16px 24px',
+            fontSize: '12px',
+            fontWeight: 900,
+            textTransform: 'uppercase' as const,
+            boxShadow: '6px 6px 0px #000000'
         },
         fontClass: 'font-mono', accent: '#000000',
     },
@@ -936,7 +936,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                        { id: 'standard', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
+                        { id: 'custom', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
                         { id: 'ugc', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
                         { id: 'olivia', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
@@ -964,7 +964,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                 </p>
                                 <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">{layout.desc}</p>
                             </div>
-                            
+
                             {(profile?.settings?.layoutStyle || 'standard') === layout.id && (
                                 <div className="absolute top-3 right-3 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
                                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -990,7 +990,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                         ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm"
                                         : "bg-white dark:bg-slate-900 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                                 )}>
-                                {React.cloneElement(cat.icon as React.ReactElement, { size: 12 })} 
+                                {React.cloneElement(cat.icon as React.ReactElement, { size: 12 })}
                                 {cat.name}
                             </button>
                         ))}
@@ -1025,7 +1025,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                             ) : (
                                                 <div className="w-8 h-8 rounded-full mb-1.5 shadow-sm" style={{ border: `1px solid ${tCfg.textColor}30`, backgroundColor: `${tCfg.textColor}10` }} />
                                             )}
-                                            
+
                                             {/* Title */}
                                             {profile?.title ? (
                                                 <div className="mb-1 text-[8px] font-bold truncate max-w-[80%]" style={{ color: tCfg.textColor }}>
@@ -1034,24 +1034,24 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                             ) : (
                                                 <div className="w-12 h-1 rounded-full mb-1" style={{ backgroundColor: `${tCfg.textColor}60` }} />
                                             )}
-                                            
+
                                             <div className="w-8 h-0.5 rounded-full mb-3" style={{ backgroundColor: `${tCfg.textColor}30` }} />
-                                            
+
                                             {/* Links */}
                                             <div className="w-full space-y-1.5">
                                                 {/* Use actual links if available, else fall back to generic blocks */}
                                                 {(() => {
                                                     const blocks = profile?.tabs?.[0]?.sections?.[0]?.blocks?.filter((b: any) => b.is_active !== 0 && b.is_Enabled !== 0) || [];
                                                     const previewBlocks = blocks.length > 0 ? blocks.slice(0, 3) : [1, 2, 3];
-                                                    
+
                                                     return previewBlocks.map((b: any, i: number) => {
                                                         const label = typeof b === 'object' ? (b.settings?.title || b.settings?.name || b.settings?.text || "Link") : "";
                                                         return (
                                                             <div key={typeof b === 'object' ? b.id : i} className="w-full h-4 rounded-[4px] transition-all duration-500 flex items-center justify-center px-1.5 overflow-hidden"
-                                                                style={{ 
-                                                                    ...tCfg.btnStyle, 
-                                                                    padding: 0, 
-                                                                    fontSize: 0, 
+                                                                style={{
+                                                                    ...tCfg.btnStyle,
+                                                                    padding: 0,
+                                                                    fontSize: 0,
                                                                     borderWidth: tCfg.btnStyle.border === 'none' ? '0' : '1px',
                                                                     boxShadow: 'none'
                                                                 }}>
@@ -1066,7 +1066,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                                 })()}
                                             </div>
                                         </div>
-                                        
+
                                         {/* Badges */}
                                         {tpl.badge && (
                                             <div className={cn(
