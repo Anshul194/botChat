@@ -10,6 +10,9 @@ import { resolveApiBaseUrl, resolveXHost } from "@/lib/config";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "@/app/dashboard/instagram/bio-link/TemplateSystem";
 import { getUiTypeFromBlock, isMediaType, BLOCK_ICONS } from "@/app/dashboard/instagram/bio-link/builder-utils";
 import { PortfolioLayout } from "@/app/dashboard/instagram/bio-link/layouts/PortfolioLayout";
+import { UGCLayout } from "@/app/dashboard/instagram/bio-link/layouts/UGCLayout";
+import { OliviaLayout } from "@/app/dashboard/instagram/bio-link/layouts/OliviaLayout";
+import { UniversalLayout } from "@/app/dashboard/instagram/bio-link/layouts/UniversalLayout";
 import { Globe, MoreHorizontal, Instagram, MapPin, ArrowUpRight, Camera, Sparkles, Youtube, Video, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -445,6 +448,82 @@ function PublicBioContent() {
                                 return (match && match[2].length === 11) ? match[2] : null;
                             }}
                             renderBlockUI={(block: any, isTiled: boolean, idx: number) => (
+                                <BlockRenderer key={block.id} block={block} theme={theme} />
+                            )}
+                        />
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    if (layoutStyle === "ugc") {
+        return (
+            <>
+                <title>{profile.title || username} · UGC</title>
+                <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
+                    <ThemeAnimationStyles />
+                    <ThemeEffectsLayer theme={theme} />
+                    <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
+                        <UGCLayout
+                            theme={theme}
+                            profile={profile}
+                            otherBlocks={otherBlocks}
+                            topAvatar={topAvatar}
+                            instagramUsername={username}
+                            getUiTypeFromBlock={getUiTypeFromBlock}
+                            uiTypeOverrides={{}}
+                            isMediaType={isMediaType}
+                            renderBlockUI={(block: any) => (
+                                <BlockRenderer key={block.id} block={block} theme={theme} />
+                            )}
+                        />
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    if (layoutStyle === "olivia") {
+        return (
+            <>
+                <title>{profile.title || username} · Olivia</title>
+                <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
+                    <ThemeAnimationStyles />
+                    <ThemeEffectsLayer theme={theme} />
+                    <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
+                        <OliviaLayout
+                            profile={profile}
+                            otherBlocks={otherBlocks}
+                            topAvatar={topAvatar}
+                            isMediaType={isMediaType}
+                            getUiTypeFromBlock={getUiTypeFromBlock}
+                            uiTypeOverrides={{}}
+                            renderBlockUI={(block: any) => (
+                                <BlockRenderer key={block.id} block={block} theme={theme} />
+                            )}
+                        />
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+    if (layoutStyle === "universal") {
+        return (
+            <>
+                <title>{profile.title || username} · Universal</title>
+                <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
+                    <ThemeAnimationStyles />
+                    <ThemeEffectsLayer theme={theme} />
+                    <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
+                        <UniversalLayout
+                            profile={profile}
+                            otherBlocks={otherBlocks}
+                            topAvatar={topAvatar}
+                            getUiTypeFromBlock={getUiTypeFromBlock}
+                            uiTypeOverrides={{}}
+                            renderBlockUI={(block: any) => (
                                 <BlockRenderer key={block.id} block={block} theme={theme} />
                             )}
                         />

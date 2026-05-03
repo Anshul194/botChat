@@ -369,6 +369,33 @@ export function extractPrimaryBgColor(bg: string): string | null {
 
 const THEMES: Record<string, ThemeConfig> = {
 
+    beauty_pink: {
+        bgStyle: { background: 'linear-gradient(135deg, #fff5f7 0%, #fce7f3 50%, #ffffff 100%)' },
+        textColor: '#9d174d',
+        btnStyle: { background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', border: '1px solid rgba(251,113,133,0.2)', borderRadius: '24px', color: '#be185d', padding: '16px 24px', fontSize: '13px', fontWeight: 800, boxShadow: '0 10px 20px rgba(157,23,77,0.05)' },
+        fontClass: 'font-serif', accent: '#f43f5e',
+        effects: ['particles', 'orbs'], particleColor: '#fb7185',
+        meshGlow: 'radial-gradient(circle at 50% 50%, rgba(244,63,94,0.08), transparent 60%)',
+    },
+
+    creator_light: {
+        bgStyle: { background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)' },
+        textColor: '#0f172a',
+        btnStyle: { background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: '20px', color: '#0f172a', padding: '16px 24px', fontSize: '13px', fontWeight: 800, boxShadow: '0 4px 15px rgba(0,0,0,0.05)' },
+        fontClass: 'font-sans', accent: '#6366f1',
+        effects: ['particles', 'orbs'], particleColor: '#6366f1',
+        meshGlow: 'radial-gradient(circle at 20% 20%, rgba(99,102,241,0.05), transparent 50%)',
+    },
+
+    insta_ink: {
+        bgStyle: { background: 'linear-gradient(180deg, #050508 0%, #0a0a1a 100%)' },
+        textColor: '#f8fafc',
+        btnStyle: { background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '18px', color: '#f8fafc', padding: '16px 24px', fontSize: '13px', fontWeight: 700, boxShadow: '0 8px 32px rgba(0,0,0,0.4)' },
+        fontClass: 'font-sans', accent: '#8b5cf6',
+        effects: ['orbs', 'grain', 'particles'], particleColor: '#8b5cf6',
+        meshGlow: 'radial-gradient(circle at 50% 0%, rgba(139,92,246,0.15), transparent 70%)',
+    },
+
     // ═══════════════════ PHOTOGRAPHY ═══════════════════
     photo_aura: {
         bgStyle: { background: 'linear-gradient(145deg, #1a0533 0%, #2e1065 35%, #4c1d95 65%, #1a0533 100%)' },
@@ -938,8 +965,8 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                     {[
                         { id: 'custom', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
-                        { id: 'ugc', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
-                        { id: 'olivia', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+                        { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
+                        { id: 'influencer', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
                     ].map((layout) => (
                         <button
                             key={layout.id}
