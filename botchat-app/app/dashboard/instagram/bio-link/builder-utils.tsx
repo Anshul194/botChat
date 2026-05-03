@@ -1,5 +1,5 @@
 import React from "react";
-import { LinkIcon, FileCode2, User, ImageIcon, Share2, CircleDot, Info, Megaphone, ShoppingBag, Orbit, Youtube, Video, Layers, Grid, MonitorPlay, Smartphone, Monitor, Hexagon, SmartphoneNfc, Globe, Mail, Camera, Sparkles, MoreHorizontal, LayoutTemplate, Zap } from "lucide-react";
+import { LinkIcon, FileCode2, User, ImageIcon, Share2, CircleDot, Info, Megaphone, ShoppingBag, Orbit, Youtube, Video, Layers, Grid, MonitorPlay, Smartphone, Monitor, Hexagon, SmartphoneNfc, Globe, Mail, Camera, Sparkles, MoreHorizontal, LayoutTemplate, Zap, Star, ShieldCheck, Clock } from "lucide-react";
 
 export const BLOCK_ICONS: Record<string, React.ReactNode> = {
     vcard: <User size={16} />, newsletter: <Mail size={16} />, divider: <MoreHorizontal size={16} />,
@@ -17,6 +17,9 @@ export const BLOCK_ICONS: Record<string, React.ReactNode> = {
     hero_section: <LayoutTemplate size={16} />, stats_section: <CircleDot size={16} />, brands_section: <Hexagon size={16} />,
     portfolio_section: <Grid size={16} />, services_section: <ShoppingBag size={16} />, testimonials_section: <User size={16} />,
     faq_section: <Info size={16} />, cta_section: <Zap size={16} />,
+    hero_product_section: <ShoppingBag size={16} />, featured_product_section: <Star size={16} />,
+    product_list_section: <Layers size={16} />, trust_badges_section: <ShieldCheck size={16} />,
+    urgency_offer_section: <Clock size={16} />, contact_section: <Mail size={16} />,
 };
 
 export const BLOCK_COLORS: Record<string, string> = {

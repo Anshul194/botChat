@@ -9,6 +9,7 @@ import { PortfolioLayout } from "./layouts/PortfolioLayout";
 import { UGCLayout } from "./layouts/UGCLayout";
 import { OliviaLayout } from "./layouts/OliviaLayout";
 import { UniversalLayout } from "./layouts/UniversalLayout";
+import { CreatorStoreLayout } from "./layouts/CreatorStoreLayout";
 
 export const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
     switch (name.toLowerCase()) {
@@ -50,7 +51,7 @@ export const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) 
     }
 }
 
-export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, instagramUsername, viewportOffset = 280, previewWidth = 300, uiTypeOverrides = {}, layoutStyle = "standard" }: any) => {
+export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, instagramUsername, viewportOffset = 280, previewWidth = 300, uiTypeOverrides = {}, layoutStyle = "standard", openEditor }: any) => {
     const [activePortfolioTab, setActivePortfolioTab] = React.useState("portfolio");
     const [portfolioSubView, setPortfolioSubView] = React.useState("main");
     const currentTab = tabs.find((t: any) => t.id === selectedTabId) || tabs[0];
@@ -335,12 +336,12 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                 
                 {/* Edge-to-Edge Screen Content */}
                 <div className="rounded-[3.8rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" 
-                    style={{ background: theme.bgStyle.background || "#F3F4F6", color: theme.textColor || "#0F172A" }}>
+                    style={{ background: layoutStyle === 'creator_store' ? '#ffffff' : (theme.bgStyle.background || "#F3F4F6"), color: theme.textColor || "#0F172A" }}>
                     
                     {/* Screen Surface Reflection */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-transparent z-30 pointer-events-none" />
 
-                    <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (layoutStyle === "portfolio" || layoutStyle === "ugc" || layoutStyle === "olivia" || layoutStyle === "universal") ? "p-0" : "p-6")}>
+                    <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (layoutStyle === "portfolio" || layoutStyle === "ugc" || layoutStyle === "olivia" || layoutStyle === "universal" || layoutStyle === "creator_store") ? "p-0" : "p-6")}>
                         {/* Default Header if no blocks exist */}
                         {otherBlocks.length === 0 && !topAvatar && (
                             <div className="flex flex-col items-center pt-20 pb-8 space-y-5 animate-in fade-in zoom-in-95 duration-1000">
@@ -359,6 +360,8 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                         {layoutStyle === "portfolio" ? (
                             <PortfolioLayout profile={profile} tabs={tabs} selectedTabId={selectedTabId} setSelectedTabId={setSelectedTabId} instagramUsername={instagramUsername} otherBlocks={otherBlocks} topAvatar={topAvatar} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} isMediaType={isMediaType} getYouTubeId={getYouTubeId} renderBlockUI={renderBlockUI} />
+                        ) : layoutStyle === "creator_store" ? (
+                            <CreatorStoreLayout profile={profile} otherBlocks={otherBlocks} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} openEditor={openEditor} />
                         ) : layoutStyle === "ugc" ? (
                             <UGCLayout theme={theme} profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} instagramUsername={instagramUsername} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} isMediaType={isMediaType} renderBlockUI={renderBlockUI} />
                         ) : layoutStyle === "olivia" ? (

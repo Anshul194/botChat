@@ -9,7 +9,7 @@ import {
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
     Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail,
-    Instagram, Twitter, Facebook, EyeOff
+    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
@@ -1718,7 +1718,7 @@ export default function BioLinkBuilder() {
                 </aside>
 
                 <main className={cn(
-                    "w-full xl:w-[500px] xl:shrink-0 bg-slate-50 dark:bg-slate-950 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
+                    "w-full xl:w-[500px] xl:shrink-0 bg-[#121418] relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
                     "sticky top-0 h-full overflow-hidden",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
                     showCarouselEditor && "xl:mr-[400px]"
@@ -1728,9 +1728,8 @@ export default function BioLinkBuilder() {
 
                     {/* Premium Decorative Background */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50 dark:opacity-100">
-                        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] dark:bg-primary/10" />
-                        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[120px] dark:bg-indigo-500/10" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent dark:from-white/5" />
+                        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/2 rounded-full blur-[120px]" />
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-white/2 rounded-full blur-[120px]" />
                     </div>
 
                     <div className={cn(
@@ -1747,6 +1746,7 @@ export default function BioLinkBuilder() {
                             previewWidth={360}
                             uiTypeOverrides={uiTypeOverrides}
                             layoutStyle={profile?.settings?.layoutStyle || "standard"}
+                            openEditor={openEditor}
                         />
                     </div>
                 </main>
@@ -1977,6 +1977,121 @@ export default function BioLinkBuilder() {
                                                     <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'logos', [...(item.logos || []), { image: url }]); } }} />
                                                 </label>
                                             </div>
+                                        </div>
+                                    )}
+
+                                    {/* Creator Store: Hero Product Section */}
+                                    {uiType === "hero_product_section" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Launch Your Digital Product" />
+                                            <InputField label="Subtitle" value={item.subtitle || ""} onChange={(e: any) => updateItem(idx, 'subtitle', e.target.value)} placeholder="Sell smarter with your bio page" />
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Image</label>
+                                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                    {item.product_image && <img src={item.product_image} className="w-12 h-12 rounded-lg object-cover" />}
+                                                    <label className="flex-1 cursor-pointer">
+                                                        <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                                            {item.product_image ? "Change Image" : "Upload Product"}
+                                                        </div>
+                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'product_image', url); } }} />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="Price" value={item.price || ""} onChange={(e: any) => updateItem(idx, 'price', e.target.value)} placeholder="$49" />
+                                                <InputField label="CTA Text" value={item.cta_text || ""} onChange={(e: any) => updateItem(idx, 'cta_text', e.target.value)} placeholder="Buy Now" />
+                                            </div>
+                                            <InputField label="CTA Link" value={item.cta_link || ""} onChange={(e: any) => updateItem(idx, 'cta_link', e.target.value)} placeholder="https://..." />
+                                        </div>
+                                    )}
+
+                                    {/* Creator Store: Featured Product Section */}
+                                    {uiType === "featured_product_section" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Product Name" value={item.name || ""} onChange={(e: any) => updateItem(idx, 'name', e.target.value)} placeholder="Premium Course" />
+                                            <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Product details..." textarea />
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Featured Image</label>
+                                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                    {item.image && <img src={item.image} className="w-12 h-12 rounded-lg object-cover" />}
+                                                    <label className="flex-1 cursor-pointer">
+                                                        <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                                            {item.image ? "Change Image" : "Upload Image"}
+                                                        </div>
+                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="Price" value={item.price || ""} onChange={(e: any) => updateItem(idx, 'price', e.target.value)} placeholder="$99" />
+                                                <InputField label="Link" value={item.link || ""} onChange={(e: any) => updateItem(idx, 'link', e.target.value)} placeholder="https://..." />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Creator Store: Product List Section */}
+                                    {uiType === "product_list_section" && (
+                                        <div className="space-y-5">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Items</p>
+                                            {(item.items || []).map((pItem: any, piIdx: number) => (
+                                                <div key={piIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                    <button onClick={() => { const newItems = [...item.items]; newItems.splice(piIdx, 1); updateItem(idx, 'items', newItems); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"><X size={12} /></button>
+                                                    <div className="flex gap-4">
+                                                        <div className="w-16 h-16 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden border border-slate-100 dark:border-slate-700">
+                                                            {pItem.image ? <img src={pItem.image} className="w-full h-full object-cover" /> : <ShoppingBag size={20} className="text-slate-300" />}
+                                                        </div>
+                                                        <div className="flex-1 space-y-2">
+                                                            <label className="cursor-pointer inline-block px-3 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase">
+                                                                Upload
+                                                                <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) { const newItems = [...item.items]; newItems[piIdx] = { ...pItem, image: url }; updateItem(idx, 'items', newItems); } } }} />
+                                                            </label>
+                                                            <InputField label="Name" value={pItem.name || ""} onChange={(e: any) => { const newItems = [...item.items]; newItems[piIdx] = { ...pItem, name: e.target.value }; updateItem(idx, 'items', newItems); }} />
+                                                        </div>
+                                                    </div>
+                                                    <InputField label="Description" value={pItem.description || ""} onChange={(e: any) => { const newItems = [...item.items]; newItems[piIdx] = { ...pItem, description: e.target.value }; updateItem(idx, 'items', newItems); }} textarea />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <InputField label="Price" value={pItem.price || ""} onChange={(e: any) => { const newItems = [...item.items]; newItems[piIdx] = { ...pItem, price: e.target.value }; updateItem(idx, 'items', newItems); }} />
+                                                        <InputField label="Link" value={pItem.link || ""} onChange={(e: any) => { const newItems = [...item.items]; newItems[piIdx] = { ...pItem, link: e.target.value }; updateItem(idx, 'items', newItems); }} />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <button onClick={() => { const newItems = [...(item.items || []), { name: "", description: "", image: "", price: "", link: "" }]; updateItem(idx, 'items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Product</button>
+                                        </div>
+                                    )}
+
+                                    {/* Creator Store: Trust Badges Section */}
+                                    {uiType === "trust_badges_section" && (
+                                        <div className="space-y-5">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Trust Badges</p>
+                                            {(item.items || []).map((badge: any, bIdx: number) => (
+                                                <div key={bIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center gap-4 relative group">
+                                                    <button onClick={() => { const newItems = [...item.items]; newItems.splice(bIdx, 1); updateItem(idx, 'items', newItems); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"><X size={12} /></button>
+                                                    <InputField label="Label" value={badge.label || ""} onChange={(e: any) => { const newItems = [...item.items]; newItems[bIdx] = { ...badge, label: e.target.value }; updateItem(idx, 'items', newItems); }} />
+                                                    <InputField label="Icon (lucide)" value={badge.icon || "ShieldCheck"} onChange={(e: any) => { const newItems = [...item.items]; newItems[bIdx] = { ...badge, icon: e.target.value }; updateItem(idx, 'items', newItems); }} />
+                                                </div>
+                                            ))}
+                                            <button onClick={() => { const newItems = [...(item.items || []), { label: "", icon: "ShieldCheck" }]; updateItem(idx, 'items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Badge</button>
+                                        </div>
+                                    )}
+
+                                    {/* Creator Store: Urgency Offer Section */}
+                                    {uiType === "urgency_offer_section" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Limited Time Offer" />
+                                            <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Offer details..." textarea />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <InputField label="Button Text" value={item.button_text || ""} onChange={(e: any) => updateItem(idx, 'button_text', e.target.value)} placeholder="Claim Discount" />
+                                                <InputField label="Button Link" value={item.button_link || ""} onChange={(e: any) => updateItem(idx, 'button_link', e.target.value)} placeholder="https://..." />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Creator Store: Contact Section */}
+                                    {uiType === "contact_section" && (
+                                        <div className="space-y-5">
+                                            <InputField label="Email Address" value={item.email || ""} onChange={(e: any) => updateItem(idx, 'email', e.target.value)} placeholder="support@creator.com" icon={<Mail size={14} />} />
+                                            <InputField label="Phone Number" value={item.phone || ""} onChange={(e: any) => updateItem(idx, 'phone', e.target.value)} placeholder="+123456789" icon={<Phone size={14} />} />
+                                            <InputField label="WhatsApp Number" value={item.whatsapp || ""} onChange={(e: any) => updateItem(idx, 'whatsapp', e.target.value)} placeholder="123456789" icon={<MessageCircle size={14} />} />
                                         </div>
                                     )}
 
