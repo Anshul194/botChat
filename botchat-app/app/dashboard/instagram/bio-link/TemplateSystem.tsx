@@ -930,14 +930,16 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
             <ThemeAnimationStyles />
 
             {/* ── Layout Style Selector ── */}
-            <div className="mb-10">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 mb-4 block">Layout Structure</label>
-                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+            <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Layout Structure</label>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                        { id: 'standard', name: 'Standard Links', desc: 'Classic bio-link list with themes', image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&q=80' },
-                        { id: 'portfolio', name: 'Portfolio', desc: 'Continuous showcase template', image: 'https://images.unsplash.com/photo-1481481600465-bbaeb5e45a2d?w=500&q=80' },
-                        { id: 'ugc', name: 'UGC Creator', desc: 'Elegant & aesthetic layout', image: 'https://images.unsplash.com/photo-1616469829581-73993eb86b02?w=500&q=80' },
-                        { id: 'olivia', name: 'Olivia Warren', desc: 'Minimalist image-focused layout', image: 'https://images.unsplash.com/photo-1534528741775-53994a69dadaeb?w=500&q=80' },
+                        { id: 'standard', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
+                        { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
+                        { id: 'ugc', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
+                        { id: 'olivia', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
                     ].map((layout) => (
                         <button
                             key={layout.id}
@@ -947,51 +949,55 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                 }
                             }}
                             className={cn(
-                                "text-left group relative overflow-hidden rounded-3xl border-2 transition-all duration-300 flex flex-col h-full",
+                                "text-left group relative p-3 rounded-xl border transition-all duration-200 flex flex-col items-start gap-2 h-full bg-white dark:bg-slate-900/40 backdrop-blur-sm",
                                 (profile?.settings?.layoutStyle || 'standard') === layout.id
-                                    ? "border-primary shadow-xl shadow-primary/10 ring-2 ring-primary ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-950 scale-[1.02] z-10"
-                                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md"
+                                    ? "border-primary shadow-sm ring-1 ring-primary bg-primary/5 dark:bg-primary/10"
+                                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60"
                             )}
                         >
-                            <div className="h-28 w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
-                                <img src={layout.image} alt={layout.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
-                                {(profile?.settings?.layoutStyle || 'standard') === layout.id && (
-                                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 animate-pulse">
-                                        <Sparkles size={12} />
-                                    </div>
-                                )}
+                            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:scale-110 transition-transform">
+                                {layout.icon}
                             </div>
-                            <div className="p-4 flex-1 flex flex-col justify-end bg-white dark:bg-slate-900">
-                                <p className={cn("text-xs font-black uppercase tracking-widest", (profile?.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
+                            <div>
+                                <p className={cn("text-xs font-bold leading-tight", (profile?.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
                                     {layout.name}
                                 </p>
-                                <p className="text-[10px] font-medium text-slate-400 mt-1">{layout.desc}</p>
+                                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">{layout.desc}</p>
                             </div>
+                            
+                            {(profile?.settings?.layoutStyle || 'standard') === layout.id && (
+                                <div className="absolute top-3 right-3 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
+                                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                </div>
+                            )}
                         </button>
                     ))}
                 </div>
             </div>
 
             {(!profile?.settings?.layoutStyle || profile?.settings?.layoutStyle === 'standard') && (
-                <>
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Theme Presets</label>
+                    </div>
                     {/* ── Category Pills ── */}
-                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                         {NICHE_CATEGORIES.map(cat => (
                             <button key={cat.id} onClick={() => setSelectedNiche(cat.id)}
                                 className={cn(
-                                    "flex-shrink-0 h-10 px-5 rounded-xl flex items-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all",
+                                    "flex-shrink-0 h-8 px-3.5 rounded-full flex items-center gap-1.5 text-[11px] font-medium transition-all",
                                     selectedNiche === cat.id
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "bg-white dark:bg-slate-900 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800"
+                                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm"
+                                        : "bg-white dark:bg-slate-900 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                                 )}>
-                                {cat.icon} {cat.name}
+                                {React.cloneElement(cat.icon as React.ReactElement, { size: 12 })} 
+                                {cat.name}
                             </button>
                         ))}
                     </div>
 
                     {/* ── Template Grid ── */}
-                    <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
                         {NICHE_TEMPLATES[selectedNiche]?.map((tpl) => {
                             const tCfg = getTheme(tpl.id);
                             const isSelected = profile?.theme === tpl.id;
@@ -1001,53 +1007,92 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                             return (
                                 <button key={tpl.id} onClick={() => updateProfile({ theme: tpl.id })}
                                     className={cn(
-                                        "group relative aspect-[9/16] rounded-2xl overflow-hidden border-2 transition-all duration-300 outline-none cursor-pointer",
+                                        "group relative aspect-[9/16] rounded-xl overflow-hidden border transition-all duration-300 outline-none cursor-pointer flex flex-col bg-white dark:bg-slate-900",
                                         isSelected
-                                            ? "border-primary shadow-2xl shadow-primary/20 scale-[1.02]"
-                                            : "border-transparent hover:border-primary/30 dark:hover:border-primary/20 hover:shadow-xl"
+                                            ? "border-primary shadow-md ring-1 ring-primary"
+                                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
                                     )}>
 
-                                    <div className="absolute inset-0" style={tCfg.bgStyle}>
+                                    {/* Preview Area */}
+                                    <div className="relative flex-1 w-full overflow-hidden" style={tCfg.bgStyle}>
                                         <ThemeEffectsLayer theme={tCfg} mini />
-                                        <div className="absolute inset-0 flex flex-col items-center pt-8 px-4 opacity-50 group-hover:opacity-80 transition-opacity duration-500 z-[5]">
-                                            <div className="w-10 h-10 rounded-full mb-2" style={{ border: `2px solid ${tCfg.textColor}30`, backgroundColor: `${tCfg.textColor}10` }} />
-                                            <div className="w-14 h-1.5 rounded-full mb-1" style={{ backgroundColor: `${tCfg.textColor}25` }} />
-                                            <div className="w-10 h-1 rounded-full mb-5" style={{ backgroundColor: `${tCfg.textColor}15` }} />
-                                            <div className="w-full space-y-2">
-                                                {[1, 2, 3].map(n => (
-                                                    <div key={n} className="w-full h-7 transition-all duration-500"
-                                                        style={{ ...tCfg.btnStyle, padding: 0, fontSize: 0 }} />
-                                                ))}
+                                        <div className="absolute inset-0 flex flex-col items-center pt-5 px-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300 z-[5]">
+                                            {/* Avatar */}
+                                            {profile?.avatar ? (
+                                                <div className="w-8 h-8 rounded-full mb-1.5 shadow-sm overflow-hidden" style={{ border: `1px solid ${tCfg.textColor}30` }}>
+                                                    <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                                </div>
+                                            ) : (
+                                                <div className="w-8 h-8 rounded-full mb-1.5 shadow-sm" style={{ border: `1px solid ${tCfg.textColor}30`, backgroundColor: `${tCfg.textColor}10` }} />
+                                            )}
+                                            
+                                            {/* Title */}
+                                            {profile?.title ? (
+                                                <div className="mb-1 text-[8px] font-bold truncate max-w-[80%]" style={{ color: tCfg.textColor }}>
+                                                    {profile.title}
+                                                </div>
+                                            ) : (
+                                                <div className="w-12 h-1 rounded-full mb-1" style={{ backgroundColor: `${tCfg.textColor}60` }} />
+                                            )}
+                                            
+                                            <div className="w-8 h-0.5 rounded-full mb-3" style={{ backgroundColor: `${tCfg.textColor}30` }} />
+                                            
+                                            {/* Links */}
+                                            <div className="w-full space-y-1.5">
+                                                {/* Use actual links if available, else fall back to generic blocks */}
+                                                {(() => {
+                                                    const blocks = profile?.tabs?.[0]?.sections?.[0]?.blocks?.filter((b: any) => b.is_active !== 0 && b.is_Enabled !== 0) || [];
+                                                    const previewBlocks = blocks.length > 0 ? blocks.slice(0, 3) : [1, 2, 3];
+                                                    
+                                                    return previewBlocks.map((b: any, i: number) => {
+                                                        const label = typeof b === 'object' ? (b.settings?.title || b.settings?.name || b.settings?.text || "Link") : "";
+                                                        return (
+                                                            <div key={typeof b === 'object' ? b.id : i} className="w-full h-4 rounded-[4px] transition-all duration-500 flex items-center justify-center px-1.5 overflow-hidden"
+                                                                style={{ 
+                                                                    ...tCfg.btnStyle, 
+                                                                    padding: 0, 
+                                                                    fontSize: 0, 
+                                                                    borderWidth: tCfg.btnStyle.border === 'none' ? '0' : '1px',
+                                                                    boxShadow: 'none'
+                                                                }}>
+                                                                {typeof b === 'object' ? (
+                                                                    <span className="text-[6px] font-bold truncate w-full text-center" style={{ color: tCfg.textColor }}>{label}</span>
+                                                                ) : (
+                                                                    <div className="w-1/2 h-0.5 rounded-sm" style={{ backgroundColor: tCfg.textColor, opacity: 0.6 }} />
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    });
+                                                })()}
                                             </div>
                                         </div>
+                                        
+                                        {/* Badges */}
+                                        {tpl.badge && (
+                                            <div className={cn(
+                                                "absolute top-2 left-2 px-1.5 py-0.5 text-white text-[8px] font-bold rounded shadow-sm flex items-center gap-1 z-20 backdrop-blur-md",
+                                                isAnimated ? "bg-amber-500/90" :
+                                                    isImage ? "bg-blue-500/90" :
+                                                        "bg-slate-700/90"
+                                            )}>
+                                                {isAnimated ? <Zap size={8} /> : isImage ? <ImageIcon size={8} /> : <Sparkles size={8} />}
+                                                {tpl.badge}
+                                            </div>
+                                        )}
+                                        {isSelected && (
+                                            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center z-20 shadow-sm">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {isSelected && (
-                                        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-20 shadow-lg">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                                        </div>
-                                    )}
-
-                                    {tpl.badge && (
-                                        <div className={cn(
-                                            "absolute top-3 left-3 px-2.5 py-1 text-white text-[8px] font-black uppercase rounded-full shadow-lg flex items-center gap-1 z-20",
-                                            isAnimated ? "bg-gradient-to-r from-amber-500 to-orange-500" :
-                                                isImage ? "bg-gradient-to-r from-cyan-500 to-blue-500" :
-                                                    "bg-gradient-to-r from-slate-600 to-slate-800"
-                                        )}>
-                                            {isAnimated ? <Zap size={8} /> : isImage ? <ImageIcon size={8} /> : <Sparkles size={8} />}
-                                            {tpl.badge}
-                                        </div>
-                                    )}
-
-                                    <div className="absolute bottom-0 inset-x-0 p-2.5 z-10">
-                                        <div className="bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl p-3 rounded-xl border border-white/20 shadow-2xl group-hover:translate-y-[-2px] transition-transform duration-300">
-                                            <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">{tpl.name}</p>
-                                            <div className="flex items-center justify-between mt-1.5">
-                                                <span className="text-[8px] font-black uppercase tracking-[0.15em]" style={{ color: tCfg.accent }}>{tpl.style}</span>
-                                                <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ backgroundColor: `${tCfg.accent}20` }}>
-                                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: tCfg.accent }} />
-                                                </div>
+                                    {/* Footer Name Area */}
+                                    <div className="w-full p-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-0.5 relative z-10 bg-white dark:bg-slate-900">
+                                        <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate text-left">{tpl.name}</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[8px] text-slate-500 dark:text-slate-400 font-medium truncate text-left">{tpl.style}</span>
+                                            <div className="w-2.5 h-2.5 rounded-full flex items-center justify-center shrink-0 ml-1.5" style={{ backgroundColor: `${tCfg.accent}20` }}>
+                                                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: tCfg.accent }} />
                                             </div>
                                         </div>
                                     </div>
@@ -1055,7 +1100,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                             );
                         })}
                     </div>
-                </>
+                </div>
             )}
         </div>
     );
