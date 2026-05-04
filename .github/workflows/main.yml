@@ -3,7 +3,7 @@ name: Deploy to FTP
 on:
   push:
     branches:
-      - main   # change if your branch is different
+      - main
 
 jobs:
   deploy:
@@ -11,36 +11,29 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./botchat-app   # ✅ your actual project folder
+        working-directory: ./botchat-app
 
     steps:
-      # 1. Checkout repo
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Setup Node (important)
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # 3. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Build + Export (for static hosting)
-      - name: Build and Export
-        run: |
-          npx next build
-          npx next export
+      - name: Build project
+        run: npm run build
 
-      # 5. Deploy to FTP
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./botchat-app/out/   # ✅ export folder
-          server-dir: /public_html/megadm.chat/  # ✅ your live domain
+          local-dir: ./botchat-app/out/
+          server-dir: /public_html/megadm.chat/
           dangerous-clean-slate: true
