@@ -200,11 +200,10 @@ export default function InstagramBioLinksPage() {
             <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
             <div className="max-w-full space-y-8 relative z-10 p-6">
-                {/* Header Section */}
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }} 
                     animate={{ opacity: 1, y: 0 }} 
-                    className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+                    className="flex flex-col lg:flex-row lg:items-end justify-between gap-6"
                 >
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
@@ -216,17 +215,17 @@ export default function InstagramBioLinksPage() {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
                                 Bio Link Manager
                             </h1>
-                            <p className="text-[var(--muted-foreground)] font-medium max-w-xl">
+                            <p className="text-[var(--muted-foreground)] font-medium max-w-xl text-sm sm:text-base">
                                 Create and maintain your high-conversion bio links in one professional dashboard.
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+                        className="h-14 w-full lg:w-auto px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
                     >
                         <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" /> 
                         Add New Bio
@@ -238,9 +237,9 @@ export default function InstagramBioLinksPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="h-16 rounded-3xl border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl flex items-center justify-between px-6 shadow-sm"
+                    className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:h-16 rounded-3xl border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl px-6 py-4 sm:py-0 shadow-sm"
                 >
-                    <div className="flex items-center gap-4 flex-1">
+                    <div className="flex items-center gap-4 w-full sm:flex-1">
                         <div className="relative w-full max-w-md group">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
                             <input
@@ -252,7 +251,7 @@ export default function InstagramBioLinksPage() {
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                         <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10">
                             <button
                                 onClick={() => setView('row')}
@@ -319,27 +318,29 @@ export default function InstagramBioLinksPage() {
                         </div>
                     ) : (
                         <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Portfolio & URL</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Status</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Management</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredRows.map((row) => (
-                                        <BioLinkRow 
-                                            key={row.pageId} 
-                                            row={row} 
-                                            onEdit={handleEdit} 
-                                            onCopy={handleCopy} 
-                                            onAction={(type) => setActionModal({ isOpen: true, type, row })}
-                                            copied={copiedId === row.pageId}
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
+                            <div className="overflow-x-auto no-scrollbar">
+                                <table className="w-full text-left border-collapse min-w-[700px]">
+                                    <thead>
+                                        <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Portfolio & URL</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Status</th>
+                                            <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Management</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredRows.map((row) => (
+                                            <BioLinkRow 
+                                                key={row.pageId} 
+                                                row={row} 
+                                                onEdit={handleEdit} 
+                                                onCopy={handleCopy} 
+                                                onAction={(type) => setActionModal({ isOpen: true, type, row })}
+                                                copied={copiedId === row.pageId}
+                                            />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
                 </div>

@@ -1086,8 +1086,8 @@ function BioLinkBuilderContent() {
         <div className="h-screen bg-transparent font-sans selection:bg-primary/10 flex flex-col relative overflow-hidden"
             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
 
-            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ STABLE TOP BAR ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
-            <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white/85 dark:bg-black/70 backdrop-blur-2xl border-b border-slate-100 dark:border-slate-800 shadow-sm">
+            {/* ── STABLE TOP BAR ── */}
+            <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white/85 dark:bg-black/70 backdrop-blur-2xl border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
                 <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
                         <Sparkles size={16} />
@@ -1099,15 +1099,16 @@ function BioLinkBuilderContent() {
                 </div>
 
                 {/* ── CENTRAL FLOATING PHASE DOCK ── */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100] w-auto">
-                    <div className="bg-slate-100 dark:bg-slate-800 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100] w-auto max-w-[80%] sm:max-w-none">
+                    <div className="bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-3xl rounded-full p-1 flex items-center gap-0.5 sm:gap-1 border border-slate-200 dark:border-slate-700 shadow-xl">
                         {PHASES.map((p, idx) => (
                             <button key={p.id} onClick={() => setView(p.id)} className={cn(
-                                "h-9 px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
+                                "h-8 sm:h-9 px-3 sm:px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
                                 view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm z-10" : "text-slate-500 hover:text-slate-900 hover:bg-white/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5"
                             )}>
                                 <p.Icon size={14} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100")} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
+                                <span className="hidden md:inline text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
+                                {view === p.id && <span className="md:hidden text-[9px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>}
                             </button>
                         ))}
                     </div>
@@ -1129,11 +1130,10 @@ function BioLinkBuilderContent() {
             <div className="relative flex-1 flex overflow-hidden">
                 {/* LEFT PANEL: TOOLS & PHASES */}
                 <aside className={cn(
-                    "bg-white dark:bg-slate-950 flex flex-col sticky top-0 h-full z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl shrink-0",
-                    activePanel === "preview" ? "hidden xl:flex" : "flex",
-                    "flex-1"
+                    "bg-white dark:bg-slate-950 flex flex-col h-full z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl shrink-0",
+                    activePanel === "preview" ? "hidden xl:flex" : "flex w-full xl:flex-1",
                 )}>
-                    <div className="flex-1 overflow-y-auto px-6 pt-8 pb-10 no-scrollbar">
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-32">
 
                         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 px-4 py-3 shadow-sm">
                             <div>
@@ -1283,8 +1283,8 @@ function BioLinkBuilderContent() {
                                                                 }}
                                                             >
                                                                 {/* Drag Handle */}
-                                                                <div className="text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing group-hover:text-slate-400 transition-colors">
-                                                                    <GripVertical size={16} />
+                                                                <div className="w-10 h-10 -ml-2 flex items-center justify-center text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing group-hover:text-slate-400 transition-colors">
+                                                                    <GripVertical size={18} />
                                                                 </div>
 
                                                                 {/* Block Icon */}
@@ -1773,8 +1773,8 @@ function BioLinkBuilderContent() {
                 </aside>
 
                 <main className={cn(
-                    "w-full xl:w-[500px] xl:shrink-0 bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
-                    "sticky top-0 h-full overflow-hidden",
+                    "w-full bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
+                    "xl:sticky xl:top-0 h-full overflow-hidden xl:w-[450px]",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
                     showCarouselEditor && "xl:mr-[400px]"
                 )}>
@@ -1784,7 +1784,7 @@ function BioLinkBuilderContent() {
 
                     <div className={cn(
                         "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full pt-4",
-                        "scale-[1.05] xl:scale-[1.1]"
+                        "scale-100"
                     )}>
                         <PhonePreview
                             profile={profile}
@@ -1819,14 +1819,32 @@ function BioLinkBuilderContent() {
                 </AnimatePresence>
             </div>
 
-            {/* MOBILE SWITCHER */}
-            <div className="xl:hidden fixed bottom-4 left-4 right-4 z-[200] h-16 bg-primary backdrop-blur-2xl rounded-[22px] flex p-1.5 shadow-2xl border border-white/20">
-                <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-white text-primary shadow-lg' : 'text-white/60')}>
-                    <Edit3 size={16} /> Studio
+        {/* ── MOBILE FLOATING CONTROLS (OUTSIDE MAIN OVERFLOW) ── */}
+            <div className="xl:hidden">
+                {/* Main Floating Button (Corner) */}
+                <button 
+                    onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
+                    className="fixed bottom-8 right-8 z-[9999] w-16 h-16 rounded-full bg-primary text-white shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-4 border-white dark:border-slate-900 group"
+                >
+                    <div className="relative">
+                        {activePanel === 'builder' ? (
+                            <Eye size={28} className="group-hover:rotate-12 transition-transform" />
+                        ) : (
+                            <Edit3 size={28} className="group-hover:-rotate-12 transition-transform" />
+                        )}
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+                    </div>
                 </button>
-                <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-white text-primary shadow-lg' : 'text-white/60')}>
-                    <Eye size={16} /> Portal
-                </button>
+
+                {/* Bottom Switcher Bar */}
+                <div className="fixed bottom-8 left-8 right-28 z-[9998] h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[24px] flex p-1.5 shadow-2xl border border-slate-200 dark:border-white/10">
+                    <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-2xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-primary text-white shadow-lg' : 'text-slate-400')}>
+                        <Edit3 size={16} /> Studio
+                    </button>
+                    <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-2xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-primary text-white shadow-lg' : 'text-slate-400')}>
+                        <Eye size={16} /> Portal
+                    </button>
+                </div>
             </div>
 
             {/* MODALS */}

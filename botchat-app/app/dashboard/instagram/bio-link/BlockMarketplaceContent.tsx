@@ -168,7 +168,7 @@ export default function BlockMarketplaceContent({
                             {category}
                         </h3>
 
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-2">
                             {data.blocks.map((item) => {
                                 const Icon = getLucideIcon(item.id, category);
                                 const itemColor = item.color || data.info.color || "#64748b";
