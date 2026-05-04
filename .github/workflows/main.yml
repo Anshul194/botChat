@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: next-metadm-frontend   # 👈 THIS IS THE FIX
+        working-directory: ./botchat-app   # ✅ CORRECT FOLDER
 
     steps:
       - name: Checkout code
@@ -29,6 +29,6 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: next-metadm-frontend/out/   # 👈 update path
+          local-dir: ./botchat-app/out/   # ✅ CORRECT
           server-dir: /public_html/megadm.chat/
           dangerous-clean-slate: true
