@@ -78,6 +78,7 @@ export const mergeTabsPreservingItems = (localTabs: any[], incomingTabs: any[]) 
         return Array.isArray(localTabs) ? localTabs : [];
     }
 
+
     return incomingTabs.map((incomingTab) => {
         const localTab = (localTabs || []).find((t: any) => t.id === incomingTab.id);
         const incomingSections = Array.isArray(incomingTab?.sections) ? incomingTab.sections : [];
