@@ -3,21 +3,30 @@ name: Deploy to FTP
 on:
   push:
     branches:
-      - main   # or your branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./botchat-app
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
       - name: Install dependencies
         run: npm install
 
-      - name: Build Next.js
-        run: npm run build && npx next export
+      - name: Build project
+        run: npm run build
 
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -25,5 +34,6 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./out/
+          local-dir: ./botchat-app/out/
           server-dir: /public_html/megadm.chat/
+          dangerous-clean-slate: true
