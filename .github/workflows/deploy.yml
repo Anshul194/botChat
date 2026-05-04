@@ -3,11 +3,15 @@ name: Deploy to FTP
 on:
   push:
     branches:
-      - main   # or your branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: next-metadm-frontend   # 👈 THIS IS THE FIX
 
     steps:
       - name: Checkout code
@@ -16,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Next.js
+      - name: Build project
         run: npm run build && npx next export
 
       - name: Upload to FTP
@@ -25,5 +29,6 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./out/
-          server-dir: /public_html/megadm.chat/
+          local-dir: next-metadm-frontend/out/   # 👈 update path
+          server-dir: /public_html/agency.megadm.chat/
+          dangerous-clean-slate: true
