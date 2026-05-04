@@ -131,7 +131,11 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
                     <EditOverlay />
                     <div className="rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-100">
                         <div className="relative aspect-video">
-                            <img src={featuredBlock.settings?.image} className="w-full h-full object-cover" alt="" />
+                            <img 
+                                src={featuredBlock.settings?.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"} 
+                                className="w-full h-full object-cover" 
+                                alt="Featured" 
+                            />
                             <div className="absolute top-3 left-3 bg-black/90 backdrop-blur-md text-white px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest">
                                 Best Seller
                             </div>

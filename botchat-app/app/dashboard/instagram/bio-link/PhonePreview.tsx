@@ -365,7 +365,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         {(settings.logos || []).length > 0 ? (
                             <div className="flex flex-wrap items-center justify-center gap-8">
                                 {(settings.logos || []).slice(0, 6).map((l: any, i: number) => (
-                                    <img key={i} src={l.image} className="h-6 object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all" />
+                                    l.image && (
+                                        <img key={i} src={l.image} className="h-6 object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all" />
+                                    )
                                 ))}
                             </div>
                         ) : (
