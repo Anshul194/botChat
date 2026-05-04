@@ -57,6 +57,41 @@ const getLucideIcon = (id: string, category: string) => {
     return Sparkles;
 };
 
+const DEFAULT_BLOCKS: BlockCategoryMap = {
+    standard: {
+        info: { color: "#3b82f6", background_color: "#eff6ff", icon: "layout" },
+        blocks: [
+            { id: "hero", label: "Hero Section", desc: "Main introduction with image and CTA", color: "#3b82f6" },
+            { id: "heading", label: "Heading", desc: "Section title or large text", color: "#6366f1" },
+            { id: "paragraph", label: "Text Block", desc: "Detailed description or biography", color: "#64748b" },
+            { id: "avatar", label: "Profile Header", desc: "Avatar with name and username", color: "#ec4899" },
+            { id: "image", label: "Image Block", desc: "High-quality photo or banner", color: "#f59e0b" },
+            { id: "socials", label: "Social Links", desc: "Connect your social profiles", color: "#06b6d4" },
+        ]
+    },
+    advanced: {
+        info: { color: "#8b5cf6", background_color: "#f5f3ff", icon: "zap" },
+        blocks: [
+            { id: "services", label: "Services", desc: "List your core offerings", color: "#8b5cf6" },
+            { id: "portfolio", label: "Portfolio Grid", desc: "Showcase your best work", color: "#10b981" },
+            { id: "testimonials", label: "Testimonials", desc: "Client success stories", color: "#f43f5e" },
+            { id: "faq", label: "FAQ", desc: "Frequently asked questions", color: "#64748b" },
+            { id: "cta", label: "Call to Action", desc: "Highlight a priority link", color: "#f97316" },
+            { id: "stats", label: "Statistics", desc: "Display your achievements", color: "#2563eb" },
+            { id: "brands", label: "Brand Logos", desc: "Logos of partners or clients", color: "#475569" },
+        ]
+    },
+    embeds: {
+        info: { color: "#f43f5e", background_color: "#fff1f2", icon: "music" },
+        blocks: [
+            { id: "youtube", label: "YouTube Video", desc: "Embed a video or channel", color: "#ff0000" },
+            { id: "tiktok", label: "TikTok", desc: "Showcase your latest clips", color: "#000000" },
+            { id: "spotify", label: "Spotify", desc: "Embed a track or playlist", color: "#1db954" },
+            { id: "soundcloud", label: "SoundCloud", desc: "Share your audio tracks", color: "#ff5500" },
+        ]
+    }
+};
+
 export default function BlockMarketplaceContent({
     onSelect,
 }: {
@@ -72,10 +107,16 @@ export default function BlockMarketplaceContent({
             setIsLoading(true);
             try {
                 const res = await api.get("/bio/block-types");
-                const data = res.data?.data || {};
-                setInternalCategories(data);
+                const data = res.data?.data || res.data || {};
+                
+                if (Object.keys(data).length > 0) {
+                    setInternalCategories(data);
+                } else {
+                    setInternalCategories(DEFAULT_BLOCKS);
+                }
             } catch (err) {
-                console.error("Failed to fetch block types", err);
+                console.error("Failed to fetch block types, using fallback", err);
+                setInternalCategories(DEFAULT_BLOCKS);
             } finally {
                 setIsLoading(false);
             }

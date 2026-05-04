@@ -164,23 +164,21 @@ const CarouselPreview = ({ items }: { items: any[] }) => (
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
         {open && (
-            <div className="fixed inset-0 z-[500] pointer-events-none">
+            <div className="fixed inset-0 z-[10000] pointer-events-none">
                 {/* ── MOBILE / TABLET OVERLAY ── */}
-                <div className="xl:hidden pointer-events-auto absolute inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4">
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+                <div className="xl:hidden pointer-events-auto absolute inset-0 z-[10000]">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
-                        <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-                            {icon && <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">{icon}</div>}
-                            <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
+                        initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className={cn("relative z-10 w-full h-full bg-white dark:bg-slate-950 flex flex-col shadow-2xl", maxWidthClassName)}>
+                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 sticky top-0 z-20">
                             <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-                                <X size={18} />
+                                <ChevronLeft size={20} />
                             </button>
+                            <h2 className="text-lg font-black text-slate-900 dark:text-white flex-1 tracking-tight truncate">{title}</h2>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-8 no-scrollbar">{children}</div>
-                        {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shrink-0">{footer}</div>}
+                        <div className="flex-1 overflow-y-auto p-6 no-scrollbar pb-48">{children}</div>
+                        {footer && <div className="p-6 pb-12 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 fixed bottom-0 left-0 right-0 z-[10001] shadow-[0_-16px_32px_rgba(0,0,0,0.1)]">{footer}</div>}
                     </motion.div>
                 </div>
 
@@ -1087,44 +1085,71 @@ function BioLinkBuilderContent() {
             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
 
             {/* ── STABLE TOP BAR ── */}
-            <header className="relative z-50 h-14 flex items-center justify-between px-6 bg-white/85 dark:bg-black/70 backdrop-blur-2xl border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                        <Sparkles size={16} />
-                    </div>
-                    <div className="min-w-0">
-                        <span className="block text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">Creator Studio</span>
-                        <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">Bio link builder</span>
+            {/* ── STABLE TOP BAR ── */}
+            {(!showAddBlock && !showCarouselEditor) && (
+                <header className="relative z-50 h-14 xl:h-16 flex items-center justify-between px-4 xl:px-8 bg-white/95 dark:bg-black/80 backdrop-blur-3xl border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
+                <div className="flex items-center gap-2 xl:gap-4 min-w-0">
+                    <button 
+                        onClick={() => window.location.href = '/dashboard/instagram/bio-links'}
+                        className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="hidden sm:flex w-8 h-8 rounded-xl bg-primary items-center justify-center text-white shadow-lg shadow-primary/20 shrink-0">
+                            <Sparkles size={16} />
+                        </div>
+                        <div className="min-w-0">
+                            <span className="block text-xs xl:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">Studio</span>
+                            <span className="hidden xl:block text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">Bio link builder</span>
+                        </div>
                     </div>
                 </div>
 
-                {/* ── CENTRAL FLOATING PHASE DOCK ── */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100] w-auto max-w-[80%] sm:max-w-none">
-                    <div className="bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-3xl rounded-full p-1 flex items-center gap-0.5 sm:gap-1 border border-slate-200 dark:border-slate-700 shadow-xl">
+                {/* ── CENTRAL FLOATING PHASE DOCK (DESKTOP) ── */}
+                <div className="hidden xl:block absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100]">
+                    <div className="bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-slate-200 dark:border-slate-700 shadow-xl">
                         {PHASES.map((p, idx) => (
                             <button key={p.id} onClick={() => setView(p.id)} className={cn(
-                                "h-8 sm:h-9 px-3 sm:px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
+                                "h-9 px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
                                 view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm z-10" : "text-slate-500 hover:text-slate-900 hover:bg-white/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5"
                             )}>
                                 <p.Icon size={14} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100")} />
-                                <span className="hidden md:inline text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
-                                {view === p.id && <span className="md:hidden text-[9px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>}
+                                <span className="inline text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
                             </button>
                         ))}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 relative z-[110]">
+                <div className="flex items-center gap-2 xl:gap-3 relative z-[110]">
                     <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         {instagramUsername}
                     </div>
-                    <button onClick={handleShareLink} className="h-8 px-4 rounded-lg bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-md shadow-primary/10">
+                    <button onClick={handleShareLink} className="h-9 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20">
                         {copiedLink ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
-                        {copiedLink ? "COPIED" : "SHARE"}
+                        <span className="hidden sm:inline">{copiedLink ? "COPIED" : "SHARE"}</span>
                     </button>
                 </div>
             </header>
+            )}
+
+            {/* ── MOBILE PHASE DOCK (SCROLLABLE BAR) ── */}
+            {(!showAddBlock && !showCarouselEditor) && (
+                <div className="xl:hidden bg-white/80 dark:bg-black/40 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 overflow-x-auto no-scrollbar shrink-0">
+                <div className="flex items-center gap-1 p-2 min-w-max">
+                    {PHASES.map((p) => (
+                        <button key={p.id} onClick={() => setView(p.id)} className={cn(
+                            "h-10 px-4 rounded-full flex items-center justify-center gap-2 transition-all",
+                            view === p.id ? "bg-primary text-white shadow-lg" : "text-slate-500 dark:text-slate-400"
+                        )}>
+                            <p.Icon size={16} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+            )}
 
             {/* CREATOR WORKSPACE */}
             <div className="relative flex-1 flex overflow-hidden">
@@ -1819,32 +1844,15 @@ function BioLinkBuilderContent() {
                 </AnimatePresence>
             </div>
 
-        {/* ── MOBILE FLOATING CONTROLS (OUTSIDE MAIN OVERFLOW) ── */}
+            {/* ── MOBILE FLOATING CONTROLS (OUTSIDE MAIN OVERFLOW) ── */}
             <div className="xl:hidden">
-                {/* Main Floating Button (Corner) */}
+                {/* Main Floating Toggle Button */}
                 <button 
                     onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
-                    className="fixed bottom-8 right-8 z-[9999] w-16 h-16 rounded-full bg-primary text-white shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-4 border-white dark:border-slate-900 group"
+                    className="fixed bottom-32 right-6 z-[10002] w-14 h-14 rounded-full bg-primary text-white shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-4 border-white dark:border-slate-900"
                 >
-                    <div className="relative">
-                        {activePanel === 'builder' ? (
-                            <Eye size={28} className="group-hover:rotate-12 transition-transform" />
-                        ) : (
-                            <Edit3 size={28} className="group-hover:-rotate-12 transition-transform" />
-                        )}
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse" />
-                    </div>
+                    {activePanel === 'builder' ? <Eye size={24} /> : <Edit3 size={24} />}
                 </button>
-
-                {/* Bottom Switcher Bar */}
-                <div className="fixed bottom-8 left-8 right-28 z-[9998] h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[24px] flex p-1.5 shadow-2xl border border-slate-200 dark:border-white/10">
-                    <button onClick={() => setActivePanel('builder')} className={cn("flex-1 rounded-2xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'builder' ? 'bg-primary text-white shadow-lg' : 'text-slate-400')}>
-                        <Edit3 size={16} /> Studio
-                    </button>
-                    <button onClick={() => setActivePanel('preview')} className={cn("flex-1 rounded-2xl flex items-center justify-center gap-2 text-[11px] font-black uppercase tracking-widest transition-all", activePanel === 'preview' ? 'bg-primary text-white shadow-lg' : 'text-slate-400')}>
-                        <Eye size={16} /> Portal
-                    </button>
-                </div>
             </div>
 
             {/* MODALS */}
@@ -1858,32 +1866,34 @@ function BioLinkBuilderContent() {
                 title={`Edit ${getUiTypeFromBlock(editingBlock).replace(/_/g, " ") || "Block"}`}
                 icon={editingBlock && (BLOCK_ICONS[getUiTypeFromBlock(editingBlock)] || <LayoutTemplate size={20} />)}
                 footer={
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-row gap-3">
                         {!editingBlock?._isNew && (
                             <button
                                 onClick={async () => {
                                     if (!editingBlock?.id) return;
+                                    const ok = window.confirm("Delete this block?");
+                                    if (!ok) return;
                                     await handleDeleteBlock(editingBlock.id);
                                     setEditingBlock(null);
                                     setShowCarouselEditor(false);
                                 }}
-                                className="h-14 px-6 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-black uppercase tracking-widest text-[12px]"
+                                className="flex-1 h-15 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[11px] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all"
                             >
-                                Delete Block
+                                Delete
                             </button>
                         )}
                         <button
                             onClick={saveEditor}
                             disabled={isSavingBlock}
                             className={cn(
-                                "flex-1 h-14 rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-xl transition-all flex items-center justify-center gap-2",
-                                isSavingBlock ? "bg-slate-100 text-slate-400" : "bg-primary text-white hover:opacity-90 active:scale-[0.98]"
+                                "flex-[2] h-15 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-lg transition-all flex items-center justify-center gap-2",
+                                isSavingBlock ? "bg-slate-100 text-slate-400" : "bg-primary text-white hover:opacity-90 active:scale-[0.98] shadow-primary/25"
                             )}
                         >
                             {isSavingBlock ? (
                                 <><Loader2 size={16} className="animate-spin" /> Saving...</>
                             ) : (
-                                editingBlock?._isNew ? "Create block" : "Save Changes"
+                                editingBlock?._isNew ? "Create Block" : "Save Changes"
                             )}
                         </button>
                     </div>
