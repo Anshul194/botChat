@@ -244,16 +244,33 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
         className={cn(
             "relative inline-flex h-7 w-12 items-center rounded-full transition-all",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-            checked ? "bg-slate-900 dark:bg-slate-700" : "bg-slate-200 dark:bg-slate-800"
+            checked ? "bg-primary shadow-lg shadow-primary/25" : "bg-slate-200 dark:bg-slate-800"
         )}
     >
         <span
             className={cn(
-                "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-all",
+                "inline-block h-5 w-5 transform rounded-full bg-white transition-all shadow-md",
                 checked ? "translate-x-6" : "translate-x-1"
             )}
         />
     </button>
+);
+
+const ToggleField = ({ label, desc, icon: Icon, checked, onChange, colorClass }: any) => (
+    <div className="group flex items-center justify-between p-5 rounded-[24px] bg-slate-50/50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 hover:border-slate-200 dark:hover:border-white/10 transition-all">
+        <div className="flex items-center gap-4">
+            {Icon && (
+                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-slate-900")}>
+                    <Icon size={18} />
+                </div>
+            )}
+            <div className="flex-1 min-w-0 pr-4">
+                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">{label}</p>
+                <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed opacity-70">{desc}</p>
+            </div>
+        </div>
+        <ToggleSwitch checked={checked} onChange={onChange} />
+    </div>
 );
 
 function BioLinkBuilderContent() {
@@ -1416,37 +1433,79 @@ function BioLinkBuilderContent() {
                                     const GtIcon = activeGT.icon;
 
                                     return (
-                                        <div className="space-y-6">
-                                            {/* Category Grid for Mobile-Friendly Sidebar */}
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
-                                                {GROWTH_TABS.map((tab) => (
-                                                    <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
-                                                        className={cn(
-                                                            "flex flex-col items-center justify-center p-3 rounded-2xl border transition-all",
-                                                            growthTab === tab.id
-                                                                ? `${tab.light} border-transparent ring-2 ${tab.ring}`
-                                                                : "bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800"
-                                                        )}>
-                                                        <tab.icon size={16} className={cn("mb-1", growthTab === tab.id ? tab.text : "text-slate-400")} />
-                                                        <span className={cn("text-[9px] font-black uppercase tracking-widest", growthTab === tab.id ? tab.text : "text-slate-500")}>{tab.label}</span>
-                                                    </button>
-                                                ))}
+                                        <div className="flex flex-col xl:flex-row gap-6 min-h-[600px]">
+                                            {/* ── GROWTH SIDEBAR (DESKTOP) / TABS (MOBILE) ── */}
+                                            <div className="xl:w-56 shrink-0">
+                                                <div className="xl:sticky xl:top-0 space-y-1">
+                                                    <div className="hidden xl:block px-3 mb-4">
+                                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Workstation</h3>
+                                                    </div>
+                                                    
+                                                    {/* Mobile Horizontal Scroll */}
+                                                    <div className="xl:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2">
+                                                        {GROWTH_TABS.map((tab) => (
+                                                            <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
+                                                                className={cn(
+                                                                    "flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all whitespace-nowrap",
+                                                                    growthTab === tab.id
+                                                                        ? `${tab.light} border-transparent ring-2 ${tab.ring}`
+                                                                        : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800"
+                                                                )}>
+                                                                <tab.icon size={14} className={cn(growthTab === tab.id ? tab.text : "text-slate-400")} />
+                                                                <span className={cn("text-[10px] font-black uppercase tracking-widest", growthTab === tab.id ? tab.text : "text-slate-500")}>{tab.label}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Desktop Vertical Sidebar */}
+                                                    <div className="hidden xl:flex flex-col gap-1">
+                                                        {GROWTH_TABS.map((tab) => (
+                                                            <button key={tab.id} onClick={() => setGrowthTab(tab.id)}
+                                                                className={cn(
+                                                                    "group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-left relative overflow-hidden",
+                                                                    growthTab === tab.id
+                                                                        ? `${tab.light} shadow-sm`
+                                                                        : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                                                )}>
+                                                                {growthTab === tab.id && (
+                                                                    <motion.div layoutId="growthActive" className={cn("absolute left-0 top-3 bottom-3 w-1 rounded-r-full", tab.bg)} />
+                                                                )}
+                                                                <div className={cn(
+                                                                    "w-8 h-8 rounded-xl flex items-center justify-center transition-all",
+                                                                    growthTab === tab.id ? tab.bg + " text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-slate-200"
+                                                                )}>
+                                                                    <tab.icon size={14} />
+                                                                </div>
+                                                                <span className={cn("text-[11px] font-black uppercase tracking-widest", growthTab === tab.id ? "text-slate-900 dark:text-white" : "text-slate-500")}>
+                                                                    {tab.label}
+                                                                </span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            {/* Active Content */}
-                                            <div className="min-w-0">
+                                            {/* Active Content Panel */}
+                                            <div className="flex-1 min-w-0">
                                                 <AnimatePresence mode="wait">
                                                     <motion.div key={growthTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }}
                                                         className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
 
                                                         {/* Panel header */}
-                                                        <div className={cn("px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3", activeGT.light)}>
-                                                            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm", activeGT.bg)}>
-                                                                <GtIcon size={18} />
+                                                        <div className={cn("px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between", activeGT.light)}>
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={cn("w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg", activeGT.bg)}>
+                                                                    <GtIcon size={20} />
+                                                                </div>
+                                                                <div>
+                                                                    <p className={cn("text-[10px] font-black uppercase tracking-[0.2em] opacity-70", activeGT.text)}>{activeGT.label} Settings</p>
+                                                                    <h3 className="text-lg font-black text-slate-900 dark:text-white">Configure {activeGT.label}</h3>
+                                                                </div>
                                                             </div>
-                                                            <div>
-                                                                <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", activeGT.text)}>Growth Workstation</p>
-                                                                <p className="text-sm font-black text-slate-900 dark:text-white">{activeGT.label}</p>
+                                                            <div className="hidden sm:block">
+                                                                <div className="px-3 py-1 rounded-full bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/5 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                                                    {view.toUpperCase()} STATION
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -1454,35 +1513,39 @@ function BioLinkBuilderContent() {
                                                         <div className="p-5 sm:p-7 space-y-6">
 
                                                             {/* SEO */}
-                                                            {growthTab === "seo" && (<>
-                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                    <div>
-                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Block from search engines</p>
-                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Adds noindex, nofollow meta tags to this page.</p>
-                                                                    </div>
-                                                                    <ToggleSwitch checked={advancedSettings.seoBlock} onChange={(v) => setAdvancedSettings({ ...advancedSettings, seoBlock: v })} />
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">SEO Title</label>
-                                                                    <input value={advancedSettings.seoTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoTitle: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                        placeholder="My Awesome Bio Page" />
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Appears in browser tabs and search results.</p>
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Description</label>
-                                                                    <textarea value={advancedSettings.seoDescription} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoDescription: e.target.value })}
-                                                                        rows={3} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                        placeholder="Brief description of your page for search results." />
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Recommended: 120–160 characters.</p>
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Meta Keywords</label>
-                                                                    <input value={advancedSettings.seoKeywords} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoKeywords: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                        placeholder="bio, links, creator, profile" />
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Comma-separated. Optional.</p>
-                                                                </div>
+                                                            {growthTab === "seo" && (<div className="space-y-6">
+                                                                <ToggleField 
+                                                                    label="Block Search Engines" 
+                                                                    desc="Prevent Google and other search engines from indexing your page." 
+                                                                    icon={Search}
+                                                                    checked={advancedSettings.seoBlock} 
+                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, seoBlock: v })} 
+                                                                    colorClass="bg-slate-900"
+                                                                />
+                                                                
+                                                                <InputField 
+                                                                    label="SEO Title" 
+                                                                    icon={<Globe size={14} />} 
+                                                                    value={advancedSettings.seoTitle} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoTitle: e.target.value })}
+                                                                    placeholder="My Awesome Bio Page" 
+                                                                />
+                                                                <InputField 
+                                                                    label="Meta Description" 
+                                                                    textarea
+                                                                    icon={<Edit3 size={14} />} 
+                                                                    value={advancedSettings.seoDescription} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoDescription: e.target.value })}
+                                                                    placeholder="Brief description for search results..." 
+                                                                />
+                                                                
+                                                                <InputField 
+                                                                    label="Meta Keywords" 
+                                                                    icon={<Grid size={14} />} 
+                                                                    value={advancedSettings.seoKeywords} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoKeywords: e.target.value })}
+                                                                    placeholder="bio, links, creator..." 
+                                                                />
                                                                 <div className="space-y-1.5">
                                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                                                                         <ImageIcon size={12} /> Open graph image
@@ -1540,18 +1603,19 @@ function BioLinkBuilderContent() {
                                                                     </select>
                                                                     <p className="text-[11px] text-slate-400 ml-1">Set the meta language of your page to help browsers and search engines identify its language.</p>
                                                                 </div>
-                                                            </>)}
+                                                            </div>)}
 
 
                                                             {/* BRANDING */}
-                                                            {growthTab === "branding" && (<>
-                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                    <div>
-                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Display branding</p>
-                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Show the BotChat branding badge on your public page.</p>
-                                                                    </div>
-                                                                    <ToggleSwitch checked={advancedSettings.displayBranding} onChange={(v) => setAdvancedSettings({ ...advancedSettings, displayBranding: v })} />
-                                                                </div>
+                                                            {growthTab === "branding" && (<div className="space-y-6">
+                                                                <ToggleField 
+                                                                    label="Display Branding" 
+                                                                    desc="Show the 'Powered by BotChat' badge on your public page." 
+                                                                    icon={Sparkles}
+                                                                    checked={advancedSettings.displayBranding} 
+                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, displayBranding: v })} 
+                                                                    colorClass="bg-violet-600"
+                                                                />
                                                                 <div className="space-y-1.5">
                                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Name</label>
                                                                     <input value={advancedSettings.brandingName} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
@@ -1576,206 +1640,194 @@ function BioLinkBuilderContent() {
                                                                             placeholder="#1f2937" />
                                                                     </div>
                                                                 </div>
-                                                            </>)}
+                                                            </div>)}
 
                                                             {/* PIXELS */}
-                                                            {growthTab === "pixels" && (<>
-                                                                <p className="text-[11px] text-slate-500">Connect your analytics pixels to track bio page visits and conversions.</p>
-                                                                <div className="space-y-3">
-                                                                    {[
-                                                                        { key: "pixelFacebookEnabled", label: "Facebook Pixel", desc: "Track events with the Meta Pixel", icon: Facebook, color: "bg-blue-600" },
-                                                                        { key: "pixelGoogleEnabled", label: "Google Analytics", desc: "Connect Google Analytics to this page", icon: Globe, color: "bg-red-500" },
-                                                                    ].map(({ key, label, desc, icon: Ico, color }) => (
-                                                                        <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                            <div className="flex items-center gap-3">
-                                                                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs", color)}>
-                                                                                    <Ico size={16} />
-                                                                                </div>
-                                                                                <div>
-                                                                                    <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
-                                                                                    <p className="text-[11px] text-slate-500">{desc}</p>
-                                                                                </div>
-                                                                            </div>
-                                                                            <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </>)}
+                                                            {growthTab === "pixels" && (<div className="space-y-4">
+                                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Social & Ad Tracking</p>
+                                                                <ToggleField 
+                                                                    label="Facebook Pixel" 
+                                                                    desc="Track conversion events with the Meta Pixel" 
+                                                                    icon={Facebook}
+                                                                    checked={advancedSettings.pixelFacebookEnabled} 
+                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, pixelFacebookEnabled: v })} 
+                                                                    colorClass="bg-[#1877F2]"
+                                                                />
+                                                                <ToggleField 
+                                                                    label="Google Analytics" 
+                                                                    desc="Monitor visitor traffic and page performance" 
+                                                                    icon={Globe}
+                                                                    checked={advancedSettings.pixelGoogleEnabled} 
+                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, pixelGoogleEnabled: v })} 
+                                                                    colorClass="bg-[#EA4335]"
+                                                                />
+                                                            </div>)}
 
                                                             {/* UTM */}
-                                                            {growthTab === "utm" && (<>
-                                                                <div className="space-y-1.5">
+                                                            {growthTab === "utm" && (<div className="space-y-6">
+                                                                <InputField 
+                                                                    label="Campaign Source" 
+                                                                    icon={<Shuffle size={14} />} 
+                                                                    value={advancedSettings.utmSource} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
+                                                                    placeholder="e.g. instagram, newsletter" 
+                                                                />
+                                                                <InputField 
+                                                                    label="Campaign Medium" 
+                                                                    icon={<Monitor size={14} />} 
+                                                                    value={advancedSettings.utmMedium} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
+                                                                    placeholder="e.g. social, banner" 
+                                                                />
+                                                                <div className="pt-4 space-y-3 border-t border-slate-100 dark:border-slate-800">
                                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                        <Shuffle size={12} /> Source
-                                                                    </label>
-                                                                    <input value={advancedSettings.utmSource} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmSource: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                        placeholder="e.g. instagram, newsletter, google" />
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                        <Monitor size={12} /> Medium
-                                                                    </label>
-                                                                    <input value={advancedSettings.utmMedium} onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-amber-300 dark:focus:border-amber-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                        placeholder="e.g. social, link, banner, email" />
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                        <Megaphone size={12} /> Campaign
-                                                                    </label>
-                                                                    <div className="w-full h-12 px-4 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-2 border-transparent text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center italic">
-                                                                        Automatically set for each link based on the name.
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="pt-4 space-y-1.5 border-t border-slate-100 dark:border-slate-800">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                        <Eye size={12} /> UTM preview
+                                                                        <Eye size={12} /> UTM Link Preview
                                                                     </label>
                                                                     <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
-                                                                        <p className="text-xs font-mono text-amber-800 dark:text-amber-300 break-all leading-relaxed">
+                                                                        <p className="text-[11px] font-mono text-amber-800 dark:text-amber-300 break-all leading-relaxed">
                                                                             {`?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`}
                                                                         </p>
                                                                     </div>
-                                                                    <p className="text-[11px] text-slate-400 ml-1">This query parameter will be appended to your destination URL.</p>
+                                                                    <p className="text-[11px] text-slate-500 font-medium ml-1">This query will be appended to your destination links.</p>
                                                                 </div>
-                                                            </>)}
+                                                            </div>)}
 
                                                             {/* PROTECTION */}
-                                                            {growthTab === "protection" && (<>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                        <KeyRound size={12} /> Page Password
-                                                                    </label>
-                                                                    <div className="relative group">
-                                                                        <input
-                                                                            type={showPassword ? "text" : "password"}
-                                                                            value={advancedSettings.password}
-                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
-                                                                            className="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-red-300 dark:focus:border-red-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                            placeholder="••••••••" />
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => setShowPassword(!showPassword)}
-                                                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500 transition-colors"
-                                                                        >
-                                                                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                                                        </button>
-                                                                    </div>
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Require visitors to enter a password to access your page.</p>
-                                                                </div>
-                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                    <div>
-                                                                        <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                                                                            <ShieldAlert size={14} className="text-red-500" /> Sensitive content warning
-                                                                        </p>
-                                                                        <p className="text-[11px] text-slate-500 mt-0.5 ml-5">Ask visitors to confirm before accessing potentially sensitive content.</p>
-                                                                    </div>
-                                                                    <ToggleSwitch checked={advancedSettings.sensitiveContentWarning} onChange={(v) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: v })} />
-                                                                </div>
-                                                            </>)}
+                                                            {growthTab === "protection" && (<div className="space-y-6">
+                                                                <InputField 
+                                                                    label="Page Password" 
+                                                                    icon={<KeyRound size={14} />} 
+                                                                    type="password"
+                                                                    value={advancedSettings.password} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, password: e.target.value })}
+                                                                    placeholder="••••••••" 
+                                                                />
+                                                                <ToggleField 
+                                                                    label="Sensitive Content Warning" 
+                                                                    desc="Show a warning to users before they can view your page." 
+                                                                    icon={ShieldAlert}
+                                                                    checked={advancedSettings.sensitiveContentWarning} 
+                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, sensitiveContentWarning: v })} 
+                                                                    colorClass="bg-red-600"
+                                                                />
+                                                            </div>)}
 
-                                                            {/* ── POPUP (BRANDED BUTTON) ── */}
-                                                            {growthTab === "popup" && (<>
-                                                                <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                    <div>
-                                                                        <p className="text-sm font-black text-slate-900 dark:text-white">Enable branded button</p>
-                                                                        <p className="text-[11px] text-slate-500 mt-0.5">Show a floating button that opens a modal popup.</p>
-                                                                    </div>
-                                                                    <ToggleSwitch checked={advancedSettings.brandedButtonEnabled} onChange={(v) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: v })} />
-                                                                </div>
-
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                                                        <ImageIcon size={12} /> Branded icon
-                                                                    </label>
-                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
-                                                                        <div className="flex-1">
-                                                                            <input
-                                                                                type="file"
-                                                                                id="branded-icon-upload"
-                                                                                className="hidden"
-                                                                                accept=".jpg,.jpeg,.png,.ico,.svg,.gif,.webp"
-                                                                                onChange={async (e) => {
-                                                                                    if (e.target.files && e.target.files[0]) {
-                                                                                        const url = await handleUploadImage(e.target.files[0]);
-                                                                                        if (url) setAdvancedSettings({ ...advancedSettings, brandedIconUrl: url });
-                                                                                    }
-                                                                                }}
-                                                                            />
-                                                                            <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
-                                                                                Choose File
+                                                            {/* POPUP (BRANDED BUTTON) */}
+                                                            {growthTab === "popup" && (<div className="space-y-6">
+                                                                <ToggleField 
+                                                                    label="Branded Floating Button" 
+                                                                    desc="Show a persistent action button that opens a custom modal." 
+                                                                    icon={SmartphoneNfc}
+                                                                    checked={advancedSettings.brandedButtonEnabled} 
+                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, brandedButtonEnabled: v })} 
+                                                                    colorClass="bg-fuchsia-600"
+                                                                />
+                                                                
+                                                                {advancedSettings.brandedButtonEnabled && (
+                                                                    <div className="space-y-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                                                        <div className="space-y-3">
+                                                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                                <ImageIcon size={12} /> Button Icon
                                                                             </label>
-                                                                            <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
-                                                                                {advancedSettings.brandedIconUrl ? advancedSettings.brandedIconUrl.split('/').pop() : 'No file chosen'}
-                                                                            </span>
-                                                                        </div>
-                                                                        {advancedSettings.brandedIconUrl && (
-                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
-                                                                                <img src={advancedSettings.brandedIconUrl} alt="Icon Preview" className="w-full h-full object-cover" />
-                                                                                <button onClick={() => setAdvancedSettings({ ...advancedSettings, brandedIconUrl: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
-                                                                                    <X size={10} />
-                                                                                </button>
+                                                                            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                                                                <div className="flex-1">
+                                                                                    <input type="file" id="branded-icon-upload" className="hidden" accept="image/*"
+                                                                                        onChange={async (e) => {
+                                                                                            if (e.target.files?.[0]) {
+                                                                                                const url = await handleUploadImage(e.target.files[0]);
+                                                                                                if (url) setAdvancedSettings({ ...advancedSettings, brandedIconUrl: url });
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-10 items-center justify-center rounded-xl bg-white dark:bg-slate-800 px-4 text-xs font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 transition-all">
+                                                                                        Upload Icon
+                                                                                    </label>
+                                                                                </div>
+                                                                                {advancedSettings.brandedIconUrl && (
+                                                                                    <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                                                                                        <img src={advancedSettings.brandedIconUrl} className="w-full h-full object-cover" alt="icon" />
+                                                                                        <button onClick={() => setAdvancedSettings({ ...advancedSettings, brandedIconUrl: "" })} className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                                                            <X size={14} />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                )}
                                                                             </div>
-                                                                        )}
+                                                                        </div>
+
+                                                                        <InputField 
+                                                                            label="Modal Title" 
+                                                                            icon={<Edit3 size={14} />} 
+                                                                            value={advancedSettings.brandedModalTitle} 
+                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
+                                                                            placeholder="Your Modal Title" 
+                                                                        />
+                                                                        <InputField 
+                                                                            label="Modal Content (HTML Support)" 
+                                                                            textarea
+                                                                            icon={<Layers size={14} />} 
+                                                                            value={advancedSettings.brandedModalContent} 
+                                                                            onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
+                                                                            placeholder="Write your modal content here..." 
+                                                                        />
                                                                     </div>
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Make sure it's a 1:1 ratio sized image with transparent background. .jpg, .jpeg, .png, .ico, .svg, .gif, .webp allowed. 2 MB maximum.</p>
-                                                                </div>
-
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal title</label>
-                                                                    <input value={advancedSettings.brandedModalTitle} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalTitle: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                        placeholder="Your Modal Title" />
-                                                                </div>
-
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Modal content</label>
-                                                                    <textarea value={advancedSettings.brandedModalContent} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandedModalContent: e.target.value })}
-                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-fuchsia-300 dark:focus:border-fuchsia-700 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                        placeholder="Write your modal content here..." />
-                                                                    <p className="text-[11px] text-slate-400 ml-1">This field accepts the usage of HTML.</p>
-                                                                </div>
-                                                            </>)}
+                                                                )}
+                                                            </div>)}
 
                                                             {/* ADVANCED / MORE */}
-                                                            {growthTab === "more" && (<>
-                                                                {[
-                                                                    { key: "enableShareButton", label: "Share button", desc: "Show a share button at the top of your page." },
-                                                                    { key: "enableScrollButtons", label: "Scroll buttons", desc: "Add scroll-to-top and scroll-to-bottom buttons." },
-                                                                    { key: "enableDirectoryDisplaying", label: "Directory listing", desc: "Make your bio page public in BotChat's directory." },
-                                                                ].map(({ key, label, desc }) => (
-                                                                    <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                                                        <div>
-                                                                            <p className="text-sm font-black text-slate-900 dark:text-white">{label}</p>
-                                                                            <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
-                                                                        </div>
-                                                                        <ToggleSwitch checked={(advancedSettings as any)[key]} onChange={(v) => setAdvancedSettings({ ...advancedSettings, [key]: v })} />
-                                                                    </div>
-                                                                ))}
+                                                            {growthTab === "more" && (<div className="space-y-6">
+                                                                <div className="grid grid-cols-1 gap-3">
+                                                                    <ToggleField 
+                                                                        label="Share Button" 
+                                                                        desc="Display a floating share action at the top of your page." 
+                                                                        icon={Share2}
+                                                                        checked={advancedSettings.enableShareButton} 
+                                                                        onChange={(v) => setAdvancedSettings({ ...advancedSettings, enableShareButton: v })} 
+                                                                        colorClass="bg-indigo-600"
+                                                                    />
+                                                                    <ToggleField 
+                                                                        label="Scroll-to-Top" 
+                                                                        desc="Add navigation assistance for longer bio pages." 
+                                                                        icon={SmartphoneNfc}
+                                                                        checked={advancedSettings.enableScrollButtons} 
+                                                                        onChange={(v) => setAdvancedSettings({ ...advancedSettings, enableScrollButtons: v })} 
+                                                                        colorClass="bg-emerald-600"
+                                                                    />
+                                                                    <ToggleField 
+                                                                        label="Directory Listing" 
+                                                                        desc="Make your profile discoverable in BotChat's public directory." 
+                                                                        icon={Orbit}
+                                                                        checked={advancedSettings.enableDirectoryDisplaying} 
+                                                                        onChange={(v) => setAdvancedSettings({ ...advancedSettings, enableDirectoryDisplaying: v })} 
+                                                                        colorClass="bg-amber-600"
+                                                                    />
+                                                                </div>
 
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Leap Link URL</label>
-                                                                    <input value={advancedSettings.leapLinkUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
-                                                                        placeholder="https://example.com/" />
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Redirect all visitors to this URL. Leave empty to disable.</p>
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom CSS</label>
-                                                                    <textarea value={advancedSettings.customCss} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
-                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                        placeholder="body { background: blue !important; }" />
-                                                                </div>
-                                                                <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Custom JS</label>
-                                                                    <textarea value={advancedSettings.customJs} onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
-                                                                        rows={4} className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-xs font-mono text-slate-900 dark:text-white outline-none resize-none transition-all"
-                                                                        placeholder="console.log('Hello world');" />
-                                                                </div>
-                                                            </>)}
+                                                                <InputField 
+                                                                    label="Leap Link URL" 
+                                                                    icon={<ArrowRight size={14} />} 
+                                                                    value={advancedSettings.leapLinkUrl} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, leapLinkUrl: e.target.value })}
+                                                                    placeholder="https://example.com/" 
+                                                                />
+                                                                
+                                                                <InputField 
+                                                                    label="Custom CSS" 
+                                                                    textarea
+                                                                    icon={<LayoutTemplate size={14} />} 
+                                                                    value={advancedSettings.customCss} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, customCss: e.target.value })}
+                                                                    placeholder="body { background: #000; }" 
+                                                                />
 
+                                                                <InputField 
+                                                                    label="Custom Javascript" 
+                                                                    textarea
+                                                                    icon={<Zap size={14} />} 
+                                                                    value={advancedSettings.customJs} 
+                                                                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, customJs: e.target.value })}
+                                                                    placeholder="console.log('Hello world');" 
+                                                                />
+                                                            </div>)}
                                                         </div>
                                                     </motion.div>
                                                 </AnimatePresence>
