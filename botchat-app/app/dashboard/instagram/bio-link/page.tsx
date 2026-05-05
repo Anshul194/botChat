@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import {
-    Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon,
+    Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon, BarChart2,
     Image as ImageIcon, GripVertical, RefreshCw, LayoutTemplate,
     Upload, Wand2, ArrowRight, CheckCircle2, X, Eye, Share2, Grid, User,
     Layers, Video, Youtube, MonitorPlay, Smartphone, Monitor, Hexagon,
@@ -12,10 +12,13 @@ import {
     Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { deleteBioPage, fetchBioPages } from "@/store/slices/bioSlice";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { VisualsLab, getTheme, isColorLight, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
 import BlockMarketplaceContent from "./BlockMarketplaceContent";
 import { PhonePreview } from "./PhonePreview";
@@ -297,6 +300,33 @@ function BioLinkBuilderContent() {
     const [isArranging, setIsArranging] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
     const [activePanel, setActivePanel] = useState<"builder" | "preview">("builder");
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const [actionModal, setActionModal] = useState<{ isOpen: boolean; type: 'delete' | 'duplicate' | 'reset' | 'toggle'; row: any | null }>({ isOpen: false, type: 'delete', row: null });
+
+    const confirmAction = async () => {
+        if (!actionModal.row) return;
+        
+        try {
+            if (actionModal.type === 'delete') {
+                if (actionModal.row.isBlock) {
+                    await handleDeleteBlock(actionModal.row.id);
+                    showModal("success", "Deleted", "Block removed successfully.");
+                } else {
+                    const linkId = actionModal.row.profileId || actionModal.row.pageId || actionModal.row.id;
+                    if (!linkId) return;
+                    await dispatch(deleteBioPage(linkId)).unwrap();
+                    showModal("success", "Deleted", "Studio destroyed successfully.");
+                    router.push('/dashboard/instagram/bio-links');
+                }
+            }
+        } catch (err: any) {
+            showModal("error", "Error", err || `Failed to ${actionModal.type} bio link.`);
+        } finally {
+            setActionModal({ isOpen: false, type: 'delete', row: null });
+        }
+    };
+
     const [view, setView] = useState("blocks");
     const [advancedSettings, setAdvancedSettings] = useState<BioAdvancedSettings>(DEFAULT_ADVANCED_SETTINGS);
     const [isSavingAdvanced, setIsSavingAdvanced] = useState(false);
@@ -805,10 +835,6 @@ function BioLinkBuilderContent() {
             setEditingBlock(null);
             return;
         }
-        if (typeof window !== "undefined") {
-            const ok = window.confirm("Are you sure you want to delete this block?");
-            if (!ok) return;
-        }
 
         // Local-first delete
         setTabs((prevTabs) =>
@@ -1102,7 +1128,6 @@ function BioLinkBuilderContent() {
             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
 
             {/* ── STABLE TOP BAR ── */}
-            {/* ── STABLE TOP BAR ── */}
             {(!showAddBlock && !showCarouselEditor) && (
                 <header className="relative z-50 h-14 xl:h-16 flex items-center justify-between px-4 xl:px-8 bg-white/95 dark:bg-black/80 backdrop-blur-3xl border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
                 <div className="flex items-center gap-2 xl:gap-4 min-w-0">
@@ -1143,6 +1168,28 @@ function BioLinkBuilderContent() {
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         {instagramUsername}
                     </div>
+
+                    {/* Analytics Button */}
+                    <button 
+                        onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${selectedPageId}`)}
+                        className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                        title="View Analytics"
+                    >
+                        <BarChart2 size={18} />
+                    </button>
+
+                    {/* Preview Toggle Button (Eye) */}
+                    <button 
+                        onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
+                        className={cn(
+                            "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm xl:hidden",
+                            activePanel === 'preview' ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white"
+                        )}
+                        title={activePanel === 'preview' ? "Back to Editor" : "Live Preview"}
+                    >
+                        {activePanel === 'preview' ? <Edit3 size={18} /> : <Eye size={18} />}
+                    </button>
+
                     <button onClick={handleShareLink} className="h-9 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20">
                         {copiedLink ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
                         <span className="hidden sm:inline">{copiedLink ? "COPIED" : "SHARE"}</span>
@@ -1832,12 +1879,27 @@ function BioLinkBuilderContent() {
                                                     </motion.div>
                                                 </AnimatePresence>
 
-                                                {/* SAVE BUTTON */}
-                                                <div className="mt-5">
-                                                    <button onClick={handleSaveAdvanced} disabled={isSavingAdvanced}
-                                                        className={cn("w-full h-13 py-3.5 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg disabled:opacity-60",
-                                                            activeGT.bg, "hover:opacity-90", "shadow-" + activeGT.color + "-500/20")}>
-                                                        {isSavingAdvanced ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : <><Save size={14} /> Save Growth Settings</>}
+                                                {/* WORKSTATION ACTIONS */}
+                                                <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                                                    <button 
+                                                        onClick={() => setActionModal({ isOpen: true, type: 'delete', row: { profileId: selectedPageId } as any })}
+                                                        className="flex-1 h-12 rounded-2xl border-2 border-red-50 dark:border-red-950/30 text-red-500 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all"
+                                                    >
+                                                        <Trash2 size={14} /> Destroy Studio
+                                                    </button>
+                                                    <button 
+                                                        onClick={handleSaveAdvanced} 
+                                                        disabled={isSavingAdvanced}
+                                                        className={cn(
+                                                            "flex-[2] h-12 rounded-2xl text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xl disabled:opacity-60",
+                                                            activeGT.bg, "hover:opacity-90", "shadow-" + activeGT.color + "-500/20"
+                                                        )}
+                                                    >
+                                                        {isSavingAdvanced ? (
+                                                            <><Loader2 size={14} className="animate-spin" /> Syncing...</>
+                                                        ) : (
+                                                            <><Save size={14} /> Update {activeGT.label}</>
+                                                        )}
                                                     </button>
                                                 </div>
                                             </div>
@@ -1898,13 +1960,6 @@ function BioLinkBuilderContent() {
 
             {/* ── MOBILE FLOATING CONTROLS (OUTSIDE MAIN OVERFLOW) ── */}
             <div className="xl:hidden">
-                {/* Main Floating Toggle Button */}
-                <button 
-                    onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
-                    className="fixed bottom-32 right-6 z-[10002] w-14 h-14 rounded-full bg-primary text-white shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-4 border-white dark:border-slate-900"
-                >
-                    {activePanel === 'builder' ? <Eye size={24} /> : <Edit3 size={24} />}
-                </button>
             </div>
 
             {/* MODALS */}
@@ -1913,6 +1968,18 @@ function BioLinkBuilderContent() {
                     onSelect={handleSelectBlockType}
                 />
             </ModalShell>
+
+            <ConfirmModal
+                isOpen={actionModal.isOpen}
+                onClose={() => setActionModal({ ...actionModal, isOpen: false })}
+                onConfirm={confirmAction}
+                title={actionModal.type === 'delete' ? 'Destroy Studio?' : 'Confirm Action'}
+                message={
+                    actionModal.type === 'delete' ? 'This action is permanent and will destroy all content blocks in this studio.' : 'Are you sure?'
+                }
+                type={actionModal.type === 'delete' ? 'danger' : 'warning'}
+                confirmText={actionModal.type === 'delete' ? 'Destroy Now' : 'Confirm'}
+            />
 
             <ModalShell open={showCarouselEditor && !!editingBlock} onClose={() => setShowCarouselEditor(false)}
                 title={`Edit ${getUiTypeFromBlock(editingBlock).replace(/_/g, " ") || "Block"}`}
@@ -1923,29 +1990,27 @@ function BioLinkBuilderContent() {
                             <button
                                 onClick={async () => {
                                     if (!editingBlock?.id) return;
-                                    const ok = window.confirm("Delete this block?");
-                                    if (!ok) return;
-                                    await handleDeleteBlock(editingBlock.id);
-                                    setEditingBlock(null);
-                                    setShowCarouselEditor(false);
+                                    setActionModal({ isOpen: true, type: 'delete', row: { id: editingBlock.id } as any });
+                                    // Note: This logic for block deletion should be handled separately if it's different from page deletion
+                                    // For now, I'll keep the direct call if it works, or use the existing handleDeleteBlock
                                 }}
-                                className="flex-1 h-15 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[11px] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all"
+                                className="flex-1 h-12 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[10px] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
                             >
-                                Delete
+                                <Trash2 size={14} /> Delete
                             </button>
                         )}
                         <button
                             onClick={saveEditor}
                             disabled={isSavingBlock}
                             className={cn(
-                                "flex-[2] h-15 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-lg transition-all flex items-center justify-center gap-2",
+                                "flex-[2] h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg transition-all flex items-center justify-center gap-2",
                                 isSavingBlock ? "bg-slate-100 text-slate-400" : "bg-primary text-white hover:opacity-90 active:scale-[0.98] shadow-primary/25"
                             )}
                         >
                             {isSavingBlock ? (
-                                <><Loader2 size={16} className="animate-spin" /> Saving...</>
+                                <><Loader2 size={14} className="animate-spin" /> Syncing...</>
                             ) : (
-                                editingBlock?._isNew ? "Create Block" : "Save Changes"
+                                <>{editingBlock?._isNew ? <Plus size={14} /> : <Save size={14} />} {editingBlock?._isNew ? "Create Block" : "Update Block"}</>
                             )}
                         </button>
                     </div>

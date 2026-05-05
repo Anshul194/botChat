@@ -19,6 +19,11 @@ interface BioState {
     currentPage: BioPage | null;
     isLoading: boolean;
     error: string | null;
+    statistics: {
+        data: any;
+        isLoading: boolean;
+        error: string | null;
+    };
 }
 
 const initialState: BioState = {
@@ -26,6 +31,11 @@ const initialState: BioState = {
     currentPage: null,
     isLoading: false,
     error: null,
+    statistics: {
+        data: null,
+        isLoading: false,
+        error: null,
+    },
 };
 
 export const fetchBioPages = createAsyncThunk(
@@ -118,6 +128,22 @@ export const toggleBioPageStatus = createAsyncThunk(
     }
 );
 
+export const fetchBioStatistics = createAsyncThunk(
+    'bio/fetchBioStatistics',
+    async ({ pageId, type, start_date, end_date }: { pageId: string; type: string; start_date: string; end_date: string }, { rejectWithValue }) => {
+        try {
+            const params = new URLSearchParams({ type, start_date, end_date });
+            const response = await api.get(`/bio/pages/${pageId}/statistics?${params.toString()}`);
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message || 'Failed to fetch statistics');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch statistics');
+        }
+    }
+);
+
 const bioSlice = createSlice({
     name: 'bio',
     initialState,
@@ -180,6 +206,18 @@ const bioSlice = createSlice({
                         state.pages[index] = { ...state.pages[index], ...action.payload, is_enabled: action.payload.is_enabled };
                     }
                 }
+            })
+            .addCase(fetchBioStatistics.pending, (state) => {
+                state.statistics.isLoading = true;
+                state.statistics.error = null;
+            })
+            .addCase(fetchBioStatistics.fulfilled, (state, action) => {
+                state.statistics.isLoading = false;
+                state.statistics.data = action.payload;
+            })
+            .addCase(fetchBioStatistics.rejected, (state, action) => {
+                state.statistics.isLoading = false;
+                state.statistics.error = action.payload as string;
             });
     },
 });
