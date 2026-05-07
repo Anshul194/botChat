@@ -9,7 +9,7 @@ import {
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
     Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail,
-    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle
+    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle, ExternalLink
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -342,13 +342,18 @@ function BioLinkBuilderContent() {
     const previewTabs = React.useMemo(() => {
         if (!editingBlock) return tabs;
 
-        // Always merge items[0] into settings so the preview reflects the latest typed values
+        // Merge items[0] into settings so the preview reflects the latest typed values
         const liveSettings = { ...(editingBlock.settings || {}), ...(editingBlock.items?.[0] || {}) };
+        
+        // Special handling for influencer blocks that store arrays in settings
+        if (editingBlock.settings?.items) {
+            liveSettings.items = editingBlock.settings.items;
+        }
+
         delete (liveSettings as any).builder_type;
         const liveBlock = { ...editingBlock, settings: liveSettings };
 
         if (editingBlock._isNew) {
-            // Append a preview ghost of the new block at the bottom of the first section
             return tabs.map((tab: any, tIdx: number) => ({
                 ...tab,
                 sections: tab.sections?.map((sec: any, sIdx: number) => ({
@@ -368,6 +373,19 @@ function BioLinkBuilderContent() {
             }))
         }));
     }, [tabs, editingBlock]);
+
+    // Live profile for global settings (background, layout, etc.)
+    const previewProfile = React.useMemo(() => {
+        if (!profile) return null;
+        return {
+            ...profile,
+            settings: {
+                ...profile.settings,
+                ...advancedSettings, // Merge advanced settings state
+                layoutStyle: profile.settings?.layoutStyle // This is already in profile.settings
+            }
+        };
+    }, [profile, advancedSettings]);
 
     const currentTab = previewTabs.find(t => t.id === selectedTabId) || previewTabs[0];
     const flatBlocks = (previewTabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
@@ -486,7 +504,7 @@ function BioLinkBuilderContent() {
 
                 // Fetch blocks for this specific page
                 const bRes = await api.get(`/bio/pages/${linkId}/blocks`);
-                const bData = bRes.data?.data || bRes.data || [];
+                const bData = (bRes.data?.data && bRes.data.data.length > 0) ? bRes.data.data : (payload.blocks || []);
                 const mappedBlocks = bData.map((b: any) => ({
                     ...b,
                     id: b.biolink_block_id || b.id,
@@ -596,6 +614,18 @@ function BioLinkBuilderContent() {
         if (!profile) return;
         const linkId = profile.link_id || profile.id;
         try {
+            // Local update for immediate feedback
+            setProfile(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    settings: {
+                        ...(prev.settings || {}),
+                        layoutStyle: templateId
+                    }
+                };
+            });
+
             await api.post(`/bio/pages/${linkId}/apply-template`, {
                 template: templateId
             });
@@ -1194,6 +1224,16 @@ function BioLinkBuilderContent() {
                         {copiedLink ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
                         <span className="hidden sm:inline">{copiedLink ? "COPIED" : "SHARE"}</span>
                     </button>
+
+                    <a 
+                        href={publicUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="h-9 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
+                    >
+                        <ExternalLink size={14} />
+                        <span className="hidden sm:inline">VIEW LIVE</span>
+                    </a>
                 </div>
             </header>
             )}
@@ -1926,7 +1966,7 @@ function BioLinkBuilderContent() {
                         "scale-100"
                     )}>
                         <PhonePreview
-                            profile={profile}
+                            profile={previewProfile || profile}
                             tabs={previewTabs}
                             selectedTabId={selectedTabId}
                             setSelectedTabId={setSelectedTabId}
@@ -2036,6 +2076,11 @@ function BioLinkBuilderContent() {
 
                         {(editingBlock.items || []).map((item: any, idx: number) => {
                             const uiType = getUiTypeFromBlock(editingBlock);
+                            const aestheticTypes = [
+                                "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
+                                "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section"
+                            ];
+                            if (aestheticTypes.includes(uiType)) return null;
 
                             return (
                                 <div key={idx} className="space-y-6">
@@ -2958,7 +3003,10 @@ function BioLinkBuilderContent() {
                             const uiType = getUiTypeFromBlock(editingBlock, uiTypeOverrides);
                             const s = editingBlock.settings || {};
                             const upd = (field: string, value: any) => updateBlockSettings(field, value);
-                            const aestheticTypes = ["hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section"];
+                            const aestheticTypes = [
+                                "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
+                                "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section"
+                            ];
                             if (!aestheticTypes.includes(uiType)) return null;
                             return (
                                 <div className="space-y-6 mt-2">
@@ -3037,6 +3085,155 @@ function BioLinkBuilderContent() {
                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('author_image',url); }}} />
                                             </label>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Header Profile Section */}
+                                {uiType === "header_profile_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Name/Title" value={s.name || s.title || ""} onChange={(e: any) => upd('name', e.target.value)} placeholder="Your Name" />
+                                        <InputField label="Bio" value={s.bio || s.description || ""} onChange={(e: any) => upd('bio', e.target.value)} placeholder="Tell your story..." textarea />
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Profile Avatar</label>
+                                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                {s.avatar && <img src={s.avatar} className="w-12 h-12 rounded-full object-cover" />}
+                                                <label className="flex-1 cursor-pointer">
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.avatar ? "Change Avatar" : "Upload Avatar"}</div>
+                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('avatar', url); }}} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Cover Image</label>
+                                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                {s.cover_image && <img src={s.cover_image} className="w-20 h-12 rounded-lg object-cover" />}
+                                                <label className="flex-1 cursor-pointer">
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.cover_image ? "Change Cover" : "Upload Cover"}</div>
+                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('cover_image', url); }}} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Social Proof */}
+                                {uiType === "social_proof_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Social Stats</p>
+                                        {(s.items || []).map((item: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Platform" value={item.platform || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,platform:e.target.value}; upd('items',it); }} />
+                                                    <InputField label="Count" value={item.followers || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,followers:e.target.value}; upd('items',it); }} placeholder="1.2M" />
+                                                </div>
+                                                <InputField label="Link" value={item.url || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,url:e.target.value}; upd('items',it); }} />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{platform:"",followers:"",url:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Stat</button>
+                                    </div>
+                                )}
+
+                                {/* Featured Links */}
+                                {uiType === "featured_links_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Featured Links</p>
+                                        {(s.items || []).map((link: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <InputField label="Title" value={link.label || link.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...link,label:e.target.value}; upd('items',it); }} />
+                                                <InputField label="Description" value={link.description || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...link,description:e.target.value}; upd('items',it); }} />
+                                                <InputField label="URL" value={link.url || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...link,url:e.target.value}; upd('items',it); }} />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{label:"",description:"",url:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Link</button>
+                                    </div>
+                                )}
+
+                                {/* Content Grid */}
+                                {uiType === "content_grid_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Grid Items</p>
+                                        {(s.items || []).map((m: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Type" value={m.type || "video"} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...m,type:e.target.value}; upd('items',it); }} />
+                                                    <InputField label="Caption" value={m.caption || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...m,caption:e.target.value}; upd('items',it); }} />
+                                                </div>
+                                                <InputField label="URL" value={m.url || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...m,url:e.target.value}; upd('items',it); }} />
+                                                <div className="space-y-2">
+                                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Thumbnail</label>
+                                                    <div className="flex items-center gap-4">
+                                                        {m.thumbnail && <img src={m.thumbnail} className="w-10 h-10 rounded-lg object-cover" />}
+                                                        <label className="flex-1 cursor-pointer">
+                                                            <div className="h-9 px-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">Upload</div>
+                                                            <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) { const it=[...(s.items||[])]; it[i]={...m,thumbnail:url}; upd('items',it); }}}} />
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{type:"video",caption:"",url:"",thumbnail:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Media</button>
+                                    </div>
+                                )}
+
+                                {/* Offers/Services */}
+                                {uiType === "offers_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Exclusive Offers</p>
+                                        {(s.items || []).map((offer: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <InputField label="Name" value={offer.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...offer,name:e.target.value}; upd('items',it); }} />
+                                                <InputField label="Description" value={offer.description || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...offer,description:e.target.value}; upd('items',it); }} textarea />
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Price" value={offer.price || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...offer,price:e.target.value}; upd('items',it); }} />
+                                                    <InputField label="CTA Text" value={offer.cta_text || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...offer,cta_text:e.target.value}; upd('items',it); }} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",description:"",price:"",cta_text:"Buy Now"}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Offer</button>
+                                    </div>
+                                )}
+
+                                {/* Testimonials */}
+                                {uiType === "testimonials_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Testimonials</p>
+                                        {(s.items || []).map((t: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <InputField label="Name" value={t.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,name:e.target.value}; upd('items',it); }} />
+                                                <InputField label="Role" value={t.role || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,role:e.target.value}; upd('items',it); }} />
+                                                <InputField label="Quote" value={t.quote || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,quote:e.target.value}; upd('items',it); }} textarea />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",role:"",quote:"",rating:5}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Testimonial</button>
+                                    </div>
+                                )}
+
+                                {/* FAQ */}
+                                {uiType === "faq_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">FAQ Items</p>
+                                        {(s.items || []).map((faq: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <InputField label="Question" value={faq.question || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...faq,question:e.target.value}; upd('items',it); }} />
+                                                <InputField label="Answer" value={faq.answer || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...faq,answer:e.target.value}; upd('items',it); }} textarea />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{question:"",answer:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add FAQ</button>
+                                    </div>
+                                )}
+
+                                {/* Contact Section */}
+                                {uiType === "contact_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Email" value={s.email || ""} onChange={(e: any) => upd('email', e.target.value)} placeholder="hello@example.com" />
+                                        <InputField label="Phone" value={s.phone || ""} onChange={(e: any) => upd('phone', e.target.value)} placeholder="+1 234 567 890" />
+                                        <InputField label="WhatsApp" value={s.whatsapp || ""} onChange={(e: any) => upd('whatsapp', e.target.value)} placeholder="+1 234..." />
                                     </div>
                                 )}
 

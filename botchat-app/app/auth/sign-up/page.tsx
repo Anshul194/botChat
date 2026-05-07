@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { useState } from "react";
@@ -10,9 +9,12 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
+import { useAppDispatch } from "@/store/hooks";
+import { registerUser } from "@/store/slices/authSlice";
 
 export default function SignUpPage() {
     const router = useRouter();
+    const dispatch = useAppDispatch();
     const { theme } = useTheme();
     const isLight = theme === "light";
 
@@ -54,11 +56,24 @@ export default function SignUpPage() {
 
     const handleNext = () => { if (validateStep1()) setStep(2); };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateStep2()) return;
         setLoading(true);
-        setTimeout(() => { setLoading(false); router.push("/dashboard"); }, 1800);
+        try {
+            await dispatch(registerUser({
+                name: `${form.firstName.trim()} ${form.lastName.trim()}`,
+                email: form.email.trim(),
+                password: form.password,
+                password_confirmation: form.confirm,
+            })).unwrap();
+            router.push("/dashboard");
+        } catch (err: any) {
+            // Show the API error message under the submit button
+            setErrors((prev) => ({ ...prev, _api: typeof err === 'string' ? err : err?.message || 'Registration failed. Please try again.' }));
+        } finally {
+            setLoading(false);
+        }
     };
 
     const pwdStrength = (() => {
@@ -382,6 +397,13 @@ export default function SignUpPage() {
                                     </label>
                                     {errors.agree && <p className="mt-1.5 text-xs flex items-center gap-1" style={{ color: "#ef4444" }}><AlertCircle className="w-3 h-3" />{errors.agree}</p>}
                                 </div>
+
+                                {errors._api && (
+                                    <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: "rgba(239,68,68,0.08)", border: "1.5px solid rgba(239,68,68,0.25)" }}>
+                                        <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "#ef4444" }} />
+                                        <p className="text-sm font-medium" style={{ color: "#ef4444" }}>{errors._api}</p>
+                                    </div>
+                                )}
 
                                 <div className="flex gap-3">
                                     <button type="button" onClick={() => setStep(1)}

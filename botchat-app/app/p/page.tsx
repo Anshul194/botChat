@@ -14,6 +14,7 @@ import { UGCLayout } from "@/app/dashboard/instagram/bio-link/layouts/UGCLayout"
 import { OliviaLayout } from "@/app/dashboard/instagram/bio-link/layouts/OliviaLayout";
 import { UniversalLayout } from "@/app/dashboard/instagram/bio-link/layouts/UniversalLayout";
 import { CreatorStoreLayout } from "@/app/dashboard/instagram/bio-link/layouts/CreatorStoreLayout";
+import { InfluencerLayout } from "@/app/dashboard/instagram/bio-link/layouts/InfluencerLayout";
 import { Globe, MessageCircle, User, MoreHorizontal, Instagram, MapPin, ArrowUpRight, Camera, Sparkles, Youtube, Video, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -1248,27 +1249,31 @@ function PublicBioContent() {
         );
     }
 
-    if (layoutStyle === "ugc" || layoutStyle === "aesthetic_influencer") {
+    if (layoutStyle === "ugc" || layoutStyle === "aesthetic_influencer" || layoutStyle === "influencer") {
         return (
             <>
-                <title>{profile.title || username} · UGC</title>
+                <title>{profile.title || username} · Bio</title>
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
                     <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
-                        <UGCLayout
-                            theme={theme}
-                            profile={profile}
-                            otherBlocks={otherBlocks}
-                            topAvatar={topAvatar}
-                            instagramUsername={username}
-                            getUiTypeFromBlock={getUiTypeFromBlock}
-                            uiTypeOverrides={{}}
-                            isMediaType={isMediaType}
-                            renderBlockUI={(block: any) => (
-                                <BlockRenderer key={block.id} block={block} theme={theme} />
-                            )}
-                        />
+                        {layoutStyle === "ugc" ? (
+                            <UGCLayout
+                                theme={theme}
+                                profile={profile}
+                                otherBlocks={otherBlocks}
+                                topAvatar={topAvatar}
+                                instagramUsername={username}
+                                getUiTypeFromBlock={getUiTypeFromBlock}
+                                uiTypeOverrides={{}}
+                                isMediaType={isMediaType}
+                                renderBlockUI={(block: any) => (
+                                    <BlockRenderer key={block.id} block={block} theme={theme} />
+                                )}
+                            />
+                        ) : (
+                            <InfluencerLayout profile={profile} tabs={rawTabs} />
+                        )}
                     </div>
                 </div>
             </>
