@@ -9,6 +9,7 @@ export interface User {
     phone?: string;
     country?: string;
     avatar?: string;
+    email_verified_at?: string;
     roles?: string | string[];
     role?: string; // Normalized role: SUPER_ADMIN, RESELLER, TENANT
 }
@@ -101,6 +102,38 @@ export const loginUser = createAsyncThunk(
             return { token, user: normalizedUser };
         } catch (error: any) {
             const message = error.response?.data?.message || error.message || 'Login failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const verifyEmail = createAsyncThunk(
+    'auth/verifyEmail',
+    async (token: string, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/verify-email', { token });
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Verification failed.');
+            }
+            return response.data.data;
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Verification failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const resendVerification = createAsyncThunk(
+    'auth/resendVerification',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/resend-verification');
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Failed to resend verification.');
+            }
+            return response.data.message;
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Failed to resend verification.';
             return rejectWithValue(message);
         }
     }

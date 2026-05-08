@@ -5,6 +5,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
+import VerificationBanner from "@/components/VerificationBanner";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
@@ -118,7 +119,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         mobileSidebarOpen={mobileSidebarOpen}
                     />
                 )}
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex-1 overflow-y-auto p-4 md:p-6">
+                    <VerificationBanner />
                     {children}
                 </main>
             </div>
