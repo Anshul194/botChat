@@ -1,12 +1,13 @@
 ---
 deployment:
   tasks:
-    # 1. Copy files to live folder
+
+    # Copy latest repo files to live app
     - /bin/cp -R botchat-app/. /home/megasfuh/botchat_app/
-    
-    # 2. Build the app (Must be chained on one line so the folder doesn't reset)
-    - export PATH=/opt/cpanel/ea-nodejs20/bin:$PATH && cd /home/megasfuh/botchat_app/ && npm install && npm run build
-    
-    # 3. Restart server
+
+    # Install dependencies + build
+    - export PATH=/opt/cpanel/ea-nodejs20/bin:$PATH && cd /home/megasfuh/botchat_app && npm install && npm run build
+
+    # Restart Node.js app
     - mkdir -p /home/megasfuh/botchat_app/tmp
     - touch /home/megasfuh/botchat_app/tmp/restart.txt
