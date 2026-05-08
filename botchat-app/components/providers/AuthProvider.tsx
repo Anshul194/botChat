@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { setCredentials } from '@/store/slices/authSlice';
+import { setCredentials, setInitialized } from '@/store/slices/authSlice';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
@@ -20,7 +20,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 // Invalid stored data
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                dispatch(setInitialized());
             }
+        } else {
+            dispatch(setInitialized());
         }
     }, [dispatch]);
 

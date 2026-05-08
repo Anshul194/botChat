@@ -11,7 +11,10 @@ import { OliviaLayout } from "./layouts/OliviaLayout";
 import { UniversalLayout } from "./layouts/UniversalLayout";
 import { CreatorStoreLayout } from "./layouts/CreatorStoreLayout";
 import { InfluencerLayout } from "./layouts/InfluencerLayout";
-
+import { InstaTrendyLayout } from "./layouts/InstaTrendyLayout";
+import { InstaProLayout } from "./layouts/InstaProLayout";
+import { InstaMinimalLayout } from "./layouts/InstaMinimalLayout";
+import { SundayBrunchLayout } from "./layouts/SundayBrunchLayout";
 export const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
     switch (name.toLowerCase()) {
         case 'instagram':
@@ -721,7 +724,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         {/* Screen Surface Reflection */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-transparent z-30 pointer-events-none" />
 
-                        <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (effectiveLayoutStyle === "portfolio" || effectiveLayoutStyle === "ugc" || effectiveLayoutStyle === "aesthetic_influencer" || effectiveLayoutStyle === "influencer" || effectiveLayoutStyle === "olivia" || effectiveLayoutStyle === "universal" || effectiveLayoutStyle === "creator_store") ? "p-0" : "p-6")}>
+                        <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (effectiveLayoutStyle === "portfolio" || effectiveLayoutStyle === "ugc" || effectiveLayoutStyle === "aesthetic_influencer" || effectiveLayoutStyle === "influencer" || effectiveLayoutStyle === "olivia" || effectiveLayoutStyle === "universal" || effectiveLayoutStyle === "creator_store" || effectiveLayoutStyle === "sunday_brunch" || effectiveLayoutStyle === "insta_trendy" || effectiveLayoutStyle === "insta_pro" || effectiveLayoutStyle === "insta_minimal") ? "p-0" : "p-6")}>
                         {/* Default Header if no blocks exist */}
                         {otherBlocks.length === 0 && !topAvatar && (
                             <div className="flex flex-col items-center pt-20 pb-8 space-y-5 animate-in fade-in zoom-in-95 duration-1000">

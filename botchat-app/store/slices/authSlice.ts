@@ -18,6 +18,7 @@ export interface AuthState {
     token: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
+    isInitialized: boolean;
     error: string | null;
 }
 
@@ -26,6 +27,7 @@ const initialState: AuthState = {
     token: null,
     isAuthenticated: false,
     isLoading: false,
+    isInitialized: false,
     error: null,
 };
 
@@ -172,7 +174,11 @@ const authSlice = createSlice({
             state.user = action.payload.user;
             state.token = action.payload.token;
             state.isAuthenticated = true;
+            state.isInitialized = true;
         },
+        setInitialized: (state) => {
+            state.isInitialized = true;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -229,7 +235,7 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearError, setCredentials } = authSlice.actions;
+export const { clearError, setCredentials, setInitialized } = authSlice.actions;
 
 // Global Role Selectors (using any to avoid circular dependency with store)
 export const selectIsSuperAdmin = (state: any) => state.auth.user?.role === 'SUPER_ADMIN';
