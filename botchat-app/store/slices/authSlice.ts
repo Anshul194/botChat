@@ -229,6 +229,14 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
+            .addCase(verifyEmail.fulfilled, (state, action) => {
+                if (state.user) {
+                    state.user = { ...state.user, ...action.payload.user };
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('user', JSON.stringify(state.user));
+                    }
+                }
+            })
             .addCase(loginUser.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
