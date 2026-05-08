@@ -1,4 +1,4 @@
-name: Deploy to FTP
+name: Deploy Next.js to cPanel
 
 on:
   push:
@@ -6,34 +6,41 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./botchat-app
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install Dependencies
+        working-directory: ./botchat-app
+        run: npm ci
 
-      - name: Build project
+      - name: Build Next.js App
+        working-directory: ./botchat-app
         run: npm run build
 
-      - name: Upload to FTP
+      - name: Create Restart File
+        run: |
+          mkdir -p ./botchat-app/tmp
+          touch ./botchat-app/tmp/restart.txt
+
+      - name: Sync Files to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./botchat-app/out/
-          server-dir: /public_html/megadm.chat/
-          dangerous-clean-slate: true
+          local-dir: ./botchat-app/
+          server-dir: /botchat_app/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env*
