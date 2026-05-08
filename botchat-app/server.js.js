@@ -7,5 +7,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
     createServer((req, res) => {
         handle(req, res);
-    }).listen(3000);
+    }).listen(process.env.PORT || 3000, () => {
+        console.log("Server running");
+    });
 });
