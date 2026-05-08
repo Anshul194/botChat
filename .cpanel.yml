@@ -1,5 +1,18 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home2/divyangt/public_html/metadm.chat
-    - /bin/cp -r out/* $DEPLOYPATH
+    # 1. Copy the pushed files from the botchat-app folder in Git to the live botchat_app folder
+    - /bin/cp -R botchat-app/. /home/megasfuh/botchat_app/
+    
+    # 2. Go into the live folder
+    - cd /home/megasfuh/botchat_app/
+    
+    # 3. Use cPanel's Node.js 20 environment
+    - export PATH=/opt/cpanel/ea-nodejs20/bin:$PATH
+    
+    # 4. Build the new Next.js files automatically
+    - npm run build
+    
+    # 5. Tell cPanel to instantly restart the live server
+    - mkdir -p tmp
+    - touch tmp/restart.txt
