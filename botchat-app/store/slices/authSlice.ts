@@ -264,6 +264,9 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload;
                 state.isAuthenticated = true;
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('user', JSON.stringify(action.payload));
+                }
             })
             .addCase(fetchMe.rejected, (state, action) => {
                 state.isLoading = false;
