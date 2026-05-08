@@ -29,6 +29,44 @@ const initialState: AuthState = {
     error: null,
 };
 
+export const registerUser = createAsyncThunk(
+    'auth/registerUser',
+    async (
+        credentials: { name: string; email: string; password: string; password_confirmation: string },
+        { rejectWithValue }
+    ) => {
+        try {
+            const response = await api.post('/auth/register', credentials);
+
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Registration failed.');
+            }
+
+            const data = response.data.data;
+            const token = data.token;
+            const user = data.user || data;
+
+            const normalizedUser = {
+                ...user,
+                role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
+                    user.type === 'Reseller' ? 'RESELLER' :
+                        user.type === 'Tenant' ? 'TENANT' :
+                            user.type === 'Admin' ? 'SUPER_ADMIN' : user.type
+            };
+
+            if (typeof window !== 'undefined') {
+                if (token) localStorage.setItem('token', token);
+                if (normalizedUser) localStorage.setItem('user', JSON.stringify(normalizedUser));
+            }
+
+            return { token, user: normalizedUser };
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Registration failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (credentials: { email: string; password: string }, { rejectWithValue }) => {
@@ -138,6 +176,20 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(registerUser.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(registerUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = true;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
             .addCase(loginUser.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;

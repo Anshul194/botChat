@@ -172,6 +172,7 @@ export const NICHE_CATEGORIES = [
     { id: 'art', name: 'Creative', icon: <Palette size={16} /> },
     { id: 'gaming', name: 'Gaming', icon: <Gamepad2 size={16} /> },
     { id: 'business', name: 'Creator Pro', icon: <Briefcase size={16} /> },
+    { id: 'influencer', name: 'Influencer', icon: <Sparkles size={16} /> },
     { id: 'modern', name: 'Modern', icon: <Sparkles size={16} /> },
 ];
 
@@ -249,6 +250,11 @@ export const NICHE_TEMPLATES: Record<string, TemplateItem[]> = {
         { id: 'biz_paper', name: 'Paper', style: 'Clean' },
         { id: 'biz_glass', name: 'Glass UI', style: 'Modern', badge: 'Animated' },
         { id: 'biz_skyline', name: 'Skyline', style: 'Urban', badge: 'Image' },
+    ],
+    influencer: [
+        { id: 'influencer_trendy', name: 'Trendy Pro', style: 'High Contrast', badge: 'New' },
+        { id: 'influencer_glass', name: 'Glass Glow', style: 'Glassmorphism' },
+        { id: 'influencer_minimal', name: 'Quiet Luxury', style: 'Minimalist' },
     ],
     modern: [
         { id: 'modern_fisher', name: 'Fisher', style: 'Designer', badge: 'Popular' },
@@ -797,6 +803,14 @@ const THEMES: Record<string, ThemeConfig> = {
         overlayStyle: { opacity: 0.1 },
         effects: ['shimmer', 'grain'],
     },
+    influencer_trendy: {
+        bgStyle: { background: '#050505' },
+        textColor: '#ffffff',
+        btnStyle: { background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', color: '#ffffff', padding: '16px 24px', fontSize: '13px', fontWeight: 700, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' },
+        fontClass: 'font-sans', accent: '#8b5cf6',
+        effects: ['particles', 'orbs', 'grain'], particleColor: '#8b5cf6',
+        meshGlow: 'radial-gradient(circle at 50% 0%, rgba(139,92,246,0.15), transparent 70%)',
+    },
     modern_minimal: {
         bgStyle: { background: '#ffffff' },
         textColor: '#0a0a0a',
@@ -966,7 +980,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                         { id: 'custom', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
                         { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
-                        // { id: 'influencer', name: 'Olivia', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+                        { id: 'influencer', name: 'Influencers', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
                         { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Aesthetic Influencer', icon: <ImageIcon size={18} className="text-emerald-500" /> },
 
                     ].map((layout) => (
