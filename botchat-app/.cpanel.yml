@@ -1,0 +1,19 @@
+---
+deployment:
+  tasks:
+
+    # Deploy log
+    - echo "DEPLOY $(date)" >> /home/megasfuh/deploy-log.txt
+
+    # Copy latest files
+    - /bin/cp -R botchat-app/. /home/megasfuh/botchat_app/
+
+    # Clean old build
+    - /bin/rm -rf /home/megasfuh/botchat_app/.next
+
+    # Install + Build
+    - export PATH=/opt/cpanel/ea-nodejs20/bin:$PATH && cd /home/megasfuh/botchat_app && npm install && npm run build
+
+    # Restart app
+    - mkdir -p /home/megasfuh/botchat_app/tmp
+    - touch /home/megasfuh/botchat_app/tmp/restart.txt
