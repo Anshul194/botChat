@@ -2,14 +2,14 @@
   "name": "botchat-app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "dev:admin": "dotenv -e .env.admin -- next dev --port 3000",
-    "dev:reseller": "dotenv -e .env.reseller -- next dev --port 3001",
-    "build": "next build",
-    "start": "node server.js",
-    "lint": "eslint"
-  },
+ "scripts": {
+  "dev": "next dev",
+  "dev:admin": "dotenv -e .env.admin -- next dev --port 3000",
+  "dev:reseller": "dotenv -e .env.reseller -- next dev --port 3001",
+  "build": "next build",
+  "start": "node server.js",
+  "lint": "eslint"
+},
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",

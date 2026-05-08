@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  redirect("/auth/sign-in");
+  // Redirect to the landing page instead of the sign-in page
+  redirect("/landing");
 }
