@@ -15,7 +15,9 @@ export default function VerificationBanner() {
     const [dismissed, setDismissed] = useState(false);
 
     // If user is already verified or banner is dismissed, don't show it
-    if (!user || user.email_verified_at || dismissed) {
+    const isVerified = !!user?.email_verified_at;
+
+    if (!user || isVerified || dismissed) {
         return null;
     }
 
