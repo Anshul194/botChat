@@ -994,8 +994,8 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Layout Structure</label>
-                    <a 
-                        href={`/p/?u=${profile?.instagram_username || 'demo'}`} 
+                    <a
+                        href={`/p/?u=${profile?.instagram_username || 'demo'}`}
                         target="_blank"
                         className="text-[10px] font-bold text-violet-600 hover:text-violet-700 flex items-center gap-1 transition-colors"
                     >
@@ -1013,7 +1013,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                         { id: 'insta_trendy', name: 'Insta Trendy', desc: 'Vibrant Mesh', icon: <Sparkles size={18} className="text-fuchsia-500" /> },
                         { id: 'insta_minimal', name: 'Studio Minimal', desc: 'Clean Grayscale', icon: <Grid size={18} className="text-slate-500" /> },
                         { id: 'sunday_brunch', name: 'Sunday Brunch', desc: 'Warm Organic', icon: <Coffee size={18} className="text-orange-500" /> },
-                        { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+                        // { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
 
                     ].map((layout) => (
                         <button
@@ -1080,7 +1080,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                             const isImage = tpl.badge === 'Image';
 
                             return (
-                                <button key={tpl.id} 
+                                <button key={tpl.id}
                                     onClick={async () => {
                                         if (applyBioTheme) {
                                             setApplyingThemeId(tpl.id);

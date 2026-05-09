@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
-    Heart, ShoppingBag, ArrowRight, Mail, Globe, Sparkles, Star, ChevronRight, User, Instagram, ShieldCheck, Plus
+    Heart, ShoppingBag, ArrowRight, Mail, Globe, Sparkles, Star, ChevronRight, User, Instagram, ShieldCheck, Plus, ArrowUpRight
 } from "lucide-react";
 import { getUiTypeFromBlock } from "../builder-utils";
 
@@ -63,8 +63,10 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
             </div>
 
             {/* Soft Footer */}
-            <div className="mt-32 pb-12 opacity-30 text-center">
-                <p className="text-[11px] tracking-[0.3em] uppercase font-black text-[#8c7e74]">EST. 2026 / BIOSTUDIO</p>
+            <div className="mt-32 pb-16 opacity-30 text-center relative">
+                <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-96 h-96 bg-[#f8f1e9] rounded-full blur-[120px] pointer-events-none" />
+                <p className="text-[10px] font-black tracking-[0.4em] uppercase text-[#2d241e] mb-4">Curated with Intention</p>
+                <div className="text-[11px] tracking-[0.3em] uppercase font-black text-[#8c7e74]">© 2026 BIOSTUDIO LUXURY</div>
             </div>
         </div>
     );
@@ -79,59 +81,56 @@ const renderBrunchSection = (block: any, profile: any) => {
     switch (type) {
         case 'link':
             const isFeatured = s.is_featured || s.is_Featured || false;
+            const isButton = s.layout_type === 'button' || s.variant === 'button' || true; // Default to button-like as requested
+
             return (
                 <a 
                     href={s.url || s.location_url || "#"}
                     className={cn(
-                        "group relative block p-6 sm:p-7 transition-all duration-500",
+                        "group relative block transition-all duration-300",
                         isFeatured 
-                            ? "bg-white border-2 border-[#e8dccb] rounded-[2.5rem] shadow-[10px_10px_0px_#f3eee8] scale-[1.02]" 
-                            : "bg-white border border-white hover:border-[#e8dccb] rounded-[2.2rem] shadow-[0_10px_30px_rgba(74,64,58,0.05)]"
+                            ? "p-6 sm:p-7 bg-white border-2 border-[#2d241e] rounded-[2rem] shadow-[8px_8px_0px_#2d241e] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_#2d241e] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_#2d241e]" 
+                            : "p-5 bg-white border border-[#2d241e] rounded-[1.5rem] shadow-[4px_4px_0px_#2d241e] hover:shadow-[6px_6px_0px_#2d241e] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_#2d241e]"
                     )}
                 >
-                    <div className="flex items-center gap-4 sm:gap-5">
-                        <div className={cn(
-                            "w-12 h-12 sm:w-14 sm:h-14 rounded-[1.8rem] flex items-center justify-center overflow-hidden transition-all",
-                            isFeatured ? "bg-[#fdfaf5] shadow-inner" : "bg-[#fdfaf5] shadow-inner group-hover:scale-105"
-                        )}>
-                            {s.image ? <img src={s.image} className="w-full h-full object-cover" /> : <Sparkles size={20} className="text-orange-200" />}
-                        </div>
-                        <div className="flex-1">
-                            <h3 className={cn(
-                                "text-[16px] font-bold tracking-tight",
-                                isFeatured ? "text-[#2d241e] italic underline decoration-[#e8dccb] decoration-2 underline-offset-4" : "text-[#2d241e]"
-                            )}>
-                                {s.title || s.name || "Curated Find"}
+                    <div className="flex items-center gap-4 sm:gap-5 justify-center">
+                        <div className="flex flex-col items-center">
+                            <h3 className="text-[15px] font-black uppercase tracking-[0.2em] text-[#2d241e] text-center">
+                                {s.title || s.name || s.label || "Curated Find"}
                             </h3>
                             {(s.description || s.text) && (
-                                <p className="text-[11px] sm:text-xs text-[#8c7e74] mt-1 font-medium italic">{s.description || s.text}</p>
+                                <p className="text-[9px] text-[#8c7e74] mt-1 font-black uppercase tracking-widest text-center opacity-60">{s.description || s.text}</p>
                             )}
                         </div>
-                        <div className={cn(
-                            "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all",
-                            isFeatured ? "bg-[#2d241e] text-white" : "bg-[#fdfaf5] text-[#8c7e74] group-hover:bg-[#4a403a] group-hover:text-white"
-                        )}>
-                            <ChevronRight size={18} />
-                        </div>
+                    </div>
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <ArrowUpRight size={16} className="text-[#2d241e]" />
                     </div>
                 </a>
             );
 
-        case 'link_grid_section':
+        case 'featured_links_section':
         case 'links_grid':
+        case 'link_grid_section':
             return (
-                <div className="grid grid-cols-2 gap-4">
-                    {(blockItems.length > 0 ? blockItems : [
-                        { n: 'Studio Visit', i: Globe },
-                        { n: 'Journal', i: Heart }
-                    ]).map((item, i) => (
-                        <a key={i} href={item.url || "#"} className="flex flex-col items-center gap-4 p-6 rounded-[2.5rem] bg-white/40 border border-[#f3eee8] hover:bg-white transition-all group">
-                            <div className="w-12 h-12 rounded-full bg-[#fdfaf5] flex items-center justify-center text-[#8c7e74] group-hover:text-[#2d241e] transition-colors border border-dashed border-[#e8dccb]">
-                                {item.i ? <item.i size={20} /> : <Sparkles size={20} />}
-                            </div>
-                            <span className="text-[11px] font-black uppercase tracking-widest text-[#8c7e74] group-hover:text-[#2d241e]">{item.n || item.name || item.title}</span>
-                        </a>
-                    ))}
+                <div className="space-y-4">
+                    {blockItems.map((item: any, i: number) => {
+                        const l = item.settings || item;
+                        return (
+                            <motion.a 
+                                key={i} 
+                                href={l.url || l.location_url || "#"}
+                                whileHover={{ scale: 1.01 }}
+                                className="block w-full p-5 bg-[#2d241e] border-2 border-[#2d241e] rounded-[1.8rem] shadow-[6px_6px_0px_rgba(45,36,30,0.2)] hover:shadow-[8px_8px_0px_rgba(45,36,30,0.2)] transition-all group"
+                            >
+                                <div className="flex items-center justify-center text-center">
+                                    <span className="text-[14px] font-black uppercase tracking-[0.2em] text-white">
+                                        {l.title || l.name || l.label}
+                                    </span>
+                                </div>
+                            </motion.a>
+                        );
+                    })}
                 </div>
             );
 
@@ -190,22 +189,74 @@ const renderBrunchSection = (block: any, profile: any) => {
             );
 
         case 'countdown':
-        case 'countdown_section':
-        case 'urgency_offer_section':
+        case 'social_medias_section':
+        case 'socials':
             return (
-                <div className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border-4 border-[#f8f1e9] shadow-xl shadow-orange-100/20 flex flex-col items-center text-center">
-                    <h3 className="text-[9px] sm:text-[10px] font-black text-[#8c7e74] uppercase tracking-[0.3em] sm:tracking-[0.4em] mb-6 sm:mb-8 italic">{s.title || "Next Collection"}</h3>
-                    <div className="flex justify-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="grid grid-cols-2 gap-4">
+                    {blockItems.map((item: any, i: number) => (
+                        <motion.a
+                            key={i}
+                            href={item.url || "#"}
+                            target="_blank"
+                            whileHover={{ y: -2 }}
+                            className="flex items-center justify-center gap-3 p-4 bg-white border border-[#2d241e] rounded-2xl shadow-[4px_4px_0px_#2d241e] hover:shadow-[6px_6px_0px_#2d241e] transition-all"
+                        >
+                            <span className="text-[12px] font-black uppercase tracking-widest text-[#2d241e]">{item.platform}</span>
+                        </motion.a>
+                    ))}
+                </div>
+            );
+
+        case 'portfolio_section':
+        case 'portfolio_minimal_section':
+        case 'content_grid_section':
+            return (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between px-2">
+                        <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-[#2d241e] italic">
+                            {s.title || "Selected Works"}
+                        </h3>
+                        <span className="text-[10px] font-bold text-[#8c7e74] uppercase tracking-widest border-b border-[#e8dccb] pb-0.5">View All</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        {(blockItems.length > 0 ? blockItems : [
+                            { url: 'https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400' },
+                            { url: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=400' },
+                            { url: 'https://images.unsplash.com/photo-1515514756003-246e74640161?w=400' },
+                            { url: 'https://images.unsplash.com/photo-1481277542470-605612bd2d61?w=400' }
+                        ]).map((item: any, i: number) => (
+                            <motion.div 
+                                key={i} 
+                                whileHover={{ scale: 0.98 }}
+                                className="rounded-[2rem] overflow-hidden border-2 border-[#2d241e] shadow-[4px_4px_0px_#2d241e] bg-white group relative aspect-[4/5]"
+                            >
+                                <img src={item.image || item.url || item.thumbnail} className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700" />
+                                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+        case 'urgency_offer_section':
+        case 'countdown_section':
+            return (
+                <div className="p-8 sm:p-10 rounded-[2.5rem] bg-[#2d241e] text-white flex flex-col items-center text-center shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                        <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white rounded-full blur-3xl" />
+                    </div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8 text-white/50 italic">{s.title || "Limited Time Offer"}</h3>
+                    <div className="flex justify-center gap-6 mb-8">
                         {[
                             { v: '03', l: 'DAYS' }, { v: '09', l: 'HRS' }, { v: '42', l: 'MIN' }
                         ].map((t, i) => (
-                            <div key={i} className="flex flex-col items-center min-w-[50px] sm:min-w-[60px]">
-                                <span className="text-2xl sm:text-3xl font-serif font-black text-[#2d241e] italic mb-1">{t.v}</span>
-                                <span className="text-[7px] sm:text-[8px] font-black text-[#8c7e74] uppercase tracking-widest">{t.l}</span>
+                            <div key={i} className="flex flex-col items-center min-w-[60px]">
+                                <span className="text-3xl font-serif font-black italic mb-1 text-white">{t.v}</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-white/40">{t.l}</span>
                             </div>
                         ))}
                     </div>
-                    <p className="text-[10px] sm:text-[11px] text-[#8c7e74] font-medium italic">{s.description || "Limited release drops soon."}</p>
+                    <p className="text-[11px] text-white/70 font-medium italic mb-2 leading-relaxed">{s.description || "Grab your exclusive access before the timer hits zero."}</p>
                 </div>
             );
 
@@ -349,31 +400,132 @@ const renderBrunchSection = (block: any, profile: any) => {
                 </div>
             );
 
-        case 'heading':
+        case 'cta_section':
+        case 'impact_section':
+        case 'contact_section':
+        case 'contact_form':
+        case 'contact_collector':
             return (
-                <div className="px-2 pt-12 pb-6 text-center">
-                    <h2 className="text-[28px] font-serif font-black italic text-[#2d241e] leading-none">{s.title || "Selected Works"}</h2>
-                    <div className="w-12 h-1 bg-[#e8dccb] mx-auto mt-6 rounded-full" />
+                <div className="p-8 sm:p-10 rounded-[3rem] bg-white border-2 border-[#2d241e] shadow-[10px_10px_0px_#2d241e] flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-[#fdfaf5] border border-[#2d241e] flex items-center justify-center text-[#2d241e] mb-8">
+                        <Mail size={24} />
+                    </div>
+                    <h3 className="text-xl font-serif font-black italic text-[#2d241e] mb-4">
+                        {s.title || "Direct Connection"}
+                    </h3>
+                    <p className="text-[13px] text-[#8c7e74] font-medium mb-10 leading-relaxed italic px-2">
+                        {s.description || "Have a project in mind or just want to say hello? My inbox is always open for thoughtful inquiries."}
+                    </p>
+                    <button className="w-full h-14 bg-[#2d241e] text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] hover:translate-y-[-2px] hover:shadow-[0_10px_20px_rgba(45,36,30,0.2)] transition-all">
+                        {s.button_text || "Send a Message"}
+                    </button>
                 </div>
             );
 
-        case 'paragraph':
+        case 'offers_section':
+        case 'pricing_cards_section':
             return (
-                <div className="px-6 text-center">
-                    <p className="text-[14px] text-[#8c7e74] leading-relaxed font-medium italic">{s.text || s.description || "Curating beauty in the small details, one day at a time."}</p>
+                <div className="space-y-6">
+                    <div className="text-center">
+                        <span className="text-[9px] font-black text-[#8c7e74] uppercase tracking-[0.4em] italic mb-2 block">Exclusive Access</span>
+                        <h2 className="text-[24px] font-serif font-black italic text-[#2d241e]">Curated Offers</h2>
+                    </div>
+                    <div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar snap-x px-2">
+                        {(blockItems.length > 0 ? blockItems : [
+                            { t: 'Digital Guide', d: 'Slow Living Blueprint', p: '$49' },
+                            { t: 'Artisan Pack', d: 'Texture & Light Presets', p: '$129' }
+                        ]).map((item: any, i: number) => (
+                            <div key={i} className="min-w-[280px] snap-center p-8 rounded-[2.5rem] bg-white border-2 border-[#2d241e] shadow-[6px_6px_0px_#2d241e] flex flex-col">
+                                <span className="text-[10px] font-black text-[#e8dccb] uppercase tracking-widest mb-2 italic">Offer {i + 1}</span>
+                                <h4 className="text-[18px] font-black text-[#2d241e] mb-1 italic leading-tight">{item.title || item.t}</h4>
+                                <p className="text-[12px] text-[#8c7e74] font-medium italic mb-8">{item.description || item.d}</p>
+                                <div className="mt-auto pt-6 border-t border-[#f3eee8] flex items-center justify-between">
+                                    <span className="text-[18px] font-serif font-black italic text-[#2d241e]">{item.price || item.p}</span>
+                                    <button className="w-10 h-10 rounded-full bg-[#2d241e] text-white flex items-center justify-center hover:scale-110 transition-transform">
+                                        <Plus size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             );
 
-        case 'divider':
+        case 'video':
+        case 'youtube':
+        case 'tiktok_video':
             return (
-                <div className="py-12 flex justify-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#e8dccb]" />
-                    <div className="w-2 h-2 rounded-full bg-[#e8dccb] opacity-60" />
-                    <div className="w-2 h-2 rounded-full bg-[#e8dccb] opacity-30" />
+                <div className="p-2 bg-white border border-[#f3eee8] rounded-[3rem] shadow-sm overflow-hidden group aspect-video relative">
+                    <img src={s.thumbnail || "https://images.unsplash.com/photo-1516483642785-0cda1fb59ce2?w=800"} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#2d241e] shadow-xl group-hover:bg-[#2d241e] group-hover:text-white transition-all">
+                            <Play size={20} fill="currentColor" />
+                        </div>
+                    </div>
+                </div>
+            );
+
+        case 'spotify':
+        case 'music_section':
+            return (
+                <div className="p-8 rounded-[3.5rem] bg-[#fdfaf5] border border-[#f3eee8] flex items-center gap-6 group">
+                    <div className="w-20 h-20 rounded-[2.5rem] bg-white border border-[#f3eee8] flex items-center justify-center text-[#e8dccb] group-hover:rotate-12 transition-transform">
+                        <BrandIcon name="spotify" size={32} />
+                    </div>
+                    <div className="flex-1">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8c7e74] mb-1 block italic">Sunday Playlist</span>
+                        <h4 className="text-[16px] font-serif font-black italic text-[#2d241e]">{s.title || "Soft Mornings"}</h4>
+                        <p className="text-[11px] text-[#8c7e74] font-medium italic">Curated for quiet hours</p>
+                    </div>
+                    <ArrowUpRight size={18} className="text-[#e8dccb]" />
+                </div>
+            );
+
+        case 'community_section':
+        case 'discord':
+            return (
+                <div className="p-10 rounded-[3rem] bg-[#2d241e] text-white flex flex-col items-center text-center group cursor-pointer relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                    <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <Share2 size={24} />
+                    </div>
+                    <h3 className="text-xl font-serif font-black italic mb-2">The Gathering</h3>
+                    <p className="text-[12px] text-white/50 font-medium italic mb-8 max-w-[200px]">{s.description || "Join our quiet corner for thoughtful discussion."}</p>
+                    <button className="px-8 py-3 bg-white text-[#2d241e] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">Join Discord</button>
+                </div>
+            );
+
+        case 'donation_section':
+        case 'support':
+            return (
+                <div className="p-12 text-center bg-white border border-[#f3eee8] rounded-[4rem] shadow-sm">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-50 text-orange-200 mb-8">
+                        <Heart size={32} fill="currentColor" />
+                    </div>
+                    <h3 className="text-2xl font-serif font-black italic text-[#2d241e] mb-4">Gifts & Support</h3>
+                    <p className="text-[13px] text-[#8c7e74] font-medium mb-10 max-w-[240px] mx-auto italic leading-relaxed">If my work has touched your heart, consider supporting its continuation.</p>
+                    <div className="flex justify-center gap-4">
+                        {[5, 15, 30].map(v => (
+                            <button key={v} className="px-8 py-4 rounded-3xl bg-[#fdfaf5] border border-[#f3eee8] text-[#2d241e] font-black text-xs hover:bg-[#2d241e] hover:text-white transition-all active:scale-95">
+                                ${v}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             );
 
         default:
             return null;
     }
+};
+
+const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
+    const n = name?.toLowerCase() || "";
+    if (n.includes('instagram')) return <i className="fab fa-instagram" style={{ fontSize: size }} />;
+    if (n.includes('linkedin')) return <i className="fab fa-linkedin" style={{ fontSize: size }} />;
+    if (n.includes('twitter') || n === 'x') return <i className="fab fa-x-twitter" style={{ fontSize: size }} />;
+    if (n.includes('youtube')) return <Youtube size={size} />;
+    if (n.includes('tiktok')) return <i className="fab fa-tiktok" style={{ fontSize: size }} />;
+    if (n.includes('spotify')) return <i className="fab fa-spotify" style={{ fontSize: size }} />;
+    return <Globe size={size} />;
 };

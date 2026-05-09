@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
-    ArrowUpRight, Share2, Globe, Mail, Instagram, Twitter, Linkedin, Youtube, Play
+    ArrowUpRight, Share2, Globe, Mail, Instagram, Twitter, Linkedin, Youtube, Play, Heart, ShoppingBag
 } from "lucide-react";
 import { getUiTypeFromBlock } from "../builder-utils";
 
@@ -15,22 +15,22 @@ export function InstaMinimalLayout({ profile, tabs }: any) {
         <div className="w-full min-h-full bg-white text-zinc-900 font-sans px-8 py-20 flex flex-col items-center selection:bg-zinc-100">
             {/* Studio Header */}
             <div className="w-full max-w-[440px] mb-24 flex flex-col items-center text-center">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1 }}
                     className="w-20 h-20 rounded-none grayscale hover:grayscale-0 transition-all duration-1000 mb-12 border border-zinc-100 p-1 bg-zinc-50"
                 >
-                    <img 
-                        src={profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"} 
-                        className="w-full h-full object-cover" 
+                    <img
+                        src={profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"}
+                        className="w-full h-full object-cover"
                     />
                 </motion.div>
-                
+
                 <h1 className="text-[20px] font-black tracking-[0.5em] uppercase mb-4 leading-none pl-[0.5em]">
                     {profile?.title || "Studio Minimal"}
                 </h1>
-                
+
                 <div className="w-8 h-[2px] bg-zinc-900 mb-8" />
 
                 <p className="text-[11px] text-zinc-400 font-bold tracking-[0.3em] uppercase max-w-[280px] leading-relaxed">
@@ -71,7 +71,7 @@ const renderMinimalSection = (block: any, profile: any) => {
         case 'link':
             const isFeatured = s.is_featured || s.is_Featured || false;
             return (
-                <a 
+                <a
                     href={s.url || s.location_url || "#"}
                     className={cn(
                         "group block py-8 border-b border-zinc-100 flex items-center justify-between transition-all duration-700",
@@ -108,7 +108,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                     {(blockItems.length > 0 ? blockItems : [
                         { n: 'STUDIO', i: Globe },
                         { n: 'PRESS', i: Mail }
-                    ]).map((item, i) => (
+                    ]).map((item: any, i: number) => (
                         <a key={i} href={item.url || "#"} className="flex flex-col gap-8 p-8 bg-white hover:bg-zinc-50 transition-colors group">
                             <ArrowUpRight size={14} className="text-zinc-200 group-hover:text-zinc-900 transition-colors" />
                             <span className="text-[11px] font-black uppercase tracking-[0.3em]">{item.n || item.name || item.title}</span>
@@ -125,9 +125,9 @@ const renderMinimalSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { n: 'LATEST WORK', d: '2024' },
                             { n: 'ARCHIVE', d: '2020-2023' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <a key={i} href={item.url || "#"} className="min-w-[200px] p-10 bg-white hover:bg-zinc-50 transition-colors group flex flex-col gap-12">
-                                <span className="text-[40px] font-light text-zinc-100 group-hover:text-zinc-900 transition-colors">0{i+1}</span>
+                                <span className="text-[40px] font-light text-zinc-100 group-hover:text-zinc-900 transition-colors">0{i + 1}</span>
                                 <div>
                                     <h4 className="text-[12px] font-black uppercase tracking-widest mb-1">{item.n || item.name || item.title}</h4>
                                     <p className="text-[9px] text-zinc-300 font-bold uppercase tracking-[0.2em]">{item.d || item.description || "VIEW"}</p>
@@ -193,7 +193,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { t: 'Art Direction', d: 'Visual Language', p: '01' },
                             { t: 'Development', d: 'Technical Logic', p: '02' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="group py-6 sm:py-10 border-b border-zinc-100 flex items-center justify-between hover:bg-zinc-50 transition-colors px-4 -mx-4">
                                 <div className="flex flex-col gap-1 min-w-0 pr-4">
                                     <h4 className="text-[13px] sm:text-[14px] font-black uppercase tracking-widest truncate">{item.t}</h4>
@@ -226,7 +226,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { n: 'M. Chen', d: 'Architect', t: 'The definitive bio-link for modern creators. Minimal and powerful.' },
                             { n: 'E. Rossi', d: 'Artist', t: 'Visual clarity that respects the work. Truly exceptional.' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="flex flex-col gap-6 max-w-sm">
                                 <p className="text-[18px] sm:text-[22px] font-light tracking-tight leading-tight text-zinc-900">"{item.t || item.text || item.description}"</p>
                                 <div className="flex flex-col gap-1">
@@ -249,7 +249,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { q: 'Project Scope', a: 'We focus on high-impact digital experiences and visual storytelling.' },
                             { q: 'Inquiry Process', a: 'All collaborations begin with a formal brief. Average response time is 48hrs.' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="py-8 sm:py-10 flex flex-col gap-4 group cursor-pointer">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-[13px] sm:text-[14px] font-black uppercase tracking-widest">{item.q || item.title || item.question}</h4>
@@ -268,9 +268,9 @@ const renderMinimalSection = (block: any, profile: any) => {
                 <div className="py-20 border-y border-zinc-100 flex flex-col items-center text-center">
                     <h3 className="text-[11px] font-black uppercase tracking-[0.5em] mb-12">Correspondence</h3>
                     <div className="w-full space-y-8">
-                        <input 
-                            type="email" 
-                            placeholder="EMAIL ADDRESS" 
+                        <input
+                            type="email"
+                            placeholder="EMAIL ADDRESS"
                             className="w-full bg-transparent border-b border-zinc-200 py-4 text-[11px] font-bold tracking-widest text-center focus:outline-none focus:border-zinc-900 transition-colors placeholder:text-zinc-200"
                         />
                         <button className="text-[10px] font-black uppercase tracking-[0.6em] hover:text-zinc-400 transition-colors pt-4">
@@ -285,47 +285,106 @@ const renderMinimalSection = (block: any, profile: any) => {
             return (
                 <div className="py-12 border-y border-zinc-100">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-12 opacity-10 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-1000">
-                        {(item.logos || [
+                        {(blockItems.length > 0 ? blockItems : [
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732221.png' },
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732229.png' },
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732190.png' },
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732230.png' }
                         ]).map((logo: any, i: number) => (
                             <div key={i} className="flex items-center justify-center">
-                                <img src={logo.image} className="h-4 sm:h-5 w-auto object-contain" />
+                                <img src={logo.image || logo.url} className="h-4 sm:h-5 w-auto object-contain" />
                             </div>
                         ))}
                     </div>
                 </div>
             );
 
-        case 'faq_section':
+        case 'video':
+        case 'youtube':
+        case 'tiktok_video':
             return (
-                <div className="space-y-12">
-                    <h4 className="text-[10px] font-black text-zinc-200 uppercase tracking-[0.5em] mb-16">Inquiries</h4>
-                    {[
-                        { q: "Philosophy", a: "Reduction as a form of evolution." },
-                        { q: "Execution", a: "Precision in every pixel." }
-                    ].map((item, i) => (
-                        <div key={i} className="group border-l border-zinc-100 pl-8 py-2 hover:border-zinc-900 transition-colors">
-                            <h4 className="text-[12px] font-black uppercase tracking-widest mb-4 flex items-center justify-between">
-                                {item.q}
-                            </h4>
-                            <p className="text-[11px] text-zinc-400 leading-relaxed font-medium tracking-wide">{item.a}</p>
+                <div className="aspect-video bg-zinc-50 border border-zinc-100 p-1 relative group overflow-hidden">
+                    <img src={s.thumbnail || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800"} className="w-full h-full object-cover grayscale opacity-80" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-16 border border-zinc-900/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-all">
+                            <Play size={20} className="ml-1" />
                         </div>
-                    ))}
+                    </div>
                 </div>
             );
 
-        case 'video':
-        case 'youtube':
+        case 'spotify':
+        case 'music_section':
             return (
-                <div className="aspect-video bg-zinc-50 p-2 relative group overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800" className="w-full h-full object-cover grayscale opacity-80" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 border border-white/20 backdrop-blur-sm flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                            <Play size={20} />
+                <div className="py-12 border-y border-zinc-100">
+                    <div className="flex items-center gap-8">
+                        <div className="w-24 h-24 bg-zinc-50 border border-zinc-100 flex items-center justify-center grayscale">
+                            <div className="w-8 h-8 rounded-full border-2 border-zinc-200 animate-spin-slow" />
                         </div>
+                        <div className="flex-1">
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-300 mb-2 block">Now Playing</span>
+                            <h4 className="text-[14px] font-black uppercase tracking-widest mb-1">{s.title || "Sound Narrative"}</h4>
+                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{s.artist || "Studio Selection"}</p>
+                        </div>
+                        <ArrowUpRight size={16} className="text-zinc-200" />
+                    </div>
+                </div>
+            );
+
+        case 'donation_section':
+        case 'support':
+            return (
+                <div className="py-24 border-y border-zinc-900 flex flex-col items-center text-center">
+                    <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-12 text-zinc-200">Patronage</span>
+                    <h3 className="text-[20px] font-light tracking-tighter mb-12 max-w-xs">{s.description || "Support the ongoing research and production of the studio."}</h3>
+                    <div className="flex gap-4">
+                        {['01', '05', '10'].map(v => (
+                            <button key={v} className="w-16 h-16 border border-zinc-100 flex items-center justify-center text-[11px] font-black hover:border-zinc-900 transition-colors">
+                                ${v}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+
+        case 'community_section':
+        case 'discord':
+            return (
+                <div className="py-16 bg-zinc-50 border border-zinc-100 px-10 flex items-center justify-between group cursor-pointer">
+                    <div>
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-300 mb-3 block">Dialogue</span>
+                        <h4 className="text-[15px] font-black uppercase tracking-widest">{s.title || "Join Discord"}</h4>
+                    </div>
+                    <div className="w-12 h-12 border border-zinc-900/10 flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-all">
+                        <Share2 size={16} />
+                    </div>
+                </div>
+            );
+
+        case 'products':
+        case 'product_section':
+        case 'offers_section':
+            return (
+                <div className="space-y-16">
+                    <div className="flex items-end justify-between border-b border-zinc-900 pb-8">
+                        <h2 className="text-[24px] font-black uppercase tracking-tighter leading-none">Commerce</h2>
+                        <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">Inventory 04</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-12">
+                        {(blockItems.length > 0 ? blockItems : [
+                            { t: 'Object 01', p: '$120', i: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400' },
+                            { t: 'Object 02', p: '$450', i: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400' }
+                        ]).map((item: any, i: number) => (
+                            <div key={i} className="group cursor-pointer">
+                                <div className="aspect-[4/5] bg-zinc-50 border border-zinc-100 p-1 mb-6 overflow-hidden">
+                                    <img src={item.i || item.image || item.url} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                                </div>
+                                <div className="flex items-start justify-between">
+                                    <h4 className="text-[11px] font-black uppercase tracking-widest leading-tight max-w-[100px]">{item.t || item.title}</h4>
+                                    <span className="text-[11px] font-bold text-zinc-400">{item.p || item.price}</span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             );
@@ -354,4 +413,15 @@ const renderMinimalSection = (block: any, profile: any) => {
         default:
             return null;
     }
+};
+
+const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
+    const n = name?.toLowerCase() || "";
+    if (n.includes('instagram')) return <i className="fab fa-instagram" style={{ fontSize: size }} />;
+    if (n.includes('linkedin')) return <i className="fab fa-linkedin" style={{ fontSize: size }} />;
+    if (n.includes('twitter') || n === 'x') return <i className="fab fa-x-twitter" style={{ fontSize: size }} />;
+    if (n.includes('youtube')) return <Youtube size={size} />;
+    if (n.includes('tiktok')) return <i className="fab fa-tiktok" style={{ fontSize: size }} />;
+    if (n.includes('spotify')) return <i className="fab fa-spotify" style={{ fontSize: size }} />;
+    return <Globe size={size} />;
 };
