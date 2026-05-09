@@ -11,6 +11,9 @@ export function InstaMinimalLayout({ profile, tabs }: any) {
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
+    const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
+    const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
+
     return (
         <div className="w-full min-h-full bg-white text-zinc-900 font-sans px-8 py-20 flex flex-col items-center selection:bg-zinc-100">
             {/* Studio Header */}
@@ -22,25 +25,25 @@ export function InstaMinimalLayout({ profile, tabs }: any) {
                     className="w-20 h-20 rounded-none grayscale hover:grayscale-0 transition-all duration-1000 mb-12 border border-zinc-100 p-1 bg-zinc-50"
                 >
                     <img
-                        src={profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"}
+                        src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"}
                         className="w-full h-full object-cover"
                     />
                 </motion.div>
 
                 <h1 className="text-[20px] font-black tracking-[0.5em] uppercase mb-4 leading-none pl-[0.5em]">
-                    {profile?.title || "Studio Minimal"}
+                    {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Studio Minimal"}
                 </h1>
 
                 <div className="w-8 h-[2px] bg-zinc-900 mb-8" />
 
                 <p className="text-[11px] text-zinc-400 font-bold tracking-[0.3em] uppercase max-w-[280px] leading-relaxed">
-                    {profile?.bio || "Aesthetic Clarity / Digital Design / Tokyo"}
+                    {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Aesthetic Clarity / Digital Design / Tokyo"}
                 </p>
             </div>
 
             {/* Blocks */}
             <div className="w-full max-w-[440px] space-y-20">
-                {allBlocks.map((block: any, idx: number) => (
+                {contentBlocks.map((block: any, idx: number) => (
                     <motion.div
                         key={block.id || idx}
                         initial={{ opacity: 0 }}
@@ -63,8 +66,8 @@ export function InstaMinimalLayout({ profile, tabs }: any) {
 
 const renderMinimalSection = (block: any, profile: any) => {
     const type = getUiTypeFromBlock(block);
-    const { settings, items } = block;
-    const blockItems = items || settings?.items || [];
+    const { settings } = block;
+    const blockItems = block.items || settings?.items || settings?.logos || settings?.plans || settings?.steps || settings?.points || [];
     const s = settings || {};
 
     switch (type) {
@@ -108,12 +111,23 @@ const renderMinimalSection = (block: any, profile: any) => {
                     {(blockItems.length > 0 ? blockItems : [
                         { n: 'STUDIO', i: Globe },
                         { n: 'PRESS', i: Mail }
-                    ]).map((item: any, i: number) => (
-                        <a key={i} href={item.url || "#"} className="flex flex-col gap-8 p-8 bg-white hover:bg-zinc-50 transition-colors group">
-                            <ArrowUpRight size={14} className="text-zinc-200 group-hover:text-zinc-900 transition-colors" />
-                            <span className="text-[11px] font-black uppercase tracking-[0.3em]">{item.n || item.name || item.title}</span>
-                        </a>
-                    ))}
+                    ]).map((item: any, i: number) => {
+                        const img = item.image || item.thumbnail || item.url;
+                        const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+
+                        return (
+                            <a key={i} href={item.url || "#"} className="flex flex-col gap-8 p-8 bg-white hover:bg-zinc-50 transition-colors group">
+                                {isImg ? (
+                                    <div className="w-full aspect-video overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+                                        <img src={img} className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <ArrowUpRight size={14} className="text-zinc-200 group-hover:text-zinc-900 transition-colors" />
+                                )}
+                                <span className="text-[11px] font-black uppercase tracking-[0.3em]">{item.n || item.name || item.title}</span>
+                            </a>
+                        );
+                    })}
                 </div>
             );
 
@@ -125,15 +139,26 @@ const renderMinimalSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { n: 'LATEST WORK', d: '2024' },
                             { n: 'ARCHIVE', d: '2020-2023' }
-                        ]).map((item: any, i: number) => (
-                            <a key={i} href={item.url || "#"} className="min-w-[200px] p-10 bg-white hover:bg-zinc-50 transition-colors group flex flex-col gap-12">
-                                <span className="text-[40px] font-light text-zinc-100 group-hover:text-zinc-900 transition-colors">0{i + 1}</span>
-                                <div>
-                                    <h4 className="text-[12px] font-black uppercase tracking-widest mb-1">{item.n || item.name || item.title}</h4>
-                                    <p className="text-[9px] text-zinc-300 font-bold uppercase tracking-[0.2em]">{item.d || item.description || "VIEW"}</p>
-                                </div>
-                            </a>
-                        ))}
+                        ]).map((item: any, i: number) => {
+                            const img = item.image || item.thumbnail || item.url;
+                            const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+
+                            return (
+                                <a key={i} href={item.url || "#"} className="min-w-[200px] p-10 bg-white hover:bg-zinc-50 transition-colors group flex flex-col gap-12 overflow-hidden">
+                                    {isImg ? (
+                                        <div className="w-full h-32 overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+                                            <img src={img} className="w-full h-full object-cover" />
+                                        </div>
+                                    ) : (
+                                        <span className="text-[40px] font-light text-zinc-100 group-hover:text-zinc-900 transition-colors">0{i + 1}</span>
+                                    )}
+                                    <div>
+                                        <h4 className="text-[12px] font-black uppercase tracking-widest mb-1">{item.n || item.name || item.title}</h4>
+                                        <p className="text-[9px] text-zinc-300 font-bold uppercase tracking-[0.2em]">{item.d || item.description || "VIEW"}</p>
+                                    </div>
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
             );

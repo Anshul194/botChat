@@ -77,7 +77,7 @@ export function InstaProLayout({ profile, tabs }: any) {
 const renderInstaProSection = (block: any, accentColor: string, profile: any) => {
     const type = getUiTypeFromBlock(block);
     const { settings, items } = block;
-    const blockItems = items || settings?.items || [];
+    const blockItems = items || settings?.items || settings?.logos || settings?.plans || settings?.steps || settings?.points || [];
     const s = settings || {};
 
     switch (type) {
@@ -86,7 +86,10 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any) =>
         case 'header':
         case 'profile':
         case 'hero':
-            const heroImages = [s.image || profile?.image, s.image_secondary || s.secondary_image].filter(Boolean);
+            const mainImg = s.avatar || s.image || profile?.image;
+            const secondImg = s.cover_image || s.image_secondary || s.secondary_image;
+            const heroImages = [mainImg, secondImg].filter(Boolean);
+            
             return (
                 <div className="relative overflow-hidden">
                     <div className="relative w-full aspect-[4/5] min-h-[580px] sm:min-h-[720px] overflow-hidden bg-[#050505] flex">
@@ -411,12 +414,16 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any) =>
                 <div className="px-6 sm:px-8 space-y-6">
                     <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] text-center block italic">Global Partners</span>
                     <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 py-8 opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
-                        {(item.logos || [
+                        {(blockItems.length > 0 ? blockItems : [
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732221.png' },
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732229.png' },
                             { image: 'https://cdn-icons-png.flaticon.com/512/732/732190.png' }
                         ]).map((logo: any, i: number) => (
-                            <img key={i} src={logo.image} className="h-6 sm:h-8 w-auto object-contain transition-transform hover:scale-110" />
+                            logo.image || logo.url ? (
+                                <img key={i} src={logo.image || logo.url} className="h-6 sm:h-8 w-auto object-contain transition-transform hover:scale-110" />
+                            ) : (
+                                <span key={i} className="text-[14px] font-black tracking-widest text-white uppercase">{logo.name || logo.title || "BRAND"}</span>
+                            )
                         ))}
                     </div>
                 </div>

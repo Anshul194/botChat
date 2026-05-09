@@ -45,7 +45,7 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
             <div className="relative z-10 w-full mx-auto px-5 sm:px-8">
                 {/* Hero Section */}
                 {(() => {
-                    const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero'].includes(getUiTypeFromBlock(b)));
+                    const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
                     const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
                     
                     return (
@@ -59,7 +59,7 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
                                     <div className="absolute inset-[-8px] bg-gradient-to-tr from-[#ff0080] via-[#7928ca] to-[#ff0080] rounded-[2.5rem] blur-md opacity-50 animate-pulse" />
                                     <div className="relative w-28 h-28 rounded-[2.2rem] border-2 border-white/20 overflow-hidden shadow-[0_20px_50px_rgba(255,0,128,0.3)]">
                                         <img 
-                                            src={profile?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
+                                            src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
                                             className="w-full h-full object-cover" 
                                             alt="Profile" 
                                         />
@@ -78,7 +78,7 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
                                     animate={{ y: 0, opacity: 1 }}
                                     className="text-[clamp(32px,8vw,48px)] font-black tracking-tighter mb-3 leading-none italic"
                                 >
-                                    {profile?.title || "Vibe Curator"}
+                                    {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Vibe Curator"}
                                 </motion.h1>
 
                                 <motion.p 
@@ -87,7 +87,7 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
                                     transition={{ delay: 0.1 }}
                                     className="text-[15px] text-white/40 max-w-[300px] font-medium leading-relaxed mb-10"
                                 >
-                                    {profile?.bio || "Creating content that pops. Tech, Lifestyle & Aesthetics."}
+                                    {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Creating content that pops. Tech, Lifestyle & Aesthetics."}
                                 </motion.p>
 
                                 <div className="flex items-center gap-6">
@@ -127,9 +127,8 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
 
 const renderTrendySection = (block: any, accentColor: string, profile: any) => {
     const type = getUiTypeFromBlock(block);
-    const { settings, items } = block;
-    const blockItems = items || settings?.items || [];
-    const s = settings || {};
+    const s = block.settings || {};
+    const blockItems = block.items || s.items || s.logos || s.plans || s.steps || s.points || [];
 
     switch (type) {
         case 'link':
@@ -194,14 +193,19 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
                         { n: 'Shop', i: ShoppingBag },
                         { n: 'Music', i: Sparkles },
                         { n: 'Chat', i: Mail }
-                    ]).map((item, i) => (
-                        <a key={i} href={item.url || "#"} className="flex flex-col items-center gap-3 p-4 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all group text-center">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#ff0080] group-hover:scale-110 transition-transform">
-                                {item.i ? <item.i size={18} /> : <ArrowUpRight size={18} />}
-                            </div>
-                            <span className="text-[10px] font-black uppercase text-white/60 group-hover:text-white truncate w-full">{item.n || item.name || item.title}</span>
-                        </a>
-                    ))}
+                    ]).map((item: any, i: number) => {
+                        const img = item.image || item.thumbnail || item.url;
+                        const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+                        
+                        return (
+                            <a key={i} href={item.url || "#"} className="flex flex-col items-center gap-3 p-4 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all group text-center">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#ff0080] group-hover:scale-110 transition-transform overflow-hidden">
+                                    {isImg ? <img src={img} className="w-full h-full object-cover" /> : (item.i ? <item.i size={18} /> : <ArrowUpRight size={18} />)}
+                                </div>
+                                <span className="text-[10px] font-black uppercase text-white/60 group-hover:text-white truncate w-full">{item.n || item.name || item.title}</span>
+                            </a>
+                        );
+                    })}
                 </div>
             );
 
@@ -214,15 +218,26 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
                             { n: 'Exclusive Drop', d: 'Available Now' },
                             { n: 'Tour Dates', d: 'Book Tickets' },
                             { n: 'Merch Store', d: 'New Arrival' }
-                        ]).map((item, i) => (
-                            <a key={i} href={item.url || "#"} className="min-w-[200px] snap-center p-6 rounded-[2rem] bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 hover:border-[#ff0080]/50 transition-all group">
-                                <div className="w-8 h-8 rounded-full bg-[#ff0080] flex items-center justify-center text-white mb-4 group-hover:rotate-45 transition-transform">
-                                    <ArrowUpRight size={14} />
-                                </div>
-                                <h4 className="text-[14px] font-black text-white mb-1">{item.n || item.name || item.title}</h4>
-                                <p className="text-[10px] text-white/40 font-bold uppercase">{item.d || item.description || item.subtitle || "Check it out"}</p>
-                            </a>
-                        ))}
+                        ]).map((item: any, i: number) => {
+                            const img = item.image || item.thumbnail || item.url;
+                            const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+
+                            return (
+                                <a key={i} href={item.url || "#"} className="min-w-[200px] snap-center p-6 rounded-[2rem] bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 hover:border-[#ff0080]/50 transition-all group overflow-hidden">
+                                    {isImg ? (
+                                        <div className="w-full h-24 mb-4 rounded-xl overflow-hidden border border-white/5">
+                                            <img src={img} className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all" />
+                                        </div>
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-full bg-[#ff0080] flex items-center justify-center text-white mb-4 group-hover:rotate-45 transition-transform">
+                                            <ArrowUpRight size={14} />
+                                        </div>
+                                    )}
+                                    <h4 className="text-[14px] font-black text-white mb-1">{item.n || item.name || item.title}</h4>
+                                    <p className="text-[10px] text-white/40 font-bold uppercase">{item.d || item.description || item.subtitle || "Check it out"}</p>
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
             );

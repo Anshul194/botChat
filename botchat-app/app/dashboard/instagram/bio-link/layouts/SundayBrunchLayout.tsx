@@ -11,6 +11,9 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
+    const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
+    const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
+
     return (
         <div className="w-full min-h-full bg-[#fdfaf5] text-[#4a403a] font-sans px-6 py-16 flex flex-col items-center selection:bg-[#e8dccb] relative">
             {/* Organic Background Elements */}
@@ -25,17 +28,17 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
                     className="w-28 h-28 rounded-[3rem] bg-white p-2 mb-8 shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9]"
                 >
                     <img 
-                        src={profile?.image || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
+                        src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
                         className="w-full h-full rounded-[2.5rem] object-cover" 
                     />
                 </motion.div>
                 
                 <h1 className="text-3xl font-serif font-black tracking-tight text-[#2d241e] mb-3 italic">
-                    {profile?.title || "Handcrafted Life"}
+                    {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Handcrafted Life"}
                 </h1>
                 
                 <p className="text-sm text-[#8c7e74] font-medium max-w-[280px] leading-relaxed italic">
-                    {profile?.bio || "Living for slow mornings, good coffee, and organic design."}
+                    {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Living for slow mornings, good coffee, and organic design."}
                 </p>
 
                 <div className="flex gap-6 mt-10">
@@ -49,7 +52,7 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
 
             {/* Blocks */}
             <div className="w-full max-w-[420px] space-y-8 relative z-10">
-                {allBlocks.map((block: any, idx: number) => (
+                {contentBlocks.map((block: any, idx: number) => (
                     <motion.div
                         key={block.id || idx}
                         initial={{ opacity: 0, y: 20 }}
@@ -75,7 +78,7 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
 const renderBrunchSection = (block: any, profile: any) => {
     const type = getUiTypeFromBlock(block);
     const { settings, items } = block;
-    const blockItems = items || settings?.items || [];
+    const blockItems = items || settings?.items || settings?.logos || settings?.plans || settings?.steps || settings?.points || [];
     const s = settings || {};
 
     switch (type) {
@@ -116,17 +119,27 @@ const renderBrunchSection = (block: any, profile: any) => {
                 <div className="space-y-4">
                     {blockItems.map((item: any, i: number) => {
                         const l = item.settings || item;
+                        const img = l.image || l.thumbnail || l.url;
+                        const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+
                         return (
                             <motion.a 
                                 key={i} 
                                 href={l.url || l.location_url || "#"}
                                 whileHover={{ scale: 1.01 }}
-                                className="block w-full p-5 bg-[#2d241e] border-2 border-[#2d241e] rounded-[1.8rem] shadow-[6px_6px_0px_rgba(45,36,30,0.2)] hover:shadow-[8px_8px_0px_rgba(45,36,30,0.2)] transition-all group"
+                                className="block w-full p-5 bg-[#2d241e] border-2 border-[#2d241e] rounded-[1.8rem] shadow-[6px_6px_0px_rgba(45,36,30,0.2)] hover:shadow-[8px_8px_0px_rgba(45,36,30,0.2)] transition-all group overflow-hidden"
                             >
-                                <div className="flex items-center justify-center text-center">
-                                    <span className="text-[14px] font-black uppercase tracking-[0.2em] text-white">
-                                        {l.title || l.name || l.label}
-                                    </span>
+                                <div className="flex items-center gap-4">
+                                    {isImg && (
+                                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 shrink-0">
+                                            <img src={img} className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 text-center">
+                                        <span className="text-[14px] font-black uppercase tracking-[0.2em] text-white">
+                                            {l.title || l.name || l.label}
+                                        </span>
+                                    </div>
                                 </div>
                             </motion.a>
                         );
@@ -142,15 +155,26 @@ const renderBrunchSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { n: 'Autumn Collection', d: 'View Gallery' },
                             { n: 'Bespoke Orders', d: 'Inquire' }
-                        ]).map((item, i) => (
-                            <a key={i} href={item.url || "#"} className="min-w-[220px] snap-center p-8 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm hover:shadow-md transition-all group">
-                                <div className="text-[#e8dccb] mb-4 group-hover:translate-x-1 transition-transform">
-                                    <ArrowRight size={24} />
-                                </div>
-                                <h4 className="text-[15px] font-serif font-black italic text-[#2d241e] mb-1">{item.n || item.name || item.title}</h4>
-                                <p className="text-[10px] text-[#8c7e74] font-black uppercase tracking-widest">{item.d || item.description || "Collection"}</p>
-                            </a>
-                        ))}
+                        ]).map((item: any, i: number) => {
+                            const img = item.image || item.thumbnail || item.url;
+                            const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+
+                            return (
+                                <a key={i} href={item.url || "#"} className="min-w-[220px] snap-center p-8 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                                    {isImg ? (
+                                        <div className="w-full h-24 mb-4 rounded-2xl overflow-hidden border border-[#f3eee8]">
+                                            <img src={img} className="w-full h-full object-cover" />
+                                        </div>
+                                    ) : (
+                                        <div className="text-[#e8dccb] mb-4 group-hover:translate-x-1 transition-transform">
+                                            <ArrowRight size={24} />
+                                        </div>
+                                    )}
+                                    <h4 className="text-[15px] font-serif font-black italic text-[#2d241e] mb-1">{item.n || item.name || item.title}</h4>
+                                    <p className="text-[10px] text-[#8c7e74] font-black uppercase tracking-widest">{item.d || item.description || "Collection"}</p>
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
             );
