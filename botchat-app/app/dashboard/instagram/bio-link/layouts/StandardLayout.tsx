@@ -15,7 +15,7 @@ export const StandardLayout = ({
             <div className="flex flex-col gap-2">
                 {groupedRows.map((row: any, ridx: number) => {
                     const isFisher = profile.theme === 'modern_fisher';
-                    const cardClass = isFisher ? "bg-white/90 backdrop-blur-sm p-7 rounded-[40px] shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-white/50 mb-8" : "mb-10";
+                    const cardClass = isFisher ? "bg-white/90 backdrop-blur-sm p-7 rounded-[40px] shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-white/50 mb-8" : "mb-6";
 
                     if (row.type === 'section') {
                         return (
@@ -34,6 +34,13 @@ export const StandardLayout = ({
                                 cardClass
                             )}>
                                 {row.blocks.map((b: any, bidx: number) => renderBlockUI(b, row.blocks.length > 1, bidx))}
+                            </div>
+                        );
+                    }
+                    if (row.type === 'single') {
+                        return (
+                            <div key={ridx} className={cardClass}>
+                                {renderBlockUI(row.block, false, ridx)}
                             </div>
                         );
                     }

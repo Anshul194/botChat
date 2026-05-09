@@ -9,6 +9,7 @@ export interface User {
     phone?: string;
     country?: string;
     avatar?: string;
+    email_verified_at?: string;
     roles?: string | string[];
     role?: string; // Normalized role: SUPER_ADMIN, RESELLER, TENANT
 }
@@ -106,6 +107,38 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+export const verifyEmail = createAsyncThunk(
+    'auth/verifyEmail',
+    async (token: string, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/verify-email', { token });
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Verification failed.');
+            }
+            return response.data.data;
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Verification failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const resendVerification = createAsyncThunk(
+    'auth/resendVerification',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/resend-verification');
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Failed to resend verification.');
+            }
+            return response.data.message;
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Failed to resend verification.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
 export const fetchMe = createAsyncThunk(
     'auth/fetchMe',
     async (_, { rejectWithValue }) => {
@@ -196,6 +229,14 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
+            .addCase(verifyEmail.fulfilled, (state, action) => {
+                if (state.user) {
+                    state.user = { ...state.user, ...action.payload.user };
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('user', JSON.stringify(state.user));
+                    }
+                }
+            })
             .addCase(loginUser.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -223,6 +264,9 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.user = action.payload;
                 state.isAuthenticated = true;
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('user', JSON.stringify(action.payload));
+                }
             })
             .addCase(fetchMe.rejected, (state, action) => {
                 state.isLoading = false;
