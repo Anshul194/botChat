@@ -20,7 +20,7 @@ export const PortfolioLayout = ({
     const [portfolioSubView, setPortfolioSubView] = React.useState("main");
 
     // Filter out inactive blocks
-    const activeBlocks = otherBlocks.filter((b: any) => b.is_active !== 0 && b.is_Enabled !== 0);
+    const activeBlocks = otherBlocks.filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     // Extract specific section blocks
     const heroBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "hero_section");

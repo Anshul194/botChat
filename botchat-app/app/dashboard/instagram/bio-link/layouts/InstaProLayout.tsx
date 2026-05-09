@@ -13,10 +13,10 @@ import { getUiTypeFromBlock } from "../builder-utils";
 export function InstaProLayout({ profile, tabs }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     const settings = profile?.settings || {};
-    const accentColor = "#8b5cf6"; 
+    const accentColor = "#8b5cf6";
 
     return (
         <div className="w-full min-h-full bg-[#050505] text-white font-sans overflow-x-hidden pb-24 selection:bg-[#8b5cf6]/30 flex flex-col relative">
@@ -36,7 +36,7 @@ export function InstaProLayout({ profile, tabs }: any) {
                         return (
                             <>
                                 {renderInstaProSection(heroBlock || { type: 'header' }, accentColor, profile)}
-                                
+
                                 <div className="flex flex-col gap-12 sm:gap-20">
                                     {contentBlocks.map((block: any, idx: number) => (
                                         <motion.div
@@ -138,23 +138,23 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any) =>
             const isFeatured = s.is_featured || s.is_Featured || false;
             return (
                 <div className="px-6 sm:px-8">
-                    <a 
-                        href={s.location_url || s.url || "#"} 
+                    <a
+                        href={s.location_url || s.url || "#"}
                         className={cn(
                             "group w-full flex items-center justify-between p-6 sm:p-8 rounded-[2.5rem] sm:rounded-[3rem] transition-all duration-700 shadow-2xl relative overflow-hidden",
-                            isFeatured 
-                                ? "bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] border-none scale-[1.02]" 
+                            isFeatured
+                                ? "bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] border-none scale-[1.02]"
                                 : "bg-white/[0.02] border border-white/5 hover:bg-white/5"
                         )}
                     >
                         {isFeatured && (
-                            <motion.div 
+                            <motion.div
                                 animate={{ x: ['-100%', '100%'] }}
                                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
                             />
                         )}
-                         <div className="flex items-center gap-4 sm:gap-6 relative z-10">
+                        <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                             <div className={cn(
                                 "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all",
                                 isFeatured ? "bg-white text-[#8b5cf6]" : "bg-white/5 text-white/20 group-hover:bg-[#8b5cf6] group-hover:text-white"
@@ -177,11 +177,11 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any) =>
                                     </span>
                                 )}
                             </div>
-                         </div>
-                         <ArrowRight size={20} className={cn(
-                             "relative z-10 transition-all",
-                             isFeatured ? "text-white" : "text-white/10 group-hover:text-white group-hover:translate-x-2"
-                         )} />
+                        </div>
+                        <ArrowRight size={20} className={cn(
+                            "relative z-10 transition-all",
+                            isFeatured ? "text-white" : "text-white/10 group-hover:text-white group-hover:translate-x-2"
+                        )} />
                     </a>
                 </div>
             );

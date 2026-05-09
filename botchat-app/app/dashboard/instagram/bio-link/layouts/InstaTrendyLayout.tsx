@@ -13,7 +13,7 @@ import { getUiTypeFromBlock } from "../builder-utils";
 export function InstaTrendyLayout({ profile, tabs }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     const settings = profile?.settings || {};
     const accentColor = profile?.accent_color || "#ff0080"; 

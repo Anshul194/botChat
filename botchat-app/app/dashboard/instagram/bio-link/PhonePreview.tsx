@@ -27,7 +27,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
     const previewSections = currentTab?.sections || [];
     const theme = getTheme(profile?.theme);
 
-    const allBlocks = previewSections.flatMap((s: any) => s.blocks || []);
+    const allBlocks = previewSections.flatMap((s: any) => s.blocks || []).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
     const topAvatar = allBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "avatar");
     const avatarUrls = topAvatar ? [topAvatar.settings?.image || topAvatar.settings?.url].filter(Boolean) : [];
 

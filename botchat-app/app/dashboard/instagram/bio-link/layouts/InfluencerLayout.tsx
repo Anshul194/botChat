@@ -47,7 +47,7 @@ const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
 export function InfluencerLayout({ profile, tabs }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_active !== 0 && b.is_enabled !== 0 && b.is_Enabled !== 0);
+    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     const settings = profile?.settings || {};
     const bgType = settings.backgroundType || settings.background_type;
