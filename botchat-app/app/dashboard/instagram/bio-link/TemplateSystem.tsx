@@ -6,6 +6,7 @@ import {
     Music, Laptop, Palette, Gamepad2, Briefcase,
     HeartPulse, Dumbbell, Zap, ImageIcon, Layers, Grid
 } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ══════════════════════════════════════════════════════════
@@ -252,9 +253,11 @@ export const NICHE_TEMPLATES: Record<string, TemplateItem[]> = {
         { id: 'biz_skyline', name: 'Skyline', style: 'Urban', badge: 'Image' },
     ],
     influencer: [
-        { id: 'influencer_trendy', name: 'Trendy Pro', style: 'High Contrast', badge: 'New' },
-        { id: 'influencer_glass', name: 'Glass Glow', style: 'Glassmorphism' },
-        { id: 'influencer_minimal', name: 'Quiet Luxury', style: 'Minimalist' },
+        { id: 'insta_pro', name: 'Luxury Pro', style: 'High-End Editorial', badge: 'New' },
+        { id: 'insta_trendy', name: 'Insta Trendy', style: 'Vibrant Mesh', badge: 'Popular' },
+        { id: 'insta_minimal', name: 'Studio Minimal', style: 'Clean Grayscale', badge: 'Minimal' },
+        { id: 'sunday_brunch', name: 'Sunday Brunch', style: 'Warm Organic', badge: 'Cozy' },
+        { id: 'luxury_dark', name: 'Luxury Noir', style: 'Premium Luxury', badge: 'Animated' },
     ],
     modern: [
         { id: 'modern_fisher', name: 'Fisher', style: 'Designer', badge: 'Popular' },
@@ -400,6 +403,15 @@ const THEMES: Record<string, ThemeConfig> = {
         fontClass: 'font-sans', accent: '#8b5cf6',
         effects: ['orbs', 'grain', 'particles'], particleColor: '#8b5cf6',
         meshGlow: 'radial-gradient(circle at 50% 0%, rgba(139,92,246,0.15), transparent 70%)',
+    },
+
+    luxury_dark: {
+        bgStyle: { background: '#050505' },
+        textColor: '#ffffff',
+        btnStyle: { background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', color: '#ffffff', padding: '16px 24px', fontSize: '13px', fontWeight: 700, boxShadow: '0 10px 40px rgba(0,0,0,0.5)' },
+        fontClass: 'font-serif', accent: '#8b5cf6',
+        effects: ['orbs', 'grain'], particleColor: '#8b5cf6',
+        meshGlow: 'radial-gradient(circle at 50% 50%, rgba(139,92,246,0.1), transparent 80%)',
     },
 
     // ═══════════════════ PHOTOGRAPHY ═══════════════════
@@ -974,6 +986,14 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Layout Structure</label>
+                    <a 
+                        href={`/p/?u=${profile?.instagram_username || 'demo'}`} 
+                        target="_blank"
+                        className="text-[10px] font-bold text-violet-600 hover:text-violet-700 flex items-center gap-1 transition-colors"
+                    >
+                        <ExternalLink size={12} />
+                        View Public Link
+                    </a>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
@@ -981,7 +1001,11 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
                         { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
                         { id: 'influencer', name: 'Influencers', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
-                        { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Aesthetic Influencer', icon: <ImageIcon size={18} className="text-emerald-500" /> },
+                        { id: 'insta_pro', name: 'Luxury Pro', desc: 'Premium luxury', icon: <Zap size={18} className="text-violet-500" /> },
+                        { id: 'insta_trendy', name: 'Insta Trendy', desc: 'Vibrant Mesh', icon: <Sparkles size={18} className="text-fuchsia-500" /> },
+                        { id: 'insta_minimal', name: 'Studio Minimal', desc: 'Clean Grayscale', icon: <Grid size={18} className="text-slate-500" /> },
+                        { id: 'sunday_brunch', name: 'Sunday Brunch', desc: 'Warm Organic', icon: <Coffee size={18} className="text-orange-500" /> },
+                        { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
 
                     ].map((layout) => (
                         <button

@@ -11,8 +11,8 @@ import { OliviaLayout } from "./layouts/OliviaLayout";
 import { UniversalLayout } from "./layouts/UniversalLayout";
 import { CreatorStoreLayout } from "./layouts/CreatorStoreLayout";
 import { InfluencerLayout } from "./layouts/InfluencerLayout";
-import { InstaTrendyLayout } from "./layouts/InstaTrendyLayout";
 import { InstaProLayout } from "./layouts/InstaProLayout";
+import { InstaTrendyLayout } from "./layouts/InstaTrendyLayout";
 import { InstaMinimalLayout } from "./layouts/InstaMinimalLayout";
 import { SundayBrunchLayout } from "./layouts/SundayBrunchLayout";
 export const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
@@ -592,20 +592,41 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </div>
                 )}
 
-                {/* ── URGENCY OFFER (Clean Banner) ── */}
-                {type === "urgency_offer_section" && (
+                {/* ── URGENCY OFFER / COUNTDOWN (Clean Banner) ── */}
+                {["urgency_offer_section", "countdown_section"].includes(type) && (
                     <div className="w-[calc(100%+3rem)] -mx-6 mt-4 mb-8 p-8 bg-red-500 text-white text-center">
                         <div className="inline-flex items-center gap-2 mb-4 opacity-80">
                             <Clock size={14} className="animate-pulse" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em]">Limited Time Offer</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em]">{type === "countdown_section" ? "Countdown" : "Limited Time Offer"}</p>
                         </div>
-                        <h3 className="text-[24px] font-black tracking-tight leading-tight mb-3">{settings.title || "Special Offer"}</h3>
+                        <h3 className="text-[24px] font-black tracking-tight leading-tight mb-3">{settings.title || (type === "countdown_section" ? "Coming Soon" : "Special Offer")}</h3>
                         {settings.description && <p className="text-[14px] opacity-90 leading-relaxed max-w-[90%] mx-auto mb-6">{settings.description}</p>}
                         {settings.button_text && (
                             <button className="px-8 py-3.5 rounded-full bg-white text-red-500 text-[12px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-transform">
                                 {settings.button_text}
                             </button>
                         )}
+                    </div>
+                )}
+
+                {/* ── LINK GRID / CAROUSEL (Standard Fallback) ── */}
+                {["link_grid_section", "link_carousel_section"].includes(type) && (
+                    <div className={cn("w-full mt-4 mb-8", type === "link_carousel_section" ? "overflow-x-auto no-scrollbar" : "")}>
+                        <div className={cn(
+                            type === "link_grid_section" ? "grid grid-cols-2 gap-4" : "flex gap-4 pb-4"
+                        )}>
+                            {(settings.items || []).map((link: any, i: number) => (
+                                <a key={i} href={link.url || "#"} className={cn(
+                                    "p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex flex-col items-center gap-3 text-center transition-all hover:bg-black/10",
+                                    type === "link_carousel_section" ? "min-w-[140px]" : "w-full"
+                                )}>
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <ArrowUpRight size={18} />
+                                    </div>
+                                    <span className="text-[13px] font-bold truncate w-full" style={{ color: effectiveTextColor }}>{link.name || link.title || "Link"}</span>
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 )}
 
@@ -675,7 +696,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                 {/* ── GENERIC CATCH-ALL for remaining block types (Hyper Trendy Links) ── */}
                 {!["link", "heading", "paragraph", "socials", "avatar", "email_collector", "phone_collector", "contact_form", "contact_collector", "youtube", "spotify", "paypal", "newsletter", "vcard", "divider", "business_hours", "rss", "soundcloud", "vimeo", "twitch", "tiktok_video",
                     "hero_section", "hero_aesthetic_section", "stats_section", "stats_minimal_section", "brands_section", "portfolio_section", "portfolio_minimal_section", "services_section", "testimonials_section", "testimonial_highlight_section", "faq_section", "faq_cards_section",
-                    "cta_section", "cta_fullscreen_section", "social_medias_section", "header_profile_section", "hero_product_section", "featured_product_section", "product_list_section", "trust_badges_section", "urgency_offer_section", "contact_section", "impact_section", "pricing_cards_section"
+                    "cta_section", "cta_fullscreen_section", "social_medias_section", "header_profile_section", "hero_product_section", "featured_product_section", "product_list_section", "trust_badges_section", "urgency_offer_section", "countdown_section", "link_grid_section", "link_carousel_section", "contact_section", "impact_section", "pricing_cards_section"
                 ].includes(type) && (
                     <a href={block.location_url || "#"} className="relative w-full group overflow-hidden transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex items-center justify-center min-h-[64px] py-4 px-8 mt-3 mb-3 rounded-full shadow-sm border border-black/5 dark:border-white/5" style={{ ...buttonStyle, background: buttonStyle.background ? buttonStyle.background : 'rgba(0,0,0,0.05)' }}>
                          
@@ -698,31 +719,38 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
     return (
         <div className="relative mx-auto flex items-center justify-center p-4 h-full w-full pointer-events-auto overflow-visible">
-            {/* iPhone 17 Pro Concept Shell — Ultra Thin Bezels & Titanium Frame */}
-            <div className="relative aspect-[9/19.5] h-full max-h-[840px] w-auto max-w-full bg-black rounded-[4rem] p-[4px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/20 overflow-hidden group/phone transition-all duration-700 border-[1px] border-white/5">
+            {/* iPhone 15/16 Pro Studio Shell — Natural Titanium Edition */}
+            <div 
+                className="relative aspect-[9/20] h-full max-h-[940px] w-auto max-w-full bg-[#1c1c1e] rounded-[4.5rem] p-[8px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.1)] overflow-hidden group/phone transition-all duration-700 border-[1px] border-white/5"
+            >
                 
-                {/* Titanium Frame Reflections */}
-                <div className="absolute inset-0 rounded-[4rem] border-[4px] border-[#1c1c1e] z-0" />
-                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/[0.08] to-transparent z-10 pointer-events-none" />
+                {/* Natural Titanium Frame Glow */}
+                <div className="absolute inset-0 rounded-[4.5rem] border-[1px] border-white/20 z-0 pointer-events-none" />
+                <div className="absolute inset-[1px] rounded-[4.4rem] border-[3px] border-[#2c2c2e] z-0 pointer-events-none" />
                 
-                {/* Minimalist Side Buttons (iPhone 17 Style) */}
-                <div className="absolute -left-[3px] top-32 w-1 h-12 bg-zinc-800 rounded-r-lg z-20 border-r border-white/5" />
-                <div className="absolute -left-[3px] top-48 w-1 h-20 bg-zinc-800 rounded-r-lg z-20 border-r border-white/5" />
-                <div className="absolute -left-[3px] top-72 w-1 h-20 bg-zinc-800 rounded-r-lg z-20 border-r border-white/5" />
-                <div className="absolute -right-[3px] top-48 w-1 h-28 bg-zinc-800 rounded-l-lg z-20 border-l border-white/5" />
+                {/* side buttons */}
+                {/* Action Button (Left) */}
+                <div className="absolute -left-[2px] top-36 w-[3px] h-8 bg-zinc-700 rounded-r-md z-20 border-r border-white/10" />
+                {/* Volume Buttons (Left) */}
+                <div className="absolute -left-[2px] top-52 w-[3px] h-14 bg-zinc-700 rounded-r-md z-20 border-r border-white/10" />
+                <div className="absolute -left-[2px] top-72 w-[3px] h-14 bg-zinc-700 rounded-r-md z-20 border-r border-white/10" />
+                {/* Power Button (Right) */}
+                <div className="absolute -right-[2px] top-56 w-[3px] h-20 bg-zinc-700 rounded-l-md z-20 border-l border-white/10" />
 
-                {/* Integrated Dynamic Island (Smaller & Sleeker) */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full z-[100] flex items-center justify-center border border-white/[0.05] shadow-2xl">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/30 mr-1.5 blur-[2px]" />
-                    <div className="w-0.5 h-0.5 rounded-full bg-white/10" />
+                {/* Dynamic Island */}
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-[100] flex items-center justify-center border border-white/[0.03] shadow-2xl">
+                    <div className="absolute right-6 w-1.5 h-1.5 rounded-full bg-[#1a1a1a] border border-white/5" />
                 </div>
                 
-                {/* Edge-to-Edge Screen Content */}
-                    <div className="rounded-[3.8rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" 
-                        style={{ background: effectiveLayoutStyle === 'creator_store' ? '#ffffff' : (theme.bgStyle.background || "#F3F4F6"), color: theme.textColor || "#0F172A" }}>
-                        
-                        {/* Screen Surface Reflection */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-transparent z-30 pointer-events-none" />
+                {/* Screen Surface */}
+                <div className="rounded-[4rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" 
+                    style={{ 
+                        background: effectiveLayoutStyle === 'creator_store' ? '#ffffff' : (theme.bgStyle.background || "#F3F4F6"), 
+                        color: theme.textColor || "#0F172A" 
+                    }}>
+                    
+                    {/* Screen Surface Reflection */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.03] via-transparent to-transparent z-30 pointer-events-none" />
 
                         <div className={cn("flex-1 overflow-y-auto no-scrollbar relative z-10 w-full", (effectiveLayoutStyle === "portfolio" || effectiveLayoutStyle === "ugc" || effectiveLayoutStyle === "aesthetic_influencer" || effectiveLayoutStyle === "influencer" || effectiveLayoutStyle === "olivia" || effectiveLayoutStyle === "universal" || effectiveLayoutStyle === "creator_store" || effectiveLayoutStyle === "sunday_brunch" || effectiveLayoutStyle === "insta_trendy" || effectiveLayoutStyle === "insta_pro" || effectiveLayoutStyle === "insta_minimal") ? "p-0" : "p-6")}>
                         {/* Default Header if no blocks exist */}
@@ -753,6 +781,14 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             <UniversalLayout profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} />
                         ) : (effectiveLayoutStyle === "aesthetic_influencer" || effectiveLayoutStyle === "influencer") ? (
                             <InfluencerLayout profile={profile} tabs={tabs} />
+                        ) : effectiveLayoutStyle === "insta_pro" ? (
+                            <InstaProLayout profile={profile} tabs={tabs} />
+                        ) : effectiveLayoutStyle === "insta_trendy" ? (
+                            <InstaTrendyLayout profile={profile} tabs={tabs} />
+                        ) : effectiveLayoutStyle === "insta_minimal" ? (
+                            <InstaMinimalLayout profile={profile} tabs={tabs} />
+                        ) : effectiveLayoutStyle === "sunday_brunch" ? (
+                            <SundayBrunchLayout profile={profile} tabs={tabs} />
                         ) : (
                             <StandardLayout topAvatar={topAvatar} groupedRows={groupedRows} profile={profile} renderBlockUI={renderBlockUI} />
                         )}

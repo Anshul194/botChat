@@ -1952,8 +1952,8 @@ function BioLinkBuilderContent() {
                 </aside>
 
                 <main className={cn(
-                    "w-full bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-4 sm:p-12 transition-all duration-1000 ease-in-out z-10",
-                    "xl:sticky xl:top-0 h-full overflow-hidden xl:w-[450px]",
+                    "w-full bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-2 sm:p-4 transition-all duration-1000 ease-in-out z-10",
+                    "xl:sticky xl:top-0 h-full overflow-hidden xl:w-[420px]",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
                     showCarouselEditor && "xl:mr-[400px]"
                 )}>
@@ -2446,9 +2446,9 @@ function BioLinkBuilderContent() {
                                     )}
 
                                     {/* Creator Store: Urgency Offer Section */}
-                                    {uiType === "urgency_offer_section" && (
-                                        <div className="space-y-5">
-                                            <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Limited Time Offer" />
+                                     {["urgency_offer_section", "countdown_section"].includes(uiType) && (
+                                         <div className="space-y-5">
+                                             <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Limited Time Offer" />
                                             <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Offer details..." textarea />
                                             <div className="grid grid-cols-2 gap-4">
                                                 <InputField label="Button Text" value={item.button_text || ""} onChange={(e: any) => updateItem(idx, 'button_text', e.target.value)} placeholder="Claim Discount" />
@@ -2467,7 +2467,7 @@ function BioLinkBuilderContent() {
                                     )}
 
                                     {/* Portfolio / Services / Testimonials / FAQ Sections */}
-                                    {["portfolio_section", "services_section", "testimonials_section", "faq_section"].includes(uiType) && (
+                                    {["portfolio_section", "services_section", "testimonials_section", "faq_section", "link_grid_section", "link_carousel_section"].includes(uiType) && (
                                         <div className="space-y-5">
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Section Items</p>
                                             {(item.items || []).map((sItem: any, siIdx: number) => (

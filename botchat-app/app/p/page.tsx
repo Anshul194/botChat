@@ -15,6 +15,7 @@ import { OliviaLayout } from "@/app/dashboard/instagram/bio-link/layouts/OliviaL
 import { UniversalLayout } from "@/app/dashboard/instagram/bio-link/layouts/UniversalLayout";
 import { CreatorStoreLayout } from "@/app/dashboard/instagram/bio-link/layouts/CreatorStoreLayout";
 import { InfluencerLayout } from "@/app/dashboard/instagram/bio-link/layouts/InfluencerLayout";
+import { InstaProLayout } from "@/app/dashboard/instagram/bio-link/layouts/InstaProLayout";
 import { Globe, MessageCircle, User, MoreHorizontal, Instagram, MapPin, ArrowUpRight, Camera, Sparkles, Youtube, Video, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -1256,7 +1257,7 @@ function PublicBioContent() {
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
-                    <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
+                    <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col">
                         {layoutStyle === "ugc" ? (
                             <UGCLayout
                                 theme={theme}
@@ -1280,6 +1281,19 @@ function PublicBioContent() {
         );
     }
 
+    if (layoutStyle === "insta_pro") {
+        return (
+            <>
+                <title>{profile.title || username} · Luxury Pro</title>
+                <div className="min-h-screen flex justify-center w-full bg-[#050505]">
+                    <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col shadow-2xl">
+                        <InstaProLayout profile={profile} tabs={rawTabs} />
+                    </div>
+                </div>
+            </>
+        );
+    }
+
     if (layoutStyle === "olivia") {
         return (
             <>
@@ -1287,7 +1301,7 @@ function PublicBioContent() {
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
-                    <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
+                    <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col">
                         <OliviaLayout
                             profile={profile}
                             otherBlocks={otherBlocks}
@@ -1312,7 +1326,7 @@ function PublicBioContent() {
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
-                    <div className="w-full max-w-[480px] min-h-screen relative overflow-hidden flex flex-col">
+                    <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col">
                         <UniversalLayout
                             profile={profile}
                             otherBlocks={otherBlocks}
@@ -1334,7 +1348,7 @@ function PublicBioContent() {
             <>
                 <title>{profile.title || username} · Store</title>
                 <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
-                    <div className="w-full max-w-[480px] min-h-screen shadow-2xl relative bg-white overflow-hidden flex flex-col">
+                    <div className="w-full max-w-[540px] min-h-screen shadow-2xl relative bg-white overflow-hidden flex flex-col">
                         <CreatorStoreLayout
                             profile={profile}
                             otherBlocks={otherBlocks}
@@ -1353,7 +1367,7 @@ function PublicBioContent() {
         <>
             <title>{profile.title || username} · Bio Link</title>
             <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
-                <div className="w-full max-w-[480px] min-h-screen shadow-2xl relative bg-white dark:bg-[#0a0a0a] overflow-x-hidden flex flex-col">
+                <div className="w-full max-w-[540px] min-h-screen shadow-2xl relative bg-white dark:bg-[#0a0a0a] overflow-x-hidden flex flex-col">
                     {/* ── Hero Header ──────────────────────────────────── */}
                 <div className="relative pt-16 pb-10 px-6 flex flex-col items-center text-center"
                     style={theme.bgStyle}>

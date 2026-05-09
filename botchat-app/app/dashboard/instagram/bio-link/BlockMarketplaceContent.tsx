@@ -47,7 +47,9 @@ const getLucideIcon = (id: string, category: string) => {
     if (val.includes("services")) return ShoppingBag;
     if (val.includes("testimonials")) return User;
     if (val.includes("faq")) return Info;
-    if (val.includes("cta")) return Zap;
+    if (val.includes("cta") || val.includes("urgency")) return Zap;
+    if (val.includes("countdown")) return Loader2;
+    if (val.includes("trust")) return ShieldCheck;
     
     if (category === "standard") return LayoutTemplate;
     if (category === "advanced") return Wand2;
@@ -67,6 +69,8 @@ const DEFAULT_BLOCKS: BlockCategoryMap = {
             { id: "avatar", label: "Profile Header", desc: "Avatar with name and username", color: "#ec4899" },
             { id: "image", label: "Image Block", desc: "High-quality photo or banner", color: "#f59e0b" },
             { id: "socials", label: "Social Links", desc: "Connect your social profiles", color: "#06b6d4" },
+            { id: "link_grid_section", label: "Link Grid", desc: "Small icon-based links", color: "#8b5cf6" },
+            { id: "link_carousel_section", label: "Link Carousel", desc: "Horizontal scrolling links", color: "#ec4899" },
         ]
     },
     advanced: {
@@ -79,6 +83,8 @@ const DEFAULT_BLOCKS: BlockCategoryMap = {
             { id: "cta", label: "Call to Action", desc: "Highlight a priority link", color: "#f97316" },
             { id: "stats", label: "Statistics", desc: "Display your achievements", color: "#2563eb" },
             { id: "brands", label: "Brand Logos", desc: "Logos of partners or clients", color: "#475569" },
+            { id: "countdown_section", label: "Countdown", desc: "Build urgency for your next drop", color: "#f97316" },
+            { id: "trust_badges_section", label: "Trust Badges", desc: "Showcase your credibility", color: "#10b981" },
         ]
     },
     embeds: {
