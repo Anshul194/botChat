@@ -870,8 +870,9 @@ function PublicBioContent() {
     const currentTab = rawTabs.find((t: any) => t.id === activeTab) || rawTabs[0];
     const theme = getTheme(profile.theme_name || profile.theme || profile.settings?.theme);
 
-    const allBlocks = rawTabs.flatMap((t: any) => t.sections || []).flatMap((s: any) => s.blocks || []).filter((b: any) => !b.is_hidden);
-    const otherBlocks = currentTab?.sections?.flatMap((s: any) => s.blocks || [])?.filter((b: any) => !b.is_hidden) || [];
+    const isBlockVisible = (b: any) => b.is_enabled != 0 && !b.is_hidden && b.is_active != 0 && b.is_Enabled != 0;
+    const allBlocks = rawTabs.flatMap((t: any) => t.sections || []).flatMap((s: any) => s.blocks || []).filter(isBlockVisible);
+    const otherBlocks = currentTab?.sections?.flatMap((s: any) => s.blocks || [])?.filter(isBlockVisible) || [];
     
     // For PortfolioLayout specifically
     const topAvatar = otherBlocks.find(b => getUiTypeFromBlock(b) === "avatar");

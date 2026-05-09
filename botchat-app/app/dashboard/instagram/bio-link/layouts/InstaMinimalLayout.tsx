@@ -9,7 +9,7 @@ import { getUiTypeFromBlock } from "../builder-utils";
 export function InstaMinimalLayout({ profile, tabs }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     return (
         <div className="w-full min-h-full bg-white text-zinc-900 font-sans px-8 py-20 flex flex-col items-center selection:bg-zinc-100">

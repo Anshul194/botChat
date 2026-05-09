@@ -9,7 +9,7 @@ import { getUiTypeFromBlock } from "../builder-utils";
 export function SundayBrunchLayout({ profile, tabs }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     return (
         <div className="w-full min-h-full bg-[#fdfaf5] text-[#4a403a] font-sans px-6 py-16 flex flex-col items-center selection:bg-[#e8dccb] relative">

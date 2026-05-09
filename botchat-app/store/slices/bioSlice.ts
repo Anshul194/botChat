@@ -128,6 +128,21 @@ export const toggleBioPageStatus = createAsyncThunk(
     }
 );
 
+export const toggleBlockStatus = createAsyncThunk(
+    'bio/toggleBlockStatus',
+    async (block_id: string, { rejectWithValue }) => {
+        try {
+            const response = await api.patch(`/bio/blocks/${block_id}/toggle`);
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message || 'Failed to toggle block status');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to toggle block status');
+        }
+    }
+);
+
 export const fetchBioStatistics = createAsyncThunk(
     'bio/fetchBioStatistics',
     async ({ pageId, type, start_date, end_date }: { pageId: string; type: string; start_date: string; end_date: string }, { rejectWithValue }) => {

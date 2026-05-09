@@ -1130,7 +1130,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                                             <div className="w-full space-y-1.5">
                                                 {/* Use actual links if available, else fall back to generic blocks */}
                                                 {(() => {
-                                                    const blocks = profile?.tabs?.[0]?.sections?.[0]?.blocks?.filter((b: any) => b.is_active !== 0 && b.is_Enabled !== 0) || [];
+                                                    const blocks = profile?.tabs?.[0]?.sections?.[0]?.blocks?.filter((b: any) => b.is_active !== 0 && b.is_Enabled !== 0 && b.is_enabled !== 0) || [];
                                                     const previewBlocks = blocks.length > 0 ? blocks.slice(0, 3) : [1, 2, 3];
 
                                                     return previewBlocks.map((b: any, i: number) => {

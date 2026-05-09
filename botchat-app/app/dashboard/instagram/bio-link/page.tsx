@@ -1423,7 +1423,7 @@ function BioLinkBuilderContent() {
                                                         const uiType = getUiTypeFromBlock(block, uiTypeOverrides);
                                                         const color = BLOCK_COLORS[uiType] || "#6B7280";
                                                         const icon = BLOCK_ICONS[uiType] || <LayoutTemplate size={14} />;
-                                                        const isInactive = block.is_active === 0 || block.is_Enabled === 0;
+                                                        const isInactive = block.is_active == 0 || block.is_Enabled == 0 || block.is_enabled == 0;
                                                         const label = block.settings?.title || block.settings?.name || block.settings?.text || uiType.replace(/_/g, " ");
 
                                                         return (
@@ -1471,22 +1471,44 @@ function BioLinkBuilderContent() {
                                                                     <button
                                                                         data-no-click
                                                                         onClick={async (e) => {
+                                                                            e.preventDefault();
                                                                             e.stopPropagation();
+                                                                            // Optimistic update — flip immediately
                                                                             const newStatus = isInactive ? 1 : 0;
-                                                                            setTabs(prev => prev.map(tab => ({
+                                                                            const applyStatus = (s: number) => setTabs(prev => prev.map(tab => ({
                                                                                 ...tab,
                                                                                 sections: (tab.sections || []).map(sec => ({
                                                                                     ...sec,
-                                                                                    blocks: (sec.blocks || []).map(b => b.id === block.id ? { ...b, is_active: newStatus, is_Enabled: newStatus } : b)
+                                                                                    blocks: (sec.blocks || []).map(b => b.id === block.id ? { ...b, is_active: s, is_Enabled: s, is_enabled: s } : b)
                                                                                 }))
                                                                             })));
-                                                                            try { await api.put(`/bio/blocks/${block.id}`, { is_Enabled: newStatus, is_active: newStatus }); } catch { /* silent */ }
+                                                                            applyStatus(newStatus);
+                                                                            // Close editor if disabling
+                                                                            if (newStatus === 0 && editingBlock?.id === block.id) {
+                                                                                setEditingBlock(null);
+                                                                                setShowCarouselEditor(false);
+                                                                            }
+                                                                            // API call
+                                                                            try {
+                                                                                const res = await api.patch(`/bio/blocks/${block.id}/toggle`);
+                                                                                // Normalize: API may return boolean true/false or integer 1/0
+                                                                                const raw = res.data?.data?.is_enabled ?? res.data?.data?.is_Enabled ?? newStatus;
+                                                                                const serverStatus = raw === true ? 1 : raw === false ? 0 : Number(raw);
+                                                                                applyStatus(serverStatus);
+                                                                                if (serverStatus === 0 && editingBlock?.id === block.id) {
+                                                                                    setEditingBlock(null);
+                                                                                    setShowCarouselEditor(false);
+                                                                                }
+                                                                            } catch (err) {
+                                                                                console.error("Toggle block failed:", err);
+                                                                                applyStatus(isInactive ? 0 : 1); // revert
+                                                                            }
                                                                         }}
                                                                         title={isInactive ? "Show block" : "Hide block"}
                                                                         className={cn(
                                                                             "w-7 h-7 rounded-md flex items-center justify-center transition-all",
                                                                             isInactive
-                                                                                ? "text-slate-300 dark:text-slate-600 hover:text-slate-500"
+                                                                                ? "text-amber-400 dark:text-amber-500 hover:text-amber-600"
                                                                                 : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100"
                                                                         )}
                                                                     >
@@ -2089,19 +2111,73 @@ function BioLinkBuilderContent() {
                 }>
                 {editingBlock && (
                     <div className="space-y-6">
-                        {/* HIDE BLOCK TOGGLE */}
+                        {/* BLOCK VISIBILITY TOGGLE (IN-FORM) */}
                         <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
-                                    <EyeOff size={14} className="text-slate-500 dark:text-slate-400" />
+                                <div className={cn(
+                                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                                    (editingBlock.is_enabled == 0) ? "bg-amber-100 dark:bg-amber-900/30 text-amber-500" : "bg-green-100 dark:bg-green-900/30 text-green-500"
+                                )}>
+                                    {(editingBlock.is_enabled == 0) ? <EyeOff size={14} /> : <Eye size={14} />}
                                 </div>
                                 <div>
-                                    <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">Hide Block</h4>
-                                    <p className="text-[10px] text-slate-500 font-bold tracking-tight">Hide from the public page</p>
+                                    <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">
+                                        {(editingBlock.is_enabled == 0) ? "Block is Hidden" : "Block is Visible"}
+                                    </h4>
+                                    <p className="text-[10px] text-slate-500 font-bold tracking-tight">Toggle visibility on your public page</p>
                                 </div>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={editingBlock.is_hidden || false} onChange={(e) => setEditingBlock({ ...editingBlock, is_hidden: e.target.checked })} />
+                                <input 
+                                    type="checkbox" 
+                                    className="sr-only peer" 
+                                    checked={editingBlock.is_enabled != 0} 
+                                    onChange={async () => {
+                                        const blockId = editingBlock.id;
+                                        const isCurrentlyInactive = editingBlock.is_enabled == 0;
+                                        const newStatus = isCurrentlyInactive ? 1 : 0;
+                                        
+                                        // Update editingBlock state immediately
+                                        setEditingBlock({ ...editingBlock, is_enabled: newStatus, is_active: newStatus, is_Enabled: newStatus });
+                                        
+                                        // Update tabs state (for live preview)
+                                        const applyToTabs = (s: number) => setTabs(prev => prev.map(tab => ({
+                                            ...tab,
+                                            sections: (tab.sections || []).map(sec => ({
+                                                ...sec,
+                                                blocks: (sec.blocks || []).map(b => b.id === blockId ? { ...b, is_active: s, is_Enabled: s, is_enabled: s } : b)
+                                            }))
+                                        })));
+                                        applyToTabs(newStatus);
+
+                                        // If disabling, close the editor
+                                        if (newStatus === 0) {
+                                            setEditingBlock(null);
+                                            setShowCarouselEditor(false);
+                                        }
+
+                                        try {
+                                            const res = await api.patch(`/bio/blocks/${blockId}/toggle`);
+                                            const raw = res.data?.data?.is_enabled ?? res.data?.data?.is_Enabled ?? newStatus;
+                                            const serverStatus = raw === true ? 1 : raw === false ? 0 : Number(raw);
+                                            
+                                            // Sync final status
+                                            applyToTabs(serverStatus);
+                                            if (serverStatus === 0) {
+                                                setEditingBlock(null);
+                                                setShowCarouselEditor(false);
+                                            } else {
+                                                setEditingBlock(prev => prev?.id === blockId ? { ...prev, is_enabled: serverStatus, is_active: serverStatus, is_Enabled: serverStatus } : prev);
+                                            }
+                                        } catch (err) {
+                                            console.error("Toggle block failed:", err);
+                                            // Revert on error
+                                            const revertStatus = isCurrentlyInactive ? 0 : 1;
+                                            applyToTabs(revertStatus);
+                                            setEditingBlock(prev => prev?.id === blockId ? { ...prev, is_enabled: revertStatus, is_active: revertStatus, is_Enabled: revertStatus } : prev);
+                                        }
+                                    }} 
+                                />
                                 <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
                             </label>
                         </div>
