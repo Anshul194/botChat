@@ -22,14 +22,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     }, [isAuthenticated, isInitialized, router]);
 
-    // Show loading state while initializing or while not authenticated
-    if (!isInitialized || !isAuthenticated) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-[#0a0f1e]">
-                <div className="w-10 h-10 border-4 border-[#FF2D78] border-t-transparent rounded-full animate-spin" />
-            </div>
-        );
-    }
     const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies") || pathname?.includes("/comment-manager") || pathname?.includes("/dashboard/posts/studio");
 
     // Handle global sidebar toggle events
@@ -72,6 +64,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setSidebarCollapsed(true);
         setMobileSidebarOpen(false);
     }, [pathname]);
+
+    // Show loading state while initializing or while not authenticated
+    if (!isInitialized || !isAuthenticated) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-[#0a0f1e]">
+                <div className="w-10 h-10 border-4 border-[#FF2D78] border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div

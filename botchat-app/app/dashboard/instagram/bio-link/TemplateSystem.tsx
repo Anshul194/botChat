@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Camera, ShoppingBag, Sparkles, Coffee,
     Music, Laptop, Palette, Gamepad2, Briefcase,
-    HeartPulse, Dumbbell, Zap, ImageIcon, Layers, Grid
+    HeartPulse, Dumbbell, Zap, ImageIcon, Layers, Grid, Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -963,8 +963,16 @@ export const getTheme = (id: string = 'photo_aura'): ThemeConfig => {
 // ══════════════════════════════════════════════════════════
 // VISUALS LAB — Gen-Z Template Picker
 // ══════════════════════════════════════════════════════════
-export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
-    const [selectedNiche, setSelectedNiche] = useState('photography');
+export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioTheme }: any) => {
+    const [selectedNiche, setSelectedNiche] = useState(profile?.niche || 'photography');
+    const [applyingThemeId, setApplyingThemeId] = useState<string | null>(null);
+
+    // Sync niche when profile loads or changes externally
+    useEffect(() => {
+        if (profile?.niche) {
+            setSelectedNiche(profile.niche);
+        }
+    }, [profile?.niche]);
 
     return (
         <div className="space-y-6">
@@ -1048,12 +1056,26 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                             const isImage = tpl.badge === 'Image';
 
                             return (
-                                <button key={tpl.id} onClick={() => updateProfile({ theme: tpl.id })}
+                                <button key={tpl.id} 
+                                    onClick={async () => {
+                                        if (applyBioTheme) {
+                                            setApplyingThemeId(tpl.id);
+                                            try {
+                                                await applyBioTheme(tpl.id, selectedNiche);
+                                            } finally {
+                                                setApplyingThemeId(null);
+                                            }
+                                        } else {
+                                            updateProfile({ theme: tpl.id });
+                                        }
+                                    }}
+                                    disabled={applyingThemeId !== null}
                                     className={cn(
                                         "group relative aspect-[9/16] rounded-xl overflow-hidden border transition-all duration-300 outline-none cursor-pointer flex flex-col bg-white dark:bg-slate-900",
                                         isSelected
                                             ? "border-primary shadow-md ring-1 ring-primary"
-                                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700",
+                                        applyingThemeId === tpl.id && "opacity-80 scale-95"
                                     )}>
 
                                     {/* Preview Area */}
@@ -1122,9 +1144,15 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate }: any) => {
                                                 {tpl.badge}
                                             </div>
                                         )}
-                                        {isSelected && (
+                                        {isSelected && !applyingThemeId && (
                                             <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center z-20 shadow-sm">
                                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                            </div>
+                                        )}
+
+                                        {applyingThemeId === tpl.id && (
+                                            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center z-30">
+                                                <Loader2 className="w-6 h-6 text-white animate-spin" />
                                             </div>
                                         )}
                                     </div>

@@ -456,7 +456,14 @@ function BioLinkBuilderContent() {
                     payload.settings.layoutStyle = layoutName;
                 }
 
-                setProfile(payload);
+                // Map theme_name from backend to theme for frontend consistency
+                const hydratedProfile = {
+                    ...payload,
+                    theme: payload.theme_name || payload.theme || payload.settings?.theme || "photo_aura",
+                    niche: payload.niche || payload.settings?.niche || "photography"
+                };
+
+                setProfile(hydratedProfile);
                 const linkId = payload.link_id || payload.id;
 
                 // Sync advanced settings from profile settings (hydrated state)
@@ -633,6 +640,30 @@ function BioLinkBuilderContent() {
             showModal("success", "Template Applied", `Successfully switched to ${templateId} layout.`);
         } catch {
             showModal("error", "Error", "Failed to apply template.");
+        }
+    };
+
+    const handleApplyBioTheme = async (themeName: string, niche: string) => {
+        if (!profile) return;
+        const linkId = profile.link_id || profile.id;
+        
+        try {
+            // Instant update for PhonePreview
+            setProfile(prev => prev ? { ...prev, theme: themeName } : prev);
+            
+            await api.post(`/bio/pages/${linkId}/apply-template`, {
+                template: "custom",
+                theme_name: themeName,
+                niche: niche
+            });
+            
+            // Refresh data to ensure everything is synced
+            await fetchBuilderData();
+            showModal("success", "Theme Applied", `Successfully applied the ${themeName.replace(/_/g, ' ')} theme.`);
+        } catch (error) {
+            console.error("Failed to apply theme:", error);
+            showModal("error", "Error", "Failed to apply theme. Please try again.");
+            await fetchBuilderData();
         }
     };
 
@@ -1503,6 +1534,7 @@ function BioLinkBuilderContent() {
                                         profile={profile}
                                         updateProfile={handleUpdateProfile}
                                         applyTemplate={handleApplyTemplate}
+                                        applyBioTheme={handleApplyBioTheme}
                                     />
                                 )}
 

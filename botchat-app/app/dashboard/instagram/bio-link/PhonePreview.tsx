@@ -313,7 +313,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                 {/* ── HERO SECTION (Edge-to-Edge Website Style) ── */}
                 {(type === "hero_section" || type === "hero_aesthetic_section") && (
-                    <div className="relative w-[calc(100%+3rem)] -mx-6 mt-0 mb-8 overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.1)] bg-black group min-h-[400px] flex items-end">
+                    <div className="relative w-[calc(100%+3rem)] -mx-6 mt-0 mb-6 overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.1)] bg-black group min-h-[320px] flex items-end">
                         {settings.image ? (
                             <img src={settings.image} className="absolute inset-0 w-full h-full object-cover opacity-80" />
                         ) : (
@@ -321,20 +321,20 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                         
-                        <div className="relative z-10 p-8 w-full text-left">
+                        <div className="relative z-10 p-6 w-full text-left">
                             {(settings.brand_name || settings.headline) && (
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 mb-3">{settings.brand_name || settings.headline}</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/70 mb-2">{settings.brand_name || settings.headline}</p>
                             )}
-                            <h2 className="text-[36px] font-black leading-[1.05] tracking-tight text-white mb-4">
+                            <h2 className="text-[26px] font-black leading-[1.05] tracking-tight text-white mb-2">
                                 {settings.title || "Elevate Your Vision"}
                             </h2>
                             {(settings.subtitle || settings.subheadline || settings.description) && (
-                                <p className="text-[15px] text-white/80 leading-relaxed max-w-[90%] mb-6">
+                                <p className="text-[13px] text-white/80 leading-relaxed max-w-[90%] mb-4">
                                     {settings.subtitle || settings.subheadline || settings.description}
                                 </p>
                             )}
                             {settings.cta_text && (
-                                <button className="px-8 py-3.5 rounded-full bg-white text-black text-[13px] font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform">
+                                <button className="px-6 py-2.5 rounded-full bg-white text-black text-[12px] font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform">
                                     {settings.cta_text}
                                 </button>
                             )}
@@ -498,7 +498,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                 {/* ── HEADER PROFILE SECTION (Edge-to-Edge) ── */}
                 {type === "header_profile_section" && (
-                    <div className="relative w-[calc(100%+3rem)] -mx-6 -mt-6 mb-8 overflow-hidden rounded-b-[40px] bg-black/5 dark:bg-white/5 pb-8">
+                    <div className="relative w-[calc(100%+3rem)] -mx-6 -mt-6 mb-6 overflow-hidden rounded-b-[40px] bg-black/5 dark:bg-white/5 pb-8">
                         {settings.cover_image ? (
                             <img src={settings.cover_image} className="w-full h-[160px] object-cover" />
                         ) : (
@@ -720,6 +720,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                 {/* Edge-to-Edge Screen Content */}
                     <div className="rounded-[3.8rem] overflow-hidden w-full h-full relative flex flex-col shadow-inner" 
                         style={{ background: effectiveLayoutStyle === 'creator_store' ? '#ffffff' : (theme.bgStyle.background || "#F3F4F6"), color: theme.textColor || "#0F172A" }}>
+                        
+                        <ThemeAnimationStyles />
+                        <ThemeEffectsLayer theme={theme} />
                         
                         {/* Screen Surface Reflection */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] via-transparent to-transparent z-30 pointer-events-none" />
