@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 ].join(" ")}
             >
                 <Sidebar
-                    collapsed={sidebarCollapsed}
+                    collapsed={mobileSidebarOpen ? false : sidebarCollapsed}
                     onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                     onClose={() => setMobileSidebarOpen(false)}
                 />
