@@ -532,6 +532,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             </div>
                                         ))}
                                     </div>
+                                    {(settings.plans || []).length === 0 && (
+                                        <div className="w-full h-40 rounded-[32px] bg-white/5 border border-white/10 opacity-20" />
+                                    )}
                                 </div>
                             );
 
@@ -638,13 +641,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                      style={{ background: "rgba(255,255,255,0.03)", backdropFilter: 'blur(10px)', color: theme.textColor, borderRadius: "24px" }}>
                                     <span className="font-bold text-[14px] opacity-40 tracking-tight">{displayLabel || type.replace(/_/g, " ")}</span>
                                 </div>
-                            ))}
-                            {(settings.plans || []).length === 0 && (
-                                <div className="w-full h-40 rounded-[32px] bg-white/5 border border-white/10 opacity-20" />
-                            )}
-                        </div>
-                    </div>
-                )}
+                            );
+                    }
+                })()}
 
                 {/* ── GENERIC CATCH-ALL for remaining block types (Hyper Trendy Links) ── */}
                 {!["link", "heading", "paragraph", "socials", "avatar", "email_collector", "phone_collector", "contact_form", "contact_collector", "youtube", "spotify", "paypal", "newsletter", "vcard", "divider", "business_hours", "rss", "soundcloud", "vimeo", "twitch", "tiktok_video",
