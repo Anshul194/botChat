@@ -988,7 +988,6 @@ function PublicBioContent() {
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
                     <div className="w-full max-w-[480px] min-h-screen relative z-10 overflow-hidden flex flex-col">
-                    <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col">
                         <UniversalLayout
                             profile={profile}
                             otherBlocks={otherBlocks}
