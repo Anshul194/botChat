@@ -344,7 +344,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 { label: "Vcard Links", href: "/dashboard/vcard-links", badge: "Premium" },
                                 { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", badge: "" },
                                 { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", badge: "" },
-                                { label: "Analytics", href: "/dashboard/instagram/bio-links/analytics", badge: "" },
+
                             ]}
                             pathname={currentPath}
                             navigate={navigate}

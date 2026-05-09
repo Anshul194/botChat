@@ -54,12 +54,12 @@ export const ThemeEffectsLayer = ({ theme, mini = false }: { theme: ThemeConfig;
     return (
         <>
             {theme.bgImage && (
-                <div className="absolute inset-0 z-[0]" style={{
+                <div className="absolute inset-0 z-[0] pointer-events-none" style={{
                     backgroundImage: `url(${theme.bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center',
                 }} />
             )}
-            {theme.overlayStyle && <div className="absolute inset-0 z-[1]" style={theme.overlayStyle} />}
-            {theme.meshGlow && <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: theme.meshGlow }} />}
+            {theme.overlayStyle && <div className="absolute inset-0 pointer-events-none" style={theme.overlayStyle} />}
+            {theme.meshGlow && <div className="absolute inset-0 pointer-events-none" style={{ background: theme.meshGlow }} />}
 
             {fx.includes('particles') && (
                 <div className="absolute inset-0 overflow-hidden z-[2] pointer-events-none">

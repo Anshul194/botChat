@@ -564,9 +564,6 @@ function ActionDropdown({ row, onAction, onEdit }: any) {
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
                     <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Analytics</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => showModal("info", "Feature Pending", "QR Code Generation coming soon.")}>
-                    <QrCode size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">QR Code</span>
-                </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => onAction('duplicate')}>
                     <Copy size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
                 </DropdownMenuItem>
