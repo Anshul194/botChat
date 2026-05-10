@@ -16,6 +16,7 @@ export function InstaProLayout({ profile, tabs, openEditor }: any) {
     ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
 
     const settings = profile?.settings || {};
+
     const accentColor = "#8b5cf6";
 
     return (
@@ -91,7 +92,7 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any) =>
             const mainImg = s.avatar || s.image || profile?.image;
             const secondImg = s.cover_image || s.image_secondary || s.secondary_image;
             const heroImages = [mainImg, secondImg].filter(Boolean);
-            
+
             return (
                 <div className="relative overflow-hidden">
                     <div className="relative w-full aspect-[4/5] min-h-[580px] sm:min-h-[720px] overflow-hidden bg-[#050505] flex">
