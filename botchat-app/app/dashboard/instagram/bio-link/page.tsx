@@ -390,6 +390,32 @@ function BioLinkBuilderContent() {
         };
     }, [profile, advancedSettings]);
 
+    const [previewScale, setPreviewScale] = useState(1);
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const handleResize = () => {
+            const h = window.innerHeight;
+            const w = window.innerWidth;
+            
+            // Available height is roughly window height minus header and padding
+            const availableHeight = h - 160;
+            // The phone frame has a max-height of ~820px at scale 1
+            const phoneHeight = 820;
+            
+            // Also consider width if on mobile
+            const availableWidth = w < 1280 ? w - 40 : 400;
+            const phoneWidth = 360;
+
+            const scaleH = Math.min(1, availableHeight / phoneHeight);
+            const scaleW = Math.min(1, availableWidth / phoneWidth);
+            
+            setPreviewScale(Math.min(scaleH, scaleW));
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const currentTab = previewTabs.find(t => t.id === selectedTabId) || previewTabs[0];
     const flatBlocks = (previewTabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
     const layoutFilter = profile?.settings?.layoutStyle || 'standard';
@@ -2019,9 +2045,8 @@ function BioLinkBuilderContent() {
                     {/* Background is now matched exactly to the left panel */}
 
                     <div className={cn(
-                        "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full pt-4",
-                        "scale-100"
-                    )}>
+                        "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full",
+                    )} style={{ transform: `scale(${previewScale})`, transformOrigin: 'center center' }}>
                         <PhonePreview
                             profile={previewProfile || profile}
                             tabs={previewTabs}
@@ -2188,10 +2213,10 @@ function BioLinkBuilderContent() {
                         {(editingBlock.items || []).map((item: any, idx: number) => {
                             const uiType = getUiTypeFromBlock(editingBlock);
                             const aestheticTypes = [
-                                "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
+                                "image", "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
                                 "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section",
                                 "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section",
-                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands"
+                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section"
                             ];
                             if (aestheticTypes.includes(uiType)) return null;
 
@@ -2232,10 +2257,20 @@ function BioLinkBuilderContent() {
                                         <div className="space-y-5">
                                             <InputField
                                                 label="Button Label"
-                                                value={item.name || ""}
-                                                onChange={(e: any) => updateItem(idx, 'name', e.target.value)}
+                                                value={item.name || item.title || ""}
+                                                onChange={(e: any) => {
+                                                    updateItem(idx, 'name', e.target.value);
+                                                    updateItem(idx, 'title', e.target.value);
+                                                }}
                                                 placeholder="e.g. Visit my website"
                                                 icon={<LinkIcon size={14} />}
+                                            />
+                                            <InputField
+                                                label="Description"
+                                                value={item.description || ""}
+                                                onChange={(e: any) => updateItem(idx, 'description', e.target.value)}
+                                                placeholder="e.g. View our latest work"
+                                                icon={<Edit3 size={14} />}
                                             />
                                             <InputField
                                                 label="Destination URL"
@@ -2244,6 +2279,18 @@ function BioLinkBuilderContent() {
                                                 placeholder="https://example.com/"
                                                 icon={<Globe size={14} />}
                                             />
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Button Image (Optional)</label>
+                                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                    {item.image && <img src={item.image} className="w-12 h-12 rounded-lg object-cover" />}
+                                                    <label className="flex-1 cursor-pointer">
+                                                        <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                            {uploadingField === 'link_image' ? <Loader2 size={14} className="animate-spin" /> : "Upload Image"}
+                                                        </div>
+                                                        <input type="file" className="hidden" disabled={uploadingField === 'link_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('link_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) updateItem(idx, 'image', url); } }} />
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
 
@@ -2670,20 +2717,7 @@ function BioLinkBuilderContent() {
                                     )}
 
 
-                                    {/* Paragraph Type */}
-                                    {uiType === "paragraph" && (
-                                        <InputField
-                                            label="Content"
-                                            value={item.text || item.description || ""}
-                                            onChange={(e: any) => {
-                                                updateItem(idx, 'text', e.target.value);
-                                                updateItem(idx, 'description', e.target.value);
-                                            }}
-                                            placeholder="Write your content here..."
-                                            textarea
-                                            icon={<FileCode2 size={14} />}
-                                        />
-                                    )}
+
 
                                     {/* Avatar Type */}
                                     {uiType === "avatar" && (
@@ -2806,37 +2840,7 @@ function BioLinkBuilderContent() {
                                         </div>
                                     )}
 
-                                    {/* Heading Type */}
-                                    {uiType === "heading" && (
-                                        <>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                    <LayoutTemplate size={14} className="text-slate-400" /> Type
-                                                </label>
-                                                <select
-                                                    value={item.heading_type || "h1"}
-                                                    onChange={(e) => updateItem(idx, 'heading_type', e.target.value)}
-                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
-                                                >
-                                                    <option value="h1">H1</option>
-                                                    <option value="h2">H2</option>
-                                                    <option value="h3">H3</option>
-                                                    <option value="h4">H4</option>
-                                                    <option value="h5">H5</option>
-                                                    <option value="h6">H6</option>
-                                                </select>
-                                            </div>
-                                            <InputField
-                                                label="Text"
-                                                value={item.text || item.title || ""}
-                                                onChange={(e: any) => {
-                                                    updateItem(idx, 'text', e.target.value);
-                                                    updateItem(idx, 'title', e.target.value); // Sync for display
-                                                }}
-                                                placeholder="Enter heading text"
-                                            />
-                                        </>
-                                    )}
+
 
                                     {/* Business Hours Type */}
                                     {uiType === "business_hours" && (
@@ -2979,111 +2983,11 @@ function BioLinkBuilderContent() {
                                         />
                                     )}
 
-                                    {/* Link Type */}
-                                    {uiType === "link" && (
-                                        <>
-                                            <InputField
-                                                label="Destination URL"
-                                                value={item.url || item.location_url || ""}
-                                                onChange={(e: any) => updateItem(idx, 'url', e.target.value)}
-                                                placeholder="https://example.com/"
-                                                icon={<LinkIcon size={14} />}
-                                            />
-                                            <InputField
-                                                label="Name"
-                                                value={item.name || item.title || ""}
-                                                onChange={(e: any) => {
-                                                    updateItem(idx, 'name', e.target.value);
-                                                    updateItem(idx, 'title', e.target.value);
-                                                }}
-                                                placeholder="Your Link Name"
-                                                icon={<Megaphone size={14} />}
-                                            />
-                                        </>
-                                    )}
 
-                                    {/* Paragraph Type */}
-                                    {uiType === "paragraph" && (
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                <Edit3 size={14} className="text-slate-400" /> Text
-                                            </label>
-                                            <div className="rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
-                                                <div className="flex items-center gap-4 px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                                                    <span className="text-xs font-bold text-slate-500">Normal</span>
-                                                    <div className="h-4 w-px bg-slate-200 dark:bg-slate-800 mx-2" />
-                                                    <div className="flex items-center gap-4 text-slate-400">
-                                                        <span className="font-bold hover:text-primary cursor-pointer transition-colors">B</span>
-                                                        <span className="italic hover:text-primary cursor-pointer transition-colors">I</span>
-                                                        <span className="underline hover:text-primary cursor-pointer transition-colors">U</span>
-                                                        <span className="line-through hover:text-primary cursor-pointer transition-colors">S</span>
-                                                        <span className="hover:text-primary cursor-pointer transition-colors">A</span>
-                                                        <LinkIcon size={14} className="hover:text-primary cursor-pointer transition-colors" />
-                                                    </div>
-                                                </div>
-                                                <textarea
-                                                    value={item.text || item.description || ""}
-                                                    onChange={(e: any) => {
-                                                        updateItem(idx, 'text', e.target.value);
-                                                        updateItem(idx, 'description', e.target.value);
-                                                    }}
-                                                    rows={6}
-                                                    className="w-full px-5 py-4 bg-transparent text-sm font-medium text-slate-900 dark:text-white outline-none resize-none"
-                                                    placeholder="Write content..."
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
 
-                                    {/* Avatar Type */}
-                                    {uiType === "avatar" && (
-                                        <>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                    <ImageIcon size={14} className="text-slate-400" /> Image
-                                                </label>
-                                                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
-                                                    <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
-                                                        {(item.image || item.url) ? <img src={item.image || item.url} className="w-full h-full object-cover" /> : <User size={24} className="text-slate-400" />}
-                                                    </div>
-                                                    <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
-                                                        Choose File
-                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
-                                                    </label>
-                                                    <p className="text-[10px] text-slate-400 text-center font-bold uppercase tracking-tight">.jpg, .png, .webp allowed. 2 MB maximum.</p>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                    <Maximize2 size={14} className="text-slate-400" /> Size
-                                                </label>
-                                                <select
-                                                    value={item.size || "75x75px"}
-                                                    onChange={(e) => updateItem(idx, 'size', e.target.value)}
-                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
-                                                >
-                                                    <option value="75x75px">75x75px</option>
-                                                    <option value="100x100px">100x100px</option>
-                                                    <option value="125x125px">125x125px</option>
-                                                    <option value="150x150px">150x150px</option>
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                    <Grid size={14} className="text-slate-400" /> Border Radius
-                                                </label>
-                                                <select
-                                                    value={item.border_radius || "straight"}
-                                                    onChange={(e) => updateItem(idx, 'border_radius', e.target.value)}
-                                                    className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
-                                                >
-                                                    <option value="straight">Straight</option>
-                                                    <option value="round">Round</option>
-                                                    <option value="rounded">Rounded</option>
-                                                </select>
-                                            </div>
-                                        </>
-                                    )}
+
+
+
 
                                     {/* Fallback for other types */}
                                     {!["heading", "link", "paragraph", "avatar", "image", "socials", "business_hours", "paypal", "email_collector", "phone_collector", "contact_collector", "spotify", "soundcloud", "youtube", "twitch", "vimeo", "tiktok_video", "hero_section", "stats_section", "cta_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section",
@@ -3117,13 +3021,65 @@ function BioLinkBuilderContent() {
                             const s = editingBlock.settings || {};
                             const upd = (field: string, value: any) => updateBlockSettings(field, value);
                             const aestheticTypes = [
-                                "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
+                                "image", "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
                                 "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section",
-                                "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section"
+                                "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section",
+                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section"
                             ];
                             if (!aestheticTypes.includes(uiType)) return null;
                             return (
                                 <div className="space-y-6 mt-2">
+                                    {/* Image Block (Moved to aesthetic for real-time sync) */}
+                                    {uiType === "image" && (
+                                        <div className="space-y-6">
+                                            {(s.items || editingBlock.items || []).map((item: any, i: number) => (
+                                                <div key={i} className="space-y-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                    <button onClick={() => { 
+                                                        const it = [...(s.items || editingBlock.items || [])];
+                                                        it.splice(i, 1);
+                                                        if (s.items) upd('items', it); else setEditingBlock({...editingBlock, items: it});
+                                                    }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">×</button>
+                                                    
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Image</label>
+                                                        <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-3">
+                                                            {(item.image || item.url) && (
+                                                                <div className="w-full aspect-video rounded-lg overflow-hidden border border-slate-100">
+                                                                    <img src={item.image || item.url} className="w-full h-full object-cover" />
+                                                                </div>
+                                                            )}
+                                                            <label className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-primary hover:text-white transition-all">
+                                                                {uploadingField === `image_${i}` ? <Loader2 size={12} className="animate-spin" /> : "Choose Image"}
+                                                                <input type="file" className="hidden" onChange={async e => {
+                                                                    if (e.target.files?.[0]) {
+                                                                        setUploadingField(`image_${i}`);
+                                                                        const url = await handleUploadImage(e.target.files[0]);
+                                                                        setUploadingField(null);
+                                                                        if (url) {
+                                                                            const it = [...(s.items || editingBlock.items || [])];
+                                                                            it[i] = { ...it[i], image: url };
+                                                                            if (s.items) upd('items', it); else setEditingBlock({...editingBlock, items: it});
+                                                                        }
+                                                                    }
+                                                                }} />
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <InputField label="Destination URL" value={item.url || ""} onChange={(e: any) => {
+                                                        const it = [...(s.items || editingBlock.items || [])];
+                                                        it[i] = { ...it[i], url: e.target.value };
+                                                        if (s.items) upd('items', it); else setEditingBlock({...editingBlock, items: it});
+                                                    }} placeholder="https://..." />
+                                                </div>
+                                            ))}
+                                            <button onClick={() => {
+                                                const it = [...(s.items || editingBlock.items || []), { image: "", url: "" }];
+                                                if (s.items) upd('items', it); else setEditingBlock({...editingBlock, items: it});
+                                            }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
+                                                <Plus size={14} /> Add Image
+                                            </button>
+                                        </div>
+                                    )}
 
                                 {/* Hero Aesthetic */}
                                 {uiType === "hero_aesthetic_section" && (
