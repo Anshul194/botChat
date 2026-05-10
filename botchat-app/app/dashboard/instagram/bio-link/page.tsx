@@ -186,7 +186,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                 </div>
 
                 {/* ── DESKTOP SIDEBAR (INSPECTOR) ── */}
-                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[400px] flex-col bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
+                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[700px] flex-col bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
                     <motion.div
                         initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 20, opacity: 0 }}
                         className="flex flex-col h-full"
@@ -2036,9 +2036,9 @@ function BioLinkBuilderContent() {
 
                 <main className={cn(
                     "w-full bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-2 sm:p-4 transition-all duration-1000 ease-in-out z-10",
-                    "xl:sticky xl:top-0 h-full overflow-hidden xl:w-[420px]",
+                    "xl:sticky xl:top-0 h-full overflow-hidden xl:flex-1",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
-                    showCarouselEditor && "xl:mr-[400px]"
+                    showCarouselEditor && "xl:mr-[700px]"
                 )}>
                     {/* Live Preview Status Badge */}
 
@@ -2064,7 +2064,7 @@ function BioLinkBuilderContent() {
 
                 <AnimatePresence>
                     {showAddBlock && (
-                        <aside className="fixed inset-x-0 bottom-0 top-0 xl:top-14 xl:bottom-0 xl:left-auto xl:right-0 z-[60] w-full xl:w-[400px] bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl overflow-hidden absolute">
+                        <aside className="fixed inset-x-0 bottom-0 top-0 xl:top-14 xl:bottom-0 xl:left-auto xl:right-0 z-[60] w-full xl:w-[700px] bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl overflow-hidden absolute">
                             <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
                                 <div>
                                     <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Add Content</h3>
