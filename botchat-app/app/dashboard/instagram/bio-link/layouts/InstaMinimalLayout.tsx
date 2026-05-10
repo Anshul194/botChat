@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { getUiTypeFromBlock } from "../builder-utils";
 
-export function InstaMinimalLayout({ profile, tabs }: any) {
+export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => {
@@ -60,10 +60,12 @@ export function InstaMinimalLayout({ profile, tabs }: any) {
                     return (
                         <motion.div
                             key={block.id || idx}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-50px" }}
-                            transition={{ duration: 0.8, delay: idx * 0.05 }}
+                            transition={{ duration: 1, delay: idx * 0.1 }}
+                            onClick={() => openEditor?.(block)}
+                            className="cursor-pointer"
                         >
                             {section}
                         </motion.div>
@@ -143,7 +145,7 @@ const renderMinimalSection = (block: any, profile: any) => {
             return (
                 <div className="grid grid-cols-2 gap-[1px] bg-zinc-100 border border-zinc-100">
                     {blockItems.map((item: any, i: number) => {
-                        const img = item.image || item.thumbnail;
+                        const img = item.image || item.thumbnail || item.icon_image;
                         const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                         return (
@@ -171,7 +173,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                 <div className="relative -mx-8">
                     <div className="flex gap-[1px] overflow-x-auto px-8 pb-4 no-scrollbar bg-zinc-100">
                         {blockItems.map((item: any, i: number) => {
-                            const img = item.image || item.thumbnail;
+                            const img = item.image || item.thumbnail || item.cover_image;
                             const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                             return (

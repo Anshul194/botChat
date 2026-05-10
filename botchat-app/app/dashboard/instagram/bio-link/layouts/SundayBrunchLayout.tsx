@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { getUiTypeFromBlock } from "../builder-utils";
 
-export function SundayBrunchLayout({ profile, tabs }: any) {
+export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
@@ -55,15 +55,16 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
 
             {/* Blocks */}
             <div className="w-full max-w-[420px] space-y-8 relative z-10">
-                {contentBlocks.map((block: any, idx: number) => (
-                    <motion.div
-                        key={block.id || idx}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        transition={{ delay: idx * 0.05 }}
-                    >
-                        {renderBrunchSection(block, profile)}
+                    {contentBlocks.map((block: any, idx: number) => (
+                        <motion.div 
+                            key={block.id || idx}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: idx * 0.1 }}
+                            onClick={() => openEditor?.(block)}
+                            className="w-full cursor-pointer"
+                        >{renderBrunchSection(block, profile)}
                     </motion.div>
                 ))}
             </div>
@@ -197,8 +198,8 @@ const renderBrunchSection = (block: any, profile: any) => {
                 <div className="relative -mx-8">
                     <div className="flex gap-4 overflow-x-auto px-8 pb-4 no-scrollbar snap-x">
                         {blockItems.map((item: any, i: number) => {
-                            const img = item.image || item.thumbnail || item.url || item.image_url;
-                            const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+                        const img = item.image || item.thumbnail || item.icon_image;
+                        const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                             return (
                                 <a key={i} href={item.url || "#"} className="min-w-[220px] snap-center p-8 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm hover:shadow-md transition-all group overflow-hidden">

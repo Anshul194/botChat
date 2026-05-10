@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { getUiTypeFromBlock } from "../builder-utils";
 
-export function InstaTrendyLayout({ profile, tabs }: any) {
+export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
@@ -50,56 +50,68 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
                     
                     return (
                         <>
-                            <div className="pt-24 pb-16 flex flex-col items-center text-center">
-                                <motion.div 
-                                    initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
-                                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                                    className="relative mb-8"
-                                >
-                                    <div className="absolute inset-[-8px] bg-gradient-to-tr from-[#ff0080] via-[#7928ca] to-[#ff0080] rounded-[2.5rem] blur-md opacity-50 animate-pulse" />
-                                    <div className="relative w-28 h-28 rounded-[2.2rem] border-2 border-white/20 overflow-hidden shadow-[0_20px_50px_rgba(255,0,128,0.3)]">
-                                        <img 
-                                            src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
-                                            className="w-full h-full object-cover" 
-                                            alt="Profile" 
-                                        />
+                            <div className="relative w-full">
+                                {heroBlock?.settings?.cover_image && (
+                                    <div className="absolute top-0 left-[-5vw] w-[110vw] h-64 sm:h-80 overflow-hidden">
+                                        <img src={heroBlock.settings.cover_image} className="w-full h-full object-cover opacity-40 blur-[2px]" />
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#08080a]/50 to-[#08080a]" />
                                     </div>
+                                )}
+                                
+                                <div className={cn(
+                                    "flex flex-col items-center text-center relative z-20",
+                                    heroBlock?.settings?.cover_image ? "pt-32 sm:pt-40 pb-16" : "pt-24 pb-16"
+                                )}>
                                     <motion.div 
-                                        animate={{ y: [0, -4, 0] }}
-                                        transition={{ duration: 2, repeat: Infinity }}
-                                        className="absolute -bottom-2 -right-2 px-3 py-1 bg-white text-black text-[10px] font-black rounded-full shadow-xl uppercase tracking-tighter"
+                                        initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                                        className="relative mb-8"
                                     >
-                                        Live ✨
-                                    </motion.div>
-                                </motion.div>
-
-                                <motion.h1 
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    className="text-[clamp(32px,8vw,48px)] font-black tracking-tighter mb-3 leading-none italic"
-                                >
-                                    {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Vibe Curator"}
-                                </motion.h1>
-
-                                <motion.p 
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 0.1 }}
-                                    className="text-[15px] text-white/40 max-w-[300px] font-medium leading-relaxed mb-10"
-                                >
-                                    {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Creating content that pops. Tech, Lifestyle & Aesthetics."}
-                                </motion.p>
-
-                                <div className="flex items-center gap-6">
-                                    {['instagram', 'tiktok', 'youtube'].map((p, i) => (
+                                        <div className="absolute inset-[-8px] bg-gradient-to-tr from-[#ff0080] via-[#7928ca] to-[#ff0080] rounded-[2.5rem] blur-md opacity-50 animate-pulse" />
+                                        <div className="relative w-28 h-28 rounded-[2.2rem] border-2 border-white/20 overflow-hidden shadow-[0_20px_50px_rgba(255,0,128,0.3)] bg-[#111]">
+                                            <img 
+                                                src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
+                                                className="w-full h-full object-cover" 
+                                                alt="Profile" 
+                                            />
+                                        </div>
                                         <motion.div 
-                                            key={p} 
-                                            whileHover={{ y: -5, scale: 1.1 }}
-                                            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:bg-[#ff0080] hover:border-[#ff0080] transition-all cursor-pointer shadow-lg"
+                                            animate={{ y: [0, -4, 0] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                            className="absolute -bottom-2 -right-2 px-3 py-1 bg-white text-black text-[10px] font-black rounded-full shadow-xl uppercase tracking-tighter"
                                         >
-                                            <BrandIcon name={p} size={20} />
+                                            Live ✨
                                         </motion.div>
-                                    ))}
+                                    </motion.div>
+
+                                    <motion.h1 
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        className="text-[clamp(32px,8vw,48px)] font-black tracking-tighter mb-3 leading-none italic uppercase"
+                                    >
+                                        {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Vibe Curator"}
+                                    </motion.h1>
+
+                                    <motion.p 
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.1 }}
+                                        className="text-[15px] text-white/60 max-w-[300px] font-medium leading-relaxed mb-10"
+                                    >
+                                        {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Creating content that pops. Tech, Lifestyle & Aesthetics."}
+                                    </motion.p>
+
+                                    <div className="flex items-center gap-6">
+                                        {['instagram', 'tiktok', 'youtube'].map((p, i) => (
+                                            <motion.div 
+                                                key={p} 
+                                                whileHover={{ y: -5, scale: 1.1 }}
+                                                className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:bg-[#ff0080] hover:border-[#ff0080] transition-all cursor-pointer shadow-lg"
+                                            >
+                                                <BrandIcon name={p} size={20} />
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
@@ -112,6 +124,8 @@ export function InstaTrendyLayout({ profile, tabs }: any) {
                                         whileInView={{ opacity: 1, scale: 1 }}
                                         viewport={{ once: true, margin: "-50px" }}
                                         transition={{ delay: idx * 0.05 }}
+                                        onClick={() => openEditor?.(block)}
+                                        className="cursor-pointer"
                                     >
                                         {renderTrendySection(block, accentColor, profile)}
                                     </motion.div>
@@ -157,12 +171,21 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
                         )}
                     >
                         <div className="flex items-center gap-4 sm:gap-5">
-                            <div className={cn(
-                                "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center overflow-hidden border transition-all",
-                                isFeatured ? "bg-[#ff0080] border-[#ff0080]" : "bg-white/5 border-white/10"
-                            )}>
-                                {s.image ? <img src={s.image} className="w-full h-full object-cover" /> : <Sparkles className={isFeatured ? "text-white" : "text-[#ff0080]"} size={20} />}
-                            </div>
+                            {s.image && (s.image.startsWith('http') || s.image.startsWith('/')) ? (
+                                <div className={cn(
+                                    "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center overflow-hidden border transition-all",
+                                    isFeatured ? "bg-[#ff0080] border-[#ff0080]" : "bg-white/5 border-white/10"
+                                )}>
+                                    <img src={s.image} className="w-full h-full object-cover" />
+                                </div>
+                            ) : (
+                                <div className={cn(
+                                    "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center border transition-all",
+                                    isFeatured ? "bg-[#ff0080] border-[#ff0080]" : "bg-white/5 border-white/10"
+                                )}>
+                                    <Sparkles className={isFeatured ? "text-white" : "text-[#ff0080]"} size={20} />
+                                </div>
+                            )}
                             <div className="flex-1 min-w-0">
                                 <h3 className={cn(
                                     "text-[16px] sm:text-[17px] font-black tracking-tight",
@@ -188,21 +211,28 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
         case 'link_grid_section':
         case 'links_grid':
             return (
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-4">
                     {(blockItems.length > 0 ? blockItems : [
-                        { n: 'Shop', i: ShoppingBag },
-                        { n: 'Music', i: Sparkles },
-                        { n: 'Chat', i: Mail }
+                        { name: 'Shop', icon: 'fas fa-shopping-bag' },
+                        { name: 'Music', icon: 'fas fa-sparkles' },
+                        { name: 'Chat', icon: 'fas fa-envelope' }
                     ]).map((item: any, i: number) => {
-                        const img = item.image || item.thumbnail || item.url;
+                        const img = item.image || item.thumbnail || item.icon_image;
                         const isImg = img && (img.startsWith('http') || img.startsWith('/'));
+                        const icon = item.icon || item.i;
                         
                         return (
-                            <a key={i} href={item.url || "#"} className="flex flex-col items-center gap-3 p-4 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all group text-center">
-                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-[#ff0080] group-hover:scale-110 transition-transform overflow-hidden">
-                                    {isImg ? <img src={img} className="w-full h-full object-cover" /> : (item.i ? <item.i size={18} /> : <ArrowUpRight size={18} />)}
+                            <a key={i} href={item.url || "#"} className="flex flex-col items-center gap-3 p-5 rounded-[2.5rem] bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-[#ff0080]/30 transition-all group text-center shadow-xl">
+                                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#ff0080] group-hover:scale-110 transition-transform overflow-hidden shadow-inner">
+                                    {isImg ? (
+                                        <img src={img} className="w-full h-full object-cover" />
+                                    ) : icon ? (
+                                        typeof icon === 'string' && icon.startsWith('fa') ? <i className={cn(icon, "text-[18px]")} /> : <ArrowUpRight size={20} />
+                                    ) : (
+                                        <ArrowUpRight size={20} />
+                                    )}
                                 </div>
-                                <span className="text-[10px] font-black uppercase text-white/60 group-hover:text-white truncate w-full">{item.n || item.name || item.title}</span>
+                                <span className="text-[10px] font-black uppercase text-white/40 tracking-widest group-hover:text-white transition-colors truncate w-full">{item.name || item.n || item.title}</span>
                             </a>
                         );
                     })}
@@ -219,7 +249,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
                             { n: 'Tour Dates', d: 'Book Tickets' },
                             { n: 'Merch Store', d: 'New Arrival' }
                         ]).map((item: any, i: number) => {
-                            const img = item.image || item.thumbnail || item.url;
+                            const img = item.image || item.thumbnail || item.cover_image;
                             const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                             return (
@@ -516,6 +546,20 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
                 </div>
             );
 
+        case 'contact_section':
+            return (
+                <div className="grid grid-cols-3 gap-4">
+                    {['phone', 'email', 'whatsapp'].map((k) => s[k] && (
+                        <a key={k} href={k === 'phone' ? `tel:${s[k]}` : k === 'email' ? `mailto:${s[k]}` : `https://wa.me/${s[k]}`} className="p-6 rounded-[2.5rem] bg-white/[0.03] border border-white/10 flex flex-col items-center gap-3 hover:bg-[#ff0080] hover:border-[#ff0080] transition-all group shadow-xl">
+                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                {k === 'phone' ? <Phone size={20} /> : k === 'email' ? <Mail size={20} /> : <MessageCircle size={20} />}
+                            </div>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-white/20 group-hover:text-white transition-colors">{k}</span>
+                        </a>
+                    ))}
+                </div>
+            );
+
         case 'faq':
         case 'faq_section':
         case 'faq_cards_section':
@@ -530,7 +574,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any) => {
                             { q: 'Is this limited?', a: 'Only 50 memberships available per drop. Stay tuned for the next release.' },
                             { q: 'What is the utility?', a: 'Full access to the digital ecosystem and exclusive community events.' }
                         ]).map((item, i) => (
-                            <div key={i} className="p-6 rounded-2xl bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] transition-all group">
+                            <div key={i} className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.03] transition-all group">
                                 <div className="flex items-center justify-between mb-3">
                                     <h4 className="text-[13px] sm:text-[14px] font-black text-white italic">{item.q || item.title || item.question}</h4>
                                     <Plus size={16} className="text-[#ff0080] group-hover:rotate-90 transition-transform" />

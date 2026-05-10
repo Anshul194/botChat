@@ -735,13 +735,13 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         ) : (effectiveLayoutStyle === "aesthetic_influencer" || effectiveLayoutStyle === "influencer") ? (
                             <InfluencerLayout profile={profile} tabs={tabs} />
                         ) : effectiveLayoutStyle === "insta_pro" ? (
-                            <InstaProLayout profile={profile} tabs={tabs} />
+                            <InstaProLayout profile={profile} tabs={tabs} openEditor={openEditor} />
                         ) : effectiveLayoutStyle === "insta_trendy" ? (
-                            <InstaTrendyLayout profile={profile} tabs={tabs} />
+                            <InstaTrendyLayout profile={profile} tabs={tabs} openEditor={openEditor} />
                         ) : effectiveLayoutStyle === "insta_minimal" ? (
-                            <InstaMinimalLayout profile={profile} tabs={tabs} />
+                            <InstaMinimalLayout profile={profile} tabs={tabs} openEditor={openEditor} />
                         ) : effectiveLayoutStyle === "sunday_brunch" ? (
-                            <SundayBrunchLayout profile={profile} tabs={tabs} />
+                            <SundayBrunchLayout profile={profile} tabs={tabs} openEditor={openEditor} />
                         ) : (
                             <StandardLayout topAvatar={topAvatar} groupedRows={groupedRows} profile={profile} renderBlockUI={renderBlockUI} />
                         )}

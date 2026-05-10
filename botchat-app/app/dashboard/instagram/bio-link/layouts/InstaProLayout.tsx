@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { getUiTypeFromBlock } from "../builder-utils";
 
-export function InstaProLayout({ profile, tabs }: any) {
+export function InstaProLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
@@ -35,7 +35,7 @@ export function InstaProLayout({ profile, tabs }: any) {
 
                         return (
                             <>
-                                {renderInstaProSection(heroBlock || { type: 'header' }, accentColor, profile)}
+                                {renderInstaProSection(heroBlock || { type: 'header' }, accentColor, profile, openEditor)}
 
                                 <div className="flex flex-col gap-12 sm:gap-20">
                                     {contentBlocks.map((block: any, idx: number) => (
@@ -45,8 +45,10 @@ export function InstaProLayout({ profile, tabs }: any) {
                                             whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{ once: true, margin: "-100px" }}
                                             transition={{ duration: 0.8, ease: "easeOut" }}
+                                            onClick={() => openEditor?.(block)}
+                                            className="cursor-pointer"
                                         >
-                                            {renderInstaProSection(block, accentColor, profile)}
+                                            {renderInstaProSection(block, accentColor, profile, openEditor)}
                                         </motion.div>
                                     ))}
                                 </div>
@@ -236,7 +238,7 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any) =>
                     <div className={cn("grid gap-6", blockItems.length > 1 ? "grid-cols-2" : "grid-cols-1")}>
                         {(blockItems.length > 0 ? blockItems : [s]).map((item: any, i: number) => (
                             <div key={i} className="relative aspect-[3/4] rounded-[3rem] overflow-hidden border border-white/5 group bg-[#050505] shadow-2xl">
-                                <img src={item.image || item.url || s.image || s.url} className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-[1.5s] group-hover:scale-110" />
+                                <img src={item.image || item.icon_image || item.cover_image || s.image || s.avatar} className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-[1.5s] group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-8 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-700">
                                     <p className="text-white text-[14px] font-black uppercase italic tracking-widest">{item.title || "Visual Study"}</p>
                                 </div>
