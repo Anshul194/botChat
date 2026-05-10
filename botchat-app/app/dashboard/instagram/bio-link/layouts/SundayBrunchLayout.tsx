@@ -9,49 +9,58 @@ import { getUiTypeFromBlock } from "../builder-utils";
 export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => {
+        const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
+        const isActive = b.is_active !== 0 && b.is_active !== '0';
+        return isEnabled && isActive;
+    });
 
     const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
     const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
 
     return (
-        <div className="w-full min-h-full bg-[#fdfaf5] text-[#4a403a] font-sans px-6 py-16 flex flex-col items-center selection:bg-[#e8dccb] relative">
+        <div className="w-full min-h-full bg-[#fdfaf5] text-[#4a403a] font-sans px-4 py-12 flex flex-col items-center selection:bg-[#e8dccb] relative">
             {/* Organic Background Elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#f8f1e9] rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-20 left-0 w-48 h-48 bg-[#fdf3e7] rounded-full blur-[80px] pointer-events-none -translate-x-1/2" />
 
             {/* Header */}
-            <div className="w-full max-w-[420px] mb-16 flex flex-col items-center text-center relative z-10">
-                <motion.div 
-                    initial={{ scale: 0.9, opacity: 0, rotate: -5 }}
-                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                    className="w-28 h-28 rounded-[3rem] bg-white p-2 mb-8 shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9]"
+            {heroBlock && (
+                <div 
+                    onClick={() => openEditor?.(heroBlock)}
+                    className="w-full max-w-[420px] mb-16 flex flex-col items-center text-center relative z-10 cursor-pointer"
                 >
-                    <img 
-                        src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || heroBlock?.settings?.image_url || profile?.image || profile?.avatar || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
-                        className="w-full h-full rounded-[2.5rem] object-cover" 
-                    />
-                </motion.div>
-                
-                {heroBlock?.settings?.name && (
-                    <p className="text-[11px] text-[#8c7e74] font-black uppercase tracking-[0.2em] mb-2 mt-4">{heroBlock.settings.name}</p>
-                )}
-                <h1 className="text-3xl font-serif font-black tracking-tight text-[#2d241e] mb-3 italic leading-tight">
-                    {heroBlock?.settings?.title || profile?.title || "Handcrafted Life"}
-                </h1>
-                
-                <p className="text-sm text-[#8c7e74] font-medium max-w-[280px] leading-relaxed italic">
-                    {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Living for slow mornings, good coffee, and organic design."}
-                </p>
+                    <motion.div 
+                        initial={{ scale: 0.9, opacity: 0, rotate: -5 }}
+                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                        className="w-28 h-28 rounded-[3rem] bg-white p-2 mb-8 shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9]"
+                    >
+                        <img 
+                            src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || heroBlock?.settings?.image_url || profile?.image || profile?.avatar || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
+                            className="w-full h-full rounded-[2.5rem] object-cover" 
+                        />
+                    </motion.div>
+                    
+                    {heroBlock?.settings?.name && (
+                        <p className="text-[11px] text-[#8c7e74] font-black uppercase tracking-[0.2em] mb-2 mt-4">{heroBlock.settings.name}</p>
+                    )}
+                    <h1 className="text-3xl font-serif font-black tracking-tight text-[#2d241e] mb-3 italic leading-tight">
+                        {heroBlock?.settings?.title || profile?.title || "Handcrafted Life"}
+                    </h1>
+                    
+                    <p className="text-sm text-[#8c7e74] font-medium max-w-[280px] leading-relaxed italic">
+                        {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Living for slow mornings, good coffee, and organic design."}
+                    </p>
 
-                <div className="flex gap-6 mt-10">
-                    {['instagram', 'mail', 'globe'].map((p, i) => (
-                        <motion.div key={i} whileHover={{ y: -3 }} className="text-[#8c7e74] hover:text-[#4a403a] transition-colors cursor-pointer">
-                            {p === 'instagram' ? <Instagram size={18} /> : p === 'mail' ? <Mail size={18} /> : <Globe size={18} />}
-                        </motion.div>
-                    ))}
+                    <div className="flex gap-6 mt-10">
+                        {['instagram', 'mail', 'globe'].map((p, i) => (
+                            <motion.div key={i} whileHover={{ y: -3 }} className="text-[#8c7e74] hover:text-[#4a403a] transition-colors cursor-pointer">
+                                {p === 'instagram' ? <Instagram size={18} /> : p === 'mail' ? <Mail size={18} /> : <Globe size={18} />}
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Blocks */}
             <div className="w-full max-w-[420px] space-y-8 relative z-10">

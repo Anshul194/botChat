@@ -671,10 +671,10 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
 
     return (
-        <div className="relative mx-auto flex items-center justify-center p-4 h-full w-full pointer-events-auto overflow-visible">
+        <div className="relative mx-auto flex items-center justify-center p-2 sm:p-4 h-full w-full pointer-events-auto">
             {/* iPhone 15/16 Pro Studio Shell — Natural Titanium Edition */}
             <div 
-                className="relative aspect-[9/20] h-full max-h-[940px] w-auto max-w-full bg-[#1c1c1e] rounded-[4.5rem] p-[8px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.1)] overflow-hidden group/phone transition-all duration-700 border-[1px] border-white/5"
+                className="relative aspect-[9/19.5] h-full max-h-full w-auto max-w-full bg-[#1c1c1e] rounded-[3.5rem] sm:rounded-[4.5rem] p-[6px] sm:p-[8px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] overflow-hidden group/phone transition-all duration-700 border-[1px] border-white/5"
             >
                 
                 {/* Natural Titanium Frame Glow */}

@@ -10,7 +10,7 @@ export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => {
-        const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0';
+        const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
         const isActive = b.is_active !== 0 && b.is_active !== '0';
         return isEnabled && isActive;
     });
@@ -23,34 +23,39 @@ export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
     const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
 
     return (
-        <div className="w-full min-h-full bg-white text-zinc-900 font-sans px-6 sm:px-12 py-16 sm:py-24 flex flex-col items-center selection:bg-zinc-100 relative overflow-hidden">
+        <div className="w-full min-h-full bg-white text-zinc-900 font-sans px-4 sm:px-6 py-12 sm:py-20 flex flex-col items-center selection:bg-zinc-100 relative overflow-hidden">
             {/* Subtle Gradient Accent */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-zinc-50/50 to-transparent pointer-events-none" />
 
             {/* Studio Header */}
-            <div className="w-full max-w-[480px] mb-24 sm:mb-32 flex flex-col items-center text-center relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, ease: "circOut" }}
-                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-none grayscale hover:grayscale-0 transition-all duration-1000 mb-12 border border-zinc-100 p-1.5 bg-white shadow-sm ring-1 ring-zinc-900/5"
+            {heroBlock && (
+                <div 
+                    onClick={() => openEditor?.(heroBlock)}
+                    className="w-full max-w-[480px] mb-24 sm:mb-32 flex flex-col items-center text-center relative z-10 cursor-pointer"
                 >
-                    <img
-                        src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"}
-                        className="w-full h-full object-cover"
-                    />
-                </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1.2, ease: "circOut" }}
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-none grayscale hover:grayscale-0 transition-all duration-1000 mb-12 border border-zinc-100 p-1.5 bg-white shadow-sm ring-1 ring-zinc-900/5"
+                    >
+                        <img
+                            src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"}
+                            className="w-full h-full object-cover"
+                        />
+                    </motion.div>
 
-                <h1 className="text-[22px] sm:text-[26px] font-black tracking-[0.4em] sm:tracking-[0.6em] uppercase mb-6 leading-none pl-[0.4em] sm:pl-[0.6em]">
-                    {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Studio Minimal"}
-                </h1>
+                    <h1 className="text-[22px] sm:text-[26px] font-black tracking-[0.4em] sm:tracking-[0.6em] uppercase mb-6 leading-none pl-[0.4em] sm:pl-[0.6em]">
+                        {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Studio Minimal"}
+                    </h1>
 
-                <div className="w-12 h-[3px] bg-zinc-900 mb-10" />
+                    <div className="w-12 h-[3px] bg-zinc-900 mb-10" />
 
-                <p className="text-[11px] sm:text-[12px] text-zinc-400 font-bold tracking-[0.2em] sm:tracking-[0.4em] uppercase max-w-[320px] leading-relaxed">
-                    {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Aesthetic Clarity / Digital Design / Tokyo"}
-                </p>
-            </div>
+                    <p className="text-[11px] sm:text-[12px] text-zinc-400 font-bold tracking-[0.2em] sm:tracking-[0.4em] uppercase max-w-[320px] leading-relaxed">
+                        {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Aesthetic Clarity / Digital Design / Tokyo"}
+                    </p>
+                </div>
+            )}
 
             <div className="w-full max-w-[480px] space-y-24 sm:space-y-32 relative z-10">
                 {contentBlocks.map((block: any, idx: number) => {

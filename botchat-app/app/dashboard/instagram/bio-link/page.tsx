@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, Suspense } from "react";
+import React, { useState, useEffect, useCallback, Suspense, useRef } from "react";
 import {
     Plus, Trash2, Edit3, Save, Loader2, Link as LinkIcon, BarChart2,
     Image as ImageIcon, GripVertical, RefreshCw, LayoutTemplate,
@@ -389,33 +389,33 @@ function BioLinkBuilderContent() {
             }
         };
     }, [profile, advancedSettings]);
-
     const [previewScale, setPreviewScale] = useState(1);
+    const canvasRef = useRef<HTMLElement>(null);
+
     useEffect(() => {
-        if (typeof window === "undefined") return;
-        const handleResize = () => {
-            const h = window.innerHeight;
-            const w = window.innerWidth;
-            
-            // Available height is roughly window height minus header and padding
-            const availableHeight = h - 160;
-            // The phone frame has a max-height of ~820px at scale 1
-            const phoneHeight = 820;
-            
-            // Also consider width if on mobile
-            const availableWidth = w < 1280 ? w - 40 : 400;
-            const phoneWidth = 360;
+        if (typeof window === "undefined" || !canvasRef.current) return;
+        
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                const { width, height } = entry.contentRect;
+                const availableHeight = height - 40;
+                const availableWidth = width - 40;
+                
+                // Target a large internal size to ensure high-fidelity and "big" feel
+                const phoneHeight = 850;
+                const phoneWidth = 380; 
+                
+                const scaleH = availableHeight / phoneHeight;
+                const scaleW = availableWidth / phoneWidth;
+                
+                // Cap the scale slightly to avoid it touching edges, but keep it big
+                setPreviewScale(Math.min(scaleH, scaleW, 1.2));
+            }
+        });
 
-            const scaleH = Math.min(1, availableHeight / phoneHeight);
-            const scaleW = Math.min(1, availableWidth / phoneWidth);
-            
-            setPreviewScale(Math.min(scaleH, scaleW));
-        };
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
+        observer.observe(canvasRef.current);
+        return () => observer.disconnect();
+    }, [showCarouselEditor, showAddBlock]);
     const currentTab = previewTabs.find(t => t.id === selectedTabId) || previewTabs[0];
     const flatBlocks = (previewTabs || []).flatMap((tab: any) => tab.sections || []).flatMap((sec: any) => sec.blocks || []);
     const layoutFilter = profile?.settings?.layoutStyle || 'standard';
@@ -1320,7 +1320,7 @@ function BioLinkBuilderContent() {
                 {/* LEFT PANEL: TOOLS & PHASES */}
                 <aside className={cn(
                     "bg-white dark:bg-slate-950 flex flex-col h-full z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl shrink-0",
-                    activePanel === "preview" ? "hidden xl:flex" : "flex w-full xl:flex-1",
+                    (activePanel === "preview" || showCarouselEditor || showAddBlock) ? "hidden" : "flex w-full xl:flex-1",
                 )}>
                     <div className="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-32">
 
@@ -2034,9 +2034,12 @@ function BioLinkBuilderContent() {
                     </div>
                 </aside>
 
-                <main className={cn(
+                <main 
+                    ref={canvasRef}
+                    className={cn(
                     "w-full bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-2 sm:p-4 transition-all duration-1000 ease-in-out z-10",
-                    "xl:sticky xl:top-0 h-full overflow-hidden xl:flex-1",
+                    "xl:sticky xl:top-0 h-full overflow-hidden",
+                    (showCarouselEditor || showAddBlock) ? "xl:flex-1" : "xl:w-[450px]",
                     activePanel === "preview" ? "flex" : "hidden xl:flex",
                     showCarouselEditor && "xl:mr-[700px]"
                 )}>
@@ -2045,8 +2048,13 @@ function BioLinkBuilderContent() {
                     {/* Background is now matched exactly to the left panel */}
 
                     <div className={cn(
-                        "transition-all duration-1000 ease-in-out flex items-center justify-center w-full h-full",
-                    )} style={{ transform: `scale(${previewScale})`, transformOrigin: 'center center' }}>
+                        "transition-all duration-1000 ease-in-out flex items-center justify-center shrink-0",
+                    )} style={{ 
+                        transform: `scale(${previewScale})`, 
+                        transformOrigin: 'center center',
+                        width: '380px',
+                        height: '850px'
+                    }}>
                         <PhonePreview
                             profile={previewProfile || profile}
                             tabs={previewTabs}

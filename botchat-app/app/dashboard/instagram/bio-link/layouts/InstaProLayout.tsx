@@ -13,14 +13,18 @@ import { getUiTypeFromBlock } from "../builder-utils";
 export function InstaProLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => {
+        const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
+        const isActive = b.is_active !== 0 && b.is_active !== '0';
+        return isEnabled && isActive;
+    });
 
     const settings = profile?.settings || {};
 
     const accentColor = "#8b5cf6";
 
     return (
-        <div className="w-full min-h-full bg-[#050505] text-white font-sans overflow-x-hidden pb-24 selection:bg-[#8b5cf6]/30 flex flex-col relative">
+        <div className="relative w-full min-h-full bg-[#030303] text-white font-sans selection:bg-[#8b5cf6]/30 px-4 sm:px-6 py-12 sm:py-16">
             {/* Ambient Background Glows */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100%] h-[40%] bg-gradient-to-b from-[#8b5cf6]/10 to-transparent blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[20%] left-0 w-64 h-64 bg-[#8b5cf6]/5 blur-[80px] pointer-events-none" />
@@ -36,7 +40,11 @@ export function InstaProLayout({ profile, tabs, openEditor }: any) {
 
                         return (
                             <>
-                                {renderInstaProSection(heroBlock || { type: 'header' }, accentColor, profile, openEditor)}
+                                {heroBlock && (
+                                    <div onClick={() => openEditor?.(heroBlock)} className="cursor-pointer">
+                                        {renderInstaProSection(heroBlock, accentColor, profile, openEditor)}
+                                    </div>
+                                )}
 
                                 <div className="flex flex-col gap-12 sm:gap-20">
                                     {contentBlocks.map((block: any, idx: number) => (
@@ -77,7 +85,7 @@ export function InstaProLayout({ profile, tabs, openEditor }: any) {
     );
 }
 
-const renderInstaProSection = (block: any, accentColor: string, profile: any) => {
+const renderInstaProSection = (block: any, accentColor: string, profile: any, openEditor?: any) => {
     const type = getUiTypeFromBlock(block);
     const { settings, items } = block;
     const blockItems = items || settings?.items || settings?.logos || settings?.plans || settings?.steps || settings?.points || [];
