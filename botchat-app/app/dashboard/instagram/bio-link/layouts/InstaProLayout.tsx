@@ -247,7 +247,7 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
                     <div className={cn("grid gap-6", blockItems.length > 1 ? "grid-cols-2" : "grid-cols-1")}>
                         {(blockItems.length > 0 ? blockItems : [s]).map((item: any, i: number) => (
                             <div key={i} className="relative aspect-[3/4] rounded-[3rem] overflow-hidden border border-white/5 group bg-[#050505] shadow-2xl">
-                                <img src={item.image || item.icon_image || item.cover_image || s.image || s.avatar} className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-[1.5s] group-hover:scale-110" />
+                                <img src={item.image || item.icon_image || item.cover_image || s.image || s.avatar || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"} className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-[1.5s] group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-8 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-700">
                                     <p className="text-white text-[14px] font-black uppercase italic tracking-widest">{item.title || "Visual Study"}</p>
                                 </div>

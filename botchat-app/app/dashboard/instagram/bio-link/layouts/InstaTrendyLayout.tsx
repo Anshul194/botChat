@@ -310,7 +310,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
                             whileHover={{ rotate: i % 2 === 0 ? 1 : -1 }}
                             className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/5 relative group shadow-2xl"
                         >
-                            <img src={item.image || item.url || s.image || s.url} className="w-full aspect-square object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <img src={item.image || item.url || s.image || s.url || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"} className="w-full aspect-square object-cover transition-transform duration-700 group-hover:scale-110" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
                                 {item.title && <p className="text-[12px] font-black uppercase tracking-widest">{item.title}</p>}
                             </div>

@@ -235,7 +235,11 @@ const renderBrunchSection = (block: any, profile: any) => {
                 <div className={cn("grid gap-4", blockItems.length > 1 ? "grid-cols-2" : "grid-cols-1")}>
                     {(blockItems.length > 0 ? blockItems : [s]).map((item: any, i: number) => (
                         <div key={i} className="rounded-[2.5rem] overflow-hidden shadow-xl shadow-orange-100/30 border-[6px] border-white relative group">
-                            <img src={item.image || item.url} className="w-full aspect-[4/5] object-cover transition-transform duration-1000 group-hover:scale-110" />
+                            <img 
+                                src={item.image || item.url || item.image_url || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"} 
+                                className="w-full aspect-[4/5] object-cover transition-transform duration-1000 group-hover:scale-110" 
+                                alt={item.title || "Image"}
+                            />
                             <div className="absolute inset-0 bg-[#4a403a]/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Heart size={24} className="text-white fill-current" />
                             </div>
