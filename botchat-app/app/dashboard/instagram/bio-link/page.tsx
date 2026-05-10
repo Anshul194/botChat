@@ -299,6 +299,9 @@ function BioLinkBuilderContent() {
 
     const [isArranging, setIsArranging] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
+
+    // State for tracking which image is currently uploading
+    const [uploadingField, setUploadingField] = useState<string | null>(null);
     const [activePanel, setActivePanel] = useState<"builder" | "preview">("builder");
     const router = useRouter();
     const dispatch = useAppDispatch();
@@ -2208,8 +2211,8 @@ function BioLinkBuilderContent() {
                                                         </div>
                                                     )}
                                                     <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
-                                                        Choose File
-                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                        {uploadingField === 'image' ? <Loader2 size={14} className="animate-spin" /> : "Choose File"}
+                                                        <input type="file" className="hidden" disabled={uploadingField === 'image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) updateItem(idx, 'image', url); } }} />
                                                     </label>
                                                     <p className="text-[10px] text-slate-400 text-center font-bold uppercase tracking-tight">.jpg, .png, .webp, .svg, .gif allowed. 2 MB maximum.</p>
                                                 </div>
@@ -2364,12 +2367,12 @@ function BioLinkBuilderContent() {
                                             <div className="space-y-2">
                                                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Hero Image</label>
                                                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
-                                                    {item.image && <img src={item.image} className="w-12 h-12 rounded-lg object-cover" />}
+                                                    {(item.image || item.url) && <img src={item.image || item.url} className="w-12 h-12 rounded-lg object-cover" />}
                                                     <label className="flex-1 cursor-pointer">
-                                                        <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
-                                                            {item.image ? "Change Image" : "Upload Image"}
+                                                        <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                            {uploadingField === 'hero_image' ? <Loader2 size={14} className="animate-spin" /> : (item.image ? "Change Image" : "Upload Image")}
                                                         </div>
-                                                        <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
+                                                        <input type="file" className="hidden" disabled={uploadingField === 'hero_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('hero_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) updateItem(idx, 'image', url); } }} />
                                                     </label>
                                                 </div>
                                             </div>
@@ -2610,7 +2613,7 @@ function BioLinkBuilderContent() {
                                                         <>
                                                             <div className="flex gap-4">
                                                                 <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
-                                                                    {sItem.image ? <img src={sItem.image} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
+                                                                    {(sItem.image || sItem.url) ? <img src={sItem.image || sItem.url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
                                                                 </div>
                                                                 <div className="flex-1 space-y-2">
                                                                     <label className="cursor-pointer inline-block px-3 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold">
@@ -2690,9 +2693,9 @@ function BioLinkBuilderContent() {
                                                     <User size={14} className="text-slate-400" /> Avatar Image
                                                 </label>
                                                 <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
-                                                    {item.image && (
+                                                    {(item.image || item.url) && (
                                                         <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-700 shadow-md mb-2">
-                                                            <img src={item.image} className="w-full h-full object-cover" />
+                                                            <img src={item.image || item.url} className="w-full h-full object-cover" />
                                                         </div>
                                                     )}
                                                     <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
@@ -3041,7 +3044,7 @@ function BioLinkBuilderContent() {
                                                 </label>
                                                 <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
                                                     <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
-                                                        {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <User size={24} className="text-slate-400" />}
+                                                        {(item.image || item.url) ? <img src={item.image || item.url} className="w-full h-full object-cover" /> : <User size={24} className="text-slate-400" />}
                                                     </div>
                                                     <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
                                                         Choose File
@@ -3134,8 +3137,10 @@ function BioLinkBuilderContent() {
                                             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
                                                 {s.profile_image && <img src={s.profile_image} className="w-12 h-12 rounded-lg object-cover" />}
                                                 <label className="flex-1 cursor-pointer">
-                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.profile_image ? "Change" : "Upload Image"}</div>
-                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('profile_image', url); }}} />
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                        {uploadingField === 'hero_profile_image' ? <Loader2 size={14} className="animate-spin" /> : (s.profile_image ? "Change" : "Upload Image")}
+                                                    </div>
+                                                    <input type="file" className="hidden" disabled={uploadingField === 'hero_profile_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('hero_profile_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('profile_image', url); }}} />
                                                 </label>
                                             </div>
                                         </div>
@@ -3192,8 +3197,10 @@ function BioLinkBuilderContent() {
                                         <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
                                             {s.author_image && <img src={s.author_image} className="w-10 h-10 rounded-full object-cover" />}
                                             <label className="flex-1 cursor-pointer">
-                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.author_image ? "Change Photo" : "Upload Photo"}</div>
-                                                <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('author_image',url); }}} />
+                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                    {uploadingField === 'author_image' ? <Loader2 size={14} className="animate-spin" /> : (s.author_image ? "Change Photo" : "Upload Photo")}
+                                                </div>
+                                                <input type="file" className="hidden" disabled={uploadingField === 'author_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('author_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('author_image',url); }}} />
                                             </label>
                                         </div>
                                     </div>
@@ -3202,15 +3209,20 @@ function BioLinkBuilderContent() {
                                 {/* Header Profile Section */}
                                 {uiType === "header_profile_section" && (
                                     <div className="space-y-4">
-                                        <InputField label="Name/Title" value={s.name || s.title || ""} onChange={(e: any) => upd('name', e.target.value)} placeholder="Your Name" />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <InputField label="Name" value={s.name || ""} onChange={(e: any) => upd('name', e.target.value)} placeholder="Your Name" />
+                                            <InputField label="Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="e.g. Handcrafted Life" />
+                                        </div>
                                         <InputField label="Bio" value={s.bio || s.description || ""} onChange={(e: any) => upd('bio', e.target.value)} placeholder="Tell your story..." textarea />
                                         <div className="space-y-2">
                                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Profile Avatar</label>
                                             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
                                                 {s.avatar && <img src={s.avatar} className="w-12 h-12 rounded-full object-cover" />}
                                                 <label className="flex-1 cursor-pointer">
-                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.avatar ? "Change Avatar" : "Upload Avatar"}</div>
-                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('avatar', url); }}} />
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                        {uploadingField === 'header_avatar' ? <Loader2 size={14} className="animate-spin" /> : (s.avatar ? "Change Avatar" : "Upload Avatar")}
+                                                    </div>
+                                                    <input type="file" className="hidden" disabled={uploadingField === 'header_avatar'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('header_avatar'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('avatar', url); }}} />
                                                 </label>
                                             </div>
                                         </div>
@@ -3219,8 +3231,10 @@ function BioLinkBuilderContent() {
                                             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
                                                 {s.cover_image && <img src={s.cover_image} className="w-20 h-12 rounded-lg object-cover" />}
                                                 <label className="flex-1 cursor-pointer">
-                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.cover_image ? "Change Cover" : "Upload Cover"}</div>
-                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('cover_image', url); }}} />
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                        {uploadingField === 'header_cover' ? <Loader2 size={14} className="animate-spin" /> : (s.cover_image ? "Change Cover" : "Upload Cover")}
+                                                    </div>
+                                                    <input type="file" className="hidden" disabled={uploadingField === 'header_cover'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('header_cover'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('cover_image', url); }}} />
                                                 </label>
                                             </div>
                                         </div>
@@ -3245,6 +3259,7 @@ function BioLinkBuilderContent() {
                                 {/* Link Carousel Section */}
                                 {uiType === "link_carousel_section" && (
                                     <div className="space-y-4">
+                                        <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="e.g. Look Gallery" />
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Carousel Items</p>
                                         {(s.items || []).map((item: any, i: number) => (
                                             <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
@@ -3314,8 +3329,10 @@ function BioLinkBuilderContent() {
                                             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
                                                 {s.thumbnail && <img src={s.thumbnail} className="w-20 h-12 rounded-lg object-cover" />}
                                                 <label className="flex-1 cursor-pointer">
-                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">{s.thumbnail ? "Change" : "Upload"}</div>
-                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('thumbnail', url); }}} />
+                                                    <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                        {uploadingField === 'video_thumbnail' ? <Loader2 size={14} className="animate-spin" /> : (s.thumbnail ? "Change" : "Upload")}
+                                                    </div>
+                                                    <input type="file" className="hidden" disabled={uploadingField === 'video_thumbnail'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('video_thumbnail'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('thumbnail', url); }}} />
                                                 </label>
                                             </div>
                                         </div>
@@ -3374,8 +3391,11 @@ function BioLinkBuilderContent() {
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black text-slate-400 uppercase">Image</label>
                                                     <div className="h-20 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
-                                                        {item.image && <img src={item.image} className="absolute inset-0 w-full h-full object-cover" />}
-                                                        <label className="cursor-pointer z-10"><Plus size={14} /><input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) { const it=[...(s.items||[])]; it[i]={...item,image:url}; upd('items',it); }}}} /></label>
+                                                        {(item.image || item.url) && <img src={item.image || item.url} className="absolute inset-0 w-full h-full object-cover" />}
+                                                        <label className="cursor-pointer z-10">
+                                                            {uploadingField === `portfolio_${i}` ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                                                            <input type="file" className="hidden" disabled={uploadingField === `portfolio_${i}`} onChange={async e => { if (e.target.files?.[0]) { setUploadingField(`portfolio_${i}`); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) { const it=[...(s.items||[])]; it[i]={...item,image:url}; upd('items',it); }}}} />
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -3480,11 +3500,11 @@ function BioLinkBuilderContent() {
                                             <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
                                                 <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                 <InputField label="Name" value={t.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,name:e.target.value}; upd('items',it); }} />
-                                                <InputField label="Role" value={t.role || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,role:e.target.value}; upd('items',it); }} />
-                                                <InputField label="Quote" value={t.quote || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,quote:e.target.value}; upd('items',it); }} textarea />
+                                                <InputField label="Subtitle" value={t.subtitle || t.role || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,subtitle:e.target.value}; upd('items',it); }} placeholder="e.g. Baker" />
+                                                <InputField label="Description" value={t.description || t.quote || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,description:e.target.value}; upd('items',it); }} textarea placeholder="The simplicity of this layout..." />
                                             </div>
                                         ))}
-                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",role:"",quote:"",rating:5}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Testimonial</button>
+                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",subtitle:"",description:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Testimonial</button>
                                     </div>
                                 )}
 

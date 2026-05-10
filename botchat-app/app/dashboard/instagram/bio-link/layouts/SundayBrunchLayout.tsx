@@ -28,13 +28,16 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
                     className="w-28 h-28 rounded-[3rem] bg-white p-2 mb-8 shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9]"
                 >
                     <img 
-                        src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
+                        src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || heroBlock?.settings?.image_url || profile?.image || profile?.avatar || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
                         className="w-full h-full rounded-[2.5rem] object-cover" 
                     />
                 </motion.div>
                 
-                <h1 className="text-3xl font-serif font-black tracking-tight text-[#2d241e] mb-3 italic">
-                    {heroBlock?.settings?.title || heroBlock?.settings?.name || profile?.title || "Handcrafted Life"}
+                {heroBlock?.settings?.name && (
+                    <p className="text-[11px] text-[#8c7e74] font-black uppercase tracking-[0.2em] mb-2 mt-4">{heroBlock.settings.name}</p>
+                )}
+                <h1 className="text-3xl font-serif font-black tracking-tight text-[#2d241e] mb-3 italic leading-tight">
+                    {heroBlock?.settings?.title || profile?.title || "Handcrafted Life"}
                 </h1>
                 
                 <p className="text-sm text-[#8c7e74] font-medium max-w-[280px] leading-relaxed italic">
@@ -78,8 +81,23 @@ export function SundayBrunchLayout({ profile, tabs }: any) {
 const renderBrunchSection = (block: any, profile: any) => {
     const type = getUiTypeFromBlock(block);
     const { settings, items } = block;
-    const blockItems = items || settings?.items || settings?.logos || settings?.plans || settings?.steps || settings?.points || [];
     const s = settings || {};
+    
+    const blockItems = (Array.isArray(s.items) && s.items.length > 0) 
+        ? s.items 
+        : (Array.isArray(items) && items.length > 0 && !items[0]?.builder_type) 
+            ? items 
+            : (Array.isArray(s.logos) && s.logos.length > 0) ? s.logos
+            : (Array.isArray(s.plans) && s.plans.length > 0) ? s.plans
+            : (Array.isArray(s.steps) && s.steps.length > 0) ? s.steps
+            : (Array.isArray(s.points) && s.points.length > 0) ? s.points
+            : [];
+
+    // HIDE EMPTY BLOCKS: If no data items, return null to hide the design entirely (as requested)
+    if (blockItems.length === 0 && !['header', 'avatar', 'profile', 'hero', 'header_profile_section', 'hero_aesthetic_section'].includes(type)) {
+        // Special case: some blocks might have non-item settings (like text)
+        if (!s.title && !s.text && !s.description && !s.image && !s.url) return null;
+    }
 
     switch (type) {
         case 'link':
@@ -147,16 +165,39 @@ const renderBrunchSection = (block: any, profile: any) => {
                 </div>
             );
 
+        case 'hero_aesthetic_section':
+            return (
+                <div className="w-full space-y-8 mb-12">
+                    <div className="w-full aspect-video rounded-[3rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9] group">
+                        <img 
+                            src={s.image || s.url || s.image_url || blockItems?.[0]?.image || blockItems?.[0]?.url || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                        />
+                    </div>
+                    <div className="text-center px-4">
+                        <h2 className="text-3xl font-serif font-black italic text-[#2d241e] mb-4 leading-tight">
+                            {s.title || "Artesian Collection"}
+                        </h2>
+                        <p className="text-sm text-[#8c7e74] font-medium leading-relaxed italic max-w-[300px] mx-auto">
+                            {s.description || s.subtitle || "A curation of timeless pieces designed for the modern sanctuary."}
+                        </p>
+                        {s.button_text && (
+                            <motion.button whileHover={{ scale: 1.05 }} className="mt-8 px-8 py-3 bg-[#2d241e] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                {s.button_text}
+                            </motion.button>
+                        )}
+                    </div>
+                </div>
+            );
+
         case 'link_carousel_section':
         case 'links_carousel':
+            if (blockItems.length === 0) return null;
             return (
                 <div className="relative -mx-8">
                     <div className="flex gap-4 overflow-x-auto px-8 pb-4 no-scrollbar snap-x">
-                        {(blockItems.length > 0 ? blockItems : [
-                            { n: 'Autumn Collection', d: 'View Gallery' },
-                            { n: 'Bespoke Orders', d: 'Inquire' }
-                        ]).map((item: any, i: number) => {
-                            const img = item.image || item.thumbnail || item.url;
+                        {blockItems.map((item: any, i: number) => {
+                            const img = item.image || item.thumbnail || item.url || item.image_url;
                             const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                             return (
@@ -171,7 +212,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                                         </div>
                                     )}
                                     <h4 className="text-[15px] font-serif font-black italic text-[#2d241e] mb-1">{item.n || item.name || item.title}</h4>
-                                    <p className="text-[10px] text-[#8c7e74] font-black uppercase tracking-widest">{item.d || item.description || "Collection"}</p>
+                                    <p className="text-[10px] text-[#8c7e74] font-black uppercase tracking-widest">{item.d || item.description || item.subtitle || "Collection"}</p>
                                 </a>
                             );
                         })}
@@ -195,18 +236,17 @@ const renderBrunchSection = (block: any, profile: any) => {
 
         case 'stats':
         case 'stats_section':
+        case 'stats_minimal_section':
+            if (blockItems.length === 0) return null;
             return (
                 <div className="grid grid-cols-2 gap-4">
-                    {(blockItems.length > 0 ? blockItems : [
-                        { value: '5k', label: 'Followers' },
-                        { value: '12', label: 'Projects' }
-                    ]).slice(0, 4).map((item: any, i: number) => (
+                    {blockItems.slice(0, 4).map((item: any, i: number) => (
                         <div key={i} className={cn(
                             "p-8 rounded-[3rem] flex flex-col items-center text-center",
                             i % 2 === 0 ? "bg-[#f8f1e9] shadow-sm" : "bg-white border border-[#f3eee8]"
                         )}>
-                            <span className="text-2xl font-serif font-black text-[#2d241e] mb-1 italic">{item.value}</span>
-                            <span className="text-[9px] font-black text-[#8c7e74] uppercase tracking-[0.2em]">{item.label}</span>
+                            <span className="text-2xl font-serif font-black text-[#2d241e] mb-1 italic">{item.value || item.n || item.title}</span>
+                            <span className="text-[9px] font-black text-[#8c7e74] uppercase tracking-[0.2em]">{item.label || item.d || item.subtitle}</span>
                         </div>
                     ))}
                 </div>
@@ -234,6 +274,7 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'portfolio_section':
         case 'portfolio_minimal_section':
         case 'content_grid_section':
+            if (blockItems.length === 0) return null;
             return (
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
@@ -243,18 +284,13 @@ const renderBrunchSection = (block: any, profile: any) => {
                         <span className="text-[10px] font-bold text-[#8c7e74] uppercase tracking-widest border-b border-[#e8dccb] pb-0.5">View All</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                        {(blockItems.length > 0 ? blockItems : [
-                            { url: 'https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400' },
-                            { url: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=400' },
-                            { url: 'https://images.unsplash.com/photo-1515514756003-246e74640161?w=400' },
-                            { url: 'https://images.unsplash.com/photo-1481277542470-605612bd2d61?w=400' }
-                        ]).map((item: any, i: number) => (
+                        {blockItems.map((item: any, i: number) => (
                             <motion.div 
                                 key={i} 
                                 whileHover={{ scale: 0.98 }}
                                 className="rounded-[2rem] overflow-hidden border-2 border-[#2d241e] shadow-[4px_4px_0px_#2d241e] bg-white group relative aspect-[4/5]"
                             >
-                                <img src={item.image || item.url || item.thumbnail} className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700" />
+                                <img src={item.image || item.url || item.image_url || item.thumbnail} className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700" />
                                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </motion.div>
                         ))}
@@ -330,6 +366,7 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'testimonials':
         case 'testimonials_section':
         case 'testimonial_highlight_section':
+            if (blockItems.length === 0) return null;
             return (
                 <div className="space-y-6 sm:space-y-8">
                     <div className="text-center px-4">
@@ -337,20 +374,20 @@ const renderBrunchSection = (block: any, profile: any) => {
                         <h2 className="text-[22px] font-serif font-black italic text-[#2d241e]">Community Stories</h2>
                     </div>
                     <div className="grid gap-6">
-                        {(blockItems.length > 0 ? blockItems : [
-                            { n: 'Clara M.', d: 'Baker', t: '"The simplicity of this layout is exactly what my brand needed. So warm."' },
-                            { n: 'Thomas B.', d: 'Artisan', t: '"Finally a bio-link that doesn\'t feel like a tech company. Pure soul."' }
-                        ]).map((item, i) => (
-                            <div key={i} className="p-8 rounded-[2.5rem] bg-white border border-[#f3eee8] shadow-sm relative group italic">
-                                <p className="text-[14px] sm:text-[15px] text-[#4a403a] leading-relaxed mb-6">"{item.t || item.text || item.description}"</p>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-[#fdfaf5] border border-[#f3eee8] flex items-center justify-center text-[#8c7e74]">
-                                        <Heart size={14} />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-[12px] font-bold text-[#2d241e]">{item.n || item.name || item.title}</h4>
-                                        <p className="text-[9px] text-[#8c7e74] font-medium uppercase tracking-widest">{item.d || item.subtitle || "Customer"}</p>
-                                    </div>
+                        {blockItems.map((item: any, i: number) => (
+                            <div key={i} className="p-10 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm relative text-center">
+                                <Star className="text-[#e8dccb] mx-auto mb-6" size={24} fill="currentColor" />
+                                <p className="text-[15px] text-[#4a403a] italic leading-relaxed mb-8 px-2 font-medium">
+                                    "{item.t || item.text || item.description || item.quote}"
+                                </p>
+                                <div className="flex flex-col items-center">
+                                    {(item.image || item.author_image || item.url || item.image_url) && (
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#fdfaf5] mb-3 shadow-md">
+                                            <img src={item.image || item.author_image || item.url || item.image_url} className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <p className="text-xs font-bold text-[#2d241e]">{item.n || item.name || item.author || item.title}</p>
+                                    {(item.d || item.subtitle || item.role) && <p className="text-[10px] text-[#8c7e74] font-black uppercase tracking-widest mt-1">{item.d || item.subtitle || item.role}</p>}
                                 </div>
                             </div>
                         ))}
@@ -407,22 +444,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                 </div>
             );
 
-        case 'testimonials_section':
-            return (
-                <div className="p-10 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm relative text-center">
-                    <Star className="text-[#e8dccb] mx-auto mb-6" size={24} fill="currentColor" />
-                    <p className="text-[15px] text-[#4a403a] italic leading-relaxed mb-8 px-2 font-medium">
-                        "{s.text || "Such a peaceful way to showcase my collection. The design feels like a soft breath of air."}"
-                    </p>
-                    <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#fdfaf5] mb-3 shadow-md">
-                            <img src="https://i.pravatar.cc/100?u=sunday" className="w-full h-full object-cover" />
-                        </div>
-                        <p className="text-xs font-bold text-[#2d241e]">{s.author || "Alice Rivers"}</p>
-                        <p className="text-[10px] text-[#8c7e74] font-black uppercase tracking-widest mt-1">Artisan</p>
-                    </div>
-                </div>
-            );
+
 
         case 'cta_section':
         case 'impact_section':
@@ -448,6 +470,7 @@ const renderBrunchSection = (block: any, profile: any) => {
 
         case 'offers_section':
         case 'pricing_cards_section':
+            if (blockItems.length === 0) return null;
             return (
                 <div className="space-y-6">
                     <div className="text-center">
@@ -455,14 +478,11 @@ const renderBrunchSection = (block: any, profile: any) => {
                         <h2 className="text-[24px] font-serif font-black italic text-[#2d241e]">Curated Offers</h2>
                     </div>
                     <div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar snap-x px-2">
-                        {(blockItems.length > 0 ? blockItems : [
-                            { t: 'Digital Guide', d: 'Slow Living Blueprint', p: '$49' },
-                            { t: 'Artisan Pack', d: 'Texture & Light Presets', p: '$129' }
-                        ]).map((item: any, i: number) => (
+                        {blockItems.map((item: any, i: number) => (
                             <div key={i} className="min-w-[280px] snap-center p-8 rounded-[2.5rem] bg-white border-2 border-[#2d241e] shadow-[6px_6px_0px_#2d241e] flex flex-col">
                                 <span className="text-[10px] font-black text-[#e8dccb] uppercase tracking-widest mb-2 italic">Offer {i + 1}</span>
-                                <h4 className="text-[18px] font-black text-[#2d241e] mb-1 italic leading-tight">{item.title || item.t}</h4>
-                                <p className="text-[12px] text-[#8c7e74] font-medium italic mb-8">{item.description || item.d}</p>
+                                <h4 className="text-[18px] font-black text-[#2d241e] mb-1 italic leading-tight">{item.title || item.t || item.name}</h4>
+                                <p className="text-[12px] text-[#8c7e74] font-medium italic mb-8">{item.description || item.d || item.subtitle}</p>
                                 <div className="mt-auto pt-6 border-t border-[#f3eee8] flex items-center justify-between">
                                     <span className="text-[18px] font-serif font-black italic text-[#2d241e]">{item.price || item.p}</span>
                                     <button className="w-10 h-10 rounded-full bg-[#2d241e] text-white flex items-center justify-center hover:scale-110 transition-transform">
