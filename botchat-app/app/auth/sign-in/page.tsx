@@ -506,7 +506,7 @@ export default function SignInPage() {
                             </motion.button>
 
                             {/* 🚀 QUICK DEMO LOGINS */}
-                            <div className="pt-2">
+                            {/* <div className="pt-2">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="flex-1 h-px" style={{ background: isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }} />
                                     <span className="text-[10px] font-bold px-1 uppercase tracking-widest text-[#ec4899]">Demo Access</span>
@@ -566,7 +566,7 @@ export default function SignInPage() {
                                         Admin Login
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
                         </motion.form>
 
                         {/* Mobile signup link */}
