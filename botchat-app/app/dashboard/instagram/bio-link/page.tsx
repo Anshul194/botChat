@@ -2237,7 +2237,7 @@ function BioLinkBuilderContent() {
                                 "image", "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
                                 "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section",
                                 "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section",
-                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section",
+                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section", "hero_product_section",
                                 "social_medias_section"
                             ];
                             if (aestheticTypes.includes(uiType)) return null;
@@ -3047,7 +3047,7 @@ function BioLinkBuilderContent() {
                                 "image", "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
                                 "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section",
                                 "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section",
-                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section", "social_medias_section"
+                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section", "social_medias_section", "hero_product_section"
                             ];
                             if (!aestheticTypes.includes(uiType)) return null;
                             return (
@@ -3273,12 +3273,15 @@ function BioLinkBuilderContent() {
                                     <div className="space-y-4">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Badges</p>
                                         {(s.items || []).map((item: any, i: number) => (
-                                            <div key={i} className="flex gap-2 items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
-                                                <InputField label="" value={item.label || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,label:e.target.value}; upd('items',it); }} placeholder="e.g. SECURE" />
-                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center">×</button>
+                                            <div key={i} className="flex gap-2 items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <div className="flex-1 grid grid-cols-2 gap-2">
+                                                    <InputField label="Icon (Lucide)" value={item.icon || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,icon:e.target.value}; upd('items',it); }} placeholder="Shield, Lock, etc." />
+                                                    <InputField label="Label" value={item.label || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,label:e.target.value}; upd('items',it); }} placeholder="SECURE" />
+                                                </div>
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">×</button>
                                             </div>
                                         ))}
-                                        <button onClick={() => upd('items',[...(s.items||[]),{label:""}])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12}/> Add Badge</button>
+                                        <button onClick={() => upd('items',[...(s.items||[]),{label:"",icon:""}])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12}/> Add Badge</button>
                                     </div>
                                 )}
 
@@ -3421,6 +3424,7 @@ function BioLinkBuilderContent() {
                                     <div className="space-y-4">
                                         <InputField label="Offer Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} />
                                         <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} textarea />
+                                        <InputField label="End Date (Optional)" value={s.countdown || s.end_date || ""} onChange={(e: any) => upd('countdown', e.target.value)} placeholder="2024-12-31 23:59:59" />
                                         <div className="grid grid-cols-2 gap-3">
                                             <InputField label="Button Text" value={s.button_text || ""} onChange={(e: any) => upd('button_text', e.target.value)} />
                                             <InputField label="Button Link" value={s.button_link || ""} onChange={(e: any) => upd('button_link', e.target.value)} />
@@ -3549,6 +3553,66 @@ function BioLinkBuilderContent() {
                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('items',[...(s.items||[]),{image:url}]); }}} />
                                             </label>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Hero Product Section */}
+                                {uiType === "hero_product_section" && (
+                                    <div className="space-y-4">
+                                        <InputField label="Product Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} />
+                                        <InputField label="Subtitle" value={s.subtitle || ""} onChange={(e: any) => upd('subtitle', e.target.value)} />
+                                        <InputField label="Price" value={s.price || ""} onChange={(e: any) => upd('price', e.target.value)} />
+                                        <InputField label="CTA Text" value={s.cta_text || ""} onChange={(e: any) => upd('cta_text', e.target.value)} />
+                                        <InputField label="CTA Link" value={s.cta_link || ""} onChange={(e: any) => upd('cta_link', e.target.value)} />
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Image</label>
+                                            <div className="p-4 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center gap-3">
+                                                {s.product_image && <img src={s.product_image} className="w-24 h-24 rounded-lg object-cover" />}
+                                                <label className="px-4 py-2 rounded-lg bg-white border text-xs font-bold cursor-pointer">
+                                                    {uploadingField === 'hero_product_image' ? "Uploading..." : "Choose Image"}
+                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { setUploadingField('hero_product_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('product_image', url); }}} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Featured Product Section */}
+                                {(uiType === "featured_product_section" || uiType === "product_section") && (
+                                    <div className="space-y-4">
+                                        <InputField label="Product Name" value={s.name || s.title || ""} onChange={(e: any) => upd('name', e.target.value)} />
+                                        <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} textarea />
+                                        <InputField label="Price" value={s.price || ""} onChange={(e: any) => upd('price', e.target.value)} />
+                                        <InputField label="Link" value={s.link || s.url || ""} onChange={(e: any) => upd('link', e.target.value)} />
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Image</label>
+                                            <div className="p-4 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center gap-3">
+                                                {s.image && <img src={s.image} className="w-24 h-24 rounded-lg object-cover" />}
+                                                <label className="px-4 py-2 rounded-lg bg-white border text-xs font-bold cursor-pointer">
+                                                    {uploadingField === 'featured_product_image' ? "Uploading..." : "Choose Image"}
+                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { setUploadingField('featured_product_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('image', url); }}} />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Product List Section */}
+                                {uiType === "product_list_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Products</p>
+                                        {(s.items || []).map((item: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 border border-slate-100 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Name" value={item.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,name:e.target.value}; upd('items',it); }} />
+                                                    <InputField label="Price" value={item.price || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,price:e.target.value}; upd('items',it); }} />
+                                                </div>
+                                                <InputField label="Description" value={item.description || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,description:e.target.value}; upd('items',it); }} textarea />
+                                                <InputField label="Link" value={item.link || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,link:e.target.value}; upd('items',it); }} />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",price:"",description:"",link:"",image:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Product</button>
                                     </div>
                                 )}
 
