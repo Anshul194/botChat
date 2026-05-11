@@ -10,6 +10,7 @@ export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => {
+        if (String(b.id).startsWith('__preview')) return true;
         const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
         const isActive = b.is_active !== 0 && b.is_active !== '0';
         return isEnabled && isActive;

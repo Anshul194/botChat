@@ -10,6 +10,7 @@ export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => {
+        if (String(b.id).startsWith('__preview')) return true;
         const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
         const isActive = b.is_active !== 0 && b.is_active !== '0';
         return isEnabled && isActive;
@@ -251,6 +252,8 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'stats':
         case 'stats_section':
         case 'stats_minimal_section':
+        case 'floating_stats_section':
+        case 'impact_section':
             if (blockItems.length === 0) return null;
             return (
                 <div className="grid grid-cols-2 gap-4">
@@ -443,6 +446,8 @@ const renderBrunchSection = (block: any, profile: any) => {
             );
 
         case 'newsletter':
+        case 'newsletter_section':
+        case 'newsletter_collector':
         case 'email_collector':
             return (
                 <div className="p-10 rounded-[3.5rem] bg-[#f8f1e9] border-4 border-white shadow-2xl shadow-orange-100/40 flex flex-col items-center text-center">

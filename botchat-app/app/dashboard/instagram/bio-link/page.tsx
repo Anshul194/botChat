@@ -372,7 +372,7 @@ function BioLinkBuilderContent() {
             ...tab,
             sections: tab.sections?.map((sec: any) => ({
                 ...sec,
-                blocks: sec.blocks?.map((b: any) => b.id === editingBlock.id ? liveBlock : b)
+                blocks: sec.blocks?.map((b: any) => String(b.id) === String(editingBlock.id) ? liveBlock : b)
             }))
         }));
     }, [tabs, editingBlock]);
@@ -1014,7 +1014,7 @@ function BioLinkBuilderContent() {
                 sections: (tab.sections || []).map((section) => ({
                     ...section,
                     blocks: (section.blocks || []).map((block) =>
-                        block.id === editingBlock.id
+                        String(block.id) === String(editingBlock.id)
                             ? { ...block, settings: mergedSettings, location_url: payload.location_url || block.location_url }
                             : block
                     ),
@@ -1069,7 +1069,7 @@ function BioLinkBuilderContent() {
                 sections: (tab.sections || []).map((section) => ({
                     ...section,
                     blocks: (section.blocks || []).map((block) =>
-                        block.id === editingBlock.id ? { ...block, settings: newSettings } : block
+                        String(block.id) === String(editingBlock.id) ? { ...block, settings: newSettings } : block
                     ),
                 })),
             }))
@@ -1518,12 +1518,12 @@ function BioLinkBuilderContent() {
                                                                                 ...tab,
                                                                                 sections: (tab.sections || []).map(sec => ({
                                                                                     ...sec,
-                                                                                    blocks: (sec.blocks || []).map(b => b.id === block.id ? { ...b, is_active: s, is_Enabled: s, is_enabled: s } : b)
+                                                                                    blocks: (sec.blocks || []).map(b => String(b.id) === String(block.id) ? { ...b, is_active: s, is_Enabled: s, is_enabled: s } : b)
                                                                                 }))
                                                                             })));
                                                                             applyStatus(newStatus);
                                                                             // Close editor if disabling
-                                                                            if (newStatus === 0 && editingBlock?.id === block.id) {
+                                                                            if (newStatus === 0 && String(editingBlock?.id) === String(block.id)) {
                                                                                 setEditingBlock(null);
                                                                                 setShowCarouselEditor(false);
                                                                             }
@@ -1534,7 +1534,7 @@ function BioLinkBuilderContent() {
                                                                                 const raw = res.data?.data?.is_enabled ?? res.data?.data?.is_Enabled ?? newStatus;
                                                                                 const serverStatus = raw === true ? 1 : raw === false ? 0 : Number(raw);
                                                                                 applyStatus(serverStatus);
-                                                                                if (serverStatus === 0 && editingBlock?.id === block.id) {
+                                                                                if (serverStatus === 0 && String(editingBlock?.id) === String(block.id)) {
                                                                                     setEditingBlock(null);
                                                                                     setShowCarouselEditor(false);
                                                                                 }
@@ -2194,7 +2194,7 @@ function BioLinkBuilderContent() {
                                             ...tab,
                                             sections: (tab.sections || []).map(sec => ({
                                                 ...sec,
-                                                blocks: (sec.blocks || []).map(b => b.id === blockId ? { ...b, is_active: s, is_Enabled: s, is_enabled: s } : b)
+                                                blocks: (sec.blocks || []).map(b => String(b.id) === String(blockId) ? { ...b, is_active: s, is_Enabled: s, is_enabled: s } : b)
                                             }))
                                         })));
                                         applyToTabs(newStatus);
@@ -2216,14 +2216,14 @@ function BioLinkBuilderContent() {
                                                 setEditingBlock(null);
                                                 setShowCarouselEditor(false);
                                             } else {
-                                                setEditingBlock(prev => prev?.id === blockId ? { ...prev, is_enabled: serverStatus, is_active: serverStatus, is_Enabled: serverStatus } : prev);
+                                                setEditingBlock(prev => String(prev?.id) === String(blockId) ? { ...prev, is_enabled: serverStatus, is_active: serverStatus, is_Enabled: serverStatus } : prev);
                                             }
                                         } catch (err) {
                                             console.error("Toggle block failed:", err);
                                             // Revert on error
                                             const revertStatus = isCurrentlyInactive ? 0 : 1;
                                             applyToTabs(revertStatus);
-                                            setEditingBlock(prev => prev?.id === blockId ? { ...prev, is_enabled: revertStatus, is_active: revertStatus, is_Enabled: revertStatus } : prev);
+                                            setEditingBlock(prev => String(prev?.id) === String(blockId) ? { ...prev, is_enabled: revertStatus, is_active: revertStatus, is_Enabled: revertStatus } : prev);
                                         }
                                     }} 
                                 />
@@ -3133,8 +3133,8 @@ function BioLinkBuilderContent() {
                                     </div>
                                 )}
 
-                                {/* Stats Minimal */}
-                                {uiType === "stats_minimal_section" && (
+                                {/* Stats */}
+                                {(uiType === "stats_minimal_section" || uiType === "stats_section") && (
                                     <div className="space-y-4">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats</p>
                                         {(s.items || []).map((stat: any, i: number) => (

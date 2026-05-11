@@ -47,7 +47,12 @@ const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
 export function InfluencerLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_enabled != 0 && b.is_active !== false);
+    ).filter((b: any) => {
+        if (String(b.id).startsWith('__preview')) return true;
+        const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
+        const isActive = b.is_active !== 0 && b.is_active !== '0';
+        return isEnabled && isActive;
+    });
 
     const settings = profile?.settings || {};
     const bgType = settings.backgroundType || settings.background_type;
@@ -132,8 +137,8 @@ export function InfluencerLayout({ profile, tabs, openEditor }: any) {
 
 const renderSection = (section: any, accentColor: string) => {
     const { type, settings, items } = section;
-    const blockItems = settings?.items || items || [];
     const s = settings || {};
+    const blockItems = s.items || items || [];
 
     switch (type) {
         case 'header_profile_section':
@@ -402,8 +407,11 @@ const renderSection = (section: any, accentColor: string) => {
                 </div>
             );
 
-        case 'contact_section':
+        case 'newsletter':
+        case 'newsletter_section':
+        case 'newsletter_collector':
         case 'email_collector':
+        case 'contact_section':
         case 'phone_collector':
         case 'contact_collector':
         case 'contact_form':

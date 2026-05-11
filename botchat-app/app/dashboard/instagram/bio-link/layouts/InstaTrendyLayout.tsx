@@ -14,6 +14,7 @@ export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
     ).filter((b: any) => {
+        if (String(b.id).startsWith('__preview')) return true;
         const isEnabled = b.is_enabled !== false && b.is_enabled !== 0 && b.is_enabled !== '0' && b.is_Enabled !== 0 && b.is_Enabled !== '0';
         const isActive = b.is_active !== 0 && b.is_active !== '0';
         return isEnabled && isActive;
@@ -280,6 +281,9 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
 
         case 'stats':
         case 'stats_section':
+        case 'stats_minimal_section':
+        case 'impact_section':
+        case 'floating_stats_section':
             return (
                 <div className="grid grid-cols-2 gap-4">
                     {blockItems.slice(0, 4).map((item: any, i: number) => (
@@ -353,6 +357,8 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
             );
 
         case 'newsletter':
+        case 'newsletter_section':
+        case 'newsletter_collector':
         case 'email_collector':
             return (
                 <div className="relative p-10 rounded-[3rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl overflow-hidden group shadow-2xl">
