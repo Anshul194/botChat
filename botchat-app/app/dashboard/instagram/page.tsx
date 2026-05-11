@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { AiAgentSettingsPanel } from "./AiAgentSettingsPanel";
@@ -214,21 +215,23 @@ export default function InstagramPage() {
                             <ArrowLeft className="w-4 h-4" /> Back to Accounts
                         </button>
                     )}
-                    <button
+                    <Button
+                        variant="outline"
+                        size="icon"
                         onClick={fetchConnectedAccounts}
                         disabled={isLoading}
-                        className="p-2.5 rounded-xl border bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 text-gray-600 dark:text-gray-300"
+                        className="rounded-xl"
                     >
-                        <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-pink-500")} />
-                    </button>
-                    <button
+                        <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-primary")} />
+                    </Button>
+                    <Button
                         onClick={handleInstagramConnect}
                         disabled={isConnecting}
-                        className="h-10 px-5 rounded-xl bg-primary text-white font-bold text-[11px] tracking-wide hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold text-[11px] tracking-wide hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin text-white/50" /> : <Instagram className="w-4 h-4" />}
                         {isConnecting ? "Authorizing..." : "Connect Profile"}
-                    </button>
+                    </Button>
                 </div>
             </header>
 
@@ -392,7 +395,9 @@ export default function InstagramPage() {
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-3">
-                                                            <button
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     showConfirm({
@@ -411,9 +416,11 @@ export default function InstagramPage() {
                                                                 )}
                                                             >
                                                                 {acc.is_active ? "Disable automations" : "Enable modules"}
-                                                            </button>
+                                                            </Button>
 
-                                                            <button
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon-sm"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     showConfirm({
@@ -425,24 +432,14 @@ export default function InstagramPage() {
                                                                     });
                                                                 }}
                                                                 title="Clean Data"
-                                                                className="p-2 rounded-xl bg-gray-50 dark:bg-slate-900 text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors"
+                                                                className="rounded-xl bg-gray-50 dark:bg-slate-900 text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors"
                                                             >
                                                                 <Eraser className="h-4 w-4" />
-                                                            </button>
-                                                            {/* 
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSelectedAccountForSettings({ id: acc.id, name: acc.username });
-                                                            setIsSettingsOpen(true);
-                                                        }}
-                                                        title="AI Agent Settings"
-                                                        className="p-2 rounded-xl bg-pink-50 text-pink-600 hover:bg-pink-100 dark:bg-pink-500/10 dark:text-pink-500 dark:hover:bg-pink-500/20 transition-colors"
-                                                    >
-                                                        <BrainCircuit className="h-4 w-4" />
-                                                    </button> */}
+                                                            </Button>
 
-                                                            <button
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon-sm"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     showConfirm({
@@ -454,10 +451,10 @@ export default function InstagramPage() {
                                                                     });
                                                                 }}
                                                                 title="Disconnect Account"
-                                                                className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-900/40 transition-colors"
+                                                                className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors"
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
-                                                            </button>
+                                                            </Button>
                                                         </div>
                                                     </div>
                                                 ))}

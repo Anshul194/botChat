@@ -9,8 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-white shadow-[0_4px_14px_rgba(236,72,153,0.39)] hover:shadow-[0_6px_20px_rgba(236,72,153,0.23)] hover:-translate-y-[1px] dark:shadow-[0_4px_14px_rgba(236,72,153,0.2)] dark:hover:shadow-[0_6px_20px_rgba(236,72,153,0.15)]",
-        destructive: "bg-destructive text-white shadow-[0_4px_14px_rgba(220,38,38,0.39)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.23)] hover:-translate-y-[1px]",
+        default: "bg-primary text-primary-foreground shadow-[0_4px_14px_rgba(30,95,212,0.30)] hover:shadow-[0_6px_20px_rgba(30,95,212,0.20)] hover:-translate-y-[1px] dark:shadow-[0_4px_14px_rgba(29,110,245,0.25)] dark:hover:shadow-[0_6px_20px_rgba(29,110,245,0.20)]",
+        destructive: "bg-destructive text-destructive-foreground shadow-[0_4px_14px_rgba(220,38,38,0.30)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.20)] hover:-translate-y-[1px]",
         outline: "border border-input bg-background/50 backdrop-blur-md shadow-sm hover:bg-accent hover:text-accent-foreground hover:border-accent dark:hover:bg-accent/40",
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent/50 hover:text-accent-foreground dark:hover:bg-accent/30",

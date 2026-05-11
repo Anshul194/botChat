@@ -97,7 +97,7 @@ function InputField({ label, name, type = "text", placeholder, defaultValue, val
                 readOnly={resolvedReadOnly}
                 className="w-full px-3.5 py-2.5 rounded-xl text-sm outline-none transition-all duration-300"
                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--brand-purple)"; e.currentTarget.style.boxShadow = "var(--input-focus-ring)"; }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "var(--input-focus-ring)"; }}
                 onBlur={(e) => { e.currentTarget.style.borderColor = "var(--glass-border)"; e.currentTarget.style.boxShadow = "none"; }}
             />
         </div>
@@ -147,7 +147,7 @@ function Toggle({ label, desc, defaultChecked = false }: { label: string; desc?:
             </div>
             <button onClick={() => setOn(!on)}
                 className="relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0"
-                style={{ background: on ? "var(--brand-purple)" : "var(--glass-border)" }}>
+                style={{ background: on ? "var(--primary)" : "var(--glass-border)" }}>
                 <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
                     style={{ left: on ? "calc(100% - 22px)" : "2px" }} />
             </button>
@@ -238,7 +238,7 @@ export default function SettingsPage() {
         landingPageEnabled: true,
         registerEnabled: false,
         theme: {
-            primaryColor: "#6C5CE7",
+            primaryColor: "#1d6ef5",
             sidebarTransparent: true,
             darkLayout: false
         },
@@ -257,7 +257,7 @@ export default function SettingsPage() {
         if (general) {
             setGeneralForm({
                 ...general,
-                theme: general.theme || { primaryColor: "#6C5CE7", sidebarTransparent: true, darkLayout: false }
+                theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false }
             });
             // Construct full preview URL if backend returns relative filename
             if (general.logo) setLogoPreview(general.logo.startsWith('http') ? general.logo : `${process.env.NEXT_PUBLIC_BASE_URL?.replace('/api/v1', '')}/uploads/${general.logo}`);

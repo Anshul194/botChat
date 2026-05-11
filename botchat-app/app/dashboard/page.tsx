@@ -46,7 +46,7 @@ const areaData = [
 ];
 
 const pieData = [
-    { name: "Instagram", value: 62, color: "#ec4899" },
+    { name: "Instagram", value: 62, color: "var(--primary)" },
     { name: "Facebook", value: 38, color: "#3b82f6" },
 ];
 
@@ -116,7 +116,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 
 export default function DashboardPage() {
     const stats = [
-        { label: "Total Messages", value: "48,291", change: "+18.2%", up: true, icon: MessageSquare, color: "#ec4899" },
+        { label: "Total Messages", value: "48,291", change: "+18.2%", up: true, icon: MessageSquare, color: "var(--primary)" },
         { label: "Automated Replies", value: "44,180", change: "+22.4%", up: true, icon: Zap, color: "#a855f7" },
         { label: "Conversion Rate", value: "8.4%", change: "-0.3%", up: false, icon: TrendingUp, color: "#f59e0b" },
         { label: "New Leads", value: "3,847", change: "+31.0%", up: true, icon: Users, color: "#10b981" },
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                             <CardDescription>Multi-layered interaction mapping across 24h</CardDescription>
                         </div>
                         <div className="hidden items-center gap-6 sm:flex">
-                            {[{ name: "Live", color: "#ec4899" }, { name: "Auto", color: "#a855f7" }, { name: "Success", color: "#10b981" }].map((l) => (
+                            {[{ name: "Live", color: "var(--primary)" }, { name: "Auto", color: "#6366f1" }, { name: "Success", color: "#10b981" }].map((l) => (
                                 <div key={l.name} className="flex items-center gap-2">
                                     <div className="h-1.5 w-1.5 rounded-full" style={{ background: l.name === "Success" ? "transparent" : l.color, border: l.name === "Success" ? `2px solid ${l.color}` : 'none' }} />
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{l.name}</span>
@@ -218,7 +218,7 @@ export default function DashboardPage() {
                     <CardFooter className="grid grid-cols-3 border-t border-border/10 bg-muted/5 p-6">
                         <div className="text-center">
                             <p className="text-[10px] font-bold uppercase text-muted-foreground">Flow Velocity</p>
-                            <p className="text-lg font-black text-[#ec4899]">High</p>
+                            <p className="text-lg font-black text-primary">High</p>
                         </div>
                         <div className="text-center border-x border-border/10">
                             <p className="text-[10px] font-bold uppercase text-muted-foreground">Path Success</p>
@@ -249,14 +249,14 @@ export default function DashboardPage() {
                         <div className="w-full space-y-3 p-6 pt-2 bg-gradient-to-t from-muted/20 to-transparent rounded-b-3xl">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] font-black uppercase text-muted-foreground">IG Saturation</span>
-                                <span className="text-xs font-black text-pink-500">62%</span>
+                                <span className="text-xs font-black text-primary">62%</span>
                             </div>
-                            <Progress value={62} className="h-1 bg-muted/20" />
+                            <Progress value={62} className="h-1 bg-primary/20" />
                             <div className="flex items-center justify-between pt-1">
                                 <span className="text-[10px] font-black uppercase text-muted-foreground">FB Reach</span>
                                 <span className="text-xs font-black text-blue-500">38%</span>
                             </div>
-                            <Progress value={38} className="h-1 bg-muted/20" />
+                            <Progress value={38} className="h-1 bg-primary/20" />
                         </div>
                     </CardFooter>
                 </Card>
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="mt-1 flex items-center gap-3">
                                         <div className="flex items-center gap-1.5 opacity-60">
-                                            {a.platform === "instagram" ? <Instagram className="h-3 w-3 text-pink-500" /> : <Facebook className="h-3 w-3 text-blue-500" />}
+                                            {a.platform === "instagram" ? <Instagram className="h-3 w-3 text-primary" /> : <Facebook className="h-3 w-3 text-blue-500" />}
                                             <span className="text-[10px] font-bold uppercase">{a.platform}</span>
                                         </div>
                                         <div className="h-1 w-1 rounded-full bg-border" />
@@ -347,7 +347,7 @@ export default function DashboardPage() {
                                     <p className="truncate text-xs font-medium text-muted-foreground">{c.msg}</p>
                                 </div>
                                 <div className="flex flex-col items-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                                    {c.platform === "instagram" ? <Instagram className="h-4 w-4 text-pink-500" /> : <Facebook className="h-4 w-4 text-blue-500" />}
+                                    {c.platform === "instagram" ? <Instagram className="h-4 w-4 text-primary" /> : <Facebook className="h-4 w-4 text-blue-500" />}
                                     <ArrowUpRight className="h-3 w-3 text-muted-foreground" />
                                 </div>
                             </div>
@@ -355,8 +355,8 @@ export default function DashboardPage() {
                     </CardContent>
                     <CardFooter className="grid grid-cols-3 gap-3 pt-0">
                         {[
-                            { icon: Clock, label: "Avg Wait", value: "1.2s", color: "#ec4899" },
-                            { icon: Bot, label: "Bot Rate", value: "94%", color: "#a855f7" },
+                            { icon: Clock, label: "Avg Wait", value: "1.2s", color: "var(--primary)" },
+                            { icon: Bot, label: "Bot Rate", value: "94%", color: "#6366f1" },
                             { icon: Activity, label: "Sentiment", value: "97%", color: "#10b981" },
                         ].map((q) => (
                             <div key={q.label} className="flex flex-col items-center justify-center rounded-2xl border border-border/5 bg-muted/20 p-3 text-center transition-all hover:bg-muted/40">
@@ -448,7 +448,7 @@ export default function DashboardPage() {
                         <div className="mt-8 rounded-2xl bg-muted/10 p-6">
                             <div className="mb-4 flex items-center justify-between">
                                 <span className="text-xs font-black uppercase tracking-tight">API Throughput</span>
-                                <span className="text-xs font-black text-[#ec4899] italic">99.98% Success</span>
+                                <span className="text-xs font-black text-primary italic">99.98% Success</span>
                             </div>
                             <div className="flex gap-1.5">
                                 {Array.from({ length: 48 }).map((_, i) => (

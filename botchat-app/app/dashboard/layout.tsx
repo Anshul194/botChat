@@ -68,8 +68,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // Show loading state while initializing or while not authenticated
     if (!isInitialized || !isAuthenticated) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#0a0f1e]">
-                <div className="w-10 h-10 border-4 border-[#FF2D78] border-t-transparent rounded-full animate-spin" />
+            <div className="flex items-center justify-center min-h-screen bg-[#06030f]">
+                <div className="w-10 h-10 border-4 border-[#1d6ef5] border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }

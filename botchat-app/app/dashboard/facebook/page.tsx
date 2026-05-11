@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
@@ -213,21 +214,23 @@ export default function FacebookPage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button
+                    <Button
+                        variant="outline"
+                        size="icon"
                         onClick={fetchConnectedPages}
                         disabled={isLoading}
-                        className="p-2.5 rounded-xl border bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 text-gray-600 dark:text-gray-300"
+                        className="rounded-xl"
                     >
-                        <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-blue-500")} />
-                    </button>
-                    <button
+                        <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-primary")} />
+                    </Button>
+                    <Button
                         onClick={handleConnectFacebook}
                         disabled={isConnecting}
-                        className="h-10 px-5 rounded-xl bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-2 shadow-sm"
+                        className="h-10 px-5 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-2 shadow-sm"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Facebook className="w-4 h-4" />}
                         {isConnecting ? "Authorizing..." : "Connect Account"}
-                    </button>
+                    </Button>
                 </div>
             </header>
 
@@ -337,7 +340,9 @@ export default function FacebookPage() {
                                             </div>
 
                                             <div className="flex flex-wrap items-center gap-3">
-                                                <button
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
                                                     onClick={() =>
                                                         setConfirmModal({
                                                             show: true,
@@ -354,9 +359,11 @@ export default function FacebookPage() {
                                                     )}
                                                 >
                                                     {page.is_enabled ? "Disable automations" : "Enable modules"}
-                                                </button>
+                                                </Button>
 
-                                                <button
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon-sm"
                                                     onClick={() =>
                                                         setConfirmModal({
                                                             show: true,
@@ -366,12 +373,14 @@ export default function FacebookPage() {
                                                         })
                                                     }
                                                     title="Clean Data"
-                                                    className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/40 transition-colors"
+                                                    className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors"
                                                 >
                                                     <Eraser className="h-4 w-4" />
-                                                </button>
+                                                </Button>
 
-                                                <button
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon-sm"
                                                     onClick={() =>
                                                         setConfirmModal({
                                                             show: true,
@@ -381,10 +390,10 @@ export default function FacebookPage() {
                                                         })
                                                     }
                                                     title="Disconnect Page"
-                                                    className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:bg-gray-800 dark:hover:bg-rose-900/40 transition-colors"
+                                                    className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
                                         );

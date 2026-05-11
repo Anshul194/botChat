@@ -87,7 +87,7 @@ export default function SignUpPage() {
         return s;
     })();
     const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][pwdStrength];
-    const strengthColors = ["", "#ef4444", "#f59e0b", "#ec4899", "#22c55e"];
+    const strengthColors = ["", "#ef4444", "#f59e0b", "var(--primary)", "#22c55e"];
 
     const features = [
         "Unlimited Instagram & Facebook connections",
@@ -105,15 +105,15 @@ export default function SignUpPage() {
     const labelStyle = { color: isLight ? "#1e1b4b" : "#e2e8f0" };
 
     return (
-        <div className="min-h-screen flex" style={{ background: isLight ? "#fdf2f8" : "#06030f" }}>
+        <div className="min-h-screen flex" style={{ background: isLight ? "#f8fafc" : "#06030f" }}>
 
             {/* ── Left panel ── */}
             <div
                 className="hidden lg:flex lg:w-[44%] flex-col relative overflow-hidden"
-                style={{ background: "linear-gradient(155deg, #9d174d 0%, #ec4899 45%, #a855f7 100%)" }}
+                style={{ background: "linear-gradient(155deg, #124ba8 0%, #1e5fd4 45%, #6366f1 100%)" }}
             >
                 <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-20"
-                    style={{ background: "radial-gradient(circle, #f9a8d4 0%, transparent 70%)" }} />
+                    style={{ background: "radial-gradient(circle, #38b2ff 0%, transparent 70%)" }} />
                 <div className="absolute bottom-20 -left-10 w-56 h-56 rounded-full opacity-15"
                     style={{ background: "radial-gradient(circle, white 0%, transparent 70%)" }} />
                 <div className="absolute inset-0 opacity-[0.06]"
@@ -178,7 +178,7 @@ export default function SignUpPage() {
                             <MessageSquare className="w-4 h-4 text-white" />
                         </div>
                         <span className="font-bold text-sm" style={{
-                            background: "linear-gradient(135deg, #ec4899, #a855f7)",
+                            background: "linear-gradient(135deg, #1e5fd4, #6366f1)",
                             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
                         }}>BotChat</span>
                     </div>
@@ -202,9 +202,9 @@ export default function SignUpPage() {
                                 <div key={s} className="flex items-center gap-2">
                                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
                                         style={{
-                                            background: step >= s ? "linear-gradient(135deg, #ec4899, #a855f7)" : isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
+                                            background: step >= s ? "linear-gradient(135deg, #1e5fd4, #6366f1)" : isLight ? "#f1f5f9" : "rgba(255,255,255,0.08)",
                                             color: step >= s ? "#fff" : isLight ? "#94a3b8" : "#64748b",
-                                            boxShadow: step === s ? "0 0 16px rgba(236,72,153,0.4)" : "none",
+                                            boxShadow: step === s ? "0 0 16px rgba(30,95,212,0.4)" : "none",
                                         }}>
                                         {step > s ? <Check className="w-3.5 h-3.5" /> : s}
                                     </div>
@@ -214,7 +214,7 @@ export default function SignUpPage() {
                                     </span>
                                     {s < 2 && (
                                         <div className="w-10 h-px mx-1"
-                                            style={{ background: step > 1 ? "#ec4899" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)" }} />
+                                            style={{ background: step > 1 ? "var(--primary)" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)" }} />
                                     )}
                                 </div>
                             ))}
@@ -262,7 +262,7 @@ export default function SignUpPage() {
                                                 value={form.email} onChange={(e) => setField("email", e.target.value)}
                                                 className="w-full pl-10 pr-4 h-12 rounded-xl text-sm outline-none transition-all"
                                                 style={inputStyle(!!errors.email)}
-                                                onFocus={(e) => { e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                                 onBlur={(e) => { e.currentTarget.style.borderColor = errors.email ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                             />
                                         </div>
@@ -279,7 +279,7 @@ export default function SignUpPage() {
                                                 placeholder="Min. 8 characters" value={form.password} onChange={(e) => setField("password", e.target.value)}
                                                 className="w-full pl-10 pr-12 h-12 rounded-xl text-sm outline-none transition-all"
                                                 style={inputStyle(!!errors.password)}
-                                                onFocus={(e) => { e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                                 onBlur={(e) => { e.currentTarget.style.borderColor = errors.password ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                             />
                                             <button type="button" onClick={() => setShowPwd(!showPwd)}
@@ -311,7 +311,7 @@ export default function SignUpPage() {
                                                 placeholder="Repeat password" value={form.confirm} onChange={(e) => setField("confirm", e.target.value)}
                                                 className="w-full pl-10 pr-12 h-12 rounded-xl text-sm outline-none transition-all"
                                                 style={inputStyle(!!errors.confirm)}
-                                                onFocus={(e) => { e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                                 onBlur={(e) => { e.currentTarget.style.borderColor = errors.confirm ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                             />
                                             <button type="button" onClick={() => setShowConfirm(!showConfirm)}
@@ -325,8 +325,8 @@ export default function SignUpPage() {
                                     <button type="button" onClick={handleNext}
                                         className="w-full h-12 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm text-white transition-all mt-2"
                                         style={{
-                                            background: "linear-gradient(135deg, #ec4899 0%, #a855f7 100%)",
-                                            boxShadow: "0 4px 20px rgba(236,72,153,0.35)"
+                                            background: "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)",
+                                            boxShadow: "0 4px 20px rgba(30,95,212,0.30)"
                                         }}>
                                         Continue <ArrowRight className="w-4 h-4" />
                                     </button>
@@ -345,7 +345,7 @@ export default function SignUpPage() {
                                                 value={form.firstName} onChange={(e) => setField("firstName", e.target.value)}
                                                 className="w-full pl-10 pr-3 h-12 rounded-xl text-sm outline-none transition-all"
                                                 style={inputStyle(!!errors.firstName)}
-                                                onFocus={(e) => { e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                                 onBlur={(e) => { e.currentTarget.style.borderColor = errors.firstName ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                             />
                                         </div>
@@ -357,7 +357,7 @@ export default function SignUpPage() {
                                             value={form.lastName} onChange={(e) => setField("lastName", e.target.value)}
                                             className="w-full px-3 h-12 rounded-xl text-sm outline-none transition-all"
                                             style={inputStyle(!!errors.lastName)}
-                                            onFocus={(e) => { e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                             onBlur={(e) => { e.currentTarget.style.borderColor = errors.lastName ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                         />
                                         {errors.lastName && <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>{errors.lastName}</p>}
@@ -376,7 +376,7 @@ export default function SignUpPage() {
                                             value={form.company} onChange={(e) => setField("company", e.target.value)}
                                             className="w-full pl-10 pr-4 h-12 rounded-xl text-sm outline-none transition-all"
                                             style={inputStyle(false)}
-                                            onFocus={(e) => { e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                             onBlur={(e) => { e.currentTarget.style.borderColor = isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                         />
                                     </div>
@@ -387,12 +387,12 @@ export default function SignUpPage() {
                                     <label className="flex items-start gap-3 cursor-pointer">
                                         <input id="signup-agree" type="checkbox" checked={form.agree}
                                             onChange={(e) => setField("agree", e.target.checked)}
-                                            className="mt-0.5 w-4 h-4 rounded accent-pink-600 cursor-pointer flex-shrink-0" />
+                                            className="mt-0.5 w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0" />
                                         <span className="text-sm" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
                                             I agree to BotChat&apos;s{" "}
-                                            <Link href="#" className="font-semibold" style={{ color: "#ec4899" }}>Terms of Service</Link>
+                                            <Link href="#" className="font-semibold" style={{ color: "var(--primary)" }}>Terms of Service</Link>
                                             {" "}and{" "}
-                                            <Link href="#" className="font-semibold" style={{ color: "#ec4899" }}>Privacy Policy</Link>
+                                            <Link href="#" className="font-semibold" style={{ color: "var(--primary)" }}>Privacy Policy</Link>
                                         </span>
                                     </label>
                                     {errors.agree && <p className="mt-1.5 text-xs flex items-center gap-1" style={{ color: "#ef4444" }}><AlertCircle className="w-3 h-3" />{errors.agree}</p>}
@@ -418,8 +418,8 @@ export default function SignUpPage() {
                                     <button type="submit" disabled={loading}
                                         className="flex-1 h-12 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm text-white transition-all"
                                         style={{
-                                            background: "linear-gradient(135deg, #ec4899 0%, #a855f7 100%)",
-                                            boxShadow: "0 4px 20px rgba(236,72,153,0.35)",
+                                            background: "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)",
+                                            boxShadow: "0 4px 20px rgba(30,95,212,0.30)",
                                             opacity: loading ? 0.85 : 1
                                         }}>
                                         {loading ? (

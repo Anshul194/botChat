@@ -165,16 +165,16 @@ export default function SignInPage() {
     }
 
     return (
-        <div className="min-h-screen flex" style={{ background: isLight ? "#fdf2f8" : "#06030f" }}>
+        <div className="min-h-screen flex" style={{ background: isLight ? "#f8fafc" : "#06030f" }}>
 
             {/* ── Left decorative panel ── */}
             <div
                 className="hidden lg:flex lg:w-[46%] flex-col relative overflow-hidden"
-                style={{ background: "linear-gradient(160deg, #9d174d 0%, #ec4899 45%, #a855f7 100%)" }}
+                style={{ background: "linear-gradient(160deg, #124ba8 0%, #1e5fd4 45%, #6366f1 100%)" }}
             >
                 {/* Orbs */}
                 <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-25"
-                    style={{ background: "radial-gradient(circle, #f9a8d4 0%, transparent 70%)" }} />
+                    style={{ background: "radial-gradient(circle, #38b2ff 0%, transparent 70%)" }} />
                 <div className="absolute bottom-10 right-0 w-96 h-96 rounded-full opacity-10"
                     style={{ background: "radial-gradient(circle, white 0%, transparent 70%)" }} />
                 {/* Grid */}
@@ -247,7 +247,7 @@ export default function SignInPage() {
                             <MessageSquare className="w-4 h-4 text-white" />
                         </div>
                         <span className="font-bold text-sm" style={{
-                            background: "linear-gradient(135deg, #ec4899, #a855f7)",
+                            background: "linear-gradient(135deg, #1e5fd4, #6366f1)",
                             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
                         }}>BotChat</span>
                     </div>
@@ -256,7 +256,7 @@ export default function SignInPage() {
                         <span className="text-sm" style={{ color: isLight ? "#64748b" : "#a1a1aa" }}>
                             No account?{" "}
                             <Link href="/auth/sign-up" className="font-semibold"
-                                style={{ color: "#ec4899" }}>
+                                style={{ color: "var(--primary)" }}>
                                 Sign up
                             </Link>
                         </span>
@@ -321,7 +321,7 @@ export default function SignInPage() {
                                 >
                                     <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                                         {socialLoading === p.id
-                                            ? <div className="w-4 h-4 border-2 border-pink-500/30 border-t-pink-500 rounded-full animate-spin" />
+                                            ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                                             : p.icon}
                                     </span>
                                     <span className="flex-1 text-center">{p.label}</span>
@@ -371,7 +371,7 @@ export default function SignInPage() {
                                             color: isLight ? "#1e1b4b" : "#f1f5f9",
                                             boxShadow: errors.email ? "0 0 0 3px rgba(239,68,68,0.1)" : "none",
                                         }}
-                                        onFocus={(e) => { if (!errors.email) e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                        onFocus={(e) => { if (!errors.email) e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                         onBlur={(e) => { e.currentTarget.style.borderColor = errors.email ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                     />
                                 </div>
@@ -393,7 +393,7 @@ export default function SignInPage() {
                                         Password
                                     </label>
                                     <Link href="/auth/forgot-password" className="text-xs font-semibold"
-                                        style={{ color: "#ec4899" }}>
+                                        style={{ color: "var(--primary)" }}>
                                         Forgot password?
                                     </Link>
                                 </div>
@@ -417,7 +417,7 @@ export default function SignInPage() {
                                             color: isLight ? "#1e1b4b" : "#f1f5f9",
                                             boxShadow: errors.password ? "0 0 0 3px rgba(239,68,68,0.1)" : "none",
                                         }}
-                                        onFocus={(e) => { if (!errors.password) e.currentTarget.style.borderColor = "#ec4899"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(236,72,153,0.12)"; }}
+                                        onFocus={(e) => { if (!errors.password) e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
                                         onBlur={(e) => { e.currentTarget.style.borderColor = errors.password ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
                                     />
                                     <button type="button" onClick={() => setShowPwd(!showPwd)}
@@ -440,7 +440,7 @@ export default function SignInPage() {
                             <label className="flex items-center gap-2.5 cursor-pointer group">
                                 <div className="relative flex-shrink-0">
                                     <input type="checkbox" className="peer sr-only" />
-                                    <div className="w-4 h-4 rounded border-2 transition-all peer-checked:border-pink-500 peer-checked:bg-pink-500 flex items-center justify-center"
+                                    <div className="w-4 h-4 rounded border-2 transition-all peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center"
                                         style={{ borderColor: isLight ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)" }}>
                                         <Check className="w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100" />
                                     </div>
@@ -470,12 +470,12 @@ export default function SignInPage() {
                                     background:
                                         status === "error" ? "#ef4444" :
                                             status === "success" ? "#10b981" :
-                                                "linear-gradient(135deg, #ec4899 0%, #a855f7 100%)",
+                                                "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)",
                                     scale: status === "success" ? 1.02 : 1
                                 }}
                                 style={{
                                     boxShadow: status === "idle" || status === "loading"
-                                        ? "0 4px 20px rgba(236,72,153,0.35)"
+                                        ? "0 4px 20px rgba(30,95,212,0.30)"
                                         : "none",
                                     cursor: status === "loading" || status === "success" ? "default" : "pointer"
                                 }}
@@ -509,7 +509,7 @@ export default function SignInPage() {
                             {/* <div className="pt-2">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="flex-1 h-px" style={{ background: isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }} />
-                                    <span className="text-[10px] font-bold px-1 uppercase tracking-widest text-[#ec4899]">Demo Access</span>
+                                    <span className="text-[10px] font-bold px-1 uppercase tracking-widest text-primary">Demo Access</span>
                                     <div className="flex-1 h-px" style={{ background: isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)" }} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
@@ -530,7 +530,7 @@ export default function SignInPage() {
                                                 setTimeout(() => setStatus("idle"), 2500);
                                             }
                                         }}
-                                        className="h-10 rounded-xl text-xs font-bold transition-all border hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:border-[#ec4899]/30"
+                                        className="h-10 rounded-xl text-xs font-bold transition-all border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                                         style={{
                                             background: isLight ? "#f8fafc" : "rgba(255,255,255,0.02)",
                                             borderColor: isLight ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.08)",
@@ -556,7 +556,7 @@ export default function SignInPage() {
                                                 setTimeout(() => setStatus("idle"), 2500);
                                             }
                                         }}
-                                        className="h-10 rounded-xl text-xs font-bold transition-all border hover:bg-[#a855f7]/10 hover:text-[#a855f7] hover:border-[#a855f7]/30"
+                                        className="h-10 rounded-xl text-xs font-bold transition-all border hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                                         style={{
                                             background: isLight ? "#f8fafc" : "rgba(255,255,255,0.02)",
                                             borderColor: isLight ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.08)",
@@ -572,7 +572,7 @@ export default function SignInPage() {
                         {/* Mobile signup link */}
                         <p className="mt-7 text-center text-sm lg:hidden" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
                             Don&apos;t have an account?{" "}
-                            <Link href="/auth/sign-up" className="font-semibold" style={{ color: "#ec4899" }}>
+                            <Link href="/auth/sign-up" className="font-semibold" style={{ color: "var(--primary)" }}>
                                 Sign up free
                             </Link>
                         </p>
