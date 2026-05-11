@@ -3410,12 +3410,29 @@ function BioLinkBuilderContent() {
                                         {(s.items || []).map((item: any, i: number) => (
                                             <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
                                                 <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
-                                                <InputField label="Offer Title" value={item.title || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,title:e.target.value}; upd('items',it); }} />
-                                                <InputField label="Price" value={item.price || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,price:e.target.value}; upd('items',it); }} />
-                                                <InputField label="Description" value={item.description || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,description:e.target.value}; upd('items',it); }} textarea />
+                                                <InputField label="Offer Name" value={item.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,name:e.target.value}; upd('items',it); }} placeholder="1-on-1 Coaching Call" />
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Price" value={item.price || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,price:e.target.value}; upd('items',it); }} placeholder="149" />
+                                                    <InputField label="Currency" value={item.currency || "USD"} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,currency:e.target.value}; upd('items',it); }} placeholder="USD" />
+                                                </div>
+                                                <InputField label="Description" value={item.description || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,description:e.target.value}; upd('items',it); }} textarea placeholder="What's included..." />
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="CTA Button Text" value={item.cta_text || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,cta_text:e.target.value}; upd('items',it); }} placeholder="Book Now" />
+                                                    <InputField label="CTA Link" value={item.cta_link || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,cta_link:e.target.value}; upd('items',it); }} placeholder="https://..." />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase">Product Image</label>
+                                                    <div className="h-20 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                        {item.image && <img src={item.image} className="absolute inset-0 w-full h-full object-cover" />}
+                                                        <label className="cursor-pointer z-10">
+                                                            {uploadingField === `offer_img_${i}` ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                                                            <input type="file" className="hidden" disabled={uploadingField === `offer_img_${i}`} onChange={async e => { if (e.target.files?.[0]) { setUploadingField(`offer_img_${i}`); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) { const it=[...(s.items||[])]; it[i]={...item,image:url}; upd('items',it); }}}} />
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         ))}
-                                        <button onClick={() => upd('items',[...(s.items||[]),{title:"",price:"",description:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Offer</button>
+                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",price:"",currency:"USD",description:"",cta_text:"",cta_link:"",image:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Offer</button>
                                     </div>
                                 )}
 
@@ -3442,8 +3459,8 @@ function BioLinkBuilderContent() {
                                     </div>
                                 )}
 
-                                {/* Brands / Social Proof */}
-                                {(uiType === "brands_section" || uiType === "brands" || uiType === "social_proof_section") && (
+                                {/* Brands (logo grid) */}
+                                {(uiType === "brands_section" || uiType === "brands") && (
                                     <div className="space-y-4">
                                         <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Global Partners" />
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Logos</p>
@@ -3475,6 +3492,68 @@ function BioLinkBuilderContent() {
                                     </div>
                                 )}
 
+                                {/* Social Proof (platform stats) */}
+                                {uiType === "social_proof_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Platform Stats</p>
+                                        {(s.items || []).map((item: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Platform" value={item.platform || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,platform:e.target.value}; upd('items',it); }} placeholder="Instagram" />
+                                                    <InputField label="Followers" value={item.followers || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,followers:e.target.value}; upd('items',it); }} placeholder="150K" />
+                                                </div>
+                                                <InputField label="Profile URL" value={item.url || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,url:e.target.value}; upd('items',it); }} placeholder="https://instagram.com/..." />
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{platform:"",followers:"",url:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Platform</button>
+                                    </div>
+                                )}
+
+                                {/* Featured Links Section */}
+                                {uiType === "featured_links_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Featured Links</p>
+                                        {(s.items || []).map((item: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <InputField label="Label" value={item.label || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,label:e.target.value}; upd('items',it); }} placeholder="My Latest Video" />
+                                                <InputField label="URL" value={item.url || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,url:e.target.value}; upd('items',it); }} placeholder="https://..." />
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Icon (FA class)" value={item.icon || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,icon:e.target.value}; upd('items',it); }} placeholder="fab fa-youtube" />
+                                                    <InputField label="Description" value={item.description || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,description:e.target.value}; upd('items',it); }} placeholder="Short tagline" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{label:"",url:"",icon:"",description:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Link</button>
+                                    </div>
+                                )}
+
+                                {/* Content Grid Section */}
+                                {uiType === "content_grid_section" && (
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Content Grid</p>
+                                        {(s.items || []).map((item: any, i: number) => (
+                                            <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                                                <InputField label="Caption" value={item.caption || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,caption:e.target.value}; upd('items',it); }} placeholder="Behind the scenes" />
+                                                <InputField label="Link URL" value={item.url || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...item,url:e.target.value}; upd('items',it); }} placeholder="https://youtube.com/..." />
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase">Thumbnail</label>
+                                                    <div className="h-20 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                        {item.thumbnail && <img src={item.thumbnail} className="absolute inset-0 w-full h-full object-cover" />}
+                                                        <label className="cursor-pointer z-10">
+                                                            {uploadingField === `grid_thumb_${i}` ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                                                            <input type="file" className="hidden" disabled={uploadingField === `grid_thumb_${i}`} onChange={async e => { if (e.target.files?.[0]) { setUploadingField(`grid_thumb_${i}`); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) { const it=[...(s.items||[])]; it[i]={...item,thumbnail:url}; upd('items',it); }}}} />
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button onClick={() => upd('items',[...(s.items||[]),{caption:"",url:"",thumbnail:"",type:"video"}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Item</button>
+                                    </div>
+                                )}
+
                                 {/* Testimonials */}
                                 {uiType === "testimonials_section" && (
                                     <div className="space-y-4">
@@ -3482,12 +3561,32 @@ function BioLinkBuilderContent() {
                                         {(s.items || []).map((t: any, i: number) => (
                                             <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
                                                 <button onClick={() => { const it=[...(s.items||[])]; it.splice(i,1); upd('items',it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
-                                                <InputField label="Name" value={t.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,name:e.target.value}; upd('items',it); }} />
-                                                <InputField label="Subtitle" value={t.subtitle || t.role || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,subtitle:e.target.value}; upd('items',it); }} placeholder="e.g. Baker" />
-                                                <InputField label="Description" value={t.description || t.quote || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,description:e.target.value}; upd('items',it); }} textarea placeholder="The simplicity of this layout..." />
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <InputField label="Name" value={t.name || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,name:e.target.value}; upd('items',it); }} />
+                                                    <InputField label="Role" value={t.role || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,role:e.target.value}; upd('items',it); }} placeholder="Entrepreneur" />
+                                                </div>
+                                                <InputField label="Quote" value={t.quote || ""} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,quote:e.target.value}; upd('items',it); }} textarea placeholder="This changed my business..." />
+                                                <div className="grid grid-cols-2 gap-3 items-end">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-slate-400 uppercase">Avatar</label>
+                                                        <div className="h-14 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                            {t.avatar && <img src={t.avatar} className="absolute inset-0 w-full h-full object-cover rounded-lg" />}
+                                                            <label className="cursor-pointer z-10">
+                                                                {uploadingField === `testimonial_avatar_${i}` ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                                                                <input type="file" className="hidden" disabled={uploadingField === `testimonial_avatar_${i}`} onChange={async e => { if (e.target.files?.[0]) { setUploadingField(`testimonial_avatar_${i}`); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) { const it=[...(s.items||[])]; it[i]={...t,avatar:url}; upd('items',it); }}}} />
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black text-slate-400 uppercase">Rating (1-5)</label>
+                                                        <select value={t.rating ?? 5} onChange={(e: any) => { const it=[...(s.items||[])]; it[i]={...t,rating:Number(e.target.value)}; upd('items',it); }} className="w-full h-12 px-3 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 text-[14px] font-bold outline-none">
+                                                            {[5,4,3,2,1].map(r => <option key={r} value={r}>{r} ★</option>)}
+                                                        </select>
+                                                    </div>
+                                                </div>
                                             </div>
                                         ))}
-                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",subtitle:"",description:""}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Testimonial</button>
+                                        <button onClick={() => upd('items',[...(s.items||[]),{name:"",role:"",quote:"",avatar:"",rating:5}])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14}/> Add Testimonial</button>
                                     </div>
                                 )}
 

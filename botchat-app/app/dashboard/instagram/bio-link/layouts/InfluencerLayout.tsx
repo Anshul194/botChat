@@ -44,10 +44,10 @@ const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
     }
 };
 
-export function InfluencerLayout({ profile, tabs }: any) {
+export function InfluencerLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
         (tab.sections || []).flatMap((sec: any) => sec.blocks || [])
-    ).filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
+    ).filter((b: any) => b.is_enabled != 0 && b.is_active !== false);
 
     const settings = profile?.settings || {};
     const bgType = settings.backgroundType || settings.background_type;
@@ -105,6 +105,8 @@ export function InfluencerLayout({ profile, tabs }: any) {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.035 }}
+                            onClick={() => openEditor?.(block)}
+                            className={openEditor ? 'cursor-pointer' : ''}
                         >
                             {renderSection(block, accentColor)}
                         </motion.div>
@@ -130,7 +132,7 @@ export function InfluencerLayout({ profile, tabs }: any) {
 
 const renderSection = (section: any, accentColor: string) => {
     const { type, settings, items } = section;
-    const blockItems = items || settings?.items || [];
+    const blockItems = settings?.items || items || [];
     const s = settings || {};
 
     switch (type) {
@@ -234,7 +236,7 @@ const renderSection = (section: any, accentColor: string) => {
             );
 
         case 'featured_links_section':
-        case 'link':
+        case 'link': {
             const links = type === 'link' ? [section] : blockItems;
             return (
                 <div className="px-4 space-y-3.5">
@@ -244,7 +246,7 @@ const renderSection = (section: any, accentColor: string) => {
                         return (
                             <motion.a
                                 key={i}
-                                href={l.url || l.location_url}
+                                href={l.url || l.location_url || '#'}
                                 target="_blank"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
@@ -254,7 +256,7 @@ const renderSection = (section: any, accentColor: string) => {
                                     {l.icon ? <i className={`${l.icon} text-xl`} /> : <ArrowRight size={20} className="text-blue-400" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-[15px] group-hover:text-blue-400 transition-colors truncate tracking-tight">{l.name || l.label}</h3>
+                                    <h3 className="font-bold text-[15px] group-hover:text-blue-400 transition-colors truncate tracking-tight">{l.name || l.label || 'Link'}</h3>
                                     {l.description && <p className="text-xs text-zinc-500 line-clamp-1 mt-0.5">{l.description}</p>}
                                 </div>
                                 <ChevronRight size={18} className="text-zinc-700 group-hover:text-white transition-colors" />
@@ -262,9 +264,12 @@ const renderSection = (section: any, accentColor: string) => {
                         );
                     })}
                 </div>
-            );        case 'content_grid_section':
+            );
+        }
+
+        case 'content_grid_section':
         case 'image':
-        case 'video':
+        case 'video': {
             const mediaItems = type === 'content_grid_section' ? blockItems : [section];
             return (
                 <div className="px-4">
@@ -277,25 +282,21 @@ const renderSection = (section: any, accentColor: string) => {
                     <div className="grid grid-cols-3 gap-1.5">
                         {mediaItems.map((item: any, i: number) => {
                             const m = item.settings || item;
-                            const isLarge = type === 'content_grid_section' && i === -1; // No large ones in 3rd grid usually
                             return (
                                 <motion.div
                                     key={i}
                                     whileHover={{ opacity: 0.8 }}
-                                    className={cn(
-                                        "relative aspect-square overflow-hidden bg-zinc-900",
-                                        isLarge ? "col-span-2 row-span-2" : ""
-                                    )}
+                                    className="relative aspect-square overflow-hidden bg-zinc-900 rounded-lg"
                                 >
                                     {m.image || m.thumbnail ? (
                                         <img src={m.image || m.thumbnail} className="w-full h-full object-cover" alt="" />
                                     ) : (
-                                        <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                                            {type === 'video' ? <Play size={24} className="text-white/20" /> : <ImageIcon size={24} className="text-white/20" />}
+                                        <div className="w-full h-full bg-zinc-800 flex flex-col items-center justify-center gap-1">
+                                            {(m.type === 'video' || type === 'video') ? <Play size={20} className="text-white/30" /> : <ImageIcon size={20} className="text-white/30" />}
+                                            {m.caption && <p className="text-[8px] text-white/30 px-1 text-center line-clamp-1">{m.caption}</p>}
                                         </div>
                                     )}
-                                    
-                                    {(type === 'video' || m.type === 'video' || m.location_url?.includes('youtube')) && (
+                                    {(type === 'video' || m.type === 'video') && (
                                         <div className="absolute top-2 right-2">
                                             <Play size={14} fill="white" className="text-white drop-shadow-lg" />
                                         </div>
@@ -306,10 +307,11 @@ const renderSection = (section: any, accentColor: string) => {
                     </div>
                 </div>
             );
+        }
 
         case 'offers_section':
         case 'services':
-        case 'paypal':
+        case 'paypal': {
             const offerItems = (type === 'services' || type === 'paypal') ? [section] : blockItems;
             return (
                 <div className="px-4">
@@ -324,23 +326,24 @@ const renderSection = (section: any, accentColor: string) => {
                                 <motion.div
                                     key={i}
                                     whileHover={{ y: -5 }}
-                                    className="min-w-[300px] snap-start bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-[2rem] p-7 relative overflow-hidden shadow-2xl"
+                                    className="min-w-[280px] snap-start bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-[2rem] p-7 relative overflow-hidden shadow-2xl"
                                 >
                                     <div className="flex justify-between items-start mb-6">
                                         <span className="px-3.5 py-1 text-[9px] font-bold tracking-[2px] bg-blue-500 text-white rounded-full">PREMIUM</span>
                                         <p className="text-xl font-bold text-white">{o.price ? `$${o.price}` : 'FREE'}</p>
                                     </div>
-                                    <h3 className="text-lg font-bold leading-tight text-white mb-2">{o.name || o.title}</h3>
-                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-8">{o.description || "Limited time offer for subscribers."}</p>
+                                    <h3 className="text-lg font-bold leading-tight text-white mb-2">{o.name || o.title || 'Offer'}</h3>
+                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-8">{o.description || 'Limited time offer.'}</p>
                                     <button className="w-full py-4 bg-white text-black rounded-2xl font-bold text-[11px] tracking-[2px] hover:bg-blue-500 hover:text-white transition-all uppercase active:scale-95 shadow-xl">
-                                        {o.cta_text || "Get Access"}
+                                        {o.cta_text || 'Get Access'}
                                     </button>
                                 </motion.div>
                             );
                         })}
                     </div>
                 </div>
-);
+            );
+        }
 
         case 'testimonials_section':
         case 'testimonials':

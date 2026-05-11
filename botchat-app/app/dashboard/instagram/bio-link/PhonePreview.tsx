@@ -737,7 +737,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         ) : effectiveLayoutStyle === "universal" ? (
                             <UniversalLayout profile={profile} otherBlocks={otherBlocks} topAvatar={topAvatar} getUiTypeFromBlock={getUiTypeFromBlock} uiTypeOverrides={uiTypeOverrides} renderBlockUI={renderBlockUI} />
                         ) : (effectiveLayoutStyle === "aesthetic_influencer" || effectiveLayoutStyle === "influencer") ? (
-                            <InfluencerLayout profile={profile} tabs={tabs} />
+                            <InfluencerLayout profile={profile} tabs={tabs} openEditor={openEditor} />
                         ) : effectiveLayoutStyle === "insta_pro" ? (
                             <InstaProLayout profile={profile} tabs={tabs} openEditor={openEditor} />
                         ) : effectiveLayoutStyle === "insta_trendy" ? (
