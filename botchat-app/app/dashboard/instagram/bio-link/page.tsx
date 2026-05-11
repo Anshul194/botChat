@@ -1355,13 +1355,23 @@ function BioLinkBuilderContent() {
                                         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
                                             <div className="flex items-center gap-8 mb-10 pb-10 border-b border-slate-100 dark:border-slate-800">
                                                 <label className="relative cursor-pointer shrink-0">
-                                                    <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 overflow-hidden ring-4 ring-slate-100 dark:ring-slate-700 shadow-inner border-2 border-slate-100 dark:border-slate-700">
-                                                        {profile?.avatar ? <img src={profile.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-slate-300"><User size={32} /></div>}
+                                                    <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 overflow-hidden ring-4 ring-slate-100 dark:ring-slate-700 shadow-inner border-2 border-slate-100 dark:border-slate-700 relative">
+                                                        {isUploadingImage ? (
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800 animate-pulse">
+                                                                <Loader2 className="animate-spin text-primary" size={24} />
+                                                            </div>
+                                                        ) : profile?.avatar ? (
+                                                            <img src={profile.avatar} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                                <User size={32} />
+                                                            </div>
+                                                        )}
                                                         <div className="absolute inset-0 bg-slate-900/40 opacity-0 hover:opacity-100 flex items-center justify-center transition-all">
                                                             <Upload size={20} className="text-white" />
                                                         </div>
                                                     </div>
-                                                    <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) handleUpdateProfile({ avatar: url }); } }} />
+                                                    <input type="file" className="hidden" disabled={isUploadingImage} onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) handleUpdateProfile({ avatar: url }); } }} />
                                                 </label>
                                                 <div>
                                                     <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1">Your Profile Photo</h3>
@@ -1734,11 +1744,14 @@ function BioLinkBuilderContent() {
                                                                                     }
                                                                                 }}
                                                                             />
-                                                                            <label htmlFor="og-image-upload" className="cursor-pointer inline-flex h-9 items-center justify-center rounded-lg bg-white dark:bg-slate-700 px-4 text-xs font-semibold text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
-                                                                                Choose File
+                                                                            <label htmlFor="og-image-upload" className={cn(
+                                                                                "cursor-pointer inline-flex h-9 items-center justify-center rounded-lg px-4 text-xs font-semibold shadow-sm transition-colors",
+                                                                                isUploadingImage ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-white dark:bg-slate-700 text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600"
+                                                                            )}>
+                                                                                {isUploadingImage ? <><Loader2 size={12} className="animate-spin mr-2" /> Uploading...</> : "Choose File"}
                                                                             </label>
                                                                             <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
-                                                                                {advancedSettings.seoOpenGraphImage ? advancedSettings.seoOpenGraphImage.split('/').pop() : 'No file chosen'}
+                                                                                {isUploadingImage ? "Syncing..." : (advancedSettings.seoOpenGraphImage ? advancedSettings.seoOpenGraphImage.split('/').pop() : 'No file chosen')}
                                                                             </span>
                                                                         </div>
                                                                         {advancedSettings.seoOpenGraphImage && (
@@ -2224,7 +2237,8 @@ function BioLinkBuilderContent() {
                                 "image", "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
                                 "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section",
                                 "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section",
-                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section"
+                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section",
+                                "social_medias_section"
                             ];
                             if (aestheticTypes.includes(uiType)) return null;
 
@@ -2727,6 +2741,7 @@ function BioLinkBuilderContent() {
 
 
 
+
                                     {/* Avatar Type */}
                                     {uiType === "avatar" && (
                                         <div className="space-y-6">
@@ -3032,7 +3047,7 @@ function BioLinkBuilderContent() {
                                 "image", "hero_aesthetic_section","stats_minimal_section","impact_section","testimonial_highlight_section","pricing_cards_section","portfolio_minimal_section","faq_cards_section","cta_fullscreen_section",
                                 "header_profile_section", "social_proof_section", "featured_links_section", "content_grid_section", "offers_section", "testimonials_section", "faq_section", "contact_section",
                                 "link_grid_section", "link_carousel_section", "services_section", "trust_badges_section", "portfolio_section", "music_section", "floating_stats_section", "stats_section", "video_showcase_section", "countdown_section", "urgency_offer_section", "transformation_story_section", "services_timeline_section",
-                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section"
+                                "newsletter", "newsletter_section", "newsletter_collector", "email_collector", "brands_section", "brands", "support", "donation_section", "community_section", "discord", "products", "product_section", "featured_product_section", "product_list_section", "social_medias_section"
                             ];
                             if (!aestheticTypes.includes(uiType)) return null;
                             return (
@@ -3534,6 +3549,32 @@ function BioLinkBuilderContent() {
                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('items',[...(s.items||[]),{image:url}]); }}} />
                                             </label>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Social Medias Section */}
+                                {uiType === "social_medias_section" && (
+                                    <div className="space-y-5">
+                                        <InputField label="Section Title (Optional)" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Connect with me" />
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Social Profiles</p>
+                                        {(s.items || []).map((sItem: any, siIdx: number) => (
+                                            <div key={siIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                <button onClick={() => { const newItems = [...(s.items || [])]; newItems.splice(siIdx, 1); upd('items', newItems); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"><X size={12} /></button>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <InputField label="Platform/Name" value={sItem.name || sItem.type || ""} onChange={(e: any) => {
+                                                        const newItems = [...(s.items || [])];
+                                                        newItems[siIdx] = { ...sItem, name: e.target.value, type: e.target.value };
+                                                        upd('items', newItems);
+                                                    }} placeholder="Instagram" />
+                                                    <InputField label="Link/Username" value={sItem.link || sItem.url || ""} onChange={(e: any) => {
+                                                        const newItems = [...(s.items || [])];
+                                                        newItems[siIdx] = { ...sItem, link: e.target.value, url: e.target.value };
+                                                        upd('items', newItems);
+                                                    }} placeholder="https://..." />
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button onClick={() => { const newItems = [...(s.items || []), { name: "", link: "", type: "", icon: "" }]; upd('items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Social Link</button>
                                     </div>
                                 )}
 

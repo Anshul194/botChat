@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Globe, Instagram, Mail, MapPin, MoreHorizontal, ArrowUpRight } from "lucide-react";
+import { Globe, Instagram, Mail, MapPin, MoreHorizontal, ArrowUpRight, Star, User, Twitter, Facebook, Youtube } from "lucide-react";
 
 export const PortfolioLayout = ({
     profile,
@@ -19,8 +19,12 @@ export const PortfolioLayout = ({
     const [activePortfolioTab, setActivePortfolioTab] = React.useState("portfolio");
     const [portfolioSubView, setPortfolioSubView] = React.useState("main");
 
-    // Filter out inactive blocks
-    const activeBlocks = otherBlocks.filter((b: any) => b.is_enabled != 0 && b.is_active != 0 && b.is_Enabled != 0);
+    // Filter out inactive blocks - be more lenient with undefined fields
+    const activeBlocks = otherBlocks.filter((b: any) =>
+        b.is_enabled != 0 &&
+        b.is_active !== 0 &&
+        b.is_Enabled !== 0
+    );
 
     // Extract specific section blocks
     const heroBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "hero_section");
@@ -31,11 +35,12 @@ export const PortfolioLayout = ({
     const testimonialsBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "testimonials_section");
     const faqBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "faq_section");
     const ctaBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "cta_section");
+    const socialsBlock = activeBlocks.find((b: any) => getUiTypeFromBlock(b, uiTypeOverrides) === "social_medias_section");
 
     // Filter out these special sections from the general feed if needed, 
     // or keep them if they should appear in both places. 
     // For this template, we'll use them in their specific slots.
-    const specialTypes = ["hero_section", "stats_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section", "cta_section"];
+    const specialTypes = ["hero_section", "stats_section", "brands_section", "portfolio_section", "services_section", "testimonials_section", "faq_section", "cta_section", "social_medias_section"];
     const feedBlocks = activeBlocks.filter((b: any) => !specialTypes.includes(getUiTypeFromBlock(b, uiTypeOverrides)));
 
     return (
@@ -130,8 +135,8 @@ export const PortfolioLayout = ({
                                         </h1>
 
                                         <div className="flex items-center gap-3">
-                                            <a 
-                                                href={heroBlock?.settings?.cta_link || "#contact"} 
+                                            <a
+                                                href={heroBlock?.settings?.cta_link || "#contact"}
                                                 className="flex-1 bg-white text-black rounded-full py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition font-bold text-[12px] shadow-lg no-underline"
                                             >
                                                 <Mail size={14} /> {heroBlock?.settings?.cta_text || "Contact Me"}
@@ -153,18 +158,18 @@ export const PortfolioLayout = ({
                                     </h2>
                                 </div>
                             )}
-                                
-                                {brandsBlock && (
-                                    <div className="p-6 pt-0 text-center border-b border-gray-100 w-full">
-                                        <div className="flex flex-wrap items-center justify-center gap-6 opacity-60">
-                                            {(brandsBlock.settings?.logos || []).map((logo: any, i: number) => (
-                                                <div key={i} className="h-8 flex items-center justify-center">
-                                                    {logo.image ? <img src={logo.image} className="h-full object-contain grayscale" /> : <span className="text-[10px] font-bold">BRAND</span>}
-                                                </div>
-                                            ))}
-                                        </div>
+
+                            {brandsBlock && (
+                                <div className="p-6 pt-0 text-center border-b border-gray-100 w-full">
+                                    <div className="flex flex-wrap items-center justify-center gap-6 opacity-60">
+                                        {(brandsBlock.settings?.logos || []).map((logo: any, i: number) => (
+                                            <div key={i} className="h-8 flex items-center justify-center">
+                                                {logo.image ? <img src={logo.image} className="h-full object-contain grayscale" /> : <span className="text-[10px] font-bold">BRAND</span>}
+                                            </div>
+                                        ))}
                                     </div>
-                                )}
+                                </div>
+                            )}
 
                             {/* Featured Work Section */}
                             {(portfolioBlock || feedBlocks.length > 0) && (
@@ -200,18 +205,13 @@ export const PortfolioLayout = ({
                                         {(portfolioBlock?.settings?.items || []).map((item: any, i: number) => (
                                             <div key={`portfolio-${i}`} className="group overflow-hidden">
                                                 <div className="aspect-[4/3] bg-gray-100 rounded-3xl relative overflow-hidden mb-3 shadow-sm">
-                                                    <img src={item.image || "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800"} className="w-full h-full object-cover" />
+                                                    <img src={item.image || item.url || item.image_url || "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800"} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                                                     <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-xl shadow-sm">
                                                         <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Case Study</span>
                                                     </div>
                                                 </div>
-                                                <div className="px-1 flex justify-between items-start">
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="font-bold text-gray-900 text-lg mb-0.5 truncate">{item.title}</h4>
-                                                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest truncate">{item.description}</p>
-                                                    </div>
-                                                    <a href={item.link || "#"} className="text-gray-400 hover:text-black transition-colors mt-1 shrink-0"><ArrowUpRight size={18} /></a>
-                                                </div>
+                                                <h4 className="text-base font-bold text-gray-900 truncate">{item.title || item.name || "Project"}</h4>
+                                                <p className="text-xs text-gray-400 font-medium truncate italic">{item.description || item.subtitle || "Case Study"}</p>
                                             </div>
                                         ))}
 
@@ -264,7 +264,7 @@ export const PortfolioLayout = ({
                                             return <div key={block.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">{renderBlockUI(block, false, idx)}</div>;
                                         })}
                                     </div>
-                                    
+
                                     <button
                                         type="button"
                                         onClick={() => setPortfolioSubView("projects")}
@@ -283,13 +283,21 @@ export const PortfolioLayout = ({
 
                                     <div className="flex flex-col">
                                         {(servicesBlock.settings?.items || []).map((service: any, i: number) => (
-                                            <a key={i} href={service.link || "#"} className="py-4 border-b border-gray-200 flex items-center justify-between group cursor-pointer no-underline">
+                                            <a key={i} href={service.link || service.url || "#"} className="py-4 border-b border-gray-200 flex items-center justify-between group cursor-pointer no-underline">
                                                 <div className="flex items-center gap-4">
                                                     <span className="text-sm font-bold text-gray-400">0{i + 1}</span>
-                                                    <h4 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">{service.title}</h4>
+                                                    <div className="flex flex-col">
+                                                        <h4 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">{service.t || service.title || "Service"}</h4>
+                                                        {(service.d || service.description) && (
+                                                            <p className="text-xs text-gray-400 font-medium truncate max-w-[200px]">{service.d || service.description}</p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-                                                    <ArrowUpRight size={14} />
+                                                <div className="flex items-center gap-3">
+                                                    {service.p && <span className="text-sm font-black text-gray-900">{service.p}</span>}
+                                                    <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+                                                        <ArrowUpRight size={14} />
+                                                    </div>
                                                 </div>
                                             </a>
                                         ))}
@@ -300,8 +308,8 @@ export const PortfolioLayout = ({
                             {/* Stats Section / About */}
                             {statsBlock && (
                                 <div className="p-6 py-10 border-b border-gray-100 w-full">
-                                    <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">Performance</p>
-                                    <h3 className="text-xl font-black text-gray-900 mb-6 leading-tight">Delivering results that matter.</h3>
+                                    <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">{statsBlock.settings?.title || "Performance"}</p>
+                                    <h3 className="text-xl font-black text-gray-900 mb-6 leading-tight">{statsBlock.settings?.description || "Delivering results that matter."}</h3>
 
                                     <div className="grid grid-cols-2 gap-4 mb-8">
                                         {(statsBlock.settings?.items || []).map((stat: any, i: number) => (
@@ -323,19 +331,21 @@ export const PortfolioLayout = ({
                                     <h3 className="text-xl font-black text-gray-900 text-center mb-6 leading-tight">Client Success Stories</h3>
 
                                     <div className="flex flex-col gap-6">
-                                        {(testimonialsBlock.settings?.items || []).map((t: any, i: number) => (
-                                            <div key={i} className="bg-gray-50 p-6 rounded-3xl border border-gray-100 relative">
-                                                <div className="text-orange-500 text-4xl font-serif absolute top-4 left-4 opacity-20">"</div>
-                                                <p className="text-sm text-gray-700 leading-relaxed relative z-10 mb-6 font-medium italic">
-                                                    {t.description}
+                                        {(testimonialsBlock.settings?.items || []).map((item: any, i: number) => (
+                                            <div key={`test-${i}`} className="p-8 rounded-[40px] bg-white border border-gray-100 shadow-sm">
+                                                <div className="flex items-center gap-1 mb-6 text-yellow-400">
+                                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                                                </div>
+                                                <p className="text-xl font-medium text-gray-900 leading-relaxed italic mb-8">
+                                                    "{item.description || item.quote || item.text || item.t || "Outstanding work and attention to detail."}"
                                                 </p>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                                                        {t.image && <img src={t.image} className="w-full h-full object-cover" />}
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                                                        {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <User size={20} className="text-gray-400" />}
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-gray-900 text-sm">{t.title}</h4>
-                                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{t.author || "Client"}</p>
+                                                        <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">{item.name || item.title || "Elite Client"}</h4>
+                                                        <p className="text-xs text-gray-400 font-medium">{item.subtitle || item.description || item.d || "Collaborator"}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -347,8 +357,8 @@ export const PortfolioLayout = ({
                             {/* FAQ Section */}
                             {faqBlock && (
                                 <div className="p-6 py-10 border-b border-gray-100 w-full">
-                                    <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">FAQ</p>
-                                    <h3 className="text-xl font-black text-gray-900 mb-6 leading-tight">Answers to your questions</h3>
+                                    <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase mb-4">{faqBlock.settings?.title || "FAQ"}</p>
+                                    <h3 className="text-xl font-black text-gray-900 mb-6 leading-tight">{faqBlock.settings?.description || "Answers to your questions"}</h3>
 
                                     <div className="flex flex-col divide-y divide-gray-100 border-t border-gray-100">
                                         {(faqBlock.settings?.items || []).map((faq: any, i: number) => (
@@ -370,17 +380,42 @@ export const PortfolioLayout = ({
                                     <h3 className="text-xl font-black text-white mb-6 leading-tight max-w-[240px]">
                                         {ctaBlock?.settings?.title || "Ready to stand out from everyone?"}
                                     </h3>
-                                    <a 
-                                        href={ctaBlock?.settings?.button_link || "#contact"} 
+                                    <a
+                                        href={ctaBlock?.settings?.button_link || "#contact"}
                                         className="bg-orange-600 text-white rounded-full py-3 px-8 font-bold text-sm mb-12 hover:bg-orange-700 transition no-underline"
                                     >
                                         {ctaBlock?.settings?.button_text || "Let's Talk"}
                                     </a>
 
                                     <div className="flex gap-4 mb-8">
-                                        <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Globe size={16} /></div>
-                                        <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Instagram size={16} /></div>
-                                        <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Mail size={16} /></div>
+                                        {(() => {
+                                            const items = (socialsBlock?.settings?.items || profile?.social_medias_section || []);
+                                            if (items.length > 0) {
+                                                return items.map((s: any, i: number) => {
+                                                    const name = (s.name || s.type || s.icon || "").toLowerCase();
+                                                    const url = (s.url || s.link || "").toLowerCase();
+                                                    const isMatch = (term: string) => name.includes(term) || url.includes(term);
+
+                                                    return (
+                                                        <a key={i} href={s.url || s.link || "#"} target="_blank" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition">
+                                                            {isMatch('instagram') ? <Instagram size={16} /> :
+                                                             isMatch('twitter') || isMatch(' x ') || name === 'x' ? <Twitter size={16} /> :
+                                                             isMatch('facebook') ? <Facebook size={16} /> :
+                                                             isMatch('youtube') ? <Youtube size={16} /> :
+                                                             isMatch('mail') || isMatch('email') ? <Mail size={16} /> :
+                                                             <Globe size={16} />}
+                                                        </a>
+                                                    );
+                                                });
+                                            }
+                                            return (
+                                                <>
+                                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Globe size={16} /></div>
+                                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Instagram size={16} /></div>
+                                                    <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white"><Mail size={16} /></div>
+                                                </>
+                                            );
+                                        })()}
                                     </div>
 
                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">© 2026 {profile?.title || instagramUsername || "Anshul"}. All rights reserved.</p>
@@ -398,8 +433,8 @@ export const PortfolioLayout = ({
                                 <ArrowUpRight size={16} className="rotate-[225deg]" /> Back to Home
                             </button>
 
-                            <h2 className="text-4xl font-black text-gray-900 mb-2 leading-tight">All Projects</h2>
-                            <p className="text-gray-500 font-medium mb-12">Explore my complete body of work across brand identity, UI/UX, and web development.</p>
+                            <h2 className="text-4xl font-black text-gray-900 mb-2 leading-tight">{portfolioBlock?.settings?.title ? `All ${portfolioBlock.settings.title}` : "All Projects"}</h2>
+                            <p className="text-gray-500 font-medium mb-12">{portfolioBlock?.settings?.description || "Explore my complete body of work across brand identity, UI/UX, and web development."}</p>
 
                             <div className="grid grid-cols-1 gap-8">
                                 {/* First show items from portfolio_section if exists */}

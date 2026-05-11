@@ -353,13 +353,13 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
                         {(blockItems.length > 0 ? blockItems : [
                             { t: 'Branding', d: 'Visual Identity & Strategy', p: '$2k+' },
                             { t: 'Development', d: 'Full-stack Performance', p: '$5k+' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="flex items-center justify-between p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] bg-white/[0.02] border border-white/5 hover:border-[#8b5cf6]/30 transition-all group">
                                 <div className="min-w-0 pr-4">
-                                    <h4 className="text-[14px] sm:text-[16px] font-black text-white uppercase italic mb-1 truncate">{item.t}</h4>
-                                    <p className="text-[10px] sm:text-[11px] text-white/30 font-medium truncate">{item.d}</p>
+                                    <h4 className="text-[14px] sm:text-[16px] font-black text-white uppercase italic mb-1 truncate">{item.t || item.title || item.name || "Service"}</h4>
+                                    <p className="text-[10px] sm:text-[11px] text-white/30 font-medium truncate">{item.d || item.description || "Premium Offering"}</p>
                                 </div>
-                                <span className="text-[12px] sm:text-[14px] font-black text-[#8b5cf6] shrink-0">{item.p}</span>
+                                <span className="text-[12px] sm:text-[14px] font-black text-[#8b5cf6] shrink-0">{item.p || item.price || item.cost}</span>
                             </div>
                         ))}
                     </div>
@@ -398,19 +398,21 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
                         {(blockItems.length > 0 ? blockItems : [
                             { n: 'Alexander R.', d: 'Global Director', t: '"Unparalleled aesthetic vision. A master of the digital craft."' },
                             { n: 'Sophia L.', d: 'Creative Lead', t: '"Redefining the boundaries of modern luxury in every pixel."' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="p-8 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white/[0.02] border border-white/5 shadow-2xl relative group">
                                 <div className="absolute top-8 left-8 text-[#8b5cf6] opacity-10">
                                     <Sparkles size={48} />
                                 </div>
-                                <p className="text-[15px] sm:text-[18px] font-medium text-white/80 italic leading-relaxed mb-8 relative z-10">{item.t || item.text || item.description}</p>
+                                <p className="text-[15px] sm:text-[18px] font-medium text-white/80 italic leading-relaxed mb-8 relative z-10">
+                                    "{item.t || item.text || item.description || item.quote || "Outstanding work and attention to detail."}"
+                                </p>
                                 <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#8b5cf6]">
-                                        <User size={18} />
+                                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                                        {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <User size={18} className="text-[#8b5cf6]" />}
                                     </div>
                                     <div>
-                                        <h4 className="text-[12px] font-black text-white uppercase italic">{item.n || item.name || item.title}</h4>
-                                        <p className="text-[9px] text-white/30 font-medium uppercase tracking-widest">{item.d || item.subtitle || "Collaborator"}</p>
+                                        <h4 className="text-[12px] font-black text-white uppercase italic">{item.n || item.name || item.title || "Elite Client"}</h4>
+                                        <p className="text-[9px] text-white/30 font-medium uppercase tracking-widest">{item.d || item.subtitle || item.description || "Collaborator"}</p>
                                     </div>
                                 </div>
                             </div>
@@ -435,6 +437,22 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
                             ) : (
                                 <span key={i} className="text-[14px] font-black tracking-widest text-white uppercase">{logo.name || logo.title || "BRAND"}</span>
                             )
+                        ))}
+                    </div>
+                </div>
+            );
+
+
+
+        case 'social_medias_section':
+            return (
+                <div className="px-4 sm:px-8 space-y-6">
+                    {s.title && <h2 className="text-center text-[10px] font-black text-white/20 uppercase tracking-[0.5em] italic">{s.title}</h2>}
+                    <div className="flex flex-wrap items-center justify-center gap-6">
+                        {(blockItems.length > 0 ? blockItems : []).map((item: any, i: number) => (
+                            <a key={i} href={item.url || item.link || "#"} target="_blank" className="w-12 h-12 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/60 hover:text-[#8b5cf6] hover:bg-white/[0.08] hover:border-[#8b5cf6]/20 transition-all duration-300">
+                                <BrandIcon name={item.name || item.type || item.icon || "globe"} size={20} />
+                            </a>
                         ))}
                     </div>
                 </div>
