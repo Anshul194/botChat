@@ -58,7 +58,7 @@ export default function SocialSuccessPage() {
 
                 <h1 className="text-3xl font-black tracking-tight mb-4 uppercase">Identity Connected</h1>
                 <p className="text-neutral-400 font-medium leading-relaxed">
-                    Your Facebook identity has been securely linked to your dashboard. This window will close automatically.
+                    Your account has been securely linked to your dashboard. This window will close automatically.
                 </p>
 
                 <div className="mt-10 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-500">
