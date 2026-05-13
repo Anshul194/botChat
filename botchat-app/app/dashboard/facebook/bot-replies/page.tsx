@@ -301,9 +301,9 @@ export default function BotRepliesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
+        <div className="min-h-screen bg-transparent font-sans w-full min-w-0 -m-4 md:-m-6">
             {/* 1. PREMIUM BRANDED HEADER */}
-            <div className="sticky top-0 z-[50] bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
+            <div className="sticky top-[-16px] md:top-[-24px] z-[50] bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
                 <div className="flex items-center gap-2 sm:gap-4">
                     <button
                         onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
@@ -339,10 +339,9 @@ export default function BotRepliesPage() {
                                 className={cn(
                                     "px-4 sm:px-5 py-2 rounded-xl text-[12px] sm:text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
                                     activeMenu === menu.id
-                                        ? "bg-white dark:bg-neutral-700 shadow-sm"
+                                        ? "bg-[#0866FF] text-white shadow-md"
                                         : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
                                 )}
-                                style={activeMenu === menu.id ? { color: "var(--nav-active-color)" } : undefined}
                             >
                                 <menu.icon className="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px]" strokeWidth={2} />
                                 {menu.label}
@@ -922,20 +921,34 @@ export default function BotRepliesPage() {
                                             disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
                                         />
                                     </div>
-                                    <div className="pt-4 flex gap-3">
+                                    <div className="pt-4 flex flex-col gap-3">
                                         <button
-                                            onClick={() => setShowCreateModal(false)}
-                                            className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            onClick={handleCreate}
+                                            onClick={async () => {
+                                                await handleCreate();
+                                                // After creation, publish the latest reply
+                                                const latest = replies[replies.length - 1];
+                                                if (latest) await handleToggleStatus({ ...latest, status: 'draft' });
+                                            }}
                                             disabled={isCreating}
-                                            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            className="w-full py-3 rounded-xl bg-[#0866FF] text-white font-semibold text-sm shadow-md hover:shadow-lg hover:bg-[#0756d6] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
-                                            {isCreating ? 'Creating...' : 'Create Flow'}
+                                            {isCreating ? 'Creating...' : '⚡ Save & Publish'}
                                         </button>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => setShowCreateModal(false)}
+                                                className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleCreate}
+                                                disabled={isCreating}
+                                                className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            >
+                                                {isCreating ? 'Creating...' : 'Save as Draft'}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
