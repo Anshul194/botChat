@@ -16,6 +16,9 @@ import {
     TrendingUp,
     Loader2,
     Eraser,
+    ExternalLink,
+    AlertCircle,
+    Info,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -289,14 +292,26 @@ export default function FacebookPage() {
                                             <p className="text-sm text-neutral-500">Facebook Authenticator · {account.pages.length} Pages</p>
                                         </div>
                                     </div>
-                                    <button
+                                    <Button
+                                        variant="ghost"
                                         onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
-                                        className="p-2.5 rounded-lg text-neutral-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
-                                        title="Disconnect Account"
+                                        className={cn(
+                                            "h-10 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium flex items-center gap-2 border border-rose-100 dark:border-rose-900/50",
+                                            account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
+                                        )}
+                                        disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
                                     >
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
+                                        <Trash2 className="w-4 h-4" />
+                                        Delete Account
+                                    </Button>
                                 </div>
+
+                                {account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && (
+                                    <div className="mx-4 mt-2 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 flex items-center gap-3 text-amber-800 dark:text-amber-400 text-sm">
+                                        <Info className="w-4 h-4 shrink-0" />
+                                        <p>You must disable all pages before you can disconnect this Facebook account.</p>
+                                    </div>
+                                )}
 
                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pl-4 md:pl-8 border-l-2 ml-4 dark:border-neutral-800 pb-4">
                                     {account.pages.map((rawPage) => {
@@ -358,7 +373,19 @@ export default function FacebookPage() {
                                                             : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
                                                     )}
                                                 >
-                                                    {page.is_enabled ? "Disable automations" : "Enable modules"}
+                                                    {page.is_enabled ? "Disable Page" : "Enable Page"}
+                                                </Button>
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon-sm"
+                                                    asChild
+                                                    title="View on Facebook"
+                                                    className="rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 transition-colors"
+                                                >
+                                                    <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer">
+                                                        <ExternalLink className="h-4 w-4" />
+                                                    </a>
                                                 </Button>
 
                                                 <Button
