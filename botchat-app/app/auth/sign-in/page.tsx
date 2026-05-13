@@ -15,6 +15,7 @@ import { loginUser, fetchMe } from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
+import { useSocialLogin } from "@/hooks/useSocialLogin";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -30,7 +31,6 @@ export default function SignInPage() {
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [serverError, setServerError] = useState("");
-    const [socialLoading, setSocialLoading] = useState<string | null>(null);
     const [isPopupClosing, setIsPopupClosing] = useState(false);
 
     useEffect(() => {
@@ -68,87 +68,7 @@ export default function SignInPage() {
         }
     };
 
-    const handleSocialLogin = async (platform: string) => {
-        if (socialLoading) return;
-        setSocialLoading(platform);
-
-        // 1. Create a professional centered popup
-        const width = 600;
-        const height = 750;
-        const left = window.screenX + (window.innerWidth - width) / 2;
-        const top = window.screenY + (window.innerHeight - height) / 2;
-
-        const popup = window.open(
-            'about:blank',
-            `social-auth-${platform}`,
-            `width=${width},height=${height},left=${left},top=${top},status=no,menubar=no,toolbar=no`
-        );
-
-        if (!popup) {
-            showModal("error", "Error", "Popup blocked! Please allow popups for this site.");
-            setSocialLoading(null);
-            return;
-        }
-
-        try {
-            // 2. Get the official OAuth redirect URL from your backend
-            const response = await api.get(`/auth/social/${platform}`);
-
-            if (response.data.success && response.data.data.redirect_url) {
-                // Point the popup to Facebook/Google
-                popup.location.href = response.data.data.redirect_url;
-
-                // 3. Monitor the popup and session
-                const pollTimer = setInterval(async () => {
-                    // If user manually closes the popup, check if they actually logged in
-                    if (popup.closed) {
-                        clearInterval(pollTimer);
-                        setSocialLoading(null);
-
-                        // Attempt to fetch the session (works if backend set cookies or if we can poll API)
-                        const result = await dispatch(fetchMe());
-                        if (fetchMe.fulfilled.match(result)) {
-                            toast.success(`Welcome back!`, {
-                                description: "You've successfully connected your account."
-                            });
-                            router.push('/dashboard');
-                        }
-                        return;
-                    }
-
-                    try {
-                        // If same-domain (Production), we can try to auto-detect the JSON content
-                        // and close the window automatically for the user.
-                        if (popup.location.href.includes('/callback')) {
-                            const bodyText = popup.document.body.innerText;
-                            if (bodyText.includes('"success":true')) {
-                                clearInterval(pollTimer);
-                                const data = JSON.parse(bodyText);
-                                if (data.data?.token) {
-                                    localStorage.setItem('token', data.data.token);
-                                    await dispatch(fetchMe());
-                                    popup.close();
-                                    router.push('/dashboard');
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        // Ignore cross-origin errors during the OAuth redirect phases
-                    }
-                }, 1000);
-
-            } else {
-                popup.close();
-                toast.error(`Failed to initialize ${platform} login`);
-                setSocialLoading(null);
-            }
-        } catch (err: any) {
-            popup.close();
-            console.error(`${platform} Login Error:`, err);
-            toast.error(err.response?.data?.message || `Error connecting to ${platform}`);
-            setSocialLoading(null);
-        }
-    };
+    const { handleSocialLogin, socialLoading } = useSocialLogin();
 
     if (isPopupClosing) {
         return (
