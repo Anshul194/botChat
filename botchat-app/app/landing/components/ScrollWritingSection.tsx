@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate } from "framer-motion";
 
 // ─── PLATFORM ICONS ───────────────────────────────────────────────────────────
 
@@ -439,8 +439,6 @@ export default function ChatOrbitSection() {
   );
   const [ringOpacity, setRingOpacity] = useState(0);
 
-  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start start", "end end"] });
-
   const currentStage = STAGE_THRESHOLDS.reduce(
     (acc, threshold, i) => (progress >= threshold ? i : acc), 0
   );
@@ -496,11 +494,18 @@ export default function ChatOrbitSection() {
     setRingOpacity(p > 0.28 ? Math.min(1, (p - 0.28) / 0.1) : 0);
   }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", v => {
-    const p = Math.max(0, Math.min(1, v));
-    setProgress(p);
-    compute(p);
-  });
+  useEffect(() => {
+    const controls = animate(0, 1, {
+      duration: 12, // Loops the full sequence every 12 seconds
+      ease: "linear",
+      repeat: Infinity,
+      onUpdate: (v) => {
+        setProgress(v);
+        compute(v);
+      }
+    });
+    return () => controls.stop();
+  }, [compute]);
 
   useEffect(() => {
     const onResize = () => compute(progress);
@@ -509,9 +514,9 @@ export default function ChatOrbitSection() {
   }, [progress, compute]);
 
   return (
-    <div ref={wrapRef} style={{ position: "relative", height: "500vh" }}>
+    <div ref={wrapRef} style={{ position: "relative" }}>
       <div 
-        className="sticky top-0 h-[100dvh] w-full flex flex-col lg:flex-row overflow-hidden"
+        className="min-h-[100dvh] w-full flex flex-col lg:flex-row overflow-hidden relative"
         style={{
           background: "linear-gradient(135deg, #fff5f8 0%, #fff 35%, #fce7f3 65%, #fdf2f8 100%)",
         }}
