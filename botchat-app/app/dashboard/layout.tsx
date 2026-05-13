@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     }, [isAuthenticated, isInitialized, router]);
 
-    const isAutomationPage = pathname?.includes("/dashboard/flows") || pathname?.includes("/bot-replies") || pathname?.includes("/comment-manager") || pathname?.includes("/dashboard/posts/studio");
+
 
     // Handle global sidebar toggle events
     useEffect(() => {
@@ -112,14 +112,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* ── Main area ─ topbar + page content ── */}
             <div className="flex flex-col flex-1 min-w-0 relative">
-                {!isAutomationPage && (
-                    <Topbar
-                        onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                        collapsed={sidebarCollapsed}
-                        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-                        mobileSidebarOpen={mobileSidebarOpen}
-                    />
-                )}
+                <Topbar
+                    onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                    collapsed={sidebarCollapsed}
+                    onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    mobileSidebarOpen={mobileSidebarOpen}
+                />
                 <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     <VerificationBanner />
                     {children}
