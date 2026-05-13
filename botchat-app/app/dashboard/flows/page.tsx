@@ -1464,10 +1464,10 @@ function MediaFields({ step, update, onSaveStep }) {
         </div>
         {step.type === 'video' && c.url && (c.url.includes("youtube.com") || c.url.includes("youtu.be")) && (
           <div style={{ marginTop: 12, borderRadius: DS.radiusSm, overflow: "hidden", border: `1.5px solid ${DS.border}`, background: "#000" }}>
-            <iframe 
+            <iframe
               src={`https://www.youtube.com/embed/${c.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)?.[1] || ''}`}
               style={{ width: "100%", aspectRatio: "16/9", border: "none", display: "block" }}
-              allowFullScreen 
+              allowFullScreen
             />
           </div>
         )}
@@ -2093,7 +2093,7 @@ function PhonePreview({ steps, platform }) {
                         {m.image && <img src={ensureUrl(m.image)} style={{ width: "100%", borderRadius: 14, display: "block" }} alt="" />}
                         {m.video && (
                           (m.video.includes("youtube.com") || m.video.includes("youtu.be")) ? (
-                            <iframe 
+                            <iframe
                               src={`https://www.youtube.com/embed/${m.video.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)?.[1] || ''}`}
                               style={{ width: "100%", borderRadius: 14, display: "block", aspectRatio: "16/9", border: "none", background: "#000" }}
                               allowFullScreen
@@ -2924,7 +2924,7 @@ function FlowBuilder() {
                 display: "flex", alignItems: "center", gap: 6
               }}>
                 {saved ? "✓" : <Save size={14} />}
-                <span className="btn-text"> {saved ? "Saved!" : "Quick Save"}</span>
+                <span className="btn-text"> {saved ? "Saved!" : "Publish Flow"}</span>
               </button>
             </div>
           </div>
