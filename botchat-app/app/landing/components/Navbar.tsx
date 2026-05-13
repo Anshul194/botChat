@@ -8,7 +8,11 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
 
-export default function Navbar() {
+interface NavbarProps {
+  forceLight?: boolean;
+}
+
+export default function Navbar({ forceLight = false }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -25,6 +29,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const useLight = forceLight || isScrolled;
+
   const navLinks = [
     { name: "Features", href: "#features" },
     { name: "Solutions", href: "#solutions" },
@@ -37,7 +43,7 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`pointer-events-auto flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-full transition-all duration-500 border ${isScrolled
+        className={`pointer-events-auto flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-full transition-all duration-500 border ${useLight
             ? "bg-white/70 backdrop-blur-xl border-gray-200/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
             : "bg-[#06000d]/40 backdrop-blur-lg border-white/10 shadow-2xl"
           }`}
@@ -48,7 +54,7 @@ export default function Navbar() {
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <span
-            className={`font-extrabold text-lg tracking-tight transition-colors ${isScrolled ? "text-gray-900" : "text-white"
+            className={`font-extrabold text-lg tracking-tight transition-colors ${useLight ? "text-gray-900" : "text-white"
               }`}
           >
             botChat
@@ -61,7 +67,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className={`text-sm font-semibold transition-all hover:scale-105 active:scale-95 ${isScrolled ? "text-gray-600 hover:text-[#FF2D78]" : "text-white/60 hover:text-white"
+              className={`text-sm font-semibold transition-all hover:scale-105 active:scale-95 ${useLight ? "text-gray-600 hover:text-[#FF2D78]" : "text-white/60 hover:text-white"
                 }`}
             >
               {link.name}
@@ -75,7 +81,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/auth/sign-in"
-                className={`text-sm font-bold transition-colors ${isScrolled ? "text-gray-700 hover:text-[#FF2D78]" : "text-white/80 hover:text-white"
+                className={`text-sm font-bold transition-colors ${useLight ? "text-gray-700 hover:text-[#FF2D78]" : "text-white/80 hover:text-white"
                   }`}
               >
                 Sign In
@@ -93,7 +99,7 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className={`flex items-center p-1 rounded-full border transition-all ${isScrolled 
+                className={`flex items-center p-1 rounded-full border transition-all ${useLight 
                   ? "bg-gray-50 border-gray-200 text-gray-900" 
                   : "bg-white/10 border-white/10 text-white"
                 }`}
@@ -142,7 +148,7 @@ export default function Navbar() {
         {/* MOBILE TOGGLE */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`md:hidden p-2 rounded-full transition-colors ${isScrolled ? "hover:bg-gray-100 text-gray-900" : "hover:bg-white/10 text-white"
+          className={`md:hidden p-2 rounded-full transition-colors ${useLight ? "hover:bg-gray-100 text-gray-900" : "hover:bg-white/10 text-white"
             }`}
         >
           {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -156,7 +162,7 @@ export default function Navbar() {
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className={`absolute top-24 inset-x-6 z-40 p-6 rounded-3xl border shadow-2xl pointer-events-auto md:hidden ${isScrolled ? "bg-white border-gray-100" : "bg-[#110818] border-white/10"
+            className={`absolute top-24 inset-x-6 z-40 p-6 rounded-3xl border shadow-2xl pointer-events-auto md:hidden ${useLight ? "bg-white border-gray-100" : "bg-[#110818] border-white/10"
               }`}
           >
             <div className="flex flex-col gap-6">
@@ -165,7 +171,7 @@ export default function Navbar() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-lg font-bold ${isScrolled ? "text-gray-900 hover:text-[#FF2D78]" : "text-white hover:text-[#FF2D78]"
+                  className={`text-lg font-bold ${useLight ? "text-gray-900 hover:text-[#FF2D78]" : "text-white hover:text-[#FF2D78]"
                     }`}
                 >
                   {link.name}
@@ -177,7 +183,7 @@ export default function Navbar() {
                   <>
                     <Link
                       href="/auth/sign-in"
-                      className={`text-center py-3 rounded-2xl font-bold ${isScrolled ? "text-gray-900 bg-gray-50" : "text-white bg-white/5"
+                      className={`text-center py-3 rounded-2xl font-bold ${useLight ? "text-gray-900 bg-gray-50" : "text-white bg-white/5"
                         }`}
                     >
                       Sign In

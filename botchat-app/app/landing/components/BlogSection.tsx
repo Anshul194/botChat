@@ -53,7 +53,7 @@ export default function BlogSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {POSTS.map((post, i) => (
             <motion.a
-              href="#"
+              href="/blog/how-to-10x-your-dm-conversions"
               key={i}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
