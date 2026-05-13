@@ -17,6 +17,7 @@ import GrowthSections from "./landing/components/GrowthSections";
 import TrustAndFinalCTA from "./landing/components/TrustAndFinalCTA";
 import PerformanceChart from "./landing/components/PerformanceChart";
 import StepsSection from "./landing/components/StepsSection";
+import BlogSection from "./landing/components/BlogSection";
 
 export default function Home() {
   return (
@@ -43,6 +44,8 @@ export default function Home() {
         <CreatorProof />
 
         <Testimonials />
+
+        <BlogSection />
 
         <Pricing />
 
