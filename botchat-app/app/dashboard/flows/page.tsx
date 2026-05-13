@@ -2705,7 +2705,7 @@ function FlowBuilder() {
 
   return (
     <DSContext.Provider value={DS}>
-      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Sora', 'DM Sans', -apple-system, sans-serif" }}>
+      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Sora', 'DM Sans', -apple-system, sans-serif", margin: "-16px" }} className="md:-m-6">
         <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
@@ -2748,7 +2748,7 @@ function FlowBuilder() {
           border-bottom: 1.5px solid ${DS.border}; 
           padding: 8px 12px; 
           position: sticky; 
-          top: 0; 
+          top: -16px; 
           z-index: 100; 
           backdrop-filter: blur(8px); 
           display: flex;
@@ -2761,6 +2761,7 @@ function FlowBuilder() {
              flex-direction: row; 
              padding: 12px 24px;
              gap: 20px;
+             top: -24px;
           }
         }
 
