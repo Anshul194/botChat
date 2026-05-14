@@ -193,29 +193,29 @@ export function AiAgentSettingsPanel({
     const topicList = settings.restricted_topics_json ? settings.restricted_topics_json.split(',').map(t => t.trim()).filter(Boolean) : [];
 
     return (
-        <div className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-3xl shadow-xl shadow-neutral-200/20 dark:shadow-none max-w-6xl mx-auto overflow-hidden">
+        <div className="w-full">
             {/* Header Area */}
-            <div className="px-6 py-6 sm:px-10 sm:py-8 border-b border-neutral-50 dark:border-neutral-900 bg-neutral-50/30 dark:bg-neutral-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="py-6 sm:py-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-5">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                         <Bot className="w-6 h-6" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">AI Agent Configuration</h3>
+                        <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">AI Assistant Settings</h3>
                         <p className="text-xs text-neutral-500 font-medium">Neural settings for @{accountName}</p>
                     </div>
                 </div>
                 <button className="h-10 px-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-bold text-neutral-600 dark:text-neutral-400 flex items-center gap-2 hover:bg-neutral-50 transition-all">
-                    Advanced Options <ChevronDown size={16} />
+                    More Options <ChevronDown size={16} />
                 </button>
             </div>
 
             {/* Grid Form */}
-            <div className="p-6 sm:p-12 grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12">
 
                 {/* Activation & Core Section */}
                 <div className="space-y-10">
-                    <FormField label="System Status" showInfo={false}>
+                    <FormField label="AI Status" showInfo={false}>
                         <div className="flex items-center gap-6">
                             <button
                                 onClick={() => setSettings(s => ({ ...s, ai_enabled: !s.ai_enabled }))}
@@ -241,7 +241,7 @@ export function AiAgentSettingsPanel({
                     <AnimatePresence mode="wait">
                         {settings.ai_enabled && (
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
-                                <ThemeToggle label="Enable Intent Detection" enabled={settings.enable_intent_detection} onToggle={() => setSettings(s => ({ ...s, enable_intent_detection: !s.enable_intent_detection }))} />
+                                <ThemeToggle label="Understand Customer Messages" enabled={settings.enable_intent_detection} onToggle={() => setSettings(s => ({ ...s, enable_intent_detection: !s.enable_intent_detection }))} />
 
                                 <div className="flex items-center gap-5 p-5 bg-neutral-50/50 dark:bg-neutral-900/50 rounded-2xl">
                                     <button
@@ -250,12 +250,12 @@ export function AiAgentSettingsPanel({
                                     >
                                         <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.ai_agent_all_queries ? "translate-x-5" : "translate-x-0")} />
                                     </button>
-                                    <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Execute for All Queries</span>
+                                    <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Reply to All Messages</span>
                                 </div>
 
-                                <ThemeToggle label="Enable Contextual Memory" enabled={settings.enable_contextual_memory} onToggle={() => setSettings(s => ({ ...s, enable_contextual_memory: !s.enable_contextual_memory }))} />
+                                <ThemeToggle label="Remember Previous Chats" enabled={settings.enable_contextual_memory} onToggle={() => setSettings(s => ({ ...s, enable_contextual_memory: !s.enable_contextual_memory }))} />
 
-                                <FormField label="Restricted Topics" hint="Add topics and press Enter to secure.">
+                                <FormField label="Topics to Avoid" hint="Add topics and press Enter to secure.">
                                     <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-3 min-h-[56px] flex flex-wrap gap-2 shadow-sm focus-within:border-primary/30 transition-all">
                                         {topicList.map(topic => (
                                             <span key={topic} className="flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary text-[11px] font-black uppercase tracking-widest rounded-xl border border-primary/20">
@@ -273,10 +273,10 @@ export function AiAgentSettingsPanel({
                                     </div>
                                 </FormField>
 
-                                <ThemeToggle label="Automated Department Assignment" enabled={settings.enable_assignment} onToggle={() => setSettings(s => ({ ...s, enable_assignment: !s.enable_assignment }))} />
-                                <ThemeToggle label="Real-time Typing Simulator" enabled={settings.enable_typing_indicator} onToggle={() => setSettings(s => ({ ...s, enable_typing_indicator: !s.enable_typing_indicator }))} />
+                                <ThemeToggle label="Send Chat to Right Team" enabled={settings.enable_assignment} onToggle={() => setSettings(s => ({ ...s, enable_assignment: !s.enable_assignment }))} />
+                                <ThemeToggle label="Show Typing Like Human" enabled={settings.enable_typing_indicator} onToggle={() => setSettings(s => ({ ...s, enable_typing_indicator: !s.enable_typing_indicator }))} />
 
-                                <FormField label="Intelligence Reasoning Depth">
+                                <FormField label="AI Response Quality">
                                     <div className="grid grid-cols-3 gap-3">
                                         {(['low', 'medium', 'high'] as const).map(l => (
                                             <button
@@ -301,7 +301,7 @@ export function AiAgentSettingsPanel({
 
                 {/* Training & Logistics Section */}
                 <div className="space-y-10">
-                    <FormField label="Neural Training Data">
+                    <FormField label="AI Learning Data">
                         <div className="flex items-center gap-8 absolute right-0 -top-8">
                             <button className="text-[11px] font-black text-primary tracking-widest flex items-center gap-1.5 hover:opacity-70 transition-all"><Plus size={14} strokeWidth={3} /> NEW</button>
                             <button onClick={() => dispatch(fetchCampaigns())} className="text-[11px] font-black text-primary tracking-widest flex items-center gap-1.5 hover:opacity-70 transition-all"><RefreshCw size={14} strokeWidth={3} /> REFRESH</button>
@@ -312,7 +312,7 @@ export function AiAgentSettingsPanel({
                                 onChange={(e) => setSettings(s => ({ ...s, ai_training_campaign_id: e.target.value }))}
                                 className="w-full h-14 px-6 appearance-none bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl text-sm font-bold text-neutral-700 dark:text-neutral-300 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
                             >
-                                <option value="">Select AI training campaign source</option>
+                                <option value="">Choose Learning Source</option>
                                 {campaigns.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
                             </select>
                             <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none group-focus-within:rotate-180 transition-transform" />
@@ -329,12 +329,12 @@ export function AiAgentSettingsPanel({
                                     >
                                         <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.ai_as_fallback_only ? "translate-x-5" : "translate-x-0")} />
                                     </button>
-                                    <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Strict Fallback Mode</span>
+                                    <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Safe Reply Mode</span>
                                 </div>
 
-                                <ThemeToggle label="Suspend Agent During Off Hours" enabled={settings.no_agent_off_hours} onToggle={() => setSettings(s => ({ ...s, no_agent_off_hours: !s.no_agent_off_hours }))} />
+                                <ThemeToggle label="Turn Off After Business Hours" enabled={settings.no_agent_off_hours} onToggle={() => setSettings(s => ({ ...s, no_agent_off_hours: !s.no_agent_off_hours }))} />
 
-                                <FormField label="Restricted Content Response" hint="Define the automated response for guardrail events.">
+                                <FormField label="Reply for Restricted Questions" hint="Define the automated response for guardrail events.">
                                     <textarea
                                         value={settings.restricted_response || ""}
                                         onChange={(e) => setSettings(s => ({ ...s, restricted_response: e.target.value }))}
@@ -343,7 +343,7 @@ export function AiAgentSettingsPanel({
                                     />
                                 </FormField>
 
-                                <FormField label="Inference Delay (Seconds)" hint="Simulate natural conversation latency (Max 60s)">
+                                <FormField label="Reply Waiting Time" hint="Make Replies Feel Natural (Max 60s)">
                                     <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl h-14 px-6 flex items-center shadow-sm">
                                         <input
                                             type="number"
@@ -362,14 +362,14 @@ export function AiAgentSettingsPanel({
             </div>
 
             {/* Commit Footer */}
-            <div className="px-6 py-6 sm:px-12 sm:py-8 bg-neutral-50/50 dark:bg-neutral-900/50 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end">
+            <div className="pt-8 mt-12 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end">
                 <button
                     onClick={handleSave}
                     disabled={isSaving}
                     className="w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-16 rounded-[20px] sm:rounded-[24px] bg-primary text-white font-black text-[10px] sm:text-xs uppercase tracking-[0.25em] shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4"
                 >
                     {isSaving ? <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-white/50" /> : <Save className="w-5 h-5 sm:w-6 sm:h-6" />}
-                    Initialize Context Save
+                    Save Settings
                 </button>
             </div>
         </div>
