@@ -144,6 +144,25 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
     root.style.setProperty("--glow-pink", `0 0 40px ${rgba(settings.primary, 0.28)}`);
     root.style.setProperty("--glow-pink-sm", `0 0 18px ${rgba(settings.primary, 0.32)}`);
 
+    // Glow / shadow variables that feed --shadow-hover
+    root.style.setProperty("--glow-blue", `0 0 40px ${rgba(settings.primary, 0.28)}`);
+    root.style.setProperty("--glow-sky", `0 0 40px ${rgba(settings.secondary, 0.22)}`);
+    root.style.setProperty("--glow-blue-sm", `0 0 18px ${rgba(settings.primary, 0.32)}`);
+    root.style.setProperty("--shadow-hover", `0 16px 48px rgba(0,0,0,${settings.darkMode ? 0.55 : 0.18}), 0 0 28px ${rgba(settings.primary, 0.22)}`);
+    root.style.setProperty("--shadow-blue", `0 8px 30px ${rgba(settings.primary, 0.38)}`);
+
+    // Body background orb tints
+    root.style.setProperty("--body-orb-primary", rgba(settings.primary, settings.darkMode ? 0.12 : 0.08));
+    root.style.setProperty("--body-orb-accent", rgba(settings.secondary, settings.darkMode ? 0.08 : 0.05));
+
+    // Message bubbles
+    root.style.setProperty("--msg-in-bg", rgba(settings.primary, settings.darkMode ? 0.09 : 0.06));
+    root.style.setProperty("--msg-in-border", rgba(settings.primary, settings.darkMode ? 0.18 : 0.12));
+    root.style.setProperty("--msg-out-bg", `linear-gradient(135deg, ${settings.primary}, ${settings.secondary})`);
+
+    // Nav active color follows primary
+    root.style.setProperty("--nav-active-color", settings.secondary || settings.primary);
+
     root.style.setProperty("--chart-1", settings.chartMatchTheme ? settings.primary : settings.chartColor);
     root.style.setProperty("--chart-2", settings.secondary);
     root.style.setProperty("--chart-3", settings.tertiary);
