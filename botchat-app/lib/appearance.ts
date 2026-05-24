@@ -117,6 +117,12 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
 
     root.style.setProperty("--brand-pink", settings.primary);
     root.style.setProperty("--brand-purple", settings.secondary);
+    // Keep brand-blue tokens in sync with the user-chosen primary/secondary
+    // so all globals.css consumers (links, scrollbar, glows) reflect the theme.
+    root.style.setProperty("--brand-blue", settings.primary);
+    root.style.setProperty("--brand-blue-light", settings.secondary);
+    const [_r, _g, _b] = hexToRgb(settings.primary);
+    root.style.setProperty("--brand-blue-dark", `rgb(${Math.max(0, _r - 30)},${Math.max(0, _g - 30)},${Math.max(0, _b - 30)})`);
     root.style.setProperty("--accent", settings.tertiary);
     root.style.setProperty("--on-primary", onPrimary);
     root.style.setProperty("--on-secondary", onSecondary);
@@ -233,7 +239,7 @@ export function saveAppearance(settings: AppearanceSettings): void {
 export function previewAppearance(settings: AppearanceSettings): void {
     if (typeof document === "undefined") return;
     applyAppearanceVariables(settings);
-    
+
     // Dispatch the full settings object to listeners (like ThemeProvider)
     const event = new CustomEvent("botchat-appearance-updated", { detail: settings });
     window.dispatchEvent(event);

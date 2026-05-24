@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     Mail, Phone, ArrowRight, Link as LinkIcon, Grid, ShoppingBag,
     SmartphoneNfc, Layers, Image as ImageIcon, Hexagon, Share2, Check,
+    Play, DollarSign,
 } from "lucide-react";
 import { resolveApiBaseUrl, resolveXHost } from "@/lib/config";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "@/app/dashboard/instagram/bio-link/TemplateSystem";
@@ -70,8 +71,8 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
         console.log("Fetching public profile directly from:", url);
 
         const res = await fetch(url, {
-            headers: { 
-                "x-host": resolveXHost(), 
+            headers: {
+                "x-host": resolveXHost(),
                 "Accept": "application/json",
             },
             cache: "no-store",
@@ -81,16 +82,16 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
             console.error("API fetch failed with status:", res.status);
             return null;
         }
-        
+
         const json = await res.json();
         // The single page API usually returns the page object in a 'data' wrapper
         const profile = json?.data || json;
-        
+
         if (!profile || (!profile.link_id && !profile.id)) {
             console.warn("Invalid profile data received from:", url);
             return null;
         }
-        
+
         return profile;
     } catch (err) {
         console.error("fetchPublicProfile error:", err);
@@ -134,10 +135,10 @@ function CarouselBlockView({ items }: { items: any[] }) {
         <div className="w-full relative py-2">
             <div className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-6 px-1">
                 {items.map((item: any, i: number) => (
-                    <motion.a 
-                        key={i} 
-                        href={item.url || item.location_url || item.link || "#"} 
-                        target="_blank" 
+                    <motion.a
+                        key={i}
+                        href={item.url || item.location_url || item.link || "#"}
+                        target="_blank"
                         rel="noopener noreferrer"
                         initial={{ opacity: 0, scale: 0.9, x: 20 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -379,7 +380,7 @@ function StatsFloatingView({ items }: { items: any[] }) {
             {items.map((item, i) => (
                 <div key={i} className="bg-gradient-to-br from-white/10 to-transparent backdrop-blur-2xl p-6 rounded-[32px] border border-white/10 flex flex-col items-center text-center group hover:-translate-y-1 transition-all">
                     <span className="text-[32px] font-black text-white tracking-tighter mb-1 drop-shadow-2xl group-hover:scale-110 transition-transform">{item.value}</span>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">{item.label}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/65">{item.label}</span>
                 </div>
             ))}
         </div>
@@ -439,19 +440,19 @@ function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
         case "video_showcase_section": return <VideoShowcaseView {...settings} />;
         case "hero_section":
         case "hero_aesthetic_section": return <HeroBlockView item={settings} />;
-        
+
         case "link":
             return (
                 <a href={block.location_url || settings.location_url || settings.url || "#"} target="_blank" rel="noopener noreferrer"
-                   className="w-full flex items-center justify-center min-h-[72px] py-4 px-8 shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-white/10 group relative overflow-hidden" 
-                   style={{ background: theme.btnStyle?.background || "rgba(255,255,255,0.05)", backdropFilter: 'blur(10px)', color: theme.btnStyle?.color || theme.textColor, borderRadius: theme.btnStyle?.borderRadius || "24px" }}>
+                    className="w-full flex items-center justify-center min-h-[72px] py-4 px-8 shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-white/10 group relative overflow-hidden"
+                    style={{ background: theme.btnStyle?.background || "rgba(255,255,255,0.05)", backdropFilter: 'blur(10px)', color: theme.btnStyle?.color || theme.textColor, borderRadius: theme.btnStyle?.borderRadius || "24px" }}>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     {settings.icon ? (
-                         <i className={`${settings.icon} absolute left-8 text-xl opacity-100 group-hover:scale-110 transition-transform`}></i>
+                        <i className={`${settings.icon} absolute left-8 text-xl opacity-100 group-hover:scale-110 transition-transform`}></i>
                     ) : (
-                         <div className="absolute left-8 flex items-center justify-center opacity-60 group-hover:scale-110 transition-all">
-                             <BrandIcon name={displayLabel || "globe"} size={22} />
-                         </div>
+                        <div className="absolute left-8 flex items-center justify-center opacity-60 group-hover:scale-110 transition-all">
+                            <BrandIcon name={displayLabel || "globe"} size={22} />
+                        </div>
                     )}
                     <span className="font-black text-[16px] tracking-tight truncate max-w-[70%]">{displayLabel || "Open Website"}</span>
                     <ArrowRight size={18} className="absolute right-8 opacity-20 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
@@ -503,8 +504,8 @@ function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
 
         case "socials":
             const rawSocials = settings.socials || items || [];
-            const socialsList = Array.isArray(rawSocials) 
-                ? rawSocials 
+            const socialsList = Array.isArray(rawSocials)
+                ? rawSocials
                 : (rawSocials && typeof rawSocials === 'object')
                     ? Object.entries(rawSocials).map(([key, value]) => ({ type: key, link: value as string }))
                     : [];
@@ -514,7 +515,7 @@ function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
                     {socialsList.map((social: any, i: number) => {
                         const sLink = social.link || social.url || social.location_url;
                         if (!sLink && !social.type) return null;
-                        
+
                         const finalLink = sLink?.includes("@") ? `mailto:${sLink}` : sLink;
                         return (
                             <a key={i} href={finalLink || "#"} target="_blank" rel="noopener noreferrer"
@@ -556,7 +557,7 @@ function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-black to-purple-900" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                    
+
                     <div className="relative z-10 p-10 w-full text-center flex flex-col items-center">
                         {(settings.brand_name || settings.headline) && (
                             <p className="text-[12px] font-black uppercase tracking-[0.4em] text-pink-500 mb-6 drop-shadow-md animate-pulse">{settings.brand_name || settings.headline}</p>
@@ -803,8 +804,8 @@ function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
 
         default:
             return (
-                <a href={block.location_url || "#"} className="w-full flex items-center justify-center min-h-[64px] py-4 px-8 shadow-md transition-all hover:scale-[1.01] active:scale-95 border border-white/5" 
-                   style={{ background: "rgba(255,255,255,0.03)", backdropFilter: 'blur(10px)', color: theme.textColor, borderRadius: "24px" }}>
+                <a href={block.location_url || "#"} className="w-full flex items-center justify-center min-h-[64px] py-4 px-8 shadow-md transition-all hover:scale-[1.01] active:scale-95 border border-white/5"
+                    style={{ background: "rgba(255,255,255,0.03)", backdropFilter: 'blur(10px)', color: theme.textColor, borderRadius: "24px" }}>
                     <span className="font-bold text-[15px] opacity-60 tracking-tight">{displayLabel || type.replace(/_/g, " ")}</span>
                 </a>
             );
@@ -833,9 +834,9 @@ function PublicBioContent() {
         }
 
         fetchPublicProfile(targetId).then(data => {
-            if (!data) { 
+            if (!data) {
                 console.error("Profile not found after fetch for:", targetId);
-                setNotFound(true); 
+                setNotFound(true);
             }
             else {
                 console.log("Profile data loaded successfully:", data.title);
@@ -876,10 +877,10 @@ function PublicBioContent() {
     const isBlockVisible = (b: any) => b.is_enabled != 0 && !b.is_hidden && b.is_active != 0 && b.is_Enabled != 0;
     const allBlocks = rawTabs.flatMap((t: any) => t.sections || []).flatMap((s: any) => s.blocks || []).filter(isBlockVisible);
     const otherBlocks = currentTab?.sections?.flatMap((s: any) => s.blocks || [])?.filter(isBlockVisible) || [];
-    
+
     // For PortfolioLayout specifically
     const topAvatar = otherBlocks.find(b => getUiTypeFromBlock(b) === "avatar");
-    
+
     const rawLayout = (profile as any).template_name || (profile as any).layout || (profile as any).settings?.layoutStyle || "standard";
     const layoutStyle = rawLayout === 'custom' ? 'standard' : rawLayout;
 
@@ -1071,8 +1072,8 @@ function PublicBioContent() {
         <>
             <title>{profile.title || username} · Bio Link</title>
             <div className="min-h-screen flex justify-center w-full bg-[#f8fafc] dark:bg-[#0f172a]">
-                <div className={`w-full max-w-[480px] min-h-screen relative overflow-x-hidden flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.1)] border-x border-slate-200 dark:border-white/10`} 
-                     style={theme.bgStyle}>
+                <div className={`w-full max-w-[480px] min-h-screen relative overflow-x-hidden flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.1)] border-x border-slate-200 dark:border-white/10`}
+                    style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
                     {/* ── Hero Header (Hide for Custom Layout as it uses blocks) ── */}
@@ -1123,61 +1124,60 @@ function PublicBioContent() {
                         </div>
                     )}
 
-                {/* ── Tab Bar ──────────────────────────────────────── */}
-                {(profile.tabs || []).length > 1 && (
-                    <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3">
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar justify-start max-w-lg mx-auto">
-                            {profile.tabs.map(tab => (
-                                <button key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex-shrink-0 px-5 py-2 rounded-full text-[12px] font-bold transition-all whitespace-nowrap ${
-                                        activeTab === tab.id
+                    {/* ── Tab Bar ──────────────────────────────────────── */}
+                    {(profile.tabs || []).length > 1 && (
+                        <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3">
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar justify-start max-w-lg mx-auto">
+                                {profile.tabs.map(tab => (
+                                    <button key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex-shrink-0 px-5 py-2 rounded-full text-[12px] font-bold transition-all whitespace-nowrap ${activeTab === tab.id
                                             ? "text-white shadow-md"
                                             : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-200"
-                                    }`}
-                                    style={activeTab === tab.id ? { backgroundColor: theme.accent, boxShadow: `0 4px 12px ${theme.accent}30` } : {}}>
-                                    {tab.title}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* ── Content Container ── */}
-                <div className={`w-full max-w-[480px] mx-auto px-6 space-y-12 flex flex-col ${rawLayout === 'custom' ? 'py-0' : 'py-12'}`}>
-                    {currentTab?.sections?.map(section => {
-                        const hasContent = section.blocks?.some(b => (b.items || []).length > 0 || (b.settings && Object.keys(b.settings).length > 0) || b.location_url);
-                        return (
-                            <div key={section.id} className="space-y-4">
-                                {section.title && section.title !== "New Section" && (
-                                    <h3 className="text-[11px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-widest px-1">
-                                        {section.title}
-                                    </h3>
-                                )}
-                                {section.blocks?.filter((b: any) => !b.is_hidden).map(block => (
-                                    <BlockRenderer key={block.id} block={block} theme={theme} />
+                                            }`}
+                                        style={activeTab === tab.id ? { backgroundColor: theme.accent, boxShadow: `0 4px 12px ${theme.accent}30` } : {}}>
+                                        {tab.title}
+                                    </button>
                                 ))}
                             </div>
-                        );
-                    })}
-
-                    {(!currentTab?.sections || currentTab.sections.length === 0) && (
-                        <div className="py-20 text-center">
-                            <p className="text-slate-400 dark:text-slate-500 font-medium text-sm">No content here yet.</p>
                         </div>
                     )}
-                </div>
 
-                {/* ── Footer ───────────────────────────────────────── */}
-                <div className="py-10 text-center">
-                    <a href="/" className="inline-flex items-center gap-2 text-[12px] font-bold text-slate-400 dark:text-slate-500 hover:text-[#db2777] transition-colors">
-                        <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-[#db2777] to-[#f472b6] flex items-center justify-center">
-                            <LinkIcon size={10} className="text-white" />
-                        </div>
-                        Made with BotChat Bio
-                    </a>
+                    {/* ── Content Container ── */}
+                    <div className={`w-full max-w-[480px] mx-auto px-6 space-y-12 flex flex-col ${rawLayout === 'custom' ? 'py-0' : 'py-12'}`}>
+                        {currentTab?.sections?.map(section => {
+                            const hasContent = section.blocks?.some(b => (b.items || []).length > 0 || (b.settings && Object.keys(b.settings).length > 0) || b.location_url);
+                            return (
+                                <div key={section.id} className="space-y-4">
+                                    {section.title && section.title !== "New Section" && (
+                                        <h3 className="text-[11px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-widest px-1">
+                                            {section.title}
+                                        </h3>
+                                    )}
+                                    {section.blocks?.filter((b: any) => !b.is_hidden).map(block => (
+                                        <BlockRenderer key={block.id} block={block} theme={theme} />
+                                    ))}
+                                </div>
+                            );
+                        })}
+
+                        {(!currentTab?.sections || currentTab.sections.length === 0) && (
+                            <div className="py-20 text-center">
+                                <p className="text-slate-400 dark:text-slate-500 font-medium text-sm">No content here yet.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Footer ───────────────────────────────────────── */}
+                    <div className="py-10 text-center">
+                        <a href="/" className="inline-flex items-center gap-2 text-[12px] font-bold text-slate-400 dark:text-slate-500 hover:text-[#db2777] transition-colors">
+                            <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-[#db2777] to-[#f472b6] flex items-center justify-center">
+                                <LinkIcon size={10} className="text-white" />
+                            </div>
+                            Made with BotChat Bio
+                        </a>
+                    </div>
                 </div>
-            </div>
             </div>
         </>
     );
