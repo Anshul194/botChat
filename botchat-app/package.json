@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "dev:all": "concurrently --names \"nextjs,socket\" --prefix-colors \"blue,green\" \"next dev\" \"node ../socket-server/server.js\"",
-
     "dev:admin": "dotenv -e .env.admin -- next dev --port 3000",
     "dev:reseller": "dotenv -e .env.reseller -- next dev --port 3001",
     "build": "next build",
@@ -25,8 +24,10 @@
     "emoji-picker-react": "^4.18.0",
     "framer-motion": "^12.34.3",
     "gsap": "^3.14.2",
+    "laravel-echo": "^2.3.4",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
+    "pusher-js": "^8.5.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
