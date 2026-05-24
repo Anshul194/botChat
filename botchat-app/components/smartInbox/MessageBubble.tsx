@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { SmartInboxMessage } from "@/store/slices/smartInboxSlice";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
-import { Check, CheckCheck, Smile, Bot, User, Settings } from "lucide-react";
+import { Check, CheckCheck, Smile, Bot, User, Settings, Sparkles, Instagram, Facebook } from "lucide-react";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import ReactionPicker from "./ReactionPicker";
 import MediaPreview from "./MediaPreview";
 import MessageRenderer from "./messages/MessageRenderer";
@@ -38,40 +39,34 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         } catch { reactionsList = []; }
     }
 
-    // ── Delivery tick ─────────────────────────────────────────────────────────
+    // ── Delivery status logic ────────────────────────────────────────────────
     const renderDeliveryStatus = () => {
-        if (isInbound) return null;
-        switch (message.status) {
-            case "sending":
-                return <span className="w-3 h-3 border-2 border-primary/40 border-t-transparent rounded-full animate-spin" />;
-            case "failed":
-                return <span className="text-[10px] text-red-500 font-bold">Failed</span>;
-            case "sent":
-                return <Check className="w-3.5 h-3.5 text-muted-foreground" />;
-            case "delivered":
-                return <CheckCheck className="w-3.5 h-3.5 text-muted-foreground" />;
-            case "seen":
-                return <CheckCheck className="w-3.5 h-3.5 text-primary" />;
-            default:
-                return null;
-        }
+        if (isInbound || !message.status) return null;
+        const status = message.status;
+        
+        return (
+            <div className="flex items-center gap-1">
+                {status === 'seen' || status === 'read' ? (
+                    <CheckCheck className="w-3 h-3 text-primary" />
+                ) : (
+                    <Check className="w-3 h-3 text-muted-foreground/40" />
+                )}
+            </div>
+        );
     };
 
     // ── Sender badge (only for outbound) ─────────────────────────────────────
     const renderSenderBadge = () => {
-        if (isInbound) return null;
         if (isBot) {
             return (
-                <span className="inline-flex items-center gap-0.5 bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 px-1.5 py-0.5 rounded-full text-[9px] font-bold tracking-wide">
-                    <Bot className="w-2.5 h-2.5" />
+                <span className="flex items-center gap-1 text-[9px] font-bold text-primary px-1.5 py-0.5 rounded bg-primary/10">
                     Bot
                 </span>
             );
         }
-        if (isAgent) {
+        if (!isInbound) {
             return (
-                <span className="inline-flex items-center gap-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded-full text-[9px] font-bold tracking-wide">
-                    <User className="w-2.5 h-2.5" />
+                <span className="text-[9px] font-bold text-muted-foreground/60 px-1.5 py-0.5 border border-border rounded bg-muted/30">
                     Agent
                 </span>
             );
@@ -79,53 +74,54 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         return null;
     };
 
+
     // ── Bubble styling by direction + type ───────────────────────────────────
     const isMediaOnly = ["image", "video", "audio", "voice", "sticker"].includes(message.message_type);
-    const bubbleClasses = `relative transition-all shadow-[0_1px_2px_rgba(0,0,0,0.04)] ${
-        isMediaOnly ? "" : "p-3 rounded-2xl"
+    const bubbleClasses = `relative transition-all duration-300 max-w-[85%] ${
+        isMediaOnly ? "" : "px-4 py-2.5 rounded-2xl"
     } ${
         isInbound
-            ? "bg-neutral-100 dark:bg-neutral-800 text-foreground rounded-2xl rounded-bl-sm"
-            : isBot
-                ? "bg-gradient-to-br from-violet-600 to-purple-700 text-white rounded-2xl rounded-br-sm"
-                : "bg-primary text-white rounded-2xl rounded-br-sm"
+            ? "bg-muted text-foreground border border-border"
+            : "bg-primary text-white shadow-sm"
     }`;
 
     return (
-        <div className={`flex flex-col ${isInbound ? "items-start" : "items-end"} gap-1.5 group relative`}>
-
-            {/* Bubble row */}
-            <div className={`flex items-end gap-2 max-w-[70%] ${isInbound ? "flex-row" : "flex-row-reverse"}`}>
+        <div 
+            className={`flex flex-col group ${isInbound ? "items-start" : "items-end"} w-full py-1`}
+        >
+            <div className={`flex items-end gap-2 ${isInbound ? "flex-row" : "flex-row-reverse"}`}>
+                
                 <div className={bubbleClasses}>
                     <MessageRenderer
                         message={message}
                         onImageClick={(url) => setPreviewUrl(url)}
                     />
 
-                    {/* Reaction badge overlay */}
-                    {reactionsList.length > 0 && (
-                        <div className="absolute -bottom-2 right-2 flex items-center gap-0.5 bg-card border border-border/60 px-1 py-0.5 rounded-full shadow-sm text-xs select-none">
-                            {reactionsList.map((r: any, idx: number) => (
-                                <span key={idx} title={`Reacted by user ${r.user_id}`}>
-                                    {r.emoji}
-                                </span>
-                            ))}
+                    {/* Status icon for outbound */}
+                    {!isInbound && (
+                        <div className="absolute -right-5 bottom-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {message.status === "sent" && <Check className="w-3 h-3 text-muted-foreground" />}
+                            {message.status === "delivered" && <CheckCheck className="w-3 h-3 text-muted-foreground" />}
+                            {message.status === "seen" && <CheckCheck className="w-3 h-3 text-primary animate-pulse" />}
                         </div>
                     )}
                 </div>
 
                 {/* Reaction trigger — shows on hover */}
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-2">
                     <button
                         onClick={() => setShowReactions(true)}
-                        className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground rounded-full transition-all cursor-pointer"
+                        className="w-8 h-8 flex items-center justify-center bg-background border border-border text-muted-foreground hover:text-primary rounded-full shadow-sm transition-all active:scale-90"
                         title="React"
                     >
                         <Smile className="w-4 h-4" />
                     </button>
                     {showReactions && (
                         <ReactionPicker
-                            onSelect={(emoji) => reactToMessage(message.id, emoji)}
+                            onSelect={(emoji) => {
+                                reactToMessage(message.id, emoji);
+                                setShowReactions(false);
+                            }}
                             onClose={() => setShowReactions(false)}
                         />
                     )}
@@ -133,7 +129,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             </div>
 
             {/* Time / sender / delivery bar */}
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground px-1">
+            <div className={`flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 px-2 ${isInbound ? "ml-1" : "mr-1"}`}>
                 {renderSenderBadge()}
                 <span>{formatTime((message as any).sent_at || (message as any).created_at)}</span>
                 {renderDeliveryStatus()}
@@ -151,3 +147,5 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         </div>
     );
 }
+
+

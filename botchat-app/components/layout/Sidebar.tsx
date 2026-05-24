@@ -33,7 +33,6 @@ interface SidebarProps {
 
 const mainNav = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { label: "Inbox", icon: Inbox, href: "/social/smart-inbox", badge: "12" }
 ];
 
 const growthNav = [
@@ -76,11 +75,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     // and falls back to a full redirect if router doesn't complete within timeout.
     const navigate = (href: string) => {
         setPendingRoute(href);
-        try { window.dispatchEvent(new CustomEvent('nav:start', { detail: { href } })); } catch {}
+        try { window.dispatchEvent(new CustomEvent('nav:start', { detail: { href } })); } catch { }
         const fallback = setTimeout(() => {
             try {
                 if (window.location.pathname !== href) window.location.href = href;
-            } catch (e) {}
+            } catch (e) { }
         }, 6000);
         // router.push returns a promise in App Router
         try {
@@ -507,16 +506,16 @@ function NavAccordion({
     navigate: (href: string) => void;
     onClose?: () => void;
 }) {
-    const isActive = items.some(item => 
-        item.href === "/dashboard/facebook" || item.href === "/dashboard/instagram" 
-            ? pathname === item.href 
+    const isActive = items.some(item =>
+        item.href === "/dashboard/facebook" || item.href === "/dashboard/instagram"
+            ? pathname === item.href
             : pathname.startsWith(item.href)
     );
 
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <div 
+        <div
             className="relative"
             onMouseEnter={() => collapsed && setIsHovered(true)}
             onMouseLeave={() => collapsed && setIsHovered(false)}
@@ -575,8 +574,8 @@ function NavAccordion({
                     >
                         <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
                             {items.map(sub => {
-                                const isSubActive = sub.href === "/dashboard/facebook" || sub.href === "/dashboard/instagram" 
-                                    ? pathname === sub.href 
+                                const isSubActive = sub.href === "/dashboard/facebook" || sub.href === "/dashboard/instagram"
+                                    ? pathname === sub.href
                                     : pathname.startsWith(sub.href);
                                 return (
                                     <Link
@@ -612,9 +611,9 @@ function NavAccordion({
                         <TooltipTrigger asChild>
                             <div className="absolute inset-0 z-10" />
                         </TooltipTrigger>
-                        <TooltipContent 
-                            side="right" 
-                            sideOffset={10} 
+                        <TooltipContent
+                            side="right"
+                            sideOffset={10}
                             className="p-2 min-w-[200px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden"
                         >
                             <div className="px-3 py-2 mb-1 border-b border-neutral-100 dark:border-neutral-800">

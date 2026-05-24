@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
-import { Smile, Image as ImageIcon, Paperclip, Bookmark, Mic, Code, Send, ChevronDown, Sparkles } from "lucide-react";
+import { Smile, Image as ImageIcon, Plus, Paperclip, Bookmark, Mic, Code, Send, ChevronDown, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { InlineEmojiButton } from "./EmojiPicker";
 import VoiceRecorder from "./VoiceRecorder";
 import MediaPreview from "./MediaPreview";
@@ -122,78 +123,94 @@ export default function MessageInput() {
     if (!selectedConversation) return null;
 
     return (
-        <div className="bg-card rounded-[2rem] border border-border/40 p-4 space-y-3 relative">
+        <div className="bg-card border-t border-border p-2 space-y-2 relative shadow-sm">
             {/* Top tab selector */}
-            <div className="flex items-center gap-4 border-b border-border/10 pb-2">
+            <div className="flex items-center gap-4 px-1">
                 <button
                     onClick={() => setActiveTab("reply")}
-                    className={`text-xs font-black pb-1 transition-all ${
+                    className={`text-[10px] font-black uppercase tracking-widest pb-1 transition-all relative ${
                         activeTab === "reply"
-                            ? "text-primary border-b-2 border-primary"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100"
                     }`}
                 >
                     Reply
+                    {activeTab === "reply" && (
+                        <motion.div layoutId="inputTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                    )}
                 </button>
                 <button
                     onClick={() => setActiveTab("note")}
-                    className={`text-xs font-black pb-1 transition-all ${
+                    className={`text-[10px] font-black uppercase tracking-widest pb-1 transition-all relative ${
                         activeTab === "note"
-                            ? "text-primary border-b-2 border-primary"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100"
                     }`}
                 >
-                    Note
+                    Private Note
+                    {activeTab === "note" && (
+                        <motion.div layoutId="inputTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                    )}
                 </button>
             </div>
 
             {/* Content area: recording state or editor state */}
             {isRecording ? (
-                <VoiceRecorder
-                    onStop={(blob) => {
-                        sendVoiceMessage(blob);
-                        setIsRecording(false);
-                    }}
-                    onCancel={() => setIsRecording(false)}
-                />
-            ) : (
-                <div className="space-y-2">
-                    {/* Media preview bubble */}
-                    {pendingFile && (
-                        <div className="px-1">
-                            <MediaPreview file={pendingFile} type={pendingFileType!} onClear={clearPendingFile} />
-                        </div>
-                    )}
-
-                    <textarea
-                        value={messageText}
-                        onChange={handleTextChange}
-                        onKeyDown={handleKeyPress}
-                        placeholder={
-                            activeTab === "note"
-                                ? "Type internal conversation note (only visible to team)..."
-                                : "Type your message..."
-                        }
-                        className="w-full text-sm font-medium outline-none bg-transparent placeholder:text-muted-foreground text-foreground min-h-[72px] max-h-[140px] resize-none"
+                <div className="p-1">
+                    <VoiceRecorder
+                        onStop={(blob) => {
+                            sendVoiceMessage(blob);
+                            setIsRecording(false);
+                        }}
+                        onCancel={() => setIsRecording(false)}
                     />
+                </div>
+            ) : (
+                <div className="space-y-1.5">
+                    {/* Media preview bubble */}
+                    <AnimatePresence>
+                        {pendingFile && (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="px-1"
+                            >
+                                <MediaPreview file={pendingFile} type={pendingFileType!} onClear={clearPendingFile} />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <div className="relative group">
+                        <textarea
+                            value={messageText}
+                            onChange={handleTextChange}
+                            onKeyDown={handleKeyPress}
+                            placeholder={
+                                activeTab === "note"
+                                    ? "Internal note..."
+                                    : "Type a message..."
+                            }
+                            className="w-full text-[13px] font-medium outline-none bg-transparent placeholder:text-muted-foreground/40 text-foreground min-h-[40px] max-h-[120px] resize-none leading-tight transition-all"
+                        />
+                    </div>
 
                     {/* Bottom toolbar actions */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border/10">
-                        <div className="flex items-center gap-1.5">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
                             {/* Emoji button */}
                             <InlineEmojiButton
                                 value={messageText}
                                 onChange={(val) => setMessageText(val)}
-                                className="p-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-all text-muted-foreground hover:text-foreground"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary border border-transparent"
                             />
 
                             {/* Image upload icon */}
                             <button
                                 onClick={() => fileInputRef.current?.click()}
-                                className="p-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-all text-muted-foreground hover:text-foreground cursor-pointer"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Attach media"
                             >
-                                <ImageIcon className="w-4.5 h-4.5" />
+                                <ImageIcon className="w-4 h-4" />
                             </button>
                             <input
                                 type="file"
@@ -206,10 +223,10 @@ export default function MessageInput() {
                             {/* Attachment document file icon */}
                             <button
                                 onClick={() => attachmentInputRef.current?.click()}
-                                className="p-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-all text-muted-foreground hover:text-foreground cursor-pointer"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Attach document"
                             >
-                                <Paperclip className="w-4.5 h-4.5" />
+                                <Paperclip className="w-4 h-4" />
                             </button>
                             <input
                                 type="file"
@@ -223,72 +240,61 @@ export default function MessageInput() {
                             <div className="relative">
                                 <button
                                     onClick={handleQuickRepliesToggle}
-                                    className={`p-2 rounded-xl transition-all cursor-pointer ${
+                                    className={`w-7 h-7 flex items-center justify-center rounded-md transition-all cursor-pointer ${
                                         showQuickReplies
-                                            ? "bg-primary/10 text-primary"
-                                            : "text-muted-foreground hover:text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                                            ? "bg-primary text-white"
+                                            : "text-muted-foreground hover:text-primary hover:bg-muted"
                                     }`}
                                     title="Quick replies"
                                 >
-                                    <Bookmark className="w-4.5 h-4.5" />
+                                    <Bookmark className="w-4 h-4" />
                                 </button>
-                                {showQuickReplies && (
-                                    <div className="absolute bottom-full mb-2 left-0 z-50 w-64 bg-card border border-border/40 rounded-2xl shadow-xl p-3 space-y-2">
-                                        <div className="flex items-center gap-1 text-[10px] font-black uppercase text-muted-foreground tracking-wider mb-1">
-                                            <Sparkles className="w-3.5 h-3.5 text-primary" />
-                                            Saved Templates
-                                        </div>
-                                        <div className="max-h-48 overflow-y-auto space-y-1.5 scrollbar-thin">
-                                            {quickRepliesList.length === 0 ? (
-                                                <div className="text-center py-4 text-xs text-muted-foreground">
-                                                    No quick replies configured
-                                                </div>
-                                            ) : (
-                                                quickRepliesList.map((qr: any) => (
+                                <AnimatePresence>
+                                    {showQuickReplies && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                            className="absolute bottom-full mb-3 left-0 z-50 w-72 bg-card border border-border rounded-xl shadow-2xl p-2"
+                                        >
+                                            <div className="flex items-center gap-2 text-[9px] font-bold uppercase text-primary tracking-widest px-1 mb-2">
+                                                <Sparkles className="w-3 h-3" /> Quick Replies
+                                            </div>
+                                            <div className="max-h-60 overflow-y-auto space-y-1">
+                                                {quickRepliesList.map((qr: any) => (
                                                     <button
                                                         key={qr.id}
                                                         onClick={() => handleSelectQuickReply(qr.reply_text)}
-                                                        className="w-full text-left p-2 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 text-xs font-medium border border-transparent hover:border-border/30 truncate"
+                                                        className="w-full text-left p-2 rounded-lg hover:bg-primary/5 text-xs font-semibold border border-transparent hover:border-primary/10 transition-all group"
                                                     >
-                                                        {qr.name}
+                                                        <div className="text-foreground group-hover:text-primary transition-colors truncate">{qr.name}</div>
                                                     </button>
-                                                ))
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                             {/* Micro Voice Note recorder */}
                             <button
                                 onClick={() => setIsRecording(true)}
-                                className="p-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-all text-muted-foreground hover:text-foreground cursor-pointer"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Record voice note"
                             >
-                                <Mic className="w-4.5 h-4.5" />
-                            </button>
-
-                            {/* Shortcodes button */}
-                            <button
-                                onClick={() => setMessageText(prev => prev + " {name}")}
-                                className="p-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-all text-muted-foreground hover:text-foreground cursor-pointer font-bold text-xs"
-                                title="Insert shortcodes"
-                            >
-                                {"{ }"}
+                                <Mic className="w-4 h-4" />
                             </button>
                         </div>
 
-                        {/* Send button */}
-                        <div className="flex items-center">
+                        {/* Send button group */}
+                        <div className="flex items-center gap-1 bg-muted/30 p-0.5 rounded-lg border border-border/50 shadow-sm">
                             <button
                                 onClick={handleSendMessage}
                                 disabled={!messageText.trim() && !pendingFile}
-                                className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-opacity-90 disabled:opacity-40 disabled:hover:bg-primary text-white text-xs font-black rounded-xl shadow-sm transition-all active:scale-95 cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 h-7 bg-primary hover:opacity-90 disabled:opacity-30 disabled:grayscale text-white text-[9px] font-bold uppercase tracking-wider rounded-md transition-all active:scale-95 flex-shrink-0"
                             >
-                                <Send className="w-3.5 h-3.5" /> Send
-                            </button>
-                            <button className="p-2 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl text-muted-foreground transition-all flex items-center justify-center cursor-pointer">
-                                <ChevronDown className="w-4 h-4" />
+                                <Send className="w-3 h-3" />
+                                <span>Send</span>
                             </button>
                         </div>
                     </div>
@@ -297,3 +303,4 @@ export default function MessageInput() {
         </div>
     );
 }
+
