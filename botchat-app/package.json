@@ -2,14 +2,16 @@
   "name": "botchat-app",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "dev": "next dev",
-  "dev:admin": "dotenv -e .env.admin -- next dev --port 3000",
-  "dev:reseller": "dotenv -e .env.reseller -- next dev --port 3001",
-  "build": "next build",
-  "start": "node server.js",
-  "lint": "eslint"
-},
+  "scripts": {
+    "dev": "next dev",
+    "dev:all": "concurrently --names \"nextjs,socket\" --prefix-colors \"blue,green\" \"next dev\" \"node ../socket-server/server.js\"",
+
+    "dev:admin": "dotenv -e .env.admin -- next dev --port 3000",
+    "dev:reseller": "dotenv -e .env.reseller -- next dev --port 3001",
+    "build": "next build",
+    "start": "node server.js",
+    "lint": "eslint"
+  },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",
@@ -42,6 +44,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",

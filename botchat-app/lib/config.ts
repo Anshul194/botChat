@@ -38,7 +38,7 @@ export function getTenantDomain(): string {
     }
 
     console.log('Resolving tenant domain for hostname:', window.location.hostname);
-    
+
     // Only use DEV_DOMAIN if we are running in development, or if DEV_DOMAIN was explicitly provided and we are overriding.
     // However, for single-build production, we MUST use window.location.hostname.
     if (process.env.NODE_ENV !== 'production' && DEV_DOMAIN) {

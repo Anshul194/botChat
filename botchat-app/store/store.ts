@@ -13,6 +13,7 @@ import socialPostingReducer from './slices/socialPostingSlice';
 import carouselReducer from './slices/carouselSlice';
 import domainsReducer from './slices/domainsSlice';
 import pixelsReducer from './slices/pixelsSlice';
+import smartInboxReducer from './slices/smartInboxSlice';
 
 export const store = configureStore({
     reducer: {
@@ -29,6 +30,7 @@ export const store = configureStore({
         carousel: carouselReducer,
         domains: domainsReducer,
         pixels: pixelsReducer,
+        smartInbox: smartInboxReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 
