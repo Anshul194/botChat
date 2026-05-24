@@ -129,7 +129,7 @@
 
   /* Shadows */
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.45);
-  --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 28px rgba(29, 110, 245, 0.22);
+  --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.55), var(--glow-blue-sm);
   --shadow-blue: 0 8px 30px rgba(29, 110, 245, 0.40);
 
   /* Navigation */
@@ -147,6 +147,10 @@
   /* Input focus */
   --input-focus-ring: rgba(29, 110, 245, 0.25);
   --input-focus-border: #1d6ef5;
+
+  /* Body background orb tints — updated by appearance.ts */
+  --body-orb-primary: rgba(29, 110, 245, 0.12);
+  --body-orb-accent: rgba(56, 178, 255, 0.08);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -260,7 +264,49 @@ html.light :root,
     scroll-behavior: smooth;
   }
 
+  /* ── Ambient background orbs (bio-link style) ── */
+  html::before,
+  html::after {
+    content: '';
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(90px);
+    transition: background 0.4s ease;
+  }
+
+  /* Top-centre orb — primary colour */
+  html::before {
+    top: -12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 45%;
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+  }
+
+  /* Bottom-left orb — accent colour */
+  html::after {
+    bottom: -14%;
+    left: -8%;
+    width: 50%;
+    height: 42%;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  /* Light mode: softer orbs */
+  html.light::before {
+    background: color-mix(in srgb, var(--primary) 7%, transparent);
+  }
+
+  html.light::after {
+    background: color-mix(in srgb, var(--accent) 5%, transparent);
+  }
+
   body {
+    position: relative;
+    z-index: 1;
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--app-font-family, var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
@@ -269,6 +315,46 @@ html.light :root,
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* ── Right-side + centre-bottom orbs on body ── */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(100px);
+    transition: background 0.4s ease;
+  }
+
+  /* Right-mid orb — secondary/accent blend */
+  body::before {
+    top: 30%;
+    right: -12%;
+    width: 45%;
+    height: 50%;
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+  }
+
+  /* Centre-bottom subtle orb — primary */
+  body::after {
+    bottom: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%;
+    height: 35%;
+    background: color-mix(in srgb, var(--primary) 6%, transparent);
+  }
+
+  /* Light mode: even softer */
+  html.light body::before {
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+
+  html.light body::after {
+    background: color-mix(in srgb, var(--primary) 4%, transparent);
   }
 
   h1,
@@ -303,17 +389,17 @@ html.light :root,
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(29, 110, 245, 0.30);
+    background: color-mix(in srgb, var(--primary) 35%, transparent);
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(29, 110, 245, 0.60);
+    background: color-mix(in srgb, var(--primary) 65%, transparent);
   }
 
   /* Selection */
   ::selection {
-    background: rgba(29, 110, 245, 0.25);
+    background: color-mix(in srgb, var(--primary) 28%, transparent);
     color: var(--foreground);
   }
 }
@@ -339,7 +425,7 @@ html.light :root,
 
 .card-surface:hover {
   box-shadow: var(--shadow-hover);
-  border-color: rgba(29, 110, 245, 0.25);
+  border-color: color-mix(in srgb, var(--primary) 28%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -441,18 +527,18 @@ html.light :root,
   font-weight: 600;
   font-size: 0.875rem;
   background: var(--brand-gradient-soft);
-  color: var(--brand-blue);
-  border: 1px solid rgba(29, 110, 245, 0.22);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .light .btn-secondary {
-  color: var(--brand-blue);
+  color: var(--primary);
 }
 
 .btn-secondary:hover {
-  background: rgba(29, 110, 245, 0.18);
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
   border-color: var(--primary);
 }
 
@@ -475,7 +561,7 @@ html.light :root,
 .btn-ghost:hover {
   background: var(--nav-hover-bg);
   color: var(--foreground);
-  border-color: rgba(29, 110, 245, 0.20);
+  border-color: color-mix(in srgb, var(--primary) 22%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -499,7 +585,7 @@ html.light :root,
 
 .input-field:focus {
   border-color: var(--input-focus-border);
-  box-shadow: 0 6px 20px rgba(29,110,245,0.08), 0 0 0 4px var(--input-focus-ring);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 10%, transparent), 0 0 0 4px var(--input-focus-ring);
   background: var(--card);
 }
 
@@ -581,7 +667,7 @@ html.light :root,
 
 .automation-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(29, 110, 245, 0.35);
+  border-color: color-mix(in srgb, var(--primary) 38%, transparent);
   box-shadow: var(--shadow-hover);
 }
 
@@ -629,7 +715,7 @@ html.light :root,
 }
 
 .flow-node:hover {
-  border-color: rgba(29, 110, 245, 0.40);
+  border-color: color-mix(in srgb, var(--primary) 42%, transparent);
   box-shadow: var(--shadow-hover);
 }
 
@@ -654,9 +740,9 @@ html.light :root,
    BADGE
 ═══════════════════════════════════════════════════════════════ */
 .badge-blue {
-  background: rgba(29, 110, 245, 0.15);
-  color: var(--brand-blue-light);
-  border: 1px solid rgba(29, 110, 245, 0.25);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
   border-radius: 999px;
   padding: 2px 10px;
   font-size: 11px;
@@ -665,13 +751,13 @@ html.light :root,
 }
 
 .light .badge-blue {
-  color: var(--brand-blue);
+  color: var(--primary);
 }
 
 .badge-sky {
-  background: rgba(56, 178, 255, 0.12);
-  color: #38b2ff;
-  border: 1px solid rgba(56, 178, 255, 0.22);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
   border-radius: 999px;
   padding: 2px 10px;
   font-size: 11px;
@@ -704,7 +790,7 @@ html.light :root,
   right: -10%;
   width: 55%;
   height: 70%;
-  background: radial-gradient(ellipse at center, rgba(29, 110, 245, 0.14) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--primary) 16%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -715,17 +801,17 @@ html.light :root,
   left: -8%;
   width: 45%;
   height: 60%;
-  background: radial-gradient(ellipse at center, rgba(56, 178, 255, 0.10) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
 /* Light-mode auth adjustments */
 .light .auth-bg::before {
-  background: radial-gradient(ellipse at center, rgba(30, 95, 212, 0.10) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--primary) 12%, transparent) 0%, transparent 70%);
 }
 
 .light .auth-bg::after {
-  background: radial-gradient(ellipse at center, rgba(2, 132, 199, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 70%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -747,6 +833,38 @@ html.light :root,
 
 .pulse-dot {
   animation: pulse-dot 2s infinite;
+}
+
+/* ── Ambient orb drift animations ── */
+@keyframes orbDriftA {
+  0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.85; }
+  33%       { transform: translateX(-44%) scale(1.06); opacity: 1;    }
+  66%       { transform: translateX(-56%) scale(0.95); opacity: 0.75; }
+}
+
+@keyframes orbDriftB {
+  0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.8;  }
+  40%       { transform: translateX(-54%) scale(1.08); opacity: 1;   }
+  70%       { transform: translateX(-46%) scale(0.94); opacity: 0.7; }
+}
+
+@keyframes orbDriftRight {
+  0%, 100% { transform: translateY(0)   scale(1);    opacity: 0.75; }
+  50%       { transform: translateY(-5%) scale(1.05); opacity: 1;   }
+}
+
+/* Apply drift to all four orbs */
+html::before {
+  animation: orbDriftA 18s ease-in-out infinite;
+}
+html::after {
+  animation: orbDriftRight 22s ease-in-out infinite;
+}
+body::before {
+  animation: orbDriftRight 26s ease-in-out infinite reverse;
+}
+body::after {
+  animation: orbDriftB 20s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -868,6 +986,16 @@ html.light :root,
 *::after {
   transition-property: background-color, border-color, color, box-shadow, fill, stroke;
   transition-duration: 0.22s;
+  transition-timing-function: ease;
+}
+
+/* Orb pseudo-elements — longer, smooth background transition */
+html::before,
+html::after,
+body::before,
+body::after {
+  transition-property: background, filter, opacity;
+  transition-duration: 0.5s;
   transition-timing-function: ease;
 }
 

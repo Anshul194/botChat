@@ -34,8 +34,6 @@ function Aurora() {
     <>
       <style dangerouslySetInnerHTML={{
         __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
         @keyframes drift1 {
           0%,100% { transform: translate(0,0) scale(1); }
           33%      { transform: translate(80px,-60px) scale(1.1); }
@@ -272,17 +270,33 @@ function BrowserStage() {
 }
 
 function VideoStage() {
+  const [videoError, setVideoError] = useState(false);
+
   return (
     <div className="w-full h-full relative">
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full h-full object-cover"
-      >
-        <source src="/hero-video.mp4" type="video/mp4" />
-      </video>
+      {videoError ? (
+        /* ── graceful fallback when video fails ── */
+        <div className="w-full h-full flex flex-col items-center justify-center gap-4"
+          style={{ background: "linear-gradient(135deg,#0a0411 0%,#1a0828 100%)" }}>
+          <div className="w-16 h-16 rounded-full bg-pink-500/20 border border-pink-500/30 flex items-center justify-center">
+            <Play className="w-7 h-7 text-pink-400 fill-pink-400" />
+          </div>
+          <p className="text-pink-300/60 text-xs font-semibold tracking-widest uppercase">Demo Video</p>
+        </div>
+      ) : (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          crossOrigin="anonymous"
+          poster="/mobile_preview.png"
+          onError={() => setVideoError(true)}
+          className="w-full h-full object-cover"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-6 left-6 right-6">
         <div className="flex items-center gap-3">
@@ -435,7 +449,7 @@ export default function Hero() {
           {/* Body */}
           <p className="hero-text-elem text-base md:text-lg leading-relaxed max-w-md"
             style={{ color: "rgba(240,220,240,.6)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}>
-            The ultimate tool to <span className="text-white font-medium">convert comments &rarr; customers</span>. 
+            The ultimate tool to <span className="text-white font-medium">convert comments &rarr; customers</span>.
             Automate your growth and never miss a lead again.
           </p>
 
