@@ -33,7 +33,7 @@ interface SidebarProps {
 
 const mainNav = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { label: "Inbox", icon: Inbox, href: "/dashboard/inbox", badge: "12" }
+    { label: "Inbox", icon: Inbox, href: "/social/smart-inbox", badge: "12" }
 ];
 
 const growthNav = [
@@ -273,6 +273,27 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         {mainNav.map(item => (
                             <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                         ))}
+                    </motion.div>
+
+                    {/* SOCIAL */}
+                    <motion.div variants={itemVariants} className="space-y-0.5">
+                        {!collapsed && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="px-3 pb-1.5"
+                            >
+                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--sidebar-foreground)", opacity: 0.78 }}>
+                                    Social
+                                </span>
+                            </motion.div>
+                        )}
+                        <NavItem
+                            item={{ label: "Smart Inbox", icon: MessageSquare, href: "/social/smart-inbox" }}
+                            collapsed={collapsed}
+                            pathname={currentPath}
+                            onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
+                        />
                     </motion.div>
 
                     {/* PLATFORMS */}

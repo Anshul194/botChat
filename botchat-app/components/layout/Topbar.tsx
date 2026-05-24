@@ -31,6 +31,7 @@ const NOTIFS = [
 const PAGE_MAP: Record<string, string> = {
     "/dashboard": "Overview",
     "/dashboard/inbox": "Smart Inbox",
+    "/social/smart-inbox": "Smart Inbox",
     "/dashboard/automations": "Automations",
     "/dashboard/flows": "Flow Builder",
     "/dashboard/instagram": "Instagram",
