@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
     Plus, Trash2, Save, RefreshCw,
-    Link2, MousePointerClick, Layers, Info, Trash
+    Link2, MousePointerClick, Layers, Info, Trash, Facebook as FacebookIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -42,7 +42,7 @@ interface MenuItemFormProps {
 function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAddSub }: MenuItemFormProps) {
     return (
         <div className={cn(
-            "p-4 rounded-2xl border border-pink-100 dark:border-pink-900/30 bg-white dark:bg-neutral-900 shadow-sm",
+            "p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-white dark:bg-neutral-900 shadow-sm",
             subIndex !== undefined ? "ml-6 mt-3" : "mt-4"
         )}>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -78,15 +78,15 @@ function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAd
                     {/* URL field */}
                     {item.type === "web_url" && (
                         <div className="flex flex-col gap-1">
-                            <label className="text-[11px] font-medium uppercase tracking-widest text-pink-400">URL</label>
+                            <label className="text-[11px] font-medium uppercase tracking-widest text-blue-400">URL</label>
                             <div className="relative">
-                                <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-300" />
+                                <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-300" />
                                 <input
                                     type="url"
                                     placeholder="https://example.com"
                                     value={item.url || ""}
                                     onChange={(e) => onUpdate(index, subIndex, { url: e.target.value })}
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-pink-50 dark:bg-neutral-950 border border-pink-100 dark:border-pink-900/30 text-sm font-normal text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 outline-none focus:border-pink-400 dark:focus:border-pink-500 transition-colors"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-blue-50 dark:bg-neutral-950 border border-blue-100 dark:border-blue-900/30 text-sm font-normal text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 outline-none focus:border-blue-400 dark:focus:border-blue-500 transition-colors"
                                 />
                             </div>
                         </div>
@@ -126,14 +126,10 @@ function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAd
 
             {/* Nested sub-items */}
             {item.type === "nested" && (
-                <div className="mt-4 pt-4 border-t border-pink-50 dark:border-pink-900/20">
+                <div className="mt-4 pt-4 border-t border-blue-50 dark:border-blue-900/20">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                            <Layers className="w-3.5 h-3.5 text-pink-500" />
-                            <span className="text-[11px] font-medium uppercase text-neutral-500 tracking-wider">
-                                Sub Menu Items ({item.children?.length || 0}/5)
-                            </span>
-                            <Layers className="w-3.5 h-3.5 text-[#0866FF]" />
+                            <Layers className="w-3.5 h-3.5 text-blue-500" />
                             <span className="text-[11px] font-semibold uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
                         </div>
                         <button
@@ -362,7 +358,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                         disabled={isSyncing}
                         className="px-6 py-2.5 rounded-xl bg-[#0866FF] hover:bg-[#0055D4] text-white text-[11px] font-medium uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#0866FF]/20 active:scale-95 transition-all"
                     >
-                        {isSyncing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                        {isSyncing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <FacebookIcon className="w-3 h-3" />}
                         Sync to Facebook
                     </button>
                 </div>
@@ -374,14 +370,14 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                 <div className={cn(
                     "w-full max-w-sm p-5 rounded-2xl border transition-all flex flex-col gap-4 shadow-sm",
                     composerInputDisabled
-                        ? "bg-pink-50/50 border-pink-200 dark:bg-pink-950/10 dark:border-pink-900/40"
+                        ? "bg-blue-50/50 border-blue-200 dark:bg-blue-950/10 dark:border-blue-900/40"
                         : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800"
                 )}>
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                             <div className={cn(
                                 "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
-                                composerInputDisabled ? "bg-pink-100 text-pink-500 dark:bg-pink-900/50" : "bg-neutral-50 text-neutral-400 dark:bg-neutral-800"
+                                composerInputDisabled ? "bg-blue-100 text-[#0866FF] dark:bg-blue-900/50" : "bg-neutral-50 text-neutral-400 dark:bg-neutral-800"
                             )}>
                                 <Info className="w-5 h-5" />
                             </div>
@@ -392,7 +388,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                             onClick={() => setComposerInputDisabled(!composerInputDisabled)}
                             className={cn(
                                 "w-12 h-6 rounded-full relative transition-all duration-300",
-                                composerInputDisabled ? "bg-pink-500" : "bg-neutral-200 dark:bg-neutral-800"
+                                composerInputDisabled ? "bg-[#0866FF]" : "bg-neutral-200 dark:bg-neutral-800"
                             )}
                         >
                             <div className={cn(
@@ -433,7 +429,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                     {items.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                            className="py-12 border-2 border-dashed border-pink-100 dark:border-pink-900/20 rounded-2xl text-center"
+                            className="py-12 border-2 border-dashed border-blue-100 dark:border-blue-900/20 rounded-2xl text-center"
                         >
                             <p className="text-sm text-neutral-400">No menu items configured yet.</p>
                         </motion.div>
@@ -461,3 +457,4 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
         </div>
     );
 }
+

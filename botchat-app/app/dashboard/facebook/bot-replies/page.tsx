@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
-    CheckCircle2, Target, Bot, MousePointerClick,
-    Menu, Settings2, Sparkles, Box, RefreshCw, ChevronRight,
-    ChevronLeft, ChevronDown, ListFilter, ArrowLeft, Facebook as FacebookIcon,
-    ShieldAlert, X, MoreVertical, Pencil, ExternalLink, BarChart2, History, Layout, Grid, Globe, Zap, MousePointer2, Info, Loader2, ArrowRight
+    CheckCircle2, Target, Bot, MousePointerClick, ArrowLeft,
+    Menu, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Facebook as FacebookIcon, Layers,
+    ChevronLeft, ChevronDown, ListFilter
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -15,17 +14,11 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
 import { AiAgentSettingsPanel } from "../../instagram/AiAgentSettingsPanel";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+
 
 interface BotReply {
     id: number;
-    facebook_page_id: string;
+    facebook_page_id: string; // Used in API calls
     name: string;
     trigger_type: string;
     trigger_value: string;
@@ -35,7 +28,7 @@ interface BotReply {
     page_name?: string;
 }
 
-interface FacebookPage {
+interface FacebookPageData {
     id: number;
     page_id: string;
     page_name: string;
@@ -58,74 +51,28 @@ const MENUS = [
 
 type MenuId = typeof MENUS[number]['id'];
 
-const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
-    <AnimatePresence>
-        {open && (
-            <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
-                    <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-                        {icon && <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">{icon}</div>}
-                        <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight uppercase">{title}</h2>
-                        <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
-                            <X className="w-5 h-5" />
-                        </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-8 no-scrollbar">{children}</div>
-                    {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
-                </motion.div>
-            </div>
-        )}
-    </AnimatePresence>
-);
-
-const InputField = ({ label, ...props }: any) => (
-    <div className="space-y-2">
-        <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">{label}</label>
-        <div className="relative group">
-            <input
-                {...props}
-                className="w-full h-14 pl-6 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
-            />
-        </div>
-    </div>
-);
-
-const SelectField = ({ label, options, ...props }: any) => (
-    <div className="space-y-2">
-        <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">{label}</label>
-        <div className="relative">
-            <select
-                {...props}
-                className="w-full h-14 pl-6 pr-10 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer shadow-inner"
-            >
-                {options.map((opt: any) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-            </select>
-            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
-    </div>
-);
-
-
-export default function BotRepliesPage() {
+export default function FacebookBotRepliesPage() {
     const router = useRouter();
-    const { showModal, showConfirm } = useModal();
     const [replies, setReplies] = useState<BotReply[]>([]);
-    const [pages, setPages] = useState<FacebookPage[]>([]);
+    const [pages, setPages] = useState<FacebookPageData[]>([]);
+    const { showModal, showConfirm } = useModal();
     const [isLoading, setIsLoading] = useState(true);
 
     const [selectedPageId, setSelectedPageId] = useState<string | "all">("all");
     const [activeMenu, setActiveMenu] = useState<MenuId>('bot_reply');
 
     const [searchQuery, setSearchQuery] = useState("");
-    const [view, setView] = useState<'row' | 'card'>('row');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [showPageDropdown, setShowPageDropdown] = useState(false);
+    const [quickFindSearch, setQuickFindSearch] = useState("");
+
+    const [actions, setActions] = useState<ActionData[]>([]);
+    const [isActionsLoading, setIsActionsLoading] = useState(false);
+    const [showActionModal, setShowActionModal] = useState(false);
+    const [selectedActionType, setSelectedActionType] = useState<string | null>(null);
 
     const [newReply, setNewReply] = useState({
         name: "",
@@ -134,12 +81,12 @@ export default function BotRepliesPage() {
         trigger_value: ""
     });
 
-    const [actions, setActions] = useState<ActionData[]>([]);
-    const [isActionsLoading, setIsActionsLoading] = useState(false);
-    const [showActionModal, setShowActionModal] = useState(false);
-    const [selectedActionType, setSelectedActionType] = useState<string | null>(null);
+    const [isCreatePageDropdownOpen, setIsCreatePageDropdownOpen] = useState(false);
+    const [createPageSearchQuery, setCreatePageSearchQuery] = useState("");
 
-    const fetchReplies = async () => {
+    const selectedPageObj = useMemo(() => pages.find(p => p.page_id === selectedPageId) || null, [pages, selectedPageId]);
+
+    const fetchReplies = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await api.get("/facebook/bot-replies");
@@ -148,14 +95,14 @@ export default function BotRepliesPage() {
             }
         } catch (error: any) {
             console.error("Fetch Replies Error:", error);
-            const errorMsg = error.response?.data?.message || "Failed to load bot replies";
+            const errorMsg = error.response?.data?.message || "Failed to load Facebook bot replies";
             showModal("error", "Error", errorMsg);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [api, showModal]);
 
-    const fetchPages = async () => {
+    const fetchPages = useCallback(async () => {
         try {
             const response = await api.get("/social/facebook-connect");
             if (response.data.success || response.data.is_success) {
@@ -166,12 +113,15 @@ export default function BotRepliesPage() {
         } catch (error) {
             console.error("Fetch Pages Error:", error);
         }
-    };
+    }, [api]);
 
-    const fetchActions = async (pageId: string) => {
+    const fetchActions = useCallback(async (pageIdToUse?: string) => {
+        const pageId = pageIdToUse || selectedPageId;
+        const page = pages.find(p => p.page_id === pageId) || (pages.length ? pages[0] : null);
+        if (!page || !page.page_id) return;
         setIsActionsLoading(true);
         try {
-            const response = await api.get(`/facebook/actions?page_id=${pageId}`);
+            const response = await api.get(`/facebook/actions?page_id=${page.page_id}`);
             if (response.data.success || response.data.is_success) {
                 setActions(response.data.data || []);
             }
@@ -180,42 +130,44 @@ export default function BotRepliesPage() {
         } finally {
             setIsActionsLoading(false);
         }
-    };
+    }, [api, selectedPageId, pages]);
 
     useEffect(() => {
         fetchReplies();
         fetchPages();
-    }, []);
+    }, [fetchReplies, fetchPages]);
 
     useEffect(() => {
         if (activeMenu === 'action_buttons' || activeMenu === 'persistent_menu') {
             if (selectedPageId === "all" && pages.length > 0) {
                 setSelectedPageId(pages[0].page_id);
             } else if (selectedPageId !== "all") {
-                fetchActions(selectedPageId);
+                fetchActions();
             }
         }
-    }, [activeMenu, selectedPageId, pages]);
+    }, [activeMenu, selectedPageId, pages, fetchActions]);
 
     const handleCreate = async () => {
-        const targetPageId = newReply.facebook_page_id || (selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId);
+        const rccFb = selectedPageId === "all" ? (pages[0] || null) : selectedPageObj;
+        const targetPageId = newReply.facebook_page_id || rccFb?.page_id || "";
+
         const submitData = { ...newReply, facebook_page_id: targetPageId };
 
         const isKeywordRequired = !['welcome', 'fallback'].includes(submitData.trigger_type);
         if (!submitData.name || !submitData.facebook_page_id || (isKeywordRequired && !submitData.trigger_value)) {
-            showModal("error", "Error", "Please fill all required fields");
+            showModal("error", "Missing Fields", "Please fill all required fields");
             return;
         }
         setIsCreating(true);
         try {
             const response = await api.post("/facebook/bot-replies", submitData);
             if (response.data.success || response.data.is_success) {
-                showModal("success", "Created", "Bot reply created successfully");
+                showModal("success", "Success", "Facebook bot reply created successfully");
                 setShowCreateModal(false);
                 fetchReplies();
             }
         } catch (error: any) {
-            const errorMsg = error.response?.data?.message || "Failed to create bot reply";
+            const errorMsg = error.response?.data?.message || "Failed to create Facebook bot reply";
             showModal("error", "Error", errorMsg);
         } finally {
             setIsCreating(false);
@@ -225,9 +177,10 @@ export default function BotRepliesPage() {
                 trigger_type: "exact",
                 trigger_value: ""
             });
+            setIsCreatePageDropdownOpen(false);
+            setCreatePageSearchQuery("");
         }
     };
-
 
     const handleDelete = async (id: number) => {
         const reply = replies.find(r => r.id === id);
@@ -253,7 +206,7 @@ export default function BotRepliesPage() {
         const newStatus = reply.status === 'published' ? 'draft' : 'publish';
         try {
             await api.patch(`/facebook/bot-replies/${reply.id}/${newStatus}`);
-            showModal("success", "Updated", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
+            showModal("success", "Success", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             fetchReplies();
         } catch (error: any) {
             const errorMsg = error.response?.data?.message || "Failed to update status";
@@ -277,10 +230,8 @@ export default function BotRepliesPage() {
         try {
             const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/facebook/bot-replies/${action.automation_id}/${newStatus}`);
-            showModal("success", "Updated", `Action status updated`);
-            if (selectedPageId !== "all") {
-                fetchActions(selectedPageId);
-            }
+            showModal("success", "Success", `Action status updated`);
+            if (selectedPageId !== "all") fetchActions();
         } catch (error: any) {
             const errorMsg = error.response?.data?.message || "Failed to toggle action";
             showModal("error", "Error", errorMsg);
@@ -314,14 +265,53 @@ export default function BotRepliesPage() {
         setShowActionModal(true);
     };
 
+    const handleActionCreate = async (type: string) => {
+        if (!type || !selectedPageObj || !selectedPageObj.page_id) return;
+        setIsCreating(true);
+        try {
+            const response = await api.post("/facebook/actions", {
+                page_id: selectedPageObj.page_id,
+                action_type: type,
+                name: type === 'action_no_match' ? 'No Match' : type === 'action_get_started' ? 'Get Started' : 'Ice Breakers'
+            });
+            if (response.data.success || response.data.is_success) {
+                const automationId = response.data.data?.automation_id || response.data.data?.id;
+                showModal("success", "Success", "Action created successfully");
+                setShowActionModal(false);
+                fetchActions();
+                if (automationId) {
+                    goToFlow(automationId);
+                }
+            }
+        } catch (error) {
+            showModal("error", "Error", "Failed to create action");
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
     const goToFlow = (replyId: number) => {
         router.push(`/dashboard/flows?id=${replyId}&platform=facebook`);
     };
 
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const amount = 200;
+            scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+        }
+    };
+
     const handlePageSelect = (id: string | "all") => {
         setSelectedPageId(id);
+        setShowPageDropdown(false);
         if (id !== "all") {
-            setNewReply(prev => ({ ...prev, facebook_page_id: id }));
+            const page = pages.find(p => p.page_id === id);
+            if (page) {
+                setNewReply(prev => ({
+                    ...prev,
+                    facebook_page_id: page.page_id
+                }));
+            }
         }
     };
 
@@ -333,610 +323,681 @@ export default function BotRepliesPage() {
         );
     }, [replies, selectedPageId, searchQuery]);
 
-    const handleEdit = (reply: BotReply) => {
-        router.push(`/dashboard/flows?id=${reply.id}&platform=facebook`);
-    };
-
-    const creationPageIdFallback = selectedPageId === "all" ? (pages[0]?.page_id || "") : selectedPageId;
-
-
+    const creationPageFallback = selectedPageId === "all" ? (pages[0] || null) : selectedPageObj;
 
     return (
-        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30 relative overflow-hidden -m-4 md:-m-6">
-            {/* Decorative Background Glows */}
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[var(--primary)] opacity-[0.08] rounded-full blur-[120px] pointer-events-none z-0" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[var(--accent)] opacity-[0.05] rounded-full blur-[120px] pointer-events-none z-0" />
-
-            <div className="max-w-full space-y-12 relative z-10 p-6 sm:p-10">
-                {/* Header Section */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="flex flex-col xl:flex-row xl:items-end justify-between gap-10"
-                >
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-5">
-                            <div className="w-16 h-16 rounded-3xl bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] shadow-2xl shadow-[var(--primary)]/10">
-                                <FacebookIcon size={32} />
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="px-4 py-1.5 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-[var(--primary)] text-[10px] font-black uppercase tracking-[0.25em] w-fit">
-                                    Facebook Neural Studio
-                                </div>
-                                <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-900 dark:text-white mt-3 uppercase">
-                                    Bot Replies
-                                </h1>
+        <div className="min-h-screen bg-transparent font-sans w-full min-w-0 -m-4 md:-m-6">
+            {/* 1. PREMIUM BRANDED HEADER */}
+            <div className="sticky top-[-16px] md:top-[-24px] z-[50] bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
+                        className="md:hidden w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all bg-neutral-100 dark:bg-neutral-800 rounded-full"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
+                    >
+                        <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+                    </button>
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                            <span className="text-[8px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
+                            <div className="hidden xs:block w-1 h-1 rounded-full bg-neutral-300" />
+                            <div className="hidden xs:flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
+                                <FacebookIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#0866FF]" />
+                                <span className="text-[8px] sm:text-[9px] font-medium text-[#0866FF]">Neural Node</span>
                             </div>
                         </div>
-                        <p className="text-[var(--muted-foreground)] font-medium max-w-3xl text-xl leading-relaxed">
-                            Orchestrate high-performance automated conversations for your Facebook accounts with precision neural triggering and AI branching.
-                        </p>
-                        
-                        {/* Tab Switcher inside Header */}
-                        <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-2 rounded-[2.5rem] w-fit border border-slate-200 dark:border-slate-800 shadow-inner">
-                            {MENUS.map(menu => (
+                        <h1 className="text-sm xs:text-base sm:text-lg lg:text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase whitespace-normal">Facebook Reply Manager</h1>
+                    </div>
+                </div>
+
+                <div className="order-last md:order-none w-full md:w-auto flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-2xl border border-neutral-200 dark:border-neutral-700 overflow-x-auto no-scrollbar scroll-smooth">
+                    <div className="flex items-center min-w-max">
+                        {MENUS.map(menu => (
+                            <button
+                                key={menu.id}
+                                onClick={() => setActiveMenu(menu.id)}
+                                className={cn(
+                                    "px-4 sm:px-5 py-2 rounded-xl text-[12px] sm:text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
+                                    activeMenu === menu.id
+                                        ? "bg-[#0866FF] text-white shadow-md"
+                                        : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
+                                )}
+                            >
+                                <menu.icon className="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px]" strokeWidth={2} />
+                                {menu.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <button className="p-2 sm:p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 transition-all"><Settings2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /></button>
+                    <button className="hidden xs:block px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl text-white text-[12px] sm:text-[13px] font-medium uppercase tracking-wider hover:scale-105 active:scale-95 transition-all" style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)", boxShadow: "0 10px 20px -5px rgba(8, 102, 255, 0.3)" }}>Pulse stats</button>
+                </div>
+            </div>
+
+            <div className="p-4 sm:p-8 space-y-8 pb-32 lg:pb-8">
+                {/* 2. PAGES SELECTOR (Scrollable + Dropdown) */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+                    <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+
+                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
+                            <button
+                                onClick={() => handlePageSelect("all")}
+                                className={cn(
+                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold uppercase tracking-widest transition-all whitespace-nowrap",
+                                    selectedPageId === "all"
+                                        ? "bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900"
+                                        : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                )}
+                            >
+                                All Pages
+                            </button>
+                            <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
+                            {pages.map(page => (
                                 <button
-                                    key={menu.id}
-                                    onClick={() => setActiveMenu(menu.id)}
+                                    key={page.id}
+                                    onClick={() => handlePageSelect(page.page_id)}
                                     className={cn(
-                                        "px-8 py-4 rounded-full text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-4 transition-all",
-                                        activeMenu === menu.id
-                                            ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xl"
-                                            : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-300"
+                                        "px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all whitespace-nowrap",
+                                        selectedPageId === page.page_id
+                                            ? "shadow-sm border border-[#0866FF]/30 bg-[#0866FF]/5 text-[#0866FF]"
+                                            : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
                                     )}
                                 >
-                                    <menu.icon size={16} strokeWidth={3} />
-                                    {menu.label}
+                                    {page.page_name}
                                 </button>
                             ))}
                         </div>
-                    </div>
 
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-5">
-                        {/* Page Selector */}
-                        <div className="relative min-w-[280px]">
-                            <select 
-                                value={selectedPageId}
-                                onChange={(e) => handlePageSelect(e.target.value)}
-                                className="w-full h-20 pl-8 pr-14 rounded-3xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-black uppercase tracking-[0.15em] text-slate-900 dark:text-white outline-none appearance-none cursor-pointer shadow-lg focus:border-primary transition-all"
-                            >
-                                <option value="all">All Connected Pages</option>
-                                {pages.map(page => (
-                                    <option key={page.page_id} value={page.page_id}>{page.page_name}</option>
-                                ))}
-                            </select>
-                            <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
-                        </div>
-
-                        <button
-                            onClick={() => setShowCreateModal(true)}
-                            className="h-20 px-10 rounded-3xl bg-[var(--primary)] text-white text-[13px] font-black uppercase tracking-[0.25em] flex items-center justify-center gap-5 shadow-2xl shadow-[var(--primary)]/30 hover:scale-[1.02] active:scale-[0.98] transition-all group"
-                        >
-                            <Plus size={24} className="group-hover:rotate-90 transition-transform duration-500" /> 
-                            New Auto Reply
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
+                            <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>
-                </motion.div>
 
+                    <div className="relative shrink-0 z-20">
+                        <button
+                            onClick={() => setShowPageDropdown(!showPageDropdown)}
+                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-medium uppercase tracking-wider transition-colors text-neutral-700 dark:text-neutral-300"
+                            style={{ borderColor: showPageDropdown ? "#0866FF" : undefined }}
+                        >
+                            <div className="flex items-center gap-2">
+                                <ListFilter className="w-4 h-4 text-[#0866FF]" />
+                                Quick Find
+                            </div>
+                            <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
+                        </button>
+                        <AnimatePresence>
+                            {showPageDropdown && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                    className="absolute right-0 top-[calc(100%+8px)] w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
+                                >
+                                    <div className="flex flex-col max-h-[350px]">
+                                        <div className="p-2 border-b border-neutral-100 dark:border-neutral-800 sticky top-0 bg-white dark:bg-neutral-900 z-10">
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search pages..."
+                                                    value={quickFindSearch}
+                                                    onChange={(e) => setQuickFindSearch(e.target.value)}
+                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white dark:focus:bg-neutral-800 text-xs outline-none transition-all"
+                                                    autoFocus
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="p-1 overflow-y-auto custom-scrollbar">
+                                            <button
+                                                onClick={() => { handlePageSelect("all"); setQuickFindSearch(""); }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                                                    selectedPageId === "all" ? "bg-[#0866FF]/10 text-[#0866FF]" : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                )}
+                                            >
+                                                All Pages
+                                            </button>
+                                            <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
+                                            {pages
+                                                .filter(page => !quickFindSearch || page.page_name.toLowerCase().includes(quickFindSearch.toLowerCase()))
+                                                .map(page => (
+                                                    <button
+                                                        key={page.id}
+                                                        onClick={() => { handlePageSelect(page.page_id); setQuickFindSearch(""); }}
+                                                        className={cn(
+                                                            "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all truncate flex items-center gap-2",
+                                                            selectedPageId === page.page_id ? "bg-[#0866FF]/10 text-[#0866FF]" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                        )}
+                                                    >
+                                                        <FacebookIcon className="w-3.5 h-3.5 shrink-0 text-[#0866FF]" />
+                                                        <span className="truncate">{page.page_name}</span>
+                                                    </button>
+                                                ))}
+                                            {pages.filter(page => page.page_name.toLowerCase().includes(quickFindSearch.toLowerCase())).length === 0 && (
+                                                <div className="py-8 text-center px-4">
+                                                    <Search className="w-8 h-8 text-neutral-200 dark:text-neutral-800 mx-auto mb-2" />
+                                                    <p className="text-xs text-neutral-400 font-medium italic">No pages found</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
 
-            <div className="max-w-full relative z-10">
-
-
-                {/* Main Content Area */}
-                <div className="min-h-[600px] space-y-10">
+                {/* 3. MAIN WORKSPACE */}
+                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
                     <AnimatePresence mode="wait">
+
+                        {/* BOT REPLIES CONTENT */}
                         {activeMenu === 'bot_reply' && (
                             <motion.div
-                                key="bot_reply_list"
-                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                                className="space-y-8"
+                                key="bot_reply"
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex flex-col"
                             >
-                                {/* Search & View Toggle Bar */}
-                                <div className="h-24 rounded-[3rem] border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-3xl flex items-center justify-between px-10 shadow-lg">
-                                    <div className="flex items-center gap-5 flex-1">
-                                        <div className="relative w-full max-w-lg group">
-                                            <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
-                                            <input
-                                                placeholder="Search neural replies..."
-                                                className="w-full pl-10 h-12 bg-transparent text-sm font-black uppercase tracking-[0.2em] focus:outline-none"
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                            />
-                                        </div>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                                    <div className="relative w-full max-w-sm">
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search replies..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white focus:border-blue-300 dark:focus:border-blue-500/30 text-sm outline-none transition-all placeholder:text-neutral-400"
+                                        />
                                     </div>
-                                    
-                                    <div className="hidden lg:flex items-center gap-4">
-                                        <div className="flex items-center bg-slate-50 dark:bg-slate-900 border border-[var(--border)] rounded-[1.5rem] p-2 h-14">
-                                            <button
-                                                onClick={() => setView('row')}
-                                                className={cn(
-                                                    "px-8 py-2.5 rounded-xl transition-all flex items-center gap-3",
-                                                    view === 'row' ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xl" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                                                )}
-                                            >
-                                                <Layout className="w-4 h-4" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">List</span>
-                                            </button>
-                                            <button
-                                                onClick={() => setView('card')}
-                                                className={cn(
-                                                    "px-8 py-2.5 rounded-xl transition-all flex items-center gap-3",
-                                                    view === 'card' ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xl" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                                                )}
-                                            >
-                                                <Grid className="w-4 h-4" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Cards</span>
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <button
+                                        onClick={() => setShowCreateModal(true)}
+                                        className="text-white px-6 py-2.5 rounded-xl font-medium uppercase text-[12px] tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
+                                        style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)", boxShadow: "0 10px 20px -5px rgba(8, 102, 255, 0.3)" }}
+                                    >
+                                        <Sparkles className="w-4 h-4" /> Create FB Flow
+                                    </button>
                                 </div>
 
                                 {isLoading ? (
-                                    <div className="h-[500px] flex flex-col items-center justify-center gap-8 text-[var(--muted-foreground)]">
-                                        <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-2xl shadow-primary/30" />
-                                        <p className="text-sm font-black uppercase tracking-[0.4em] animate-pulse">Syncing Neural Nodes...</p>
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="h-20 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                                        ))}
                                     </div>
-                                ) : filteredReplies.length === 0 ? (
-                                    <motion.div 
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="h-[500px] flex flex-col items-center justify-center text-center p-12 rounded-[5rem] border-2 border-dashed border-[var(--border)] bg-slate-50/30 dark:bg-slate-900/10 shadow-inner"
-                                    >
-                                        <div className="w-28 h-28 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mb-10 shadow-inner">
-                                            <Bot className="w-12 h-12 text-primary" />
-                                        </div>
-                                        <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">No Responses Found</h3>
-                                        <p className="text-[var(--muted-foreground)] max-w-md mx-auto mb-12 font-medium text-lg leading-relaxed">
-                                            {searchQuery ? "No neural nodes match your search criteria. Try a different query." : "Build your first automated reply layer and start saving time with high-performance bot logic."}
-                                        </p>
-                                        <button 
-                                            onClick={() => setShowCreateModal(true)} 
-                                            className="h-16 px-12 rounded-3xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black uppercase tracking-[0.25em] shadow-2xl hover:scale-105 transition-all flex items-center gap-4"
-                                        >
-                                            <Plus size={20} strokeWidth={4} /> Create Neural Node
-                                        </button>
-                                    </motion.div>
-                                ) : view === 'card' ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10">
+                                ) : filteredReplies.length > 0 ? (
+                                    <div className="space-y-3">
                                         {filteredReplies.map((reply) => (
-                                            <BotReplyCard 
-                                                key={reply.id} 
-                                                reply={reply} 
-                                                pages={pages}
-                                                onEdit={handleEdit} 
-                                                onToggleStatus={handleToggleStatus}
-                                                onDuplicate={handleDuplicate}
-                                                onDelete={handleDelete}
-                                            />
+                                            <div
+                                                key={reply.id}
+                                                onClick={() => goToFlow(reply.id)}
+                                                className="group bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-blue-200 dark:hover:border-blue-900/50 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                    <div className={cn(
+                                                        "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all group-hover:rotate-6",
+                                                        reply.status === 'published' ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20" : "bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+                                                    )}>
+                                                        <MessageSquare className="w-4 h-4" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-[15px] font-semibold text-neutral-900 dark:text-white truncate uppercase tracking-tight">{reply.name}</h4>
+                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                            <span className={cn(
+                                                                "text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded",
+                                                                reply.status === 'published' ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20" : "bg-neutral-200/50 text-neutral-600 dark:text-neutral-400"
+                                                            )}>
+                                                                {reply.status}
+                                                            </span>
+                                                            <span className="text-[10px] text-neutral-400 font-medium uppercase tracking-widest whitespace-nowrap">
+                                                                Type: {reply.trigger_type}
+                                                            </span>
+                                                            {selectedPageId === "all" && (
+                                                                <>
+                                                                    <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
+                                                                    <span className="text-[10px] text-[#0866FF] font-semibold uppercase tracking-widest bg-[#0866FF]/10 px-2 rounded-lg truncate max-w-[120px] sm:max-w-none">
+                                                                        {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown"}
+                                                                    </span>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }}
+                                                        className="flex-1 sm:flex-none py-2 px-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow-sm active:scale-95 transition-all text-center whitespace-nowrap"
+                                                    >
+                                                        Edit Flow
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
+                                                        className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
+                                                        title={reply.status === 'published' ? "Pause" : "Live"}
+                                                    >
+                                                        {reply.status === 'published' ? <Pause className="w-4 h-4 text-amber-500" /> : <Play className="w-4 h-4 text-emerald-500" />}
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
+                                                        className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
+                                                        title="Duplicate"
+                                                    >
+                                                        <Copy className="w-4 h-4 text-blue-500" />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
+                                                        className="p-2.5 rounded-lg border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="bg-[var(--card)] border border-[var(--border)] rounded-[4rem] overflow-hidden shadow-[0_32px_128px_rgba(0,0,0,0.08)] backdrop-blur-3xl">
-                                        <table className="w-full text-left border-collapse">
-                                            <thead>
-                                                <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-[var(--border)]">
-                                                    <th className="px-12 py-8 text-[11px] font-black uppercase tracking-[0.3em] text-[var(--muted-foreground)]">Automation Identity</th>
-                                                    <th className="px-12 py-8 text-[11px] font-black uppercase tracking-[0.3em] text-[var(--muted-foreground)]">Neural Trigger</th>
-                                                    <th className="px-12 py-8 text-[11px] font-black uppercase tracking-[0.3em] text-[var(--muted-foreground)]">Connected Page</th>
-                                                    <th className="px-12 py-8 text-[11px] font-black uppercase tracking-[0.3em] text-[var(--muted-foreground)] text-right">Operations</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {filteredReplies.map((reply) => (
-                                                    <BotReplyRow 
-                                                        key={reply.id} 
-                                                        reply={reply} 
-                                                        pages={pages}
-                                                        onEdit={handleEdit} 
-                                                        onToggleStatus={handleToggleStatus}
-                                                        onDuplicate={handleDuplicate}
-                                                        onDelete={handleDelete}
-                                                    />
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </motion.div>
-                        )}
-
-                        {activeMenu === 'ai_agent' && (
-                            <motion.div key="ai_agent_tab" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-10">
-                                {selectedPageId !== "all" ? (
-                                    <AiAgentSettingsPanel
-                                        platform="facebook"
-                                        accountId={selectedPageId}
-                                        accountName={pages.find(p => p.page_id === selectedPageId)?.page_name || "Facebook Page"}
-                                    />
-                                ) : (
-                                    <div className="h-[500px] flex flex-col items-center justify-center text-center p-12 rounded-[5rem] border-2 border-dashed border-amber-200 bg-amber-50/30">
-                                        <div className="w-24 h-24 rounded-full bg-amber-100 flex items-center justify-center mb-8 shadow-inner">
-                                            <ShieldAlert className="w-10 h-10 text-amber-600" />
+                                    <div className="py-16 text-center flex flex-col items-center">
+                                        <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                                            <MessageSquare className="w-8 h-8 text-blue-400" />
                                         </div>
-                                        <h3 className="text-2xl font-black uppercase tracking-tight text-amber-900">Account Selection Required</h3>
-                                        <p className="text-amber-700/70 max-w-sm mx-auto mt-4 font-bold uppercase tracking-[0.15em] text-xs leading-relaxed">
-                                            AI Neural Agents are bound to specific accounts. Please select a single page from the header to begin deep agent configuration.
-                                        </p>
+                                        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
+                                        <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Facebook messages.</p>
+                                        <button
+                                            onClick={() => setShowCreateModal(true)}
+                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
+                                        >
+                                            Build First Reply
+                                        </button>
                                     </div>
                                 )}
                             </motion.div>
                         )}
 
                         {activeMenu === 'action_buttons' && (
-                            <motion.div key="actions_tab" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-10">
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
-                                    {actions.map((action) => (
-                                        <ActionCard key={action.type} action={action} onConfigure={() => handleConfigureAction(action.type)} onToggle={() => handleActionToggle(action)} onDelete={() => handleActionDelete(action)} onOpenFlow={() => goToFlow(action.automation_id!)} />
-                                    ))}
+                            <motion.div key="action" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pb-12">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-800 pb-6">
+                                    <div>
+                                        <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight uppercase">FB Action Shortcuts</h2>
+                                        <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] mt-1">Connect system events to custom automation layers</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => fetchActions()}
+                                            className="p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
+                                        >
+                                            <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
+                                        </button>
+                                    </div>
                                 </div>
+
+                                {isActionsLoading ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="h-44 rounded-3xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                                        ))}
+                                    </div>
+                                ) : actions.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {actions.map(action => {
+                                            const labels: Record<string, { label: string, desc: string }> = {
+                                                'action_get_started': { label: 'Get Started', desc: 'Triggered when someone opens your Messenger' },
+                                                'action_no_match': { label: 'No Match / Fallback', desc: 'Triggered when no bot reply matches' },
+                                                'action_ice_breaker': { label: 'Ice Breakers', desc: 'Precomputed conversation starters' },
+                                            };
+                                            const def = labels[action.type] || { label: action.label || action.type, desc: 'Custom System Action' };
+
+                                            return (
+                                                <div
+                                                    key={action.type}
+                                                    onClick={() => {
+                                                        if (action.automation_id) {
+                                                            goToFlow(action.automation_id);
+                                                        } else {
+                                                            handleConfigureAction(action.type);
+                                                        }
+                                                    }}
+                                                    className="group bg-neutral-50/50 dark:bg-neutral-950/20 shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-[32px] p-6 hover:border-blue-500/30 transition-all flex flex-col justify-between cursor-pointer"
+                                                >
+                                                    <div>
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <div className={cn(
+                                                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm",
+                                                                action.automation_id ? "bg-blue-100 text-[#0866FF] dark:bg-blue-900/40" : "bg-white dark:bg-neutral-900 text-neutral-400 dark:border-neutral-800"
+                                                            )}>
+                                                                {action.type === 'action_get_started' ? <Play className="w-6 h-6 fill-current" /> : <RefreshCw className="w-6 h-6" />}
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                {action.automation_id && (
+                                                                    <>
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleActionToggle(action); }}
+                                                                            className={cn(
+                                                                                "p-2 rounded-lg border transition-all active:scale-90",
+                                                                                action.status === 'published' ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                                            )}
+                                                                            title={action.status === 'published' ? "Pause Action" : "Resume Action"}
+                                                                        >
+                                                                            {action.status === 'published' ? <Pause size={14} /> : <Play size={14} />}
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleActionDelete(action); }}
+                                                                            className="p-2 rounded-lg border bg-red-50 text-red-500 border-red-100 hover:bg-red-100 transition-all active:scale-90"
+                                                                            title="Unmap Action"
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
+                                                            {action.automation_id && (
+                                                                <div className={cn(
+                                                                    "w-1.5 h-1.5 rounded-full",
+                                                                    action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
+                                                                )} />
+                                                            )}
+                                                        </div>
+                                                        <p className="text-[11px] text-neutral-400 font-medium leading-relaxed">{def.desc}</p>
+                                                    </div>
+
+                                                    <div className="mt-8">
+                                                        {action.automation_id ? (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); goToFlow(action.automation_id!); }}
+                                                                className="w-full py-3.5 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-blue-100 dark:border-blue-900/10 text-[#0866FF] dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all flex items-center justify-center gap-2"
+                                                            >
+                                                                <Box size={14} /> Open Flow Logic
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleActionCreate(action.type); }}
+                                                                className="w-full py-3.5 rounded-2xl bg-[#0866FF] text-white text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-blue-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                            >
+                                                                <Plus size={14} strokeWidth={2.5} /> Create Custom Layer
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="py-20 text-center flex flex-col items-center border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[40px]">
+                                        <div className="w-20 h-20 rounded-3xl bg-[#0866FF]/5 dark:bg-[#0866FF]/10 flex items-center justify-center mb-6">
+                                            <MousePointerClick className="w-10 h-10 text-[#0866FF]" />
+                                        </div>
+                                        <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight leading-none">No custom shortcuts</h3>
+                                        <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] max-w-xs mt-2 mb-8 mx-auto leading-relaxed">Map FB system events to neural automation layers to handle complex edge cases.</p>
+                                        <button
+                                            onClick={() => setShowActionModal(true)}
+                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-8 py-3 rounded-2xl font-medium text-[11px] uppercase tracking-widest shadow-xl shadow-neutral-950/20 hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                            Build custom layer
+                                        </button>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 
-                        {activeMenu === 'persistent_menu' && (
-                            <motion.div key="persistent_menu_tab" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-10">
+                        {activeMenu === 'persistent_menu' && selectedPageObj && selectedPageId !== "all" && (
+                            <PersistentMenu
+                                pageId={selectedPageObj.page_id}
+                                actions={actions}
+                            />
+                        )}
+
+                        {activeMenu === 'ai_agent' && (
+                            <motion.div
+                                key="ai"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="py-6 px-4 max-w-6xl mx-auto"
+                            >
                                 {selectedPageId !== "all" ? (
-                                    <PersistentMenu pageId={selectedPageId} actions={actions} />
-                                ) : (
-                                    <div className="h-[500px] flex flex-col items-center justify-center text-center p-12 rounded-[5rem] border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/10">
-                                        <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-8 shadow-inner">
-                                            <Menu className="w-10 h-10 text-slate-600 dark:text-slate-400" />
-                                        </div>
-                                        <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">Menu Scope Required</h3>
-                                        <p className="text-slate-700/70 dark:text-slate-400/70 max-w-sm mx-auto mt-4 font-bold uppercase tracking-[0.15em] text-xs leading-relaxed">
-                                            Persistent menus are profile-specific. Select an account above to modify its navigation and command structure.
-                                        </p>
+                                    <div className="w-full">
+                                        <AiAgentSettingsPanel
+                                            platform="facebook"
+                                            accountId={selectedPageId}
+                                            accountName={selectedPageObj?.page_name || "Facebook Page"}
+                                        />
                                     </div>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="w-full max-w-md p-10 bg-blue-50 dark:bg-blue-500/10 rounded-[40px] border border-blue-100 dark:border-blue-500/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
+                                    >
+                                        <div className="w-16 h-16 rounded-3xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
+                                            <Bot className="w-8 h-8 text-blue-600" />
+                                        </div>
+                                        <h4 className="text-lg font-black text-blue-900 dark:text-blue-400 uppercase tracking-tight leading-tight">Environment Required</h4>
+                                        <p className="text-xs font-bold text-blue-700 dark:text-blue-500/80 uppercase tracking-widest leading-relaxed">Please select a specific Facebook page from the header to enable neural agent configuration.</p>
+                                    </motion.div>
                                 )}
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
-            </div>
-        </div>
 
                 {/* CREATE MODAL */}
-                {/* Creation Modal */}
-            <ModalShell
-                open={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                title="Initialize Neural Reply"
-                icon={<MessageSquare size={20} />}
-                footer={
-                    <div className="flex gap-4">
-                        <button onClick={() => setShowCreateModal(false)} className="flex-1 h-14 rounded-2xl border border-slate-200 text-slate-400 font-black uppercase tracking-[0.2em] text-[11px] hover:bg-slate-50 transition-colors">Cancel</button>
-                        <button
-                            onClick={handleCreate}
-                            disabled={isCreating}
-                            className="flex-[1.8] h-14 px-8 rounded-2xl bg-[var(--primary)] text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-[var(--primary)]/20 flex items-center justify-center gap-3 disabled:opacity-50"
-                        >
-                            {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-                            {isCreating ? "Initializing..." : "Create Response Node"}
-                        </button>
-                    </div>
-                }
-            >
-                <div className="space-y-10 py-2">
-                    <InputField
-                        label="Internal Identity (Name)"
-                        value={newReply.name}
-                        onChange={(e: any) => setNewReply((prev) => ({ ...prev, name: e.target.value }))}
-                        placeholder="e.g. Welcome Message"
-                    />
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        <SelectField
-                            label="Neural Trigger Type"
-                            value={newReply.trigger_type}
-                            onChange={(e: any) => setNewReply((prev) => ({ ...prev, trigger_type: e.target.value }))}
-                            options={[
-                                { value: "exact", label: "Exact Match" },
-                                { value: "contains", label: "Contains Keyword" },
-                                { value: "welcome", label: "Welcome Message" },
-                                { value: "fallback", label: "Fallback (No Match)" }
-                            ]}
-                        />
-                        
-                        {!['welcome', 'fallback'].includes(newReply.trigger_type) && (
-                            <InputField
-                                label="Trigger Keyword"
-                                value={newReply.trigger_value}
-                                onChange={(e: any) => setNewReply((prev) => ({ ...prev, trigger_value: e.target.value }))}
-                                placeholder="e.g. help, price"
+                <AnimatePresence>
+                    {showCreateModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm"
+                                onClick={() => setShowCreateModal(false)}
                             />
-                        )}
-                    </div>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-5 xs:p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
+                            >
+                                <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
+                                    New FB Flow {selectedPageId !== "all" ? `for ${selectedPageObj?.page_name}` : ""}
+                                </h3>
+                                <div className="space-y-4">
+                                    {selectedPageId === "all" && (
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select FB Page</label>
+                                            <div className="relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsCreatePageDropdownOpen(!isCreatePageDropdownOpen)}
+                                                    className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-blue-500 transition-all cursor-pointer flex items-center justify-between"
+                                                >
+                                                    <span className={cn(
+                                                        "truncate",
+                                                        !(newReply.facebook_page_id || creationPageFallback?.page_id) && "text-neutral-400"
+                                                    )}>
+                                                        {pages.find(p => p.page_id === (newReply.facebook_page_id || creationPageFallback?.page_id))?.page_name || "Select a page..."}
+                                                    </span>
+                                                    <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreatePageDropdownOpen && "rotate-180")} />
+                                                </button>
 
-                    <SelectField
-                        label="Target Meta Account"
-                        value={newReply.facebook_page_id || creationPageIdFallback}
-                        onChange={(e: any) => setNewReply((prev) => ({ ...prev, facebook_page_id: e.target.value }))}
-                        options={[
-                            ...pages.map(p => ({ value: p.page_id, label: p.page_name }))
-                        ]}
-                    />
-
-                    <div className="p-8 rounded-[3rem] bg-indigo-500/5 border border-indigo-500/10 flex items-start gap-6 shadow-inner">
-                        <Info size={24} className="text-indigo-600 mt-1 shrink-0" />
-                        <p className="text-[12px] text-indigo-700/80 dark:text-indigo-400 font-bold uppercase tracking-[0.1em] leading-relaxed">
-                            Once initialized, you can access the Neural Flow Designer to build complex multi-step logical paths, media-rich sequences, and AI-driven branching logic.
-                        </p>
-                    </div>
-                </div>
-            </ModalShell>
-
-            {/* Action Selection Modal */}
-            {showActionModal && (
-                <ModalShell
-                    open={showActionModal}
-                    onClose={() => setShowActionModal(false)}
-                    title="Map System Action"
-                    icon={<Target size={20} />}
-                >
-                    <div className="space-y-6">
-                         <div className="mb-8">
-                            <p className="text-lg font-medium text-slate-500 dark:text-slate-400">Choose a custom automated response to trigger for the <span className="text-primary font-black uppercase tracking-widest">"{selectedActionType}"</span> system event.</p>
-                        </div>
-                        <div className="space-y-4 max-h-[450px] overflow-y-auto pr-2 no-scrollbar">
-                            {replies.filter(r => r.facebook_page_id === selectedPageId).map(r => (
-                                <button
-                                    key={r.id}
-                                    onClick={async () => {
-                                        try {
-                                            await api.post(`/facebook/actions/${selectedActionType}`, { bot_reply_id: r.id, facebook_page_id: selectedPageId });
-                                            showModal("success", "Mapped", "Action mapped!");
-                                            setShowActionModal(false);
-                                            fetchActions(selectedPageId);
-                                        } catch (e) { showModal("error", "Error", "Mapping failed"); }
-                                    }}
-                                    className="w-full group p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:bg-white dark:hover:bg-slate-800 shadow-sm transition-all flex items-center justify-between"
-                                >
-                                    <div className="text-left">
-                                        <div className="font-black text-slate-900 dark:text-white uppercase tracking-tight text-xl leading-tight">{r.name}</div>
-                                        <div className="flex items-center gap-3 mt-2">
-                                            <span className={cn("text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full", r.status === 'published' ? "bg-emerald-100 text-emerald-600 shadow-sm" : "bg-slate-200 text-slate-500")}>{r.status}</span>
-                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] leading-none">• {r.trigger_type}</span>
+                                                <AnimatePresence>
+                                                    {isCreatePageDropdownOpen && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                                            className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
+                                                        >
+                                                            <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
+                                                                <div className="relative">
+                                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Search pages..."
+                                                                        value={createPageSearchQuery}
+                                                                        onChange={(e) => setCreatePageSearchQuery(e.target.value)}
+                                                                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-blue-500/30 text-sm outline-none transition-all"
+                                                                        autoFocus
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
+                                                                {pages.filter(p => !createPageSearchQuery || p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).map(p => (
+                                                                    <button
+                                                                        key={p.id}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setNewReply({ ...newReply, facebook_page_id: p.page_id });
+                                                                            setIsCreatePageDropdownOpen(false);
+                                                                        }}
+                                                                        className={cn(
+                                                                            "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
+                                                                            (newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id
+                                                                                ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold"
+                                                                                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                                        )}
+                                                                    >
+                                                                        <FacebookIcon className="w-4 h-4 opacity-50 text-[#0866FF]" />
+                                                                        <span className="truncate">{p.page_name}</span>
+                                                                        {(newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id && (
+                                                                            <CheckCircle2 className="w-4 h-4 ml-auto text-blue-500" />
+                                                                        )}
+                                                                    </button>
+                                                                ))}
+                                                                {pages.filter(p => p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).length === 0 && (
+                                                                    <div className="py-4 text-center text-xs text-neutral-500">No pages found</div>
+                                                                )}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="space-y-2">
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Template Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. Support Bot (FB)"
+                                            value={newReply.name}
+                                            onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Reply Type</label>
+                                        <select
+                                            value={newReply.trigger_type}
+                                            onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 appearance-none transition-all cursor-pointer"
+                                        >
+                                            <option value="exact">Exact Match</option>
+                                            <option value="contains">Contains Word</option>
+                                            <option value="starts_with">Starts With</option>
+                                            <option value="keywords">Multiple Keywords</option>
+                                            <option value="welcome">Welcome</option>
+                                            <option value="fallback">Fallback</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Keywords</label>
+                                        <input
+                                            type="text"
+                                            placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "help, support"}
+                                            value={newReply.trigger_value}
+                                            onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 transition-all disabled:opacity-50"
+                                            disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
+                                        />
+                                    </div>
+                                    <div className="pt-4 flex flex-col gap-3">
+                                        <button
+                                            onClick={async () => {
+                                                await handleCreate();
+                                                const latest = replies[replies.length - 1];
+                                                if (latest) await handleToggleStatus({ ...latest, status: 'draft' });
+                                            }}
+                                            disabled={isCreating}
+                                            className="w-full py-3 rounded-xl bg-[#0866FF] text-white font-semibold text-sm shadow-md hover:bg-[#0055D4] hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                        >
+                                            {isCreating ? 'Creating...' : '⚡ Save & Publish'}
+                                        </button>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => setShowCreateModal(false)}
+                                                className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleCreate}
+                                                disabled={isCreating}
+                                                className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            >
+                                                {isCreating ? 'Creating...' : 'Save as Draft'}
+                                            </button>
                                         </div>
                                     </div>
-                                    <ArrowRight size={24} className="text-slate-300 group-hover:text-primary group-hover:translate-x-2 transition-all" />
-                                </button>
-                            ))}
-                            {replies.filter(r => r.facebook_page_id === selectedPageId).length === 0 && (
-                                <div className="text-center py-16 px-8 bg-slate-50 rounded-[3rem] border-4 border-dashed border-slate-100">
-                                    <p className="text-sm font-black text-slate-300 uppercase tracking-[0.3em]">No Flows Found for this Page</p>
                                 </div>
-                            )}
-                            <button
-                                onClick={() => { setShowActionModal(false); setShowCreateModal(true); }}
-                                className="w-full p-10 rounded-[3rem] border-4 border-dashed border-slate-100 dark:border-slate-800 text-slate-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all font-black text-xs uppercase tracking-[0.3em] flex flex-col items-center justify-center gap-6 group"
-                            >
-                                <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner"><Plus size={32} strokeWidth={4} /></div>
-                                Initialize New Target Flow
-                            </button>
+                            </motion.div>
                         </div>
-                    </div>
-                </ModalShell>
-            )}
-        </div>
-    );
-}
+                    )}
+                </AnimatePresence>
+                {/* ACTION CONFIGURATION MODAL */}
+                <AnimatePresence>
+                    {showActionModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
+                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[40px] p-10 w-full max-w-md shadow-2xl relative z-10">
+                                <h3 className="text-2xl font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">Map FB Shortcut</h3>
+                                <p className="text-sm text-neutral-500 mb-8 font-medium">Select a system event to automate with a new flow.</p>
 
-function BotReplyCard({ reply, pages, onEdit, onToggleStatus, onDuplicate, onDelete }: any) {
-    const isLive = reply.status === 'published';
-    const page = pages.find((p: any) => p.page_id === reply.facebook_page_id);
+                                <div className="space-y-3">
+                                    {[
+                                        { type: 'action_get_started', label: 'Get Started', icon: <Play className="w-4 h-4" /> },
+                                        { type: 'action_no_match', label: 'No Match / Fallback', icon: <RefreshCw className="w-4 h-4" /> },
+                                        { type: 'action_ice_breaker', label: 'Ice Breakers', icon: <Layers className="w-4 h-4" /> },
+                                    ].map(opt => {
+                                        const exists = actions.some(a => a.type === opt.type);
+                                        return (
+                                            <button
+                                                key={opt.type}
+                                                onClick={() => handleActionCreate(opt.type)}
+                                                disabled={exists || isCreating}
+                                                className={cn(
+                                                    "w-full p-4 rounded-3xl border text-left flex items-center justify-between group transition-all",
+                                                    exists
+                                                        ? "bg-neutral-50/50 border-neutral-100 dark:bg-neutral-900/50 dark:border-neutral-800 opacity-50 cursor-not-allowed"
+                                                        : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 hover:border-blue-500/50 hover:bg-blue-50/20"
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-neutral-100 text-neutral-400" : "bg-blue-50 text-blue-500 group-hover:bg-blue-100")}>
+                                                        {opt.icon}
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-sm font-bold text-neutral-900 dark:text-white block leading-none">{opt.label}</span>
+                                                        {exists && <span className="text-[10px] font-black uppercase text-amber-500 tracking-widest mt-1 block">Already Configured</span>}
+                                                    </div>
+                                                </div>
+                                                {!exists && <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-blue-500" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
 
-    return (
-        <div 
-            onClick={() => onEdit(reply)}
-            className="group bg-[var(--card)] border border-[var(--border)] rounded-[4rem] p-10 hover:shadow-[0_32px_128px_rgba(0,0,0,0.1)] hover:border-primary/50 transition-all duration-700 flex flex-col gap-8 relative overflow-hidden cursor-pointer"
-        >
-            <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                <Bot className="w-40 h-40" />
-            </div>
-
-            <div className="flex items-start justify-between relative z-10">
-                <div className={cn(
-                    "w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-inner transition-all duration-500 group-hover:scale-110",
-                    isLive ? "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white" : "bg-slate-500/10 text-slate-500 group-hover:bg-slate-500 group-hover:text-white"
-                )}>
-                    <MessageSquare size={32} strokeWidth={2.5} />
-                </div>
-                <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-[var(--background)] border border-[var(--border)] shadow-xl">
-                    <span className={cn("w-2.5 h-2.5 rounded-full shadow-sm", isLive ? "bg-emerald-500 animate-pulse" : "bg-slate-300")} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--muted-foreground)]">
-                        {isLive ? "Active Node" : "Draft Layer"}
-                    </span>
-                </div>
-            </div>
-
-            <div className="space-y-3 relative z-10">
-                <h3 className="font-black text-2xl group-hover:text-primary transition-colors truncate uppercase tracking-tight leading-tight">{reply.name}</h3>
-                <div className="flex items-center gap-3 text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity">
-                    <Zap size={14} className="text-[var(--primary)]" /> 
-                    {reply.trigger_type}: {reply.trigger_value || "System Event"}
-                </div>
-                {page && (
-                     <div className="flex items-center gap-2.5 text-[10px] font-black text-primary uppercase tracking-[0.25em] mt-2 px-3 py-1 bg-primary/5 rounded-full w-fit">
-                        <FacebookIcon size={12} className="fill-primary" /> {page.page_name}
-                    </div>
-                )}
-            </div>
-
-            <div className="flex items-center justify-between pt-8 border-t border-[var(--border)] relative z-10 mt-auto">
-                <div className="flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                        onClick={() => onToggleStatus(reply)}
-                        className={cn(
-                            "relative inline-flex h-7 w-14 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300 shadow-inner",
-                            isLive ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"
-                        )}
-                    >
-                        <span className={cn("pointer-events-none block h-5 w-5 rounded-full bg-white shadow-xl ring-0 transition-transform duration-300", isLive ? "translate-x-7" : "translate-x-0.5")} />
-                    </button>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Node Logic</span>
-                </div>
-
-                <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onDuplicate(reply.id)} className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-white/5 border border-transparent hover:border-primary/30 text-slate-500 hover:text-primary transition-all flex items-center justify-center shadow-sm">
-                        <Copy size={20} />
-                    </button>
-                    <BotReplyActions reply={reply} onEdit={onEdit} onDelete={onDelete} />
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function BotReplyRow({ reply, pages, onEdit, onToggleStatus, onDuplicate, onDelete }: any) {
-    const isLive = reply.status === 'published';
-    const page = pages.find((p: any) => p.page_id === reply.facebook_page_id);
-
-    return (
-        <tr 
-            onClick={() => onEdit(reply)}
-            className="group hover:bg-primary/[0.02] transition-all border-b border-[var(--border)]/50 last:border-none cursor-pointer"
-        >
-            <td className="px-12 py-10">
-                <div className="flex items-center gap-8">
-                    <div className={cn(
-                        "w-20 h-20 rounded-[2rem] flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-700 shadow-inner",
-                        isLive ? "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white" : "bg-slate-500/10 text-slate-500 group-hover:bg-slate-500 group-hover:text-white"
-                    )}>
-                        <MessageSquare size={32} strokeWidth={2.5} />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="font-black text-2xl truncate group-hover:text-primary transition-colors leading-tight uppercase tracking-tight">{reply.name}</p>
-                        <div className="flex items-center gap-4 mt-3">
-                            <span className={cn("text-[10px] font-black uppercase tracking-[0.25em] px-4 py-1.5 rounded-full shadow-sm", isLive ? "bg-emerald-500/10 text-emerald-600" : "bg-slate-100 text-slate-500")}>
-                                {reply.status}
-                            </span>
-                            <span className="text-[11px] text-[var(--muted-foreground)] font-bold uppercase tracking-[0.3em] opacity-40">Sync Node: {new Date(reply.created_at).toLocaleDateString()}</span>
+                                <button onClick={() => setShowActionModal(false)} className="w-full mt-6 py-3.5 rounded-2xl text-neutral-400 hover:text-neutral-600 font-bold text-xs uppercase tracking-[0.2em] transition-all">Cancel</button>
+                            </motion.div>
                         </div>
-                    </div>
-                </div>
-            </td>
-            <td className="px-12 py-10">
-                <div className="inline-flex flex-col gap-2">
-                    <span className="text-[13px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white flex items-center gap-3">
-                        <Zap size={16} className="text-[var(--primary)]" /> {reply.trigger_type}
-                    </span>
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.25em] truncate max-w-[240px]">
-                        {reply.trigger_value || "Global Meta Event"}
-                    </span>
-                </div>
-            </td>
-            <td className="px-12 py-10">
-                {page ? (
-                    <div className="flex items-center gap-4 px-6 py-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm w-fit transition-all group-hover:border-primary/20">
-                        <FacebookIcon size={16} className="text-[var(--primary)] fill-[var(--primary)]" />
-                        <span className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-700 dark:text-slate-300">{page.page_name}</span>
-                    </div>
-                ) : (
-                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-[0.4em] italic">Detached Page</span>
-                )}
-            </td>
-            <td className="px-12 py-10 text-right">
-                <div className="flex items-center justify-end gap-4" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                        onClick={() => onToggleStatus(reply)}
-                        className={cn(
-                            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all border shadow-lg hover:scale-110",
-                            isLive ? "bg-emerald-50 border-emerald-100 text-emerald-600 hover:bg-emerald-100" : "bg-slate-50 border-slate-100 text-slate-400 hover:bg-slate-100"
-                        )}
-                    >
-                        {isLive ? <Pause size={20} strokeWidth={2.5} /> : <Play size={20} strokeWidth={2.5} />}
-                    </button>
-                    <button onClick={() => onDuplicate(reply.id)} className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-primary hover:border-primary/30 transition-all flex items-center justify-center shadow-lg hover:scale-110">
-                        <Copy size={20} />
-                    </button>
-                    <BotReplyActions reply={reply} onEdit={onEdit} onDelete={onDelete} />
-                </div>
-            </td>
-        </tr>
-    );
-}
-
-function BotReplyActions({ reply, onEdit, onDelete }: any) {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="w-14 h-14 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-400 hover:text-slate-600 bg-white dark:bg-slate-950 shadow-lg hover:scale-110">
-                    <MoreVertical size={24} />
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-4 rounded-[2.5rem] border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-3xl shadow-[0_32px_128px_rgba(0,0,0,0.25)]">
-                <DropdownMenuItem onClick={() => onEdit(reply)} className="h-14 rounded-2xl gap-5 px-5 cursor-pointer">
-                    <Pencil size={20} className="text-slate-500" /> <span className="font-black text-[12px] uppercase tracking-[0.2em]">Neural Designer</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="h-14 rounded-2xl gap-5 px-5 cursor-pointer" onClick={() => window.open(`https://facebook.com/${reply.facebook_page_id}`, '_blank')}>
-                    <ExternalLink size={20} className="text-slate-500" /> <span className="font-black text-[12px] uppercase tracking-[0.2em]">Meta Context</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="h-14 rounded-2xl gap-5 px-5 cursor-pointer">
-                    <BarChart2 size={20} className="text-slate-500" /> <span className="font-black text-[12px] uppercase tracking-[0.2em]">Deep Analytics</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="h-14 rounded-2xl gap-5 px-5 cursor-pointer">
-                    <History size={20} className="text-slate-500" /> <span className="font-black text-[12px] uppercase tracking-[0.2em] opacity-40">System Trace</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-3 bg-slate-100 dark:bg-white/5" />
-                <DropdownMenuItem onClick={() => onDelete(reply.id)} className="h-14 rounded-2xl gap-5 px-5 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
-                    <Trash2 size={20} className="text-red-500" /> <span className="font-black text-[12px] uppercase tracking-[0.2em]">Purge Node</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-}
-
-function ActionCard({ action, onConfigure, onToggle, onDelete, onOpenFlow }: any) {
-    const isMapped = !!action.automation_id;
-    const isLive = action.status === 'published';
-
-    return (
-        <div className="group bg-[var(--card)] border border-[var(--border)] rounded-[4.5rem] p-12 hover:shadow-[0_32px_128px_rgba(0,0,0,0.15)] hover:border-primary/50 transition-all duration-700 flex flex-col gap-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                <Target className="w-48 h-48" />
-            </div>
-
-            <div className="flex items-start justify-between relative z-10">
-                <div className={cn(
-                    "w-24 h-24 rounded-[2.5rem] flex items-center justify-center shadow-inner transition-all duration-700 group-hover:rotate-6",
-                    isMapped ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-400"
-                )}>
-                    <Zap size={44} strokeWidth={2.5} />
-                </div>
-                {isMapped && (
-                    <div className="flex gap-4">
-                        <button onClick={onToggle} className={cn("w-12 h-12 rounded-2xl border flex items-center justify-center transition-all active:scale-90 shadow-lg hover:scale-110", isLive ? "bg-amber-50 border-amber-100 text-amber-600" : "bg-emerald-50 border-emerald-100 text-emerald-600")}>
-                            {isLive ? <Pause size={20} /> : <Play size={20} />}
-                        </button>
-                        <button onClick={onDelete} className="w-12 h-12 rounded-2xl border bg-red-50 text-red-500 border-red-100 hover:bg-red-100 flex items-center justify-center transition-all active:scale-90 shadow-lg hover:scale-110">
-                            <Trash2 size={20} />
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            <div className="space-y-4 relative z-10 flex-1">
-                <div className="flex items-center gap-4">
-                    <h3 className="font-black text-3xl uppercase tracking-tight text-slate-900 dark:text-white leading-tight">{action.label}</h3>
-                    {isMapped && <span className={cn("w-3 h-3 rounded-full shadow-lg", isLive ? "bg-emerald-500 animate-pulse" : "bg-slate-300")} />}
-                </div>
-                <p className="text-[var(--muted-foreground)] font-medium text-lg leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">
-                    {isMapped 
-                        ? "Currently governed by an active neural flow layer. Custom logic has overridden the system default behavior."
-                        : "Operating on core system logic. Create a custom neural layer to orchestrate tailored responses for this event."}
-                </p>
-            </div>
-
-            <div className="mt-10 relative z-10">
-                {isMapped ? (
-                    <button onClick={onOpenFlow} className="w-full h-20 rounded-[2rem] bg-white dark:bg-slate-900 border-2 border-primary/20 text-primary font-black uppercase tracking-[0.3em] text-[12px] shadow-sm hover:shadow-2xl hover:bg-primary/5 transition-all flex items-center justify-center gap-4">
-                        <Box size={20} /> DESIGNER STUDIO
-                    </button>
-                ) : (
-                    <button onClick={onConfigure} className="w-full h-20 rounded-[2rem] bg-slate-900 dark:bg-white text-white dark:text-neutral-900 font-black uppercase tracking-[0.3em] text-[12px] shadow-2xl shadow-slate-900/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4">
-                        <Plus size={20} strokeWidth={4} /> OVERRIDE LOGIC
-                    </button>
-                )}
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
 }
+
