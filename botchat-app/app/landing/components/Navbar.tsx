@@ -16,7 +16,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  
+
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -32,10 +32,9 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   const useLight = forceLight || isScrolled;
 
   const navLinks = [
-    { name: "Features", href: "#features" },
-    { name: "Solutions", href: "#solutions" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Company", href: "#company" },
+    { name: "Features", href: "/features" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Blog", href: "/blog" },
   ];
 
   return (
@@ -44,8 +43,8 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className={`pointer-events-auto flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-full transition-all duration-500 border ${useLight
-            ? "bg-white/70 backdrop-blur-xl border-gray-200/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
-            : "bg-[#06000d]/40 backdrop-blur-lg border-white/10 shadow-2xl"
+          ? "bg-white/70 backdrop-blur-xl border-gray-200/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
+          : "bg-[#06000d]/40 backdrop-blur-lg border-white/10 shadow-2xl"
           }`}
       >
         {/* LOGO */}
@@ -99,10 +98,10 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
             <div className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className={`flex items-center p-1 rounded-full border transition-all ${useLight 
-                  ? "bg-gray-50 border-gray-200 text-gray-900" 
+                className={`flex items-center p-1 rounded-full border transition-all ${useLight
+                  ? "bg-gray-50 border-gray-200 text-gray-900"
                   : "bg-white/10 border-white/10 text-white"
-                }`}
+                  }`}
               >
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FF2D78] to-[#E1306C] flex items-center justify-center text-white font-bold text-xs overflow-hidden">
                   {(user?.name?.charAt(0) || user?.email?.charAt(0) || "U").toUpperCase()}

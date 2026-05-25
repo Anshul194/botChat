@@ -31,7 +31,7 @@ export default function BlogSection() {
   return (
     <section className="py-24 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div className="max-w-2xl">
@@ -43,10 +43,10 @@ export default function BlogSection() {
               Latest from our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#ff8cc8]">Blog</span>
             </h2>
           </div>
-          <button className="hidden md:flex items-center gap-2 font-bold text-gray-600 hover:text-[#FF2D78] transition-colors group pb-2">
-            View All Posts 
+          <Link href="/blog" className="hidden md:flex items-center gap-2 font-bold text-gray-600 hover:text-[#FF2D78] transition-colors group pb-2">
+            View All Posts
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
         </div>
 
         {/* Grid */}
@@ -62,16 +62,16 @@ export default function BlogSection() {
               className="group flex flex-col bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-xl shadow-black/5 hover:shadow-2xl hover:shadow-[#FF2D78]/10 hover:-translate-y-1 transition-all duration-300"
             >
               <div className="relative w-full h-[240px] overflow-hidden bg-gray-100">
-                <img 
-                  src={post.image} 
-                  alt={post.title} 
+                <img
+                  src={post.image}
+                  alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-[#FF2D78] shadow-sm">
                   {post.category}
                 </div>
               </div>
-              
+
               <div className="p-8 flex flex-col flex-1">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">{post.date}</p>
                 <h3 className="text-2xl font-black text-gray-900 leading-tight mb-4 group-hover:text-[#FF2D78] transition-colors">
@@ -80,7 +80,7 @@ export default function BlogSection() {
                 <p className="text-gray-600 text-sm leading-relaxed mb-8 flex-1">
                   {post.desc}
                 </p>
-                
+
                 <div className="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between font-bold text-[13px] uppercase tracking-widest text-[#0f0f0f] group-hover:text-[#FF2D78] transition-colors">
                   <span>Read Article</span>
                   <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-[#FF2D78]/10 flex items-center justify-center transition-colors">
