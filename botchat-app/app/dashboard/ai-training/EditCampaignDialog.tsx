@@ -55,7 +55,7 @@ function SourceStatusBadge({ status }: { status?: string }) {
         active: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
         pending: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
         failed: "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800",
-        processed: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+        processed: "bg-primary/10 text-primary border-primary/20",
     };
     return (
         <span className={cn(
@@ -260,13 +260,13 @@ function AddSourceModal({
                                         <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">Content Format</label>
                                         <div className="flex items-center gap-6">
                                             <label className="flex items-center gap-2 cursor-pointer group" onClick={() => setManualFormat("faq")}>
-                                                <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center transition-colors", manualFormat === "faq" ? "border-blue-600 bg-blue-600" : "border-neutral-300 dark:border-neutral-600")}>
+                                                <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center transition-colors", manualFormat === "faq" ? "border-primary bg-primary" : "border-neutral-300 dark:border-neutral-600")}>
                                                     {manualFormat === "faq" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                                 </div>
                                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">Q&A / FAQ</span>
                                             </label>
                                             <label className="flex items-center gap-2 cursor-pointer group" onClick={() => setManualFormat("raw")}>
-                                                <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center transition-colors", manualFormat === "raw" ? "border-blue-600 bg-blue-600" : "border-neutral-300 dark:border-neutral-600")}>
+                                                <div className={cn("w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center transition-colors", manualFormat === "raw" ? "border-primary bg-primary" : "border-neutral-300 dark:border-neutral-600")}>
                                                     {manualFormat === "raw" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                                                 </div>
                                                 <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">Raw Text/Info</span>
@@ -308,7 +308,7 @@ function AddSourceModal({
                                         </h5>
                                         <div className="grid grid-cols-2 gap-3">
                                             <FormField label="Selector Type">
-                                                <select value={urlFetchType} onChange={(e) => setUrlFetchType(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
+                                                <select value={urlFetchType} onChange={(e) => setUrlFetchType(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-primary">
                                                     <option value="">Select Selector</option>
                                                     <option value="id">ID</option>
                                                     <option value="class">Class</option>
@@ -331,7 +331,7 @@ function AddSourceModal({
                                                 <div key={idx} className="flex gap-3 items-end">
                                                     <div className="flex-1 grid grid-cols-2 gap-3">
                                                         <FormField label={idx === 0 ? "Selector Type" : ""}>
-                                                            <select value={sel.type} onChange={(e) => { const n = [...urlRemoveSelectors]; n[idx].type = e.target.value; setUrlRemoveSelectors(n); }} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
+                                                            <select value={sel.type} onChange={(e) => { const n = [...urlRemoveSelectors]; n[idx].type = e.target.value; setUrlRemoveSelectors(n); }} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-primary">
                                                                 <option value="">Select Selector</option>
                                                                 <option value="id">ID</option>
                                                                 <option value="class">Class</option>
@@ -358,7 +358,7 @@ function AddSourceModal({
                             {type === "file" && (
                                 <div className="space-y-6">
                                     <div>
-                                        <h4 className="text-sm font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wide flex flex-wrap items-center gap-2 mb-1">
+                                        <h4 className="text-sm font-bold text-primary uppercase tracking-wide flex flex-wrap items-center gap-2 mb-1">
                                             UPLOAD FILE
                                             <span className="text-xs normal-case text-neutral-500 font-normal">
                                                 (Upload documents (PDF, Word, Excel, CSV, OpenDocument, TXT) with structured information for the bot to learn from.
@@ -375,7 +375,8 @@ function AddSourceModal({
                                             </div>
                                             <button
                                                 onClick={() => fileRef.current?.click()}
-                                                className="h-11 px-6 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold rounded-r-md transition-colors shadow-sm shadow-pink-500/20"
+                                                className="h-11 px-6 text-white text-sm font-semibold rounded-r-md transition-colors shadow-sm"
+                                                style={{ background: "var(--brand-gradient)", boxShadow: "0 4px 12px -2px rgba(29, 110, 245, 0.25)" }}
                                             >
                                                 Upload
                                             </button>
@@ -392,14 +393,16 @@ function AddSourceModal({
                                         <button
                                             onClick={() => handleGeneratePreview("raw_response")}
                                             disabled={isPreviewLoading}
-                                            className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "raw_response" ? "bg-pink-600 border-pink-600 text-white shadow-md shadow-pink-500/25" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
+                                            className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "raw_response" ? "text-white shadow-md shadow-primary/25 border-transparent" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
+                                            style={fileParseMode === "raw_response" ? { background: "var(--brand-gradient)" } : {}}
                                         >
                                             <RefreshCcw className={cn("w-4 h-4", isPreviewLoading && fileParseMode === "raw_response" && "animate-spin")} /> Generate Raw Response
                                         </button>
                                         <button
                                             onClick={() => handleGeneratePreview("generate_faq")}
                                             disabled={isPreviewLoading}
-                                            className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "generate_faq" ? "bg-pink-600 border-pink-600 text-white shadow-md shadow-pink-500/25" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
+                                            className={cn("h-11 rounded-md text-sm font-bold flex items-center justify-center gap-2 transition-all border disabled:opacity-60", fileParseMode === "generate_faq" ? "text-white shadow-md shadow-primary/25 border-transparent" : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 text-neutral-600 dark:text-neutral-300")}
+                                            style={fileParseMode === "generate_faq" ? { background: "var(--brand-gradient)" } : {}}
                                         >
                                             <RefreshCcw className={cn("w-4 h-4", isPreviewLoading && fileParseMode === "generate_faq" && "animate-spin")} /> Generate FAQ
                                         </button>
@@ -420,7 +423,7 @@ function AddSourceModal({
                                             value={previewContent}
                                             onChange={(e) => setPreviewContent(e.target.value)}
                                             placeholder={file ? (isPreviewLoading ? "Generating preview..." : "Click a Generate button to preview content.") : "No file selected."}
-                                            className="w-full h-40 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 p-4 overflow-y-auto text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                                            className="w-full h-40 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 p-4 overflow-y-auto text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                             readOnly={!file || !previewContent}
                                         />
                                     </div>
@@ -434,7 +437,7 @@ function AddSourceModal({
                                             <StyledInput placeholder="e.g. Shopify Products" value={apiName} onChange={setApiName} className="rounded-md" />
                                         </FormField>
                                         <FormField label="HTTP Method">
-                                            <select value={apiMethod} onChange={(e) => setApiMethod(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-pink-500">
+                                            <select value={apiMethod} onChange={(e) => setApiMethod(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-primary">
                                                 <option value="GET">GET</option>
                                                 <option value="POST">POST</option>
                                                 <option value="PUT">PUT</option>
@@ -491,7 +494,7 @@ function AddSourceModal({
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <button onClick={() => handleSubmit("raw_response")} disabled={isAddingSource} className="h-10 px-5 rounded-md bg-white border border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-900 dark:border-neutral-700 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-semibold transition-colors disabled:opacity-60">{isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate Raw Response"}</button>
-                                        <button onClick={() => handleSubmit("generate_faq")} disabled={isAddingSource} className="h-10 px-5 rounded-md bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-500/25 transition-colors disabled:opacity-60">{isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate FAQ"}</button>
+                                        <button onClick={() => handleSubmit("generate_faq")} disabled={isAddingSource} className="h-10 px-5 rounded-md text-white text-sm font-semibold shadow-md active:scale-95 transition-all disabled:opacity-60" style={{ background: "var(--brand-gradient)", boxShadow: "0 4px 12px -2px rgba(29, 110, 245, 0.25)" }}>{isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate FAQ"}</button>
                                     </div>
                                 </>
                             ) : (
@@ -502,7 +505,8 @@ function AddSourceModal({
                                     <button
                                         onClick={() => handleSubmit()}
                                         disabled={isAddingSource}
-                                        className="h-10 px-5 rounded-md bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-500/25 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                                        className="h-10 px-5 rounded-md text-white text-sm font-semibold shadow-md active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                                        style={{ background: "var(--brand-gradient)", boxShadow: "0 4px 12px -2px rgba(29, 110, 245, 0.25)" }}
                                     >
                                         {isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                                             <>
@@ -647,7 +651,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                     {(s.content) && <p className="text-[10px] text-neutral-400 truncate mt-0.5">{s.content}</p>}
                 </div>
             );
-            if (s.type === "url") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs text-blue-600 dark:text-blue-400 truncate font-medium">{s.url || "—"}</p></div>;
+            if (s.type === "url") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs text-primary truncate font-medium">{s.url || "—"}</p></div>;
             if (s.type === "file") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs font-medium text-neutral-800 dark:text-neutral-200 truncate">{s.file_name || "—"}</p></div>;
             if (s.type === "api") return (
                 <div className="px-4 py-3 max-w-[220px]">
@@ -679,7 +683,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
             {/* Section header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <div className="w-1 h-4 rounded-full bg-pink-500" />
+                    <div className="w-1 h-4 rounded-full bg-primary" />
                     <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
                         Knowledge Base Sources
                     </h3>
@@ -692,7 +696,8 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 <div className="relative" ref={dropdownRef}>
                     <button
                         onClick={() => setShowDropdown(p => !p)}
-                        className="flex items-center gap-1.5 h-8 px-3 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold shadow-sm active:scale-95 transition-all"
+                        className="flex items-center gap-1.5 h-8 px-3 rounded-xl text-white text-xs font-bold shadow-sm active:scale-95 transition-all"
+                        style={{ background: "var(--brand-gradient)" }}
                     >
                         <Plus className="w-3.5 h-3.5" />
                         Add Knowledge Source
@@ -739,7 +744,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                             className={cn(
                                 "flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 -mb-px transition-all",
                                 activeTab === tab.key
-                                    ? "border-pink-500 text-pink-600 dark:text-pink-400"
+                                    ? "border-primary text-primary"
                                     : "border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
                             )}
                         >
@@ -748,7 +753,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                                 <span className={cn(
                                     "text-[9px] font-bold px-1.5 py-0.5 rounded-full",
                                     activeTab === tab.key
-                                        ? "bg-pink-100 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400"
+                                        ? "bg-primary/10 text-primary"
                                         : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500"
                                 )}>
                                     {count}
@@ -773,7 +778,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 {/* Table body */}
                 {isLoadingSources || isLoadingContents ? (
                     <div className="flex items-center justify-center py-10 gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin text-pink-500" />
+                        <Loader2 className="w-5 h-5 animate-spin text-primary" />
                         <span className="text-xs text-neutral-400">Loading data...</span>
                     </div>
                 ) : tabSources.length === 0 ? (
@@ -911,8 +916,8 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
                 {/* Panel Header */}
                 <DialogHeader className="px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-                            <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <Edit2 className="w-4 h-4 text-primary" />
                         </div>
                         <div className="text-left">
                             <DialogTitle className="text-base font-bold text-neutral-900 dark:text-white">
@@ -988,7 +993,8 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
                     <button
                         onClick={handleSave}
                         disabled={isSubmitting}
-                        className="h-10 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all disabled:opacity-60"
+                        className="h-10 px-6 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-60"
+                        style={{ background: "var(--brand-gradient)", boxShadow: "0 4px 12px -2px rgba(29, 110, 245, 0.25)" }}
                     >
                         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
                     </button>
