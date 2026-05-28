@@ -6,6 +6,7 @@ interface FlowStepMessageProps {
     text: string;
     field?: string | null;
     event?: string;
+    isInbound?: boolean;
 }
 
 /**
@@ -14,11 +15,15 @@ interface FlowStepMessageProps {
  * Renders bot flow step messages (questions, retries, max-retry errors).
  * Shows a subtle badge to distinguish from regular text bubbles.
  */
-export default function FlowStepMessage({ text, field, event }: FlowStepMessageProps) {
+export default function FlowStepMessage({ text, field, event, isInbound }: FlowStepMessageProps) {
     const isError = event === "validation_error" || event === "max_retry";
 
+    const bubbleClass = isInbound
+        ? "bg-muted text-foreground border border-border"
+        : "bg-primary text-white shadow-sm";
+
     return (
-        <div className="min-w-[160px] max-w-[280px]">
+        <div className={`min-w-[160px] max-w-[280px] px-4 py-2.5 rounded-2xl ${bubbleClass}`}>
             {/* Flow step indicator badge */}
             <div className="flex items-center gap-1 mb-2">
                 {isError ? (

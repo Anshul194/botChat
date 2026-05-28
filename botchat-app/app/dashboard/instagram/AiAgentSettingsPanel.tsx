@@ -20,6 +20,8 @@ interface AiAgentSettings {
     ai_reply_delay: number;
     enable_intent_detection: boolean;
     ai_reasoning_level: "low" | "medium" | "high";
+    ai_language_mode: "auto" | "fixed";
+    ai_default_language: string;
     restricted_topics_json: string | null;
     restricted_response: string | null;
     enable_typing_indicator: boolean;
@@ -94,6 +96,8 @@ export function AiAgentSettingsPanel({
         ai_reply_delay: 0,
         enable_intent_detection: true,
         ai_reasoning_level: "low",
+        ai_language_mode: "auto",
+        ai_default_language: "Hindi",
         restricted_topics_json: null,
         restricted_response: null,
         enable_typing_indicator: true,
@@ -123,6 +127,8 @@ export function AiAgentSettingsPanel({
                     ai_reply_delay: Number(s.ai_reply_delay) || 0,
                     enable_intent_detection: s.enable_intent_detection !== undefined ? !!s.enable_intent_detection : true,
                     ai_reasoning_level: s.ai_reasoning_level || "low",
+                    ai_language_mode: s.ai_language_mode || "auto",
+                    ai_default_language: s.ai_default_language || "Hindi",
                     restricted_topics_json: s.restricted_topics_json || null,
                     restricted_response: s.restricted_response || null,
                     enable_typing_indicator: !!s.enable_typing_indicator,
@@ -153,6 +159,8 @@ export function AiAgentSettingsPanel({
                 enable_contextual_memory: settings.enable_contextual_memory ? 1 : 0,
                 enable_assignment: settings.enable_assignment ? 1 : 0,
                 no_agent_off_hours: settings.no_agent_off_hours ? 1 : 0,
+                ai_language_mode: settings.ai_language_mode,
+                ai_default_language: settings.ai_default_language,
             };
             await api.post(`/social/ai-agent-settings/${platform}/${accountId}/save`, payload);
             showModal("success", "Success", "Configuration Synchronized.");
@@ -294,6 +302,36 @@ export function AiAgentSettingsPanel({
                                         ))}
                                     </div>
                                 </FormField>
+
+                                <FormField label="Reply Language Mode">
+                                    <div className="relative group">
+                                        <select
+                                            value={settings.ai_language_mode}
+                                            onChange={(e) => setSettings(s => ({ ...s, ai_language_mode: e.target.value as "auto" | "fixed" }))}
+                                            className="w-full h-14 px-6 appearance-none bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl text-sm font-bold text-neutral-700 dark:text-neutral-300 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                                        >
+                                            <option value="auto">Auto Detect</option>
+                                            <option value="fixed">Fixed Language</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none group-focus-within:rotate-180 transition-transform" />
+                                    </div>
+                                </FormField>
+
+                                <FormField label="Default Reply Language">
+                                    <div className="relative group">
+                                        <select
+                                            value={settings.ai_default_language}
+                                            onChange={(e) => setSettings(s => ({ ...s, ai_default_language: e.target.value }))}
+                                            className="w-full h-14 px-6 appearance-none bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl text-sm font-bold text-neutral-700 dark:text-neutral-300 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                                        >
+                                            {["English", "Hindi", "Gujarati", "Hinglish", "Spanish", "French", "German", "Arabic", "Tamil", "Telugu", "Marathi", "Punjabi", "Malayalam", "Bengali"].map(lang => (
+                                                <option key={lang} value={lang}>{lang}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none group-focus-within:rotate-180 transition-transform" />
+                                    </div>
+                                </FormField>
+
                             </motion.div>
                         )}
                     </AnimatePresence>

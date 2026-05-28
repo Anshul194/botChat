@@ -6,8 +6,8 @@ import { useRef } from "react";
 interface CarouselCard {
     title: string;
     subtitle?: string;
-    image?: string;
-    buttons?: Array<{ title: string }>;
+    image_url?: string;
+    buttons?: Array<{ title: string; type?: string; payload?: string; url?: string }>;
 }
 
 interface CarouselMessageProps {
@@ -60,9 +60,9 @@ export default function CarouselMessage({ cards }: CarouselMessageProps) {
                         key={i}
                         className="snap-start flex-shrink-0 w-[160px] rounded-xl border border-border/60 bg-card overflow-hidden shadow-sm"
                     >
-                        {card.image && (
+                        {card.image_url && (
                             <img
-                                src={card.image}
+                                src={card.image_url}
                                 alt={card.title}
                                 className="w-full h-24 object-cover"
                             />

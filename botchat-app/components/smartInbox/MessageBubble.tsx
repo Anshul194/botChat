@@ -76,13 +76,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
 
     // ── Bubble styling by direction + type ───────────────────────────────────
-    const isMediaOnly = ["image", "video", "audio", "voice", "sticker"].includes(message.message_type);
+    const isMediaOnly = ["image", "video", "audio", "voice", "sticker", "carousel", "generic_template", "template", "button", "quick_reply", "flow_step"].includes(message.message_type);
     const bubbleClasses = `relative transition-all duration-300 max-w-[85%] ${
         isMediaOnly ? "" : "px-4 py-2.5 rounded-2xl"
     } ${
-        isInbound
-            ? "bg-muted text-foreground border border-border"
-            : "bg-primary text-white shadow-sm"
+        isMediaOnly ? "" : (isInbound ? "bg-muted text-foreground border border-border" : "bg-primary text-white shadow-sm")
     }`;
 
     return (

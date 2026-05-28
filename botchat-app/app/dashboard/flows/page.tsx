@@ -85,6 +85,7 @@ const ACTIONS = [
   { id: "carousel", icon: Layers, label: "Carousel", desc: "Horizontal scrolling cards" },
   { id: "user_input", icon: Keyboard, label: "User Input", desc: "Ask question and save response" },
   { id: "condition", icon: GitBranch, label: "Condition", desc: "Logic branching" },
+  { id: "follower_gate", icon: UserCog, label: "Follower Gate", desc: "Require users to follow you" },
   // { id: "trigger_action", icon: Zap, label: "Trigger Action", desc: "Fire a postback payload" },
 ];
 
@@ -710,6 +711,165 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         }}
       >
         {saving ? "Updating..." : <><Save size={14} /> Update Condition Step</>}
+      </button>
+    </div>
+  );
+}
+
+function FollowerGateFields({ step, update, allSteps, onSaveStep, onAddStep }) {
+  const { showModal } = useModal();
+  const c = step.config || {};
+  const DS = useDS();
+  const [saving, setSaving] = useState(false);
+
+  const set = patch => update({ ...step, config: { ...c, ...patch } });
+
+  const onUpdateSave = async () => {
+    setSaving(true);
+    try {
+      if (onSaveStep) {
+        await onSaveStep(step);
+      } else {
+        await new Promise(r => setTimeout(r, 600));
+      }
+      showModal("success", "Success", "Follower Gate updated successfully");
+    } catch (e) {
+      showModal("error", "Error", "Failed to update Follower Gate");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div>
+        <Label>Title Message</Label>
+        <Input 
+          value={c.title || "Looks like you're not following me yet 🙂"} 
+          onChange={e => set({ title: e.target.value })} 
+          placeholder="Looks like you're not following me yet 🙂" 
+        />
+      </div>
+      <div>
+        <Label>Description / Call to Action</Label>
+        <Input 
+          multiline rows={2}
+          value={c.description || "Follow my profile and tap 'I'm following' below to get the link ✨"} 
+          onChange={e => set({ description: e.target.value })} 
+          placeholder="Follow my profile and tap 'I'm following' below to get the link ✨" 
+        />
+      </div>
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ flex: 1 }}>
+          <Label>Follow Button Text</Label>
+          <Input 
+            value={c.follow_button_text || "Visit Profile"} 
+            onChange={e => set({ follow_button_text: e.target.value })} 
+            placeholder="Visit Profile" 
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Label>Confirm Button Text</Label>
+          <Input 
+            value={c.confirm_button_text || "I'm following ✅"} 
+            onChange={e => set({ confirm_button_text: e.target.value })} 
+            placeholder="I'm following ✅" 
+          />
+        </div>
+      </div>
+      <div>
+        <Label>Retry Message (If verification fails)</Label>
+        <Input 
+          multiline rows={2}
+          value={c.retry_message || "Still not following 😕 Please follow first."} 
+          onChange={e => set({ retry_message: e.target.value })} 
+          placeholder="Still not following 😕 Please follow first." 
+        />
+      </div>
+      <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ flex: 1 }}>
+          <Label>Max Retries</Label>
+          <Input 
+            type="number"
+            value={c.max_retry || 3} 
+            onChange={e => set({ max_retry: parseInt(e.target.value) || 3 })} 
+            placeholder="3" 
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Label>Verification Method</Label>
+          <Select 
+            value={c.verification_method || "manual"} 
+            onChange={e => set({ verification_method: e.target.value })} 
+            options={[
+              { value: "manual", label: "Manual (Simulated Pause)" },
+              { value: "api", label: "Official API (If available)" },
+              { value: "custom", label: "Custom Script" },
+            ]} 
+          />
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 6 }}>
+        <div style={{ background: DS.greenSoft, border: `1.5px solid #86EFAC`, borderRadius: DS.radiusSm, padding: "10px 12px" }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.green, marginBottom: 3 }}>✅ IF FOLLOWS</div>
+          <Label>Then go to</Label>
+          <Select
+            value={c.success_next_step || ""}
+            onChange={e => {
+              const val = e.target.value;
+              if (val.startsWith("NEW_")) {
+                const newId = onAddStep(val.replace("NEW_", ""));
+                set({ success_next_step: newId });
+              } else {
+                set({ success_next_step: val });
+              }
+            }}
+            options={[
+              { value: "", label: "Next step" },
+              ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+              { value: "SEP", label: "--- Create New ---", disabled: true },
+              ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+            ]}
+            style={{ padding: "4px 8px", fontSize: 11 }}
+          />
+        </div>
+        <div style={{ background: DS.destructiveSoft, border: `1.5px solid ${DS.destructiveBorder}`, borderRadius: DS.radiusSm, padding: "10px 12px" }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: DS.destructive, marginBottom: 3 }}>✗ IF FAILS</div>
+          <Label>Then go to</Label>
+          <Select
+            value={c.failed_next_step || "end"}
+            onChange={e => {
+              const val = e.target.value;
+              if (val.startsWith("NEW_")) {
+                const newId = onAddStep(val.replace("NEW_", ""));
+                set({ failed_next_step: newId });
+              } else {
+                set({ failed_next_step: val });
+              }
+            }}
+            options={[
+              { value: "end", label: "End flow" },
+              ...allSteps.filter(s => s.id !== step.id).map(s => ({ value: s.id, label: s.label || s.type })),
+              { value: "SEP", label: "--- Create New ---", disabled: true },
+              ...ACTIONS.map(a => ({ value: `NEW_${a.id}`, label: `+ Add ${a.label}` }))
+            ]}
+            style={{ padding: "4px 8px", fontSize: 11 }}
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={onUpdateSave}
+        disabled={saving}
+        style={{
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
+          transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          opacity: saving ? 0.7 : 1
+        }}
+      >
+        {saving ? "Updating..." : <><Save size={14} /> Update Follower Gate Step</>}
       </button>
     </div>
   );
@@ -1683,7 +1843,7 @@ function StepFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, pla
     message: MessageFields,
     image: MediaFields, video: MediaFields, audio: MediaFields, file: MediaFields,
     carousel: CarouselFields, user_input: UserInputFields, condition: ConditionFields,
-    trigger_action: TriggerActionFields,
+    follower_gate: FollowerGateFields, trigger_action: TriggerActionFields,
   };
   const Comp = map[step.type];
   return Comp ? <Comp {...props} /> : <div style={{ fontSize: 12, color: DS.ink3 }}>Configure this step</div>;
@@ -1938,6 +2098,16 @@ function buildPreviewMsgs(steps) {
       const ruleText = rs.map(r => `${r.field_name} ${r.operator} ${r.value}`).join(c.match_type === 'all' ? ' AND ' : ' OR ');
       out.push({ type: "sys", text: `Check: ${ruleText || "condition"}` });
       out.push({ type: "sys", text: "↳ (True Branch)" });
+    } else if (s.type === "follower_gate") {
+      const title = c.title || "Looks like you're not following me yet 🙂";
+      const desc = c.description || "Follow my profile and tap 'I'm following' below to get the link ✨";
+      const btn1 = c.follow_button_text || "Visit Profile";
+      const btn2 = c.confirm_button_text || "I'm following ✅";
+      out.push({
+        type: "bot", 
+        text: `${title}\n\n${desc}`,
+        buttons: [{ title: btn1 }, { title: btn2 }]
+      });
     }
   });
   return out;

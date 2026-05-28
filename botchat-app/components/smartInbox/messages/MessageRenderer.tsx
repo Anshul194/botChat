@@ -121,6 +121,7 @@ export default function MessageRenderer({ message, onImageClick }: MessageRender
                 <ButtonMessage
                     text={data?.text ?? message.message ?? ""}
                     buttons={data?.buttons ?? []}
+                    isInbound={isInbound}
                 />
             );
 
@@ -129,14 +130,14 @@ export default function MessageRenderer({ message, onImageClick }: MessageRender
                 <QuickReplyMessage
                     text={data?.text ?? message.message ?? ""}
                     replies={data?.replies ?? []}
+                    isInbound={isInbound}
                 />
             );
 
         case "carousel":
-            return <CarouselMessage cards={data?.cards ?? []} />;
-
+        case "template":
         case "generic_template":
-            return <CarouselMessage cards={data?.cards ?? (data ? [data] : [])} />;
+            return <CarouselMessage cards={data?.cards ?? data?.elements ?? (data ? [data] : [])} />;
 
         case "flow_step":
             return (
@@ -144,6 +145,7 @@ export default function MessageRenderer({ message, onImageClick }: MessageRender
                     text={data?.text ?? message.message ?? ""}
                     field={data?.field}
                     event={data?.event}
+                    isInbound={isInbound}
                 />
             );
 

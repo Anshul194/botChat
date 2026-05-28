@@ -62,6 +62,7 @@ export const useSmartInbox = () => {
         const filters: any = { is_archived: false };
         if (account) {
             filters.account_id = account.id;
+            filters.platform = account.platform;
         }
         await loadConversations(filters);
     }, [dispatch, loadConversations]);
