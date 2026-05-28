@@ -34,7 +34,7 @@ export function getTenantDomain(): string {
 
     if (typeof window === 'undefined') {
         // SSR — resolve from env or default (We cannot read window.location on server, need headers if doing true SSR but typically this is for client)
-        return DEV_DOMAIN || 'pos.divyangtechlabs.com';
+        return DEV_DOMAIN || 'botchat.divyangtechlabs.com';
     }
 
     console.log('Resolving tenant domain for hostname:', window.location.hostname);

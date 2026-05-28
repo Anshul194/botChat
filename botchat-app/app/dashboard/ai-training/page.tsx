@@ -38,7 +38,7 @@ function CampaignCard({
             {/* Top row */}
             <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-sm flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm flex-shrink-0">
                         <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div className="min-w-0">
@@ -86,7 +86,7 @@ function CampaignCard({
             {campaign.prompt_message && (
                 <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-lg px-3 py-2 mb-3">
                     <div className="flex items-center gap-1.5 mb-1">
-                        <Sparkles className="w-3 h-3 text-pink-500" />
+                        <Sparkles className="w-3 h-3 text-primary" />
                         <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
                             System Prompt
                         </span>
@@ -172,7 +172,8 @@ export default function AITrainingPage() {
                         </div>
                         <button
                             onClick={() => setIsCreateOpen(true)}
-                            className="flex items-center gap-2 h-9 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-sm shadow-pink-500/20 active:scale-95 transition-all"
+                            className="flex items-center gap-2 h-9 px-4 rounded-xl text-white text-sm font-semibold active:scale-95 transition-all shadow-lg"
+                            style={{ background: "var(--brand-gradient)", boxShadow: "0 8px 16px -4px rgba(29, 110, 245, 0.25)" }}
                         >
                             <Plus className="w-4 h-4" />
                             New Campaign
@@ -182,7 +183,7 @@ export default function AITrainingPage() {
                     {/* ── Stats ── */}
                     <div className="grid grid-cols-3 gap-4">
                         {[
-                            { label: "Total", value: campaigns.length, icon: Target, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/30" },
+                            { label: "Total", value: campaigns.length, icon: Target, color: "text-primary", bg: "bg-primary/10" },
                             { label: "Active", value: campaigns.filter(c => c.status === "active").length, icon: Zap, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
                             { label: "Inactive", value: campaigns.filter(c => c.status !== "active").length, icon: MessageSquare, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/30" },
                         ].map((stat) => (
@@ -209,14 +210,14 @@ export default function AITrainingPage() {
                             placeholder="Search campaigns..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full h-9 pl-9 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:border-pink-400 dark:focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20 transition-all"
+                            className="w-full h-9 pl-9 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                         />
                     </div>
 
                     {/* ── Content ── */}
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3">
-                            <Loader2 className="w-7 h-7 text-pink-500 animate-spin" />
+                            <Loader2 className="w-7 h-7 text-primary animate-spin" />
                             <p className="text-sm text-neutral-400">Loading campaigns...</p>
                         </div>
                     ) : filtered.length === 0 ? (
@@ -235,7 +236,7 @@ export default function AITrainingPage() {
                             {!search && (
                                 <button
                                     onClick={() => setIsCreateOpen(true)}
-                                    className="mt-5 flex items-center gap-1.5 text-sm text-pink-600 font-semibold hover:underline"
+                                    className="mt-5 flex items-center gap-1.5 text-sm text-primary font-semibold hover:underline"
                                 >
                                     Create Campaign <ChevronRight className="w-4 h-4" />
                                 </button>

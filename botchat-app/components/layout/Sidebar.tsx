@@ -68,6 +68,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const [facebookOpen, setFacebookOpen] = useState(false);
     const [instagramOpen, setInstagramOpen] = useState(false);
     const [bioLinksOpen, setBioLinksOpen] = useState(false);
+    const [blogOpen, setBlogOpen] = useState(false);
     const [pendingRoute, setPendingRoute] = useState<string | null>(null);
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
@@ -113,6 +114,10 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
             setBioLinksOpen(true);
         } else {
             setBioLinksOpen(false);
+        }
+
+        if (current.startsWith("/dashboard/blog")) {
+            setBlogOpen(true);
         }
 
         // Clear pendingRoute only after the router has updated the pathname to match it.
@@ -384,6 +389,22 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         {growthNav.map(item => (
                             <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                         ))}
+
+                        <NavAccordion
+                            label="Blog Manager"
+                            icon={Layers}
+                            isOpen={blogOpen}
+                            onToggle={() => setBlogOpen(!blogOpen)}
+                            collapsed={collapsed}
+                            items={[
+                                { label: "All Blogs", href: "/dashboard/blog" },
+                                { label: "Categories", href: "/dashboard/blog/categories" },
+                                { label: "Create Post", href: "/dashboard/blog/create" },
+                            ]}
+                            pathname={currentPath}
+                            navigate={navigate}
+                            onClose={onClose}
+                        />
                     </motion.div>
 
                     {/* ADMIN */}
@@ -396,6 +417,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     </span>
                                 </motion.div>
                             )}
+
                             {adminNav.map(item => (
                                 <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                             ))}

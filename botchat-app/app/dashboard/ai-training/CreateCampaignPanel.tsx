@@ -67,7 +67,7 @@ export function StyledInput({
                 "bg-neutral-50 dark:bg-neutral-800/80",
                 "border border-neutral-200 dark:border-neutral-700",
                 "placeholder:text-neutral-400 text-neutral-900 dark:text-white",
-                "focus:outline-none focus:border-pink-400 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10",
+                "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10",
                 "transition-all duration-200",
                 className
             )}
@@ -99,7 +99,7 @@ export function StyledTextarea({
                 "bg-neutral-50 dark:bg-neutral-800/80",
                 "border border-neutral-200 dark:border-neutral-700",
                 "placeholder:text-neutral-400 text-neutral-900 dark:text-white",
-                "focus:outline-none focus:border-pink-400 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10",
+                "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10",
                 "transition-all duration-200 resize-none",
                 className
             )}
@@ -209,8 +209,8 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-pink-50 dark:bg-pink-950/40 flex items-center justify-center">
-                                    <Sparkles className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <Sparkles className="w-4 h-4 text-primary" />
                                 </div>
                                 <div>
                                     <h2 className="text-base font-bold text-neutral-900 dark:text-white">
@@ -297,7 +297,8 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                             <button
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
-                                className="flex-1 h-10 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm shadow-pink-500/20 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="flex-1 h-10 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
+                                style={{ background: "var(--brand-gradient)", boxShadow: "0 8px 20px -4px rgba(29, 110, 245, 0.3)" }}
                             >
                                 {isSubmitting ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />

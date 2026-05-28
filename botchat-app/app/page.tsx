@@ -32,13 +32,17 @@ export default function Home() {
       <div className="relative z-10 bg-white">
         {/* Social Proof handled inside Hero/CreatorProof */}
 
-        <FeaturesOverview />
+        <div id="features">
+          <FeaturesOverview />
+        </div>
         <BioLinkShowcase />
         <MotiveSection />
         <Features />
         <ScrollWritingSection />
         <PerformanceChart />
-        <GrowthSections />
+        <div id="solutions">
+          <GrowthSections />
+        </div>
         <TrendyStacks />
 
         <CreatorProof />
@@ -47,11 +51,15 @@ export default function Home() {
 
         <BlogSection />
 
-        <Pricing />
+        <div id="pricing">
+          <Pricing />
+        </div>
 
         <FAQ />
 
-        <TrustAndFinalCTA />
+        <div id="company">
+          <TrustAndFinalCTA />
+        </div>
 
         <Footer />
       </div>
