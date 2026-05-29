@@ -9,7 +9,7 @@ import {
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
     Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail,
-    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle, ExternalLink
+    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle, ExternalLink, ShieldCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ import { VisualsLab, getTheme, isColorLight, ThemeEffectsLayer, ThemeAnimationSt
 import BlockMarketplaceContent from "./BlockMarketplaceContent";
 import { PhonePreview } from "./PhonePreview";
 import { PortfolioCanvas as SectionCard } from "./PortfolioCanvas";
-import { BLOCK_ICONS, BLOCK_COLORS, getUiTypeFromBlock, mergeTabsPreservingItems } from "./builder-utils";
+import { BLOCK_ICONS, BLOCK_COLORS, getUiTypeFromBlock, mergeTabsPreservingItems, SOCIAL_PLATFORMS, BrandIcon, getBrandColor } from "./builder-utils";
 
 export interface BioProfile {
     link_id: string;
@@ -796,6 +796,16 @@ function BioLinkBuilderContent() {
 
         // Ensure required fields like 'name' or 'text' are present
         const processedSettings = { ...settings };
+
+        // Inject mandatory social platforms automatically
+        if (type === "social_medias_section" && (!processedSettings.items || processedSettings.items.length === 0)) {
+            processedSettings.items = [
+                { icon: 'tel', link: '', name: 'Phone' },
+                { icon: 'email', link: '', name: 'Email' },
+                { icon: 'whatsapp', link: '', name: 'WhatsApp' },
+                { icon: 'instagram', link: '', name: 'Instagram' }
+            ];
+        }
 
         // Use a fallback if all name/text fields are empty to pass validation
         const fallbackName = type.charAt(0).toUpperCase() + type.slice(1);
@@ -3715,31 +3725,98 @@ function BioLinkBuilderContent() {
                                     </div>
                                 )}
 
-                                {/* Social Medias Section */}
-                                {uiType === "social_medias_section" && (
-                                    <div className="space-y-5">
-                                        <InputField label="Section Title (Optional)" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Connect with me" />
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Social Profiles</p>
-                                        {(s.items || []).map((sItem: any, siIdx: number) => (
-                                            <div key={siIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
-                                                <button onClick={() => { const newItems = [...(s.items || [])]; newItems.splice(siIdx, 1); upd('items', newItems); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"><X size={12} /></button>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <InputField label="Platform/Name" value={sItem.name || sItem.type || ""} onChange={(e: any) => {
-                                                        const newItems = [...(s.items || [])];
-                                                        newItems[siIdx] = { ...sItem, name: e.target.value, type: e.target.value };
-                                                        upd('items', newItems);
-                                                    }} placeholder="Instagram" />
-                                                    <InputField label="Link/Username" value={sItem.link || sItem.url || ""} onChange={(e: any) => {
-                                                        const newItems = [...(s.items || [])];
-                                                        newItems[siIdx] = { ...sItem, link: e.target.value, url: e.target.value };
-                                                        upd('items', newItems);
-                                                    }} placeholder="https://..." />
+                                {/* Social Medias Section - Rich Platform Picker */}
+                                {uiType === "social_medias_section" && (() => {
+                                    const socialItems: any[] = s.items || [];
+                                    return (
+                                        <div className="space-y-5">
+                                            <InputField label="Section Title (Optional)" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Connect with me" />
+                                            
+                                            {/* Quick-add Platform Picker Grid */}
+                                            <div>
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 mb-3">Quick Add Platform</p>
+                                                <div className="grid grid-cols-5 gap-2">
+                                                    {SOCIAL_PLATFORMS.map((platform) => {
+                                                        const alreadyAdded = socialItems.some((si: any) => (si.icon || si.type || si.name || '').toLowerCase() === platform.key);
+                                                        return (
+                                                            <button
+                                                                key={platform.key}
+                                                                title={platform.label}
+                                                                onClick={() => {
+                                                                    if (alreadyAdded) return;
+                                                                    const newItems = [...socialItems, { icon: platform.key, link: platform.prefix, name: platform.label }];
+                                                                    upd('items', newItems);
+                                                                }}
+                                                                className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-all ${
+                                                                    alreadyAdded
+                                                                        ? 'border-primary/30 bg-primary/5 opacity-50 cursor-not-allowed'
+                                                                        : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-primary/5 cursor-pointer'
+                                                                }`}
+                                                            >
+                                                                <span style={{ color: platform.color }}>
+                                                                    <BrandIcon name={platform.key} size={18} colored />
+                                                                </span>
+                                                                <span className="text-[8px] font-black uppercase tracking-wider text-slate-500 truncate w-full text-center">{platform.label}</span>
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
-                                        ))}
-                                        <button onClick={() => { const newItems = [...(s.items || []), { name: "", link: "", type: "", icon: "" }]; upd('items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Social Link</button>
-                                    </div>
-                                )}
+
+                                            {/* Current Social Links */}
+                                            {socialItems.length > 0 && (
+                                                <div>
+                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 mb-3">Your Social Links</p>
+                                                    <div className="space-y-2">
+                                                        {socialItems.map((sItem: any, siIdx: number) => {
+                                                            const platformKey = (sItem.icon || sItem.type || sItem.name || '').toLowerCase();
+                                                            const brandColor = getBrandColor(platformKey);
+                                                            const platformMeta = SOCIAL_PLATFORMS.find(p => p.key === platformKey);
+                                                            return (
+                                                                <div key={siIdx} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 group relative">
+                                                                    {/* Brand Icon */}
+                                                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border" style={{ borderColor: brandColor + '30', background: brandColor + '15' }}>
+                                                                        <span style={{ color: brandColor }}>
+                                                                            <BrandIcon name={platformKey || 'globe'} size={18} colored />
+                                                                        </span>
+                                                                    </div>
+                                                                    {/* URL Input */}
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{platformMeta?.label || sItem.name || 'Link'}</p>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={sItem.link || sItem.url || ''}
+                                                                            onChange={(e) => {
+                                                                                const newItems = [...socialItems];
+                                                                                newItems[siIdx] = { ...sItem, link: e.target.value, url: e.target.value };
+                                                                                upd('items', newItems);
+                                                                            }}
+                                                                            placeholder={platformMeta?.prefix || 'https://'}
+                                                                            className="w-full text-xs font-medium outline-none bg-transparent text-slate-700 dark:text-slate-200 placeholder:text-slate-300 border-b border-slate-200 dark:border-slate-700 focus:border-primary pb-1 transition-colors"
+                                                                        />
+                                                                    </div>
+                                                                    {/* Remove */}
+                                                                    {['tel', 'email', 'whatsapp', 'instagram'].includes(platformKey) ? (
+                                                                        <div className="w-8 h-8 rounded-xl bg-slate-100/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 shrink-0 cursor-not-allowed" title="Mandatory platform">
+                                                                            <ShieldCheck size={14} />
+                                                                        </div>
+                                                                    ) : (
+                                                                        <button
+                                                                            onClick={() => { const newItems = [...socialItems]; newItems.splice(siIdx, 1); upd('items', newItems); }}
+                                                                            className="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-colors shrink-0"
+                                                                        >
+                                                                            <X size={14} />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
 
                                 {/* FAQ Cards */}
                                 {uiType === "faq_cards_section" && (

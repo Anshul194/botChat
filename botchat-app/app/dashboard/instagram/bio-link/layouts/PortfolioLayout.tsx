@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Globe, Instagram, Mail, MapPin, MoreHorizontal, ArrowUpRight, Star, User, Twitter, Facebook, Youtube } from "lucide-react";
+import { BrandIcon, getBrandColor } from "../builder-utils";
 
 export const PortfolioLayout = ({
     profile,
@@ -387,23 +388,20 @@ export const PortfolioLayout = ({
                                         {ctaBlock?.settings?.button_text || "Let's Talk"}
                                     </a>
 
-                                    <div className="flex gap-4 mb-8">
+                                    <div className="flex gap-3 mb-8 flex-wrap">
                                         {(() => {
                                             const items = (socialsBlock?.settings?.items || profile?.social_medias_section || []);
                                             if (items.length > 0) {
-                                                return items.map((s: any, i: number) => {
-                                                    const name = (s.name || s.type || s.icon || "").toLowerCase();
-                                                    const url = (s.url || s.link || "").toLowerCase();
-                                                    const isMatch = (term: string) => name.includes(term) || url.includes(term);
-
+                                                return items.map((sItem: any, i: number) => {
+                                                    const iconKey = (sItem.icon || sItem.type || sItem.name || 'globe').toLowerCase();
+                                                    const brandColor = getBrandColor(iconKey);
                                                     return (
-                                                        <a key={i} href={s.url || s.link || "#"} target="_blank" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition">
-                                                            {isMatch('instagram') ? <Instagram size={16} /> :
-                                                             isMatch('twitter') || isMatch(' x ') || name === 'x' ? <Twitter size={16} /> :
-                                                             isMatch('facebook') ? <Facebook size={16} /> :
-                                                             isMatch('youtube') ? <Youtube size={16} /> :
-                                                             isMatch('mail') || isMatch('email') ? <Mail size={16} /> :
-                                                             <Globe size={16} />}
+                                                        <a key={i} href={sItem.url || sItem.link || '#'} target="_blank" rel="noopener noreferrer"
+                                                           className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-all"
+                                                           style={{ background: brandColor + '20', border: `1.5px solid ${brandColor}40` }}>
+                                                            <span style={{ color: brandColor }}>
+                                                                <BrandIcon name={iconKey} size={16} colored />
+                                                            </span>
                                                         </a>
                                                     );
                                                 });

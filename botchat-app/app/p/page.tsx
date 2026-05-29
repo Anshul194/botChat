@@ -502,6 +502,7 @@ function BlockRenderer({ block, theme }: { block: PublicBlock; theme: any }) {
                 </div>
             );
 
+        case "social_medias_section":
         case "socials":
             const rawSocials = settings.socials || items || [];
             const socialsList = Array.isArray(rawSocials)

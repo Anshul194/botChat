@@ -8,7 +8,7 @@ import {
     Sparkles, ArrowUpRight, ShieldCheck, Zap, Layers, Grid, ShoppingBag,
     User, DollarSign, Plus
 } from "lucide-react";
-import { getUiTypeFromBlock } from "../builder-utils";
+import { getUiTypeFromBlock, BrandIcon, getBrandColor } from "../builder-utils";
 
 export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
@@ -107,14 +107,15 @@ export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
                                             {heroBlock?.settings?.bio || heroBlock?.settings?.description || profile?.bio || "Creating content that pops. Tech, Lifestyle & Aesthetics."}
                                         </motion.p>
 
-                                        <div className="flex items-center gap-6">
+                                        <div className="flex items-center gap-4">
                                             {['instagram', 'tiktok', 'youtube'].map((p, i) => (
                                                 <motion.div 
                                                     key={p} 
                                                     whileHover={{ y: -5, scale: 1.1 }}
-                                                    className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:bg-[#ff0080] hover:border-[#ff0080] transition-all cursor-pointer shadow-lg"
+                                                    className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#ff0080] hover:border-[#ff0080] transition-all cursor-pointer shadow-lg"
+                                                    style={{ color: getBrandColor(p) }}
                                                 >
-                                                    <BrandIcon name={p} size={20} />
+                                                    <BrandIcon name={p} size={20} colored />
                                                 </motion.div>
                                             ))}
                                         </div>
@@ -346,15 +347,29 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
             );
 
         case 'socials':
+        case 'social_medias_section': {
+            const socialItems = blockItems.length > 0 ? blockItems : (s.socials || []);
             return (
-                <div className="flex items-center justify-center gap-8 py-6">
-                    {blockItems.map((item: any, i: number) => (
-                        <a key={i} href={item.url} target="_blank" className="text-white/20 hover:text-[#ff0080] transition-colors">
-                            <BrandIcon name={item.platform || item.name} size={28} />
-                        </a>
-                    ))}
+                <div className="space-y-4 py-2">
+                    {s.title && <h2 className="text-center text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-5">{s.title}</h2>}
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                        {socialItems.map((item: any, i: number) => {
+                            const iconKey = item.icon || item.type || item.name || 'globe';
+                            const brandColor = getBrandColor(iconKey);
+                            return (
+                                <a key={i} href={item.url || item.link || '#'} target="_blank" rel="noopener noreferrer"
+                                   className="w-12 h-12 rounded-[18px] flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all"
+                                   style={{ background: brandColor + '20', border: `1.5px solid ${brandColor}40` }}>
+                                    <span style={{ color: brandColor }}>
+                                        <BrandIcon name={iconKey} size={20} colored />
+                                    </span>
+                                </a>
+                            );
+                        })}
+                    </div>
                 </div>
             );
+        }
 
         case 'newsletter':
         case 'newsletter_section':
@@ -600,18 +615,5 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
 
         default:
             return null;
-    }
-};
-
-const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
-    switch (name.toLowerCase()) {
-        case 'instagram': return <i className="fab fa-instagram" style={{ fontSize: size }} />;
-        case 'twitter':
-        case 'x': return <i className="fab fa-x-twitter" style={{ fontSize: size }} />;
-        case 'linkedin': return <i className="fab fa-linkedin" style={{ fontSize: size }} />;
-        case 'tiktok': return <i className="fab fa-tiktok" style={{ fontSize: size }} />;
-        case 'youtube': return <i className="fab fa-youtube" style={{ fontSize: size }} />;
-        case 'facebook': return <i className="fab fa-facebook" style={{ fontSize: size }} />;
-        default: return <Globe size={size} />;
     }
 };

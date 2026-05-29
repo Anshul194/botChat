@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import {
     ArrowUpRight, Share2, Globe, Mail, Instagram, Twitter, Linkedin, Youtube, Play, Heart, ShoppingBag
 } from "lucide-react";
-import { getUiTypeFromBlock } from "../builder-utils";
+import { getUiTypeFromBlock, BrandIcon, getBrandColor } from "../builder-utils";
 
 export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
@@ -563,18 +563,31 @@ const renderMinimalSection = (block: any, profile: any) => {
                 </div>
             );
 
-        default:
+        case 'social_medias_section':
+        case 'socials': {
+            const socialList = blockItems.length > 0 ? blockItems : (s.socials || []);
+            return (
+                <div className="py-12 border-y border-zinc-100">
+                    {s.title && <p className="text-[9px] font-black uppercase tracking-[0.5em] text-zinc-300 mb-8 text-center">{s.title}</p>}
+                    <div className="flex flex-wrap items-center justify-center gap-4">
+                        {socialList.map((item: any, i: number) => {
+                            const iconKey = item.icon || item.type || item.name || 'globe';
+                            const brandColor = getBrandColor(iconKey);
+                            return (
+                                <a key={i} href={item.url || item.link || '#'} target="_blank" rel="noopener noreferrer"
+                                   className="w-11 h-11 flex items-center justify-center rounded-2xl transition-all hover:scale-110 active:scale-95"
+                                   style={{ background: brandColor + '10', border: `1px solid ${brandColor}20` }}>
+                                    <span style={{ color: brandColor }}>
+                                        <BrandIcon name={iconKey} size={20} colored />
+                                    </span>
+                                </a>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+default:
             return null;
     }
-};
-
-const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
-    const n = name?.toLowerCase() || "";
-    if (n.includes('instagram')) return <i className="fab fa-instagram" style={{ fontSize: size }} />;
-    if (n.includes('linkedin')) return <i className="fab fa-linkedin" style={{ fontSize: size }} />;
-    if (n.includes('twitter') || n === 'x') return <i className="fab fa-x-twitter" style={{ fontSize: size }} />;
-    if (n.includes('youtube')) return <Youtube size={size} />;
-    if (n.includes('tiktok')) return <i className="fab fa-tiktok" style={{ fontSize: size }} />;
-    if (n.includes('spotify')) return <i className="fab fa-spotify" style={{ fontSize: size }} />;
-    return <Globe size={size} />;
 };

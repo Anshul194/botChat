@@ -2,9 +2,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
-    Heart, ShoppingBag, ArrowRight, Mail, Globe, Sparkles, Star, ChevronRight, User, Instagram, ShieldCheck, Plus, ArrowUpRight
+    Heart, ShoppingBag, ArrowRight, Mail, Globe, Sparkles, Star, ChevronRight, User, Instagram, ShieldCheck, Plus, ArrowUpRight, Play, Share2
 } from "lucide-react";
-import { getUiTypeFromBlock } from "../builder-utils";
+import { getUiTypeFromBlock, BrandIcon, getBrandColor } from "../builder-utils";
 
 export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
@@ -269,24 +269,30 @@ const renderBrunchSection = (block: any, profile: any) => {
                 </div>
             );
 
-        case 'countdown':
         case 'social_medias_section':
-        case 'socials':
+        case 'socials': {
+            const socialList = blockItems.length > 0 ? blockItems : (s.socials || []);
             return (
-                <div className="grid grid-cols-2 gap-4">
-                    {blockItems.map((item: any, i: number) => (
-                        <motion.a
-                            key={i}
-                            href={item.url || "#"}
-                            target="_blank"
-                            whileHover={{ y: -2 }}
-                            className="flex items-center justify-center gap-3 p-4 bg-white border border-[#2d241e] rounded-2xl shadow-[4px_4px_0px_#2d241e] hover:shadow-[6px_6px_0px_#2d241e] transition-all"
-                        >
-                            <span className="text-[12px] font-black uppercase tracking-widest text-[#2d241e]">{item.platform}</span>
-                        </motion.a>
-                    ))}
+                <div className="py-4">
+                    {s.title && <p className="text-center text-[10px] font-black text-[#8c7e74] uppercase tracking-[0.4em] italic mb-6">{s.title}</p>}
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                        {socialList.map((item: any, i: number) => {
+                            const iconKey = item.icon || item.type || item.name || 'globe';
+                            const brandColor = getBrandColor(iconKey);
+                            return (
+                                <a key={i} href={item.url || item.link || '#'} target="_blank" rel="noopener noreferrer"
+                                   className="w-12 h-12 rounded-[2rem] flex items-center justify-center border-2 border-[#2d241e] shadow-[3px_3px_0px_#2d241e] hover:shadow-[5px_5px_0px_#2d241e] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all bg-white"
+                                   style={{ borderColor: brandColor, boxShadow: `3px 3px 0px ${brandColor}` }}>
+                                    <span style={{ color: brandColor }}>
+                                        <BrandIcon name={iconKey} size={20} colored />
+                                    </span>
+                                </a>
+                            );
+                        })}
+                    </div>
                 </div>
             );
+        }
 
         case 'portfolio_section':
         case 'portfolio_minimal_section':
@@ -580,15 +586,4 @@ const renderBrunchSection = (block: any, profile: any) => {
         default:
             return null;
     }
-};
-
-const BrandIcon = ({ name, size = 22 }: { name: string; size?: number }) => {
-    const n = name?.toLowerCase() || "";
-    if (n.includes('instagram')) return <i className="fab fa-instagram" style={{ fontSize: size }} />;
-    if (n.includes('linkedin')) return <i className="fab fa-linkedin" style={{ fontSize: size }} />;
-    if (n.includes('twitter') || n === 'x') return <i className="fab fa-x-twitter" style={{ fontSize: size }} />;
-    if (n.includes('youtube')) return <Youtube size={size} />;
-    if (n.includes('tiktok')) return <i className="fab fa-tiktok" style={{ fontSize: size }} />;
-    if (n.includes('spotify')) return <i className="fab fa-spotify" style={{ fontSize: size }} />;
-    return <Globe size={size} />;
 };

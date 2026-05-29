@@ -325,29 +325,46 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                 </div>
                             );
 
-                        case "socials":
-                            const rawSocials = settings.socials || items || [];
+                        case "social_medias_section":
+                        case "socials": {
+                            const rawSocials = settings.socials || items || settings.items || [];
                             const socialsList = Array.isArray(rawSocials) 
                                 ? rawSocials 
                                 : (rawSocials && typeof rawSocials === 'object')
                                     ? Object.entries(rawSocials).map(([key, value]) => ({ type: key, link: value as string }))
                                     : [];
 
+                            const getBrandBg = (n: string) => {
+                                const colors: Record<string, string> = {
+                                    instagram: '#E1306C', facebook: '#1877F2', x: '#000000', twitter: '#000000',
+                                    youtube: '#FF0000', tiktok: '#010101', linkedin: '#0A66C2', spotify: '#1DB954',
+                                    discord: '#5865F2', github: '#333333', telegram: '#26A5E4', twitch: '#9146FF',
+                                    pinterest: '#E60023', snapchat: '#FFFC00', whatsapp: '#25D366', tel: '#25D366',
+                                    phone: '#25D366', email: '#EA4335', threads: '#000000', bereal: '#000000',
+                                };
+                                return colors[n.toLowerCase()] || '#6366f1';
+                            };
+
                             return (
-                                <div className="flex flex-wrap items-center gap-4 py-6" style={{ justifyContent: alignment === 'left' ? 'flex-start' : alignment === 'right' ? 'flex-end' : 'center' }}>
+                                <div className="flex flex-wrap items-center gap-3 py-4" style={{ justifyContent: alignment === 'left' ? 'flex-start' : alignment === 'right' ? 'flex-end' : 'center' }}>
                                     {socialsList.map((social: any, i: number) => {
                                         const sLink = social.link || social.url || social.location_url;
+                                        const iconName = social.type || social.icon || social.name || 'globe';
+                                        const brandColor = getBrandBg(iconName);
                                         return (
                                             <a key={i} href={sLink || "#"} target="_blank" rel="noopener noreferrer"
-                                               className="w-12 h-12 flex items-center justify-center bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-[18px] hover:scale-110 active:scale-95 transition-all">
-                                                <span className="text-white">
-                                                    <BrandIcon name={social.type || social.icon || social.name || "globe"} size={22} />
+                                               className="w-11 h-11 flex items-center justify-center rounded-2xl shadow-lg hover:scale-110 active:scale-95 transition-all"
+                                               style={{ background: brandColor + '20', border: `1.5px solid ${brandColor}30` }}>
+                                                <span style={{ color: brandColor }}>
+                                                    <BrandIcon name={iconName} size={20} colored />
                                                 </span>
                                             </a>
                                         );
                                     })}
                                 </div>
                             );
+                        }
+
 
                         case "avatar":
                             return (

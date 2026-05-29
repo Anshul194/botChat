@@ -8,7 +8,7 @@ import {
     Sparkles, ArrowUpRight, ShieldCheck, Zap, Layers, Grid, ShoppingBag,
     User, DollarSign, Plus, Check, Share2
 } from "lucide-react";
-import { getUiTypeFromBlock } from "../builder-utils";
+import { getUiTypeFromBlock, BrandIcon, getBrandColor } from "../builder-utils";
 
 export function InstaProLayout({ profile, tabs, openEditor }: any) {
     const allBlocks = (tabs || []).flatMap((tab: any) =>
@@ -387,18 +387,29 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
             );
 
         case 'social_medias_section':
+        case 'socials': {
+            const socialList = blockItems.length > 0 ? blockItems : (s.socials || []);
             return (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {s.title && <h2 className="text-center text-[8px] font-black text-white/20 uppercase tracking-[0.4em] italic">{s.title}</h2>}
                     <div className="flex flex-wrap items-center justify-center gap-3">
-                        {(blockItems.length > 0 ? blockItems : []).map((item: any, i: number) => (
-                            <a key={i} href={item.url || item.link || "#"} target="_blank" className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/60 hover:text-[#8b5cf6] hover:border-[#8b5cf6]/20 transition-all">
-                                <BrandIcon name={item.name || item.type || item.icon || "globe"} size={18} />
-                            </a>
-                        ))}
+                        {socialList.map((item: any, i: number) => {
+                            const iconKey = item.icon || item.type || item.name || 'globe';
+                            const brandColor = getBrandColor(iconKey);
+                            return (
+                                <a key={i} href={item.url || item.link || '#'} target="_blank" rel="noopener noreferrer"
+                                   className="w-11 h-11 rounded-[18px] flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all"
+                                   style={{ background: brandColor + '15', border: `1.5px solid ${brandColor}30` }}>
+                                    <span style={{ color: brandColor }}>
+                                        <BrandIcon name={iconKey} size={20} colored />
+                                    </span>
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
             );
+        }
 
         case 'faq':
         case 'faq_section':
@@ -474,16 +485,4 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
         default:
             return null;
     }
-};
-
-const BrandIcon = ({ name, size = 20 }: { name: string; size?: number }) => {
-    const n = name?.toLowerCase() || "";
-    if (n.includes('instagram')) return <i className="fab fa-instagram" style={{ fontSize: size }} />;
-    if (n.includes('linkedin')) return <i className="fab fa-linkedin" style={{ fontSize: size }} />;
-    if (n.includes('twitter') || n === 'x') return <i className="fab fa-x-twitter" style={{ fontSize: size }} />;
-    if (n.includes('youtube')) return <i className="fab fa-youtube" style={{ fontSize: size }} />;
-    if (n.includes('tiktok')) return <i className="fab fa-tiktok" style={{ fontSize: size }} />;
-    if (n.includes('spotify')) return <i className="fab fa-spotify" style={{ fontSize: size }} />;
-    if (n.includes('facebook')) return <i className="fab fa-facebook" style={{ fontSize: size }} />;
-    return <Globe size={size} />;
 };
