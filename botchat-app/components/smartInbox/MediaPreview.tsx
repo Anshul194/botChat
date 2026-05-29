@@ -23,6 +23,7 @@ export default function MediaPreview({
 
     // Detect type from: explicit prop → file MIME → URL extension
     const detectTypeFromUrl = (u: string): "image" | "video" | "audio" | "file" => {
+        if (!u) return "file";
         const ext = u.split(".").pop()?.split("?")[0]?.toLowerCase() ?? "";
         if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext)) return "image";
         if (["mp4", "mov", "avi", "mkv", "webm"].includes(ext)) return "video";

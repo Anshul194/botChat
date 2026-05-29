@@ -8,7 +8,7 @@ interface TextMessageProps {
 export default function TextMessage({ text }: TextMessageProps) {
     // Simple URL detection for auto-linking
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
+    const parts = (text || "").split(urlRegex);
 
     return (
         <p className="text-sm font-medium whitespace-pre-wrap break-words leading-relaxed">

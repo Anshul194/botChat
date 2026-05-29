@@ -33,9 +33,7 @@ export const sendMessage = async (data: {
 export const uploadMedia = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await api.post("/social/inbox/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-    });
+    const res = await api.post("/social/inbox/upload", formData);
     // Support both { url } and { data: { url } } response shapes
     return res.data;
 };
@@ -46,9 +44,7 @@ export const uploadVoice = async (blob: Blob) => {
     const ext = mime.includes("ogg") ? "ogg" : mime.includes("wav") ? "wav" : "webm";
     const formData = new FormData();
     formData.append("file", blob, `voice.${ext}`);
-    const res = await api.post("/social/inbox/upload-voice", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-    });
+    const res = await api.post("/social/inbox/upload-voice", formData);
     return res.data;
 };
 

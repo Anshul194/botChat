@@ -8,7 +8,7 @@ interface FileMessageProps {
 }
 
 function getFileIcon(filename: string) {
-    const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+    const ext = (filename || "").split(".").pop()?.toLowerCase() ?? "";
     if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext)) return FileImage;
     if (["mp4", "mov", "avi", "mkv", "webm"].includes(ext)) return FileVideo;
     if (["mp3", "wav", "ogg", "m4a", "aac", "webm"].includes(ext)) return FileAudio;
@@ -17,14 +17,14 @@ function getFileIcon(filename: string) {
 }
 
 function getFileTypeLabel(filename: string) {
-    const ext = filename.split(".").pop()?.toUpperCase() ?? "FILE";
+    const ext = (filename || "").split(".").pop()?.toUpperCase() ?? "FILE";
     return ext;
 }
 
 export default function FileMessage({ url, caption }: FileMessageProps) {
     if (!url) return <span className="text-xs text-muted-foreground italic">File unavailable</span>;
 
-    const filename = caption || url.split("/").pop()?.split("?")[0] || "Document";
+    const filename = caption || (url || "").split("/").pop()?.split("?")[0] || "Document";
     const Icon = getFileIcon(filename);
     const typeLabel = getFileTypeLabel(filename);
 

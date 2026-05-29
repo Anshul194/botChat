@@ -103,6 +103,15 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                             {message.status === "seen" && <CheckCheck className="w-3 h-3 text-primary animate-pulse" />}
                         </div>
                     )}
+
+                    {/* Display Reactions */}
+                    {reactionsList.length > 0 && (
+                        <div className={`absolute -bottom-3 ${isInbound ? "-right-2" : "-left-2"} flex items-center bg-background border border-border rounded-full px-1.5 py-0.5 shadow-sm z-10 scale-[0.90] origin-bottom`}>
+                            {reactionsList.map((r, i) => (
+                                <span key={i} className="text-[12px] leading-none" title={r.reaction}>{r.reaction}</span>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Reaction trigger — shows on hover */}

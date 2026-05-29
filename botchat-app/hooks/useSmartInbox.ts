@@ -296,14 +296,14 @@ export const useSmartInbox = () => {
             // Remove previous user reaction if any
             let newReactions = currentReactions.filter((r: any) => r.user_id !== userId);
             if (emoji) {
-                newReactions.push({ user_id: userId, emoji });
+                newReactions.push({ user_id: userId, reaction: emoji });
             }
 
             // Optimistic update
             dispatch(actions.updateMessage({ 
                 id: messageId, 
                 reaction_json: JSON.stringify(newReactions),
-                reactions: newReactions.map((r: any) => r.emoji)
+                reactions: newReactions.map((r: any) => r.reaction)
             }));
 
             await service.addReaction(messageId, emoji);

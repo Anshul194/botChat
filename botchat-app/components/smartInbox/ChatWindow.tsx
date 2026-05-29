@@ -42,7 +42,8 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
         let lastDateStr = "";
 
         messages.forEach((msg, idx) => {
-            const dateStr = format(parseISO(msg.created_at), "eeee, MMMM d, yyyy");
+            const rawDate = msg.created_at || msg.sent_at || new Date().toISOString();
+            const dateStr = format(parseISO(rawDate), "eeee, MMMM d, yyyy");
             if (dateStr !== lastDateStr) {
                 groups.push(
                     <div key={`date-${dateStr}`} className="flex justify-center my-8">
