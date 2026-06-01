@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import ReactionPicker from "./ReactionPicker";
 import MediaPreview from "./MediaPreview";
 import MessageRenderer from "./messages/MessageRenderer";
+import ReactionsListModal from "./ReactionsListModal";
 
 interface MessageBubbleProps {
     message: SmartInboxMessage;
@@ -17,6 +18,7 @@ interface MessageBubbleProps {
 export default function MessageBubble({ message }: MessageBubbleProps) {
     const { reactToMessage } = useSmartInbox();
     const [showReactions, setShowReactions] = useState(false);
+    const [showReactionsList, setShowReactionsList] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const isInbound = message.direction === "inbound";
@@ -106,11 +108,14 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
                     {/* Display Reactions */}
                     {reactionsList.length > 0 && (
-                        <div className={`absolute -bottom-3 ${isInbound ? "-right-2" : "-left-2"} flex items-center bg-background border border-border rounded-full px-1.5 py-0.5 shadow-sm z-10 scale-[0.90] origin-bottom`}>
+                        <button 
+                            onClick={() => setShowReactionsList(true)}
+                            className={`absolute -bottom-3 ${isInbound ? "-right-2" : "-left-2"} flex items-center bg-background border border-border rounded-full px-1.5 py-0.5 shadow-sm z-10 scale-[0.90] origin-bottom hover:bg-muted transition-colors cursor-pointer`}
+                        >
                             {reactionsList.map((r, i) => (
                                 <span key={i} className="text-[12px] leading-none" title={r.reaction}>{r.reaction}</span>
                             ))}
-                        </div>
+                        </button>
                     )}
                 </div>
 
@@ -151,8 +156,12 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                     onCloseModal={() => setPreviewUrl(null)}
                 />
             )}
+            
+            <ReactionsListModal 
+                isOpen={showReactionsList} 
+                onClose={() => setShowReactionsList(false)} 
+                reactions={reactionsList} 
+            />
         </div>
     );
 }
-
-

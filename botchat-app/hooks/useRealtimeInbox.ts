@@ -140,6 +140,16 @@ export const useRealtimeInbox = () => {
             }
         };
 
+        const onMessageUpdated = (e: any) => {
+            console.log("[Socket.IO] MessageUpdated", e);
+            if (e.message?.id) {
+                dispatch(actions.updateMessage({
+                    id: e.message.id,
+                    ...e.message
+                }));
+            }
+        };
+
         const onPresenceUpdated = (e: any) => {
             console.log("[Socket.IO] PresenceUpdated", e);
             if (e.conversation_id) {
@@ -163,6 +173,7 @@ export const useRealtimeInbox = () => {
 
         socket.on("MessageReceived",        onMessageReceived);
         socket.on("MessageSent",            onMessageSent);
+        socket.on("MessageUpdated",         onMessageUpdated);
         socket.on("TypingStarted",          onTypingStarted);
         socket.on("TypingStopped",          onTypingStopped);
         socket.on("MessageSeen",            onMessageSeen);
@@ -174,6 +185,7 @@ export const useRealtimeInbox = () => {
             socket.emit("leave", { tenantDomain, conversationId });
             socket.off("MessageReceived",       onMessageReceived);
             socket.off("MessageSent",           onMessageSent);
+            socket.off("MessageUpdated",        onMessageUpdated);
             socket.off("TypingStarted",         onTypingStarted);
             socket.off("TypingStopped",         onTypingStopped);
             socket.off("MessageSeen",           onMessageSeen);
