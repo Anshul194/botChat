@@ -293,7 +293,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             </motion.div>
                         )}
                         <NavItem
-                            item={{ label: "Smart Inbox", icon: MessageSquare, href: "/social/smart-inbox" }}
+                            item={{ label: "Shared Inbox", icon: MessageSquare, href: "/social/smart-inbox" }}
                             collapsed={collapsed}
                             pathname={currentPath}
                             onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
