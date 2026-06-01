@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter as useNextRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AccountSelector } from './components/AccountSelector';
 import { PostPreview } from './components/PostPreview';
@@ -49,8 +50,30 @@ import api from "@/lib/api";
 
 export default function PostStudioPage() {
   const { showModal, showConfirm } = useModal();
-  const [step, setStep] = useState<'select' | 'list' | 'studio'>('select');
-  const [postType, setPostType] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const nextRouter = useNextRouter();
+
+  // Derive step & postType from URL so they survive a page refresh
+  const stepParam = (searchParams.get('step') as 'select' | 'list' | 'studio') || 'select';
+  const typeParam = searchParams.get('type') || null;
+
+  const [step, _setStep] = useState<'select' | 'list' | 'studio'>(stepParam);
+  const [postType, _setPostType] = useState<string | null>(typeParam);
+
+  // Helpers that update both local state AND the URL
+  const setStep = useCallback((s: 'select' | 'list' | 'studio') => {
+    _setStep(s);
+    const params = new URLSearchParams(window.location.search);
+    params.set('step', s);
+    nextRouter.replace(`?${params.toString()}`, { scroll: false });
+  }, [nextRouter]);
+
+  const setPostType = useCallback((t: string | null) => {
+    _setPostType(t);
+    const params = new URLSearchParams(window.location.search);
+    if (t) params.set('type', t); else params.delete('type');
+    nextRouter.replace(`?${params.toString()}`, { scroll: false });
+  }, [nextRouter]);
   const [caption, setCaption] = useState('');
   const [media, setMedia] = useState<string[]>([]);
   const [carouselItemsPreview, setCarouselItemsPreview] = useState<any[]>([]);
@@ -72,6 +95,14 @@ export default function PostStudioPage() {
   const { campaigns, ctaCampaigns, isLoading: isLoadingCampaigns } = useSelector((state: RootState) => state.socialPosting);
   const { campaigns: carouselCampaigns, isPublishing: isPublishingCarousel } = useSelector((state: RootState) => state.carousel);
   const dispatch = useDispatch<AppDispatch>();
+
+  // Fetch accounts whenever we're in list or studio mode (also covers post-refresh)
+  useEffect(() => {
+    if (step === 'list' || step === 'studio') {
+      fetchAccounts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
   useEffect(() => {
     if (step === 'list') {
@@ -149,8 +180,13 @@ export default function PostStudioPage() {
   };
 
   const handleSelectType = (type: string) => {
-    setPostType(type);
-    setStep('list');
+    _setPostType(type);
+    _setStep('list');
+    // Update URL in a single replace to avoid two history entries
+    const params = new URLSearchParams();
+    params.set('step', 'list');
+    params.set('type', type);
+    nextRouter.replace(`?${params.toString()}`, { scroll: false });
     fetchAccounts();
   };
 
@@ -206,13 +242,13 @@ export default function PostStudioPage() {
     setIsPublishing(true);
 
     try {
-        const finalSelectedPages = selectedAccounts.map(id => {
-            const acc = accounts.find(a => a.id === id);
-            return {
-                id: acc?.platformId || id, // Mapping to platform_id needed by API
-                platform_id: String(acc?.platformId || id)
-            };
-        });
+      const finalSelectedPages = selectedAccounts.map(id => {
+        const acc = accounts.find(a => a.id === id);
+        return {
+          id: acc?.platformId || id, // Mapping to platform_id needed by API
+          platform_id: String(acc?.platformId || id)
+        };
+      });
 
       const primaryAccountType = accounts.find(a => a.id === (selectedAccounts[0] || selectedParentAccounts[0]))?.type || 'facebook';
 
@@ -617,173 +653,173 @@ export default function PostStudioPage() {
           <section className="flex-1 border-r border-[var(--border)] h-full flex flex-col overflow-hidden bg-[var(--background)]">
             {/* Account Selector */}
             <div className="flex flex-col border-b border-[var(--border)] bg-[var(--card)] px-6 py-3 gap-3 shrink-0 z-10">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
-                Select {postType === 'multimedia' ? 'Pages' : 'Accounts'} ({(postType === 'cta' || postType === 'carousel') ? selectedParentAccounts.length : selectedAccounts.length})
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
+                    Select {postType === 'multimedia' ? 'Pages' : 'Accounts'} ({(postType === 'cta' || postType === 'carousel') ? selectedParentAccounts.length : selectedAccounts.length})
+                  </div>
+                  <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-1 h-8">
+                    <button
+                      onClick={() => setPlatform('all')}
+                      className={cn("px-3 text-xs rounded transition-colors font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setPlatform('facebook')}
+                      className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                    >
+                      <Facebook className="w-3 h-3" /> FB ({uniqueAccounts.filter(a => a.type === 'facebook').length})
+                    </button>
+                    {(postType !== 'cta' && postType !== 'carousel') && (
+                      <button
+                        onClick={() => setPlatform('instagram')}
+                        className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                      >
+                        <Instagram className="w-3 h-3" /> IG ({uniqueAccounts.filter(a => a.type === 'instagram').length})
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="relative w-64">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+                  <Input
+                    placeholder="Quick find..."
+                    className="h-8 bg-[var(--background)] border-[var(--border)] pl-8 text-xs focus-visible:ring-1 focus-visible:ring-primary"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
               </div>
-              <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-1 h-8">
-                <button
-                  onClick={() => setPlatform('all')}
-                  className={cn("px-3 text-xs rounded transition-colors font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setPlatform('facebook')}
-                  className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                >
-                  <Facebook className="w-3 h-3" /> FB ({uniqueAccounts.filter(a => a.type === 'facebook').length})
-                </button>
-                {(postType !== 'cta' && postType !== 'carousel') && (
-                  <button
-                    onClick={() => setPlatform('instagram')}
-                    className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                  >
-                    <Instagram className="w-3 h-3" /> IG ({uniqueAccounts.filter(a => a.type === 'instagram').length})
-                  </button>
+
+              <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+                {isLoadingAccounts ? (
+                  <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" /> Loading accounts...
+                  </div>
+                ) : (postType === 'cta' || postType === 'carousel') ? (
+                  // CTA/Carousel Mode: Show ONLY parent accounts (FB ONLY as requested)
+                  uniqueAccounts
+                    .filter(acc => acc.type === 'facebook')
+                    .map((acc) => (
+                      <button
+                        key={acc.accountId}
+                        onClick={() => {
+                          // Selection logic: toggle the parent account
+                          setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId]);
+                        }}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all whitespace-nowrap shrink-0",
+                          selectedParentAccounts.includes(acc.accountId)
+                            ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm"
+                            : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
+                        )}
+                      >
+                        <img src={acc.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                        {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                        <span className="text-sm font-medium">{acc.accountName}</span>
+                      </button>
+                    ))
+                ) : (
+                  // Multimedia Mode: Show Account filters + Page list
+                  <div className="flex flex-col gap-2 w-full">
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
+                      <div className="flex items-center gap-2 bg-[var(--background)] px-3 py-1.5 rounded-full border border-[var(--border)] shadow-sm shrink-0">
+                        <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase flex items-center gap-1.5">
+                          <Filter className="w-3 h-3" /> Filter by Account:
+                        </span>
+                        <div className="h-3 w-px bg-[var(--border)] mx-1" />
+                        <div className="flex items-center gap-1.5">
+                          {uniqueAccounts
+                            .filter(acc => platform === 'all' || acc.type === platform)
+                            .map(acc => (
+                              <button
+                                key={acc.accountId}
+                                onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
+                                className={cn(
+                                  "px-3 py-1 rounded-full text-[10px] font-bold transition-all whitespace-nowrap flex items-center gap-1.5",
+                                  selectedParentAccounts.includes(acc.accountId)
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
+                                )}
+                              >
+                                {acc.type === 'facebook' ? <Facebook className="w-3 h-3" /> : <Instagram className="w-3 h-3" />}
+                                {acc.accountName}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
+                      {filteredAccounts.length > 0 ? (
+                        filteredAccounts.map((acc) => (
+                          <button
+                            key={acc.id}
+                            onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
+                            className={cn(
+                              "relative flex items-center gap-3 pl-3 pr-8 py-2.5 rounded-xl border transition-all whitespace-nowrap shrink-0 overflow-hidden group",
+                              selectedAccounts.includes(acc.id)
+                                ? "bg-primary/5 border-primary shadow-[0_0_0_1px_var(--theme-primary)]"
+                                : "bg-[var(--card)] border-[var(--border)] hover:border-[var(--muted-foreground)] hover:bg-[var(--background)]"
+                            )}
+                          >
+                            {selectedAccounts.includes(acc.id) && (
+                              <div className="absolute inset-0 bg-primary/5" />
+                            )}
+                            <div className="relative z-10 flex items-center justify-center">
+                              <img src={acc.image} alt="" className="w-7 h-7 rounded-full object-cover shadow-sm ring-2 ring-[var(--background)]" />
+                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--background)] rounded-full flex items-center justify-center shadow-sm">
+                                {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-start relative z-10">
+                              <span className="text-sm font-bold leading-none mb-1 text-[var(--foreground)]">{acc.name}</span>
+                              <span className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{acc.accountName}</span>
+                            </div>
+                            {selectedAccounts.includes(acc.id) && (
+                              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
+                                <CheckCircle2 className="w-3 h-3" />
+                              </div>
+                            )}
+                          </button>
+                        ))
+                      ) : (
+                        <div className="text-xs font-medium text-[var(--muted-foreground)] flex items-center gap-2 py-2">
+                          <Loader2 className="w-3 h-3 animate-pulse opacity-50" /> No matching pages found for this post type.
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="relative w-64">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
-              <Input
-                placeholder="Quick find..."
-                className="h-8 bg-[var(--background)] border-[var(--border)] pl-8 text-xs focus-visible:ring-1 focus-visible:ring-primary"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-            {isLoadingAccounts ? (
-              <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
-                <Loader2 className="w-4 h-4 animate-spin text-primary" /> Loading accounts...
-              </div>
-            ) : (postType === 'cta' || postType === 'carousel') ? (
-              // CTA/Carousel Mode: Show ONLY parent accounts (FB ONLY as requested)
-              uniqueAccounts
-                .filter(acc => acc.type === 'facebook')
-                .map((acc) => (
-                  <button
-                    key={acc.accountId}
-                    onClick={() => {
-                      // Selection logic: toggle the parent account
-                      setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId]);
-                    }}
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all whitespace-nowrap shrink-0",
-                      selectedParentAccounts.includes(acc.accountId)
-                        ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm"
-                        : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
-                    )}
-                  >
-                    <img src={acc.image} alt="" className="w-5 h-5 rounded-full object-cover" />
-                    {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                    <span className="text-sm font-medium">{acc.accountName}</span>
-                  </button>
-                ))
-            ) : (
-              // Multimedia Mode: Show Account filters + Page list
-              <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-                  <div className="flex items-center gap-2 bg-[var(--background)] px-3 py-1.5 rounded-full border border-[var(--border)] shadow-sm shrink-0">
-                    <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase flex items-center gap-1.5">
-                      <Filter className="w-3 h-3" /> Filter by Account:
-                    </span>
-                    <div className="h-3 w-px bg-[var(--border)] mx-1" />
-                    <div className="flex items-center gap-1.5">
-                      {uniqueAccounts
-                        .filter(acc => platform === 'all' || acc.type === platform)
-                        .map(acc => (
-                          <button
-                            key={acc.accountId}
-                            onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
-                            className={cn(
-                              "px-3 py-1 rounded-full text-[10px] font-bold transition-all whitespace-nowrap flex items-center gap-1.5",
-                              selectedParentAccounts.includes(acc.accountId)
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
-                            )}
-                          >
-                            {acc.type === 'facebook' ? <Facebook className="w-3 h-3" /> : <Instagram className="w-3 h-3" />}
-                            {acc.accountName}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
-                  {filteredAccounts.length > 0 ? (
-                    filteredAccounts.map((acc) => (
-                      <button
-                        key={acc.id}
-                        onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
-                        className={cn(
-                          "relative flex items-center gap-3 pl-3 pr-8 py-2.5 rounded-xl border transition-all whitespace-nowrap shrink-0 overflow-hidden group",
-                          selectedAccounts.includes(acc.id)
-                            ? "bg-primary/5 border-primary shadow-[0_0_0_1px_var(--theme-primary)]"
-                            : "bg-[var(--card)] border-[var(--border)] hover:border-[var(--muted-foreground)] hover:bg-[var(--background)]"
-                        )}
-                      >
-                        {selectedAccounts.includes(acc.id) && (
-                          <div className="absolute inset-0 bg-primary/5" />
-                        )}
-                        <div className="relative z-10 flex items-center justify-center">
-                          <img src={acc.image} alt="" className="w-7 h-7 rounded-full object-cover shadow-sm ring-2 ring-[var(--background)]" />
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--background)] rounded-full flex items-center justify-center shadow-sm">
-                            {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-start relative z-10">
-                          <span className="text-sm font-bold leading-none mb-1 text-[var(--foreground)]">{acc.name}</span>
-                          <span className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{acc.accountName}</span>
-                        </div>
-                        {selectedAccounts.includes(acc.id) && (
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
-                            <CheckCircle2 className="w-3 h-3" />
-                          </div>
-                        )}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="text-xs font-medium text-[var(--muted-foreground)] flex items-center gap-2 py-2">
-                      <Loader2 className="w-3 h-3 animate-pulse opacity-50" /> No matching pages found for this post type.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            </div>
-          </div>
-
             {/* Composer */}
             <div className="flex-1 overflow-y-auto no-scrollbar relative">
-            {step === 'studio' && postType === 'carousel' ? (
-              <CarouselComposer
-                onPublish={handlePublish}
-                isPublishing={isPublishingCarousel}
-                accounts={accounts}
-                isLoadingAccounts={isLoadingAccounts}
-                selectedParentAccounts={selectedParentAccounts}
-                onChange={handleCarouselChange}
-              />
-            ) : (
-              <Composer
-                onContentChange={setCaption}
-                onMediaChange={setMedia}
-                type={postType}
-                onPublish={handlePublish}
-                isPublishing={isPublishing}
-                accounts={accounts}
-                selectedParentAccounts={selectedParentAccounts}
-                onTabChange={setMultimediaTab}
-                onLinkChange={setLinkUrlPreview}
-                onCtaTypeChange={setCtaTypePreview}
-              />
-            )}
+              {step === 'studio' && postType === 'carousel' ? (
+                <CarouselComposer
+                  onPublish={handlePublish}
+                  isPublishing={isPublishingCarousel}
+                  accounts={accounts}
+                  isLoadingAccounts={isLoadingAccounts}
+                  selectedParentAccounts={selectedParentAccounts}
+                  onChange={handleCarouselChange}
+                />
+              ) : (
+                <Composer
+                  onContentChange={setCaption}
+                  onMediaChange={setMedia}
+                  type={postType}
+                  onPublish={handlePublish}
+                  isPublishing={isPublishing}
+                  accounts={accounts}
+                  selectedParentAccounts={selectedParentAccounts}
+                  onTabChange={setMultimediaTab}
+                  onLinkChange={setLinkUrlPreview}
+                  onCtaTypeChange={setCtaTypePreview}
+                />
+              )}
             </div>
           </section>
 
