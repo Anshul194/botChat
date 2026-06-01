@@ -9,7 +9,7 @@ import {
     ShoppingBag, SmartphoneNfc, Sparkles, ChevronLeft, ChevronRight,
     Settings, Zap, MoreHorizontal, PanelLeft, Columns, Search, Camera,
     Shuffle, Palette, KeyRound, ShieldAlert, CircleDot, Orbit, Megaphone, Code2, FileCode2, Info, Maximize2, Globe, Clock, Mail,
-    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle, ExternalLink, ShieldCheck
+    Instagram, Twitter, Facebook, EyeOff, Phone, MessageCircle, ExternalLink, ShieldCheck, ArrowLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -3127,20 +3127,6 @@ function BioLinkBuilderContent() {
                                                 </div>
                                             )}
 
-                                            {/* Stats */}
-                                            {(uiType === "stats_minimal_section" || uiType === "stats_section") && (
-                                                <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats</p>
-                                                    {(s.items || []).map((stat: any, i: number) => (
-                                                        <div key={i} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
-                                                            <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
-                                                            <InputField label="Value" value={stat.value || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...stat, value: e.target.value }; upd('items', it); }} placeholder="124K" />
-                                                            <InputField label="Label" value={stat.label || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...stat, label: e.target.value }; upd('items', it); }} placeholder="Followers" />
-                                                        </div>
-                                                    ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { value: "", label: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Stat</button>
-                                                </div>
-                                            )}
 
                                             {/* Impact */}
                                             {uiType === "impact_section" && (
@@ -3551,6 +3537,7 @@ function BioLinkBuilderContent() {
                                             {/* Testimonials */}
                                             {uiType === "testimonials_section" && (
                                                 <div className="space-y-4">
+                                                    <InputField label="Section Title (Optional)" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="What Clients Say" />
                                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Testimonials</p>
                                                     {(s.items || []).map((t: any, i: number) => (
                                                         <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
