@@ -134,7 +134,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const isSuperAdmin = useMemo(() => {
         if (!mounted || !user) return false;
         const role = (user.role || user.type || "").toLowerCase();
-        return role.includes("super_admin") || role.includes("admin");
+        return role.includes("super_admin");
     }, [user, mounted]);
 
     const { showModal } = useModal();
@@ -390,21 +390,23 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
                         ))}
 
-                        <NavAccordion
-                            label="Blog Manager"
-                            icon={Layers}
-                            isOpen={blogOpen}
-                            onToggle={() => setBlogOpen(!blogOpen)}
-                            collapsed={collapsed}
-                            items={[
-                                { label: "All Blogs", href: "/dashboard/blog" },
-                                { label: "Categories", href: "/dashboard/blog/categories" },
-                                { label: "Create Post", href: "/dashboard/blog/create" },
-                            ]}
-                            pathname={currentPath}
-                            navigate={navigate}
-                            onClose={onClose}
-                        />
+                        {isSuperAdmin && (
+                            <NavAccordion
+                                label="Blog Manager"
+                                icon={Layers}
+                                isOpen={blogOpen}
+                                onToggle={() => setBlogOpen(!blogOpen)}
+                                collapsed={collapsed}
+                                items={[
+                                    { label: "All Blogs", href: "/dashboard/blog" },
+                                    { label: "Categories", href: "/dashboard/blog/categories" },
+                                    { label: "Create Post", href: "/dashboard/blog/create" },
+                                ]}
+                                pathname={currentPath}
+                                navigate={navigate}
+                                onClose={onClose}
+                            />
+                        )}
                     </motion.div>
 
                     {/* ADMIN */}
