@@ -47,6 +47,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
     return (
         <div className="flex flex-wrap gap-1 p-2 bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('bold') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Bold"
@@ -54,6 +55,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <Bold className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleItalic().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('italic') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Italic"
@@ -61,6 +63,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <Italic className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('underline') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Underline"
@@ -69,6 +72,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             </button>
             <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('heading', { level: 1 }) ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Heading 1"
@@ -76,6 +80,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <Heading1 className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('heading', { level: 2 }) ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Heading 2"
@@ -84,6 +89,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             </button>
             <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('bulletList') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Bullet List"
@@ -91,6 +97,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <List className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleOrderedList().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('orderedList') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Ordered List"
@@ -99,6 +106,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             </button>
             <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('blockquote') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Quote"
@@ -106,6 +114,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <Quote className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => editor.chain().focus().toggleCode().run()}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('code') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Code"
@@ -114,6 +123,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             </button>
             <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
             <button
+                type="button"
                 onClick={addLink}
                 className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('link') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
                 title="Add Link"
@@ -121,6 +131,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <LinkIcon className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="p-2 rounded-lg hover:bg-slate-200 transition-colors text-slate-500"
                 title="Add Image"
@@ -136,6 +147,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             />
             <div className="flex-1" />
             <button
+                type="button"
                 onClick={() => editor.chain().focus().undo().run()}
                 className="p-2 rounded-lg hover:bg-slate-200 transition-colors text-slate-500"
                 title="Undo"
@@ -143,6 +155,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <Undo className="w-4 h-4" />
             </button>
             <button
+                type="button"
                 onClick={() => editor.chain().focus().redo().run()}
                 className="p-2 rounded-lg hover:bg-slate-200 transition-colors text-slate-500"
                 title="Redo"

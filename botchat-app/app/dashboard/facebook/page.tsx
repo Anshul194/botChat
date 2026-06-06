@@ -89,7 +89,7 @@ export default function FacebookPage() {
         // Listen for messages from the popup
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== window.location.origin) return;
-            
+
             if (event.data?.type === 'SOCIAL_CONNECTION_SUCCESS') {
                 fetchConnectedPages();
                 setIsConnecting(false);
@@ -114,10 +114,10 @@ export default function FacebookPage() {
                 const height = 700;
                 const left = (window.innerWidth - width) / 2 + window.screenX;
                 const top = (window.innerHeight - height) / 2 + window.screenY;
-                
+
                 const popup = window.open(
-                    redirectUrl, 
-                    'Facebook Connect', 
+                    redirectUrl,
+                    'Facebook Connect',
                     `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
                 );
 
@@ -320,109 +320,109 @@ export default function FacebookPage() {
                                             is_enabled: rawPage.is_enabled === "1" || rawPage.is_enabled === 1 || rawPage.is_enabled === true,
                                         };
                                         return (
-                                        <div
-                                            key={page.id}
-                                            className="group relative rounded-2xl border bg-white dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
-                                        >
-                                            <div className="flex items-start gap-4 mb-5">
-                                                <div className="relative shrink-0">
-                                                    <div className="h-14 w-14 overflow-hidden rounded-xl border dark:border-neutral-700 bg-gray-100 flex items-center justify-center">
-                                                        {page.picture ? (
-                                                            <img
-                                                                src={page.picture}
-                                                                alt={page.page_name}
-                                                                className="h-full w-full object-cover"
-                                                            />
-                                                        ) : (
-                                                            <span className="text-xl font-bold text-gray-500">{page.page_name[0]}</span>
-                                                        )}
+                                            <div
+                                                key={page.id}
+                                                className="group relative rounded-2xl border bg-white dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
+                                            >
+                                                <div className="flex items-start gap-4 mb-5">
+                                                    <div className="relative shrink-0">
+                                                        <div className="h-14 w-14 overflow-hidden rounded-xl border dark:border-neutral-700 bg-gray-100 flex items-center justify-center">
+                                                            {page.picture ? (
+                                                                <img
+                                                                    src={page.picture}
+                                                                    alt={page.page_name}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <span className="text-xl font-bold text-gray-500">{page.page_name[0]}</span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
 
-                                                <div className="space-y-1 flex-1 min-w-0 pr-6">
-                                                    <h3 className="text-base font-semibold text-neutral-900 dark:text-white truncate">
-                                                        {page.page_name}
-                                                    </h3>
-                                                    <p className="text-xs text-neutral-500 font-mono">
-                                                        {page.page_id}
-                                                    </p>
-                                                    <p className="text-xs font-medium text-neutral-500">{page.category || "Social Entity"}</p>
-                                                </div>
+                                                    <div className="space-y-1 flex-1 min-w-0 pr-6">
+                                                        <h3 className="text-base font-semibold text-neutral-900 dark:text-white truncate">
+                                                            {page.page_name}
+                                                        </h3>
+                                                        <p className="text-xs text-neutral-500 font-mono">
+                                                            {page.page_id}
+                                                        </p>
+                                                        <p className="text-xs font-medium text-neutral-500">{page.category || "Social Entity"}</p>
+                                                    </div>
 
-                                                {page.is_enabled && (
-                                                    <div className="absolute top-5 right-5 h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm ring-4 ring-emerald-50 dark:ring-emerald-900/30" title="Active Automation" />
-                                                )}
-                                            </div>
-
-                                            <div className="flex flex-wrap items-center gap-3">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        setConfirmModal({
-                                                            show: true,
-                                                            type: page.is_enabled ? "disable" : "enable",
-                                                            pageId: page.id,
-                                                            pageName: page.page_name,
-                                                        })
-                                                    }
-                                                    className={cn(
-                                                        "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-sm font-medium transition-colors",
-                                                        page.is_enabled
-                                                            ? "bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-500 dark:hover:bg-amber-500/20"
-                                                            : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
+                                                    {page.is_enabled && (
+                                                        <div className="absolute top-5 right-5 h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm ring-4 ring-emerald-50 dark:ring-emerald-900/30" title="Active Automation" />
                                                     )}
-                                                >
-                                                    {page.is_enabled ? "Disable Page" : "Enable Page"}
-                                                </Button>
+                                                </div>
 
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon-sm"
-                                                    asChild
-                                                    title="View on Facebook"
-                                                    className="rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 transition-colors"
-                                                >
-                                                    <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer">
-                                                        <ExternalLink className="h-4 w-4" />
-                                                    </a>
-                                                </Button>
+                                                <div className="flex flex-wrap items-center gap-3">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            setConfirmModal({
+                                                                show: true,
+                                                                type: page.is_enabled ? "disable" : "enable",
+                                                                pageId: page.id,
+                                                                pageName: page.page_name,
+                                                            })
+                                                        }
+                                                        className={cn(
+                                                            "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-sm font-medium transition-colors",
+                                                            page.is_enabled
+                                                                ? "bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-500 dark:hover:bg-amber-500/20"
+                                                                : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
+                                                        )}
+                                                    >
+                                                        {page.is_enabled ? "Disable Page" : "Enable Page"}
+                                                    </Button>
 
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon-sm"
-                                                    onClick={() =>
-                                                        setConfirmModal({
-                                                            show: true,
-                                                            type: "clean",
-                                                            pageId: page.id,
-                                                            pageName: page.page_name,
-                                                        })
-                                                    }
-                                                    title="Clean Data"
-                                                    className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors"
-                                                >
-                                                    <Eraser className="h-4 w-4" />
-                                                </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon-sm"
+                                                        asChild
+                                                        title="View on Facebook"
+                                                        className="rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 transition-colors"
+                                                    >
+                                                        <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer">
+                                                            <ExternalLink className="h-4 w-4" />
+                                                        </a>
+                                                    </Button>
 
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon-sm"
-                                                    onClick={() =>
-                                                        setConfirmModal({
-                                                            show: true,
-                                                            type: "disconnect",
-                                                            pageId: page.id,
-                                                            pageName: page.page_name,
-                                                        })
-                                                    }
-                                                    title="Disconnect Page"
-                                                    className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon-sm"
+                                                        onClick={() =>
+                                                            setConfirmModal({
+                                                                show: true,
+                                                                type: "clean",
+                                                                pageId: page.id,
+                                                                pageName: page.page_name,
+                                                            })
+                                                        }
+                                                        title="Clean Data"
+                                                        className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors"
+                                                    >
+                                                        <Eraser className="h-4 w-4" />
+                                                    </Button>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon-sm"
+                                                        onClick={() =>
+                                                            setConfirmModal({
+                                                                show: true,
+                                                                type: "disconnect",
+                                                                pageId: page.id,
+                                                                pageName: page.page_name,
+                                                            })
+                                                        }
+                                                        title="Disconnect Page"
+                                                        className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
                                         );
                                     })}
                                 </div>
@@ -451,7 +451,7 @@ export default function FacebookPage() {
                 {confirmModal?.show && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                         <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
-                        
+
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -461,7 +461,7 @@ export default function FacebookPage() {
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                                 Confirm {confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
                             </h3>
-                            
+
                             <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm leading-relaxed">
                                 Are you sure you want to {confirmModal.type.replace("-", " ")} <strong className="font-medium text-gray-900 dark:text-white">{confirmModal.pageName}</strong>? This action will modify your automation state for this entity.
                             </p>
@@ -475,11 +475,12 @@ export default function FacebookPage() {
                                 </button>
                                 <button
                                     onClick={handleAction}
-                                    className={cn(
-                                        "px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm transition-colors",
-                                        confirmModal.type.includes("disconnect") ? "bg-rose-600 hover:bg-rose-700" :
-                                        confirmModal.type === "clean" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-600 hover:bg-blue-700"
-                                    )}
+                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90"
+                                    style={{
+                                        background: confirmModal.type.includes("disconnect")
+                                            ? "rgb(225 29 72)" // rose-600
+                                            : "var(--primary)"
+                                    }}
                                 >
                                     Confirm
                                 </button>

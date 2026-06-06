@@ -93,9 +93,17 @@ export default function BlogPage() {
                                 </p>
                                 <div className="flex items-center gap-8 mb-8">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF2D78] to-[#E1306C] border border-white/20 p-0.5">
-                                            <div className="w-full h-full bg-gray-900 rounded-[8px]" />
-                                        </div>
+                                        {featuredPost.author_image_url ? (
+                                            <img
+                                                src={featuredPost.author_image_url}
+                                                alt={featuredPost.author_name || "Author"}
+                                                className="w-10 h-10 rounded-xl object-cover border-2 border-white/20 shadow-lg"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF2D78] to-[#E1306C] flex items-center justify-center text-white font-black text-sm shadow-lg">
+                                                {(featuredPost.author_name || "A").charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
                                         <div>
                                             <span className="block text-white font-black text-xs uppercase tracking-widest">{featuredPost.author_name || "Admin"}</span>
                                             <span className="text-gray-500 text-[9px] font-bold uppercase tracking-widest">Author</span>
@@ -106,7 +114,9 @@ export default function BlogPage() {
                                         <span className="text-[9px] font-black uppercase tracking-widest text-[#FF2D78]">
                                             {new Date(featuredPost.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </span>
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-600">5 min read</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-600">
+                                            {featuredPost.reading_time && Number(featuredPost.reading_time) > 0 ? `${featuredPost.reading_time} min read` : "Quick read"}
+                                        </span>
                                     </div>
                                 </div>
                                 <Link href={`/blog/${featuredPost.slug || featuredPost.id}`} className="group relative inline-flex items-center gap-3 px-10 py-4 bg-white text-black font-black rounded-2xl hover:bg-[#FF2D78] hover:text-white transition-all duration-300 overflow-hidden text-sm uppercase tracking-widest">
@@ -203,7 +213,8 @@ export default function BlogPage() {
                                             <div className="flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
                                                 <span>{new Date(post.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                                 <span className="w-1 h-1 rounded-full bg-gray-200" />
-                                                <span>5 min read</span>
+                                                <Clock className="w-3 h-3" />
+                                                <span>{post.reading_time && Number(post.reading_time) > 0 ? `${post.reading_time} min read` : "Quick read"}</span>
                                             </div>
                                             <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-pink-500 transition-colors leading-tight line-clamp-2">
                                                 {post.title}
@@ -212,6 +223,20 @@ export default function BlogPage() {
                                                 {post.short_description || post.content?.replace(/<[^>]+>/g, '') || ""}
                                             </p>
                                             <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    {post.author_image_url ? (
+                                                        <img
+                                                            src={post.author_image_url}
+                                                            alt={post.author_name || "Author"}
+                                                            className="w-7 h-7 rounded-lg object-cover border border-gray-100"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#FF2D78] to-[#E1306C] flex items-center justify-center text-white font-black text-[10px]">
+                                                            {(post.author_name || "A").charAt(0).toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{post.author_name || "Admin"}</span>
+                                                </div>
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-black flex items-center gap-2 group-hover:gap-3 transition-all">
                                                     Read More <ArrowRight className="w-3 h-3 text-pink-500" />
                                                 </span>

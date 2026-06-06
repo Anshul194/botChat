@@ -422,7 +422,6 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             );
 
                         case "hero_section":
-                        case "hero_aesthetic_section":
                             return (
                                 <div className="relative w-[calc(100%+3rem)] -mx-6 -mt-6 mb-6 overflow-hidden shadow-2xl bg-black group min-h-[380px] flex items-center justify-center">
                                     {settings.image || settings.background_image ? (
@@ -431,13 +430,12 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-black to-purple-900" />
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-
                                     <div className="relative z-10 p-8 w-full text-center flex flex-col items-center">
-                                        {(settings.brand_name || settings.headline) && (
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 mb-4 drop-shadow-md">{settings.brand_name || settings.headline}</p>
+                                        {settings.brand_name && (
+                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 mb-4 drop-shadow-md">{settings.brand_name}</p>
                                         )}
                                         <h2 className="text-[36px] font-black leading-[0.95] tracking-tighter text-white mb-2 drop-shadow-2xl">
-                                            {settings.title || "Elevate Your Vision"}
+                                            {settings.title || settings.headline || "Elevate Your Vision"}
                                         </h2>
                                         {settings.subtitle && (
                                             <h3 className="text-[18px] font-bold text-white/90 mb-3 drop-shadow-md leading-snug">{settings.subtitle}</h3>
@@ -449,6 +447,63 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             <button className="px-10 py-4 rounded-full bg-white text-black text-[11px] font-black uppercase tracking-widest shadow-2xl transition-all mt-2 max-w-[80%] mx-auto truncate">
                                                 {settings.cta_text}
                                             </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+
+                        case "hero_aesthetic_section":
+                            return (
+                                <div className="relative w-[calc(100%+3rem)] -mx-6 -mt-6 mb-6 overflow-hidden min-h-[420px] flex flex-col items-center justify-end">
+                                    {/* Background */}
+                                    {settings.background_image ? (
+                                        <img src={settings.background_image} className="absolute inset-0 w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }} />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/20" />
+                                    {/* Glowing orbs */}
+                                    <div className="absolute top-8 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full opacity-30 blur-3xl" style={{ background: 'radial-gradient(circle, #a855f7, transparent)' }} />
+                                    <div className="absolute bottom-24 right-4 w-24 h-24 rounded-full opacity-20 blur-2xl" style={{ background: 'radial-gradient(circle, #ec4899, transparent)' }} />
+
+                                    <div className="relative z-10 w-full flex flex-col items-center text-center px-6 pb-8 pt-14 gap-4">
+                                        {/* Profile image */}
+                                        {settings.profile_image && (
+                                            <div className="relative mb-1">
+                                                <div className="absolute -inset-1 rounded-full blur-md opacity-60" style={{ background: 'linear-gradient(45deg, #a855f7, #ec4899)' }} />
+                                                <img src={settings.profile_image} className="relative w-20 h-20 rounded-full object-cover border-2 border-white/20 shadow-2xl" />
+                                            </div>
+                                        )}
+                                        {/* Brand pill */}
+                                        {settings.brand_name && (
+                                            <span className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-purple-500/40 text-purple-300" style={{ backgroundColor: 'rgba(168,85,247,0.15)' }}>
+                                                {settings.brand_name}
+                                            </span>
+                                        )}
+                                        {/* Headline */}
+                                        <h2 className="text-[28px] font-black tracking-tight leading-[1.1] text-white drop-shadow-2xl">
+                                            {settings.headline || "Your Headline"}
+                                        </h2>
+                                        {/* Subheadline */}
+                                        {settings.subheadline && (
+                                            <h3 className="text-[14px] font-bold text-white/80 leading-snug -mt-2">{settings.subheadline}</h3>
+                                        )}
+                                        {/* Description */}
+                                        {settings.description && (
+                                            <p className="text-[11px] text-white/60 leading-relaxed font-medium max-w-[90%]">{settings.description}</p>
+                                        )}
+                                        {/* CTA Buttons */}
+                                        {(settings.buttons || []).length > 0 && (
+                                            <div className="flex flex-col gap-2 w-full mt-1">
+                                                {(settings.buttons || []).slice(0, 2).map((btn: any, bi: number) => (
+                                                    <a key={bi} href={btn.link || '#'} className={`w-full py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center no-underline shadow-lg ${bi === 0
+                                                        ? 'text-black'
+                                                        : 'border border-white/20 text-white'
+                                                        }`} style={bi === 0 ? { background: 'linear-gradient(135deg, #a855f7, #ec4899)' } : { background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}>
+                                                        {btn.text || (bi === 0 ? 'Get Started' : 'Learn More')}
+                                                    </a>
+                                                ))}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -557,7 +612,6 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             );
 
                         case "testimonials_section":
-                        case "testimonial_highlight_section":
                             const tItems = settings.items && settings.items.length > 0 ? settings.items : [settings];
                             return (
                                 <div className="w-full space-y-4 my-8">
@@ -605,6 +659,56 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                 </div>
                             );
 
+                        case "testimonial_highlight_section": {
+                            const t = settings;
+                            const quote = typeof t.quote === 'string' ? t.quote : (t.text || "This is truly a game-changer! I couldn't be happier with the results.");
+                            const author = typeof t.author_name === 'string' ? t.author_name : (t.name || "Happy Client");
+                            const role = typeof t.author_role === 'string' ? t.author_role : (t.role || "");
+                            const avatar = t.author_image || t.avatar;
+                            const rating = t.rating !== undefined ? Number(t.rating) : 5;
+
+                            return (
+                                <div className="w-full my-8 relative rounded-[36px] overflow-hidden p-8 flex flex-col items-center text-center shadow-2xl">
+                                    {/* Abstract background */}
+                                    <div className="absolute inset-0" style={{ background: themeBgIsLight ? 'linear-gradient(135deg, #111827 0%, #374151 100%)' : 'linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%)' }} />
+                                    <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.8), transparent 50%)' }} />
+
+                                    <div className="relative z-10 flex flex-col items-center w-full">
+                                        <div className="flex gap-1.5 mb-6">
+                                            {Array.from({ length: 5 }).map((_, rIdx) => (
+                                                <svg key={rIdx} className={`w-4 h-4 ${rIdx < rating ? (themeBgIsLight ? 'text-yellow-400' : 'text-yellow-500') : 'text-yellow-400/20'}`} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                            ))}
+                                        </div>
+
+                                        {/* Large quote icon watermark */}
+                                        <div className="absolute top-0 right-0 opacity-10 pointer-events-none" style={{ color: themeBgIsLight ? '#ffffff' : '#000000' }}>
+                                            <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                                        </div>
+
+                                        <p className="text-[17px] font-bold leading-relaxed mb-8 italic relative z-10" style={{ color: themeBgIsLight ? '#ffffff' : '#000000' }}>"{quote}"</p>
+
+                                        <div className="flex flex-col items-center gap-3 w-full border-t pt-6" style={{ borderColor: themeBgIsLight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                                            {avatar && (
+                                                <div className="relative">
+                                                    <div className="absolute -inset-1 rounded-full opacity-50 blur-sm" style={{ background: 'linear-gradient(45deg, #a855f7, #ec4899)' }} />
+                                                    <img src={avatar} className="relative w-14 h-14 rounded-full object-cover border-2 shadow-lg" style={{ borderColor: themeBgIsLight ? '#111827' : '#ffffff' }} />
+                                                </div>
+                                            )}
+                                            {!avatar && (
+                                                <div className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: themeBgIsLight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}>
+                                                    <User size={24} style={{ color: themeBgIsLight ? '#ffffff' : '#000000', opacity: 0.5 }} />
+                                                </div>
+                                            )}
+                                            <div className="flex flex-col items-center">
+                                                <p className="text-[14px] font-black tracking-tight" style={{ color: themeBgIsLight ? '#ffffff' : '#000000' }}>{author}</p>
+                                                {role && <p className="text-[10px] uppercase tracking-widest font-bold mt-1" style={{ color: themeBgIsLight ? '#ffffff' : '#000000', opacity: 0.6 }}>{role}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+
                         case "faq_section":
                         case "faq_cards_section":
                             return (
@@ -631,32 +735,98 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             );
 
                         case "cta_section":
-                        case "cta_fullscreen_section":
                             return (
                                 <div className={`w-full p-8 rounded-[36px] text-center flex flex-col items-center my-6 shadow-xl border backdrop-blur-xl ${secBg}`}>
                                     <h3 className="text-[24px] font-black leading-tight tracking-tight mb-5" style={{ color: effectiveTextColor }}>{settings.title || "Get Started"}</h3>
-                                    <button className="px-8 py-4 rounded-full cursor-pointer text-[11px] font-black uppercase tracking-widest shadow-md transition-transform hover:scale-105 active:scale-95" style={{ backgroundColor: effectiveTextColor, color: themeBgIsLight ? '#ffffff' : '#000000' }}>
+                                    <a href={settings.button_link || settings.link || '#'} className="px-8 py-4 rounded-full cursor-pointer text-[11px] font-black uppercase tracking-widest shadow-md transition-transform hover:scale-105 active:scale-95 no-underline block" style={{ backgroundColor: effectiveTextColor, color: themeBgIsLight ? '#ffffff' : '#000000' }}>
                                         {settings.button_text || "Click Here"}
-                                    </button>
+                                    </a>
+                                </div>
+                            );
+
+                        case "cta_fullscreen_section":
+                            return (
+                                <div className="relative w-[calc(100%+3rem)] -mx-6 my-6 min-h-[300px] flex items-center justify-center p-6 overflow-hidden shadow-2xl">
+                                    {/* Big bold gradient driven by theme */}
+                                    <div className="absolute inset-0" style={{ background: themeBgIsLight ? 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)' : 'linear-gradient(135deg, #818cf8 0%, #f472b6 100%)' }} />
+                                    {/* Abstract blurry shapes */}
+                                    <div className="absolute top-0 right-0 w-48 h-48 bg-white/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3" />
+                                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/20 blur-2xl rounded-full -translate-x-1/2 translate-y-1/2" />
+
+                                    <div className="relative z-10 w-full text-center flex flex-col items-center gap-6 p-8 rounded-[36px] bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl">
+                                        <div className="space-y-2">
+                                            <h3 className="text-[28px] font-black leading-[1.1] tracking-tighter text-white drop-shadow-lg">
+                                                {settings.title || "Ready to dive in?"}
+                                            </h3>
+                                            {settings.subtitle && (
+                                                <p className="text-[13px] font-medium text-white/90 leading-snug drop-shadow-sm max-w-[95%] mx-auto">{settings.subtitle}</p>
+                                            )}
+                                        </div>
+                                        <a href={settings.button_link || settings.link || '#'} className="w-full py-4 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-transform no-underline block" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
+                                            {settings.button_text || "Click Here"}
+                                        </a>
+                                    </div>
                                 </div>
                             );
 
                         case "pricing_cards_section":
                             return (
-                                <div className="w-full space-y-4 my-6">
-                                    <div className="flex gap-4 overflow-x-auto pb-4 snap-x no-scrollbar px-1">
-                                        {(settings.plans || []).map((plan: any, i: number) => (
-                                            <div key={i} className="w-[240px] shrink-0 snap-center p-6 rounded-[32px] bg-white/5 border border-white/10 flex flex-col shadow-xl">
-                                                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-pink-500 mb-2">{plan.name}</span>
-                                                <div className="flex items-baseline gap-1 mb-6">
-                                                    <span className="text-[32px] font-black text-white tracking-tighter">{plan.price}</span>
+                                <div className="w-full space-y-4 my-8">
+                                    {settings.title && <h3 className="text-[20px] font-black tracking-tight px-2 mb-4 text-center" style={{ color: effectiveTextColor }}>{settings.title}</h3>}
+                                    <div className="flex gap-4 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar px-2 -mx-2 items-stretch">
+                                        {(settings.plans || []).map((plan: any, i: number) => {
+                                            const isPopular = i === 1 || plan.is_featured;
+                                            const cardBg = isPopular
+                                                ? (themeBgIsLight ? 'linear-gradient(135deg, #111827, #374151)' : 'linear-gradient(135deg, #f3f4f6, #ffffff)')
+                                                : (themeBgIsLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.05)');
+                                            const cardText = isPopular
+                                                ? (themeBgIsLight ? '#ffffff' : '#000000')
+                                                : effectiveTextColor;
+
+                                            // Handle features array or comma-separated string
+                                            const rawFeatures = typeof plan.features === 'string'
+                                                ? plan.features.split(/[,\n]/)
+                                                : (Array.isArray(plan.features) ? plan.features : []);
+                                            const features = rawFeatures.map((f: any) => typeof f === 'string' ? f.trim() : typeof f === 'object' && f.name ? f.name : String(f)).filter(Boolean);
+
+                                            return (
+                                                <div key={i} className="w-[260px] shrink-0 snap-center p-7 rounded-[32px] border flex flex-col shadow-xl transition-all hover:scale-[1.02] backdrop-blur-xl relative overflow-hidden group" style={{ background: cardBg, borderColor: isPopular ? 'transparent' : secBorder }}>
+                                                    {isPopular && (
+                                                        <div className="absolute -top-4 -right-4 w-32 h-32 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: 'linear-gradient(45deg, #a855f7, #ec4899)' }} />
+                                                    )}
+                                                    {isPopular && (
+                                                        <div className="self-start px-3 py-1 mb-4 rounded-full text-[8px] font-black uppercase tracking-widest relative z-10" style={{ background: themeBgIsLight ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)', color: cardText }}>Most Popular</div>
+                                                    )}
+                                                    <span className={`text-[12px] font-black uppercase tracking-[0.2em] mb-2 relative z-10 ${!isPopular ? 'text-pink-500' : ''}`} style={!isPopular ? {} : { color: cardText }}>{typeof plan.name === 'string' ? plan.name : 'PLAN'}</span>
+                                                    <div className="flex flex-col gap-1 mb-6 relative z-10">
+                                                        <span className="text-[40px] font-black tracking-tighter leading-none" style={{ color: cardText }}>{typeof plan.price === 'string' || typeof plan.price === 'number' ? plan.price : 'Free'}</span>
+                                                        {(plan.billing_cycle || plan.interval) && <span className="text-[10px] font-bold opacity-60 uppercase tracking-widest" style={{ color: cardText }}>/{plan.billing_cycle || plan.interval}</span>}
+                                                    </div>
+
+                                                    {features.length > 0 && (
+                                                        <div className="space-y-3 mb-8 flex-1 relative z-10">
+                                                            {features.slice(0, 5).map((f: string, fi: number) => (
+                                                                <div key={fi} className="flex items-start gap-3">
+                                                                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 border" style={{ background: isPopular ? (themeBgIsLight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)') : 'rgba(168,85,247,0.05)', borderColor: isPopular ? 'transparent' : 'rgba(168,85,247,0.2)' }}>
+                                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" style={{ color: isPopular ? (themeBgIsLight ? '#4ade80' : '#16a34a') : '#a855f7' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                                    </div>
+                                                                    <span className="text-[13px] font-medium leading-snug" style={{ color: cardText, opacity: 0.85 }}>{f}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    <a href={plan.button_link || plan.link || '#'} className="w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl mt-auto flex items-center justify-center no-underline relative z-10 transition-transform group-hover:scale-[1.03]" style={{
+                                                        background: isPopular ? (themeBgIsLight ? '#ffffff' : '#000000') : (themeBgIsLight ? '#000000' : '#ffffff'),
+                                                        color: isPopular ? (themeBgIsLight ? '#000000' : '#ffffff') : (themeBgIsLight ? '#ffffff' : '#000000')
+                                                    }}>
+                                                        {plan.button_text || "Select"}
+                                                    </a>
                                                 </div>
-                                                <button className="w-full py-3 rounded-xl bg-white text-black font-black text-[10px] uppercase tracking-widest shadow-xl mt-auto">Select</button>
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
                                     </div>
                                     {(settings.plans || []).length === 0 && (
-                                        <div className="w-full h-40 rounded-[32px] bg-white/5 border border-white/10 opacity-20" />
+                                        <div className="w-full h-40 rounded-[32px] border border-dashed flex items-center justify-center" style={{ borderColor: secBorder }}><span className="text-[10px] font-bold uppercase tracking-widest opacity-30" style={{ color: effectiveTextColor }}>No plans yet</span></div>
                                     )}
                                 </div>
                             );
@@ -776,35 +946,88 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                         case "urgency_offer_section":
                             return (
-                                <div className="w-[calc(100%+3rem)] -mx-6 mt-4 mb-8 p-8 bg-red-500 text-white text-center">
-                                    <div className="inline-flex items-center gap-2 mb-4 opacity-80">
-                                        <Clock size={14} className="animate-pulse" />
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em]">Limited Time Offer</p>
+                                <div className="w-[calc(100%+3rem)] -mx-6 mt-4 mb-8 relative overflow-hidden">
+                                    {/* Gradient bg adapts: dark bg → vivid gradient; light bg → softer warm */}
+                                    <div className="absolute inset-0" style={{
+                                        background: themeBgIsLight
+                                            ? 'linear-gradient(135deg, #ff6b35 0%, #f7323f 100%)'
+                                            : 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)'
+                                    }} />
+                                    {/* Noise texture overlay */}
+                                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")' }} />
+                                    {/* Soft glow circles */}
+                                    <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full opacity-20 blur-2xl bg-white" />
+                                    <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full opacity-15 blur-xl bg-yellow-300" />
+
+                                    <div className="relative z-10 px-8 py-7 text-center space-y-4">
+                                        {/* Badge */}
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30">
+                                            <Clock size={10} className="animate-pulse text-white" />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Limited Time Offer</span>
+                                        </div>
+                                        {/* Title */}
+                                        <h3 className="text-[22px] font-black tracking-tight leading-tight text-white drop-shadow-lg">
+                                            {settings.title || "Special Offer"}
+                                        </h3>
+                                        {/* Description */}
+                                        {settings.description && (
+                                            <p className="text-[12px] text-white/85 leading-relaxed max-w-[90%] mx-auto font-medium">{settings.description}</p>
+                                        )}
+                                        {/* End Date chip */}
+                                        {(settings.countdown || settings.end_date) && (
+                                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-white/30 bg-black/20 backdrop-blur-md mx-auto">
+                                                <Clock size={11} className="text-white/80" />
+                                                <span className="text-[10px] font-black text-white/90 tracking-widest">
+                                                    Ends: {settings.countdown || settings.end_date}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {/* CTA Button */}
+                                        {settings.button_text && (
+                                            <a href={settings.button_link || '#'} className="inline-block px-8 py-3.5 rounded-2xl bg-white font-black text-[11px] uppercase tracking-widest shadow-2xl no-underline transition-transform" style={{ color: '#f7323f' }}>
+                                                {settings.button_text}
+                                            </a>
+                                        )}
                                     </div>
-                                    <h3 className="text-[24px] font-black tracking-tight leading-tight mb-3">{settings.title || "Special Offer"}</h3>
-                                    {settings.description && <p className="text-[14px] opacity-90 leading-relaxed max-w-[90%] mx-auto mb-6">{settings.description}</p>}
-                                    {settings.button_text && (
-                                        <button className="px-8 py-3.5 rounded-full bg-white text-red-500 text-[12px] font-black uppercase tracking-widest shadow-lg hover:scale-105 transition-transform">
-                                            {settings.button_text}
-                                        </button>
-                                    )}
                                 </div>
                             );
 
                         case "impact_section":
                             return (
-                                <div className="w-full mt-3 mb-4 p-7 rounded-[32px] bg-white/[0.03] backdrop-blur-xl border border-white/10 space-y-5">
-                                    <h3 className="text-[20px] font-black tracking-tight text-white leading-tight">{settings.title || "Our Impact"}</h3>
-                                    {settings.description && <p className="text-[13px] text-white/50 leading-relaxed">{settings.description}</p>}
-                                    <div className="space-y-3 pt-2">
-                                        {(settings.points || []).slice(0, 3).map((pt: any, i: number) => (
-                                            <div key={i} className="flex items-start gap-3">
-                                                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5 border border-white/20">
-                                                    <div className="w-2 h-2 rounded-full bg-white/80" />
-                                                </div>
-                                                <p className="text-[14px] font-medium text-white/80 leading-relaxed">{pt}</p>
+                                <div className="w-full mt-4 mb-6 relative rounded-[32px] overflow-hidden p-1">
+                                    {/* Glassy, neon-bordered container */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 backdrop-blur-2xl" />
+                                    <div className="absolute inset-0 rounded-[32px] border border-white/10" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)' }} />
+                                    <div className="relative z-10 p-7 space-y-6">
+                                        <div className="text-center space-y-2">
+                                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-2">
+                                                <Sparkles size={12} className="text-indigo-400" />
+                                                <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: effectiveTextColor }}>The Outcome</span>
                                             </div>
-                                        ))}
+                                            <h3 className="text-[24px] font-black tracking-tight leading-tight" style={{ color: effectiveTextColor }}>
+                                                {typeof settings.title === 'string' ? settings.title : "Our Impact"}
+                                            </h3>
+                                            {settings.description && typeof settings.description === 'string' && (
+                                                <p className="text-[13px] leading-relaxed font-medium" style={{ color: effectiveTextColor, opacity: 0.6 }}>{settings.description}</p>
+                                            )}
+                                        </div>
+                                        <div className="space-y-4 pt-1">
+                                            {(settings.points || []).slice(0, 4).map((pt: any, i: number) => {
+                                                const ptTitle = typeof pt === 'string' ? pt : (pt.title || pt.label || '');
+                                                const ptDesc = typeof pt === 'object' && pt !== null ? pt.description : '';
+                                                return (
+                                                    <div key={i} className="group flex items-start gap-4 p-4 rounded-[20px] bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-300">
+                                                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2))' }}>
+                                                            <div className="w-3 h-3 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
+                                                            {ptTitle && <p className="text-[14px] font-bold leading-snug" style={{ color: effectiveTextColor }}>{ptTitle}</p>}
+                                                            {ptDesc && <p className="text-[11px] leading-relaxed mt-1 line-clamp-2" style={{ color: effectiveTextColor, opacity: 0.5 }}>{ptDesc}</p>}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -929,6 +1152,288 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         </div>
                                     ))}
                                 </div>
+                            );
+
+                        case "hero_product_section":
+                            return (
+                                <div className="relative w-[calc(100%+3rem)] -mx-6 -mt-6 mb-6 overflow-hidden shadow-2xl bg-black min-h-[400px] flex items-end">
+                                    {/* Background image or gradient */}
+                                    {settings.product_image ? (
+                                        <img src={settings.product_image} className="absolute inset-0 w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }} />
+                                    )}
+                                    {/* Gradient overlays for text readability */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-transparent" />
+                                    {/* Glow accent */}
+                                    <div className="absolute top-1/3 right-0 w-40 h-40 rounded-full blur-3xl opacity-20" style={{ background: 'radial-gradient(circle, #6366f1, transparent)' }} />
+
+                                    <div className="relative z-10 p-6 pt-16 w-full flex flex-col gap-4">
+                                        {/* Price badge — top left */}
+                                        {settings.price && (
+                                            <div className="self-start">
+                                                <span className="px-3 py-1.5 rounded-full text-[11px] font-black text-white border border-white/20 shadow-lg" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}>
+                                                    {settings.price}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {/* Title */}
+                                        <div className="space-y-1.5">
+                                            <h1 className="text-[22px] font-black text-white leading-tight tracking-tight drop-shadow-lg">
+                                                {settings.title || "Product Hero"}
+                                            </h1>
+                                            {settings.subtitle && (
+                                                <p className="text-[12px] text-white/70 font-semibold leading-snug">{settings.subtitle}</p>
+                                            )}
+                                        </div>
+                                        {/* Divider */}
+                                        <div className="h-px w-full bg-white/10" />
+                                        {/* CTA button full-width */}
+                                        <a
+                                            href={settings.cta_link || '#'}
+                                            className="w-full py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest text-center shadow-2xl no-underline"
+                                            style={{ background: 'linear-gradient(135deg, #ffffff, #f0f0f0)', color: '#000' }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {settings.cta_text || "Get Now"}
+                                        </a>
+                                    </div>
+                                </div>
+                            );
+
+                        case "featured_product_section":
+                        case "product_section":
+                            return (
+                                <div className={`p-4 rounded-[28px] overflow-hidden border shadow-lg backdrop-blur-xl ${secBg}`}>
+                                    {(settings.image) && (
+                                        <div className="relative w-full aspect-video rounded-[20px] overflow-hidden mb-4">
+                                            <img src={settings.image} className="w-full h-full object-cover" alt="Product" />
+                                            <div className="absolute top-3 left-3 bg-black/90 backdrop-blur-md text-white px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest">
+                                                Best Seller
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!settings.image && (
+                                        <div className="w-full aspect-video rounded-[20px] mb-4 flex items-center justify-center border border-dashed" style={{ borderColor: secBorder, backgroundColor: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)' }}>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: effectiveTextColor, opacity: 0.3 }}>No Image</span>
+                                        </div>
+                                    )}
+                                    <div className="space-y-3">
+                                        <h2 className="text-[16px] font-black tracking-tight leading-tight" style={{ color: effectiveTextColor }}>
+                                            {typeof settings.name === 'string' ? settings.name : (typeof settings.title === 'string' ? settings.title : "Featured Product")}
+                                        </h2>
+                                        {settings.price && (typeof settings.price === 'string' || typeof settings.price === 'number') && (
+                                            <div className="text-[14px] font-black" style={{ color: effectiveTextColor }}>{settings.price}</div>
+                                        )}
+                                        {settings.description && typeof settings.description === 'string' && (
+                                            <p className="text-[11px] leading-relaxed font-medium line-clamp-2" style={{ color: effectiveTextColor, opacity: 0.6 }}>{settings.description}</p>
+                                        )}
+                                        <a
+                                            href={settings.link || settings.url || "#"}
+                                            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest no-underline shadow-lg"
+                                            style={{ backgroundColor: effectiveTextColor, color: themeBgIsLight ? '#ffffff' : '#000000' }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            Get Access
+                                        </a>
+                                    </div>
+                                </div>
+                            );
+
+                        case "product_list_section": {
+                            const prodItems = settings.items || [];
+                            return (
+                                <div className="w-full space-y-3 my-4">
+                                    {settings.title && (
+                                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] px-1" style={{ color: effectiveTextColor, opacity: 0.5 }}>
+                                            {settings.title}
+                                        </h3>
+                                    )}
+                                    {prodItems.map((p: any, i: number) => (
+                                        <a key={i} href={p.link || '#'} className={`group flex gap-3 p-3 rounded-[22px] border backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] no-underline ${secBg}`} onClick={(e) => e.stopPropagation()}>
+                                            {/* Product image */}
+                                            <div className="w-16 h-16 rounded-[16px] overflow-hidden shrink-0 border shadow-sm" style={{ borderColor: secBorder }}>
+                                                {p.image ? (
+                                                    <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center" style={{ background: themeBgIsLight ? 'linear-gradient(135deg, rgba(0,0,0,0.05), rgba(0,0,0,0.08))' : 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.1))' }}>
+                                                        <Sparkles size={16} style={{ color: effectiveTextColor, opacity: 0.3 }} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {/* Text content */}
+                                            <div className="flex-1 min-w-0 py-0.5 flex flex-col justify-center gap-1">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <h4 className="font-black text-[13px] leading-tight" style={{ color: effectiveTextColor }}>{typeof p.name === 'string' ? p.name : 'Product'}</h4>
+                                                    {p.price && (typeof p.price === 'string' || typeof p.price === 'number') && (
+                                                        <span className="shrink-0 px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)', color: effectiveTextColor }}>
+                                                            {p.price}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {p.description && typeof p.description === 'string' && (
+                                                    <p className="text-[10px] leading-snug line-clamp-2 font-medium" style={{ color: effectiveTextColor, opacity: 0.55 }}>{p.description}</p>
+                                                )}
+                                                <div className="flex items-center gap-1 mt-0.5">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: effectiveTextColor, opacity: 0.35 }}>View →</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    ))}
+                                    {prodItems.length === 0 && (
+                                        <div className="text-center py-6 rounded-[22px] border border-dashed" style={{ borderColor: secBorder }}>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: effectiveTextColor, opacity: 0.3 }}>No products yet</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
+
+                        case "trust_badges_section": {
+                            const badgeItems = settings.items || [];
+                            const badgeCount = badgeItems.length;
+                            // Accent palette picked from theme: light bg → indigo/blue; dark bg → emerald/teal
+                            const accentColors = themeBgIsLight
+                                ? ['#6366f1', '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b']
+                                : ['#a78bfa', '#60a5fa', '#34d399', '#f472b6', '#fb923c', '#facc15'];
+                            return (
+                                <div className="w-full my-4 space-y-3">
+                                    {/* Section header */}
+                                    <div className="flex items-center gap-2 px-1">
+                                        <div className="h-px flex-1" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }} />
+                                        <span className="text-[8px] font-black uppercase tracking-[0.25em]" style={{ color: effectiveTextColor, opacity: 0.4 }}>Trusted by thousands</span>
+                                        <div className="h-px flex-1" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' }} />
+                                    </div>
+                                    {/* Responsive grid: 3-col for ≤3, 2-col for 4+, wraps naturally */}
+                                    <div className={`grid gap-2 ${badgeCount <= 3 ? 'grid-cols-3' : badgeCount === 4 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                                        {badgeItems.map((badge: any, i: number) => {
+                                            const accent = accentColors[i % accentColors.length];
+                                            return (
+                                                <div key={i} className="flex flex-col items-center text-center p-3 rounded-[20px] border transition-all duration-300 hover:scale-[1.03]" style={{
+                                                    background: themeBgIsLight
+                                                        ? `linear-gradient(135deg, ${accent}10, ${accent}05)`
+                                                        : `linear-gradient(135deg, ${accent}18, ${accent}08)`,
+                                                    borderColor: `${accent}30`
+                                                }}>
+                                                    <div className="w-9 h-9 rounded-[14px] flex items-center justify-center mb-2 shadow-sm" style={{ background: `${accent}22`, border: `1px solid ${accent}40` }}>
+                                                        <Sparkles size={14} style={{ color: accent }} />
+                                                    </div>
+                                                    <span className="text-[7.5px] font-black uppercase tracking-wider leading-tight" style={{ color: effectiveTextColor, opacity: 0.75 }}>
+                                                        {badge.label}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    {badgeCount === 0 && (
+                                        <div className="text-center py-4 rounded-[20px] border border-dashed" style={{ borderColor: secBorder }}>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: effectiveTextColor, opacity: 0.3 }}>Add trust badges</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
+
+                        case "link_grid_section":
+                            return (
+                                <div className="w-full my-6 space-y-4">
+                                    {settings.title && <h3 className="text-[16px] font-black tracking-tight px-2" style={{ color: effectiveTextColor }}>{settings.title}</h3>}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {(settings.items || []).map((item: any, i: number) => {
+                                            const label = item.label || item.title || "Link";
+                                            const url = item.url || item.link || "#";
+                                            return (
+                                                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="relative group overflow-hidden rounded-[24px] p-5 flex flex-col justify-between aspect-square transition-all duration-300 hover:scale-105 active:scale-95 border no-underline shadow-lg" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
+                                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity" style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)' }} />
+                                                    <div className="w-10 h-10 rounded-full flex items-center justify-center border shadow-sm relative z-10" style={{ backgroundColor: themeBgIsLight ? '#ffffff' : '#000000', borderColor: secBorder }}>
+                                                        <ArrowUpRight size={18} style={{ color: effectiveTextColor }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                                    </div>
+                                                    <p className="font-black text-[15px] leading-tight tracking-tight relative z-10 mt-4 line-clamp-2" style={{ color: effectiveTextColor }}>{label}</p>
+                                                </a>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+
+                        case "link_carousel_section":
+                            return (
+                                <div className="w-[calc(100%+3rem)] -mx-6 my-6 relative pl-6">
+                                    {settings.title && <h3 className="text-[16px] font-black tracking-tight px-2 mb-4" style={{ color: effectiveTextColor }}>{settings.title}</h3>}
+                                    <div className="flex gap-4 overflow-x-auto pb-4 snap-x no-scrollbar">
+                                        {(settings.items || []).map((item: any, i: number) => {
+                                            const label = item.label || item.title || "Link";
+                                            // Handle cases where label is exceptionally long
+                                            const displayLabel = label.length > 30 ? label.substring(0, 30) + '...' : label;
+                                            const url = item.url || item.link || "#";
+                                            return (
+                                                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="shrink-0 w-[160px] snap-center rounded-[20px] p-4 flex flex-col justify-end min-h-[140px] relative overflow-hidden group shadow-md hover:-translate-y-1 transition-all no-underline" style={{ background: themeBgIsLight ? 'linear-gradient(180deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.05) 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.05) 100%)', border: `1px solid ${secBorder}` }}>
+                                                    <div className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity bg-black/5 dark:bg-white/10">
+                                                        <ArrowUpRight size={14} style={{ color: effectiveTextColor }} />
+                                                    </div>
+                                                    <p className="font-bold text-[13px] leading-tight" style={{ color: effectiveTextColor }}>{displayLabel}</p>
+                                                </a>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+
+                        case "newsletter":
+                            return (
+                                <div className="w-full my-6 p-6 rounded-[32px] overflow-hidden relative group" style={{ background: themeBgIsLight ? 'linear-gradient(145deg, #1f2937, #111827)' : 'linear-gradient(145deg, #f3f4f6, #ffffff)' }}>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+                                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-pink-500/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+
+                                    <div className="relative z-10 flex flex-col items-center text-center">
+                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border shadow-inner" style={{ background: themeBgIsLight ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', borderColor: themeBgIsLight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+                                            <Mail size={20} style={{ color: themeBgIsLight ? '#ffffff' : '#000000' }} />
+                                        </div>
+                                        <h3 className="text-[20px] font-black tracking-tight mb-2" style={{ color: themeBgIsLight ? '#ffffff' : '#000000' }}>{settings.heading || settings.title || "Stay Updated"}</h3>
+                                        {settings.description && (
+                                            <p className="text-[12px] font-medium leading-relaxed mb-6" style={{ color: themeBgIsLight ? '#ffffff' : '#000000', opacity: 0.7 }}>{settings.description}</p>
+                                        )}
+
+                                        <div className="w-full flex flex-col gap-2 relative">
+                                            <div className="w-full h-[48px] rounded-2xl flex items-center px-4 border" style={{ background: themeBgIsLight ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)', borderColor: themeBgIsLight ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)' }}>
+                                                <span className="text-[12px] font-medium opacity-50" style={{ color: themeBgIsLight ? '#ffffff' : '#000000' }}>{settings.input_placeholder || "Enter your email..."}</span>
+                                            </div>
+                                            <button className="w-full h-[48px] rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-2" style={{ background: themeBgIsLight ? '#ffffff' : '#000000', color: themeBgIsLight ? '#000000' : '#ffffff' }}>
+                                                {settings.button_text || "Subscribe"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+
+                        case "music_section":
+                            return (
+                                <a href={settings.url || settings.spotify_url || settings.soundcloud_url || "#"} target="_blank" rel="noopener noreferrer" className="w-full my-4 p-4 rounded-[28px] flex items-center gap-4 relative overflow-hidden group shadow-lg transition-transform hover:scale-[1.02] border no-underline" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', transform: 'skewX(-20deg) translateX(-150%)' }} />
+
+                                    <div className="w-14 h-14 rounded-[18px] shrink-0 flex items-center justify-center relative overflow-hidden shadow-inner border" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)', borderColor: secBorder }}>
+                                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
+                                        <Music size={20} style={{ color: effectiveTextColor }} className="relative z-10" />
+                                    </div>
+
+                                    <div className="flex-1 min-w-0 py-1">
+                                        <p className="text-[14px] font-black tracking-tight truncate leading-tight" style={{ color: effectiveTextColor }}>{settings.title || settings.music_title || "Listen Now"}</p>
+                                        <div className="flex items-center gap-1.5 mt-1.5">
+                                            <div className="flex items-center gap-0.5 h-3">
+                                                <div className="w-0.5 h-full bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <div className="w-0.5 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <div className="w-0.5 h-2.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                <div className="w-0.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '450ms' }} />
+                                            </div>
+                                            <span className="text-[9px] uppercase tracking-widest font-bold opacity-50" style={{ color: effectiveTextColor }}>Playing</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border transition-colors group-hover:bg-black/5 dark:group-hover:bg-white/10" style={{ backgroundColor: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
+                                        <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-b-[5px] border-b-transparent translate-x-[2px]" style={{ borderLeftColor: effectiveTextColor }} />
+                                    </div>
+                                </a>
                             );
 
                         default:
