@@ -39,6 +39,7 @@ const growthNav = [
     { label: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
     { label: "Contacts", icon: Users, href: "/dashboard/contacts" },
     { label: "Social Posting", icon: Plus, href: "/dashboard/posts/studio", badge: "Pro" },
+    { label: "Broadcasts", icon: Zap, href: "/dashboard/broadcasts" },
     { label: "Campaigns", icon: Target, href: "/dashboard/campaigns" },
     { label: "Shortened Links", icon: Link2, href: "/dashboard/shortened-links" },
     { label: "Vcard Links", icon: Contact, href: "/dashboard/vcard-links" },

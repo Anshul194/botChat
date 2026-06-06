@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { ModalProvider } from "@/components/providers/ModalProvider";
-
+import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Toaster } from "sonner";
 import NavigationOverlay from "@/components/NavigationOverlay";
 
@@ -64,13 +64,15 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <ReduxProvider>
           <AuthProvider>
-            <ThemeProvider>
-              <ModalProvider>
-                {children}
-                <NavigationOverlay />
-                <Toaster richColors position="top-right" />
-              </ModalProvider>
-            </ThemeProvider>
+            <ReactQueryProvider>
+              <ThemeProvider>
+                <ModalProvider>
+                  {children}
+                  <NavigationOverlay />
+                  <Toaster richColors position="top-right" />
+                </ModalProvider>
+              </ThemeProvider>
+            </ReactQueryProvider>
           </AuthProvider>
         </ReduxProvider>
       </body>
