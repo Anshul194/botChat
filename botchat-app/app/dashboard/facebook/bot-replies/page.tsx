@@ -535,71 +535,100 @@ export default function FacebookBotRepliesPage() {
                                         ))}
                                     </div>
                                 ) : filteredReplies.length > 0 ? (
-                                    <div className="space-y-3">
+                                    <div className="flex flex-col gap-3">
+                                        {/* Header row for a professional table-like appearance in grid, hidden on mobile */}
+                                        <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-800">
+                                            <div className="col-span-5">Automation Name</div>
+                                            <div className="col-span-2">Status</div>
+                                            <div className="col-span-2">Trigger Type</div>
+                                            <div className="col-span-3 text-right">Actions</div>
+                                        </div>
+
                                         {filteredReplies.map((reply) => (
                                             <div
                                                 key={reply.id}
                                                 onClick={() => goToFlow(reply.id)}
-                                                className="group bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-blue-200 dark:hover:border-blue-900/50 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 cursor-pointer"
+                                                className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 transition-all hover:shadow-md hover:border-[#0866FF]/30 cursor-pointer overflow-hidden"
                                             >
-                                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                {/* Left Accent indicator for active/draft */}
+                                                <div className={cn("absolute left-0 top-0 bottom-0 w-1 transition-colors", reply.status === 'published' ? 'bg-[#0866FF]' : 'bg-neutral-300 dark:bg-neutral-700')} />
+
+                                                {/* Name and Icon */}
+                                                <div className="flex items-center gap-4 col-span-5 min-w-0">
                                                     <div className={cn(
-                                                        "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all group-hover:rotate-6",
-                                                        reply.status === 'published' ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20" : "bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+                                                        "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all",
+                                                        reply.status === 'published' ? "bg-[#0866FF]/10 text-[#0866FF]" : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
                                                     )}>
-                                                        <MessageSquare className="w-4 h-4" />
+                                                        <MessageSquare className="w-5 h-5" />
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="text-[15px] font-semibold text-neutral-900 dark:text-white truncate uppercase tracking-tight">{reply.name}</h4>
-                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                            <span className={cn(
-                                                                "text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded",
-                                                                reply.status === 'published' ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20" : "bg-neutral-200/50 text-neutral-600 dark:text-neutral-400"
-                                                            )}>
-                                                                {reply.status}
-                                                            </span>
-                                                            <span className="text-[10px] text-neutral-400 font-medium uppercase tracking-widest whitespace-nowrap">
-                                                                Type: {reply.trigger_type}
-                                                            </span>
-                                                            {selectedPageId === "all" && (
-                                                                <>
-                                                                    <span className="text-neutral-300 dark:text-neutral-700 hidden sm:inline">•</span>
-                                                                    <span className="text-[10px] text-[#0866FF] font-semibold uppercase tracking-widest bg-[#0866FF]/10 px-2 rounded-lg truncate max-w-[120px] sm:max-w-none">
-                                                                        {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown"}
-                                                                    </span>
-                                                                </>
-                                                            )}
-                                                        </div>
+                                                    <div className="flex flex-col min-w-0">
+                                                        <h4 className="text-sm md:text-[15px] font-bold text-neutral-900 dark:text-white truncate" title={reply.name}>
+                                                            {reply.name}
+                                                        </h4>
+                                                        {selectedPageId === "all" && (
+                                                            <div className="flex items-center mt-1">
+                                                                <span className="text-[10px] text-[#0866FF] font-semibold uppercase tracking-wider bg-[#0866FF]/10 px-2 py-0.5 rounded-md truncate max-w-[150px]">
+                                                                    {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown Page"}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 w-full sm:w-auto">
+
+                                                {/* Status */}
+                                                <div className="flex items-center col-span-2 mt-2 md:mt-0">
+                                                    {reply.status === 'published' ? (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            Live
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                            Draft
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Trigger Type */}
+                                                <div className="flex items-center col-span-2">
+                                                    <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 uppercase tracking-wider border border-neutral-200 dark:border-neutral-700 px-2.5 py-1 rounded-lg bg-neutral-50 dark:bg-neutral-800/50">
+                                                        {reply.trigger_type}
+                                                    </span>
+                                                </div>
+
+                                                {/* Actions */}
+                                                <div className="flex flex-wrap md:flex-nowrap items-center md:justify-end gap-2 col-span-3 w-full md:w-auto mt-2 md:mt-0">
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }}
-                                                        className="flex-1 sm:flex-none py-2 px-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 shadow-sm active:scale-95 transition-all text-center whitespace-nowrap"
+                                                        className="flex-1 md:flex-none py-2 px-4 rounded-xl bg-[#0866FF]/10 hover:bg-[#0866FF]/20 text-[#0866FF] border border-[#0866FF]/20 text-xs font-bold transition-all text-center whitespace-nowrap active:scale-95"
                                                     >
                                                         Edit Flow
                                                     </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
-                                                        className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
-                                                        title={reply.status === 'published' ? "Pause" : "Live"}
-                                                    >
-                                                        {reply.status === 'published' ? <Pause className="w-4 h-4 text-amber-500" /> : <Play className="w-4 h-4 text-emerald-500" />}
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
-                                                        className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-500 transition-all active:scale-95"
-                                                        title="Duplicate"
-                                                    >
-                                                        <Copy className="w-4 h-4 text-blue-500" />
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
-                                                        className="p-2.5 rounded-lg border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
+                                                            className={cn("p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 transition-all active:scale-95", reply.status === 'published' ? "hover:bg-amber-50 text-neutral-400 hover:text-amber-500 hover:border-amber-200 dark:hover:bg-amber-500/10" : "hover:bg-emerald-50 text-neutral-400 hover:text-emerald-500 hover:border-emerald-200 dark:hover:bg-emerald-500/10")}
+                                                            title={reply.status === 'published' ? "Pause Flow" : "Go Live"}
+                                                        >
+                                                            {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
+                                                            className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:border-blue-200 text-neutral-400 hover:text-blue-500 transition-all active:scale-95"
+                                                            title="Duplicate"
+                                                        >
+                                                            <Copy className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
+                                                            className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
+                                                            title="Delete"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}

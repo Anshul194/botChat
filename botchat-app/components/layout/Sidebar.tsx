@@ -7,9 +7,42 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser } from "@/store/slices/authSlice";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
-    ChevronDown, ChevronRight, LayoutDashboard, Inbox, Zap, GitBranch,
-    Instagram, Facebook, MessageSquare, BarChart3, Users, Target, Link2,
-    Settings, CreditCard, Plus, LogOut, Layers, Contact
+    ChevronDown,
+    LayoutDashboard,
+    MessagesSquare,
+    Zap,
+    GitBranch,
+    Instagram,
+    Facebook,
+    Inbox,
+    BarChart2,
+    Users2,
+    Target,
+    Link2,
+    Settings2,
+    CreditCard,
+    Plus,
+    LogOut,
+    Layers2,
+    BookOpen,
+    FileText,
+    FolderOpen,
+    PenLine,
+    Globe2,
+    Fingerprint,
+    Unlink2,
+    UserCog,
+    ShieldCheck,
+    Blocks,
+    SendHorizonal,
+    BrainCircuit,
+    ImagePlus,
+    Rss,
+    QrCode,
+    PlugZap,
+    Cpu,
+    Tag,
+    LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -32,29 +65,71 @@ interface SidebarProps {
 }
 
 const mainNav = [
-    { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+        ariaLabel: "Go to Dashboard overview",
+    },
 ];
 
 const growthNav = [
-    { label: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
-    { label: "Contacts", icon: Users, href: "/dashboard/contacts" },
-    { label: "Social Posting", icon: Plus, href: "/dashboard/posts/studio", badge: "Pro" },
-    { label: "Broadcasts", icon: Zap, href: "/dashboard/broadcasts" },
-    { label: "Campaigns", icon: Target, href: "/dashboard/campaigns" },
-    { label: "Shortened Links", icon: Link2, href: "/dashboard/shortened-links" },
-    { label: "Vcard Links", icon: Contact, href: "/dashboard/vcard-links" },
-    { label: "AI Training", icon: MessageSquare, href: "/dashboard/ai-training", badge: "New" },
+    {
+        label: "Social Posting",
+        icon: ImagePlus,
+        href: "/dashboard/posts/studio",
+        badge: "Pro",
+        ariaLabel: "Social media post studio",
+    },
+    {
+        label: "Broadcasts",
+        icon: SendHorizonal,
+        href: "/dashboard/broadcasts",
+        ariaLabel: "Send broadcast messages",
+    },
+    {
+        label: "AI Training",
+        icon: BrainCircuit,
+        href: "/dashboard/ai-training",
+        badge: "New",
+        ariaLabel: "Train your AI assistant",
+    },
 ];
 
 const workspaceNav = [
-    { label: "Settings", icon: Settings, href: "/dashboard/settings" },
-    { label: "Billing", icon: CreditCard, href: "/dashboard/billing" },
+    {
+        label: "Settings",
+        icon: Settings2,
+        href: "/dashboard/settings",
+        ariaLabel: "Workspace settings",
+    },
+    {
+        label: "Billing",
+        icon: CreditCard,
+        href: "/dashboard/billing",
+        ariaLabel: "Billing and subscription",
+    },
 ];
 
 const adminNav = [
-    { label: "User Management", icon: Users, href: "/dashboard/users" },
-    { label: "Plan Management", icon: CreditCard, href: "/dashboard/plans" },
-    { label: "Modules", icon: Layers, href: "/dashboard/modules" },
+    {
+        label: "User Management",
+        icon: UserCog,
+        href: "/dashboard/users",
+        ariaLabel: "Manage users",
+    },
+    {
+        label: "Plan Management",
+        icon: ShieldCheck,
+        href: "/dashboard/plans",
+        ariaLabel: "Manage subscription plans",
+    },
+    {
+        label: "Modules",
+        icon: Blocks,
+        href: "/dashboard/modules",
+        ariaLabel: "Manage system modules",
+    },
 ];
 
 export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) {
@@ -71,10 +146,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const [bioLinksOpen, setBioLinksOpen] = useState(false);
     const [blogOpen, setBlogOpen] = useState(false);
     const [pendingRoute, setPendingRoute] = useState<string | null>(null);
-    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-    // Centralized navigate helper: sets pending route, fires nav:start, calls router.push,
-    // and falls back to a full redirect if router doesn't complete within timeout.
     const navigate = (href: string) => {
         setPendingRoute(href);
         try { window.dispatchEvent(new CustomEvent('nav:start', { detail: { href } })); } catch { }
@@ -83,9 +155,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                 if (window.location.pathname !== href) window.location.href = href;
             } catch (e) { }
         }, 6000);
-        // router.push returns a promise in App Router
         try {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             router.push(href).finally(() => clearTimeout(fallback));
         } catch (e) {
             clearTimeout(fallback);
@@ -94,41 +164,26 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
 
     useEffect(() => {
         setMounted(true);
-
-        // Determine the path we should consider active: pendingRoute (in-flight) or the current pathname.
         const current = pendingRoute || pathname || "";
 
-        // Open accordions based on the current (possibly pending) path so the UI reflects navigation immediately.
-        if (current.startsWith("/dashboard/facebook")) {
-            setFacebookOpen(true);
-        } else {
-            setFacebookOpen(false);
-        }
+        setFacebookOpen(current.startsWith("/dashboard/facebook"));
 
-        if (current.startsWith("/dashboard/instagram") && !current.startsWith("/dashboard/instagram/bio-link") && !current.startsWith("/dashboard/instagram/bio-links")) {
-            setInstagramOpen(true);
-        } else {
-            setInstagramOpen(false);
-        }
+        setInstagramOpen(
+            current.startsWith("/dashboard/instagram") &&
+            !current.startsWith("/dashboard/instagram/bio-link") &&
+            !current.startsWith("/dashboard/instagram/bio-links")
+        );
 
-        if (current.startsWith("/dashboard/instagram/bio-link") || current.startsWith("/dashboard/instagram/bio-links")) {
-            setBioLinksOpen(true);
-        } else {
-            setBioLinksOpen(false);
-        }
+        setBioLinksOpen(
+            current.startsWith("/dashboard/instagram/bio-link") ||
+            current.startsWith("/dashboard/instagram/bio-links")
+        );
 
-        if (current.startsWith("/dashboard/blog")) {
-            setBlogOpen(true);
-        }
+        if (current.startsWith("/dashboard/blog")) setBlogOpen(true);
 
-        // Clear pendingRoute only after the router has updated the pathname to match it.
         if (pendingRoute && pathname === pendingRoute) {
             setPendingRoute(null);
-            try {
-                window.dispatchEvent(new CustomEvent('nav:done'));
-            } catch (e) {
-                // ignore
-            }
+            try { window.dispatchEvent(new CustomEvent('nav:done')); } catch { }
         }
     }, [pathname, pendingRoute]);
 
@@ -141,42 +196,37 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const { showModal } = useModal();
 
     const currentPath = pendingRoute || pathname;
-    const isFacebookActive = currentPath.startsWith("/dashboard/facebook");
-    const isBioLinksActive = currentPath.startsWith("/dashboard/instagram/bio-link") || currentPath.startsWith("/dashboard/instagram/bio-links");
-    const isInstagramActive = currentPath.startsWith("/dashboard/instagram") && !isBioLinksActive;
+    const isBioLinksActive =
+        currentPath.startsWith("/dashboard/instagram/bio-link") ||
+        currentPath.startsWith("/dashboard/instagram/bio-links");
+    const isInstagramActive =
+        currentPath.startsWith("/dashboard/instagram") && !isBioLinksActive;
 
     const handleInstagramConnect = async () => {
-        const width = 600;
-        const height = 750;
+        const width = 600, height = 750;
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
-
         const popup = window.open(
             "about:blank",
             "instagram-connect",
             `width=${width},height=${height},left=${left},top=${top},status=no,menubar=no,toolbar=no`
         );
-
         if (!popup) {
             showModal("error", "Error", "Popup blocked! Please allow popups for this site.");
             return;
         }
-
         showModal("loading", "Linking Instagram", "Connecting to system...");
         try {
             const res = await api.get("/social/instagram-connect/redirect");
             const redirectUrl = res.data?.data?.url || res.data?.data?.redirect_url;
-
             if (redirectUrl) {
                 showModal("success", "Ready", "Please complete the setup in the popup.");
                 popup.location.href = redirectUrl;
-
                 const pollTimer = setInterval(() => {
                     if (popup.closed) {
                         clearInterval(pollTimer);
-                        if (window.location.pathname.startsWith('/dashboard/instagram')) {
+                        if (window.location.pathname.startsWith('/dashboard/instagram'))
                             window.location.reload();
-                        }
                     }
                 }, 800);
             } else {
@@ -197,45 +247,47 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
 
     const sidebarVariants: Variants = {
         expanded: { width: "16rem", transition: { type: "spring", stiffness: 300, damping: 30 } },
-        collapsed: { width: "4rem", transition: { type: "spring", stiffness: 300, damping: 30 } }
+        collapsed: { width: "4rem", transition: { type: "spring", stiffness: 300, damping: 30 } },
     };
 
     const containerVariants = {
         hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05
-            }
-        }
+        show: { opacity: 1, transition: { staggerChildren: 0.05 } },
     };
 
     const itemVariants = {
         hidden: { opacity: 0, x: -10 },
-        show: { opacity: 1, x: 0 }
+        show: { opacity: 1, x: 0 },
     };
 
     return (
         <TooltipProvider delayDuration={0}>
+            {/* nav landmark for SEO / accessibility */}
             <motion.aside
+                role="navigation"
+                aria-label="Main navigation"
                 initial={false}
                 animate={collapsed ? "collapsed" : "expanded"}
                 variants={sidebarVariants}
                 className="h-full flex flex-col border-r transition-colors"
-                style={{
-                    background: "var(--sidebar)",
-                    borderColor: "var(--sidebar-border)",
-                }}
+                style={{ background: "var(--sidebar)", borderColor: "var(--sidebar-border)" }}
             >
                 {/* Logo / Brand */}
-                <div className="h-16 flex items-center px-4 border-b flex-shrink-0" style={{ borderColor: "var(--sidebar-border)" }}>
-                    <div className="flex items-center gap-2.5">
+                <div
+                    className="h-16 flex items-center px-4 border-b flex-shrink-0"
+                    style={{ borderColor: "var(--sidebar-border)" }}
+                >
+                    <Link
+                        href="/dashboard"
+                        aria-label="BotChat – go to dashboard"
+                        className="flex items-center gap-2.5"
+                    >
                         <motion.div
                             whileHover={{ rotate: 12, scale: 1.1 }}
                             className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
                             style={{ background: "var(--primary)" }}
                         >
-                            <MessageSquare className="w-4 h-4 text-white" />
+                            <MessagesSquare className="w-4 h-4 text-white" aria-hidden="true" />
                         </motion.div>
                         <AnimatePresence mode="wait">
                             {!collapsed && (
@@ -250,51 +302,43 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 </motion.span>
                             )}
                         </AnimatePresence>
-                    </div>
+                    </Link>
                 </div>
-
-
 
                 {/* Navigation */}
                 <motion.nav
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
+                    aria-label="Sidebar navigation"
                     className="flex-1 overflow-y-auto px-1.5 py-3 space-y-5 scrollbar-thin scrollbar-thumb-neutral-300 dark:scrollbar-thumb-neutral-700"
                 >
                     {/* MAIN */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="px-3 pb-1.5"
-                            >
-                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--sidebar-foreground)", opacity: 0.78 }}>
-                                    Main
-                                </span>
-                            </motion.div>
+                            <SectionLabel label="Main" />
                         )}
                         {mainNav.map(item => (
-                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
+                            <NavItem
+                                key={item.href}
+                                item={item}
+                                collapsed={collapsed}
+                                pathname={currentPath}
+                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
+                            />
                         ))}
                     </motion.div>
 
                     {/* SOCIAL */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
-                        {!collapsed && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="px-3 pb-1.5"
-                            >
-                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--sidebar-foreground)", opacity: 0.78 }}>
-                                    Social
-                                </span>
-                            </motion.div>
-                        )}
+                        {!collapsed && <SectionLabel label="Social" />}
                         <NavItem
-                            item={{ label: "Shared Inbox", icon: MessageSquare, href: "/social/smart-inbox" }}
+                            item={{
+                                label: "Smart Inbox",
+                                icon: Inbox,
+                                href: "/social/smart-inbox",
+                                ariaLabel: "Open shared smart inbox",
+                            }}
                             collapsed={collapsed}
                             pathname={currentPath}
                             onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
@@ -304,26 +348,26 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     {/* PLATFORMS */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="px-3 pb-1.5 flex items-center justify-between"
-                            >
-                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--nav-active-color)" }}>
+                            <div className="px-3 pb-1.5 flex items-center justify-between">
+                                <span
+                                    className="text-xs font-semibold uppercase tracking-wider"
+                                    style={{ color: "var(--nav-active-color)" }}
+                                >
                                     Platforms
                                 </span>
                                 <motion.button
                                     whileHover={{ scale: 1.1 }}
                                     onClick={handleInstagramConnect}
+                                    aria-label="Connect a new social platform"
                                     className="text-xs font-medium flex items-center gap-1 opacity-90 hover:opacity-100"
                                     style={{ color: "var(--nav-active-color)" }}
                                 >
-                                    <Plus className="w-3.5 h-3.5" /> Connect
+                                    <Plus className="w-3.5 h-3.5" aria-hidden="true" /> Connect
                                 </motion.button>
-                            </motion.div>
+                            </div>
                         )}
 
-                        {/* Facebook Accordion */}
+                        {/* Facebook */}
                         <NavAccordion
                             label="Facebook"
                             icon={Facebook}
@@ -331,16 +375,16 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             onToggle={() => setFacebookOpen(!facebookOpen)}
                             collapsed={collapsed}
                             items={[
-                                { label: "Connect Account", href: "/dashboard/facebook" },
-                                { label: "Bot Replies", href: "/dashboard/facebook/bot-replies" },
-                                { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", badge: "Live" },
+                                { label: "Connect Account", href: "/dashboard/facebook", icon: PlugZap, ariaLabel: "Connect Facebook account" },
+                                { label: "Bot Replies", href: "/dashboard/facebook/bot-replies", icon: Cpu, ariaLabel: "Manage Facebook bot replies" },
+                                { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Facebook comments" },
                             ]}
                             pathname={currentPath}
                             navigate={navigate}
                             onClose={onClose}
                         />
 
-                        {/* Instagram Accordion */}
+                        {/* Instagram */}
                         <NavAccordion
                             label="Instagram"
                             icon={Instagram}
@@ -348,16 +392,16 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             onToggle={() => setInstagramOpen(!instagramOpen)}
                             collapsed={collapsed}
                             items={[
-                                { label: "Connect Account", href: "/dashboard/instagram" },
-                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies" },
-                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", badge: "Live" },
+                                { label: "Connect Account", href: "/dashboard/instagram", icon: PlugZap, ariaLabel: "Connect Instagram account" },
+                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies", icon: Cpu, ariaLabel: "Manage Instagram bot replies" },
+                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Instagram comments" },
                             ]}
                             pathname={currentPath}
                             navigate={navigate}
                             onClose={onClose}
                         />
 
-                        {/* Bio Links Accordion */}
+                        {/* Bio Links */}
                         <NavAccordion
                             label="Bio Links"
                             icon={Link2}
@@ -365,12 +409,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             onToggle={() => setBioLinksOpen(!bioLinksOpen)}
                             collapsed={collapsed}
                             items={[
-                                { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", badge: "Premium" },
-                                { label: "Shortened Links", href: "/dashboard/shortened-links", badge: "Premium" },
-                                { label: "Vcard Links", href: "/dashboard/vcard-links", badge: "Premium" },
-                                { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", badge: "" },
-                                { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", badge: "" },
-
+                                { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", icon: LayoutGrid, badge: "Premium", ariaLabel: "Manage bio links" },
+                                { label: "Shortened Links", href: "/dashboard/shortened-links", icon: Unlink2, badge: "Premium", ariaLabel: "Manage shortened URLs" },
+                                { label: "Vcard Links", href: "/dashboard/vcard-links", icon: QrCode, badge: "Premium", ariaLabel: "Manage vcard links" },
+                                { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", icon: Globe2, ariaLabel: "Manage custom domains" },
+                                { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", icon: Fingerprint, ariaLabel: "Manage tracking pixels" },
                             ]}
                             pathname={currentPath}
                             navigate={navigate}
@@ -380,28 +423,28 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
 
                     {/* GROWTH */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
-                        {!collapsed && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-3 pb-1.5">
-                                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--sidebar-foreground)", opacity: 0.78 }}>
-                                    Growth
-                                </span>
-                            </motion.div>
-                        )}
+                        {!collapsed && <SectionLabel label="Growth" />}
                         {growthNav.map(item => (
-                            <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
+                            <NavItem
+                                key={item.href}
+                                item={item}
+                                collapsed={collapsed}
+                                pathname={currentPath}
+                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
+                            />
                         ))}
 
                         {isSuperAdmin && (
                             <NavAccordion
                                 label="Blog Manager"
-                                icon={Layers}
+                                icon={Rss}
                                 isOpen={blogOpen}
                                 onToggle={() => setBlogOpen(!blogOpen)}
                                 collapsed={collapsed}
                                 items={[
-                                    { label: "All Blogs", href: "/dashboard/blog" },
-                                    { label: "Categories", href: "/dashboard/blog/categories" },
-                                    { label: "Create Post", href: "/dashboard/blog/create" },
+                                    { label: "All Blogs", href: "/dashboard/blog", icon: BookOpen, ariaLabel: "View all blog posts" },
+                                    { label: "Categories", href: "/dashboard/blog/categories", icon: Tag, ariaLabel: "Manage blog categories" },
+                                    { label: "Create Post", href: "/dashboard/blog/create", icon: PenLine, ariaLabel: "Create a new blog post" },
                                 ]}
                                 pathname={currentPath}
                                 navigate={navigate}
@@ -410,31 +453,54 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         )}
                     </motion.div>
 
+                    {/* WORKSPACE */}
+                    <motion.div variants={itemVariants} className="space-y-0.5">
+                        {!collapsed && <SectionLabel label="Workspace" />}
+                        {workspaceNav.map(item => (
+                            <NavItem
+                                key={item.href}
+                                item={item}
+                                collapsed={collapsed}
+                                pathname={currentPath}
+                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
+                            />
+                        ))}
+                    </motion.div>
+
                     {/* ADMIN */}
                     {isSuperAdmin && (
                         <motion.div variants={itemVariants} className="space-y-0.5">
                             {!collapsed && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-3 pb-1.5">
+                                <div className="px-3 pb-1.5">
                                     <span className="text-xs font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                                         Administration
                                     </span>
-                                </motion.div>
+                                </div>
                             )}
-
                             {adminNav.map(item => (
-                                <NavItem key={item.href} item={item} collapsed={collapsed} pathname={currentPath} onClick={(e) => { e.preventDefault(); const href = item.href; if (onClose) onClose(); navigate(href); }} />
+                                <NavItem
+                                    key={item.href}
+                                    item={item}
+                                    collapsed={collapsed}
+                                    pathname={currentPath}
+                                    onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
+                                />
                             ))}
                         </motion.div>
                     )}
                 </motion.nav>
 
                 {/* Bottom User Section */}
-                <div className="p-3 border-t overflow-hidden flex-shrink-0" style={{ borderColor: "var(--sidebar-border)" }}>
+                <div
+                    className="p-3 border-t overflow-hidden flex-shrink-0"
+                    style={{ borderColor: "var(--sidebar-border)" }}
+                >
                     <motion.button
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.3 }}
                         onClick={() => !collapsed && setShowLogout(true)}
+                        aria-label="Open logout menu"
                         className={cn(
                             "w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors",
                             collapsed && "justify-center"
@@ -442,6 +508,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     >
                         <motion.div
                             whileHover={{ scale: 1.1 }}
+                            aria-hidden="true"
                             className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold shadow-sm flex-shrink-0"
                             style={{ background: "var(--primary)" }}
                         >
@@ -463,7 +530,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                             {user?.email || "Pro"}
                                         </div>
                                     </div>
-                                    <LogOut className="w-4 h-4 text-neutral-400 transition-colors" style={{ color: "var(--muted-foreground)" }} />
+                                    <LogOut
+                                        className="w-4 h-4 transition-colors"
+                                        aria-hidden="true"
+                                        style={{ color: "var(--muted-foreground)" }}
+                                    />
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -475,8 +546,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
             <Dialog open={showLogout} onOpenChange={setShowLogout}>
                 <DialogContent className="sm:max-w-sm rounded-[2rem] p-8">
                     <DialogHeader className="text-center">
-                        <div className="mx-auto mb-6 w-20 h-20 rounded-full flex items-center justify-center" style={{ background: "var(--nav-active-bg)" }}>
-                            <LogOut className="w-9 h-9" style={{ color: "var(--nav-active-color)" }} />
+                        <div
+                            className="mx-auto mb-6 w-20 h-20 rounded-full flex items-center justify-center"
+                            style={{ background: "var(--nav-active-bg)" }}
+                        >
+                            <LogOut className="w-9 h-9" style={{ color: "var(--nav-active-color)" }} aria-hidden="true" />
                         </div>
                         <DialogTitle className="text-2xl font-black tracking-tight">Log out?</DialogTitle>
                         <DialogDescription className="text-neutral-500 dark:text-neutral-400 mt-2 text-base">
@@ -509,7 +583,25 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     );
 }
 
-// Reusable Accordion with hover support for collapsed state
+// ─── Section Label ────────────────────────────────────────────────────────────
+function SectionLabel({ label }: { label: string }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="px-3 pb-1.5"
+        >
+            <span
+                className="text-xs font-semibold uppercase tracking-wider"
+                style={{ color: "var(--sidebar-foreground)", opacity: 0.65 }}
+            >
+                {label}
+            </span>
+        </motion.div>
+    );
+}
+
+// ─── NavAccordion ─────────────────────────────────────────────────────────────
 function NavAccordion({
     label,
     icon: Icon,
@@ -519,14 +611,14 @@ function NavAccordion({
     items,
     pathname,
     navigate,
-    onClose
+    onClose,
 }: {
     label: string;
     icon: any;
     isOpen: boolean;
     onToggle: () => void;
     collapsed: boolean;
-    items: { label: string; href: string; badge?: string }[];
+    items: { label: string; href: string; icon?: any; badge?: string; ariaLabel?: string }[];
     pathname: string;
     navigate: (href: string) => void;
     onClose?: () => void;
@@ -549,30 +641,37 @@ function NavAccordion({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                     if (collapsed) {
-                        const firstHref = items[0].href;
                         if (onClose) onClose();
-                        navigate(firstHref);
+                        navigate(items[0].href);
                     } else {
                         onToggle();
                     }
                 }}
+                aria-expanded={!collapsed ? isOpen : undefined}
+                aria-label={`${label} menu`}
                 className={cn(
                     "group relative w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                     isActive
                         ? "font-medium shadow-sm"
                         : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
                 )}
-                style={isActive ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : { color: "var(--sidebar-foreground)" }}
+                style={isActive
+                    ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" }
+                    : { color: "var(--sidebar-foreground)" }
+                }
             >
                 <div className="flex items-center gap-3">
                     <div className={cn(
                         "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                        isActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
+                        isActive
+                            ? "bg-white dark:bg-neutral-900 shadow-sm"
+                            : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
                     )}>
-                        <Icon className={cn(
-                            "w-4.5 h-4.5",
-                            isActive ? "" : "text-neutral-600 dark:text-neutral-400"
-                        )} style={isActive ? { color: "var(--nav-active-color)" } : undefined} />
+                        <Icon
+                            className={cn("w-4 h-4", !isActive && "text-neutral-600 dark:text-neutral-400")}
+                            style={isActive ? { color: "var(--nav-active-color)" } : undefined}
+                            aria-hidden="true"
+                        />
                     </div>
                     {!collapsed && <span className="font-medium">{label}</span>}
                 </div>
@@ -582,12 +681,12 @@ function NavAccordion({
                         animate={{ rotate: isOpen ? 180 : 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     >
-                        <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+                        <ChevronDown className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} aria-hidden="true" />
                     </motion.div>
                 )}
             </motion.button>
 
-            {/* Normal Submenu (Expanded) */}
+            {/* Expanded submenu */}
             <AnimatePresence>
                 {isOpen && !collapsed && (
                     <motion.div
@@ -599,28 +698,43 @@ function NavAccordion({
                     >
                         <div className="mt-1 space-y-0.5 pl-11 pr-3 py-1">
                             {items.map(sub => {
-                                const isSubActive = sub.href === "/dashboard/facebook" || sub.href === "/dashboard/instagram"
-                                    ? pathname === sub.href
-                                    : pathname.startsWith(sub.href);
+                                const SubIcon = sub.icon;
+                                const isSubActive =
+                                    sub.href === "/dashboard/facebook" || sub.href === "/dashboard/instagram"
+                                        ? pathname === sub.href
+                                        : pathname.startsWith(sub.href);
                                 return (
                                     <Link
                                         key={sub.href}
                                         href={sub.href}
                                         prefetch={false}
+                                        aria-label={sub.ariaLabel || sub.label}
+                                        aria-current={isSubActive ? "page" : undefined}
                                         onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(sub.href); }}
                                         className={cn(
                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                            isSubActive ? "" : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                                            isSubActive
+                                                ? ""
+                                                : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
                                         )}
-                                        style={isSubActive ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" } : { color: "var(--sidebar-foreground)" }}
+                                        style={isSubActive
+                                            ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" }
+                                            : { color: "var(--sidebar-foreground)" }
+                                        }
                                     >
-                                        <div className="absolute left-0 w-1 h-1 rounded-full transition-colors" style={{ background: "var(--nav-active-border)" }} />
-                                        <span className="flex-1 truncate">{sub.label}</span>
-                                        {sub.badge && (
-                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                {sub.badge}
-                                            </span>
+                                        <div className="absolute left-0 w-1 h-1 rounded-full" style={{ background: "var(--nav-active-border)" }} aria-hidden="true" />
+                                        {SubIcon && (
+                                            <SubIcon
+                                                className={cn(
+                                                    "w-3.5 h-3.5 flex-shrink-0",
+                                                    isSubActive ? "" : "text-neutral-400 dark:text-neutral-500"
+                                                )}
+                                                style={isSubActive ? { color: "var(--nav-active-color)" } : undefined}
+                                                aria-hidden="true"
+                                            />
                                         )}
+                                        <span className="flex-1 truncate">{sub.label}</span>
+                                        {sub.badge && <SubBadge badge={sub.badge} />}
                                     </Link>
                                 );
                             })}
@@ -629,12 +743,12 @@ function NavAccordion({
                 )}
             </AnimatePresence>
 
-            {/* Hover Floating Panel (Collapsed) - Now using Tooltip Portal to prevent clipping */}
+            {/* Collapsed hover floating panel via Tooltip */}
             <AnimatePresence>
                 {collapsed && (
                     <Tooltip open={isHovered} onOpenChange={setIsHovered}>
                         <TooltipTrigger asChild>
-                            <div className="absolute inset-0 z-10" />
+                            <div className="absolute inset-0 z-10" aria-hidden="true" />
                         </TooltipTrigger>
                         <TooltipContent
                             side="right"
@@ -646,23 +760,36 @@ function NavAccordion({
                             </div>
                             <div className="space-y-0.5">
                                 {items.map(sub => {
+                                    const SubIcon = sub.icon;
                                     const isSubActive = pathname.startsWith(sub.href);
                                     return (
                                         <button
                                             key={sub.href}
                                             onClick={() => { if (onClose) onClose(); navigate(sub.href); setIsHovered(false); }}
+                                            aria-label={sub.ariaLabel || sub.label}
+                                            aria-current={isSubActive ? "page" : undefined}
                                             className={cn(
                                                 "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left",
-                                                isSubActive ? "bg-neutral-100 dark:bg-neutral-800" : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                                                isSubActive
+                                                    ? "bg-neutral-100 dark:bg-neutral-800"
+                                                    : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                                             )}
                                             style={{ color: isSubActive ? "var(--nav-active-color)" : "var(--sidebar-foreground)" }}
                                         >
-                                            <span className="truncate">{sub.label}</span>
-                                            {sub.badge && (
-                                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                    {sub.badge}
-                                                </span>
-                                            )}
+                                            <span className="flex items-center gap-2.5 truncate">
+                                                {SubIcon && (
+                                                    <SubIcon
+                                                        className={cn(
+                                                            "w-3.5 h-3.5 flex-shrink-0",
+                                                            isSubActive ? "" : "text-neutral-400"
+                                                        )}
+                                                        style={isSubActive ? { color: "var(--nav-active-color)" } : undefined}
+                                                        aria-hidden="true"
+                                                    />
+                                                )}
+                                                {sub.label}
+                                            </span>
+                                            {sub.badge && <SubBadge badge={sub.badge} />}
                                         </button>
                                     );
                                 })}
@@ -675,57 +802,63 @@ function NavAccordion({
     );
 }
 
-// Reusable single navigation item with Framer Motion hover states
+// ─── NavItem ──────────────────────────────────────────────────────────────────
 function NavItem({
     item,
     collapsed,
     pathname,
     onClick,
 }: {
-    item: { label: string; icon: any; href: string; badge?: string };
+    item: { label: string; icon: any; href: string; badge?: string; ariaLabel?: string };
     collapsed: boolean;
     pathname: string;
     onClick?: (e: React.MouseEvent) => void;
 }) {
-    // For the main Dashboard link, use exact match to avoid highlighting it on all sub-pages.
-    const isActive = item.href === "/dashboard"
-        ? pathname === "/dashboard"
-        : pathname === item.href || pathname.startsWith(`${item.href}/`);
+    const isActive =
+        item.href === "/dashboard"
+            ? pathname === "/dashboard"
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
     return (
-        <motion.div
-            whileHover={{ x: 4 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full"
-        >
+        <motion.div whileHover={{ x: 4 }} whileTap={{ scale: 0.98 }} className="w-full">
             <Link
                 href={item.href}
                 prefetch={false}
                 onClick={onClick}
+                aria-label={item.ariaLabel || item.label}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
                     "group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative",
-                    isActive
-                        ? ""
-                        : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
+                    isActive ? "" : "hover:bg-neutral-100/70 dark:hover:bg-neutral-800/50"
                 )}
-                style={isActive ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : { color: "var(--sidebar-foreground)" }}
+                style={isActive
+                    ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" }
+                    : { color: "var(--sidebar-foreground)" }
+                }
             >
                 {isActive && (
                     <motion.div
                         layoutId="activeNav"
                         className="absolute left-0 w-1 h-6 rounded-full"
                         style={{ background: "var(--nav-active-border)" }}
+                        aria-hidden="true"
                     />
                 )}
 
                 <div className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
-                    isActive ? "bg-white dark:bg-neutral-900 shadow-sm" : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
+                    isActive
+                        ? "bg-white dark:bg-neutral-900 shadow-sm"
+                        : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
                 )}>
-                    <item.icon className={cn(
-                        "w-4.5 h-4.5 transition-transform duration-300 group-hover:scale-110",
-                        isActive ? "" : "text-neutral-600 dark:text-neutral-400"
-                    )} style={isActive ? { color: "var(--nav-active-color)" } : undefined} />
+                    <item.icon
+                        className={cn(
+                            "w-4 h-4 transition-transform duration-300 group-hover:scale-110",
+                            !isActive && "text-neutral-600 dark:text-neutral-400"
+                        )}
+                        style={isActive ? { color: "var(--nav-active-color)" } : undefined}
+                        aria-hidden="true"
+                    />
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -737,27 +870,12 @@ function NavItem({
                             className="flex-1 flex items-center justify-between min-w-0"
                         >
                             <span className="truncate font-medium">{item.label}</span>
-                            {item.badge && (
-                                <motion.span
-                                    initial={{ scale: 0.5, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    className={cn(
-                                        "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter",
-                                        item.badge === "New" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" :
-                                            item.badge === "Live" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300" :
-                                                item.badge === "Premium" ? "" :
-                                                    "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300"
-                                    )}
-                                    style={item.badge === "Premium" ? { background: "var(--brand-gradient-soft)", color: "var(--nav-active-color)" } : undefined}
-                                >
-                                    {item.badge}
-                                </motion.span>
-                            )}
+                            {item.badge && <SubBadge badge={item.badge} />}
                         </motion.div>
                     ) : (
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <div className="absolute inset-0 z-10" />
+                                <div className="absolute inset-0 z-10" aria-hidden="true" />
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={10} className="bg-neutral-900 text-white border-none font-bold">
                                 {item.label}
@@ -767,5 +885,31 @@ function NavItem({
                 </AnimatePresence>
             </Link>
         </motion.div>
+    );
+}
+
+// ─── SubBadge ─────────────────────────────────────────────────────────────────
+function SubBadge({ badge }: { badge: string }) {
+    return (
+        <motion.span
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className={cn(
+                "text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter flex-shrink-0",
+                badge === "New"
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                    : badge === "Live"
+                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                        : badge === "Premium"
+                            ? ""
+                            : "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300"
+            )}
+            style={badge === "Premium"
+                ? { background: "var(--brand-gradient-soft)", color: "var(--nav-active-color)" }
+                : undefined
+            }
+        >
+            {badge}
+        </motion.span>
     );
 }
