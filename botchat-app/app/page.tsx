@@ -22,7 +22,7 @@ import SmoothScrollingUI from "./landing/components/SmoothScrollingUI";
 
 export default function Home() {
   return (
-    <main className="min-h-screen w-full bg-white selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
+    <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
       <SmoothScrollingUI />
       <Navbar />
 
@@ -30,8 +30,8 @@ export default function Home() {
       <Hero />
 
 
-      {/* SUBSEQUENT SECTIONS: White backgrounds */}
-      <div className="relative z-10 bg-white">
+      {/* SUBSEQUENT SECTIONS */}
+      <div className="relative z-10">
         {/* Social Proof handled inside Hero/CreatorProof */}
 
         <div id="features">

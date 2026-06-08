@@ -488,7 +488,7 @@ function BioLinkBuilderContent() {
                 // Map theme_name from backend to theme for frontend consistency
                 const hydratedProfile = {
                     ...payload,
-                    theme: payload.theme_name || payload.theme || payload.settings?.theme || "photo_aura",
+                    theme: payload.theme_name || payload.theme || payload.settings?.theme || "insta_minimal",
                     niche: payload.niche || payload.settings?.niche || "photography"
                 };
 

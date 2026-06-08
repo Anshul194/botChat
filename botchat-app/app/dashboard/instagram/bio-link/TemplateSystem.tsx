@@ -378,6 +378,13 @@ export function extractPrimaryBgColor(bg: string): string | null {
 
 const THEMES: Record<string, ThemeConfig> = {
 
+    insta_minimal: {
+        bgStyle: { background: '#ffffff' },
+        textColor: '#000000',
+        btnStyle: { background: '#000000', border: 'none', borderRadius: '4px', color: '#ffffff', padding: '16px 24px', fontSize: '14px', fontWeight: 700 },
+        fontClass: 'font-sans', accent: '#000000',
+    },
+
     beauty_pink: {
         bgStyle: { background: 'linear-gradient(135deg, #fff5f7 0%, #fce7f3 50%, #ffffff 100%)' },
         textColor: '#9d174d',
@@ -951,13 +958,13 @@ const THEMES: Record<string, ThemeConfig> = {
 };
 
 const DEFAULT_THEME: ThemeConfig = {
-    bgStyle: { background: 'linear-gradient(145deg, #1e293b 0%, #0f172a 100%)' },
-    textColor: '#e2e8f0',
-    btnStyle: { background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', color: '#e2e8f0', padding: '15px 24px', fontSize: '13px', fontWeight: 600 },
-    fontClass: 'font-sans', accent: '#64748b',
+    bgStyle: { background: '#ffffff' },
+    textColor: '#000000',
+    btnStyle: { background: '#000000', border: 'none', borderRadius: '4px', color: '#ffffff', padding: '15px 24px', fontSize: '13px', fontWeight: 600 },
+    fontClass: 'font-sans', accent: '#000000',
 };
 
-export const getTheme = (id: string = 'photo_aura'): ThemeConfig => {
+export const getTheme = (id: string = 'insta_minimal'): ThemeConfig => {
     const theme = THEMES[id] || DEFAULT_THEME;
 
     // Auto-correct text to black when background is bright (checks ALL gradient stops)

@@ -24,25 +24,25 @@ export type AppearanceSettings = {
 };
 
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
-    primary: "#1d6ef5",
-    secondary: "#38b2ff",
-    tertiary: "#6366f1",
-    gradient: true,
+    primary: "#000000",
+    secondary: "#1a1a1a",
+    tertiary: "#404040",
+    gradient: false,
     gradientDirection: "horizontal",
-    buttonStyle: "gradient",
-    buttonPrimary: "#1d6ef5",
-    buttonSecondary: "#38b2ff",
+    buttonStyle: "solid",
+    buttonPrimary: "#000000",
+    buttonSecondary: "#1a1a1a",
     buttonText: "#FFFFFF",
     fontFamily: "Inter, sans-serif",
     fontSize: 14,
     fontWeight: 500,
-    chartColor: "#1d6ef5",
+    chartColor: "#000000",
     chartMatchTheme: true,
     panelBgType: "solid",
-    borderRadius: 16,
-    shadow: 0.1,
-    glass: true,
-    glassOpacity: 0.8,
+    borderRadius: 12,
+    shadow: 0.05,
+    glass: false,
+    glassOpacity: 1,
     darkMode: false,
 };
 
@@ -117,12 +117,11 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
 
     root.style.setProperty("--brand-pink", settings.primary);
     root.style.setProperty("--brand-purple", settings.secondary);
-    // Keep brand-blue tokens in sync with the user-chosen primary/secondary
+    // Keep brand-pink tokens in sync with the user-chosen primary/secondary
     // so all globals.css consumers (links, scrollbar, glows) reflect the theme.
-    root.style.setProperty("--brand-blue", settings.primary);
-    root.style.setProperty("--brand-blue-light", settings.secondary);
+    root.style.setProperty("--brand-pink-light", settings.secondary);
     const [_r, _g, _b] = hexToRgb(settings.primary);
-    root.style.setProperty("--brand-blue-dark", `rgb(${Math.max(0, _r - 30)},${Math.max(0, _g - 30)},${Math.max(0, _b - 30)})`);
+    root.style.setProperty("--brand-pink-dark", `rgb(${Math.max(0, _r - 30)},${Math.max(0, _g - 30)},${Math.max(0, _b - 30)})`);
     root.style.setProperty("--accent", settings.tertiary);
     root.style.setProperty("--on-primary", onPrimary);
     root.style.setProperty("--on-secondary", onSecondary);

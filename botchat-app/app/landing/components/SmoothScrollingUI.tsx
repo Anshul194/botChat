@@ -62,7 +62,7 @@ export default function SmoothScrollingUI() {
         <div className={`fixed bottom-6 right-6 z-50 flex flex-col gap-3 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <button
                 onClick={scrollToTop}
-                className="flex items-center justify-center w-12 h-12 bg-white text-[#1d6ef5] border border-gray-200 rounded-full shadow-lg hover:bg-gray-50 transition-colors dark:bg-[#0e1628] dark:border-gray-800"
+                className="flex items-center justify-center w-12 h-12 bg-white text-[#FF2D78] border border-gray-200 rounded-full shadow-lg hover:bg-gray-50 transition-colors dark:bg-[#110a14] dark:border-[rgba(255,45,120,0.15)]"
                 aria-label="Scroll to top"
             >
                 <ArrowUp className="w-5 h-5" />
@@ -70,7 +70,7 @@ export default function SmoothScrollingUI() {
 
             <button
                 onClick={scrollToBottom}
-                className="flex items-center justify-center w-12 h-12 bg-[#1d6ef5] text-white rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+                className="flex items-center justify-center w-12 h-12 bg-[#FF2D78] text-white rounded-full shadow-lg hover:bg-[#e8175d] transition-colors"
                 aria-label="Scroll to bottom"
             >
                 <ArrowDown className="w-5 h-5" />
