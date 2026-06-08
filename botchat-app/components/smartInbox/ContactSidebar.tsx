@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
-import { Mail, Phone, MapPin, Clock, Calendar, User, Tag, Plus, ExternalLink, X } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Calendar, User, Tag, Plus, ExternalLink, X, Instagram, Facebook, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 
 interface ContactSidebarProps {
@@ -10,12 +11,12 @@ interface ContactSidebarProps {
 
 export default function ContactSidebar({ onClose }: ContactSidebarProps) {
     const { selectedConversation, onlineUsers } = useSmartInbox();
+    const [imgError, setImgError] = useState(false);
 
     if (!selectedConversation) return null;
 
     const isOnline = onlineUsers[selectedConversation.customer_id] ?? selectedConversation.is_online;
 
-    // Dummy contact details mapping to the mockup image
     const contactInfo = {
         email: selectedConversation.customer_username
             ? `${selectedConversation.customer_username}@email.com`
@@ -25,7 +26,6 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
         localTime: format(new Date(), "h:mm a")
     };
 
-    // Dummy activities matching the mockup image
     const recentActivities = [
         { id: 1, text: "Conversation assigned to you", time: "2m ago" },
         { id: 2, text: "Tag #vip added", time: "5m ago" },
@@ -36,58 +36,97 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
     const tags = ["customer", "vip"];
 
     return (
-        <div className="flex flex-col h-full bg-card rounded-[2.25rem] border border-border/40 p-5 overflow-y-auto scrollbar-thin shadow-sm relative">
-            {/* Close button for mobile drawers */}
+        <div className="flex flex-col h-full bg-card p-5 overflow-y-auto scrollbar-thin" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+            {/* Close button for mobile */}
             {onClose && (
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground rounded-lg transition-all md:hidden"
-                >
-                    <X className="w-4.5 h-4.5" />
+                <button onClick={onClose} className="absolute top-4 right-4 p-1.5 hover:bg-muted text-muted-foreground rounded-lg transition-all md:hidden">
+                    <X className="w-4 h-4" />
                 </button>
             )}
 
             {/* Profile Header */}
-            <div className="flex flex-col items-center text-center pb-6 border-b border-border/40 mb-6 mt-2">
+            <div className="flex flex-col items-center text-center pb-5 border-b border-border/50 mb-5">
                 <div className="relative mb-3">
-                    {selectedConversation.customer_avatar ? (
+                    {selectedConversation.customer_avatar && !imgError ? (
                         <img
                             src={selectedConversation.customer_avatar}
                             alt={selectedConversation.customer_name ?? 'User'}
-                            className="w-20 h-20 rounded-full object-cover shadow-sm"
+                            onError={() => setImgError(true)}
+                            className="w-16 h-16 rounded-full object-cover shadow-sm"
                         />
                     ) : (
-                        <div className="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-2xl">
+                        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-lg" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                             {(selectedConversation.customer_name ?? '?')[0]?.toUpperCase()}
                         </div>
                     )}
                     {isOnline && (
-                        <div className="absolute top-1 right-1 w-4.5 h-4.5 rounded-full border-2 border-card bg-emerald-500 shadow-md" />
+                        <div className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-card bg-emerald-500" />
                     )}
                 </div>
-                
-                <h3 className="text-sm font-black text-foreground">
-                    {selectedConversation.customer_name}
-                </h3>
-                <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5 justify-center">
+
+                <h3 className="text-sm font-medium text-foreground">{selectedConversation.customer_name}</h3>
+                <p className="text-[11px] text-muted-foreground/80 mt-0.5">
                     @{selectedConversation.customer_username
                         || (selectedConversation.customer_name ?? '').toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
                         || selectedConversation.customer_id
                         || 'unknown'
                     } • {selectedConversation.platform === "instagram" ? "Instagram" : "Facebook"}
                 </p>
-
-                <a
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                    className="text-[10px] font-black text-primary hover:text-opacity-80 flex items-center gap-1 mt-3 cursor-pointer"
-                >
-                    View Profile <ExternalLink className="w-3 h-3" />
-                </a>
             </div>
 
-            {/* Contact Info section */}
-            
+            {/* Contact Info */}
+            <div className="space-y-3 mb-5">
+                <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">Contact Info</p>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2.5 text-sm text-foreground">
+                        <Mail className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
+                        <span className="truncate text-[12px] text-foreground/90">{contactInfo.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm text-foreground">
+                        <Phone className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
+                        <span className="text-[12px] text-foreground/90">{contactInfo.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm text-foreground">
+                        <MapPin className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
+                        <span className="text-[12px] text-foreground/90">{contactInfo.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm text-foreground">
+                        <Clock className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
+                        <span className="text-[12px] text-foreground/90">{contactInfo.localTime}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Tags */}
+            <div className="mb-5">
+                <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">Tags</p>
+                <div className="flex flex-wrap gap-1.5">
+                    {tags.map(tag => (
+                        <span key={tag} className="px-2 py-0.5 rounded-md bg-primary/5 text-primary text-[10px] font-medium border border-primary/10">
+                            #{tag}
+                        </span>
+                    ))}
+                    <button className="px-2 py-0.5 rounded-md text-muted-foreground/40 text-[10px] border border-dashed border-border/60 hover:border-primary/30 hover:text-primary/60 transition-colors">
+                        + Add
+                    </button>
+                </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div>
+                <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">Recent Activity</p>
+                <div className="space-y-2">
+                    {recentActivities.map(activity => (
+                        <div key={activity.id} className="flex items-start gap-2.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 mt-1.5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[11px] text-foreground/90 truncate">{activity.text}</p>
+                                <p className="text-[9px] text-muted-foreground/60">{activity.time}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

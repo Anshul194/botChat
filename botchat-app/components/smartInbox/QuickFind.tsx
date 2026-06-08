@@ -9,6 +9,7 @@ export default function QuickFind() {
     const { accounts, selectAccount } = useSmartInbox();
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState("");
+    const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const filteredAccounts = accounts.filter(acc => 
@@ -106,15 +107,16 @@ export default function QuickFind() {
                                         className="w-full flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group text-left"
                                     >
                                         <div className="relative">
-                                            {account.profile_pic ? (
+                                            {account.profile_pic && !imgErrors[account.id] ? (
                                                 <img 
                                                     src={account.profile_pic} 
                                                     alt="" 
+                                                    onError={() => setImgErrors(prev => ({ ...prev, [account.id]: true }))}
                                                     className="w-8 h-8 rounded-lg object-cover"
                                                 />
                                             ) : (
-                                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                                    <User className="w-4 h-4 text-primary" />
+                                                <div className="w-8 h-8 rounded-lg flex items-center justify-center font-normal text-xs text-white" style={{ background: account.platform === "instagram" ? "linear-gradient(135deg, #f09433, #dc2743, #bc1888)" : "#1877f2" }}>
+                                                    {account.name[0]?.toUpperCase() || "?"}
                                                 </div>
                                             )}
                                             <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border border-card bg-background flex items-center justify-center">
@@ -126,10 +128,10 @@ export default function QuickFind() {
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-sm font-bold truncate group-hover:text-primary transition-colors">
+                                            <div className="text-sm font-medium truncate group-hover:text-primary transition-colors" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                                                 {account.name}
                                             </div>
-                                            <div className="text-[10px] text-muted-foreground uppercase font-black truncate opacity-60">
+                                            <div className="text-[10px] text-muted-foreground font-normal truncate opacity-60" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                                                 {account.platform}
                                             </div>
                                         </div>

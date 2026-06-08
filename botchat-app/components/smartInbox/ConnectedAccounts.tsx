@@ -119,30 +119,28 @@ function PlatformDropdown({
                         </div>
                     </div>
 
-                    {/* Search — only when > 5 accounts */}
-                    {accounts.length > 5 && (
-                        <div
-                            className="px-3 py-2 flex-shrink-0"
-                            style={{ borderBottom: "1px solid var(--glass-border)" }}
-                        >
-                            <div className="relative">
-                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" style={{ color: "var(--muted-foreground)" }} />
-                                <input
-                                    autoFocus
-                                    type="text"
-                                    value={q}
-                                    onChange={e => setQ(e.target.value)}
-                                    placeholder="Search accounts…"
-                                    className="w-full pl-7 pr-3 h-7 rounded-lg text-[12px] outline-none"
-                                    style={{
-                                        background: "var(--glass-bg)",
-                                        border: "1px solid var(--glass-border)",
-                                        color: "var(--foreground)",
-                                    }}
-                                />
-                            </div>
+                    {/* Search */}
+                    <div
+                        className="px-3 py-2 flex-shrink-0"
+                        style={{ borderBottom: "1px solid var(--glass-border)" }}
+                    >
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" style={{ color: "var(--muted-foreground)" }} />
+                            <input
+                                autoFocus
+                                type="text"
+                                value={q}
+                                onChange={e => setQ(e.target.value)}
+                                placeholder="Search accounts…"
+                                className="w-full pl-7 pr-3 h-7 rounded-lg text-[12px] outline-none"
+                                style={{
+                                    background: "var(--glass-bg)",
+                                    border: "1px solid var(--glass-border)",
+                                    color: "var(--foreground)",
+                                }}
+                            />
                         </div>
-                    )}
+                    </div>
 
                     {/* Scrollable account list */}
                     <div style={{ overflowY: "auto", maxHeight: 300, padding: "6px" }}>
@@ -212,6 +210,7 @@ function AccountRow({
     onClick: () => void;
 }) {
     const [hovered, setHovered] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
     return (
         <button
@@ -238,10 +237,11 @@ function AccountRow({
         >
             {/* Avatar / Icon */}
             <div style={{ position: "relative", flexShrink: 0 }}>
-                {avatar ? (
+                {avatar && !imgError ? (
                     <img
                         src={avatar}
                         alt={label}
+                        onError={() => setImgError(true)}
                         style={{
                             width: 32, height: 32, borderRadius: "50%", objectFit: "cover",
                             outline: isSelected ? `2px solid ${isFB ? "#2563eb" : "#ec4899"}` : "none",
@@ -277,7 +277,8 @@ function AccountRow({
             {/* Text */}
             <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
                 <p style={{
-                    fontSize: 12, fontWeight: 600, color: isSelected ? "var(--nav-active-color)" : "var(--foreground)",
+                    fontSize: 12, fontWeight: 600, fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+                    color: isSelected ? "var(--nav-active-color)" : "var(--foreground)",
                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>
                     {label}

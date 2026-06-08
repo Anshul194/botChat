@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Facebook, Instagram, Star, Pin, VolumeX, Archive } from "lucide-react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { SmartInboxConversation } from "@/store/slices/smartInboxSlice";
@@ -17,6 +18,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
         onlineUsers
     } = useSmartInbox();
 
+    const [imgError, setImgError] = useState(false);
     const isSelected = selectedConversation?.id === conversation.id;
     const isOnline = onlineUsers[conversation.customer_id] ?? conversation.is_online;
     const isTyping = typingUsers[conversation.id] !== null && typingUsers[conversation.id] !== undefined;
@@ -60,61 +62,55 @@ export default function ConversationItem({ conversation }: ConversationItemProps
     return (
         <div
             onClick={() => selectConversation(conversation)}
-            className={`flex gap-4 p-4 rounded-3xl cursor-pointer transition-all duration-300 relative group overflow-hidden ${
+            className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 relative group ${
                 isSelected
-                    ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]"
-                    : "hover:bg-white/50 dark:hover:bg-white/5 border-transparent"
+                    ? "bg-primary text-white shadow-md"
+                    : "hover:bg-muted/60 border-transparent"
             }`}
         >
-            {/* Selection indicator bubble background logic */}
-            {!isSelected && (
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            )}
-
             {/* Avatar block */}
-            <div className="relative flex-shrink-0 z-10">
-                <div className={`p-0.5 rounded-full ${isSelected ? "bg-white/20" : "bg-gradient-to-tr from-primary/20 to-transparent"}`}>
-                    {conversation.customer_avatar ? (
-                        <img
-                            src={conversation.customer_avatar}
-                            alt={conversation.customer_name ?? 'User'}
-                            className="w-12 h-12 rounded-full object-cover border-2 border-transparent"
-                        />
-                    ) : (
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm ${
-                            isSelected ? "bg-white text-primary" : "bg-primary/10 text-primary"
-                        }`}>
-                            {(conversation.customer_name ?? '?')[0]?.toUpperCase()}
-                        </div>
-                    )}
-                </div>
+            <div className="relative flex-shrink-0">
+                {conversation.customer_avatar && !imgError ? (
+                    <img
+                        src={conversation.customer_avatar}
+                        alt={conversation.customer_name ?? 'User'}
+                        onError={() => setImgError(true)}
+                        className="w-10 h-10 rounded-full object-cover"
+                    />
+                ) : (
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-xs ${
+                        isSelected ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
+                    }`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                        {(conversation.customer_name ?? '?')[0]?.toUpperCase()}
+                    </div>
+                )}
 
                 {/* Online indicator */}
                 {isOnline && (
-                    <div className={`absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full border-2 ${isSelected ? "border-primary bg-emerald-400" : "border-white dark:border-neutral-900 bg-emerald-500"} shadow-sm`} />
+                    <div className={`absolute top-0 right-0 w-2.5 h-2.5 rounded-full border-2 ${isSelected ? "border-primary bg-emerald-400" : "border-background bg-emerald-500"}`} />
                 )}
 
                 {/* Platform Badge */}
-                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center shadow-lg text-white border-2 ${
-                    isSelected ? "border-primary" : "border-white dark:border-neutral-900"
+                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center shadow-sm text-white border-[1.5px] ${
+                    isSelected ? "border-primary" : "border-background"
                 } ${
                     isFB ? "bg-blue-600" : "bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]"
                 }`}>
                     {isFB ? (
-                        <Facebook className="w-2.5 h-2.5 fill-current" />
+                        <Facebook className="w-2 h-2 fill-current" />
                     ) : (
-                        <Instagram className="w-2.5 h-2.5" />
+                        <Instagram className="w-2 h-2" />
                     )}
                 </div>
             </div>
 
             {/* Meta details */}
-            <div className="flex-1 min-w-0 z-10">
-                <div className="flex justify-between items-center mb-1">
-                    <h4 className={`text-[13px] font-black truncate max-w-[140px] ${isSelected ? "text-white" : "text-foreground"}`}>
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-0.5">
+                    <h4 className={`text-[13px] font-medium truncate max-w-[140px] ${isSelected ? "text-white" : "text-foreground"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                         {conversation.customer_name}
                     </h4>
-                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? "text-white/70" : "text-muted-foreground"}`}>
+                    <span className={`text-[10px] text-muted-foreground/80 ${isSelected ? "text-white/60" : ""}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                         {formatTime(conversation.last_message_at)}
                     </span>
                 </div>
@@ -123,11 +119,11 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
                         {isTyping ? (
-                            <p className={`text-[11px] font-black animate-pulse truncate ${isSelected ? "text-white" : "text-primary"}`}>
+                            <p className={`text-[11px] font-medium animate-pulse truncate ${isSelected ? "text-white/80" : "text-primary"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                                 {typingMsg || "Typing..."}
                             </p>
                         ) : (
-                            <p className={`text-[11px] truncate ${isSelected ? "text-white/80 font-medium" : "text-muted-foreground"}`}>
+                            <p className={`text-[11px] truncate ${isSelected ? "text-white/70" : "text-muted-foreground"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                                 {getMessagePreview(conversation.last_message)}
                             </p>
                         )}
@@ -136,7 +132,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                     {/* Unread badge count */}
                     {!isSelected && conversation.unread_count > 0 && (
                         <div className="flex-shrink-0">
-                            <span className="min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[9px] font-black bg-primary text-white shadow-lg shadow-primary/30">
+                            <span className="min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[9px] font-medium bg-primary text-white shadow-sm">
                                 {conversation.unread_count}
                             </span>
                         </div>
@@ -144,15 +140,15 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                 </div>
 
                 {/* Indicator icons */}
-                <div className="flex gap-2 mt-2 items-center">
+                <div className="flex gap-1.5 mt-1 items-center">
                     {conversation.is_pinned && (
-                        <Pin className={`w-3.5 h-3.5 rotate-45 ${isSelected ? "text-white/90 fill-current" : "text-amber-500 fill-current"}`} />
+                        <Pin className={`w-3 h-3 rotate-45 ${isSelected ? "text-white/70 fill-current" : "text-amber-500/70 fill-current"}`} />
                     )}
                     {conversation.is_starred && (
-                        <Star className={`w-3.5 h-3.5 ${isSelected ? "text-white/90 fill-current" : "text-yellow-500 fill-current"}`} />
+                        <Star className={`w-3 h-3 ${isSelected ? "text-white/70 fill-current" : "text-yellow-500/70 fill-current"}`} />
                     )}
                     {conversation.is_muted && (
-                        <VolumeX className={`w-3.5 h-3.5 ${isSelected ? "text-white/60" : "text-neutral-400"}`} />
+                        <VolumeX className={`w-3 h-3 ${isSelected ? "text-white/50" : "text-neutral-400/70"}`} />
                     )}
                 </div>
             </div>

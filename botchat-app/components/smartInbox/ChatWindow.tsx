@@ -46,10 +46,12 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
             const dateStr = format(parseISO(rawDate), "eeee, MMMM d, yyyy");
             if (dateStr !== lastDateStr) {
                 groups.push(
-                    <div key={`date-${dateStr}`} className="flex justify-center my-8">
-                        <span className="px-6 py-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 shadow-sm border border-black/5 dark:border-white/5">
+                    <div key={`date-${dateStr}`} className="flex items-center justify-center my-6 gap-3">
+                        <div className="h-px flex-1 bg-border/60" />
+                        <span className="text-[10px] font-medium text-muted-foreground/70 px-3 whitespace-nowrap" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                             {dateStr}
                         </span>
+                        <div className="h-px flex-1 bg-border/60" />
                     </div>
                 );
                 lastDateStr = dateStr;
@@ -64,37 +66,37 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
     return (
         <div className="flex flex-col h-full bg-background overflow-hidden">
             {/* Active Customer Profile Header */}
-            <div className="flex items-center justify-between px-6 py-2 border-b border-border bg-card">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border/60 bg-card">
                 <button 
                     onClick={onProfileClick}
-                    className="flex items-center gap-4 group hover:opacity-80 transition-all text-left"
+                    className="flex items-center gap-3 group hover:opacity-80 transition-all text-left"
                 >
                     <div className="relative">
                         {selectedConversation.customer_avatar ? (
                             <img
                                 src={selectedConversation.customer_avatar}
                                 alt={selectedConversation.customer_name ?? 'User'}
-                                className="w-10 h-10 rounded-full object-cover ring-2 ring-background shadow-sm"
+                                className="w-9 h-9 rounded-full object-cover ring-2 ring-background shadow-sm"
                             />
                         ) : (
-                            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                            <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-sm" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                                 {(selectedConversation.customer_name ?? '?')[0]?.toUpperCase()}
                             </div>
                         )}
                         {isOnline && (
-                            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card bg-emerald-500 shadow-sm" />
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card bg-emerald-500 shadow-sm" />
                         )}
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-foreground leading-none">
+                            <h3 className="text-sm font-medium text-foreground leading-none" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                                 {selectedConversation.customer_name}
                             </h3>
                             {isOnline && (
-                                <span className="w-2 h-2 rounded-full bg-emerald-500" title="Online" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Online" />
                             )}
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-medium mt-1 uppercase tracking-tight flex items-center gap-1.5 opacity-60">
+                        <p className="text-[11px] text-muted-foreground/60 mt-0.5 flex items-center gap-1.5" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                             {selectedConversation.platform === "instagram" ? (
                                 <>
                                     <Instagram className="w-3 h-3" />

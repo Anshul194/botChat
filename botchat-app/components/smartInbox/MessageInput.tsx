@@ -123,16 +123,17 @@ export default function MessageInput() {
     if (!selectedConversation) return null;
 
     return (
-        <div className="bg-card border-t border-border p-2 space-y-2 relative shadow-sm">
+        <div className="bg-card border-t border-border/60 px-3 py-2 space-y-2 relative">
             {/* Top tab selector */}
-            <div className="flex items-center gap-4 px-1">
+            <div className="flex items-center gap-3 px-0.5">
                 <button
                     onClick={() => setActiveTab("reply")}
-                    className={`text-[10px] font-black uppercase tracking-widest pb-1 transition-all relative ${
+                    className={`text-[10px] font-medium pb-1 transition-all relative ${
                         activeTab === "reply"
                             ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100"
+                            : "text-muted-foreground/70 hover:text-foreground"
                     }`}
+                    style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
                 >
                     Reply
                     {activeTab === "reply" && (
@@ -141,11 +142,12 @@ export default function MessageInput() {
                 </button>
                 <button
                     onClick={() => setActiveTab("note")}
-                    className={`text-[10px] font-black uppercase tracking-widest pb-1 transition-all relative ${
+                    className={`text-[10px] font-medium pb-1 transition-all relative ${
                         activeTab === "note"
                             ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100"
+                            : "text-muted-foreground/70 hover:text-foreground"
                     }`}
+                    style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
                 >
                     Private Note
                     {activeTab === "note" && (
@@ -180,7 +182,7 @@ export default function MessageInput() {
                         )}
                     </AnimatePresence>
 
-                    <div className="relative group">
+                    <div className="relative">
                         <textarea
                             value={messageText}
                             onChange={handleTextChange}
@@ -190,53 +192,38 @@ export default function MessageInput() {
                                     ? "Internal note..."
                                     : "Type a message..."
                             }
-                            className="w-full text-[13px] font-medium outline-none bg-transparent placeholder:text-muted-foreground/40 text-foreground min-h-[40px] max-h-[120px] resize-none leading-tight transition-all"
+                            className="w-full text-[13px] outline-none bg-transparent placeholder:text-muted-foreground/30 text-foreground min-h-[38px] max-h-[120px] resize-none leading-relaxed transition-all"
+                            style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif", fontWeight: 400 }}
                         />
                     </div>
 
                     {/* Bottom toolbar actions */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                            {/* Emoji button */}
+                        <div className="flex items-center gap-0.5">
                             <InlineEmojiButton
                                 value={messageText}
                                 onChange={(val) => setMessageText(val)}
-                                className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary border border-transparent"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary"
                             />
 
-                            {/* Image upload icon */}
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Attach media"
                             >
-                                <ImageIcon className="w-4 h-4" />
+                                <ImageIcon className="w-3.5 h-3.5" />
                             </button>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleImageSelect}
-                                accept="image/*,video/*"
-                                className="hidden"
-                            />
+                            <input type="file" ref={fileInputRef} onChange={handleImageSelect} accept="image/*,video/*" className="hidden" />
 
-                            {/* Attachment document file icon */}
                             <button
                                 onClick={() => attachmentInputRef.current?.click()}
                                 className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Attach document"
                             >
-                                <Paperclip className="w-4 h-4" />
+                                <Paperclip className="w-3.5 h-3.5" />
                             </button>
-                            <input
-                                type="file"
-                                ref={attachmentInputRef}
-                                onChange={handleAttachmentSelect}
-                                accept="audio/*,.mp3,.wav,.ogg,.pdf,.doc,.docx,.xls,.xlsx,.zip,.txt,.csv"
-                                className="hidden"
-                            />
+                            <input type="file" ref={attachmentInputRef} onChange={handleAttachmentSelect} accept="audio/*,.mp3,.wav,.ogg,.pdf,.doc,.docx,.xls,.xlsx,.zip,.txt,.csv" className="hidden" />
 
-                            {/* Quick reply templates */}
                             <div className="relative">
                                 <button
                                     onClick={handleQuickRepliesToggle}
@@ -247,7 +234,7 @@ export default function MessageInput() {
                                     }`}
                                     title="Quick replies"
                                 >
-                                    <Bookmark className="w-4 h-4" />
+                                    <Bookmark className="w-3.5 h-3.5" />
                                 </button>
                                 <AnimatePresence>
                                     {showQuickReplies && (
@@ -255,19 +242,17 @@ export default function MessageInput() {
                                             initial={{ opacity: 0, scale: 0.95, y: -10 }}
                                             animate={{ opacity: 1, scale: 1, y: 0 }}
                                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                            className="absolute bottom-full mb-3 left-0 z-50 w-72 bg-card border border-border rounded-xl shadow-2xl p-2"
+                                            className="absolute bottom-full mb-2 left-0 z-50 w-64 bg-card border border-border rounded-lg shadow-lg p-2"
                                         >
-                                            <div className="flex items-center gap-2 text-[9px] font-bold uppercase text-primary tracking-widest px-1 mb-2">
-                                                <Sparkles className="w-3 h-3" /> Quick Replies
-                                            </div>
-                                            <div className="max-h-60 overflow-y-auto space-y-1">
+                                            <p className="text-[10px] font-medium text-muted-foreground/60 px-1 mb-1.5">Quick Replies</p>
+                                            <div className="max-h-56 overflow-y-auto space-y-0.5">
                                                 {quickRepliesList.map((qr: any) => (
                                                     <button
                                                         key={qr.id}
                                                         onClick={() => handleSelectQuickReply(qr.reply_text)}
-                                                        className="w-full text-left p-2 rounded-lg hover:bg-primary/5 text-xs font-semibold border border-transparent hover:border-primary/10 transition-all group"
+                                                        className="w-full text-left px-2 py-1.5 rounded-md hover:bg-muted text-[12px] text-foreground/80 transition-colors"
                                                     >
-                                                        <div className="text-foreground group-hover:text-primary transition-colors truncate">{qr.name}</div>
+                                                        {qr.name}
                                                     </button>
                                                 ))}
                                             </div>
@@ -276,27 +261,24 @@ export default function MessageInput() {
                                 </AnimatePresence>
                             </div>
 
-                            {/* Micro Voice Note recorder */}
                             <button
                                 onClick={() => setIsRecording(true)}
                                 className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-md transition-all text-muted-foreground hover:text-primary cursor-pointer"
                                 title="Record voice note"
                             >
-                                <Mic className="w-4 h-4" />
+                                <Mic className="w-3.5 h-3.5" />
                             </button>
                         </div>
 
-                        {/* Send button group */}
-                        <div className="flex items-center gap-1 bg-muted/30 p-0.5 rounded-lg border border-border/50 shadow-sm">
-                            <button
-                                onClick={handleSendMessage}
-                                disabled={!messageText.trim() && !pendingFile}
-                                className="flex items-center gap-1.5 px-3 h-7 bg-primary hover:opacity-90 disabled:opacity-30 disabled:grayscale text-white text-[9px] font-bold uppercase tracking-wider rounded-md transition-all active:scale-95 flex-shrink-0"
-                            >
-                                <Send className="w-3 h-3" />
-                                <span>Send</span>
-                            </button>
-                        </div>
+                        <button
+                            onClick={handleSendMessage}
+                            disabled={!messageText.trim() && !pendingFile}
+                            className="flex items-center gap-1.5 px-3 h-7 bg-primary hover:opacity-90 disabled:opacity-30 disabled:grayscale text-white text-[10px] font-medium rounded-md transition-all active:scale-95 flex-shrink-0"
+                            style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
+                        >
+                            <Send className="w-3 h-3" />
+                            Send
+                        </button>
                     </div>
                 </div>
             )}

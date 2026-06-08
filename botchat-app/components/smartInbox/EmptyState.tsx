@@ -37,12 +37,12 @@ export default function EmptyState({ type, title, description }: EmptyStateProps
     const Icon = content.icon;
 
     return (
-        <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-card rounded-[2rem] border border-border/40">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-primary/10 text-primary mb-4 animate-bounce">
-                <Icon className="w-8 h-8" />
+        <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-muted/80 text-muted-foreground/40 mb-4">
+                <Icon className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-foreground mb-2">{content.title}</h3>
-            <p className="text-sm text-muted-foreground max-w-sm">{content.description}</p>
+            <h3 className="text-sm font-medium text-foreground/80 mb-1" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>{content.title}</h3>
+            <p className="text-[12px] text-muted-foreground/60 max-w-xs" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>{content.description}</p>
         </div>
     );
 }

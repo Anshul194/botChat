@@ -79,17 +79,17 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
     // ── Bubble styling by direction + type ───────────────────────────────────
     const isMediaOnly = ["image", "video", "audio", "voice", "sticker", "carousel", "generic_template", "template", "button", "quick_reply", "flow_step"].includes(message.message_type);
-    const bubbleClasses = `relative transition-all duration-300 max-w-[85%] ${
-        isMediaOnly ? "" : "px-4 py-2.5 rounded-2xl"
+    const bubbleClasses = `relative transition-all duration-200 max-w-[75%] ${
+        isMediaOnly ? "" : "px-3.5 py-2 rounded-xl"
     } ${
-        isMediaOnly ? "" : (isInbound ? "bg-muted text-foreground border border-border" : "bg-primary text-white shadow-sm")
+        isMediaOnly ? "" : (isInbound ? "bg-muted/80 text-foreground border border-border/50" : "bg-primary text-white shadow-sm")
     }`;
 
     return (
         <div 
-            className={`flex flex-col group ${isInbound ? "items-start" : "items-end"} w-full py-1`}
+            className={`flex flex-col group ${isInbound ? "items-start" : "items-end"} w-full py-0.5`}
         >
-            <div className={`flex items-end gap-2 ${isInbound ? "flex-row" : "flex-row-reverse"}`}>
+            <div className={`flex items-end gap-1.5 ${isInbound ? "flex-row" : "flex-row-reverse"}`}>
                 
                 <div className={bubbleClasses}>
                     <MessageRenderer
@@ -141,7 +141,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             </div>
 
             {/* Time / sender / delivery bar */}
-            <div className={`flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 px-2 ${isInbound ? "ml-1" : "mr-1"}`}>
+            <div className={`flex items-center gap-2 text-[10px] text-muted-foreground/70 px-1.5 ${isInbound ? "ml-1" : "mr-1"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                 {renderSenderBadge()}
                 <span>{formatTime((message as any).sent_at || (message as any).created_at)}</span>
                 {renderDeliveryStatus()}
