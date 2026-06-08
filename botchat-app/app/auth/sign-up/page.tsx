@@ -174,9 +174,9 @@ export default function SignUpPage() {
             {/* ── Right panel ── */}
             <div className="flex-1 flex flex-col">
                 {/* Topbar */}
-                <div className="flex items-center justify-between px-6 pt-5 pb-4">
-                    <div className="lg:hidden flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-4 gap-2">
+                    <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                             style={{ background: "linear-gradient(135deg, #ec4899, #a855f7)" }}>
                             <MessageSquare className="w-4 h-4 text-white" />
                         </div>
@@ -186,9 +186,9 @@ export default function SignUpPage() {
                         }}>BotChat</span>
                     </div>
                     <div className="hidden lg:block" />
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
-                            Have an account?{" "}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-sm whitespace-nowrap" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
+                            <span className="hidden sm:inline">Have an account? </span>
                             <Link href="/auth/sign-in" className="font-semibold" style={{ color: "#ec4899" }}>Sign in</Link>
                         </span>
                         <ThemeToggle />

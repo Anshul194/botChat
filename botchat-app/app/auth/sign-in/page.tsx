@@ -159,10 +159,10 @@ export default function SignInPage() {
             {/* ── Right panel — Form ── */}
             <div className="flex-1 flex flex-col relative">
                 {/* Top bar */}
-                <div className="flex items-center justify-between px-6 pt-5 pb-4">
+                <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-4 gap-2">
                     {/* Mobile logo */}
-                    <div className="lg:hidden flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                             style={{ background: "linear-gradient(135deg, #ec4899, #a855f7)" }}>
                             <MessageSquare className="w-4 h-4 text-white" />
                         </div>
@@ -172,9 +172,9 @@ export default function SignInPage() {
                         }}>BotChat</span>
                     </div>
                     <div className="hidden lg:block" />
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm" style={{ color: isLight ? "#64748b" : "#a1a1aa" }}>
-                            No account?{" "}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-sm whitespace-nowrap" style={{ color: isLight ? "#64748b" : "#a1a1aa" }}>
+                            <span className="hidden sm:inline">No account? </span>
                             <Link href="/auth/sign-up" className="font-semibold"
                                 style={{ color: "var(--primary)" }}>
                                 Sign up

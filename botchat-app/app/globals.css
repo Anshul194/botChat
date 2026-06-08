@@ -56,9 +56,9 @@
    Muted fg    #64748b  slate secondary text
 ═══════════════════════════════════════════════════════════════ */
 * {
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-              border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-              color 0.2s ease-out;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s ease-out;
 }
 
 :root {
@@ -262,6 +262,7 @@ html.light :root,
   html {
     transition: background-color 0.3s ease, color 0.3s ease;
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   /* ── Ambient background orbs (bio-link style) ── */
@@ -315,6 +316,7 @@ html.light :root,
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
   }
 
   /* ── Right-side + centre-bottom orbs on body ── */
@@ -502,15 +504,15 @@ html.light :root,
   font-size: 0.875rem;
   background: var(--primary);
   color: var(--primary-foreground);
-  border: 1px solid rgba(0,0,0,0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   cursor: pointer;
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-  box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 30px rgba(16,24,40,0.08);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
 }
 
 .btn-primary:active {
@@ -593,7 +595,7 @@ html.light :root,
 .form-section {
   padding: 1rem;
   border-radius: 0.75rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
   border: 1px solid var(--border);
 }
 
@@ -621,8 +623,8 @@ html.light :root,
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -837,32 +839,70 @@ html.light :root,
 
 /* ── Ambient orb drift animations ── */
 @keyframes orbDriftA {
-  0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.85; }
-  33%       { transform: translateX(-44%) scale(1.06); opacity: 1;    }
-  66%       { transform: translateX(-56%) scale(0.95); opacity: 0.75; }
+
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.85;
+  }
+
+  33% {
+    transform: translateX(-44%) scale(1.06);
+    opacity: 1;
+  }
+
+  66% {
+    transform: translateX(-56%) scale(0.95);
+    opacity: 0.75;
+  }
 }
 
 @keyframes orbDriftB {
-  0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.8;  }
-  40%       { transform: translateX(-54%) scale(1.08); opacity: 1;   }
-  70%       { transform: translateX(-46%) scale(0.94); opacity: 0.7; }
+
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+
+  40% {
+    transform: translateX(-54%) scale(1.08);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateX(-46%) scale(0.94);
+    opacity: 0.7;
+  }
 }
 
 @keyframes orbDriftRight {
-  0%, 100% { transform: translateY(0)   scale(1);    opacity: 0.75; }
-  50%       { transform: translateY(-5%) scale(1.05); opacity: 1;   }
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: translateY(-5%) scale(1.05);
+    opacity: 1;
+  }
 }
 
 /* Apply drift to all four orbs */
 html::before {
   animation: orbDriftA 18s ease-in-out infinite;
 }
+
 html::after {
   animation: orbDriftRight 22s ease-in-out infinite;
 }
+
 body::before {
   animation: orbDriftRight 26s ease-in-out infinite reverse;
 }
+
 body::after {
   animation: orbDriftB 20s ease-in-out infinite;
 }

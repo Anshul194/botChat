@@ -185,7 +185,7 @@ export default function InstagramPage() {
 
     return (
         <div className="bg-transparent min-h-screen pb-16"
-             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
+            style={{ background: 'var(--app-surface-bg, var(--background))' }}>
             {/* Header */}
             <header className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
                 <div className="flex items-center gap-3">
@@ -203,16 +203,16 @@ export default function InstagramPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2">
                     {selectedAccountForSettings && (
                         <button
                             onClick={() => {
                                 setSelectedAccountForSettings(null);
                                 setIsSettingsOpen(false);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all border dark:border-neutral-700"
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all border dark:border-neutral-700"
                         >
-                            <ArrowLeft className="w-4 h-4" /> Back to Accounts
+                            <ArrowLeft className="w-4 h-4" /> Back
                         </button>
                     )}
                     <Button
@@ -227,15 +227,16 @@ export default function InstagramPage() {
                     <Button
                         onClick={handleInstagramConnect}
                         disabled={isConnecting}
-                        className="h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold text-[11px] tracking-wide hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-[11px] tracking-wide hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin text-white/50" /> : <Instagram className="w-4 h-4" />}
-                        {isConnecting ? "Authorizing..." : "Connect Profile"}
+                        <span className="hidden sm:inline">{isConnecting ? "Authorizing..." : "Connect Profile"}</span>
+                        <span className="sm:hidden">{isConnecting ? "..." : "Connect"}</span>
                     </Button>
                 </div>
             </header>
 
-            <main className="mx-auto max-w-7xl px-6 py-8">
+            <main className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8">
                 <AnimatePresence mode="wait">
                     {isSettingsOpen && selectedAccountForSettings ? (
                         <motion.div
@@ -310,7 +311,7 @@ export default function InstagramPage() {
                                 <div className="space-y-8">
                                     {groupedArray.map(group => (
                                         <div key={group.id} className="space-y-6">
-                                            <div className="flex items-center justify-between bg-white dark:bg-neutral-900 p-5 rounded-2xl border dark:border-neutral-800 shadow-sm block">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-neutral-900 p-5 rounded-2xl border dark:border-neutral-800 shadow-sm">
                                                 <div className="flex items-center gap-4">
                                                     <div className="relative">
                                                         <div className="w-12 h-12 rounded-full overflow-hidden border dark:border-neutral-700 bg-gray-100 flex items-center justify-center text-gray-500 text-lg font-bold">

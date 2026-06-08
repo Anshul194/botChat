@@ -1,23 +1,87 @@
 "use client";
 
 import { useState } from "react";
-import { CreditCard, Check, Zap, ArrowUpRight, Download, Shield, Star } from "lucide-react";
+import {
+    CreditCard,
+    CheckCircle2,
+    Zap,
+    Download,
+    ShieldCheck,
+    Star,
+    Sparkles,
+    TrendingUp,
+    Users,
+    Infinity,
+    Rocket,
+    ArrowRight,
+    Building2,
+    Receipt,
+    CalendarClock,
+    BadgeCheck,
+    ChevronRight,
+    Activity,
+    BarChart3,
+    RefreshCcw,
+    Lock,
+    CircleDot,
+    Crown,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const plans = [
     {
-        name: "Starter", price: 29, current: false, color: "#06b6d4",
-        features: ["1 IG + 1 FB account", "500 auto-replies/mo", "3 automation flows", "Basic analytics"],
+        name: "Starter",
+        price: 29,
+        current: false,
+        accentColor: "#0ea5e9",
+        icon: Zap,
+        description: "Perfect for individuals getting started",
+        features: [
+            { text: "1 IG + 1 FB account", icon: Users },
+            { text: "500 auto-replies / mo", icon: RefreshCcw },
+            { text: "3 automation flows", icon: Activity },
+            { text: "Basic analytics", icon: BarChart3 },
+        ],
         cta: "Downgrade",
+        ctaVariant: "ghost" as const,
     },
     {
-        name: "Pro", price: 79, current: true, color: "#7c3aed", popular: true,
-        features: ["3 IG + 3 FB accounts", "Unlimited auto-replies", "Unlimited flows + AI", "Advanced analytics", "A/B testing", "Priority support"],
+        name: "Pro",
+        price: 79,
+        current: true,
+        accentColor: "#8b5cf6",
+        icon: Crown,
+        description: "For growing businesses & power users",
+        popular: true,
+        features: [
+            { text: "3 IG + 3 FB accounts", icon: Users },
+            { text: "Unlimited auto-replies", icon: Infinity },
+            { text: "Unlimited flows + AI", icon: Sparkles },
+            { text: "Advanced analytics", icon: BarChart3 },
+            { text: "A/B testing", icon: Activity },
+            { text: "Priority support", icon: ShieldCheck },
+        ],
         cta: "Current Plan",
+        ctaVariant: "primary" as const,
     },
     {
-        name: "Business", price: 199, current: false, color: "#f59e0b",
-        features: ["Unlimited accounts", "Custom AI training", "White-label", "API access", "Dedicated manager", "SLA guarantee"],
+        name: "Business",
+        price: 199,
+        current: false,
+        accentColor: "#f59e0b",
+        icon: Building2,
+        description: "Enterprise-grade for large teams",
+        features: [
+            { text: "Unlimited accounts", icon: Infinity },
+            { text: "Custom AI training", icon: Sparkles },
+            { text: "White-label solution", icon: Star },
+            { text: "Full API access", icon: Lock },
+            { text: "Dedicated manager", icon: Users },
+            { text: "SLA guarantee", icon: BadgeCheck },
+        ],
         cta: "Upgrade",
+        ctaVariant: "accent" as const,
     },
 ];
 
@@ -29,206 +93,419 @@ const invoices = [
 ];
 
 const usage = [
-    { label: "Auto-Replies", used: 44180, limit: null, pct: 88, color: "#7c3aed" },
-    { label: "Active Flows", used: 8, limit: null, pct: 67, color: "#06b6d4" },
-    { label: "IG Accounts", used: 2, limit: 3, pct: 67, color: "#ec4899" },
-    { label: "FB Accounts", used: 1, limit: 3, pct: 33, color: "#3b82f6" },
+    { label: "Auto-Replies", used: 44180, display: "44,180", limit: "Unlimited", pct: 88, color: "#8b5cf6", icon: RefreshCcw },
+    { label: "Active Flows", used: 8, display: "8", limit: "Unlimited", pct: 67, color: "#0ea5e9", icon: Activity },
+    { label: "IG Accounts", used: 2, display: "2 / 3", limit: "3", pct: 67, color: "#ec4899", icon: Users },
+    { label: "FB Accounts", used: 1, display: "1 / 3", limit: "3", pct: 33, color: "#f59e0b", icon: Users },
 ];
 
 export default function BillingPage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
 
-    return (
-        <div className="space-y-6 max-w-[1400px] p-4 sm:p-6">
-            {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Billing & Plans</h1>
-                <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>Manage your subscription and payment details</p>
-            </div>
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: { opacity: 1, transition: { staggerChildren: 0.07 } },
+    };
+    const itemVariants = {
+        hidden: { opacity: 0, y: 16 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 28 } },
+    };
 
-            {/* Current Plan Banner */}
-            <div className="glass-card rounded-2xl p-6 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ background: "var(--brand-gradient)" }} />
-                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: "var(--brand-gradient)", boxShadow: "var(--glow-purple)" }}>
-                            <Zap className="w-7 h-7 text-white" />
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <h2 className="text-lg font-bold" style={{ color: "var(--foreground)" }}>Pro Plan</h2>
-                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--brand-gradient)", color: "white" }}>ACTIVE</span>
+    return (
+        <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="max-w-[1200px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8"
+        >
+            {/* ── Header ── */}
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--nav-active-color)" }}>
+                        Account
+                    </p>
+                    <h1 className="text-3xl font-black tracking-tight" style={{ color: "var(--foreground)" }}>
+                        Billing & Plans
+                    </h1>
+                    <p className="mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                        Manage your subscription, usage, and invoices
+                    </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border"
+                    style={{ borderColor: "var(--glass-border)", color: "var(--muted-foreground)", background: "var(--glass-bg)" }}>
+                    <CalendarClock className="w-3.5 h-3.5" aria-hidden="true" />
+                    Next billing: March 1, 2025
+                </div>
+            </motion.div>
+
+            {/* ── Current Plan Hero ── */}
+            <motion.div variants={itemVariants}>
+                <div className="relative rounded-2xl overflow-hidden border"
+                    style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                    {/* Subtle ambient gradient */}
+                    <div className="absolute inset-0 opacity-[0.06] pointer-events-none"
+                        style={{ background: "radial-gradient(ellipse at 20% 50%, #8b5cf6 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, #6366f1 0%, transparent 60%)" }} />
+
+                    <div className="relative p-6 md:p-8">
+                        <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                            {/* Left: plan info */}
+                            <div className="flex items-center gap-5 flex-1">
+                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                                    style={{ background: "var(--brand-gradient)", boxShadow: "0 0 24px rgba(139,92,246,0.25)" }}>
+                                    <Crown className="w-7 h-7 text-white" aria-hidden="true" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2.5 mb-1">
+                                        <h2 className="text-xl font-black" style={{ color: "var(--foreground)" }}>Pro Plan</h2>
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-black tracking-wider px-2.5 py-1 rounded-full text-white uppercase"
+                                            style={{ background: "var(--brand-gradient)" }}>
+                                            <CircleDot className="w-2.5 h-2.5" aria-hidden="true" />Active
+                                        </span>
+                                    </div>
+                                    <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                                        $79 / month · Renews March 1, 2025
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>$79/month · Renews March 1, 2025</p>
+
+                            {/* Right: stats + actions */}
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div className="flex flex-col items-center px-5 py-3 rounded-xl border"
+                                    style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                                    <span className="text-2xl font-black" style={{ color: "var(--foreground)" }}>$79</span>
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>/ month</span>
+                                </div>
+                                <div className="flex flex-col items-center px-5 py-3 rounded-xl border"
+                                    style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                                    <span className="text-2xl font-black" style={{ color: "#10b981" }}>44k</span>
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>replies sent</span>
+                                </div>
+                                <motion.button
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-white transition-all"
+                                    style={{ background: "var(--brand-gradient)" }}
+                                >
+                                    <Rocket className="w-4 h-4" aria-hidden="true" /> Upgrade Plan
+                                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                                </motion.button>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="text-right hidden md:block">
-                            <div className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>$79</div>
-                            <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>per month</div>
-                        </div>
-                        <button className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-                            style={{ background: "var(--brand-gradient)", color: "white" }}>
-                            Upgrade Plan
-                        </button>
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
-            {/* Usage */}
-            <div className="glass-card rounded-2xl p-6">
-                <h2 className="text-base font-semibold mb-5" style={{ color: "var(--foreground)" }}>Usage This Month</h2>
+            {/* ── Usage ── */}
+            <motion.div variants={itemVariants} className="rounded-2xl border p-6"
+                style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Usage This Month</h2>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>Resets on March 1, 2025</p>
+                    </div>
+                    <TrendingUp className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} aria-hidden="true" />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {usage.map((u) => (
-                        <div key={u.label}>
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{u.label}</span>
-                                <span className="text-sm font-bold" style={{ color: u.color }}>
-                                    {typeof u.used === "number" && u.used > 100
-                                        ? u.used.toLocaleString()
-                                        : u.used}
-                                    {u.limit ? ` / ${u.limit}` : u.label === "Auto-Replies" ? " / Unlimited" : ""}
+                        <div key={u.label} className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                                        style={{ background: `${u.color}18` }}>
+                                        <u.icon className="w-3.5 h-3.5" style={{ color: u.color }} aria-hidden="true" />
+                                    </div>
+                                    <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{u.label}</span>
+                                </div>
+                                <span className="text-sm font-bold tabular-nums" style={{ color: u.color }}>
+                                    {u.display}
+                                    <span className="text-xs font-normal ml-1" style={{ color: "var(--muted-foreground)" }}>
+                                        {u.limit !== u.display.split(" / ")[1] && `/ ${u.limit}`}
+                                    </span>
                                 </span>
                             </div>
-                            <div className="h-2 rounded-full" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${u.pct}%`, background: u.color }} />
+                            <div className="h-1.5 rounded-full overflow-hidden"
+                                style={{ background: "var(--glass-border)" }}>
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${u.pct}%` }}
+                                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                                    className="h-full rounded-full"
+                                    style={{ background: u.color }}
+                                />
                             </div>
-                            <div className="text-[10px] mt-1" style={{ color: "var(--muted-foreground)" }}>{u.pct}% used</div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{u.pct}% used</span>
+                                {u.pct >= 80 && (
+                                    <span className="text-[11px] font-semibold text-amber-500">Near limit</span>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
 
-            {/* Plans */}
-            <div>
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>Available Plans</h2>
-                    <div className="flex items-center rounded-xl p-1 gap-1" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
+            {/* ── Plans ── */}
+            <motion.div variants={itemVariants} className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Available Plans</h2>
+                    {/* Billing toggle */}
+                    <div className="relative flex items-center rounded-xl p-1 gap-1 border"
+                        style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
                         {(["monthly", "yearly"] as const).map((c) => (
                             <button key={c} onClick={() => setBillingCycle(c)}
-                                className="px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all"
-                                style={billingCycle === c ? { background: "var(--brand-gradient)", color: "white" } : { color: "var(--muted-foreground)" }}>
-                                {c} {c === "yearly" && <span className="text-[10px] ml-1 opacity-80">-20%</span>}
+                                className="relative px-4 py-1.5 rounded-lg text-sm font-semibold capitalize transition-all z-10"
+                                style={billingCycle === c
+                                    ? { background: "var(--brand-gradient)", color: "white" }
+                                    : { color: "var(--muted-foreground)" }
+                                }>
+                                {c}
+                                {c === "yearly" && (
+                                    <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                                        style={billingCycle === "yearly"
+                                            ? { background: "rgba(255,255,255,0.2)", color: "white" }
+                                            : { background: "#10b98120", color: "#10b981" }}>
+                                        -20%
+                                    </span>
+                                )}
                             </button>
                         ))}
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {plans.map((plan) => (
-                        <div key={plan.name} className="glass-card rounded-2xl p-6 relative overflow-hidden"
-                            style={plan.current ? { border: `1px solid ${plan.color}50`, boxShadow: `0 0 30px ${plan.color}15` } : {}}>
-                            {plan.current && (
-                                <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: "var(--brand-gradient)" }} />
-                            )}
-                            {plan.popular && (
-                                <div className="absolute top-4 right-4 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                    style={{ background: "var(--brand-gradient)", color: "white" }}>POPULAR</div>
-                            )}
-                            <h3 className="text-lg font-bold mb-1" style={{ color: "var(--foreground)" }}>{plan.name}</h3>
-                            <div className="flex items-end gap-1 mb-5">
-                                <span className="text-3xl font-extrabold" style={{ color: "var(--foreground)" }}>
-                                    ${billingCycle === "yearly" ? Math.round(plan.price * 0.8) : plan.price}
-                                </span>
-                                <span className="mb-1 text-sm" style={{ color: "var(--muted-foreground)" }}>/mo</span>
-                            </div>
-                            <div className="space-y-2 mb-6">
-                                {plan.features.map((f) => (
-                                    <div key={f} className="flex items-center gap-2">
-                                        <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: plan.color }} />
-                                        <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{f}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <button className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-                                style={plan.current
-                                    ? { background: "var(--brand-gradient)", color: "white" }
-                                    : { background: `${plan.color}15`, color: plan.color, border: `1px solid ${plan.color}30` }}>
-                                {plan.cta}
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
 
-            {/* Payment Method */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="glass-card rounded-2xl p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Payment Method</h2>
-                        <button className="text-xs font-medium" style={{ color: "var(--brand-purple)" }}>Update</button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {plans.map((plan, idx) => {
+                        const Icon = plan.icon;
+                        const price = billingCycle === "yearly" ? Math.round(plan.price * 0.8) : plan.price;
+
+                        return (
+                            <motion.div
+                                key={plan.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.08 }}
+                                className="relative rounded-2xl border flex flex-col overflow-hidden"
+                                style={plan.current
+                                    ? { borderColor: plan.accentColor + "60", background: "var(--glass-bg)", boxShadow: `0 0 40px ${plan.accentColor}12` }
+                                    : { borderColor: "var(--glass-border)", background: "var(--glass-bg)" }
+                                }
+                            >
+                                {/* Top accent line */}
+                                {plan.current && (
+                                    <div className="absolute top-0 left-0 right-0 h-0.5"
+                                        style={{ background: `linear-gradient(90deg, transparent, ${plan.accentColor}, transparent)` }} />
+                                )}
+
+                                {/* Popular badge */}
+                                {plan.popular && (
+                                    <div className="absolute top-4 right-4">
+                                        <span className="text-[10px] font-black tracking-wider px-2.5 py-1 rounded-full text-white uppercase"
+                                            style={{ background: "var(--brand-gradient)" }}>
+                                            Popular
+                                        </span>
+                                    </div>
+                                )}
+
+                                <div className="p-6 flex flex-col flex-1">
+                                    {/* Icon + name */}
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                            style={{ background: plan.accentColor + "18" }}>
+                                            <Icon className="w-5 h-5" style={{ color: plan.accentColor }} aria-hidden="true" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base font-black" style={{ color: "var(--foreground)" }}>{plan.name}</h3>
+                                            <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{plan.description}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div className="flex items-end gap-1 mb-5">
+                                        <AnimatePresence mode="wait">
+                                            <motion.span
+                                                key={price}
+                                                initial={{ opacity: 0, y: -8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 8 }}
+                                                className="text-4xl font-black tabular-nums"
+                                                style={{ color: "var(--foreground)" }}
+                                            >
+                                                ${price}
+                                            </motion.span>
+                                        </AnimatePresence>
+                                        <span className="mb-1.5 text-sm" style={{ color: "var(--muted-foreground)" }}>/ mo</span>
+                                        {billingCycle === "yearly" && (
+                                            <span className="mb-1.5 ml-1 text-[11px] font-semibold line-through"
+                                                style={{ color: "var(--muted-foreground)" }}>${plan.price}</span>
+                                        )}
+                                    </div>
+
+                                    {/* Divider */}
+                                    <div className="border-t mb-4" style={{ borderColor: "var(--glass-border)" }} />
+
+                                    {/* Features */}
+                                    <ul className="space-y-2.5 flex-1 mb-6" role="list" aria-label={`${plan.name} plan features`}>
+                                        {plan.features.map((f) => (
+                                            <li key={f.text} className="flex items-center gap-2.5">
+                                                <CheckCircle2
+                                                    className="w-4 h-4 flex-shrink-0"
+                                                    style={{ color: plan.accentColor }}
+                                                    aria-hidden="true"
+                                                />
+                                                <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>{f.text}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    {/* CTA */}
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.97 }}
+                                        disabled={plan.current}
+                                        aria-label={`${plan.cta} – ${plan.name} plan`}
+                                        className={cn(
+                                            "w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+                                            plan.current && "opacity-80 cursor-default"
+                                        )}
+                                        style={plan.current
+                                            ? { background: "var(--brand-gradient)", color: "white" }
+                                            : plan.ctaVariant === "accent"
+                                                ? { background: plan.accentColor + "18", color: plan.accentColor, border: `1px solid ${plan.accentColor}35` }
+                                                : { background: "var(--glass-bg)", color: "var(--muted-foreground)", border: "1px solid var(--glass-border)" }
+                                        }
+                                    >
+                                        {plan.cta}
+                                        {!plan.current && <ChevronRight className="w-4 h-4" aria-hidden="true" />}
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            </motion.div>
+
+            {/* ── Payment & Summary ── */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Payment Method */}
+                <div className="rounded-2xl border p-5"
+                    style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                    <div className="flex items-center justify-between mb-5">
+                        <h2 className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Payment Method</h2>
+                        <button
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors hover:opacity-80"
+                            style={{ borderColor: "var(--glass-border)", color: "var(--nav-active-color)" }}
+                            aria-label="Update payment method"
+                        >
+                            Update
+                        </button>
                     </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                        <div className="w-10 h-7 rounded-md flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
-                            <CreditCard className="w-4 h-4 text-white" />
+
+                    <div className="flex items-center gap-3.5 p-4 rounded-xl border"
+                        style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                        <div className="w-12 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                            style={{ background: "var(--brand-gradient)" }}>
+                            <CreditCard className="w-5 h-5 text-white" aria-hidden="true" />
                         </div>
-                        <div>
-                            <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>Visa •••• 4242</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Visa •••• 4242</p>
                             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Expires 12/2027</p>
                         </div>
-                        <div className="ml-auto flex items-center gap-1 text-xs" style={{ color: "#10b981" }}>
-                            <Shield className="w-3 h-3" />Secure
+                        <div className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full"
+                            style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
+                            <ShieldCheck className="w-3 h-3" aria-hidden="true" /> Secured
                         </div>
                     </div>
+
+                    <p className="mt-3 text-xs flex items-center gap-1.5" style={{ color: "var(--muted-foreground)" }}>
+                        <Lock className="w-3 h-3" aria-hidden="true" />
+                        256-bit SSL encryption · PCI DSS compliant
+                    </p>
                 </div>
 
-                <div className="glass-card rounded-2xl p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Billing Summary</h2>
-                    </div>
-                    <div className="space-y-2">
+                {/* Billing Summary */}
+                <div className="rounded-2xl border p-5"
+                    style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                    <h2 className="text-sm font-bold mb-5" style={{ color: "var(--foreground)" }}>Billing Summary</h2>
+                    <div className="space-y-3">
                         {[
                             { label: "Pro Plan (monthly)", value: "$79.00" },
-                            { label: "Discount", value: "-$0.00" },
-                            { label: "Tax", value: "$0.00" },
+                            { label: "Promotional discount", value: "−$0.00", muted: true },
+                            { label: "Tax (GST 0%)", value: "$0.00", muted: true },
                         ].map((row) => (
                             <div key={row.label} className="flex items-center justify-between text-sm">
                                 <span style={{ color: "var(--muted-foreground)" }}>{row.label}</span>
-                                <span style={{ color: "var(--foreground)" }}>{row.value}</span>
+                                <span className="font-medium tabular-nums" style={{ color: row.muted ? "var(--muted-foreground)" : "var(--foreground)" }}>
+                                    {row.value}
+                                </span>
                             </div>
                         ))}
-                        <div className="border-t pt-2 flex items-center justify-between font-bold text-sm"
+                        <div className="border-t pt-3 flex items-center justify-between"
                             style={{ borderColor: "var(--glass-border)" }}>
-                            <span style={{ color: "var(--foreground)" }}>Total</span>
-                            <span className="gradient-text">$79.00/mo</span>
+                            <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Total due</span>
+                            <span className="text-lg font-black gradient-text">$79.00 / mo</span>
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
-            {/* Invoices */}
-            <div className="glass-card rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>Invoice History</h2>
-                    <button className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg"
-                        style={{ background: "var(--glass-bg)", color: "var(--muted-foreground)", border: "1px solid var(--glass-border)" }}>
-                        <Download className="w-3.5 h-3.5" />Export All
-                    </button>
+            {/* ── Invoices ── */}
+            <motion.div variants={itemVariants} className="rounded-2xl border p-6"
+                style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                <div className="flex items-center justify-between mb-5">
+                    <div>
+                        <h2 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Invoice History</h2>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                            {invoices.length} invoices · all paid
+                        </p>
+                    </div>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        aria-label="Export all invoices"
+                        className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-lg border transition-colors hover:opacity-80"
+                        style={{ background: "var(--glass-bg)", color: "var(--muted-foreground)", borderColor: "var(--glass-border)" }}
+                    >
+                        <Download className="w-3.5 h-3.5" aria-hidden="true" /> Export All
+                    </motion.button>
                 </div>
+
                 <div className="space-y-2">
-                    {invoices.map((inv) => (
-                        <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl"
-                            style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "rgba(16,185,129,0.1)" }}>
-                                    <Check className="w-4 h-4" style={{ color: "#10b981" }} />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{inv.id}</p>
-                                    <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{inv.date}</p>
-                                </div>
+                    {invoices.map((inv, i) => (
+                        <motion.div
+                            key={inv.id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.06 }}
+                            className="group flex items-center gap-4 p-4 rounded-xl border transition-colors hover:border-neutral-300 dark:hover:border-neutral-600"
+                            style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}
+                        >
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: "rgba(16,185,129,0.1)" }}>
+                                <Receipt className="w-4 h-4" style={{ color: "#10b981" }} aria-hidden="true" />
                             </div>
-                            <div className="flex items-center gap-4">
-                                <span className="text-xs font-medium px-2 py-1 rounded-full"
-                                    style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>{inv.status}</span>
-                                <span className="text-sm font-bold" style={{ color: "var(--foreground)" }}>{inv.amount}</span>
-                                <button className="p-1.5 rounded-lg hover:opacity-70" style={{ background: "var(--glass-bg)" }}>
-                                    <Download className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
-                                </button>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{inv.id}</p>
+                                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{inv.date}</p>
                             </div>
-                        </div>
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                                style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
+                                {inv.status}
+                            </span>
+                            <span className="text-sm font-black tabular-nums w-16 text-right" style={{ color: "var(--foreground)" }}>
+                                {inv.amount}
+                            </span>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                aria-label={`Download invoice ${inv.id}`}
+                                className="w-8 h-8 rounded-lg flex items-center justify-center border opacity-0 group-hover:opacity-100 transition-opacity"
+                                style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}
+                            >
+                                <Download className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} aria-hidden="true" />
+                            </motion.button>
+                        </motion.div>
                     ))}
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }

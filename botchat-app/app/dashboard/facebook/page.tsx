@@ -200,7 +200,7 @@ export default function FacebookPage() {
     return (
         <div className="bg-gray-50/50 dark:bg-gray-950 min-h-screen pb-16">
             {/* Header */}
-            <header className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+            <header className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
                         <Facebook className="w-5 h-5" />
@@ -216,7 +216,7 @@ export default function FacebookPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2">
                     <Button
                         variant="outline"
                         size="icon"
@@ -229,15 +229,16 @@ export default function FacebookPage() {
                     <Button
                         onClick={handleConnectFacebook}
                         disabled={isConnecting}
-                        className="h-10 px-5 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-2 shadow-sm"
+                        className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-2 shadow-sm"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Facebook className="w-4 h-4" />}
-                        {isConnecting ? "Authorizing..." : "Connect Account"}
+                        <span className="hidden sm:inline">{isConnecting ? "Authorizing..." : "Connect Account"}</span>
+                        <span className="sm:hidden">{isConnecting ? "..." : "Connect"}</span>
                     </Button>
                 </div>
             </header>
 
-            <main className="mx-auto max-w-7xl px-6 py-8 space-y-8">
+            <main className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 space-y-8">
                 {/* Stats Panel */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {stats.map((stat) => (
@@ -279,7 +280,7 @@ export default function FacebookPage() {
                     <div className="space-y-8">
                         {accounts.map(account => (
                             <div key={account.id} className="space-y-6">
-                                <div className="flex items-center justify-between bg-white dark:bg-neutral-900 p-5 rounded-2xl border dark:border-neutral-800 shadow-sm">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-neutral-900 p-5 rounded-2xl border dark:border-neutral-800 shadow-sm">
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-full overflow-hidden border dark:border-neutral-700 bg-gray-100 flex items-center justify-center text-gray-500 text-lg font-bold">
                                             {account.avatar ? <img src={account.avatar} className="w-full h-full object-cover" /> : account.name[0]}
