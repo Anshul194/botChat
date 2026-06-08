@@ -27,7 +27,7 @@ export const useRealtimeInbox = () => {
     // ── 1. Connect once and join global inbox room ────────────────────────────
     useEffect(() => {
         const tenantDomain = getTenantDomain();
-        const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+        const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "https://socket.divyangtechlabs.com";
 
         const socket: Socket = io(socketUrl, {
             transports: ["websocket", "polling"],
