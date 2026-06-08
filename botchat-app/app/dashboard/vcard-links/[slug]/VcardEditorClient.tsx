@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { fetchVcardById, updateVcard } from "@/store/slices/vcardsSlice";
+import { fetchPixels } from "@/store/slices/pixelsSlice";
 import { 
     Shield, ActivitySquare, Check, ArrowLeft, 
     CalendarClock, Globe, Link2, PencilLine, 
@@ -51,6 +52,7 @@ const InputBlock = ({ label, icon: Icon, value, onChange, placeholder, type = "t
 export default function VcardEditorClient({ slug: id }: Props) {
     const dispatch = useAppDispatch();
     const { currentVcard, isLoading } = useAppSelector((state) => state.vcards);
+    const { pixels } = useAppSelector((state) => state.pixels);
     const { showModal } = useModal();
 
     const [draft, setDraft] = useState<any>({
@@ -73,6 +75,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
         vcard_avatar: null,
         active: true,
         pixelsEnabled: false,
+        selectedPixels: [] as number[],
         temporaryEnabled: false,
         temporaryStart: "",
         temporaryEnd: "",
@@ -96,6 +99,8 @@ export default function VcardEditorClient({ slug: id }: Props) {
             dispatch(fetchVcardById(id));
         }
     }, [id, currentVcard, dispatch]);
+
+    useEffect(() => { dispatch(fetchPixels()); }, [dispatch]);
 
     useEffect(() => {
         if (currentVcard) {
@@ -384,15 +389,40 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             {openSection === "pixels" && (
                                 <div className="space-y-6">
                                     <SectionHeader title="Tracking Pixels" icon={ActivitySquare} />
-                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                        <div>
-                                            <div className="text-sm font-bold text-slate-800">Facebook Pixel</div>
-                                            <p className="text-[11px] text-slate-500 mt-1">Enable tracking for your Facebook advertising campaigns.</p>
+                                    {pixels.length === 0 ? (
+                                        <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                                            <p className="text-sm text-slate-500">No pixels found. Create one first in the Pixels section.</p>
                                         </div>
-                                        <button onClick={() => setDraft({...draft, pixelsEnabled: !draft.pixelsEnabled})} className={cn("w-9 h-5 rounded-full relative transition-colors", draft.pixelsEnabled ? "bg-primary" : "bg-slate-300")}>
-                                            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", draft.pixelsEnabled ? "left-[18px]" : "left-[2px]")} />
-                                        </button>
-                                    </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {pixels.map((pixel: any) => {
+                                                const isSelected = (draft.selectedPixels as number[]).includes(pixel.id || pixel.pixel_id);
+                                                return (
+                                                    <div key={pixel.id || pixel.pixel_id} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                                        <div>
+                                                            <div className="text-sm font-bold text-slate-800">{pixel.name}</div>
+                                                            <p className="text-[11px] text-slate-500 mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => {
+                                                                const current = draft.selectedPixels as number[];
+                                                                const pid = pixel.id || pixel.pixel_id;
+                                                                setDraft({
+                                                                    ...draft,
+                                                                    selectedPixels: isSelected
+                                                                        ? current.filter((id: number) => id !== pid)
+                                                                        : [...current, pid]
+                                                                });
+                                                            }}
+                                                            className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-primary" : "bg-slate-300")}
+                                                        >
+                                                            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

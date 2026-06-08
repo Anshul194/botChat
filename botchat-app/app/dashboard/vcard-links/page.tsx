@@ -10,6 +10,7 @@ import {
     duplicateVcard, 
     resetVcardClicks 
 } from "@/store/slices/vcardsSlice";
+import { fetchDomains } from "@/store/slices/domainsSlice";
 import { useRouter } from "next/navigation";
 import {
     Plus,
@@ -84,17 +85,19 @@ export default function VcardLinksPage() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { vcards, isLoading } = useAppSelector((state) => state.vcards);
+    const { domains } = useAppSelector((state) => state.domains);
     const { showModal, showConfirm } = useModal();
 
     const [query, setQuery] = useState("");
     const [view, setView] = useState<'row' | 'card'>('row');
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [draft, setDraft] = useState({ slug: "" });
+    const [draft, setDraft] = useState({ slug: "", domain_id: 0 });
     const [isCreating, setIsCreating] = useState(false);
     const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
     useEffect(() => {
         dispatch(fetchVcards());
+        dispatch(fetchDomains());
     }, [dispatch]);
 
     const vcardLinks = useMemo(() => {
@@ -125,7 +128,7 @@ export default function VcardLinksPage() {
         try {
             const result = await dispatch(createVcard({
                 url: draft.slug.trim(),
-                domain_id: 0
+                domain_id: draft.domain_id || 0
             })).unwrap();
             showModal("success", "Vcard Created", "Your new Vcard has been created successfully!");
             setShowCreateModal(false);
@@ -380,6 +383,21 @@ export default function VcardLinksPage() {
                         onChange={(e: any) => setDraft((prev) => ({ ...prev, slug: e.target.value }))}
                         placeholder="e.g. john-doe-pro"
                     />
+                    {domains.length > 0 && (
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Custom Domain</label>
+                            <select
+                                value={draft.domain_id}
+                                onChange={(e: any) => setDraft((prev) => ({ ...prev, domain_id: parseInt(e.target.value) }))}
+                                className="w-full h-14 pl-6 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                            >
+                                <option value={0}>Default domain</option>
+                                {domains.map((d: any) => (
+                                    <option key={d.domain_id || d.id} value={d.domain_id || d.id}>{d.domain}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div className="p-5 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/10 flex items-start gap-4">
                         <Info size={18} className="text-indigo-600 mt-1 shrink-0" />
                         <p className="text-[11px] text-indigo-700/80 dark:text-indigo-400 font-bold uppercase tracking-tight leading-relaxed">

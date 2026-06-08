@@ -18,6 +18,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchBioPages, deleteBioPage, createBioPage, duplicateBioPage, resetBioPage, toggleBioPageStatus } from "@/store/slices/bioSlice";
+import { fetchDomains } from "@/store/slices/domainsSlice";
 
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
@@ -75,6 +76,7 @@ export default function InstagramBioLinksPage() {
     const { showModal } = useModal();
     const dispatch = useAppDispatch();
     const { pages, isLoading: isPagesLoading } = useAppSelector(s => s.bio);
+    const { domains } = useAppSelector((state) => state.domains);
 
     const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
     const [isLoadingAccounts, setIsLoadingAccounts] = useState(true);
@@ -82,7 +84,7 @@ export default function InstagramBioLinksPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [actionModal, setActionModal] = useState<{ isOpen: boolean; type: 'delete' | 'duplicate' | 'reset' | 'toggle'; row: BioLinkRow | null }>({ isOpen: false, type: 'delete', row: null });
-    const [newBio, setNewBio] = useState({ url: "", name: "", description: "" });
+    const [newBio, setNewBio] = useState({ url: "", name: "", description: "", domain_id: 0 });
     const [search, setSearch] = useState("");
     const [view, setView] = useState<'row' | 'card'>('row');
 
@@ -95,7 +97,7 @@ export default function InstagramBioLinksPage() {
         try {
             await dispatch(createBioPage(newBio)).unwrap();
             setShowAddModal(false);
-            setNewBio({ url: "", name: "", description: "" });
+            setNewBio({ url: "", name: "", description: "", domain_id: 0 });
             showModal("success", "Success", "Bio link created successfully.");
         } catch (err: any) {
             showModal("error", "Error", err || "Failed to create bio link.");
@@ -106,6 +108,7 @@ export default function InstagramBioLinksPage() {
 
     useEffect(() => {
         dispatch(fetchBioPages());
+        dispatch(fetchDomains());
     }, [dispatch]);
 
     useEffect(() => {
@@ -422,6 +425,21 @@ export default function InstagramBioLinksPage() {
                             placeholder="A professional intro for your bio..."
                         />
                     </div>
+                    {domains.length > 0 && (
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Custom Domain</label>
+                            <select
+                                value={newBio.domain_id}
+                                onChange={(e: any) => setNewBio({ ...newBio, domain_id: parseInt(e.target.value) })}
+                                className="w-full h-14 pl-6 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                            >
+                                <option value={0}>Default domain</option>
+                                {domains.map((d: any) => (
+                                    <option key={d.domain_id || d.id} value={d.domain_id || d.id}>{d.domain}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div className="p-5 rounded-[2rem] bg-amber-500/5 border border-amber-500/10 flex items-start gap-4">
                         <Info size={18} className="text-amber-600 mt-1 shrink-0" />
                         <p className="text-[11px] text-amber-700/80 dark:text-amber-500/80 font-bold uppercase tracking-tight leading-relaxed">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { fetchLinkById, updateLink, fetchLinks } from "@/store/slices/linksSlice";
+import { fetchPixels } from "@/store/slices/pixelsSlice";
 import { Shield, Target, ActivitySquare, Check, ArrowLeft, CalendarClock, Globe, Info, Link2, PencilLine, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useModal } from "@/components/providers/ModalProvider";
@@ -54,6 +55,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
 
     const dispatch = useAppDispatch();
     const { currentLink, links, isLoading } = useAppSelector((state) => state.links);
+    const { pixels } = useAppSelector((state) => state.pixels);
 
     const [draft, setDraft] = useState<LinkDraft>(initial);
     const { showModal } = useModal();
@@ -117,6 +119,8 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
             } as any));
         }
     }, [currentLink]);
+
+    useEffect(() => { dispatch(fetchPixels()); }, [dispatch]);
 
     const [openSection, setOpenSection] = useState<string>("app");
     const [saveState, setSaveState] = useState<"idle" | "saved">("idle");
@@ -366,20 +370,41 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             )}
                             {openSection === "pixels" && (
                                 <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div className="form-label">Pixels</div>
-                                        <button className="text-sm text-primary">+ Create pixel</button>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4 mt-3">
-                                        <label className="flex items-center gap-3">
-                                            <input type="checkbox" checked={draft.pixelsEnabled} onChange={() => setDraft((p) => ({ ...p, pixelsEnabled: !p.pixelsEnabled }))} />
-                                            <span>Facebook Pixel</span>
-                                        </label>
-                                        <label className="flex items-center gap-3">
-                                            <input type="checkbox" />
-                                            <span>Google Analytics</span>
-                                        </label>
-                                    </div>
+                                    {pixels.length === 0 ? (
+                                        <p className="text-sm text-slate-500 text-center py-4">No pixels found. Create one in the Pixels section.</p>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {pixels.map((pixel: any) => {
+                                                const pid = pixel.id || pixel.pixel_id;
+                                                const selected = (draft as any).selectedPixels || [];
+                                                const isSelected = selected.includes(pid);
+                                                return (
+                                                    <div key={pid} className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                                        <div>
+                                                            <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{pixel.name}</div>
+                                                            <div className="text-[11px] text-slate-500">{pixel.type} — {pixel.pixel_id_value}</div>
+                                                        </div>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected}
+                                                            onChange={() => {
+                                                                const current = [...selected];
+                                                                if (isSelected) {
+                                                                    setDraft((p: any) => ({ ...p, selectedPixels: current.filter((id: number) => id !== pid) }));
+                                                                } else {
+                                                                    setDraft((p: any) => ({ ...p, selectedPixels: [...current, pid] }));
+                                                                }
+                                                            }}
+                                                            className="w-4 h-4 rounded accent-primary"
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

@@ -18,6 +18,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteBioPage, fetchBioPages } from "@/store/slices/bioSlice";
+import { fetchPixels } from "@/store/slices/pixelsSlice";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { VisualsLab, getTheme, isColorLight, ThemeEffectsLayer, ThemeAnimationStyles } from "./TemplateSystem";
 import BlockMarketplaceContent from "./BlockMarketplaceContent";
@@ -59,8 +60,7 @@ interface BioAdvancedSettings {
     brandingUrl: string;
     brandingTextColor: string;
     // Pixels
-    pixelFacebookEnabled: boolean;
-    pixelGoogleEnabled: boolean;
+    pixelsEnabled: number[];
     // UTM
     utmSource: string;
     utmMedium: string;
@@ -109,8 +109,7 @@ const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
     brandingUrl: "",
     brandingTextColor: "",
     // Pixels
-    pixelFacebookEnabled: true,
-    pixelGoogleEnabled: true,
+    pixelsEnabled: [],
     // UTM
     utmSource: "",
     utmMedium: "",
@@ -335,6 +334,7 @@ function BioLinkBuilderContent() {
     const [isSavingAdvanced, setIsSavingAdvanced] = useState(false);
     const [growthTab, setGrowthTab] = useState("seo");
     const [showPassword, setShowPassword] = useState(false);
+    const { pixels } = useAppSelector((state) => state.pixels);
 
     const instagramUsername = accounts.find(a => String(a.id) === selectedPageId)?.username || "username";
     const shareSlug = profile?.url || profile?.url || instagramUsername;
@@ -433,8 +433,7 @@ function BioLinkBuilderContent() {
     ];
     const enabledAdvancedFlags = [
         advancedSettings.displayBranding && "Branding",
-        advancedSettings.pixelFacebookEnabled && "Facebook Pixel",
-        advancedSettings.pixelGoogleEnabled && "Google Analytics",
+        advancedSettings.pixelsEnabled.length > 0 && `${advancedSettings.pixelsEnabled.length} Pixel${advancedSettings.pixelsEnabled.length > 1 ? 's' : ''}`,
         advancedSettings.sensitiveContentWarning && "Sensitive Warning",
         advancedSettings.brandedButtonEnabled && "Branded Button",
         advancedSettings.enableShareButton && "Share Button",
@@ -469,6 +468,7 @@ function BioLinkBuilderContent() {
     const fetchBuilderData = useCallback(async () => {
         if (!selectedPageId) return;
         setIsLoading(true);
+        dispatch(fetchPixels());
         try {
             // Using the single page API as requested (Reference: curl .../bio/pages/33)
             const res = await api.get(`/bio/pages/${selectedPageId}`);
@@ -511,6 +511,7 @@ function BioLinkBuilderContent() {
                         brandingTextColor: s.branding?.text_color || "",
                         pixelFacebookEnabled: !!s.pixel_facebook,
                         pixelGoogleEnabled: !!s.pixel_google,
+                        pixelsEnabled: s.pixel_ids || [],
                         utmSource: s.utm?.source || "",
                         utmMedium: s.utm?.medium || "",
                         utmCampaign: s.utm?.campaign || "",
@@ -1174,6 +1175,7 @@ function BioLinkBuilderContent() {
                     branded_button_icon: advancedSettings.brandedIconUrl,
                     branded_button_title: advancedSettings.brandedModalTitle,
                     branded_button_content: advancedSettings.brandedModalContent,
+                    pixel_ids: advancedSettings.pixelsEnabled,
                 },
             };
             await api.put(`/bio/pages/${linkId}`, payload);
@@ -1837,23 +1839,40 @@ function BioLinkBuilderContent() {
 
                                                             {/* PIXELS */}
                                                             {growthTab === "pixels" && (<div className="space-y-4">
-                                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Social & Ad Tracking</p>
-                                                                <ToggleField
-                                                                    label="Facebook Pixel"
-                                                                    desc="Track conversion events with the Meta Pixel"
-                                                                    icon={Facebook}
-                                                                    checked={advancedSettings.pixelFacebookEnabled}
-                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, pixelFacebookEnabled: v })}
-                                                                    colorClass="bg-[#1877F2]"
-                                                                />
-                                                                <ToggleField
-                                                                    label="Google Analytics"
-                                                                    desc="Monitor visitor traffic and page performance"
-                                                                    icon={Globe}
-                                                                    checked={advancedSettings.pixelGoogleEnabled}
-                                                                    onChange={(v) => setAdvancedSettings({ ...advancedSettings, pixelGoogleEnabled: v })}
-                                                                    colorClass="bg-[#EA4335]"
-                                                                />
+                                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Tracking & Ad Pixels</p>
+                                                                {pixels.length === 0 ? (
+                                                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                                                                        <p className="text-sm text-slate-500">No pixels found. Create one first in the Pixels section.</p>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="space-y-3">
+                                                                        {pixels.map((pixel: any) => {
+                                                                            const pid = pixel.id || pixel.pixel_id;
+                                                                            const isSelected = advancedSettings.pixelsEnabled.includes(pid);
+                                                                            return (
+                                                                                <div key={pid} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                                                                    <div>
+                                                                                        <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{pixel.name}</div>
+                                                                                        <p className="text-[11px] text-slate-500 mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                                                    </div>
+                                                                                    <button
+                                                                                        onClick={() => {
+                                                                                            setAdvancedSettings({
+                                                                                                ...advancedSettings,
+                                                                                                pixelsEnabled: isSelected
+                                                                                                    ? advancedSettings.pixelsEnabled.filter((id: number) => id !== pid)
+                                                                                                    : [...advancedSettings.pixelsEnabled, pid]
+                                                                                            });
+                                                                                        }}
+                                                                                        className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-[#1877F2]" : "bg-slate-300 dark:bg-slate-600")}
+                                                                                    >
+                                                                                        <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
+                                                                                    </button>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                )}
                                                             </div>)}
 
                                                             {/* UTM */}

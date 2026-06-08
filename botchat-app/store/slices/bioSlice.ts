@@ -55,7 +55,7 @@ export const fetchBioPages = createAsyncThunk(
 
 export const createBioPage = createAsyncThunk(
     'bio/createBioPage',
-    async (data: { url: string; name: string; description: string }, { rejectWithValue }) => {
+    async (data: any, { rejectWithValue }) => {
         try {
             const response = await api.post('/bio/pages', data);
             if (response.data.success) {
