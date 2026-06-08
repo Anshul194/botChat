@@ -8,27 +8,22 @@ import ChatWindow from "@/components/smartInbox/ChatWindow";
 import ContactSidebar from "@/components/smartInbox/ContactSidebar";
 import ConnectedAccounts from "@/components/smartInbox/ConnectedAccounts";
 import QuickFind from "@/components/smartInbox/QuickFind";
-import { ArrowLeft, UserCircle2 } from "lucide-react";
+import { ArrowLeft, MessagesSquare, Search, UserCircle2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SmartInboxPage() {
-    // 1. Initialize Realtime Listeners (Laravel Reverb)
     useRealtimeInbox();
 
-    // 2. Initialize Smart Inbox hook state & loaders
     const {
         selectedConversation,
         selectConversation,
         loadAccounts,
-        loadConversations
+        loadConversations,
     } = useSmartInbox();
 
     const [showContactSidebar, setShowContactSidebar] = useState(false);
+    const [showQuickFind, setShowQuickFind] = useState(false);
 
-    // Store functions in refs so useEffect only fires ONCE on mount.
-    // If we put loadConversations directly in deps, it re-fires every time
-    // selectedAccount changes (because loadConversations dep array changes),
-    // which was causing the second spurious API call without account_id.
     const loadAccountsRef = useRef(loadAccounts);
     const loadConversationsRef = useRef(loadConversations);
     useEffect(() => {
@@ -39,98 +34,168 @@ export default function SmartInboxPage() {
     useEffect(() => {
         loadAccountsRef.current();
         loadConversationsRef.current({ is_archived: false });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps -- intentional mount-only
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
-            {/* Top Header: Connected Accounts & Quick Actions */}
-            <div className="flex-shrink-0 flex items-center justify-between px-6 py-2 border-b border-border bg-card shadow-sm z-50">
-                <div className="flex flex-1 items-center gap-6 overflow-hidden">
-                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest hidden lg:block border-r border-border pr-6">Connected Channels</h2>
-                    <div className="flex-1 overflow-hidden">
-                        <ConnectedAccounts />
+        <div className="flex flex-col h-screen w-full overflow-hidden" style={{ background: "var(--background)" }}>
+
+            {/* ══════════════════════════════════════
+                TOP HEADER — Platform filter bar
+            ══════════════════════════════════════ */}
+            <header
+                className="flex-shrink-0 flex items-center gap-4 px-4 sm:px-6 border-b"
+                style={{
+                    background: "var(--card)",
+                    borderColor: "var(--glass-border)",
+                    minHeight: 56,
+                }}
+            >
+                {/* Left: page identity */}
+                <div className="flex items-center gap-2.5 flex-shrink-0 pr-4 border-r" style={{ borderColor: "var(--glass-border)" }}>
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--nav-active-bg)" }}>
+                        <MessagesSquare className="w-4 h-4" style={{ color: "var(--primary)" }} />
+                    </div>
+                    <div className="hidden sm:block">
+                        <p className="text-[11px] font-black uppercase tracking-widest leading-none" style={{ color: "var(--muted-foreground)" }}>
+                            Smart Inbox
+                        </p>
                     </div>
                 </div>
-                
-                <div className="flex items-center gap-4 pl-6 border-l border-border ml-6">
-                    {/* Quick Find Dropdown Component */}
-                    <QuickFind />
-                    
-                    <button className="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-lg shadow-lg shadow-primary/25 hover:scale-105 active:scale-95 transition-all">
-                        <UserCircle2 className="w-5 h-5" />
+
+                {/* Centre: platform account filter — scrollable */}
+                <div className="flex-1 min-w-0 overflow-hidden">
+                    <ConnectedAccounts />
+                </div>
+
+                {/* Right: actions */}
+                <div className="flex items-center gap-2 flex-shrink-0 pl-4 border-l" style={{ borderColor: "var(--glass-border)" }}>
+                    <div className="hidden md:block">
+                        <QuickFind />
+                    </div>
+                    <button
+                        className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
+                        style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
+                        onClick={() => setShowQuickFind(v => !v)}
+                        aria-label="Search"
+                    >
+                        <Search className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
                     </button>
                 </div>
-            </div>
+            </header>
 
-            {/* Main Content Area */}
+            {/* ══════════════════════════════════════
+                MAIN LAYOUT
+            ══════════════════════════════════════ */}
             <div className="flex-1 flex overflow-hidden">
-                {/* Column 1: Conversations List Pane */}
-                <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={`w-full md:w-[350px] lg:w-[400px] flex-shrink-0 border-r border-border ${
-                        selectedConversation ? "hidden md:flex" : "flex"
-                    } flex-col h-full bg-card`}
-                >
-                    <Sidebar onOpenFilters={() => {}} />
-                </motion.div>
 
-                {/* Column 2: Active Chat Timeline */}
-                <motion.div 
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className={`flex-1 flex flex-col h-full min-w-0 ${
-                        !selectedConversation ? "hidden md:flex" : "flex"
-                    } relative bg-background`}
+                {/* ── Conversations sidebar ── */}
+                <div
+                    className={[
+                        "flex-shrink-0 border-r flex flex-col h-full transition-all duration-300",
+                        // Mobile: full-width when no conversation, hidden when one is open
+                        selectedConversation
+                            ? "hidden md:flex"
+                            : "flex w-full",
+                        // Desktop widths
+                        "md:w-[300px] lg:w-[320px] xl:w-[360px]",
+                    ].join(" ")}
+                    style={{ background: "var(--card)", borderColor: "var(--glass-border)" }}
                 >
-                    {/* Mobile Back Header */}
+                    <Sidebar onOpenFilters={() => { }} />
+                </div>
+
+                {/* ── Chat area ── */}
+                <div
+                    className={[
+                        "flex-1 flex flex-col h-full min-w-0 relative",
+                        !selectedConversation ? "hidden md:flex" : "flex",
+                    ].join(" ")}
+                    style={{ background: "var(--background)" }}
+                >
+                    {/* Mobile back bar */}
                     {selectedConversation && (
-                        <div className="flex items-center justify-between p-4 bg-background border-b border-border md:hidden">
+                        <div
+                            className="md:hidden flex-shrink-0 flex items-center justify-between px-4 py-3 border-b"
+                            style={{ background: "var(--card)", borderColor: "var(--glass-border)" }}
+                        >
                             <button
                                 onClick={() => selectConversation(null)}
-                                className="flex items-center gap-2 text-sm font-semibold text-primary"
+                                className="flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-70"
+                                style={{ color: "var(--primary)" }}
                             >
-                                <ArrowLeft className="w-5 h-5" /> Conversations
+                                <ArrowLeft className="w-4 h-4" />
+                                Conversations
                             </button>
                             <button
-                                onClick={() => setShowContactSidebar(!showContactSidebar)}
-                                className="p-2 text-muted-foreground"
+                                onClick={() => setShowContactSidebar(v => !v)}
+                                className="w-9 h-9 flex items-center justify-center rounded-xl transition-colors hover:opacity-80"
+                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
                             >
-                                <UserCircle2 className="w-6 h-6" />
+                                <UserCircle2 className="w-5 h-5" style={{ color: "var(--muted-foreground)" }} />
                             </button>
                         </div>
                     )}
 
-                    <div className="flex-1 h-full min-h-0">
-                        <ChatWindow onProfileClick={() => setShowContactSidebar(!showContactSidebar)} />
+                    {/* Empty state (desktop) */}
+                    {!selectedConversation && (
+                        <div className="hidden md:flex flex-col items-center justify-center h-full gap-3 text-center px-8">
+                            <div
+                                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                                style={{ background: "var(--nav-active-bg)" }}
+                            >
+                                <MessagesSquare className="w-7 h-7" style={{ color: "var(--primary)", opacity: 0.6 }} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Select a conversation</p>
+                                <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                                    Choose from the list on the left to start chatting
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={`flex-1 min-h-0 ${!selectedConversation ? "hidden md:block" : "block"}`}>
+                        <ChatWindow onProfileClick={() => setShowContactSidebar(v => !v)} />
                     </div>
 
-                    {/* Overlay Contact Sidebar (Slide-in from right) */}
+                    {/* ── Contact Info slide-in panel ── */}
                     <AnimatePresence>
                         {selectedConversation && showContactSidebar && (
                             <>
-                                <motion.div 
+                                <motion.div
+                                    key="cb"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     onClick={() => setShowContactSidebar(false)}
-                                    className="absolute inset-0 bg-black/20 backdrop-blur-sm z-40"
+                                    className="absolute inset-0 z-40"
+                                    style={{ background: "rgba(0,0,0,0.18)", backdropFilter: "blur(2px)" }}
                                 />
-                                <motion.div 
-                                    initial={{ opacity: 0, x: 380 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 380 }}
-                                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                                    className="absolute inset-y-0 right-0 z-50 w-full md:w-[380px] bg-card border-l border-border shadow-2xl flex flex-col"
+                                <motion.div
+                                    key="cp"
+                                    initial={{ x: "100%" }}
+                                    animate={{ x: 0 }}
+                                    exit={{ x: "100%" }}
+                                    transition={{ type: "spring", damping: 26, stiffness: 220 }}
+                                    className="absolute inset-y-0 right-0 z-50 w-full sm:w-[340px] md:w-[360px] flex flex-col shadow-2xl"
+                                    style={{ background: "var(--card)", borderLeft: "1px solid var(--glass-border)" }}
                                 >
-                                    <div className="p-4 flex items-center justify-between border-b border-border bg-muted/30">
-                                        <h3 className="text-sm font-bold uppercase tracking-wider">Contact Info</h3>
-                                        <button 
+                                    <div
+                                        className="flex items-center justify-between px-5 py-3.5 flex-shrink-0 border-b"
+                                        style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <UserCircle2 className="w-4 h-4" style={{ color: "var(--primary)" }} />
+                                            <h3 className="text-sm font-bold tracking-wide" style={{ color: "var(--foreground)" }}>
+                                                Contact Info
+                                            </h3>
+                                        </div>
+                                        <button
                                             onClick={() => setShowContactSidebar(false)}
-                                            className="p-2 hover:bg-muted rounded-full transition-colors"
+                                            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:opacity-70"
+                                            style={{ background: "var(--glass-border)" }}
                                         >
-                                            <ArrowLeft className="w-5 h-5 rotate-180" />
+                                            <X className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
                                         </button>
                                     </div>
                                     <div className="flex-1 overflow-y-auto">
@@ -140,12 +205,8 @@ export default function SmartInboxPage() {
                             </>
                         )}
                     </AnimatePresence>
-                </motion.div>
+                </div>
             </div>
         </div>
     );
 }
-
-
-
-

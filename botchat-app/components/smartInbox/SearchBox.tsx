@@ -1,8 +1,9 @@
 "use client";
 
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Archive, BookmarkCheck, Inbox, MailOpen } from "lucide-react";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface SearchBoxProps {
     onOpenFilters: () => void;
@@ -10,62 +11,73 @@ interface SearchBoxProps {
     setActiveTab: (tab: "all" | "unread" | "starred" | "archived") => void;
 }
 
+const TABS: { id: "all" | "unread" | "starred" | "archived"; label: string; Icon: any }[] = [
+    { id: "all", label: "All", Icon: Inbox },
+    { id: "unread", label: "Unread", Icon: MailOpen },
+    { id: "starred", label: "Starred", Icon: BookmarkCheck },
+    { id: "archived", label: "Archive", Icon: Archive },
+];
+
 export default function SearchBox({ onOpenFilters, activeTab, setActiveTab }: SearchBoxProps) {
     const { search, setSearchQuery } = useSmartInbox();
 
-    const tabs = [
-        { id: "all", label: "All" },
-        { id: "unread", label: "Unread" },
-        { id: "starred", label: "Starred" },
-        { id: "archived", label: "Archived" }
-    ] as const;
-
     return (
-        <div className="space-y-4">
-            {/* Filter Tabs - Pill Style */}
-            <div className="bg-neutral-100/50 dark:bg-black/20 p-1 rounded-2xl flex items-center border border-black/5 dark:border-white/5 shadow-inner">
-                {tabs.map((tab) => {
+        <div className="space-y-3">
+            {/* ── Filter Tab Bar ── */}
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/50 border border-border/40">
+                {TABS.map((tab) => {
                     const isActive = activeTab === tab.id;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex-1 px-2 py-2 text-[10px] font-black uppercase tracking-widest rounded-[14px] transition-all relative ${
-                                isActive ? "text-white" : "text-muted-foreground hover:text-foreground"
-                            }`}
+                            className={cn(
+                                "relative flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all duration-200 outline-none min-w-0",
+                                isActive
+                                    ? "text-white"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                            )}
                         >
                             {isActive && (
-                                <motion.div
+                                <motion.span
                                     layoutId="activeFilterTab"
-                                    className="absolute inset-0 bg-primary rounded-[14px] shadow-lg shadow-primary/20 z-0"
+                                    className="absolute inset-0 bg-primary rounded-lg shadow-md shadow-primary/25 z-0"
+                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                 />
                             )}
-                            <span className="relative z-10">{tab.label}</span>
+                            <tab.Icon
+                                className={cn(
+                                    "relative z-10 w-3 h-3 flex-shrink-0 transition-transform",
+                                    isActive && "scale-110"
+                                )}
+                            />
+                            <span className="relative z-10 hidden sm:inline truncate">{tab.label}</span>
                         </button>
                     );
                 })}
             </div>
 
-            {/* Search Input Bar */}
-            <div className="relative flex items-center gap-3 px-1">
+            {/* ── Search Bar ── */}
+            <div className="flex items-center gap-2">
                 <div className="relative flex-1 group">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60 group-focus-within:text-primary transition-colors pointer-events-none" />
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search chats..."
-                        className="w-full pl-10 pr-4 h-11 bg-white/40 dark:bg-black/20 backdrop-blur-sm border border-black/5 dark:border-white/5 rounded-2xl text-[13px] font-medium outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all text-foreground placeholder:text-muted-foreground/50 shadow-sm"
+                        placeholder="Search conversations…"
+                        className="w-full pl-9 pr-3 h-10 bg-background border border-border/50 rounded-xl text-[13px] font-medium outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all text-foreground placeholder:text-muted-foreground/40"
                     />
                 </div>
+
                 <button
                     onClick={onOpenFilters}
-                    className="w-11 h-11 flex items-center justify-center border border-black/5 dark:border-white/5 rounded-2xl bg-white/40 dark:bg-black/20 backdrop-blur-sm shadow-sm text-muted-foreground hover:text-primary transition-all hover:scale-105 active:scale-95"
+                    title="Advanced filters"
+                    className="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-border/50 rounded-xl bg-background text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all active:scale-95"
                 >
-                    <SlidersHorizontal className="w-4.5 h-4.5" />
+                    <SlidersHorizontal className="w-4 h-4" />
                 </button>
             </div>
         </div>
     );
 }
-

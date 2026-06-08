@@ -51,7 +51,7 @@ export default function ConversationList({ onOpenFilters }: ConversationListProp
                 setActiveTab={setActiveTab}
             />
 
-            <div className="flex-1 overflow-y-auto pr-1 space-y-2 max-h-[calc(100vh-280px)] scrollbar-thin">
+            <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5 scrollbar-thin pr-0.5">
                 {loading ? (
                     <div className="space-y-3">
                         {[1, 2, 3, 4].map((i) => (
