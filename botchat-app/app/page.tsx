@@ -18,10 +18,12 @@ import TrustAndFinalCTA from "./landing/components/TrustAndFinalCTA";
 import PerformanceChart from "./landing/components/PerformanceChart";
 import StepsSection from "./landing/components/StepsSection";
 import BlogSection from "./landing/components/BlogSection";
+import SmoothScrollingUI from "./landing/components/SmoothScrollingUI";
 
 export default function Home() {
   return (
     <main className="min-h-screen w-full bg-white selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
+      <SmoothScrollingUI />
       <Navbar />
 
       {/* HERO: The main entry point */}
