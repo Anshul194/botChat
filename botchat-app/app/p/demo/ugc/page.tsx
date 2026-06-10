@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PageMeta from "@/components/PageMeta";
 import { UGCLayout } from "@/app/dashboard/instagram/bio-link/layouts/UGCLayout";
 import { getTheme, ThemeEffectsLayer, ThemeAnimationStyles } from "@/app/dashboard/instagram/bio-link/TemplateSystem";
 import { getUiTypeFromBlock, isMediaType } from "@/app/dashboard/instagram/bio-link/builder-utils";
@@ -121,7 +122,12 @@ export default function UGCDemoPage() {
 
     return (
         <>
-            <title>Sarah Jenkins | UGC Creator Portfolio</title>
+            <PageMeta
+                title="UGC Creator Portfolio Demo — BotChat Bio Link"
+                description="Preview a beautiful UGC creator portfolio bio-link page powered by BotChat."
+                noindex
+            />
+            <h1 className="sr-only">Sarah Jenkins | UGC Creator Portfolio</h1>
             <div className="min-h-screen w-full" style={theme.bgStyle}>
                 <ThemeAnimationStyles />
                 <ThemeEffectsLayer theme={theme} />

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PageMeta from "@/components/PageMeta";
 import { InstaProLayout } from "@/app/dashboard/instagram/bio-link/layouts/InstaProLayout";
 import { InstaTrendyLayout } from "@/app/dashboard/instagram/bio-link/layouts/InstaTrendyLayout";
 import { InstaMinimalLayout } from "@/app/dashboard/instagram/bio-link/layouts/InstaMinimalLayout";
@@ -45,7 +46,13 @@ export default function PremiumDemoPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col">
+        <>
+            <PageMeta
+                title="Premium Bio Link Templates — BotChat Showcase"
+                description="Preview BotChat's premium bio-link templates: Insta Pro, Trendy, Minimal, and Sunday Brunch layouts."
+                noindex
+            />
+            <div className="min-h-screen bg-slate-50 flex flex-col">
             <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 p-4">
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
                     <h1 className="font-black text-xl tracking-tighter">PREMIUM SHOWCASE</h1>
@@ -80,5 +87,6 @@ export default function PremiumDemoPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }

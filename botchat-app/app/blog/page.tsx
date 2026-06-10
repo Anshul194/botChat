@@ -7,6 +7,7 @@ import {
     Search, Calendar, Clock, ArrowRight,
     TrendingUp, Zap, Sparkles, MessageSquare, Loader2
 } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import Navbar from "../landing/components/Navbar";
 import Footer from "../landing/components/Footer";
 import api from "@/lib/api";
@@ -57,7 +58,12 @@ export default function BlogPage() {
     const feedPosts = blogs.filter(b => b.id !== featuredPost?.id);
 
     return (
-        <main className="min-h-screen bg-white">
+        <>
+            <PageMeta
+                title="Blog — BotChat | Instagram & Facebook Automation Tips"
+                description="Read the latest tips, guides, and strategies for Instagram and Facebook automation. Learn how to scale your social media growth with BotChat."
+            />
+            <main className="min-h-screen bg-white">
             <Navbar forceLight={true} />
 
             {/* High-Impact Blog Hero */}
@@ -286,5 +292,6 @@ export default function BlogPage() {
 
             <Footer />
         </main>
+        </>
     );
 }

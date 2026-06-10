@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Camera, Grid, ImageIcon, Layers, ArrowRight, Sparkles, Layout, Globe, Smartphone } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import { cn } from "@/lib/utils";
 
 const DEMOS = [
@@ -50,7 +51,13 @@ const DEMOS = [
 
 export default function DemoHub() {
     return (
-        <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] font-sans">
+        <>
+            <PageMeta
+                title="Bio Link Layout Showcase — BotChat"
+                description="Explore BotChat's bio-link layout templates: Standard, Portfolio, UGC Creator, Olivia, and Universal."
+                noindex
+            />
+            <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] font-sans">
             <div className="max-w-5xl mx-auto px-6 py-20">
                 <div className="flex flex-col items-center text-center mb-16">
                     <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-pink-500 to-violet-600 flex items-center justify-center shadow-xl mb-6 transform -rotate-6">
@@ -102,5 +109,6 @@ export default function DemoHub() {
                 </div>
             </div>
         </div>
+        </>
     );
 }

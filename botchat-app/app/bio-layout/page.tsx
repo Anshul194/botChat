@@ -4,13 +4,20 @@ import React, { useState } from "react";
 import { Briefcase, MapPin, MessageCircle, Bookmark, User, LayoutGrid, Menu, X, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import PageMeta from "@/components/PageMeta";
 
 export default function BioLayout() {
   const [activeTab, setActiveTab] = useState("portfolio");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans">
+    <>
+      <PageMeta
+        title="Bio Layout Demo — BotChat"
+        description="Preview beautiful bio-link page layouts powered by BotChat. Portfolio, link-in-bio, and creative showcase templates."
+        noindex
+      />
+      <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans">
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -210,5 +217,6 @@ export default function BioLayout() {
         </main>
       </div>
     </div>
+    </>
   );
 }

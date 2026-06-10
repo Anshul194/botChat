@@ -1,4 +1,10 @@
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy — BotChat",
+  description: "Read the BotChat Privacy Policy. Learn how we collect, use, and protect your data when you use our social media automation platform.",
+};
 
 export default function PrivacyPolicy() {
   return (

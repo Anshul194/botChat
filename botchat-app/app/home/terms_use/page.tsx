@@ -1,4 +1,10 @@
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Use — BotChat",
+  description: "Read the Terms of Use for BotChat. Learn about your rights and responsibilities when using our Instagram and Facebook automation platform.",
+};
 
 export default function TermsOfUse() {
   return (

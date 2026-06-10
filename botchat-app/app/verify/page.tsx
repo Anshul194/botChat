@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CheckCircle2, XCircle, Loader2, MessageSquare, ArrowRight, Mail } from "lucide-react";
 import Link from "next/link";
+import PageMeta from "@/components/PageMeta";
 import { useTheme } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAppDispatch } from "@/store/hooks";
@@ -47,7 +48,13 @@ function VerifyContent() {
     }, [token, dispatch, router]);
 
     return (
-        <div className="min-h-screen flex flex-col" style={{ background: isLight ? "#fdf2f8" : "#06030f" }}>
+        <>
+            <PageMeta
+                title="Verify Email — BotChat"
+                description="Verify your email address to activate your BotChat account."
+                noindex
+            />
+            <div className="min-h-screen flex flex-col" style={{ background: isLight ? "#fdf2f8" : "#06030f" }}>
             {/* Topbar */}
             <div className="flex items-center justify-between px-6 py-5">
                 <div className="flex items-center gap-2">
@@ -152,6 +159,7 @@ function VerifyContent() {
                 &copy; 2026 BotChat. All rights reserved.
             </div>
         </div>
+        </>
     );
 }
 

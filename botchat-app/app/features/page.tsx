@@ -9,6 +9,7 @@ import {
     Layers, Cpu, MousePointer2, ExternalLink, ArrowRight,
     Monitor, Smartphone, Globe, Cloud, Lock, Heart
 } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import Navbar from "../landing/components/Navbar";
 import Footer from "../landing/components/Footer";
 
@@ -160,7 +161,12 @@ const highlights = [
 
 export default function FeaturesPage() {
     return (
-        <main className="min-h-screen bg-white">
+        <>
+            <PageMeta
+                title="Features — BotChat | Meta Automation Platform"
+                description="Explore BotChat's powerful features: AI-powered DM automation, Facebook & Instagram auto-reply, flow builder, bio links, and deep analytics."
+            />
+            <main className="min-h-screen bg-white">
             <Navbar forceLight={true} />
 
             {/* Hero Section */}
@@ -547,5 +553,6 @@ export default function FeaturesPage() {
 
             <Footer />
         </main>
+        </>
     );
 }

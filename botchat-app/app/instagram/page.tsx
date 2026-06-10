@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSearchParams, useRouter } from 'next/navigation';
-
+import PageMeta from '@/components/PageMeta';
 import { Suspense } from 'react';
 
 function InstagramCallback() {
@@ -37,7 +37,13 @@ function InstagramCallback() {
     }, [status, router]);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-[#06030f] text-white p-6 overflow-hidden">
+        <>
+            <PageMeta
+                title="Connecting Instagram — BotChat"
+                description="Connecting your Instagram account to BotChat."
+                noindex
+            />
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#06030f] text-white p-6 overflow-hidden">
             {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[120px] pointer-events-none" />
             
@@ -98,6 +104,7 @@ function InstagramCallback() {
                 </button>
             </motion.div>
         </div>
+        </>
     );
 }
 

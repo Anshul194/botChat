@@ -8,6 +8,7 @@ import {
     ArrowRight, MessageSquare, Workflow, BarChart3,
     HelpCircle, ChevronDown
 } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import Navbar from "../landing/components/Navbar";
 import Footer from "../landing/components/Footer";
 
@@ -90,7 +91,12 @@ export default function PricingPage() {
     const [isAnnual, setIsAnnual] = useState(true);
 
     return (
-        <main className="min-h-screen bg-white">
+        <>
+            <PageMeta
+                title="Pricing — BotChat | Plans for Creators & Agencies"
+                description="Choose the right BotChat plan for your needs. Starter, Growth, and Elite plans with AI-powered Instagram and Facebook automation."
+            />
+            <main className="min-h-screen bg-white">
             <Navbar forceLight={true} />
 
             {/* High-Impact Hero Banner */}
@@ -280,5 +286,6 @@ export default function PricingPage() {
 
             <Footer />
         </main>
+        </>
     );
 }

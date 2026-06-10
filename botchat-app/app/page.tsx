@@ -1,5 +1,6 @@
 "use client";
 
+import PageMeta from "@/components/PageMeta";
 import Navbar from "./landing/components/Navbar";
 import Hero from "./landing/components/Hero";
 import FeaturesOverview from "./landing/components/FeaturesOverview";
@@ -22,7 +23,12 @@ import SmoothScrollingUI from "./landing/components/SmoothScrollingUI";
 
 export default function Home() {
   return (
-    <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
+    <>
+      <PageMeta
+        title="BotChat — DM Automation for Instagram & Facebook"
+        description="Automate your Instagram DMs and Facebook Messenger with AI-powered chatbots. Unified inbox, smart automation flows, and real-time analytics for your business."
+      />
+      <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
       <SmoothScrollingUI />
       <Navbar />
 
@@ -66,5 +72,6 @@ export default function Home() {
         <Footer />
       </div>
     </main>
+    </>
   );
 }
