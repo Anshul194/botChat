@@ -16,12 +16,12 @@ const SECTION_META: Array<{ key: string; label: string; icon: React.ComponentTyp
     { key: "app", label: "App linking", icon: Link2 },
     { key: "pixels", label: "Pixels", icon: ActivitySquare },
     { key: "temporary", label: "Temporary URL", icon: CalendarClock },
-    { key: "utm", label: "UTM Parameters", icon: Globe },
+    // { key: "utm", label: "UTM Parameters", icon: Globe },
     { key: "password", label: "Protection", icon: Shield },
-    { key: "targeting", label: "Targeting", icon: Target },
-    { key: "seo", label: "SEO", icon: Info },
-    { key: "cloaking", label: "Cloaking", icon: Settings2 },
-    { key: "advanced", label: "Advanced", icon: PencilLine },
+    // { key: "targeting", label: "Targeting", icon: Target },
+    // { key: "seo", label: "SEO", icon: Info },
+    // { key: "cloaking", label: "Cloaking", icon: Settings2 },
+    // { key: "advanced", label: "Advanced", icon: PencilLine },
 ];
 
 const toggleClass = (on: boolean) => cn("w-9 h-5 rounded-full transition-colors relative", on ? "bg-primary" : "bg-slate-300 dark:bg-slate-700");
@@ -64,7 +64,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
     useEffect(() => {
         if (!currentLink || (currentLink.url !== slug && currentLink.slug !== slug)) {
             const linkInList = links.find((l: any) => (l.url === slug || l.slug === slug));
-            
+
             if (linkInList) {
                 const id = linkInList.link_id || linkInList.id;
                 dispatch(fetchLinkById(id));
@@ -144,7 +144,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
     const onSave = async () => {
         if (!currentLink) return;
         const linkId = currentLink.link_id || currentLink.id;
-        
+
         const payload: Record<string, any> = {
             location_url: draft.destinationUrl,
             url: draft.slug,
@@ -174,7 +174,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
         payload.cloaking_title = (draft as any).cloaking_title || "";
         payload.cloaking_meta_description = (draft as any).cloaking_meta_description || "";
         payload.cloaking_custom_js = (draft as any).cloaking_custom_js || "";
-        
+
         if ((draft as any).cloaking_favicon instanceof File) {
             payload.cloaking_favicon = (draft as any).cloaking_favicon;
         }
@@ -193,7 +193,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
 
         // If we have files, we must use FormData
         const hasFiles = payload.cloaking_favicon instanceof File || payload.cloaking_opengraph instanceof File;
-        
+
         let finalPayload: any = payload;
         if (hasFiles) {
             const formData = new FormData();
@@ -206,7 +206,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
         }
 
         const resultAction = await dispatch(updateLink({ linkId, data: finalPayload }));
-        
+
         if (updateLink.fulfilled.match(resultAction)) {
             showModal("success", "Updated", "Link updated successfully!");
             dispatch(fetchLinkById(linkId));
@@ -449,7 +449,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             {openSection === "utm" && (
                                 <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label mb-4 text-center">UTM Parameters</div>
-                                    
+
                                     <div className="space-y-4">
                                         <div>
                                             <label className="text-sm font-bold text-slate-700 block mb-2">Source</label>
@@ -475,7 +475,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             {openSection === "password" && (
                                 <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label mb-4 text-center">Protection</div>
-                                    
+
                                     <div>
                                         <label className="text-sm font-bold text-slate-700 flex items-center gap-2 mb-2"><Shield size={16} /> Password</label>
                                         <input value={draft.password} onChange={(e) => setDraft((prev) => ({ ...prev, password: e.target.value }))} placeholder="Password" type="password" className="input-field" />
@@ -581,7 +581,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             {openSection === "cloaking" && (
                                 <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label mb-4 text-center">Cloaking</div>
-                                    
+
 
 
                                     <div className="space-y-4">
@@ -589,7 +589,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                             <label className="text-sm font-bold text-slate-700 block mb-2">Title of the cloaked page</label>
                                             <input value={(draft as any).cloaking_title || ""} onChange={(e) => setDraft((p: any) => ({ ...p, cloaking_title: e.target.value }))} className="input-field" />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="text-sm font-bold text-slate-700 block mb-2">Meta description of the cloaked page</label>
                                             <input value={(draft as any).cloaking_meta_description || ""} onChange={(e) => setDraft((p: any) => ({ ...p, cloaking_meta_description: e.target.value }))} className="input-field" />
@@ -598,17 +598,17 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         <div>
                                             <label className="text-sm font-bold text-slate-700 block mb-2">Favicon of the cloaked page</label>
                                             <div className="flex items-center gap-4 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg">
-                                                <input 
-                                                    type="file" 
-                                                    id="cloaking_favicon" 
-                                                    className="hidden" 
+                                                <input
+                                                    type="file"
+                                                    id="cloaking_favicon"
+                                                    className="hidden"
                                                     accept=".jpg,.jpeg,.png,.ico,.svg,.gif,.webp"
                                                     onChange={(e) => {
                                                         const file = e.target.files?.[0];
                                                         if (file) setDraft((p: any) => ({ ...p, cloaking_favicon: file }));
                                                     }}
                                                 />
-                                                <button 
+                                                <button
                                                     onClick={() => document.getElementById('cloaking_favicon')?.click()}
                                                     className="bg-white dark:bg-slate-700 px-4 py-1.5 rounded-md text-sm border border-slate-200 dark:border-slate-600 shadow-sm"
                                                 >
@@ -624,17 +624,17 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         <div>
                                             <label className="text-sm font-bold text-slate-700 block mb-2">Opengraph of the cloaked page</label>
                                             <div className="flex items-center gap-4 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg">
-                                                <input 
-                                                    type="file" 
-                                                    id="cloaking_opengraph" 
-                                                    className="hidden" 
+                                                <input
+                                                    type="file"
+                                                    id="cloaking_opengraph"
+                                                    className="hidden"
                                                     accept=".jpg,.jpeg,.png,.svg,.gif,.webp,.avif"
                                                     onChange={(e) => {
                                                         const file = e.target.files?.[0];
                                                         if (file) setDraft((p: any) => ({ ...p, cloaking_opengraph: file }));
                                                     }}
                                                 />
-                                                <button 
+                                                <button
                                                     onClick={() => document.getElementById('cloaking_opengraph')?.click()}
                                                     className="bg-white dark:bg-slate-700 px-4 py-1.5 rounded-md text-sm border border-slate-200 dark:border-slate-600 shadow-sm"
                                                 >
@@ -659,11 +659,11 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             {openSection === "advanced" && (
                                 <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="form-label">Advanced</div>
-                                    
+
                                     <div className="mt-4">
                                         <label className="block text-sm font-bold text-slate-700">HTTP Status Code</label>
-                                        <select 
-                                            value={(draft as any).http_status_code || 301} 
+                                        <select
+                                            value={(draft as any).http_status_code || 301}
                                             onChange={(e) => setDraft((p: any) => ({ ...p, http_status_code: e.target.value }))}
                                             className="input-field mt-2"
                                         >
@@ -676,11 +676,11 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                     </div>
 
 
-                                    
+
                                     <div className="mt-6">
                                         <label className="block text-sm font-bold text-slate-700">Splash page</label>
-                                        <select 
-                                            value={(draft as any).splash_page_id || ""} 
+                                        <select
+                                            value={(draft as any).splash_page_id || ""}
                                             onChange={(e) => setDraft((p: any) => ({ ...p, splash_page_id: e.target.value }))}
                                             className="input-field mt-2"
                                         >
