@@ -49,16 +49,22 @@ export function getTenantDomain(): string {
     const hostname = window.location.hostname;
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // Conditional Logic (Mirrors api.ts)
+    // Dynamic Tenant API Resolution
     // ─────────────────────────────────────────────────────────────────────────────
 
-    // If agency subdomain or agency localhost, use reseller domain
-    if (hostname.includes('agency.megadm.chat') || hostname.includes('agency.localhost') || hostname.includes('localhost:3002')) {
-        return 'pos.divyangtechlabs.com';
+    // Remove www. if present to get the actual domain name
+    const cleanHostname = hostname.replace('www.', '');
+    
+    // Extract the first part of the domain (e.g., 'agency' from 'agency.megadm.chat', or 'botchat' from 'botchat.com')
+    const prefix = cleanHostname.split('.')[0];
+
+    // Localhost or base megadm fallback
+    if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
+        return 'api.megadm.chat';
     }
 
-    // Default to central API domain for megadm.chat or localhost
-    return 'botchat.divyangtechlabs.com';
+    // Automatically construct the API domain based on the prefix
+    return `${prefix}-api.megadm.chat`;
 }
 
 /**
