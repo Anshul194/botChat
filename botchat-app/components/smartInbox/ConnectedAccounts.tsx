@@ -146,18 +146,7 @@ function PlatformDropdown({
                     <div style={{ overflowY: "auto", maxHeight: 300, padding: "6px" }}>
 
                         {/* "All [platform]" row */}
-                        <AccountRow
-                            label={`All ${isFB ? "Facebook" : "Instagram"}`}
-                            sublabel={`Show all ${accounts.length} accounts`}
-                            isSelected={false}
-                            isFB={isFB}
-                            icon={<Users className="w-3.5 h-3.5" />}
-                            onClick={() => {
-                                // Select first account of this platform as proxy for "platform filter"
-                                selectAccount(accounts[0] ?? null);
-                                onClose();
-                            }}
-                        />
+                      
 
                         <div style={{ height: 1, margin: "4px 8px", background: "var(--glass-border)" }} />
 
