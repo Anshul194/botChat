@@ -3,13 +3,14 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
     Search, Instagram, Facebook, Send, Bot, MoreVertical,
-    Tag, Clock, User, Zap, ChevronRight, ArrowLeft,
+    Tag, Clock, User, Zap, ChevronRight, ArrowLeft, Settings,
 } from "lucide-react";
 import { InlineEmojiButton } from "@/components/ui/EmojiPicker";
 import api from "@/lib/api";
 import { getTenantDomain } from "@/lib/config";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
+import InboxAccountsPanel from "@/components/inbox/InboxAccountsPanel";
 
 interface SmartInboxConversation {
     id: number;
@@ -48,6 +49,7 @@ export default function InboxPage() {
     const [filter, setFilter] = useState<"all" | "instagram" | "facebook">("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [mobileView, setMobileView] = useState<"list" | "chat">("list");
+    const [showAccounts, setShowAccounts] = useState(false);
     const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
     const [typingText, setTypingText] = useState<string | null>(null);
     const [quickReplies, setQuickReplies] = useState<string[]>([
@@ -377,30 +379,53 @@ export default function InboxPage() {
                 style={{ background: "var(--card)", borderColor: "var(--glass-border)" }}
             >
                 <div className="p-4 border-b" style={{ borderColor: "var(--glass-border)" }}>
-                    <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--foreground)" }}>Inbox</h2>
-                    {/* Platform filter */}
-                    <div className="flex gap-1 p-1 rounded-xl mb-3" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                        {(["all", "instagram", "facebook"] as const).map((f) => (
-                            <button key={f} onClick={() => setFilter(f)}
-                                className="flex-1 py-1 rounded-lg text-[11px] font-medium capitalize transition-all"
-                                style={filter === f ? { background: "var(--brand-gradient)", color: "white" } : { color: "var(--muted-foreground)" }}>
-                                {f === "instagram" ? "IG" : f === "facebook" ? "FB" : "All"}
-                            </button>
-                        ))}
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Inbox</h2>
+                        <button
+                            onClick={() => setShowAccounts((v) => !v)}
+                            title="Manage connected accounts"
+                            className="p-1.5 rounded-lg hover:opacity-70 transition-opacity"
+                            style={{
+                                background: showAccounts ? "var(--brand-gradient)" : "var(--glass-bg)",
+                                border: "1px solid var(--glass-border)",
+                            }}
+                        >
+                            <Settings className="w-3.5 h-3.5" style={{ color: showAccounts ? "white" : "var(--muted-foreground)" }} />
+                        </button>
                     </div>
-                    {/* Search */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
-                        <input
-                            placeholder="Search..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-8 pr-3 py-2 rounded-xl text-xs outline-none transition-all"
-                            style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
-                        />
-                    </div>
+                    {!showAccounts && (
+                        <>
+                            {/* Platform filter */}
+                            <div className="flex gap-1 p-1 rounded-xl mb-3" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
+                                {(["all", "instagram", "facebook"] as const).map((f) => (
+                                    <button key={f} onClick={() => setFilter(f)}
+                                        className="flex-1 py-1 rounded-lg text-[11px] font-medium capitalize transition-all"
+                                        style={filter === f ? { background: "var(--brand-gradient)", color: "white" } : { color: "var(--muted-foreground)" }}>
+                                        {f === "instagram" ? "IG" : f === "facebook" ? "FB" : "All"}
+                                    </button>
+                                ))}
+                            </div>
+                            {/* Search */}
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
+                                <input
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-8 pr-3 py-2 rounded-xl text-xs outline-none transition-all"
+                                    style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
 
+                {/* Accounts Panel or Conversation List */}
+                {showAccounts ? (
+                    <div className="flex-1 overflow-y-auto">
+                        <InboxAccountsPanel onClose={() => setShowAccounts(false)} />
+                    </div>
+                ) : (
                 <div className="flex-1 overflow-y-auto">
                     {conversations.map((c) => (
                         <div key={c.id} onClick={() => handleSelectConv(c)}
@@ -444,6 +469,7 @@ export default function InboxPage() {
                         </div>
                     ))}
                 </div>
+                )}
             </div>
 
             {/* ── Chat Area ── */}
