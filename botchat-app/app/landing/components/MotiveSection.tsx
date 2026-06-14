@@ -120,7 +120,7 @@ export default function MotiveSection() {
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-gray-400 text-sm mt-1.5 max-w-sm leading-relaxed"
+              className="text-gray-600 text-sm mt-1.5 max-w-sm leading-relaxed"
             >
               One AI engine across Instagram, Facebook & Bio — every interaction becomes revenue.
             </motion.p>
@@ -140,7 +140,7 @@ export default function MotiveSection() {
             </div>
             <div>
               <div className="text-gray-900 font-bold text-sm leading-tight">11K+ brands</div>
-              <div className="text-gray-400 text-[11px]">already running</div>
+              <div className="text-gray-600 text-[11px]">already running</div>
             </div>
           </motion.div>
         </div>
@@ -160,6 +160,8 @@ export default function MotiveSection() {
                 <button
                   key={c.id}
                   onClick={() => setActive(c.id)}
+                  aria-label={`Select ${c.label} channel`}
+                  aria-pressed={active === c.id}
                   className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all w-full group ${active === c.id ? "bg-pink-50" : "hover:bg-gray-50"
                     }`}
                 >
@@ -169,7 +171,7 @@ export default function MotiveSection() {
                   >
                     {c.icon}
                   </div>
-                  <span className={`text-sm font-medium transition-colors ${active === c.id ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"}`}>
+                  <span className={`text-sm font-medium transition-colors ${active === c.id ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"}`}>
                     {c.label}
                   </span>
                   {active === c.id && (
@@ -184,10 +186,10 @@ export default function MotiveSection() {
 
               {/* Mini stats */}
               <div className="hidden md:block mt-auto pt-3 border-t border-pink-50 px-2">
-                <p className="text-[10px] text-gray-300 uppercase tracking-widest font-semibold mb-2">Platform stats</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-2">Platform stats</p>
                 {[["25M+", "Auto DMs"], ["5M+", "Link Clicks"], ["10M+", "Comment replies"]].map(([v, l]) => (
                   <div key={l} className="flex justify-between items-baseline py-0.5">
-                    <span className="text-[11px] text-gray-400">{l}</span>
+                    <span className="text-[11px] text-gray-600">{l}</span>
                     <span className="text-[11px] font-bold text-gray-800">{v}</span>
                   </div>
                 ))}
@@ -247,14 +249,14 @@ export default function MotiveSection() {
                     >
                       {ch.label[0]}
                     </div>
-                    <span className="text-[11px] text-gray-400 font-medium">Live DM preview</span>
+                    <span className="text-[11px] text-gray-600 font-medium">Live DM preview</span>
                     <div className="ml-auto flex items-center gap-1">
                       <motion.div
                         className="w-1.5 h-1.5 rounded-full bg-green-400"
                         animate={{ opacity: [1, 0.3, 1] }}
                         transition={{ duration: 1.1, repeat: Infinity }}
                       />
-                      <span className="text-[10px] text-gray-300">active</span>
+                      <span className="text-[10px] text-gray-500">active</span>
                     </div>
                   </div>
 
@@ -286,8 +288,8 @@ export default function MotiveSection() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.6 }}
                     >
-                      <Bot className="w-2.5 h-2.5 text-gray-300" />
-                      <span className="text-[10px] text-gray-300">Sent by ReplyRush AI · just now</span>
+                      <Bot className="w-2.5 h-2.5 text-gray-500" />
+                      <span className="text-[10px] text-gray-500">Sent by ReplyRush AI · just now</span>
                     </motion.div>
                   </div>
                 </motion.div>
@@ -295,11 +297,14 @@ export default function MotiveSection() {
 
               {/* Dot nav + CTA */}
               <div className="flex items-center justify-between">
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5" role="tablist" aria-label="Channel navigation">
                   {CHANNELS.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => setActive(c.id)}
+                      role="tab"
+                      aria-selected={active === c.id}
+                      aria-label={`Select ${c.label} channel`}
                       className="w-2 h-2 rounded-full transition-all duration-200"
                       style={{ background: active === c.id ? c.color : "#e5e7eb" }}
                     />
@@ -340,7 +345,7 @@ export default function MotiveSection() {
                       animate={{ x: [0, 2, 0] }}
                       transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.2 }}
                     >
-                      <ChevronRight className="w-3 h-3 text-pink-200" />
+                      <ChevronRight className="w-3 h-3 text-pink-400" />
                     </motion.div>
                   )}
                 </div>

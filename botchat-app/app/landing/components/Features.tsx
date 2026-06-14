@@ -106,7 +106,7 @@ function FeatureCard({
 
           <div>
             <div className="flex items-center gap-2">
-              <h4 className="font-semibold text-xl text-gray-900">{feature.name}</h4>
+              <h3 className="font-semibold text-xl text-gray-900">{feature.name}</h3>
               {feature.badge && (
                 <span className="text-xs font-bold uppercase px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
                   {feature.badge}
@@ -226,11 +226,14 @@ export default function FeaturesBento() {
         </div>
 
         {/* Progress dots below grid */}
-        <div className="flex justify-center gap-3 mt-12">
-          {features.map((_, i) => (
+        <div className="flex justify-center gap-3 mt-12" role="tablist" aria-label="Feature navigation">
+          {features.map((feature, i) => (
             <button
               key={i}
               onClick={() => handleSelect(i)}
+              role="tab"
+              aria-selected={activeIndex === i}
+              aria-label={`Select ${feature.name} feature`}
               className={`
                 w-2.5 h-2.5 rounded-full transition-all duration-400
                 ${activeIndex === i

@@ -34,13 +34,14 @@ export default function Footer() {
 
             <div className="flex items-center gap-4">
               {[
-                { icon: <Instagram size={18} />, href: "#" },
-                { icon: <Twitter size={18} />, href: "#" },
-                { icon: <Facebook size={18} />, href: "#" },
-                { icon: <Linkedin size={18} />, href: "#" }
+                { icon: <Instagram size={18} />, href: "#", name: "Instagram" },
+                { icon: <Twitter size={18} />, href: "#", name: "Twitter" },
+                { icon: <Facebook size={18} />, href: "#", name: "Facebook" },
+                { icon: <Linkedin size={18} />, href: "#", name: "LinkedIn" }
               ].map((social, i) => (
                 <Link
                   key={i} href={social.href}
+                  aria-label={`Visit us on ${social.name}`}
                   className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0a0a0b] hover:scale-110 transition-all duration-300"
                 >
                   {social.icon}
@@ -109,11 +110,16 @@ export default function Footer() {
         {/* BOTTOM SECTION: Legal & Local */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-12 pl-2">
 
-          <div className="flex flex-col md:flex-row items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <div className="flex flex-col md:flex-row items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             <p>© {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
-            <div className="flex gap-8">
-              <Link href="/home/privacy_policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/home/terms_use" className="hover:text-white transition-colors">Terms of Use</Link>
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+              <Link href="/home/privacy_policy" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/home/terms_use" className="text-slate-400 hover:text-white transition-colors">Terms of Use</Link>
+              <Link href="/home/accessibility" className="text-slate-400 hover:text-white transition-colors">Accessibility Statement</Link>
+              <Link href="/home/accessibility#sign-language" className="text-slate-400 hover:text-white transition-colors">German Sign Language (DGS)</Link>
+              <Link href="/home/accessibility#easy-read" className="text-slate-400 hover:text-white transition-colors">Easy-to-Read</Link>
+              <Link href="/home/accessibility#report-barrier" className="text-slate-400 hover:text-white transition-colors">Report a Barrier</Link>
+              <Link href="/sitemap.xml" className="text-slate-400 hover:text-white transition-colors">Sitemap</Link>
             </div>
           </div>
 

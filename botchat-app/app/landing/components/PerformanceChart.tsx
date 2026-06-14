@@ -70,7 +70,7 @@ export default function PerformanceChart() {
                 </div>
                 <div>
                   <h4 className="font-black text-[#1a1235] text-lg uppercase tracking-tight">Zero Leaks</h4>
-                  <p className="text-[#a0779a] text-sm">Every single comment is tracked and DM'd instantly. No one falls through the cracks.</p>
+                  <p className="text-[#7a4d73] text-sm">Every single comment is tracked and DM'd instantly. No one falls through the cracks.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -79,7 +79,7 @@ export default function PerformanceChart() {
                 </div>
                 <div>
                   <h4 className="font-black text-[#1a1235] text-lg uppercase tracking-tight">3x Conversion</h4>
-                  <p className="text-[#a0779a] text-sm">Speed to lead is king. By replying in 0.8s, conversion rates skyrocket by over 300%.</p>
+                  <p className="text-[#7a4d73] text-sm">Speed to lead is king. By replying in 0.8s, conversion rates skyrocket by over 300%.</p>
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function PerformanceChart() {
                         <TrendingUp size={24} />
                       </div>
                       <div className="text-4xl font-black text-[#1a1235] tracking-tight">+312%</div>
-                      <div className="text-[10px] font-bold text-[#a0779a] uppercase tracking-widest mt-1">
+                      <div className="text-[10px] font-bold text-[#7a4d73] uppercase tracking-widest mt-1">
                         Leads Captured
                       </div>
                     </motion.div>

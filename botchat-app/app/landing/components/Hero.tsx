@@ -167,7 +167,7 @@ function StatChip({ value, label, delay, className }: { value: string; label: st
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       <div className="text-xl font-bold text-white leading-none" style={{ fontFamily: "'Syne', sans-serif" }}>{value}</div>
-      <div className="text-xs text-pink-300/60 mt-0.5 whitespace-nowrap">{label}</div>
+       <div className="text-xs text-pink-300/80 mt-0.5 whitespace-nowrap">{label}</div>
     </motion.div>
   );
 }
@@ -186,7 +186,7 @@ function NotifCard({ icon, text, sub, delay, className }: { icon: string; text: 
       <span className="text-2xl">{icon}</span>
       <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-white text-sm font-medium leading-tight">{text}</div>
-        <div className="text-pink-300/50 text-xs mt-0.5">{sub}</div>
+         <div className="text-pink-300/80 text-xs mt-0.5">{sub}</div>
       </div>
     </motion.div>
   );
@@ -222,7 +222,7 @@ function BrowserStage() {
           <div className="w-3 h-3 rounded-full bg-pink-300/40" />
           <div className="w-3 h-3 rounded-full bg-white/20" />
         </div>
-        <div className="flex-1 mx-4 rounded-lg px-3 py-1.5 text-xs text-white/30 border border-white/8"
+        <div className="flex-1 mx-4 rounded-lg px-3 py-1.5 text-xs text-white/60 border border-white/8"
           style={{ background: "rgba(255,255,255,.04)", fontFamily: "'DM Sans', sans-serif" }}>
           app.replai.io/dashboard
         </div>
@@ -240,7 +240,7 @@ function BrowserStage() {
             style={{
               fontFamily: "'DM Sans', sans-serif",
               background: active === i ? "rgba(255,45,120,.2)" : "transparent",
-              color: active === i ? "#ff80ab" : "rgba(255,255,255,.3)",
+              color: active === i ? "#ff80ab" : "rgba(255,255,255,.6)",
               border: active === i ? "1px solid rgba(255,45,120,.3)" : "1px solid transparent"
             }}>
             {t}
@@ -257,9 +257,9 @@ function BrowserStage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-xs font-semibold text-white/80" style={{ fontFamily: "'Syne', sans-serif" }}>@{c.user}</div>
-              <p className="text-xs text-white/50 truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>{c.comment}</p>
+              <p className="text-xs text-white/70 truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>{c.comment}</p>
             </div>
-            <div className={`px-2 py-1 rounded-lg text-[10px] font-semibold ${c.replied ? "text-pink-400 border border-pink-500/25 bg-pink-500/10" : "text-white/40 border border-white/10 bg-white/5"}`}>
+              <div className={`px-2 py-1 rounded-lg text-[10px] font-semibold ${c.replied ? "text-pink-400 border border-pink-500/25 bg-pink-500/10" : "text-white/60 border border-white/10 bg-white/5"}`}>
               {c.replied ? "Replied ✓" : "Replying…"}
             </div>
           </div>
@@ -281,7 +281,7 @@ function VideoStage() {
           <div className="w-16 h-16 rounded-full bg-pink-500/20 border border-pink-500/30 flex items-center justify-center">
             <Play className="w-7 h-7 text-pink-400 fill-pink-400" />
           </div>
-          <p className="text-pink-300/60 text-xs font-semibold tracking-widest uppercase">Demo Video</p>
+          <p className="text-pink-300/80 text-xs font-semibold tracking-widest uppercase">Demo Video</p>
         </div>
       ) : (
         <video
@@ -332,13 +332,13 @@ function AutomationStage() {
           >
             <div className="mb-2">{stat.icon}</div>
             <div className="text-xl font-bold text-white font-display">{stat.val}</div>
-            <div className="text-[10px] text-pink-200/40 uppercase tracking-widest font-bold">{stat.label}</div>
+            <div className="text-[10px] text-pink-200/80 uppercase tracking-widest font-bold">{stat.label}</div>
           </motion.div>
         ))}
       </div>
       <div className="w-full p-4 rounded-2xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-500/30 flex items-center gap-3">
         <div className="w-3 h-3 rounded-full bg-pink-500 animate-pulse" />
-        <div className="text-xs font-body text-pink-100/80">AI active: Processing real-time interactions...</div>
+        <div className="text-xs font-body text-pink-100/90">AI active: Processing real-time interactions...</div>
       </div>
     </div>
   );
@@ -377,11 +377,14 @@ function VisualCarousel() {
       </AnimatePresence>
 
       {/* Stage Dots */}
-      <div className="absolute bottom-6 right-6 flex gap-2 z-30">
+      <div className="absolute bottom-6 right-6 flex gap-2 z-30" role="tablist" aria-label="Stage navigation">
         {stages.map((_, i) => (
           <button
             key={i}
             onClick={() => setStage(i)}
+            role="tab"
+            aria-selected={stage === i}
+            aria-label={`Show ${stages[i].label} stage`}
             className={`h-1.5 rounded-full transition-all duration-500 ${stage === i ? "w-8 bg-pink-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
           />
         ))}
@@ -448,7 +451,7 @@ export default function Hero() {
 
           {/* Body */}
           <p className="hero-text-elem text-base md:text-lg leading-relaxed max-w-md"
-            style={{ color: "rgba(240,220,240,.6)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}>
+            style={{ color: "rgba(240,220,240,.75)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}>
             The ultimate tool to <span className="text-white font-medium">convert comments &rarr; customers</span>.
             Automate your growth and never miss a lead again.
           </p>
@@ -482,7 +485,7 @@ export default function Hero() {
                 <div key={a}
                   className="w-9 h-9 rounded-full border-[2px] flex items-center justify-center text-[11px] font-bold text-white hover:-translate-y-1 transition-transform cursor-pointer"
                   style={{
-                    background: `hsl(${328 + i * 18}, 80%, 55%)`,
+                    background: `hsl(${328 + i * 18}, 80%, 40%)`,
                     borderColor: "#06000d",
                     zIndex: 10 - i,
                     fontFamily: "'Syne', sans-serif"
@@ -493,8 +496,8 @@ export default function Hero() {
             </div>
             <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
               <span className="text-white font-bold text-base" style={{ fontFamily: "'Syne', sans-serif" }}>11,000+</span>
-              <span className="text-sm" style={{ color: "rgba(255,255,255,.6)" }}> creators trust us</span>
-              <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,.35)" }}>25M+ DMs sent & counting.</div>
+              <span className="text-sm" style={{ color: "rgba(255,255,255,.7)" }}> creators trust us</span>
+              <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,.55)" }}>25M+ DMs sent & counting.</div>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ const staticRoutes: { url: string; priority?: number; changeFreq?: string }[] = 
   { url: "/blog", priority: 0.8, changeFreq: "weekly" },
   { url: "/home/terms_use", priority: 0.3, changeFreq: "yearly" },
   { url: "/home/privacy_policy", priority: 0.3, changeFreq: "yearly" },
+  { url: "/home/accessibility", priority: 0.3, changeFreq: "yearly" },
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

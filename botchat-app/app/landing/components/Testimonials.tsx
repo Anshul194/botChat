@@ -78,7 +78,7 @@ export default function Testimonials() {
             The Global <br /> 
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-[#ff2d78]">Success List.</span>
           </h2>
-          <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
+          <p className="text-gray-300 font-medium text-lg max-w-2xl mx-auto">
             Scaling creators don't work harder, they automate smarter. Join the league of performant creators.
           </p>
         </div>
@@ -118,7 +118,7 @@ export default function Testimonials() {
                       <TrendingUp size={14} />
                       {t.result}
                     </div>
-                    <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                        {t.name} · {t.role}
                     </div>
                   </div>
@@ -143,7 +143,7 @@ export default function Testimonials() {
 
       {/* Manual Controls Callout */}
       <div className="text-center mt-12">
-        <p className="text-gray-500 text-xs font-black uppercase tracking-[0.3em]">
+        <p className="text-gray-400 text-xs font-black uppercase tracking-[0.3em]">
            Auto-sliding experience · Hover to flip
         </p>
       </div>

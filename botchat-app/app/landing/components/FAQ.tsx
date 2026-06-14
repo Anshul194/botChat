@@ -65,9 +65,9 @@ function FAQItem({ item, index, isOpen, toggleOpen }: { item: typeof faqs[0], in
            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${isOpen ? 'bg-[#e8175d] text-white rotate-[360deg] shadow-lg shadow-pink-100' : 'bg-white text-slate-300 group-hover:text-pink-400 border border-slate-100'}`}>
               {item.icon}
            </div>
-           <h3 className={`text-xl md:text-2xl font-bold tracking-tight transition-colors duration-500 ${isOpen ? 'text-[#1a1235]' : 'text-[#1a1235]/70'}`}>
-             {item.question}
-           </h3>
+           <h3 className={`text-xl md:text-2xl font-bold tracking-tight transition-colors duration-500 ${isOpen ? 'text-[#1a1235]' : 'text-[#1a1235]/85'}`}>
+              {item.question}
+            </h3>
         </div>
         <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${isOpen ? 'bg-[#1a1235] text-white rotate-180' : 'bg-white border border-slate-100 text-slate-300 group-hover:text-pink-500'}`}>
            {isOpen ? <Minus size={18} /> : <Plus size={18} />}
@@ -83,7 +83,7 @@ function FAQItem({ item, index, isOpen, toggleOpen }: { item: typeof faqs[0], in
             transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
             className="overflow-hidden"
           >
-            <div className="pt-6 md:pt-8 pl-17 md:pl-17 text-lg text-[#6b5780] font-medium leading-relaxed max-w-2xl">
+             <div className="pt-6 md:pt-8 pl-17 md:pl-17 text-lg text-[#4a3555] font-medium leading-relaxed max-w-2xl">
               {item.answer}
               <motion.div 
                 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
@@ -128,7 +128,7 @@ export default function FAQ() {
                   Smart <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8175d] to-[#ff2d78]">Answers</span>
                 </h2>
-                <p className="text-xl font-medium text-[#6b5780] max-w-sm">
+                <p className="text-xl font-medium text-[#4a3555] max-w-sm">
                   Everything you need to know about the most advanced automation platform in the game.
                 </p>
               </div>
@@ -143,8 +143,8 @@ export default function FAQ() {
                    <HelpCircle size={120} />
                 </div>
                 <div className="relative z-10">
-                  <h4 className="text-2xl font-bold tracking-tight mb-2">Still Curious?</h4>
-                  <p className="text-slate-400 text-sm font-medium mb-6">
+                  <h3 className="text-2xl font-bold tracking-tight mb-2">Still Curious?</h3>
+                  <p className="text-slate-300 text-sm font-medium mb-6">
                     Our team is ready to help 24/7. Ask us anything directly in the DM.
                   </p>
                   <button className="flex items-center gap-3 bg-white text-[#1a1235] px-6 py-3 rounded-2xl font-bold text-sm hover:bg-pink-50 transition-colors">

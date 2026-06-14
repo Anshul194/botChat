@@ -214,7 +214,7 @@ function Sidebar() {
             display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
             <div>
-              <div style={{ color: "#a0779a", fontSize: 10, letterSpacing: "0.03em", fontWeight: 500 }}>{s.label}</div>
+              <div style={{ color: "#7a4d73", fontSize: 10, letterSpacing: "0.03em", fontWeight: 500 }}>{s.label}</div>
               <div style={{ color: "#1a1235", fontSize: 17, fontWeight: 800, letterSpacing: "-0.03em" }}>{s.value}</div>
             </div>
             <div style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", background: "rgba(22,163,74,0.10)", borderRadius: 6, padding: "3px 7px" }}>
@@ -237,7 +237,7 @@ function Sidebar() {
               borderColor: activeFilter === f ? "transparent" : "rgba(232,23,93,0.12)",
               cursor: "pointer",
               background: activeFilter === f ? "linear-gradient(135deg,#e8175d,#ff8cc8)" : "transparent",
-              color: activeFilter === f ? "#fff" : "#a0779a",
+              color: activeFilter === f ? "#fff" : "#7a4d73",
               transition: "all 0.2s", textTransform: "capitalize",
             }}>{f}</button>
           ))}
@@ -407,7 +407,7 @@ function RightPanel({ stage }: { stage: number }) {
             }}>{f.icon}</div>
             <div>
               <div style={{ color: "#1a1235", fontSize: 12, fontWeight: 700 }}>{f.title}</div>
-              <div style={{ color: "#a0779a", fontSize: 11, marginTop: 1 }}>{f.desc}</div>
+              <div style={{ color: "#7a4d73", fontSize: 11, marginTop: 1 }}>{f.desc}</div>
             </div>
           </motion.div>
         ))}
