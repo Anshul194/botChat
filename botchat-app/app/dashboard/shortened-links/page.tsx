@@ -148,10 +148,12 @@ export default function ShortenedLinksPage() {
         setIsCreating(true);
         try {
             rawSlug = rawSlug ? slugify(rawSlug) : '';
-            await dispatch(createLink({ location_url: url, url: rawSlug, domain_id: draft.domain_id || 0 })).unwrap();
+            const payload: any = { location_url: url, url: rawSlug };
+            if (draft.domain_id) payload.domain_id = draft.domain_id;
+            await dispatch(createLink(payload)).unwrap();
             showModal("success", "Success", "Shortened link created successfully!");
             setShowCreateModal(false);
-            setDraft({ title: '', destinationUrl: '', slug: '' });
+            setDraft({ title: '', destinationUrl: '', slug: '', domain_id: 0 });
         } catch (err: any) {
             showModal("error", "Error", err.message || "Failed to create link.");
         } finally {
@@ -179,9 +181,9 @@ export default function ShortenedLinksPage() {
 
             <div className="max-w-full space-y-8 relative z-10 p-6">
                 {/* Header Section */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col md:flex-row md:items-end justify-between gap-6"
                 >
                     <div className="space-y-4">
@@ -206,13 +208,13 @@ export default function ShortenedLinksPage() {
                         onClick={() => setShowCreateModal(true)}
                         className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
                     >
-                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" /> 
+                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
                         Create Short URL
                     </button>
                 </motion.div>
 
                 {/* Search & View Toggle Bar */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
@@ -229,7 +231,7 @@ export default function ShortenedLinksPage() {
                             />
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                         <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10">
                             <button
@@ -264,7 +266,7 @@ export default function ShortenedLinksPage() {
                             <p className="text-sm font-bold uppercase tracking-widest">Scanning Links...</p>
                         </div>
                     ) : filtered.length === 0 ? (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-[3rem] border-2 border-dashed border-[var(--border)]"
@@ -285,37 +287,39 @@ export default function ShortenedLinksPage() {
                     ) : view === 'card' ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {filtered.map((item) => (
-                                <ShortLinkCard 
-                                    key={item.id} 
-                                    item={item} 
-                                    onEdit={handleEdit} 
+                                <ShortLinkCard
+                                    key={item.id}
+                                    item={item}
+                                    onEdit={handleEdit}
                                     onCopy={handleCopy}
                                     copied={copiedSlug === item.slug}
                                 />
                             ))}
                         </div>
                     ) : (
-                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Short URL & Destination</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Analytics</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Management</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filtered.map((item) => (
-                                        <ShortLinkRow 
-                                            key={item.id} 
-                                            item={item} 
-                                            onEdit={handleEdit} 
-                                            onCopy={handleCopy}
-                                            copied={copiedSlug === item.slug}
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2xl] sm:rounded-[2.5rem] shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500 w-full overflow-hidden">
+                            <div className="w-full">
+                                <table className="w-full text-left border-collapse">
+                                    <thead className="hidden sm:table-header-group">
+                                        <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
+                                            <th className="px-4 sm:px-8 py-4 sm:py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Short URL & Destination</th>
+                                            <th className="px-4 sm:px-8 py-4 sm:py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Analytics</th>
+                                            <th className="px-4 sm:px-8 py-4 sm:py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Management</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filtered.map((item) => (
+                                            <ShortLinkRow
+                                                key={item.id}
+                                                item={item}
+                                                onEdit={handleEdit}
+                                                onCopy={handleCopy}
+                                                copied={copiedSlug === item.slug}
+                                            />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -383,7 +387,7 @@ export default function ShortenedLinksPage() {
 
 function ShortLinkCard({ item, onEdit, onCopy, copied }: any) {
     return (
-        <div 
+        <div
             onClick={() => onEdit(item)}
             className="group bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] p-6 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/50 transition-all duration-500 flex flex-col gap-5 relative overflow-hidden cursor-pointer"
         >
@@ -412,7 +416,7 @@ function ShortLinkCard({ item, onEdit, onCopy, copied }: any) {
 
             <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] relative z-10">
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button 
+                    <button
                         className={cn(
                             "relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300",
                             item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
@@ -436,31 +440,35 @@ function ShortLinkCard({ item, onEdit, onCopy, copied }: any) {
 
 function ShortLinkRow({ item, onEdit, onCopy, copied }: any) {
     return (
-        <tr 
+        <tr
             onClick={() => onEdit(item)}
-            className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none cursor-pointer"
+            className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none cursor-pointer flex flex-col sm:table-row p-5 sm:p-0 gap-4 sm:gap-0"
         >
-            <td className="px-8 py-5">
+            <td className="w-full sm:w-auto block sm:table-cell sm:px-8 sm:py-5 p-0">
                 <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                        <Link2 size={24} />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
+                        <Link2 size={20} className="sm:hidden" />
+                        <Link2 size={24} className="hidden sm:block" />
                     </div>
-                    <div className="min-w-0">
-                        <p className="font-bold text-base truncate group-hover:text-primary transition-colors leading-tight">/{item.slug}</p>
-                        <p className="text-[11px] text-[var(--muted-foreground)] font-bold flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                            <ArrowRight size={10} className="text-primary" /> {item.location_url}
-                        </p>
+                    <div className="min-w-0 flex-1">
+                        <p className="font-bold text-base sm:text-base truncate group-hover:text-primary transition-colors leading-tight">/{item.slug}</p>
+                        <div className="text-[11px] text-[var(--muted-foreground)] font-bold flex items-center gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity w-full mt-1">
+                            <ArrowRight size={12} className="text-primary shrink-0" />
+                            <span className="truncate">{item.location_url}</span>
+                        </div>
                     </div>
                 </div>
             </td>
-            <td className="px-8 py-5 text-center">
-                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-tighter bg-[var(--background)]">
+            <td className="w-full sm:w-auto flex justify-between sm:justify-center items-center sm:table-cell sm:px-8 sm:py-5 p-0 pt-4 sm:pt-5 border-t border-[var(--border)]/40 sm:border-0">
+                <span className="sm:hidden text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Analytics</span>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-[var(--border)] text-[10px] font-black uppercase tracking-tighter bg-[var(--background)] shadow-sm">
                     <MousePointer2 size={12} className="text-primary" />
-                    {item.clicks} Clicks
+                    {item.clicks} total clicks
                 </div>
             </td>
-            <td className="px-8 py-5 text-right">
-                <div className="flex items-center justify-end gap-3" onClick={(e) => e.stopPropagation()}>
+            <td className="w-full sm:w-auto flex justify-between sm:justify-end items-center sm:table-cell sm:px-8 sm:py-5 p-0 pt-4 sm:pt-5 border-t border-[var(--border)]/40 sm:border-0">
+                <span className="sm:hidden text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">Controls</span>
+                <div className="flex items-center justify-end gap-2 sm:gap-3" onClick={(e) => e.stopPropagation()}>
                     <button onClick={() => onCopy(item.full_url, item.slug)} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-white dark:bg-white/5 border-[var(--border)] text-slate-500 hover:text-primary hover:border-primary/30")}>
                         {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
                     </button>

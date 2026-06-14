@@ -95,7 +95,9 @@ export default function InstagramBioLinksPage() {
         }
         setIsCreating(true);
         try {
-            await dispatch(createBioPage(newBio)).unwrap();
+            const payload: any = { url: newBio.url, name: newBio.name, description: newBio.description };
+            if (newBio.domain_id) payload.domain_id = newBio.domain_id;
+            await dispatch(createBioPage(payload)).unwrap();
             setShowAddModal(false);
             setNewBio({ url: "", name: "", description: "", domain_id: 0 });
             showModal("success", "Success", "Bio link created successfully.");

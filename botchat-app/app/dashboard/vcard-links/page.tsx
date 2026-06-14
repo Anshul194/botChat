@@ -2,13 +2,13 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { 
-    fetchVcards, 
-    deleteVcard, 
-    createVcard, 
-    toggleVcard, 
-    duplicateVcard, 
-    resetVcardClicks 
+import {
+    fetchVcards,
+    deleteVcard,
+    createVcard,
+    toggleVcard,
+    duplicateVcard,
+    resetVcardClicks
 } from "@/store/slices/vcardsSlice";
 import { fetchDomains } from "@/store/slices/domainsSlice";
 import { useRouter } from "next/navigation";
@@ -48,21 +48,21 @@ import {
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
         {open && (
-            <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-4 sm:p-6">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={onClose} />
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl overflow-hidden flex flex-col max-h-[90vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
-                    <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-slate-100 dark:border-slate-800">
-                        {icon && <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">{icon}</div>}
-                        <h2 className="text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
-                        <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                    initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 30 }}
+                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-3xl overflow-hidden flex flex-col max-h-[92vh] shadow-2xl", maxWidthClassName)}>
+                    <div className="flex items-center gap-4 px-6 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-6 border-b border-slate-100 dark:border-slate-800">
+                        {icon && <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">{icon}</div>}
+                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex-1 tracking-tight pr-2">{title}</h2>
+                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
                             <X size={18} />
                         </button>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-8">{children}</div>
-                    {footer && <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
+                    <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scroll">{children}</div>
+                    {footer && <div className="px-6 sm:px-8 py-5 sm:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
                 </motion.div>
             </div>
         )}
@@ -71,11 +71,11 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
 const InputField = ({ label, ...props }: any) => (
     <div className="space-y-2">
-        <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">{label}</label>
+        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">{label}</label>
         <div className="relative group">
             <input
                 {...props}
-                className="w-full h-14 pl-6 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
+                className="w-full h-12 sm:h-14 pl-5 sm:pl-6 pr-5 sm:pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-sm focus:shadow-inner"
             />
         </div>
     </div>
@@ -109,33 +109,32 @@ export default function VcardLinksPage() {
             full_url: item.full_url ?? '',
             clicks: item.clicks ?? 0,
             active: item.is_enabled !== false,
-            name: item.vcard_name || (item.vcard?.first_name ? `${item.vcard?.first_name || ""} ${item.vcard?.last_name || ""}` : (item.url || item.slug)),
+            name: item.vcard_name || (item.vcard?.first_name ? `${item.vcard?.first_name || ""} ${item.vcard?.last_name || ""}`.trim() : (item.url || item.slug || "Untitled")),
         }));
     }, [vcards]);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
         if (!q) return vcardLinks;
-        return vcardLinks.filter((item) => 
-            item.name.toLowerCase().includes(q) || 
-            item.slug.toLowerCase().includes(q)
+        return vcardLinks.filter((item) =>
+            (item.name || "").toLowerCase().includes(q) ||
+            (item.slug || "").toLowerCase().includes(q)
         );
     }, [vcardLinks, query]);
 
     const onCreate = async () => {
-        if (isCreating) return;
+        if (isCreating || !draft.slug.trim()) return;
         setIsCreating(true);
         try {
-            const result = await dispatch(createVcard({
-                url: draft.slug.trim(),
-                domain_id: draft.domain_id || 0
-            })).unwrap();
+            const payload: any = { url: draft.slug.trim() };
+            if (draft.domain_id) payload.domain_id = draft.domain_id;
+            const result = await dispatch(createVcard(payload)).unwrap();
             showModal("success", "Vcard Created", "Your new Vcard has been created successfully!");
             setShowCreateModal(false);
-            setDraft({ slug: "" });
+            setDraft({ slug: "", domain_id: 0 });
             router.push(`/dashboard/vcard-links/${result.data.id}`);
         } catch (err: any) {
-            showModal("error", "Error", err || "Failed to create Vcard. Slug might be taken.");
+            showModal("error", "Error", err?.message || "Failed to create Vcard. Slug might be taken.");
         } finally {
             setIsCreating(false);
         }
@@ -145,7 +144,7 @@ export default function VcardLinksPage() {
         if (typeof navigator !== "undefined" && navigator.clipboard) {
             await navigator.clipboard.writeText(fullUrl);
             setCopiedSlug(slug);
-            window.setTimeout(() => setCopiedSlug(null), 2000);
+            setTimeout(() => setCopiedSlug(null), 1800);
         }
     };
 
@@ -155,9 +154,7 @@ export default function VcardLinksPage() {
             message: "Are you sure you want to delete this vcard? This action cannot be undone.",
             type: "danger",
             confirmText: "Delete",
-            onConfirm: () => {
-                dispatch(deleteVcard(item.id));
-            }
+            onConfirm: () => dispatch(deleteVcard(item.id)),
         });
     };
 
@@ -167,9 +164,7 @@ export default function VcardLinksPage() {
             message: "Are you sure you want to reset the clicks counter for this vcard?",
             type: "warning",
             confirmText: "Reset",
-            onConfirm: () => {
-                dispatch(resetVcardClicks(item.id));
-            }
+            onConfirm: () => dispatch(resetVcardClicks(item.id)),
         });
     };
 
@@ -184,7 +179,7 @@ export default function VcardLinksPage() {
                     showModal("success", "Duplicated", "Vcard duplicated successfully!");
                     dispatch(fetchVcards());
                 } catch (err: any) {
-                    showModal("error", "Error", err || "Failed to duplicate.");
+                    showModal("error", "Error", err?.message || "Failed to duplicate.");
                 }
             }
         });
@@ -195,123 +190,121 @@ export default function VcardLinksPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30 relative overflow-hidden">
-            {/* Decorative Background Glows */}
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] relative overflow-hidden pb-12">
+            {/* Decorative Background Glows - Responsive */}
+            <div className="fixed top-[-15%] right-[-15%] w-[60%] h-[60%] md:w-[45%] md:h-[45%] bg-primary/8 rounded-full blur-[140px] pointer-events-none z-0" />
+            <div className="fixed bottom-[-20%] left-[-20%] w-[55%] h-[55%] md:w-[40%] md:h-[40%] bg-accent/5 rounded-full blur-[130px] pointer-events-none z-0" />
 
-            <div className="max-w-full space-y-8 relative z-10 p-6">
-                {/* Header Section */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+            <div className="max-w-7xl mx-auto space-y-8 relative z-10 px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+                {/* Header Section - Better Mobile */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col md:flex-row md:items-end justify-between gap-6 lg:gap-8"
                 >
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-xl shadow-primary/10">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-xl shadow-primary/10 flex-shrink-0">
                                 <Contact size={24} />
                             </div>
-                            <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+                            <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest hidden sm:inline-block">
                                 Bio Link Studio
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-                                Vcard Links
-                            </h1>
-                            <p className="text-[var(--muted-foreground)] font-medium max-w-xl">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-slate-900 dark:text-white">Vcard Links</h1>
+                            <p className="text-[var(--muted-foreground)] font-medium max-w-md lg:max-w-xl text-sm sm:text-base">
                                 Manage your professional digital business cards and track their performance.
                             </p>
                         </div>
                     </div>
+
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+                        className="h-12 sm:h-14 px-6 sm:px-8 rounded-2xl bg-primary text-white text-xs sm:text-[13px] font-black uppercase tracking-widest flex items-center justify-center gap-2.5 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.97] transition-all group w-full sm:w-auto"
                     >
-                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" /> 
-                        Create Vcard
+                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
+                        Create New Vcard
                     </button>
                 </motion.div>
 
-                {/* Search & View Toggle Bar */}
-                <motion.div 
+                {/* Search & View Toggle - Improved Mobile */}
+                <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="h-16 rounded-3xl border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl flex items-center justify-between px-6 shadow-sm"
+                    className="flex flex-col sm:flex-row gap-4 sm:items-center bg-[var(--card)] border border-[var(--border)] rounded-3xl p-2 sm:p-1.5 shadow-sm"
                 >
-                    <div className="flex items-center gap-4 flex-1">
-                        <div className="relative w-full max-w-md group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
-                            <input
-                                placeholder="Search Vcards..."
-                                className="w-full pl-10 h-10 bg-transparent text-sm font-medium focus:outline-none"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                            />
-                        </div>
+                    <div className="relative flex-1 max-w-full sm:max-w-md group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
+                        <input
+                            placeholder="Search by name or slug..."
+                            className="w-full pl-12 pr-5 h-12 sm:h-11 bg-transparent text-sm font-medium focus:outline-none rounded-2xl sm:rounded-[22px]"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
                     </div>
-                    
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10">
-                            <button
-                                onClick={() => setView('row')}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-lg transition-all flex items-center gap-2",
-                                    view === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                                )}
-                            >
-                                <Layout className="w-3.5 h-3.5" />
-                                <span className="text-[10px] font-black uppercase tracking-wider">List</span>
-                            </button>
-                            <button
-                                onClick={() => setView('card')}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-lg transition-all flex items-center gap-2",
-                                    view === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                                )}
-                            >
-                                <Grid className="w-3.5 h-3.5" />
-                                <span className="text-[10px] font-black uppercase tracking-wider">Cards</span>
-                            </button>
-                        </div>
+
+                    <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-2xl p-1 h-11 sm:h-10 flex-shrink-0 w-full sm:w-auto">
+                        <button
+                            onClick={() => setView('row')}
+                            className={cn(
+                                "flex-1 sm:flex-none px-5 py-2 rounded-xl transition-all flex items-center justify-center gap-2 text-sm",
+                                view === 'row' ? "bg-primary text-primary-foreground shadow" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--muted-foreground)]"
+                            )}
+                        >
+                            <Layout className="w-4 h-4" />
+                            <span className="font-semibold text-xs tracking-wider hidden sm:inline">List</span>
+                        </button>
+                        <button
+                            onClick={() => setView('card')}
+                            className={cn(
+                                "flex-1 sm:flex-none px-5 py-2 rounded-xl transition-all flex items-center justify-center gap-2 text-sm",
+                                view === 'card' ? "bg-primary text-primary-foreground shadow" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--muted-foreground)]"
+                            )}
+                        >
+                            <Grid className="w-4 h-4" />
+                            <span className="font-semibold text-xs tracking-wider hidden sm:inline">Cards</span>
+                        </button>
                     </div>
                 </motion.div>
 
-                {/* Main Content Area */}
-                <div className="min-h-[400px]">
+                {/* Main Content */}
+                <div className="min-h-[420px]">
                     {isLoading && vcardLinks.length === 0 ? (
-                        <div className="h-[400px] flex flex-col items-center justify-center gap-4 text-[var(--muted-foreground)]">
-                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                            <p className="text-sm font-bold uppercase tracking-widest">Scanning Cards...</p>
+                        <div className="h-[420px] flex flex-col items-center justify-center gap-5 text-[var(--muted-foreground)]">
+                            <Loader2 className="w-9 h-9 animate-spin text-primary" />
+                            <p className="text-sm font-semibold uppercase tracking-[0.125em]">Loading your Vcards...</p>
                         </div>
                     ) : filtered.length === 0 ? (
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-[3rem] border-2 border-dashed border-[var(--border)]"
+                            className="h-[420px] flex flex-col items-center justify-center text-center px-6 rounded-3xl border border-dashed border-[var(--border)] bg-[var(--card)]"
                         >
-                            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-                                <Contact className="w-8 h-8 text-primary" />
+                            <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-6">
+                                <Contact className="w-10 h-10 text-primary" />
                             </div>
-                            <h3 className="text-xl font-bold mb-2">No Vcards Found</h3>
-                            <p className="text-[var(--muted-foreground)] max-w-xs mx-auto mb-8">
-                                {query ? "Try adjusting your search query." : "Generate your first digital business card and start networking."}
+                            <h3 className="text-2xl font-bold mb-2 tracking-tight">No Vcards Yet</h3>
+                            <p className="text-[var(--muted-foreground)] max-w-xs mx-auto mb-8 text-balance">
+                                {query ? "No matches found. Try different keywords." : "Create your first digital business card to get started."}
                             </p>
                             {!query && (
-                                <button onClick={() => setShowCreateModal(true)} className="rounded-2xl h-12 px-8 bg-primary text-white font-black uppercase tracking-widest flex items-center gap-2">
-                                    <Plus className="w-4 h-4" /> Create Vcard
+                                <button
+                                    onClick={() => setShowCreateModal(true)}
+                                    className="h-12 px-8 rounded-2xl bg-primary text-white font-semibold flex items-center gap-3 hover:bg-primary/90 transition-colors text-sm"
+                                >
+                                    <Plus className="w-4 h-4" /> Create Your First Vcard
                                 </button>
                             )}
                         </motion.div>
                     ) : view === 'card' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                             {filtered.map((item) => (
-                                <VcardLinkCard 
-                                    key={item.id} 
-                                    item={item} 
-                                    onEdit={(it: any) => router.push(`/dashboard/vcard-links/${it.id}`)} 
+                                <VcardLinkCard
+                                    key={item.id}
+                                    item={item}
+                                    onEdit={(it: any) => router.push(`/dashboard/vcard-links/${it.id}`)}
                                     onCopy={onCopy}
                                     copied={copiedSlug === item.slug}
                                     onToggle={handleToggle}
@@ -324,21 +317,22 @@ export default function VcardLinksPage() {
                             ))}
                         </div>
                     ) : (
-                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Identity & URL</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Analytics</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Management</th>
+                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-3xl shadow-xl overflow-hidden">
+                            <table className="w-full text-left border-collapse min-w-full">
+                                <thead className="hidden sm:table-header-group border-b border-[var(--border)] bg-[var(--background)]/70">
+                                    <tr>
+                                        <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-[var(--muted-foreground)] text-left">Identity</th>
+                                        <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">URL</th>
+                                        <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Clicks</th>
+                                        <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right pr-8">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-[var(--border)]">
                                     {filtered.map((item) => (
-                                        <VcardLinkRow 
-                                            key={item.id} 
-                                            item={item} 
-                                            onEdit={(it: any) => router.push(`/dashboard/vcard-links/${it.id}`)} 
+                                        <VcardLinkRow
+                                            key={item.id}
+                                            item={item}
+                                            onEdit={(it: any) => router.push(`/dashboard/vcard-links/${it.id}`)}
                                             onCopy={onCopy}
                                             copied={copiedSlug === item.slug}
                                             onToggle={handleToggle}
@@ -356,53 +350,67 @@ export default function VcardLinksPage() {
                 </div>
             </div>
 
-            {/* Creation Modal */}
+            {/* Create Modal - Enhanced */}
             <ModalShell
                 open={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-                title="Create Digital Vcard"
-                icon={<Contact size={20} />}
+                onClose={() => {
+                    setShowCreateModal(false);
+                    setDraft({ slug: "", domain_id: 0 });
+                }}
+                title="Create New Digital Vcard"
+                icon={<Contact size={22} />}
+                maxWidthClassName="max-w-lg"
                 footer={
-                    <div className="flex gap-4">
-                        <button onClick={() => setShowCreateModal(false)} className="flex-1 h-14 rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowCreateModal(false)}
+                            className="flex-1 h-12 sm:h-14 rounded-2xl border border-[var(--border)] font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            Cancel
+                        </button>
                         <button
                             onClick={onCreate}
-                            disabled={isCreating}
-                            className="flex-[1.5] h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50"
+                            disabled={isCreating || !draft.slug.trim()}
+                            className="flex-1 h-12 sm:h-14 rounded-2xl bg-primary text-white font-semibold text-sm shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-[0.985]"
                         >
-                            {isCreating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
-                            {isCreating ? "Initializing..." : "Create Vcard"}
+                            {isCreating ? (
+                                <><Loader2 size={18} className="animate-spin" /> Creating...</>
+                            ) : (
+                                <><Plus size={18} /> Create Vcard</>
+                            )}
                         </button>
                     </div>
                 }
             >
-                <div className="space-y-8 py-2">
+                <div className="space-y-8 py-1">
                     <InputField
-                        label="Slug (URL Path)"
+                        label="SLUG / CUSTOM PATH"
                         value={draft.slug}
                         onChange={(e: any) => setDraft((prev) => ({ ...prev, slug: e.target.value }))}
-                        placeholder="e.g. john-doe-pro"
+                        placeholder="john-doe-business"
                     />
+
                     {domains.length > 0 && (
                         <div className="space-y-2">
-                            <label className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Custom Domain</label>
+                            <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">CUSTOM DOMAIN (OPTIONAL)</label>
                             <select
                                 value={draft.domain_id}
                                 onChange={(e: any) => setDraft((prev) => ({ ...prev, domain_id: parseInt(e.target.value) }))}
-                                className="w-full h-14 pl-6 pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                className="w-full h-12 sm:h-14 pl-5 sm:pl-6 pr-5 sm:pr-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold outline-none transition-all appearance-none"
                             >
-                                <option value={0}>Default domain</option>
+                                <option value={0}>Use default domain (biolink.divyangtechlabs.com)</option>
                                 {domains.map((d: any) => (
-                                    <option key={d.domain_id || d.id} value={d.domain_id || d.id}>{d.domain}</option>
+                                    <option key={d.id || d.domain_id} value={d.id || d.domain_id}>{d.domain}</option>
                                 ))}
                             </select>
                         </div>
                     )}
-                    <div className="p-5 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/10 flex items-start gap-4">
-                        <Info size={18} className="text-indigo-600 mt-1 shrink-0" />
-                        <p className="text-[11px] text-indigo-700/80 dark:text-indigo-400 font-bold uppercase tracking-tight leading-relaxed">
-                            This slug will be your public business card link. You can choose a custom name or leave it empty for an auto-generated one.
-                        </p>
+
+                    <div className="bg-gradient-to-br from-indigo-50 to-sky-50 dark:from-indigo-950/40 dark:to-slate-900 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-6 flex gap-4">
+                        <Info size={22} className="text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                            Choose a memorable slug. This will be part of your public Vcard URL. You can edit everything later.
+                        </div>
                     </div>
                 </div>
             </ModalShell>
@@ -410,101 +418,121 @@ export default function VcardLinksPage() {
     );
 }
 
+// Card Component - Better Responsive UI
 function VcardLinkCard({ item, onEdit, onCopy, copied, onToggle, onAction }: any) {
     const publicUrl = item.full_url || `biolink.divyangtechlabs.com/${item.slug}`;
+
     return (
-        <div 
+        <motion.div
+            whileHover={{ y: -4 }}
             onClick={() => onEdit(item)}
-            className="group bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] p-6 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/50 transition-all duration-500 flex flex-col gap-5 relative overflow-hidden cursor-pointer"
+            className="group bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col cursor-pointer relative overflow-hidden h-full"
         >
-            <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                <Contact className="w-24 h-24" />
+            <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Contact className="w-32 h-32" />
             </div>
 
-            <div className="flex items-start justify-between relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                    <span className="text-xl font-black">{(item.name?.[0] || "V").toUpperCase()}</span>
+            <div className="flex justify-between items-start mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <span className="text-3xl font-black tracking-tighter">{(item.name?.[0] || '?').toUpperCase()}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--background)] border border-[var(--border)] shadow-sm">
-                    <span className={cn("w-1.5 h-1.5 rounded-full", item.active ? "bg-emerald-500 animate-pulse" : "bg-slate-400")} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">
-                        {item.active ? "Active" : "Disabled"}
-                    </span>
+
+                <div className="flex items-center gap-2 bg-[var(--background)] px-3 py-1 rounded-full border border-[var(--border)] text-[10px] font-mono uppercase tracking-widest">
+                    <div className={cn("w-2 h-2 rounded-full", item.active ? "bg-emerald-500 ring-1 ring-emerald-400/50" : "bg-slate-400")} />
+                    {item.active ? "LIVE" : "PAUSED"}
                 </div>
             </div>
 
-            <div className="space-y-1 relative z-10">
-                <h3 className="font-bold text-lg group-hover:text-primary transition-colors truncate">{item.name}</h3>
-                <p className="text-xs text-[var(--muted-foreground)] font-medium truncate opacity-60 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    <Globe size={10} className="text-primary" /> {publicUrl}
-                </p>
+            <div className="flex-1 space-y-3">
+                <h3 className="font-semibold text-xl tracking-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[3.2em]">{item.name || "Untitled Vcard"}</h3>
+
+                <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)] font-mono break-all">
+                    <Globe size={13} className="text-primary/70" />
+                    <span className="line-clamp-1">{publicUrl}</span>
+                </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] relative z-10">
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button 
+            <div className="pt-6 mt-auto border-t border-[var(--border)] flex items-center justify-between">
+                <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+                    <button
                         onClick={() => onToggle(item)}
                         className={cn(
-                            "relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                            item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                            "relative inline-flex h-6 w-11 items-center rounded-full border-2 border-transparent transition-all duration-200",
+                            item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"
                         )}
                     >
-                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-5" : "translate-x-0.5")} />
+                        <span className={cn("block h-4 w-4 rounded-full bg-white shadow transition-transform", item.active ? "translate-x-5" : "translate-x-0.5")} />
                     </button>
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400">{item.clicks} Clicks</span>
+                    <div className="text-xs text-[var(--muted-foreground)] font-medium flex items-center gap-1">
+                        <MousePointer2 size={13} /> {item.clicks}
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onCopy(publicUrl, item.slug)} className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all border", copied ? "bg-primary text-white border-primary" : "bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 text-slate-500")}>
-                        {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+                <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onCopy(publicUrl, item.slug); }}
+                        className={cn("h-9 w-9 flex items-center justify-center rounded-2xl transition-all", copied ? "bg-emerald-500 text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800")}
+                    >
+                        {copied ? <CheckCircle2 size={17} /> : <Copy size={17} />}
                     </button>
                     <ActionDropdown item={item} onEdit={onEdit} onAction={onAction} />
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 
+// Row Component - Responsive Table Row
 function VcardLinkRow({ item, onEdit, onCopy, copied, onToggle, onAction }: any) {
     const publicUrl = item.full_url || `biolink.divyangtechlabs.com/${item.slug}`;
+
     return (
-        <tr 
+        <tr
             onClick={() => onEdit(item)}
-            className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none cursor-pointer"
+            className="group hover:bg-[var(--card)]/70 transition-colors cursor-pointer border-b border-[var(--border)] last:border-none"
         >
-            <td className="px-8 py-5">
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                        <Contact size={24} />
+            {/* Mobile Stacked + Desktop Table */}
+            <td className="p-5 sm:p-6 lg:p-7 block sm:table-cell">
+                <div className="flex items-start gap-4 sm:gap-5">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary/20 transition-colors">
+                        <Contact size={26} />
                     </div>
-                    <div className="min-w-0">
-                        <p className="font-bold text-base truncate group-hover:text-primary transition-colors leading-tight">{item.name}</p>
-                        <p className="text-[11px] text-[var(--muted-foreground)] font-bold flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                            <Globe size={10} className="text-primary" /> {publicUrl}
-                        </p>
+                    <div className="flex-1 min-w-0 pt-0.5">
+                        <div className="font-semibold text-[15px] sm:text-base tracking-tight truncate">{item.name}</div>
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] font-mono mt-1">
+                            <Globe size={12} />
+                            <span className="truncate">{publicUrl}</span>
+                        </div>
                     </div>
                 </div>
             </td>
-            <td className="px-8 py-5 text-center">
-                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-tighter bg-[var(--background)]">
-                    <MousePointer2 size={12} className="text-primary" />
-                    {item.clicks} Total Clicks
+
+            <td className="px-5 sm:px-6 lg:px-7 py-4 sm:py-7 hidden sm:table-cell text-center align-middle">
+                <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-[var(--background)] border border-[var(--border)] text-xs font-medium">
+                    <MousePointer2 size={14} className="text-primary" />
+                    {item.clicks} clicks
                 </div>
             </td>
-            <td className="px-8 py-5 text-right">
-                <div className="flex items-center justify-end gap-3" onClick={(e) => e.stopPropagation()}>
-                    <button 
+
+            <td className="p-5 sm:p-6 lg:p-7 block sm:table-cell">
+                <div className="flex items-center justify-end gap-3 sm:gap-4" onClick={(e) => e.stopPropagation()}>
+                    <button
                         onClick={() => onToggle(item)}
                         className={cn(
-                            "relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                            item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                            "relative inline-flex h-6 w-11 items-center rounded-full border transition-all",
+                            item.active ? "bg-primary border-primary" : "bg-slate-200 dark:bg-slate-700 border-slate-300"
                         )}
                     >
-                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-5" : "translate-x-0.5")} />
+                        <span className={cn("h-4 w-4 rounded-full bg-white shadow-md transition-all", item.active ? "translate-x-[22px]" : "translate-x-0.5")} />
                     </button>
-                    <button onClick={() => onCopy(publicUrl, item.slug)} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-white dark:bg-white/5 border-[var(--border)] text-slate-500 hover:text-primary hover:border-primary/30")}>
-                        {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
+
+                    <button
+                        onClick={() => onCopy(publicUrl, item.slug)}
+                        className={cn("p-2.5 rounded-2xl border transition-colors", copied ? "bg-emerald-100 text-emerald-600 border-emerald-200" : "hover:bg-slate-100 dark:hover:bg-slate-800")}
+                    >
+                        {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}
                     </button>
+
                     <ActionDropdown item={item} onEdit={onEdit} onAction={onAction} />
                 </div>
             </td>
@@ -516,26 +544,26 @@ function ActionDropdown({ item, onEdit, onAction }: any) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="w-10 h-10 rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-400 hover:text-slate-600">
+                <button className="h-10 w-10 rounded-2xl border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-foreground transition-all active:scale-95">
                     <MoreVertical size={18} />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
-                <DropdownMenuItem onClick={() => onEdit(item)} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <Pencil size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Modify Vcard</span>
+            <DropdownMenuContent align="end" className="w-56 rounded-2xl p-1.5 shadow-xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <DropdownMenuItem onClick={() => onEdit(item)} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm">
+                    <Pencil size={16} /> Edit Vcard
                 </DropdownMenuItem>
-                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <QrCode size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Digital QR</span>
+                <DropdownMenuItem className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm opacity-70">
+                    <QrCode size={16} /> Generate QR Code
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onAction('duplicate')} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <Copy size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
+                <DropdownMenuItem onClick={() => onAction('duplicate')} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm">
+                    <Copy size={16} /> Duplicate
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onAction('reset')} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <RefreshCcw size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Clicks</span>
+                <DropdownMenuItem onClick={() => onAction('reset')} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm">
+                    <RefreshCcw size={16} /> Reset Analytics
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
-                <DropdownMenuItem onClick={() => onAction('delete')} className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
-                    <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Destroy Card</span>
+                <DropdownMenuSeparator className="my-1" />
+                <DropdownMenuItem onClick={() => onAction('delete')} className="cursor-pointer text-red-600 dark:text-red-500 rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm focus:bg-red-50 dark:focus:bg-red-950">
+                    <Trash2 size={16} /> Delete Vcard
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
