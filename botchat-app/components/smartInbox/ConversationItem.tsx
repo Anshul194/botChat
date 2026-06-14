@@ -80,7 +80,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                 ) : (
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-xs ${
                         isSelected ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
-                    }`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                    }`}>
                         {(conversation.customer_name ?? '?')[0]?.toUpperCase()}
                     </div>
                 )}
@@ -107,10 +107,10 @@ export default function ConversationItem({ conversation }: ConversationItemProps
             {/* Meta details */}
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-0.5">
-                    <h4 className={`text-[13px] font-medium truncate max-w-[140px] ${isSelected ? "text-white" : "text-foreground"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                    <h4 className={`text-[13px] font-medium truncate max-w-[140px] ${isSelected ? "text-white" : "text-foreground"}`}>
                         {conversation.customer_name}
                     </h4>
-                    <span className={`text-[10px] text-muted-foreground/80 ${isSelected ? "text-white/60" : ""}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                    <span className={`text-[10px] text-muted-foreground/80 ${isSelected ? "text-white/60" : ""}`}>
                         {formatTime(conversation.last_message_at)}
                     </span>
                 </div>
@@ -119,11 +119,11 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex-1 min-w-0">
                         {isTyping ? (
-                            <p className={`text-[11px] font-medium animate-pulse truncate ${isSelected ? "text-white/80" : "text-primary"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                            <p className={`text-[11px] font-medium animate-pulse truncate ${isSelected ? "text-white/80" : "text-primary"}`}>
                                 {typingMsg || "Typing..."}
                             </p>
                         ) : (
-                            <p className={`text-[11px] truncate ${isSelected ? "text-white/70" : "text-muted-foreground"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                            <p className={`text-[11px] truncate ${isSelected ? "text-white/70" : "text-muted-foreground"}`}>
                                 {getMessagePreview(conversation.last_message)}
                             </p>
                         )}

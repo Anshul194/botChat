@@ -48,7 +48,7 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
                 groups.push(
                     <div key={`date-${dateStr}`} className="flex items-center justify-center my-6 gap-3">
                         <div className="h-px flex-1 bg-border/60" />
-                        <span className="text-[10px] font-medium text-muted-foreground/70 px-3 whitespace-nowrap" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                        <span className="text-[10px] font-medium text-muted-foreground/70 px-3 whitespace-nowrap">
                             {dateStr}
                         </span>
                         <div className="h-px flex-1 bg-border/60" />
@@ -79,7 +79,7 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
                                 className="w-9 h-9 rounded-full object-cover ring-2 ring-background shadow-sm"
                             />
                         ) : (
-                            <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-sm" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                            <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-sm">
                                 {(selectedConversation.customer_name ?? '?')[0]?.toUpperCase()}
                             </div>
                         )}
@@ -89,14 +89,14 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-medium text-foreground leading-none" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                            <h3 className="text-sm font-medium text-foreground leading-none">
                                 {selectedConversation.customer_name}
                             </h3>
                             {isOnline && (
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Online" />
                             )}
                         </div>
-                        <p className="text-[11px] text-muted-foreground/60 mt-0.5 flex items-center gap-1.5" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                        <p className="text-[11px] text-muted-foreground/60 mt-0.5 flex items-center gap-1.5">
                             {selectedConversation.platform === "instagram" ? (
                                 <>
                                     <Instagram className="w-3 h-3" />

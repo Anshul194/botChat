@@ -71,9 +71,9 @@ export default function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`relative flex flex-col p-8 rounded-3xl transition-all h-full ${
+              className={`relative flex flex-col p-6 md:p-8 rounded-3xl transition-all h-full ${
                 plan.featured 
-                  ? "bg-white border-2 border-[#FF2D78] shadow-2xl scale-105 z-10" 
+                  ? "bg-white border-2 border-[#FF2D78] shadow-2xl md:scale-105 z-10" 
                   : "bg-white border border-gray-100 hover:shadow-xl shadow-sm"
               }`}
             >

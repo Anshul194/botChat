@@ -331,18 +331,18 @@ export default function PostStudioPage() {
 
   if (step === 'select') {
     return (
-      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-8 flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-4 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12 relative z-10">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 sm:mb-12 relative z-10">
           <Badge variant="secondary" className="mb-4 px-4 py-1">Choose Campaign Type</Badge>
-          <h1 className="text-5xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-foreground)]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-foreground)]">
             What are we creating today?
           </h1>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl w-full relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl w-full relative z-10">
           <SelectionCard
             title="Multimedia Post"
             description="Post text, link, image, or video on Facebook & Instagram automatically."
@@ -377,19 +377,19 @@ export default function PostStudioPage() {
 
     return (
       <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30">
-        <div className="h-20 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md flex items-center justify-between px-8">
-          <div className="flex items-center gap-6">
-            <Button variant="ghost" size="icon" onClick={() => setStep('select')} className="rounded-xl hover:bg-primary/10">
-              <ChevronLeft className="w-6 h-6" />
+        <div className="h-auto sm:h-20 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-8 py-3 sm:py-0">
+          <div className="flex items-center gap-3 sm:gap-6">
+            <Button variant="ghost" size="icon" onClick={() => setStep('select')} className="rounded-xl hover:bg-primary/10 shrink-0">
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight capitalize">{postType?.replace('-', ' ')} Campaigns</h1>
-              <p className="text-xs text-[var(--muted-foreground)] font-medium">Manage and track your social media campaigns</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-black tracking-tight capitalize truncate">{postType?.replace('-', ' ')} Campaigns</h1>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium hidden sm:block">Manage and track your social media campaigns</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative w-64 group">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <div className="relative w-full sm:w-64 group order-last sm:order-none">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
               <Input
                 placeholder="Search campaigns..."
@@ -399,36 +399,36 @@ export default function PostStudioPage() {
               />
             </div>
 
-            <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10 shadow-sm">
+            <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10 shadow-sm hidden sm:flex">
               <button
                 onClick={() => setListView('row')}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-2",
+                  "px-2 sm:px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-1 sm:gap-2",
                   listView === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 )}
               >
                 <Layout className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider">Row</span>
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:inline">Row</span>
               </button>
               <button
                 onClick={() => setListView('card')}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-2",
+                  "px-2 sm:px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-1 sm:gap-2",
                   listView === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 )}
               >
                 <Grid className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider">Card</span>
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:inline">Card</span>
               </button>
             </div>
 
-            <Button onClick={() => setStep('studio')} className="rounded-xl h-10 px-6 font-bold shadow-lg shadow-primary/20">
-              <Plus className="w-4 h-4 mr-2" /> New Campaign
+            <Button onClick={() => setStep('studio')} className="rounded-xl h-10 px-4 sm:px-6 font-bold shadow-lg shadow-primary/20 text-xs sm:text-sm">
+              <Plus className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">New Campaign</span>
             </Button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 bg-[var(--background)]/50">
+        <div className="flex-1 overflow-y-auto py-4 sm:py-8 bg-[var(--background)]/50">
           {filteredCampaigns.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center opacity-40 grayscale pointer-events-none">
               <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -438,7 +438,7 @@ export default function PostStudioPage() {
               <p className="text-sm">Start by creating your first {postType} campaign</p>
             </div>
           ) : listView === 'card' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 -mx-4 md:-mx-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {filteredCampaigns.map((camp: any, idx: number) => (
                 <div key={camp.id || idx} className="group bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/50 transition-all duration-500 flex flex-col gap-4 relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
@@ -504,7 +504,8 @@ export default function PostStudioPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-[var(--card)] border border-[var(--border)] rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="hidden sm:block bg-[var(--card)] border border-[var(--border)] rounded-2xl sm:rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
@@ -601,6 +602,7 @@ export default function PostStudioPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
@@ -648,41 +650,41 @@ export default function PostStudioPage() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Main Content Area */}
-        <main className="flex-1 flex h-full overflow-hidden">
+        <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
           {/* Left - Account Selector & Composer */}
-          <section className="flex-1 border-r border-[var(--border)] h-full flex flex-col overflow-hidden bg-[var(--background)]">
+          <section className="flex-1 border-r-0 lg:border-r border-[var(--border)] h-full flex flex-col overflow-hidden bg-[var(--background)]">
             {/* Account Selector */}
             <div className="flex flex-col border-b border-[var(--border)] bg-[var(--card)] px-6 py-3 gap-3 shrink-0 z-10">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap">
+                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                   <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
                     Select {postType === 'multimedia' ? 'Pages' : 'Accounts'} ({(postType === 'cta' || postType === 'carousel') ? selectedParentAccounts.length : selectedAccounts.length})
                   </div>
-                  <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-1 h-8">
+                  <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-0.5 sm:p-1 h-7 sm:h-8">
                     <button
                       onClick={() => setPlatform('all')}
-                      className={cn("px-3 text-xs rounded transition-colors font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                      className={cn("px-2 sm:px-3 text-[10px] sm:text-xs rounded transition-colors font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
                     >
                       All
                     </button>
                     <button
                       onClick={() => setPlatform('facebook')}
-                      className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                      className={cn("flex items-center gap-1 px-2 sm:px-3 text-[10px] sm:text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
                     >
-                      <Facebook className="w-3 h-3" /> FB ({uniqueAccounts.filter(a => a.type === 'facebook').length})
+                      <Facebook className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> FB ({uniqueAccounts.filter(a => a.type === 'facebook').length})
                     </button>
                     {(postType !== 'cta' && postType !== 'carousel') && (
                       <button
                         onClick={() => setPlatform('instagram')}
-                        className={cn("flex items-center gap-1 px-3 text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
+                        className={cn("flex items-center gap-1 px-2 sm:px-3 text-[10px] sm:text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
                       >
-                        <Instagram className="w-3 h-3" /> IG ({uniqueAccounts.filter(a => a.type === 'instagram').length})
+                        <Instagram className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> IG ({uniqueAccounts.filter(a => a.type === 'instagram').length})
                       </button>
                     )}
                   </div>
                 </div>
 
-                <div className="relative w-64">
+                <div className="relative w-full sm:w-64 max-w-[200px] sm:max-w-none">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
                   <Input
                     placeholder="Quick find..."
@@ -824,7 +826,7 @@ export default function PostStudioPage() {
           </section>
 
           {/* Right - Preview */}
-          <section className="w-[400px] xl:w-[480px] shrink-0 h-full bg-[var(--background)] shadow-[-10px_0_30px_rgba(0,0,0,0.02)] relative z-20">
+          <section className="w-full lg:w-[400px] xl:w-[480px] shrink-0 h-auto lg:h-full bg-[var(--background)] shadow-[-10px_0_30px_rgba(0,0,0,0.02)] relative z-20">
             <PostPreview
               content={caption}
               media={media}

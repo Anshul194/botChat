@@ -110,9 +110,9 @@ export default function Footer() {
         {/* BOTTOM SECTION: Legal & Local */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-12 pl-2">
 
-          <div className="flex flex-col md:flex-row items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            <p>© {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">
+            <p className="text-center md:text-left">&copy; {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
+            <div className="flex flex-wrap justify-center gap-x-6 md:gap-x-8 gap-y-3">
               <Link href="/home/privacy_policy" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/home/terms_use" className="text-slate-400 hover:text-white transition-colors">Terms of Use</Link>
               <Link href="/home/accessibility" className="text-slate-400 hover:text-white transition-colors">Accessibility Statement</Link>

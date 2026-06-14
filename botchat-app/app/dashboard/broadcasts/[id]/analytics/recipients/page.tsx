@@ -98,13 +98,13 @@ function TimelineModal({
     return (
         // Backdrop
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4"
             style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
             onClick={onClose}
         >
             {/* Modal */}
             <div
-                className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl"
+                className="relative w-full max-w-none sm:max-w-lg min-h-screen sm:min-h-0 max-h-screen sm:max-h-[85vh] overflow-y-auto rounded-none sm:rounded-2xl shadow-2xl"
                 style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}
                 onClick={(e) => e.stopPropagation()}
             >

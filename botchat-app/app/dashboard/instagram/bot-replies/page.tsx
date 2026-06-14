@@ -842,7 +842,7 @@ export default function InstagramBotRepliesPage() {
                 {/* CREATE MODAL */}
                 <AnimatePresence>
                     {showCreateModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm"
@@ -852,7 +852,7 @@ export default function InstagramBotRepliesPage() {
                                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-5 xs:p-6 sm:p-8 w-full max-w-md shadow-xl relative z-10"
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-3xl p-5 xs:p-6 sm:p-8 w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 shadow-xl relative z-10"
                             >
                                 <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
                                     New IG Flow {selectedAccountId !== "all" ? `for ${selectedAccountObj?.username}` : ""}
@@ -1000,9 +1000,9 @@ export default function InstagramBotRepliesPage() {
                 {/* ACTION CREATION MODAL */}
                 <AnimatePresence>
                     {showActionModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[40px] p-10 w-full max-w-md shadow-2xl relative z-10">
+                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-[40px] p-10 w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 shadow-2xl relative z-10">
                                 <h3 className="text-2xl font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">Create IG Shortcut</h3>
                                 <p className="text-sm text-neutral-500 mb-8 font-medium">Select a system event to automate with a new flow.</p>
 

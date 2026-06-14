@@ -175,7 +175,7 @@ export default function CommentTemplates({ onClose, defaultView = "list", select
 
     // ─────────────────────────────────────────────────────────────────────────
     return (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
             <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -189,7 +189,7 @@ export default function CommentTemplates({ onClose, defaultView = "list", select
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: 10 }}
                 transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                className="relative z-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                className="relative z-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-3xl w-full max-w-none sm:max-w-xl min-h-screen sm:min-h-0 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}

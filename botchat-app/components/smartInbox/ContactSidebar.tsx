@@ -17,26 +17,16 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
 
     const isOnline = onlineUsers[selectedConversation.customer_id] ?? selectedConversation.is_online;
 
-    const contactInfo = {
-        email: selectedConversation.customer_username
-            ? `${selectedConversation.customer_username}@email.com`
-            : `${(selectedConversation.customer_name ?? 'customer').toLowerCase().replace(/\s+/g, '.')}@email.com`,
-        phone: "+49 176 12345678",
-        location: "Berlin, Germany",
+    const contactInfo: { email?: string; phone?: string; location?: string; localTime: string } = {
         localTime: format(new Date(), "h:mm a")
     };
 
-    const recentActivities = [
-        { id: 1, text: "Conversation assigned to you", time: "2m ago" },
-        { id: 2, text: "Tag #vip added", time: "5m ago" },
-        { id: 3, text: "Marked as Open", time: "5m ago" },
-        { id: 4, text: "Auto-reply sent", time: "10:42 AM" }
-    ];
+    const recentActivities: { id: number; text: string; time: string }[] = [];
 
-    const tags = ["customer", "vip"];
+    const tags: string[] = [];
 
     return (
-        <div className="flex flex-col h-full bg-card p-5 overflow-y-auto scrollbar-thin" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+        <div className="flex flex-col h-full bg-card p-5 overflow-y-auto scrollbar-thin">
             {/* Close button for mobile */}
             {onClose && (
                 <button onClick={onClose} className="absolute top-4 right-4 p-1.5 hover:bg-muted text-muted-foreground rounded-lg transition-all md:hidden">
@@ -55,7 +45,7 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
                             className="w-16 h-16 rounded-full object-cover shadow-sm"
                         />
                     ) : (
-                        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-lg" style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+                        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-lg">
                             {(selectedConversation.customer_name ?? '?')[0]?.toUpperCase()}
                         </div>
                     )}
@@ -79,18 +69,6 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
                 <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">Contact Info</p>
                 <div className="space-y-2">
                     <div className="flex items-center gap-2.5 text-sm text-foreground">
-                        <Mail className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
-                        <span className="truncate text-[12px] text-foreground/90">{contactInfo.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-sm text-foreground">
-                        <Phone className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
-                        <span className="text-[12px] text-foreground/90">{contactInfo.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-sm text-foreground">
-                        <MapPin className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
-                        <span className="text-[12px] text-foreground/90">{contactInfo.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-sm text-foreground">
                         <Clock className="w-3.5 h-3.5 text-muted-foreground/70 flex-shrink-0" />
                         <span className="text-[12px] text-foreground/90">{contactInfo.localTime}</span>
                     </div>
@@ -98,35 +76,36 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
             </div>
 
             {/* Tags */}
-            <div className="mb-5">
-                <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">Tags</p>
-                <div className="flex flex-wrap gap-1.5">
-                    {tags.map(tag => (
-                        <span key={tag} className="px-2 py-0.5 rounded-md bg-primary/5 text-primary text-[10px] font-medium border border-primary/10">
-                            #{tag}
-                        </span>
-                    ))}
-                    <button className="px-2 py-0.5 rounded-md text-muted-foreground/40 text-[10px] border border-dashed border-border/60 hover:border-primary/30 hover:text-primary/60 transition-colors">
-                        + Add
-                    </button>
+            {tags.length > 0 && (
+                <div className="mb-5">
+                    <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">Tags</p>
+                    <div className="flex flex-wrap gap-1.5">
+                        {tags.map(tag => (
+                            <span key={tag} className="px-2 py-0.5 rounded-md bg-primary/5 text-primary text-[10px] font-medium border border-primary/10">
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Recent Activity */}
-            <div>
-                <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">Recent Activity</p>
-                <div className="space-y-2">
-                    {recentActivities.map(activity => (
-                        <div key={activity.id} className="flex items-start gap-2.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 mt-1.5 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                                <p className="text-[11px] text-foreground/90 truncate">{activity.text}</p>
-                                <p className="text-[9px] text-muted-foreground/60">{activity.time}</p>
+            {recentActivities.length > 0 && (
+                <div>
+                    <p className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider mb-2">Recent Activity</p>
+                    <div className="space-y-2">
+                        {recentActivities.map(activity => (
+                            <div key={activity.id} className="flex items-start gap-2.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 mt-1.5 flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[11px] text-foreground/90 truncate">{activity.text}</p>
+                                    <p className="text-[9px] text-muted-foreground/60">{activity.time}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

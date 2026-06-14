@@ -60,8 +60,8 @@ function CreateCampaignModal({ open, onClose, onCreated }: {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}>
-            <div className="w-full max-w-md rounded-2xl p-6 space-y-5" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)" }}>
+            <div className="w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 rounded-none sm:rounded-2xl p-6 space-y-5 flex flex-col justify-center sm:block" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                         <Radio className="w-5 h-5 text-white" />

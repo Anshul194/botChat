@@ -55,10 +55,14 @@
    Foreground  #fdf2f8  warm off-white
    Muted fg    #9a7da0  muted rose secondary text
 ═══════════════════════════════════════════════════════════════ */
-* {
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.2s ease-out;
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow, fill, stroke;
+  transition-duration: 0.22s;
+  transition-timing-function: ease;
+}
+
+img, svg, video, [class*="animate-"], .page-enter, .slide-up, .float-anim, .pulse-dot, .shimmer {
+  transition-property: none !important;
 }
 
 :root {
@@ -316,7 +320,6 @@ html.light :root,
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.3s ease, color 0.3s ease;
-    overflow-x: hidden;
   }
 
   /* ── Right-side + centre-bottom orbs on body ── */
@@ -1018,17 +1021,6 @@ body::after {
   animation: pulse-ring 1.8s ease-out infinite;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   THEME TRANSITION  (global smooth switch)
-═══════════════════════════════════════════════════════════════ */
-*,
-*::before,
-*::after {
-  transition-property: background-color, border-color, color, box-shadow, fill, stroke;
-  transition-duration: 0.22s;
-  transition-timing-function: ease;
-}
-
 /* Orb pseudo-elements — longer, smooth background transition */
 html::before,
 html::after,
@@ -1037,18 +1029,6 @@ body::after {
   transition-property: background, filter, opacity;
   transition-duration: 0.5s;
   transition-timing-function: ease;
-}
-
-/* Exclude animation-critical elements */
-img,
-svg,
-[class*="animate-"],
-.page-enter,
-.slide-up,
-.float-anim,
-.pulse-dot,
-.shimmer {
-  transition-property: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

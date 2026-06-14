@@ -230,7 +230,7 @@ function AddSourceModal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+                    className="fixed inset-0 z-[110] flex items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
                     onClick={handleClose}
                 >
                     <motion.div
@@ -238,12 +238,11 @@ function AddSourceModal({
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 8 }}
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        className="w-full max-w-[700px] bg-white dark:bg-neutral-950 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden flex flex-col"
+                        className="w-full max-w-none sm:max-w-[700px] bg-white dark:bg-neutral-950 rounded-none sm:rounded-2xl shadow-2xl border-0 sm:border sm:border-neutral-200 dark:border-neutral-800 overflow-hidden flex flex-col min-h-screen sm:min-h-0 max-h-screen sm:max-h-[calc(100vh-2rem)]"
                         onClick={(e) => e.stopPropagation()}
-                        style={{ maxHeight: "calc(100vh - 2rem)" }}
                     >
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
+                        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
                             <h3 className="text-base font-bold text-neutral-900 dark:text-white">
                                 {type === "manual" ? "Add Manual Content/FAQ" : `Add ${cfg.label}`}
                             </h3>
@@ -253,7 +252,7 @@ function AddSourceModal({
                         </div>
 
                         {/* Modal Body */}
-                        <div className="px-6 py-5 space-y-5 overflow-y-auto min-h-[300px]">
+                        <div className="px-4 sm:px-6 py-5 space-y-5 overflow-y-auto min-h-[300px]">
                             {type === "manual" && (
                                 <>
                                     <div className="space-y-2">
@@ -306,7 +305,7 @@ function AddSourceModal({
                                         <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1 mb-2">
                                             Fetch Content Configuration <span className="text-[10px] font-normal text-neutral-500">(Use selectors to specify which parts of the webpage the AI should learn from.)</span>
                                         </h5>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <FormField label="Selector Type">
                                                 <select value={urlFetchType} onChange={(e) => setUrlFetchType(e.target.value)} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-primary">
                                                     <option value="">Select Selector</option>
@@ -329,7 +328,7 @@ function AddSourceModal({
                                         <div className="space-y-3 mb-3">
                                             {urlRemoveSelectors.map((sel, idx) => (
                                                 <div key={idx} className="flex gap-3 items-end">
-                                                    <div className="flex-1 grid grid-cols-2 gap-3">
+                                                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                         <FormField label={idx === 0 ? "Selector Type" : ""}>
                                                             <select value={sel.type} onChange={(e) => { const n = [...urlRemoveSelectors]; n[idx].type = e.target.value; setUrlRemoveSelectors(n); }} className="w-full h-11 px-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm focus:ring-1 focus:ring-primary">
                                                                 <option value="">Select Selector</option>
@@ -432,7 +431,7 @@ function AddSourceModal({
 
                             {type === "api" && (
                                 <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <FormField label="API Name / Label" required>
                                             <StyledInput placeholder="e.g. Shopify Products" value={apiName} onChange={setApiName} className="rounded-md" />
                                         </FormField>
@@ -449,7 +448,7 @@ function AddSourceModal({
                                     </FormField>
                                     <div>
                                         <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 mb-2">Response Mapping (JSON Paths)</h5>
-                                        <div className="grid grid-cols-3 gap-3 bg-neutral-50/50 dark:bg-neutral-900/30 p-4 border border-neutral-100 dark:border-neutral-800 rounded-md">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-neutral-50/50 dark:bg-neutral-900/30 p-4 border border-neutral-100 dark:border-neutral-800 rounded-md">
                                             <FormField label="List Key (optional)">
                                                 <StyledInput placeholder="data.items" value={apiListKey} onChange={setApiListKey} className="rounded-md" />
                                             </FormField>
@@ -472,7 +471,7 @@ function AddSourceModal({
                                     <FormField label="Worksheet Name/GID">
                                         <StyledInput placeholder="Sheet1 (Optional)" value={sheetName} onChange={setSheetName} className="rounded-md" />
                                     </FormField>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <FormField label="Title Column">
                                             <StyledInput placeholder="Product Name" value={sheetTitleKey} onChange={setSheetTitleKey} className="rounded-md" />
                                         </FormField>
@@ -485,7 +484,7 @@ function AddSourceModal({
                         </div>
 
                         {/* Modal Footer */}
-                        <div className={cn("border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 flex-shrink-0 flex items-center", type === "url" ? "px-6 py-4 justify-between" : "px-6 py-4 justify-end gap-3")}>
+                        <div className={cn("border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 flex-shrink-0 flex items-center", type === "url" ? "px-4 sm:px-6 py-4 justify-between flex-col sm:flex-row gap-2" : "px-4 sm:px-6 py-4 justify-end gap-3")}>
                             {type === "url" ? (
                                 <>
                                     <div>
@@ -681,7 +680,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
     return (
         <div>
             {/* Section header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-2">
                     <div className="w-1 h-4 rounded-full bg-primary" />
                     <h3 className="text-sm font-bold text-neutral-900 dark:text-white">
@@ -764,8 +763,56 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 })}
             </div>
 
-            {/* Table */}
-            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+            {/* ── Mobile list (Knowledge Sources) ── */}
+            <div className="block sm:hidden space-y-2">
+                {isLoadingSources || isLoadingContents ? (
+                    <div className="flex items-center justify-center py-10 gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                        <span className="text-xs text-neutral-400">Loading data...</span>
+                    </div>
+                ) : tabSources.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-10 gap-2">
+                        <AlertCircle className="w-6 h-6 text-neutral-300 dark:text-neutral-600" />
+                        <p className="text-xs text-neutral-400 dark:text-neutral-500">No data available</p>
+                    </div>
+                ) : (
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-800/60 border border-neutral-200 dark:border-neutral-800 rounded-xl">
+                        {tabSources.map((source, idx) => {
+                            const { mainCell, colLabel } = renderRow(source, idx);
+                            return (
+                                <div key={source.id} className="px-4 py-3 space-y-1.5">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className="text-xs text-neutral-400 font-medium">{colLabel()}</span>
+                                        <SourceStatusBadge status={source.status} />
+                                    </div>
+                                    <div className="text-sm font-medium text-neutral-900 dark:text-white truncate">
+                                        {mainCell()}
+                                    </div>
+                                    {activeTab === "processed" && (
+                                        <div className="flex items-center gap-2 text-[10px] text-neutral-400">
+                                            <span>{(source.source_type || "Source")} • {(source.content_format || "Raw")}</span>
+                                            {source.source_reference && <span className="truncate">— {source.source_reference}</span>}
+                                        </div>
+                                    )}
+                                    <div className="flex justify-end pt-1">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(source); }}
+                                            className="w-7 h-7 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                                            title="Remove source"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* ── Desktop table (Knowledge Sources) ── */}
+            <div className="hidden sm:block rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
                 {/* Table header */}
                 <div className={cn("grid bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-800", activeTab === "processed" ? "grid-cols-[40px_1.5fr_1fr_100px_60px]" : "grid-cols-[40px_1fr_100px_60px]")}>
                     {(activeTab === "processed" ? ["No.", colLabel, "Source Details", "Status", "Action"] : ["No.", colLabel, "Status", "Action"]).map((h) => (
@@ -810,11 +857,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                                     <div className="px-4 py-3 flex items-center justify-center">
                                         <button
                                             type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                handleDelete(source);
-                                            }}
+                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(source); }}
                                             className="w-7 h-7 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                                             title="Remove source"
                                         >
@@ -912,9 +955,9 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
 
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-            <DialogContent className="sm:max-w-[760px] p-0 gap-0 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden bg-white dark:bg-neutral-950">
+            <DialogContent className="p-0 gap-0 rounded-none sm:rounded-2xl border-y sm:border sm:border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden bg-white dark:bg-neutral-950 flex flex-col inset-0 sm:inset-auto sm:top-1/2 sm:left-1/2 translate-x-0 translate-y-0 sm:-translate-x-1/2 sm:-translate-y-1/2 max-h-screen sm:max-h-[85vh] w-full max-w-none sm:max-w-[760px]">
                 {/* Panel Header */}
-                <DialogHeader className="px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
+                <DialogHeader className="px-4 sm:px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                             <Edit2 className="w-4 h-4 text-primary" />
@@ -931,7 +974,7 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
                 </DialogHeader>
 
                 {/* Scrollable body */}
-                <div className="flex-1 overflow-y-auto px-6 py-6 space-y-7 max-h-[75vh]">
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-7 max-h-[75vh]">
                     {/* ── Section: Campaign Details ── */}
                     <div>
                         <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-4">
@@ -983,7 +1026,7 @@ export default function EditCampaignDialog({ campaign, open, onClose }: Props) {
                 </div>
 
                 {/* Panel Footer */}
-                <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3 bg-neutral-50/60 dark:bg-neutral-900/60 flex-shrink-0">
+                <div className="px-4 sm:px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3 bg-neutral-50/60 dark:bg-neutral-900/60 flex-shrink-0">
                     <button
                         onClick={handleClose}
                         className="h-10 px-5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"

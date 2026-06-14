@@ -133,7 +133,6 @@ export default function MessageInput() {
                             ? "text-primary"
                             : "text-muted-foreground/70 hover:text-foreground"
                     }`}
-                    style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
                 >
                     Reply
                     {activeTab === "reply" && (
@@ -147,7 +146,6 @@ export default function MessageInput() {
                             ? "text-primary"
                             : "text-muted-foreground/70 hover:text-foreground"
                     }`}
-                    style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
                 >
                     Private Note
                     {activeTab === "note" && (
@@ -193,7 +191,6 @@ export default function MessageInput() {
                                     : "Type a message..."
                             }
                             className="w-full text-[13px] outline-none bg-transparent placeholder:text-muted-foreground/30 text-foreground min-h-[38px] max-h-[120px] resize-none leading-relaxed transition-all"
-                            style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif", fontWeight: 400 }}
                         />
                     </div>
 
@@ -274,7 +271,6 @@ export default function MessageInput() {
                             onClick={handleSendMessage}
                             disabled={!messageText.trim() && !pendingFile}
                             className="flex items-center gap-1.5 px-3 h-7 bg-primary hover:opacity-90 disabled:opacity-30 disabled:grayscale text-white text-[10px] font-medium rounded-md transition-all active:scale-95 flex-shrink-0"
-                            style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
                         >
                             <Send className="w-3 h-3" />
                             Send

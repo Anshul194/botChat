@@ -197,17 +197,17 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         onClick={handleClose}
                     />
 
-                    {/* Slide-in Panel */}
+                    {/* Slide-in Panel (full-screen on mobile) */}
                     <motion.div
                         key="panel"
-                        initial={{ x: "100%" }}
-                        animate={{ x: 0 }}
-                        exit={{ x: "100%" }}
+                        initial={{ x: "100%", opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: "100%", opacity: 0 }}
                         transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                        className="fixed right-0 top-0 bottom-0 z-[100] w-full max-w-[520px] bg-white dark:bg-neutral-950 shadow-2xl flex flex-col"
+                        className="fixed inset-0 sm:inset-auto sm:right-0 sm:top-0 sm:bottom-0 z-[100] w-full sm:max-w-[520px] bg-white dark:bg-neutral-950 shadow-2xl flex flex-col"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
+                        <div className="flex items-center justify-between px-4 sm:px-6 py-5 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                                     <Sparkles className="w-4 h-4 text-primary" />
@@ -230,7 +230,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         </div>
 
                         {/* Scrollable Body */}
-                        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+                        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6">
                             {/* Section: Campaign Details */}
                             <div>
                                 <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-4">
@@ -287,7 +287,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         </div>
 
                         {/* Footer */}
-                        <div className="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-3 bg-neutral-50/60 dark:bg-neutral-900/60 flex-shrink-0">
+                        <div className="px-4 sm:px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-3 bg-neutral-50/60 dark:bg-neutral-900/60 flex-shrink-0">
                             <button
                                 onClick={handleClose}
                                 className="h-10 px-5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-sm font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"

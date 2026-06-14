@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Edit2, Trash2, Bot, Target, Zap, MessageSquare, Sparkles, FileText, ChevronRight, Loader2 } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Bot, Target, Zap, MessageSquare, Sparkles, ChevronRight, Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -13,107 +13,6 @@ import {
 import { useModal } from "@/components/providers/ModalProvider";
 import CreateCampaignPanel from "./CreateCampaignPanel";
 import EditCampaignDialog from "./EditCampaignDialog";
-
-// ── Campaign Card ─────────────────────────────────────────────────────────────
-function CampaignCard({
-    campaign,
-    onEdit,
-    onDelete,
-}: {
-    campaign: Campaign;
-    onEdit: () => void;
-    onDelete: () => void;
-}) {
-    const isActive = campaign.status === "active";
-
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.2 }}
-            className="group bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl p-5 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-sm transition-all duration-200"
-        >
-            {/* Top row */}
-            <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm flex-shrink-0">
-                        <Bot className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-neutral-900 dark:text-white truncate leading-snug">
-                            {campaign.name}
-                        </h4>
-                        <span className={cn(
-                            "inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider",
-                            isActive ? "text-emerald-600 dark:text-emerald-400" : "text-neutral-400"
-                        )}>
-                            <span className={cn(
-                                "w-1.5 h-1.5 rounded-full",
-                                isActive ? "bg-emerald-500" : "bg-neutral-400"
-                            )} />
-                            {campaign.status || "idle"}
-                        </span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                        onClick={onEdit}
-                        className="w-7 h-7 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 flex items-center justify-center text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        title="Edit campaign"
-                    >
-                        <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                        onClick={onDelete}
-                        className="w-7 h-7 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
-                        title="Delete campaign"
-                    >
-                        <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                </div>
-            </div>
-
-            {/* Description */}
-            {campaign.description && (
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 mb-3 leading-relaxed">
-                    {campaign.description}
-                </p>
-            )}
-
-            {/* System Prompt Preview */}
-            {campaign.prompt_message && (
-                <div className="bg-neutral-50 dark:bg-neutral-800/60 rounded-lg px-3 py-2 mb-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                        <Sparkles className="w-3 h-3 text-primary" />
-                        <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
-                            System Prompt
-                        </span>
-                    </div>
-                    <p className="text-xs text-neutral-600 dark:text-neutral-300 line-clamp-2 font-mono leading-relaxed">
-                        {campaign.prompt_message}
-                    </p>
-                </div>
-            )}
-
-            {/* Footer */}
-            <div className="flex items-center justify-between pt-3 border-t border-neutral-100 dark:border-neutral-800/60">
-                <span className="text-[10px] text-neutral-400">
-                    {campaign.created_at
-                        ? new Date(campaign.created_at).toLocaleDateString("en-US", {
-                            month: "short", day: "numeric", year: "numeric",
-                        })
-                        : "Just now"}
-                </span>
-                <div className="flex items-center gap-1 text-neutral-300">
-                    <FileText className="w-3 h-3" />
-                    <span className="text-[10px]">Campaign</span>
-                </div>
-            </div>
-        </motion.div>
-    );
-}
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function AITrainingPage() {
@@ -158,12 +57,12 @@ export default function AITrainingPage() {
     return (
         <>
             <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-                <div className="max-w-6xl mx-auto px-6 py-8 space-y-7">
+                <div className="py-6 sm:py-8 space-y-6 sm:space-y-7">
 
                     {/* ── Header ── */}
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
+                            <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
                                 AI Training
                             </h1>
                             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
@@ -172,7 +71,7 @@ export default function AITrainingPage() {
                         </div>
                         <button
                             onClick={() => setIsCreateOpen(true)}
-                            className="flex items-center gap-2 h-9 px-4 rounded-xl text-white text-sm font-semibold active:scale-95 transition-all shadow-lg"
+                            className="flex items-center justify-center gap-2 h-10 sm:h-9 px-4 rounded-xl text-white text-sm font-semibold active:scale-95 transition-all shadow-lg w-full sm:w-auto"
                             style={{ background: "var(--brand-gradient)", boxShadow: "0 8px 16px -4px rgba(29, 110, 245, 0.25)" }}
                         >
                             <Plus className="w-4 h-4" />
@@ -180,30 +79,10 @@ export default function AITrainingPage() {
                         </button>
                     </div>
 
-                    {/* ── Stats ── */}
-                    <div className="grid grid-cols-3 gap-4">
-                        {[
-                            { label: "Total", value: campaigns.length, icon: Target, color: "text-primary", bg: "bg-primary/10" },
-                            { label: "Active", value: campaigns.filter(c => c.status === "active").length, icon: Zap, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
-                            { label: "Inactive", value: campaigns.filter(c => c.status !== "active").length, icon: MessageSquare, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/30" },
-                        ].map((stat) => (
-                            <div
-                                key={stat.label}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 flex items-center gap-3"
-                            >
-                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0", stat.bg)}>
-                                    <stat.icon className={cn("w-4 h-4", stat.color)} />
-                                </div>
-                                <div>
-                                    <div className="text-xl font-bold text-neutral-900 dark:text-white leading-tight">{stat.value}</div>
-                                    <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{stat.label}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+
 
                     {/* ── Search ── */}
-                    <div className="relative w-full max-w-xs">
+                    <div className="relative w-full sm:max-w-xs">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
                         <input
                             type="text"
@@ -214,7 +93,7 @@ export default function AITrainingPage() {
                         />
                     </div>
 
-                    {/* ── Content ── */}
+                    {/* ── Table ── */}
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3">
                             <Loader2 className="w-7 h-7 text-primary animate-spin" />
@@ -243,18 +122,159 @@ export default function AITrainingPage() {
                             )}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <AnimatePresence mode="popLayout">
-                                {filtered.map((campaign) => (
-                                    <CampaignCard
-                                        key={campaign.id}
-                                        campaign={campaign}
-                                        onEdit={() => openEdit(campaign)}
-                                        onDelete={() => handleDelete(campaign)}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
+                        <>
+                            {/* ── Mobile list ── */}
+                            <div className="block sm:hidden space-y-2">
+                                <AnimatePresence mode="popLayout">
+                                    {filtered.map((campaign) => {
+                                        const isActive = campaign.status === "active";
+                                        return (
+                                            <motion.div
+                                                key={campaign.id}
+                                                initial={{ opacity: 0, y: 8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, x: -20 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="flex items-center gap-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3.5"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm flex-shrink-0">
+                                                    <Bot className="w-4 h-4 text-white" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
+                                                        {campaign.name}
+                                                    </div>
+                                                    {campaign.description && (
+                                                        <div className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">
+                                                            {campaign.description}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <span className={cn(
+                                                    "w-2 h-2 rounded-full flex-shrink-0",
+                                                    isActive ? "bg-emerald-500" : "bg-neutral-400"
+                                                )} />
+                                                <div className="flex items-center gap-1 flex-shrink-0">
+                                                    <button
+                                                        onClick={() => openEdit(campaign)}
+                                                        className="w-7 h-7 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 flex items-center justify-center text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                    >
+                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(campaign)}
+                                                        className="w-7 h-7 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* ── Desktop table ── */}
+                            <div className="hidden sm:block bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead>
+                                            <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60">
+                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Name</th>
+                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Description</th>
+                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden lg:table-cell">System Prompt</th>
+                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Status</th>
+                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden md:table-cell">Created</th>
+                                                <th className="text-right px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
+                                            <AnimatePresence mode="popLayout">
+                                                {filtered.map((campaign) => {
+                                                    const isActive = campaign.status === "active";
+                                                    return (
+                                                        <motion.tr
+                                                            key={campaign.id}
+                                                            initial={{ opacity: 0, y: 8 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, x: -20 }}
+                                                            transition={{ duration: 0.2 }}
+                                                            className="group hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors"
+                                                        >
+                                                            <td className="px-6 py-4">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm flex-shrink-0">
+                                                                        <Bot className="w-4 h-4 text-white" />
+                                                                    </div>
+                                                                    <span className="text-sm font-semibold text-neutral-900 dark:text-white truncate max-w-[200px] block">
+                                                                        {campaign.name}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <span className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1 max-w-[240px] block">
+                                                                    {campaign.description || "—"}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 hidden lg:table-cell">
+                                                                <div className="flex items-center gap-1.5 max-w-[220px]">
+                                                                    <Sparkles className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                                                                    <span className="text-sm text-neutral-500 dark:text-neutral-400 truncate">
+                                                                        {campaign.prompt_message || "—"}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <span className={cn(
+                                                                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border",
+                                                                    isActive
+                                                                        ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+                                                                        : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 border-neutral-200 dark:border-neutral-700"
+                                                                )}>
+                                                                    <span className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-emerald-500" : "bg-neutral-400")} />
+                                                                    {campaign.status || "inactive"}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 hidden md:table-cell">
+                                                                <div className="flex items-center gap-1.5 text-sm text-neutral-400 dark:text-neutral-500">
+                                                                    <Calendar className="w-3.5 h-3.5" />
+                                                                    <span>
+                                                                        {campaign.created_at
+                                                                            ? new Date(campaign.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                                                                            : "—"}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-right">
+                                                                <div className="flex items-center justify-end gap-1">
+                                                                    <button
+                                                                        onClick={() => openEdit(campaign)}
+                                                                        className="w-8 h-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 flex items-center justify-center text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                                    >
+                                                                        <Edit2 className="w-4 h-4" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDelete(campaign)}
+                                                                        className="w-8 h-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center justify-center text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                                                                    >
+                                                                        <Trash2 className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </motion.tr>
+                                                    );
+                                                })}
+                                            </AnimatePresence>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="px-6 py-3 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
+                                    <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                                        Showing {filtered.length} of {campaigns.length} campaigns
+                                    </p>
+                                </div>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>

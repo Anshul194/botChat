@@ -204,11 +204,11 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }:{
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}/>
       <motion.div
         initial={{opacity:0,scale:0.96,y:20}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.96,y:20}}
-        className="relative z-10 w-full max-w-[1050px] bg-[#fdfdff] dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[#fdfdff] dark:bg-slate-900 rounded-none sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         onClick={e=>e.stopPropagation()}
       >
         <div className="flex items-center gap-5 px-10 py-7 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">

@@ -315,7 +315,7 @@ export default function BlogCategoriesPage() {
             {/* Modal */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6">
+                    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-6">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -327,7 +327,7 @@ export default function BlogCategoriesPage() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white w-full max-w-lg rounded-[40px] shadow-2xl relative z-10 overflow-hidden"
+                            className="bg-white w-full max-w-none sm:max-w-lg min-h-screen sm:min-h-0 rounded-none sm:rounded-[40px] shadow-2xl relative z-10 overflow-hidden"
                             onClick={e => e.stopPropagation()}
                         >
                             <form onSubmit={handleSubmit} className="p-10 space-y-8">

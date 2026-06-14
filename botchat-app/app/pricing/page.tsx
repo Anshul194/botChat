@@ -120,25 +120,25 @@ export default function PricingPage() {
                             </span>
                         </div>
 
-                        <h1 className="text-6xl md:text-8xl font-[1000] text-white mb-8 tracking-tighter leading-none">
+                        <h1 className="text-4xl sm:text-5xl md:text-8xl font-[1000] text-white mb-6 md:mb-8 tracking-tighter leading-[1.1] md:leading-none">
                             Simple Plans. <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] via-[#FF80AB] to-[#E1306C] animate-shimmer" style={{ backgroundSize: '200% auto' }}>
                                 Infinite Scale.
                             </span>
                         </h1>
-                        <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-16 font-medium leading-relaxed">
+                        <p className="text-base sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 md:mb-16 font-medium leading-relaxed px-2">
                             Stop paying for what you don't use. Choose a plan that grows as fast as your content does.
                         </p>
 
                         {/* Social Proof Trust Bar */}
-                        <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-30 grayscale hover:grayscale-0 transition-all duration-500 mb-20">
+                        <div className="flex flex-wrap justify-center items-center gap-6 md:gap-20 opacity-30 grayscale hover:grayscale-0 transition-all duration-500 mb-12 md:mb-20">
                             {['INSTAGRAM', 'FACEBOOK', 'THREADS', 'WHATSAPP'].map(name => (
                                 <span key={name} className="text-white font-black tracking-[0.4em] text-sm">{name}</span>
                             ))}
                         </div>
 
                         {/* Professional Toggle */}
-                        <div className="flex items-center justify-center gap-6 mb-12">
+                        <div className="flex items-center justify-center gap-3 md:gap-6 mb-12">
                             <span className={`text-xs font-black uppercase tracking-widest ${!isAnnual ? 'text-white' : 'text-gray-500'}`}>Billed Monthly</span>
                             <button
                                 onClick={() => setIsAnnual(!isAnnual)}
@@ -250,7 +250,7 @@ export default function PricingPage() {
                         ))}
                     </div>
 
-                    <div className="mt-20 p-10 rounded-[40px] bg-white border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="mt-12 md:mt-20 p-6 md:p-10 rounded-[40px] bg-white border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8">
                         <div>
                             <h4 className="text-2xl font-black text-gray-900 mb-2">Still have questions?</h4>
                             <p className="text-gray-500 font-medium">Join our Discord community or talk to a real human.</p>

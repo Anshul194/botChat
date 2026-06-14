@@ -301,13 +301,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
-        className="relative z-10 w-full max-w-[980px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[980px] min-h-screen sm:min-h-0 bg-white rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
       >
         <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">
           <h2 className="text-[13px] font-semibold text-slate-800">Instagram Auto Reply Template</h2>

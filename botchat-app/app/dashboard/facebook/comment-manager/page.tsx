@@ -899,7 +899,7 @@ export default function CommentManager() {
             {/* ── ID Modal ── */}
             <AnimatePresence>
                 {isIdModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -911,7 +911,7 @@ export default function CommentManager() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative z-10"
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-lg min-h-screen sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
                         >
                             <div className="p-6 space-y-6">
                                 <div className="flex items-center justify-between">
@@ -1258,8 +1258,8 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
     }
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                     <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
                         <Megaphone className="w-5 h-5" />
@@ -1345,8 +1345,8 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
     }
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                     <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
                         <MessageSquare className="w-5 h-5" />
@@ -1612,14 +1612,14 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
     if (!page) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
                 className={cn(
-                    "relative z-10 w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[96vh] transition-all",
-                    "max-w-[980px]"
+                    "relative z-10 w-full bg-white rounded-none sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[96vh] transition-all min-h-screen sm:min-h-0",
+                    "max-w-none sm:max-w-[980px]"
                 )}
             >
                 <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">

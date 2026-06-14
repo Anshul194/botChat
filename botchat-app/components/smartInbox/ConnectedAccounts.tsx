@@ -266,7 +266,7 @@ function AccountRow({
             {/* Text */}
             <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
                 <p style={{
-                    fontSize: 12, fontWeight: 600, fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+                    fontSize: 12, fontWeight: 600,
                     color: isSelected ? "var(--nav-active-color)" : "var(--foreground)",
                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}>
@@ -332,7 +332,7 @@ export default function ConnectedAccounts() {
     }
 
     return (
-        <div style={{ display: "flex", alignItems: "center", gap: 6, width: "100%", minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, width: "100%", minWidth: 0, overflowX: "auto" }}>
 
             {/* ALL */}
             <button

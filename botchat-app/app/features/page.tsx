@@ -196,26 +196,26 @@ export default function FeaturesPage() {
                             </span>
                         </div>
 
-                        <h1 className="text-6xl md:text-8xl font-black text-white mb-10 tracking-tight leading-[0.95]">
+                        <h1 className="text-4xl sm:text-5xl md:text-8xl font-black text-white mb-6 md:mb-10 tracking-tight leading-[1.1] md:leading-[0.95]">
                             Meta <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] via-[#FF80AB] to-[#E1306C] animate-shimmer" style={{ backgroundSize: '200% auto' }}>
                                 Mastered
                             </span>
                         </h1>
 
-                        <p className="text-xl text-pink-100/60 max-w-2xl mx-auto leading-relaxed font-medium">
+                        <p className="text-base sm:text-xl text-pink-100/60 max-w-2xl mx-auto leading-relaxed font-medium px-2">
                             Automate Instagram & Facebook like a pro. Engagement, sales, and bio-links all in one high-performance platform.
                         </p>
 
-                        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <Link href="/auth/sign-up" className="group relative px-10 py-5 rounded-2xl bg-[#FF2D78] text-white font-bold text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(255,45,120,0.3)]">
+                        <div className="mt-8 md:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">
+                            <Link href="/auth/sign-up" className="group relative w-full sm:w-auto px-6 md:px-10 py-4 md:py-5 rounded-2xl bg-[#FF2D78] text-white font-bold text-base md:text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(255,45,120,0.3)]">
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                                 <span className="relative z-10 flex items-center gap-2">
                                     Get Started Now
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </span>
                             </Link>
-                            <Link href="/pricing" className="px-10 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-lg backdrop-blur-md hover:bg-white/10 transition-all">
+                            <Link href="/pricing" className="w-full sm:w-auto px-6 md:px-10 py-4 md:py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-base md:text-lg backdrop-blur-md hover:bg-white/10 transition-all text-center">
                                 View Plans
                             </Link>
                         </div>
