@@ -8,8 +8,9 @@ import ChatWindow from "@/components/smartInbox/ChatWindow";
 import ContactSidebar from "@/components/smartInbox/ContactSidebar";
 import ConnectedAccounts from "@/components/smartInbox/ConnectedAccounts";
 import QuickFind from "@/components/smartInbox/QuickFind";
-import { ArrowLeft, MessagesSquare, Search, UserCircle2, X } from "lucide-react";
+import { ArrowLeft, MessagesSquare, Search, UserCircle2, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import InboxAccountsPanel from "@/components/inbox/InboxAccountsPanel";
 
 export default function SmartInboxPage() {
     useRealtimeInbox();
@@ -23,6 +24,7 @@ export default function SmartInboxPage() {
 
     const [showContactSidebar, setShowContactSidebar] = useState(false);
     const [showQuickFind, setShowQuickFind] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
 
     const loadAccountsRef = useRef(loadAccounts);
     const loadConversationsRef = useRef(loadConversations);
@@ -72,6 +74,15 @@ export default function SmartInboxPage() {
                     <div className="hidden md:block">
                         <QuickFind />
                     </div>
+                    <button
+                        className="w-9 h-9 flex items-center justify-center rounded-xl transition-colors hover:opacity-80"
+                        style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
+                        onClick={() => setShowSettings(true)}
+                        aria-label="Account Settings"
+                        title="Manage Inbox Accounts"
+                    >
+                        <Settings className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+                    </button>
                     <button
                         className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
                         style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}
@@ -207,6 +218,23 @@ export default function SmartInboxPage() {
                     </AnimatePresence>
                 </div>
             </div>
+
+            {/* ── Settings Modal ── */}
+            <AnimatePresence>
+                {showSettings && (
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            className="w-full max-w-lg h-[85vh] max-h-[700px] rounded-2xl shadow-2xl overflow-hidden flex flex-col relative"
+                            style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}
+                        >
+                            <InboxAccountsPanel onClose={() => setShowSettings(false)} />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
