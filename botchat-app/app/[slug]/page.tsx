@@ -27,41 +27,36 @@ export default async function SlugResolverPage({ params }: { params: { slug: str
 
   const apiUrl = `https://${apiDomain}/api/v1/public/resolve/${slug}`;
 
+  let result = null;
+
   try {
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
       },
-      // Do not cache this, because we want tracking to execute every time 
-      // a user visits the slug.
       cache: 'no-store', 
     });
 
-    if (!response.ok) {
-      console.error(`Link Resolver Error: [${response.status}] for slug: ${slug}`);
-      return notFound();
+    if (response.ok) {
+      result = await response.json();
     }
-
-    const json = await response.json();
-
-    if (json.success) {
-      if (json.action === 'redirect' && json.destination) {
-        // Trigger server-side redirect for short links, vcards, events, and files.
-        redirect(json.destination);
-      }
-
-      if (json.action === 'render_biolink') {
-        // Render the bio page UI.
-        // In the future, you will pass json.data into the BioLayout component:
-        // return <BioLayout data={json.data} />;
-        return <BioLayout />;
-      }
-    }
-
-    return notFound();
   } catch (error) {
     console.error("Link Resolution Fetch Error:", error);
-    return notFound();
   }
+
+  if (!result || !result.success) {
+    notFound();
+  }
+
+  if (result.action === 'redirect' && result.destination) {
+    // redirect() throws an error internally, so it must be outside try/catch
+    redirect(result.destination);
+  }
+
+  if (result.action === 'render_biolink') {
+    return <BioLayout />;
+  }
+
+  notFound();
 }
