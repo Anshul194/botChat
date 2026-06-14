@@ -30,25 +30,46 @@ export const useRealtimeInbox = () => {
         const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "https://socket.megadm.chat";
 
         const socket: Socket = io(socketUrl, {
-            transports: ["websocket", "polling"],
+            transports: ["polling", "websocket"],
             reconnectionAttempts: 10,
             reconnectionDelay: 2000,
         });
 
         socketRef.current = socket;
 
+        // ── Engine level logging for transports ──
+        socket.io.on("error", (err) => {
+            console.error("[Socket.IO] Engine error:", err);
+        });
+
+        socket.io.on("ping", () => console.log("[Socket.IO] Ping sent..."));
+        socket.io.on("reconnect", (attempt) => console.log("[Socket.IO] Reconnected after", attempt, "attempts"));
+
         socket.on("connect", () => {
-            console.log("[Socket.IO] Connected:", socket.id);
+            const transport = socket.io.engine.transport.name; // 'polling' or 'websocket'
+            console.log(`[Socket.IO] Connected! ID: ${socket.id} | Transport: ${transport}`);
+            
+            // Listen for background upgrade
+            socket.io.engine.on("upgrade", () => {
+                const upgradedTransport = socket.io.engine.transport.name;
+                console.log(`[Socket.IO] Connection upgraded to: ${upgradedTransport}`);
+            });
+
             // Join global inbox room for this tenant
             socket.emit("join", { tenantDomain });
         });
 
         socket.on("disconnect", (reason) => {
-            console.log("[Socket.IO] Disconnected:", reason);
+            console.warn("[Socket.IO] Disconnected. Reason:", reason);
+            if (reason === "io server disconnect") {
+                // The disconnection was initiated by the server, you need to reconnect manually
+                socket.connect();
+            }
         });
 
         socket.on("connect_error", (err) => {
-            console.warn("[Socket.IO] Connection error:", err.message);
+            console.error("[Socket.IO] Connection error:", err.message, err);
+            console.log("[Socket.IO] Will attempt to reconnect via polling...");
         });
 
         // ── Global inbox events ───────────────────────────────────────────────
