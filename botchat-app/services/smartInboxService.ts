@@ -5,6 +5,35 @@ export const getAccounts = async () => {
     return res.data;
 };
 
+export const getAccountStats = async () => {
+    const res = await api.get("/social/inbox/accounts/summary");
+    return res.data;
+};
+
+export const connectAccount = async (platform: string, accountId: number) => {
+    const res = await api.post("/social/inbox/accounts/connect", { platform, account_id: accountId });
+    return res.data;
+};
+
+export const disconnectAccount = async (platform: string, accountId: number) => {
+    const res = await api.post("/social/inbox/accounts/disconnect", { platform, account_id: accountId });
+    return res.data;
+};
+
+/**
+ * Toggle inbox_enabled for a Facebook Page or Instagram Account.
+ * This updates BOTH the Tenant DB and Central DB so webhook routing works correctly.
+ * API: PATCH /api/v1/smart-inbox/accounts/toggle
+ */
+export const toggleInbox = async (platform: "facebook" | "instagram", accountId: number, enabled: boolean) => {
+    const res = await api.patch("/social/inbox/accounts/toggle", {
+        platform,
+        account_id: accountId,
+        enabled,
+    });
+    return res.data;
+};
+
 export const getConversations = async (filters: any = {}) => {
     const res = await api.get("/social/inbox/conversations", { params: filters });
     return res.data;
