@@ -2,12 +2,12 @@ import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import BioLayout from '@/app/bio-layout/page'; 
 
-export default async function SlugResolverPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function SlugResolverPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   // We are running on the server, so we must construct the API URL.
-  // In Next.js App Router, we can read the incoming request host:
-  const headersList = headers();
+  // In Next.js App Router 15+, headers() and params are asynchronous:
+  const headersList = await headers();
   const host = headersList.get('host') || '';
   
   // Custom API endpoint resolution based on the host
