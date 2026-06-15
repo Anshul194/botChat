@@ -34,7 +34,8 @@ import {
   Trash2,
   X,
   Filter,
-  CheckCircle2
+  CheckCircle2,
+  Smartphone
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,6 +87,7 @@ export default function PostStudioPage() {
   const [platform, setPlatform] = useState('all');
   const [listView, setListView] = useState<'row' | 'card'>('row');
   const [multimediaTab, setMultimediaTab] = useState('text');
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
@@ -377,58 +379,70 @@ export default function PostStudioPage() {
 
     return (
       <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30">
-        <div className="h-auto sm:h-20 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-8 py-3 sm:py-0">
-          <div className="flex items-center gap-3 sm:gap-6">
-            <Button variant="ghost" size="icon" onClick={() => setStep('select')} className="rounded-xl hover:bg-primary/10 shrink-0">
-              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-            </Button>
-            <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl font-black tracking-tight capitalize truncate">{postType?.replace('-', ' ')} Campaigns</h1>
-              <p className="text-xs text-[var(--muted-foreground)] font-medium hidden sm:block">Manage and track your social media campaigns</p>
+        <div className="h-auto sm:h-20 border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-md sm:px-8 sm:py-0">
+          <div className="sm:hidden flex items-center justify-between gap-2 px-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Button variant="ghost" size="icon" onClick={() => setStep('select')} className="rounded-xl hover:bg-primary/10 shrink-0">
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <h1 className="text-lg font-black tracking-tight capitalize truncate">{postType?.replace('-', ' ')} Campaigns</h1>
             </div>
+            <Button onClick={() => setStep('studio')} className="rounded-xl h-9 px-3 font-bold shadow-lg shadow-primary/20 text-xs shrink-0">
+              <Plus className="w-4 h-4" />
+            </Button>
           </div>
-
-          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-            <div className="relative w-full sm:w-64 group order-last sm:order-none">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
+          <div className="sm:hidden flex items-center gap-2 px-3 pb-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
               <Input
                 placeholder="Search campaigns..."
-                className="pl-10 h-10 bg-[var(--background)] border-[var(--border)] rounded-xl focus-visible:ring-1 focus-visible:ring-primary"
+                className="pl-10 h-9 bg-[var(--background)] border-[var(--border)] rounded-xl focus-visible:ring-1 focus-visible:ring-primary text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-
-            <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10 shadow-sm hidden sm:flex">
-              <button
-                onClick={() => setListView('row')}
-                className={cn(
-                  "px-2 sm:px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-1 sm:gap-2",
-                  listView === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                )}
-              >
-                <Layout className="w-4 h-4" />
-                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:inline">Row</span>
+            <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-9 shadow-sm">
+              <button onClick={() => setListView('row')} className={cn("px-2 py-1 rounded-lg transition-all", listView === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)]")}>
+                <Layout className="w-3.5 h-3.5" />
               </button>
-              <button
-                onClick={() => setListView('card')}
-                className={cn(
-                  "px-2 sm:px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center gap-1 sm:gap-2",
-                  listView === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                )}
-              >
-                <Grid className="w-4 h-4" />
-                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:inline">Card</span>
+              <button onClick={() => setListView('card')} className={cn("px-2 py-1 rounded-lg transition-all", listView === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)]")}>
+                <Grid className="w-3.5 h-3.5" />
               </button>
             </div>
-
-            <Button onClick={() => setStep('studio')} className="rounded-xl h-10 px-4 sm:px-6 font-bold shadow-lg shadow-primary/20 text-xs sm:text-sm">
-              <Plus className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">New Campaign</span>
-            </Button>
+          </div>
+          <div className="hidden sm:flex sm:items-center sm:justify-between sm:h-full sm:px-0">
+            <div className="flex items-center gap-6">
+              <Button variant="ghost" size="icon" onClick={() => setStep('select')} className="rounded-xl hover:bg-primary/10 shrink-0">
+                <ChevronLeft className="w-6 h-6" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-black tracking-tight capitalize truncate">{postType?.replace('-', ' ')} Campaigns</h1>
+                <p className="text-xs text-[var(--muted-foreground)] font-medium">Manage and track your social media campaigns</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
+                <Input placeholder="Search campaigns..." className="pl-10 h-10 bg-[var(--background)] border-[var(--border)] rounded-xl focus-visible:ring-1 focus-visible:ring-primary" value={search} onChange={(e) => setSearch(e.target.value)} />
+              </div>
+              <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-xl p-1 h-10 shadow-sm">
+                <button onClick={() => setListView('row')} className={cn("px-3 py-1.5 rounded-lg transition-all flex items-center gap-2", listView === 'row' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}>
+                  <Layout className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Row</span>
+                </button>
+                <button onClick={() => setListView('card')} className={cn("px-3 py-1.5 rounded-lg transition-all flex items-center gap-2", listView === 'card' ? "bg-primary text-primary-foreground shadow-md" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}>
+                  <Grid className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Card</span>
+                </button>
+              </div>
+              <Button onClick={() => setStep('studio')} className="rounded-xl h-10 px-6 font-bold shadow-lg shadow-primary/20 text-sm">
+                <Plus className="w-4 h-4 mr-2" /> New Campaign
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-4 sm:py-8 bg-[var(--background)]/50">
+        <div className="flex-1 overflow-y-auto bg-[var(--background)]/50">
           {filteredCampaigns.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center opacity-40 grayscale pointer-events-none">
               <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -438,162 +452,132 @@ export default function PostStudioPage() {
               <p className="text-sm">Start by creating your first {postType} campaign</p>
             </div>
           ) : listView === 'card' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 -mx-4 md:-mx-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {filteredCampaigns.map((camp: any, idx: number) => (
-                <div key={camp.id || idx} className="group bg-[var(--card)] border border-[var(--border)] rounded-[2rem] p-6 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/50 transition-all duration-500 flex flex-col gap-4 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-                    <Send className="w-20 h-20" />
+                <div key={camp.id || idx} className="bg-[var(--card)] border border-[var(--border)] rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 shadow-sm sm:shadow-xl hover:shadow-lg sm:hover:shadow-2xl hover:border-primary/30 sm:hover:border-primary/50 transition-all duration-300 flex flex-col gap-3 sm:gap-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                      <Layers className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </div>
+                    <div className={cn(
+                      "shrink-0 px-2.5 sm:px-3 py-1 rounded-full border text-[9px] sm:text-[10px] font-bold uppercase tracking-tight whitespace-nowrap",
+                      camp.posting_status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                        camp.posting_status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                          "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                    )}>
+                      {camp.posting_status || 'Pending'}
+                    </div>
                   </div>
 
-                  <div className="flex items-start justify-between relative z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                      <Layers className="w-6 h-6" />
-                    </div>
-                    <Badge variant="secondary" className="bg-[var(--background)] text-[10px] font-bold tracking-tighter uppercase px-2 py-0.5 rounded-lg border-[var(--border)]">
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-lg truncate text-[var(--foreground)]">{camp.campaign_name}</h3>
+                    <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] mt-0.5">ID: #{camp.id}</p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-[var(--muted-foreground)]">
+                    <Badge variant="secondary" className="rounded-md text-[9px] sm:text-[10px] font-bold uppercase px-2 py-0.5">
                       {camp.post_type || postType}
                     </Badge>
-                  </div>
-
-                  <div className="relative z-10">
-                    <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors truncate">{camp.campaign_name}</h3>
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted-foreground)]">
-                      <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[var(--background)] rounded-full border border-[var(--border)]">
-                        <Clock className="w-3 h-3" />
-                        {camp.schedule_type === 'later' ? 'Scheduled' : 'Posted Now'}
-                      </div>
-                      <div className={cn(
-                        "flex items-center gap-1.5 px-2 py-0.5 rounded-full border font-bold text-[10px] uppercase",
-                        camp.posting_status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                          camp.posting_status === 'failed' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                            "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                      )}>
-                        {camp.posting_status || 'Pending'}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center justify-between relative z-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold overflow-hidden">
-                        {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                      </div>
-                      <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase truncate max-w-[100px]">
-                        {camp.social_account_id || 'Page ID: ' + camp.page_group_user_id}
-                      </span>
-                    </div>
                     <div className="flex items-center gap-1">
-                      {camp.post_url && (
-                        <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary" onClick={() => window.open(camp.post_url, '_blank')}>
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      )}
-                      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-red-500/10 hover:text-red-500" onClick={() => handleDeleteCampaign(camp.id)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary">
-                        <MoreHorizontal className="w-5 h-5" />
-                      </Button>
+                      <Clock className="w-3 h-3 text-primary" />
+                      {camp.schedule_type === 'later' ? 'Scheduled' : 'Direct'}
                     </div>
                   </div>
+
+                  {camp.schedule_time && (
+                    <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)]">
+                      {new Date(camp.schedule_time).toLocaleString()}
+                    </p>
+                  )}
+
                   {camp.error_message && (
-                    <div className="mt-2 text-[10px] text-red-500 bg-red-500/5 p-2 rounded-lg border border-red-500/10 line-clamp-2">
+                    <div className="text-[9px] sm:text-[10px] text-red-500 bg-red-500/5 p-2 rounded-lg border border-red-500/10 line-clamp-2 leading-relaxed">
                       {camp.error_message}
                     </div>
                   )}
+
+                  <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-[var(--border)]/30">
+                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--muted-foreground)]">
+                      {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                      {camp.media_type === 'facebook' ? 'Facebook' : 'Instagram'}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {camp.post_url && (
+                        <Button variant="ghost" size="icon" className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-primary/10 hover:text-primary" onClick={() => window.open(camp.post_url, '_blank')}>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon" className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-red-500/10 hover:text-red-500" onClick={() => handleDeleteCampaign(camp.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="hidden sm:block bg-[var(--card)] border border-[var(--border)] rounded-2xl sm:rounded-[2.5rem] overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse hidden sm:table">
                 <thead>
-                  <tr className="bg-[var(--background)]/50 border-b border-[var(--border)]">
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Campaign & Account</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-center">Type</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Schedule</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Status</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] text-right">Actions</th>
+                  <tr className="border-b border-[var(--border)] bg-[var(--background)]/40">
+                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Campaign</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Type</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Schedule</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Status</th>
+                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCampaigns.map((camp: any, idx: number) => (
-                    <tr key={camp.id || idx} className="group hover:bg-primary/[0.02] transition-colors border-b border-[var(--border)]/50 last:border-none">
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform relative">
-                            <Layers className="w-6 h-6" />
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center">
-                              {camp.media_type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
+                    <tr key={camp.id || idx} className={cn("transition-colors", idx % 2 === 0 ? "bg-white/30 dark:bg-white/[0.02]" : "bg-transparent", "hover:bg-primary/[0.04]")}>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 relative ring-1 ring-inset ring-primary/20">
+                            <Layers className="w-5 h-5" />
+                            <div className="absolute -bottom-px -right-px w-4 h-4 rounded-full bg-[var(--background)] border-2 border-[var(--card)] flex items-center justify-center">
+                              {camp.media_type === 'facebook' ? <Facebook className="w-2 h-2 text-[#1877F2]" /> : <Instagram className="w-2 h-2 text-[#E1306C]" />}
                             </div>
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-sm truncate group-hover:text-primary transition-colors">{camp.campaign_name}</p>
-                            <p className="text-[10px] text-[var(--muted-foreground)] font-bold flex items-center gap-1">
-                              ID: #{camp.id} <span className="opacity-30">•</span> {camp.media_type?.toUpperCase()} ACCOUNT #{camp.social_account_id}
-                            </p>
+                            <p className="text-sm font-semibold truncate text-[var(--foreground)]">{camp.campaign_name}</p>
+                            <p className="text-[11px] text-[var(--muted-foreground)] mt-px">#{camp.id}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-center">
-                        <Badge variant="outline" className="rounded-lg text-[10px] font-bold tracking-tight uppercase px-3 py-1 bg-[var(--background)]">
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight bg-[var(--background)] text-[var(--muted-foreground)] ring-1 ring-inset ring-[var(--border)]">
                           {camp.post_type || postType}
-                        </Badge>
+                        </span>
                       </td>
-                      <td className="px-6 py-5">
-                        <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1.5 text-xs font-medium">
-                            <Clock className="w-3.5 h-3.5 text-primary" />
-                            {camp.schedule_type === 'later' ? 'Scheduled' : 'Direct Post'}
-                          </div>
-                          <p className="text-[10px] text-[var(--muted-foreground)] pl-5">
-                            {camp.schedule_time ? new Date(camp.schedule_time).toLocaleString() : 'Executed immediately'}
-                          </p>
-                        </div>
+                      <td className="px-5 py-4">
+                        <span className="text-sm font-medium">{camp.schedule_type === 'later' ? 'Scheduled' : 'Direct'}</span>
+                        {camp.schedule_time && (
+                          <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">{new Date(camp.schedule_time).toLocaleString()}</p>
+                        )}
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-5 py-4">
                         <div className={cn(
-                          "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-tighter",
+                          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-tight",
                           camp.posting_status === 'completed'
-                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                            ? "bg-emerald-500/10 text-emerald-600"
                             : camp.posting_status === 'failed'
-                              ? "bg-red-500/10 text-red-500 border-red-500/20"
-                              : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                              ? "bg-red-500/10 text-red-600"
+                              : "bg-amber-500/10 text-amber-600"
                         )}>
-                          <div className={cn(
-                            "w-1.5 h-1.5 rounded-full",
-                            camp.posting_status === 'completed' ? "bg-emerald-500" :
-                              camp.posting_status === 'failed' ? "bg-red-500" : "bg-amber-500 animate-pulse"
-                          )} />
+                          <div className={cn("w-1.5 h-1.5 rounded-full", camp.posting_status === 'completed' ? "bg-emerald-500" : camp.posting_status === 'failed' ? "bg-red-500" : "bg-amber-500")} />
                           {camp.posting_status || 'Pending'}
                         </div>
                         {camp.error_message && (
-                          <div className="mt-2 text-[10px] text-red-500 font-medium max-w-[200px] truncate hover:whitespace-normal hover:overflow-visible hover:bg-[var(--background)] hover:p-2 hover:rounded hover:shadow-lg transition-all" title={camp.error_message}>
-                            {camp.error_message}
-                          </div>
+                          <p className="mt-1 text-[10px] text-red-500 truncate max-w-[160px]" title={camp.error_message}>{camp.error_message}</p>
                         )}
                       </td>
-                      <td className="px-6 py-5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {camp.post_url && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
-                              onClick={() => window.open(camp.post_url, '_blank')}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </Button>
-                          )}
-                          <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
-                            <Send className="w-4 h-4" />
+                      <td className="px-5 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-[var(--muted-foreground)] hover:text-primary hover:bg-primary/10" onClick={() => camp.post_url && window.open(camp.post_url, '_blank')}>
+                            <ExternalLink className="w-4 h-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="w-9 h-9 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all"
-                            onClick={() => handleDeleteCampaign(camp.id)}
-                          >
+                          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-lg text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-500/10" onClick={() => handleDeleteCampaign(camp.id)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -602,6 +586,42 @@ export default function PostStudioPage() {
                   ))}
                 </tbody>
               </table>
+
+              <div className="block sm:hidden">
+                {filteredCampaigns.map((camp: any, idx: number) => (
+                  <div key={camp.id || idx} className="px-3 sm:px-0 py-3.5 border-b border-[var(--border)]/40 last:border-none active:bg-[var(--background)] transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          {camp.media_type === 'facebook' ? <Facebook className="w-4 h-4 text-[#1877F2]" /> : <Instagram className="w-4 h-4 text-[#E1306C]" />}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate text-[var(--foreground)]">{camp.campaign_name}</p>
+                          <p className="text-[10px] text-[var(--muted-foreground)] truncate">{camp.post_type || postType} &middot; {camp.schedule_type === 'later' ? 'Scheduled' : 'Now'}</p>
+                        </div>
+                      </div>
+                      <div className={cn(
+                        "shrink-0 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-tight",
+                        camp.posting_status === 'completed' ? "bg-emerald-500/10 text-emerald-500" :
+                          camp.posting_status === 'failed' ? "bg-red-500/10 text-red-500" : "bg-amber-500/10 text-amber-500"
+                      )}>
+                        {camp.posting_status || 'Pending'}
+                      </div>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <button className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--muted-foreground)] hover:text-primary hover:bg-primary/10 active:scale-95" onClick={() => camp.post_url && window.open(camp.post_url, '_blank')}>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </button>
+                        <button className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-500/10 active:scale-95" onClick={() => handleDeleteCampaign(camp.id)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                    {camp.error_message && (
+                      <p className="mt-1.5 text-[9px] text-red-500 leading-relaxed truncate pl-[42px]">{camp.error_message}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
               </div>
             </div>
           )}
@@ -611,222 +631,109 @@ export default function PostStudioPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] overflow-hidden selection:bg-primary/30">
+    <div className="flex flex-col h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-primary/30">
       {/* Top Header & Account Bar */}
       <div className="flex flex-col border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-xl z-30">
-        <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--border)]/50">
-          <div className="flex items-center gap-4">
+        <div className="h-12 lg:h-14 flex items-center justify-between px-3 lg:px-4 border-b border-[var(--border)]/50">
+          <div className="flex items-center gap-2 lg:gap-4">
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleGlobalSidebar}
-              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-            >
-              {globalSidebarCollapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               onClick={() => setStep('list')}
+              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] shrink-0"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 lg:w-5 lg:h-5" />
             </Button>
-            <div className="h-6 w-px bg-[var(--border)]" />
-            <h1 className="text-sm font-semibold tracking-wide text-[var(--foreground)]/80">
-              Social Poster <span className="text-[var(--muted-foreground)] mx-2">/</span>
-              <span className="text-[var(--foreground)] capitalize font-bold">{postType?.replace('-', ' ')} Studio</span>
+            <div className="h-4 lg:h-6 w-px bg-[var(--border)]" />
+            <h1 className="text-xs lg:text-sm font-semibold tracking-wide text-[var(--foreground)]/80 truncate">
+              <span className="hidden lg:inline">Social Poster /</span>
+              <span className="text-[var(--foreground)] capitalize font-bold ml-0 lg:ml-2">{postType?.replace('-', ' ')} Studio</span>
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 lg:gap-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
-              <Settings className="w-4 h-4" />
+            <Button variant="ghost" size="icon" className="w-7 h-7 lg:w-9 lg:h-9 text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+              <Settings className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Main Content Area */}
-        <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
-          {/* Left - Account Selector & Composer */}
-          <section className="flex-1 border-r-0 lg:border-r border-[var(--border)] h-full flex flex-col overflow-hidden bg-[var(--background)]">
-            {/* Account Selector */}
-            <div className="flex flex-col border-b border-[var(--border)] bg-[var(--card)] px-6 py-3 gap-3 shrink-0 z-10">
-              <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap">
-                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                  <div className="text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0 whitespace-nowrap">
-                    Select {postType === 'multimedia' ? 'Pages' : 'Accounts'} ({(postType === 'cta' || postType === 'carousel') ? selectedParentAccounts.length : selectedAccounts.length})
-                  </div>
-                  <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-0.5 sm:p-1 h-7 sm:h-8">
-                    <button
-                      onClick={() => setPlatform('all')}
-                      className={cn("px-2 sm:px-3 text-[10px] sm:text-xs rounded transition-colors font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                    >
-                      All
-                    </button>
-                    <button
-                      onClick={() => setPlatform('facebook')}
-                      className={cn("flex items-center gap-1 px-2 sm:px-3 text-[10px] sm:text-xs rounded transition-colors font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                    >
-                      <Facebook className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> FB ({uniqueAccounts.filter(a => a.type === 'facebook').length})
-                    </button>
-                    {(postType !== 'cta' && postType !== 'carousel') && (
-                      <button
-                        onClick={() => setPlatform('instagram')}
-                        className={cn("flex items-center gap-1 px-2 sm:px-3 text-[10px] sm:text-xs rounded transition-colors font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]")}
-                      >
-                        <Instagram className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> IG ({uniqueAccounts.filter(a => a.type === 'instagram').length})
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="relative w-full sm:w-64 max-w-[200px] sm:max-w-none">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
-                  <Input
-                    placeholder="Quick find..."
-                    className="h-8 bg-[var(--background)] border-[var(--border)] pl-8 text-xs focus-visible:ring-1 focus-visible:ring-primary"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-                {isLoadingAccounts ? (
-                  <div className="flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
-                    <Loader2 className="w-4 h-4 animate-spin text-primary" /> Loading accounts...
-                  </div>
-                ) : (postType === 'cta' || postType === 'carousel') ? (
-                  // CTA/Carousel Mode: Show ONLY parent accounts (FB ONLY as requested)
-                  uniqueAccounts
-                    .filter(acc => acc.type === 'facebook')
-                    .map((acc) => (
-                      <button
-                        key={acc.accountId}
-                        onClick={() => {
-                          // Selection logic: toggle the parent account
-                          setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId]);
-                        }}
-                        className={cn(
-                          "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all whitespace-nowrap shrink-0",
-                          selectedParentAccounts.includes(acc.accountId)
-                            ? "bg-primary/10 border-primary text-[var(--foreground)] shadow-sm"
-                            : "bg-[var(--background)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"
-                        )}
-                      >
-                        <img src={acc.image} alt="" className="w-5 h-5 rounded-full object-cover" />
-                        {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                        <span className="text-sm font-medium">{acc.accountName}</span>
-                      </button>
-                    ))
-                ) : (
-                  // Multimedia Mode: Show Account filters + Page list
-                  <div className="flex flex-col gap-2 w-full">
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-                      <div className="flex items-center gap-2 bg-[var(--background)] px-3 py-1.5 rounded-full border border-[var(--border)] shadow-sm shrink-0">
-                        <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase flex items-center gap-1.5">
-                          <Filter className="w-3 h-3" /> Filter by Account:
-                        </span>
-                        <div className="h-3 w-px bg-[var(--border)] mx-1" />
-                        <div className="flex items-center gap-1.5">
-                          {uniqueAccounts
-                            .filter(acc => platform === 'all' || acc.type === platform)
-                            .map(acc => (
-                              <button
-                                key={acc.accountId}
-                                onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
-                                className={cn(
-                                  "px-3 py-1 rounded-full text-[10px] font-bold transition-all whitespace-nowrap flex items-center gap-1.5",
-                                  selectedParentAccounts.includes(acc.accountId)
-                                    ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--background)] hover:text-[var(--foreground)]"
-                                )}
-                              >
-                                {acc.type === 'facebook' ? <Facebook className="w-3 h-3" /> : <Instagram className="w-3 h-3" />}
-                                {acc.accountName}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
-                      {filteredAccounts.length > 0 ? (
-                        filteredAccounts.map((acc) => (
-                          <button
-                            key={acc.id}
-                            onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
-                            className={cn(
-                              "relative flex items-center gap-3 pl-3 pr-8 py-2.5 rounded-xl border transition-all whitespace-nowrap shrink-0 overflow-hidden group",
-                              selectedAccounts.includes(acc.id)
-                                ? "bg-primary/5 border-primary shadow-[0_0_0_1px_var(--theme-primary)]"
-                                : "bg-[var(--card)] border-[var(--border)] hover:border-[var(--muted-foreground)] hover:bg-[var(--background)]"
-                            )}
-                          >
-                            {selectedAccounts.includes(acc.id) && (
-                              <div className="absolute inset-0 bg-primary/5" />
-                            )}
-                            <div className="relative z-10 flex items-center justify-center">
-                              <img src={acc.image} alt="" className="w-7 h-7 rounded-full object-cover shadow-sm ring-2 ring-[var(--background)]" />
-                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--background)] rounded-full flex items-center justify-center shadow-sm">
-                                {acc.type === 'facebook' ? <Facebook className="w-3 h-3 text-[#1877F2]" /> : <Instagram className="w-3 h-3 text-[#E1306C]" />}
-                              </div>
-                            </div>
-                            <div className="flex flex-col items-start relative z-10">
-                              <span className="text-sm font-bold leading-none mb-1 text-[var(--foreground)]">{acc.name}</span>
-                              <span className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{acc.accountName}</span>
-                            </div>
-                            {selectedAccounts.includes(acc.id) && (
-                              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
-                                <CheckCircle2 className="w-3 h-3" />
-                              </div>
-                            )}
-                          </button>
-                        ))
-                      ) : (
-                        <div className="text-xs font-medium text-[var(--muted-foreground)] flex items-center gap-2 py-2">
-                          <Loader2 className="w-3 h-3 animate-pulse opacity-50" /> No matching pages found for this post type.
-                        </div>
-                      )}
-                    </div>
-                  </div>
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+        {/* Left - Account Selector & Composer */}
+        <section className="flex-1 flex flex-col min-h-0 bg-[var(--background)] lg:border-r border-[var(--border)]">
+          {/* Account Selector */}
+          <div className="border-b border-[var(--border)] bg-[var(--card)] px-3 lg:px-6 py-2 lg:py-3 shrink-0">
+            <div className="flex items-center gap-2 mb-2 lg:mb-3">
+              <span className="text-[10px] lg:text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] shrink-0">
+                {postType === 'multimedia' ? 'Pages' : 'Accounts'}
+              </span>
+              <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-md p-0.5 h-6 lg:h-7">
+                <button onClick={() => setPlatform('all')} className={cn("px-1.5 lg:px-2 text-[9px] lg:text-[10px] rounded font-medium h-full", platform === 'all' ? "bg-primary text-primary-foreground" : "text-[var(--muted-foreground)]")}>All</button>
+                <button onClick={() => setPlatform('facebook')} className={cn("flex items-center gap-0.5 px-1.5 lg:px-2 text-[9px] lg:text-[10px] rounded font-medium h-full", platform === 'facebook' ? "bg-[#1877F2] text-white" : "text-[var(--muted-foreground)]")}>
+                  <Facebook className="w-2 h-2" /> FB
+                </button>
+                {(postType !== 'cta' && postType !== 'carousel') && (
+                  <button onClick={() => setPlatform('instagram')} className={cn("flex items-center gap-0.5 px-1.5 lg:px-2 text-[9px] lg:text-[10px] rounded font-medium h-full", platform === 'instagram' ? "bg-[#E1306C] text-white" : "text-[var(--muted-foreground)]")}>
+                    <Instagram className="w-2 h-2" /> IG
+                  </button>
                 )}
               </div>
             </div>
-
-            {/* Composer */}
-            <div className="flex-1 overflow-y-auto no-scrollbar relative">
-              {step === 'studio' && postType === 'carousel' ? (
-                <CarouselComposer
-                  onPublish={handlePublish}
-                  isPublishing={isPublishingCarousel}
-                  accounts={accounts}
-                  isLoadingAccounts={isLoadingAccounts}
-                  selectedParentAccounts={selectedParentAccounts}
-                  onChange={handleCarouselChange}
-                />
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+              {isLoadingAccounts ? (
+                <Loader2 className="w-3 h-3 animate-spin text-primary shrink-0" />
+              ) : (postType === 'cta' || postType === 'carousel') ? (
+                uniqueAccounts.filter(a => a.type === 'facebook').map(acc => (
+                  <button key={acc.accountId} onClick={() => setSelectedParentAccounts(prev => prev.includes(acc.accountId) ? prev.filter(id => id !== acc.accountId) : [...prev, acc.accountId])}
+                    className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-medium whitespace-nowrap shrink-0", selectedParentAccounts.includes(acc.accountId) ? "bg-primary/10 border-primary" : "bg-[var(--background)] border-[var(--border)]")}>
+                    <img src={acc.image} alt="" className="w-4 h-4 rounded-full" />
+                    {acc.accountName}
+                  </button>
+                ))
               ) : (
-                <Composer
-                  onContentChange={setCaption}
-                  onMediaChange={setMedia}
-                  type={postType}
-                  onPublish={handlePublish}
-                  isPublishing={isPublishing}
-                  accounts={accounts}
-                  selectedParentAccounts={selectedParentAccounts}
-                  onTabChange={setMultimediaTab}
-                  onLinkChange={setLinkUrlPreview}
-                  onCtaTypeChange={setCtaTypePreview}
-                />
+                filteredAccounts.map(acc => (
+                  <button key={acc.id} onClick={() => setSelectedAccounts(prev => prev.includes(acc.id) ? prev.filter(id => id !== acc.id) : [...prev, acc.id])}
+                    className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-medium whitespace-nowrap shrink-0", selectedAccounts.includes(acc.id) ? "bg-primary/5 border-primary" : "bg-[var(--background)] border-[var(--border)]")}>
+                    <img src={acc.image} alt="" className="w-4 h-4 rounded-full" />
+                    {acc.name}
+                  </button>
+                ))
               )}
             </div>
-          </section>
+          </div>
 
-          {/* Right - Preview */}
-          <section className="w-full lg:w-[400px] xl:w-[480px] shrink-0 h-auto lg:h-full bg-[var(--background)] shadow-[-10px_0_30px_rgba(0,0,0,0.02)] relative z-20">
+          {/* Composer */}
+          <div className="flex-1 overflow-y-auto min-h-0">
+            {step === 'studio' && postType === 'carousel' ? (
+              <CarouselComposer
+                onPublish={handlePublish}
+                isPublishing={isPublishingCarousel}
+                accounts={accounts}
+                isLoadingAccounts={isLoadingAccounts}
+                selectedParentAccounts={selectedParentAccounts}
+                onChange={handleCarouselChange}
+              />
+            ) : (
+              <Composer
+                onContentChange={setCaption}
+                onMediaChange={setMedia}
+                type={postType}
+                onPublish={handlePublish}
+                isPublishing={isPublishing}
+                accounts={accounts}
+                selectedParentAccounts={selectedParentAccounts}
+                onTabChange={setMultimediaTab}
+                onLinkChange={setLinkUrlPreview}
+                onCtaTypeChange={setCtaTypePreview}
+              />
+            )}
+          </div>
+        </section>
+
+          {/* Right - Preview (Desktop) */}
+          <section className="hidden lg:block w-[400px] xl:w-[480px] shrink-0 h-full bg-[var(--background)] shadow-[-10px_0_30px_rgba(0,0,0,0.02)] relative z-20">
             <PostPreview
               content={caption}
               media={media}
@@ -838,7 +745,39 @@ export default function PostStudioPage() {
               ctaTypeLabel={ctaTypePreview}
             />
           </section>
-        </main>
+        {/* Mobile Preview Button */}
+        <button
+          onClick={() => setShowMobilePreview(true)}
+          className="lg:hidden fixed bottom-6 right-4 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform"
+        >
+          <Smartphone className="w-5 h-5" />
+        </button>
+
+        {/* Mobile Preview Overlay */}
+        {showMobilePreview && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+            <div className="relative w-full max-w-sm bg-[var(--background)] rounded-2xl overflow-hidden max-h-[90vh] flex flex-col">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] shrink-0">
+                <h2 className="text-sm font-bold">Preview</h2>
+                <button onClick={() => setShowMobilePreview(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--background)] active:scale-90 transition-all">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3">
+                <PostPreview
+                  content={caption}
+                  media={media}
+                  type={postType === 'multimedia' ? multimediaTab : postType}
+                  carouselItems={carouselItemsPreview}
+                  sliderImages={sliderImagesPreview}
+                  carouselTab={carouselTab}
+                  linkUrl={linkUrlPreview}
+                  ctaTypeLabel={ctaTypePreview}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Decorative Gradient Glows */}
