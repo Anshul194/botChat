@@ -17,23 +17,43 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "BotChat — Instagram & Facebook Automation Platform",
+    default: "BotChat — Instagram DM & Facebook Messenger Automation Platform",
     template: "%s — BotChat",
   },
   description:
-    "Automate your Instagram DMs and Facebook Messenger with AI-powered chatbots. Unified inbox, smart automation flows, and real-time analytics for your business.",
+    "Automate Instagram DMs and Facebook Messenger with AI-powered chatbots. Convert comments into customers in under 1 second. Trusted by 47,000+ creators and brands. Fully Meta policy compliant.",
   keywords: [
-    "Instagram automation",
-    "Facebook messenger bot",
-    "DM automation",
-    "chatbot SaaS",
-    "social media automation",
+    "Instagram DM automation",
+    "Facebook Messenger chatbot",
+    "convert comments to customers",
+    "AI social media automation",
+    "Instagram lead generation",
+    "Facebook bot for business",
+    "DM auto reply Instagram",
+    "social media AI chatbot",
+    "link in bio tool",
+    "Instagram comment automation",
+    "Facebook comment responder",
+    "social selling automation",
+    "Instagram follow gated content",
+    "AI chat flows",
+    "Instagram and Facebook automation platform",
   ],
   openGraph: {
-    title: "BotChat — Instagram & Facebook Automation Platform",
+    title: "BotChat — Instagram DM & Facebook Messenger Automation",
     description:
-      "Automate your social media communications with AI-powered workflows",
+      "Turn every Instagram and Facebook comment into a paying customer. AI-powered DM automation trusted by 47,000+ businesses. Fully Meta compliant.",
     type: "website",
+    siteName: "BotChat",
+    locale: "en_IN",
+    countryName: "India",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://botchat.divyangtechlabs.com",
   },
 };
 

@@ -25,8 +25,8 @@ export default function Home() {
   return (
     <>
       <PageMeta
-        title="BotChat — DM Automation for Instagram & Facebook"
-        description="Automate your Instagram DMs and Facebook Messenger with AI-powered chatbots. Unified inbox, smart automation flows, and real-time analytics for your business."
+        title="BotChat — Instagram DM & Facebook Messenger Automation"
+        description="Automate Instagram DMs and Facebook Messenger with AI-powered chatbots. Convert comments into customers in under 1 second. Trusted by 47,000+ creators and brands. Fully Meta policy compliant."
       />
       <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
       <SmoothScrollingUI />
