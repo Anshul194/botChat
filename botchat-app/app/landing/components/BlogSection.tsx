@@ -70,6 +70,7 @@ export default function BlogSection() {
                   <img
                     src={post.featured_image_url || post.featured_image || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800"}
                     alt={post.title}
+                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   {post.category && (

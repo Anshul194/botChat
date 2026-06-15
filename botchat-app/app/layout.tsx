@@ -47,6 +47,15 @@ export const metadata: Metadata = {
     siteName: "BotChat",
     locale: "en_IN",
     countryName: "India",
+    images: [{ url: "https://botchat.divyangtechlabs.com/og-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@botchat",
+    title: "BotChat — Instagram DM & Facebook Messenger Automation",
+    description:
+      "Turn every Instagram and Facebook comment into a paying customer. AI-powered DM automation trusted by 47,000+ businesses.",
+    images: ["https://botchat.divyangtechlabs.com/og-image.png"],
   },
   robots: {
     index: true,
@@ -70,6 +79,64 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "BotChat",
+              url: "https://botchat.divyangtechlabs.com",
+              logo: "https://botchat.divyangtechlabs.com/logo.png",
+              description:
+                "AI-powered Instagram DM and Facebook Messenger automation platform. Convert comments into customers automatically.",
+              sameAs: [
+                "https://facebook.com/botchat",
+                "https://instagram.com/botchat",
+                "https://twitter.com/botchat",
+              ],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer support",
+                email: "support@botchat.com",
+              },
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "IN",
+              },
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "BotChat",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              description:
+                "Automate Instagram DMs and Facebook Messenger with AI chatbots. Reply to comments in under 1 second.",
+              url: "https://botchat.divyangtechlabs.com",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+                description: "Free trial available",
+              },
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.8",
+                ratingCount: "47000",
+                bestRating: "5",
+              },
+            }),
+          }}
+        />
 
         {/* Prevent flash of wrong theme on first load */}
         <script

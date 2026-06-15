@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, HelpCircle, MessageCircle, ShieldCheck, Zap, Sparkles, ArrowRight, Link as LinkIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const faqs = [
   {
@@ -101,6 +101,23 @@ function FAQItem({ item, index, isOpen, toggleOpen }: { item: typeof faqs[0], in
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "faq-schema";
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: { "@type": "Answer", text: f.answer },
+      })),
+    });
+    document.head.appendChild(script);
+    return () => { const el = document.getElementById("faq-schema"); el?.remove(); };
+  }, []);
 
   return (
     <section className="py-24 md:py-32 bg-white relative overflow-hidden">
