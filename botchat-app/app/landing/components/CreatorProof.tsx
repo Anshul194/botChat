@@ -134,6 +134,7 @@ function InfiniteMarquee({
                     <img
                       src={getAvatar(imgIndex)}
                       alt={display}
+                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                   </div>

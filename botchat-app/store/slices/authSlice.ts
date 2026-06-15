@@ -196,6 +196,22 @@ export const logoutUser = createAsyncThunk(
     }
 );
 
+export const changePassword = createAsyncThunk(
+    'auth/changePassword',
+    async (payload: { current_password: string; password: string; password_confirmation: string }, { rejectWithValue }) => {
+        try {
+            const response = await api.patch('/profile/password', payload);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Failed to change password.');
+            }
+            return response.data.message || 'Password changed successfully.';
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Failed to change password.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -255,6 +271,17 @@ const authSlice = createSlice({
                 state.user = null;
                 state.token = null;
                 state.isAuthenticated = false;
+            })
+            .addCase(changePassword.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(changePassword.fulfilled, (state) => {
+                state.isLoading = false;
+            })
+            .addCase(changePassword.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
             })
             .addCase(fetchMe.pending, (state) => {
                 state.isLoading = true;

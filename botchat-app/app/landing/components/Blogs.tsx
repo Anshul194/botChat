@@ -59,6 +59,7 @@ export default function Blogs() {
                 <img 
                   src={post.image} 
                   alt={post.title} 
+                  loading="lazy"
                   className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                 />
               </div>

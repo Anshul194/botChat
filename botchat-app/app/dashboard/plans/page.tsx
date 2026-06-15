@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPlans, createPlan, updatePlan, deletePlan, setSelectedPlan } from "@/store/slices/plansSlice";
 import {
     Plus, MoreHorizontal, Edit2, Trash2, Loader2,
-    Users, DollarSign, CheckCircle2, FileText, Smartphone,
+    Users, IndianRupee, CheckCircle2, FileText, Smartphone,
     Zap, CreditCard, Star
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -113,7 +113,7 @@ export default function PlansPage() {
                 {[
                     { label: "Total Plans", value: plans.length, icon: FileText },
                     { label: "Active", value: plans.filter(p => p.status).length, icon: CheckCircle2, accent: "text-emerald-600" },
-                    { label: "Highest Price", value: plans.length ? `$${Math.max(...plans.map(p => Number(p.price)))}` : "$0", icon: DollarSign },
+                    { label: "Highest Price", value: plans.length ? `₹${Math.max(...plans.map(p => Number(p.price)))}` : "₹0", icon: IndianRupee },
                     { label: "WhatsApp Enabled", value: plans.filter(p => p.features?.whatsapp === "1").length, icon: Smartphone },
                 ].map((stat) => (
                     <div key={stat.label} className="rounded-lg border border-border bg-card p-4">
@@ -212,7 +212,7 @@ export default function PlansPage() {
                                             </div>
 
                                             <div className="mt-3">
-                                                <span className="text-3xl font-bold">${plan.price}</span>
+                                                <span className="text-3xl font-bold">₹{plan.price}</span>
                                                 <span className="text-muted-foreground text-sm ml-1">/ {plan.duration} {plan.duration_type}</span>
                                             </div>
                                         </CardHeader>

@@ -98,7 +98,7 @@ export default function Testimonials() {
                 {/* FRONT side */}
                 <div className="absolute inset-0 h-full w-full rounded-[48px] bg-white/5 border border-white/10 p-8 backdrop-blur-xl flex flex-col items-center justify-between text-center [backface-visibility:hidden]">
                   <div className="relative mb-6">
-                    <img src={t.avatar} alt={t.name} className="w-24 h-24 rounded-full border-4 border-white/20 shadow-2xl relative z-10 object-cover" />
+                    <img src={t.avatar} alt={t.name} loading="lazy" className="w-24 h-24 rounded-full border-4 border-white/20 shadow-2xl relative z-10 object-cover" />
                     <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white p-1 rounded-full shadow-lg border-2 border-[#1a1235] z-20">
                       <CheckCircle2 size={16} fill="currentColor" />
                     </div>
