@@ -13,7 +13,8 @@ import {
 import {
     selectIsSuperAdmin as isSuperAdminSelector,
     selectIsReseller as isResellerSelector,
-    selectIsTenant as isTenantSelector
+    selectIsTenant as isTenantSelector,
+    changePassword
 } from "../../../store/slices/authSlice";
 import { useModal } from "@/components/providers/ModalProvider";
 import {
@@ -203,7 +204,7 @@ export default function SettingsPage() {
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
 
     // Selectors
-    const { user } = useSelector((state: RootState) => state.auth);
+    const { user, isLoading: authLoading } = useSelector((state: RootState) => state.auth);
     const { general, facebook, ai, emailProfiles, isLoadingGeneral, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
 
     const isSuperAdmin = useSelector(isSuperAdminSelector);
@@ -252,6 +253,7 @@ export default function SettingsPage() {
 
     const [aiForm, setAiForm] = useState({ provider: 'openai', secretKey: '', promptModel: 'gpt-4o', instructionToAi: '' });
     const [fbForm, setFbForm] = useState({ appName: '', appId: '', appSecret: '', siteUrl: '' });
+    const [passwordForm, setPasswordForm] = useState({ current_password: '', password: '', password_confirmation: '' });
 
     useEffect(() => {
         if (general) {
@@ -344,6 +346,29 @@ export default function SettingsPage() {
 
         await dispatch(updateFacebookSettings(payload)).unwrap();
         showModal("success", "Saved", "Facebook settings saved successfully!");
+    };
+
+    const handleChangePassword = async () => {
+        const { current_password, password, password_confirmation } = passwordForm;
+        if (!current_password || !password) {
+            showModal("error", "Validation", "All password fields are required.");
+            return;
+        }
+        if (password.length < 8) {
+            showModal("error", "Validation", "New password must be at least 8 characters.");
+            return;
+        }
+        if (password !== password_confirmation) {
+            showModal("error", "Validation", "Passwords do not match.");
+            return;
+        }
+        try {
+            await dispatch(changePassword({ current_password, password, password_confirmation })).unwrap();
+            showModal("success", "Password Updated", "Your password has been changed successfully.");
+            setPasswordForm({ current_password: '', password: '', password_confirmation: '' });
+        } catch (err: any) {
+            showModal("error", "Error", typeof err === 'string' ? err : "Failed to change password.");
+        }
     };
 
 
@@ -1331,12 +1356,12 @@ export default function SettingsPage() {
                         <div className="space-y-4">
                             <IntegrationHeader title="Security & Authentication" desc="Manage your password, 2FA, and active sessions." Icon={Shield} color="#10b981" />
                             <Section title="Change Password" desc="Use a strong, unique password">
-                                <InputField label="Current Password" type="password" placeholder="••••••••" />
-                                <InputField label="New Password" type="password" placeholder="Min 8 characters" />
-                                <InputField label="Confirm Password" type="password" placeholder="Repeat new password" />
+                                <InputField label="Current Password" type="password" placeholder="••••••••" value={passwordForm.current_password} onChange={(e: any) => setPasswordForm(p => ({ ...p, current_password: e.target.value }))} />
+                                <InputField label="New Password" type="password" placeholder="Min 8 characters" value={passwordForm.password} onChange={(e: any) => setPasswordForm(p => ({ ...p, password: e.target.value }))} />
+                                <InputField label="Confirm Password" type="password" placeholder="Repeat new password" value={passwordForm.password_confirmation} onChange={(e: any) => setPasswordForm(p => ({ ...p, password_confirmation: e.target.value }))} />
                                 <div className="flex justify-end">
-                                    <button className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-                                        style={{ background: "var(--brand-gradient)", color: "white" }}>Update Password</button>
+                                    <button onClick={handleChangePassword} disabled={authLoading} className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+                                        style={{ background: "var(--brand-gradient)", color: "white" }}>{authLoading ? "Updating..." : "Update Password"}</button>
                                 </div>
                             </Section>
                             <Section title="Two-Factor Authentication" desc="Extra layer of security">
