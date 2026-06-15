@@ -16,7 +16,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BotChat — Instagram & Facebook Automation Platform",
+  title: {
+    default: "BotChat — Instagram & Facebook Automation Platform",
+    template: "%s — BotChat",
+  },
   description:
     "Automate your Instagram DMs and Facebook Messenger with AI-powered chatbots. Unified inbox, smart automation flows, and real-time analytics for your business.",
   keywords: [
