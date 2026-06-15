@@ -7,7 +7,7 @@ export default async function SlugResolverPage({ params }: { params: { slug: str
 
   // We are running on the server, so we must construct the API URL.
   // In Next.js App Router, we can read the incoming request host:
-  const headersList = headers();
+  const headersList = await headers();
   const host = headersList.get('host') || '';
   
   // Custom API endpoint resolution based on the host
