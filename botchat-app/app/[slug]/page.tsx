@@ -1,28 +1,28 @@
 import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import BioLayout from '@/app/bio-layout/page'; 
+import BioLayout from '@/app/bio-layout/page';
 
-export default async function SlugResolverPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function SlugResolverPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   // We are running on the server, so we must construct the API URL.
-  // In Next.js App Router, we can read the incoming request host:
+  // In Next.js App Router 15+, headers() and params are asynchronous:
   const headersList = await headers();
   const host = headersList.get('host') || '';
-  
+
   // Custom API endpoint resolution based on the host
   // If local DEV_DOMAIN is set, use it. Otherwise compute from host.
   const devDomain = process.env.NEXT_PUBLIC_DEV_DOMAIN;
   let apiDomain = devDomain || 'agency-api.megadm.chat';
 
   if (!devDomain && host) {
-      const cleanHostname = host.replace('www.', '').split(':')[0];
-      const prefix = cleanHostname.split('.')[0];
-      if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
-          apiDomain = 'api.megadm.chat';
-      } else {
-          apiDomain = `${prefix}-api.megadm.chat`;
-      }
+    const cleanHostname = host.replace('www.', '').split(':')[0];
+    const prefix = cleanHostname.split('.')[0];
+    if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
+      apiDomain = 'api.megadm.chat';
+    } else {
+      apiDomain = `${prefix}-api.megadm.chat`;
+    }
   }
 
   const apiUrl = `https://${apiDomain}/api/v1/public/resolve/${slug}`;
@@ -35,7 +35,7 @@ export default async function SlugResolverPage({ params }: { params: { slug: str
       headers: {
         'Accept': 'application/json',
       },
-      cache: 'no-store', 
+      cache: 'no-store',
     });
 
     if (response.ok) {
