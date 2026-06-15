@@ -1,25 +1,27 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import PageMeta from "@/components/PageMeta";
 import Navbar from "./landing/components/Navbar";
 import Hero from "./landing/components/Hero";
-import FeaturesOverview from "./landing/components/FeaturesOverview";
-import BioLinkShowcase from "./landing/components/BioLinkShowcase";
-import MotiveSection from "./landing/components/MotiveSection";
-import Features from "./landing/components/Features";
-import ScrollWritingSection from "./landing/components/ScrollWritingSection";
-import TrendyStacks from "./landing/components/TrendyStacks";
-import CreatorProof from "./landing/components/CreatorProof";
-import Testimonials from "./landing/components/Testimonials";
-import Pricing from "./landing/components/Pricing";
-import FAQ from "./landing/components/FAQ";
-import Footer from "./landing/components/Footer";
-import GrowthSections from "./landing/components/GrowthSections";
-import TrustAndFinalCTA from "./landing/components/TrustAndFinalCTA";
-import PerformanceChart from "./landing/components/PerformanceChart";
-import StepsSection from "./landing/components/StepsSection";
-import BlogSection from "./landing/components/BlogSection";
-import SmoothScrollingUI from "./landing/components/SmoothScrollingUI";
+
+const SmoothScrollingUI = dynamic(() => import("./landing/components/SmoothScrollingUI"), { ssr: false });
+const FeaturesOverview = dynamic(() => import("./landing/components/FeaturesOverview"));
+const BioLinkShowcase = dynamic(() => import("./landing/components/BioLinkShowcase"));
+const MotiveSection = dynamic(() => import("./landing/components/MotiveSection"));
+const Features = dynamic(() => import("./landing/components/Features"));
+const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"));
+const TrendyStacks = dynamic(() => import("./landing/components/TrendyStacks"));
+const CreatorProof = dynamic(() => import("./landing/components/CreatorProof"));
+const Testimonials = dynamic(() => import("./landing/components/Testimonials"));
+const Pricing = dynamic(() => import("./landing/components/Pricing"));
+const FAQ = dynamic(() => import("./landing/components/FAQ"));
+const Footer = dynamic(() => import("./landing/components/Footer"));
+const GrowthSections = dynamic(() => import("./landing/components/GrowthSections"));
+const TrustAndFinalCTA = dynamic(() => import("./landing/components/TrustAndFinalCTA"));
+const PerformanceChart = dynamic(() => import("./landing/components/PerformanceChart"));
+const StepsSection = dynamic(() => import("./landing/components/StepsSection"));
+const BlogSection = dynamic(() => import("./landing/components/BlogSection"));
 
 export default function Home() {
   return (
@@ -35,11 +37,8 @@ export default function Home() {
       {/* HERO: The main entry point */}
       <Hero />
 
-
       {/* SUBSEQUENT SECTIONS */}
       <div className="relative z-10">
-        {/* Social Proof handled inside Hero/CreatorProof */}
-
         <div id="features">
           <FeaturesOverview />
         </div>

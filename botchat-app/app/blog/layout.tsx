@@ -4,15 +4,6 @@ export const metadata: Metadata = {
   title: "Blog",
   description:
     "Tips, tutorials, and strategies for Instagram and Facebook DM automation, AI chatbots, social selling, and converting comments into customers. Learn from BotChat experts.",
-  keywords: [
-    "Instagram automation tips",
-    "Facebook Messenger marketing",
-    "social media chatbot guide",
-    "DM automation tutorial",
-    "convert comments to leads",
-    "social selling strategies",
-    "Instagram lead generation tips",
-  ],
   openGraph: {
     title: "Blog — BotChat",
     description:
