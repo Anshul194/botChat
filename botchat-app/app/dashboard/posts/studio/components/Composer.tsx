@@ -178,7 +178,7 @@ export function Composer({
 
   if (type === 'cta') {
     return (
-      <div className="flex flex-col h-full bg-[var(--card)] p-6 gap-6 overflow-y-auto">
+      <div className="bg-[var(--card)] p-4 lg:p-6 space-y-4 lg:space-y-6">
         <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
           <div className="flex items-center gap-2">
              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -257,7 +257,7 @@ export function Composer({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
              <div className="space-y-2">
                 <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Paste Link</Label>
                 <Input 
@@ -297,7 +297,7 @@ export function Composer({
              </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
              <div className="space-y-2">
                 <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Auto Reply Template</Label>
                 <Select value={autoReplyTemplate} onValueChange={setAutoReplyTemplate}>
@@ -331,8 +331,8 @@ export function Composer({
           </div>
 
           {isScheduling && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 lg:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                 <div className="space-y-2">
                   <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Schedule time</Label>
                   <div className="flex gap-2">
@@ -364,7 +364,7 @@ export function Composer({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                 <div className="space-y-2">
                   <Label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-wider">Repeat this post</Label>
                   <div className="flex items-center gap-2">
@@ -410,7 +410,7 @@ export function Composer({
   }
 
   return (
-    <div className="flex flex-col h-full bg-[var(--card)] p-6 gap-6 overflow-y-auto">
+    <div className="bg-[var(--card)] p-4 lg:p-6 space-y-4 lg:space-y-6">
       <input 
         type="file" 
         ref={fileInputRef} 
@@ -427,85 +427,84 @@ export function Composer({
         accept="video/*"
       />
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <div className="flex items-center justify-between border-b border-[var(--border)] mb-6 pb-2">
-            <TabsList className="bg-transparent p-0 h-auto gap-4">
+        <div className="flex items-center justify-between border-b border-[var(--border)] mb-4 lg:mb-6 pb-2 overflow-x-auto no-scrollbar">
+            <TabsList className="bg-transparent p-0 h-auto gap-2 lg:gap-4 shrink-0">
               <TabsTrigger 
                 value="text" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 py-1 gap-2 text-[var(--muted-foreground)] font-bold tracking-wide"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-1.5 lg:px-2 py-1 gap-1 lg:gap-2 text-[10px] lg:text-sm text-[var(--muted-foreground)] font-bold tracking-wide"
               >
-                <span className="w-4 h-4 text-xs font-serif font-black">T</span> Text
+                <span className="w-3 h-3 lg:w-4 lg:h-4 text-[9px] lg:text-xs font-serif font-black">T</span> <span className="hidden sm:inline">Text</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="link" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 py-1 gap-2 text-[var(--muted-foreground)] font-bold tracking-wide"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-1.5 lg:px-2 py-1 gap-1 lg:gap-2 text-[10px] lg:text-sm text-[var(--muted-foreground)] font-bold tracking-wide"
               >
-                <LinkIcon className="w-4 h-4" /> Link
+                <LinkIcon className="w-3 h-3 lg:w-4 lg:h-4" /> <span className="hidden sm:inline">Link</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="image" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 py-1 gap-2 text-[var(--muted-foreground)] font-bold tracking-wide"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-1.5 lg:px-2 py-1 gap-1 lg:gap-2 text-[10px] lg:text-sm text-[var(--muted-foreground)] font-bold tracking-wide"
               >
-                <ImageIcon className="w-4 h-4" /> Image/carousel
+                <ImageIcon className="w-3 h-3 lg:w-4 lg:h-4" /> <span className="hidden sm:inline">Image</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="video" 
-                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-2 py-1 gap-2 text-[var(--muted-foreground)] font-bold tracking-wide"
+                className="data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-1.5 lg:px-2 py-1 gap-1 lg:gap-2 text-[10px] lg:text-sm text-[var(--muted-foreground)] font-bold tracking-wide"
               >
-                <Video className="w-4 h-4" /> Video
+                <Video className="w-3 h-3 lg:w-4 lg:h-4" /> <span className="hidden sm:inline">Video</span>
               </TabsTrigger>
             </TabsList>
             
             {activeTab !== 'text' && activeTab !== 'link' && (
-              <div className="flex items-center gap-2">
-                <Label htmlFor="ig-toggle" className="text-xs text-[var(--muted-foreground)] font-semibold">Instagram</Label>
-                <Switch id="ig-toggle" checked={isInstagram} onCheckedChange={setIsInstagram} className="data-[state=checked]:bg-primary" />
+              <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
+                <Label htmlFor="ig-toggle" className="text-[9px] lg:text-xs text-[var(--muted-foreground)] font-semibold whitespace-nowrap">IG</Label>
+                <Switch id="ig-toggle" checked={isInstagram} onCheckedChange={setIsInstagram} className="data-[state=checked]:bg-primary scale-75 lg:scale-100" />
               </div>
             )}
           </div>
 
-          <div className="space-y-6">
-            {/* Top Fields Based on Tab */}
+          <div className="space-y-4 lg:space-y-6">
             {activeTab === 'link' && (
-              <div className="space-y-4 animate-in fade-in">
+              <div className="space-y-3 lg:space-y-4">
                 <div className="relative">
                   <Input 
                       placeholder="Paste link" 
-                      className="bg-[var(--background)] border-[var(--border)] text-[var(--foreground)] pr-24"
+                      className="bg-[var(--background)] border-[var(--border)] text-sm pr-20 lg:pr-24"
                       value={linkUrl}
                       onChange={(e) => {
                         setLinkUrl(e.target.value);
                         onLinkChange?.(e.target.value);
                       }}
                   />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-primary cursor-pointer hover:underline">Fetch Info</div>
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] lg:text-xs font-bold text-primary cursor-pointer hover:underline">Fetch</div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-[var(--muted-foreground)]">CTA Button Type</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
+                  <div className="space-y-1.5 lg:space-y-2">
+                    <Label className="text-[10px] lg:text-xs font-bold text-[var(--muted-foreground)]">CTA Button Type</Label>
                     <Select value={ctaType} onValueChange={(val) => {
                       setCtaType(val);
                       onCtaTypeChange?.(val);
                     }}>
-                      <SelectTrigger className="bg-[var(--background)] border-[var(--border)]">
-                        <SelectValue placeholder="Select Button" />
+                      <SelectTrigger className="bg-[var(--background)] border-[var(--border)] h-9 lg:h-11 text-sm">
+                        <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.isArray(ctaTypes) && ctaTypes.map((type: any, idx) => {
                           const value = typeof type === 'string' ? type : (type?.value || type?.id || String(idx));
                           const label = typeof type === 'string' ? type.replace(/_/g, ' ') : (type?.label || type?.name || value);
                           return (
-                            <SelectItem key={value} value={value}>{label}</SelectItem>
+                            <SelectItem key={value} value={value} className="text-sm">{label}</SelectItem>
                           );
                         })}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-[var(--muted-foreground)]">CTA Value (URL)</Label>
+                  <div className="space-y-1.5 lg:space-y-2">
+                    <Label className="text-[10px] lg:text-xs font-bold text-[var(--muted-foreground)]">CTA Value (URL)</Label>
                     <Input 
                         placeholder="CTA target URL" 
-                        className="bg-[var(--background)] border-[var(--border)] text-[var(--foreground)]"
+                        className="bg-[var(--background)] border-[var(--border)] text-sm h-9 lg:h-11"
                         value={ctaValue}
                         onChange={(e) => setCtaValue(e.target.value)}
                     />
@@ -515,40 +514,40 @@ export function Composer({
             )}
 
             {(activeTab === 'image' || activeTab === 'video') && (
-              <div className="space-y-4 animate-in fade-in">
+              <div className="space-y-3 lg:space-y-4">
                 <div className="flex gap-2">
                   <Input 
                       placeholder="Paste url" 
-                      className="bg-[var(--background)] border-[var(--border)] text-[var(--foreground)]"
+                      className="bg-[var(--background)] border-[var(--border)] text-sm h-9 lg:h-11"
                   />
                   {activeTab === 'image' && (
-                    <Button variant="outline" className="border-primary text-primary hover:bg-primary/10 whitespace-nowrap">
-                      IG Media Manual
+                    <Button variant="outline" className="border-primary text-primary hover:bg-primary/10 text-[10px] lg:text-xs px-2 lg:px-3 whitespace-nowrap">
+                      IG Media
                     </Button>
                   )}
                 </div>
                 
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-3 lg:gap-4">
                   <Button 
-                    className="bg-primary hover:bg-primary/90 rounded-xl"
+                    className="bg-primary hover:bg-primary/90 rounded-xl text-xs lg:text-sm h-9 lg:h-11"
                     onClick={triggerUpload}
                     disabled={isUploading}
                   >
-                    {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-                    {isUploading ? "Uploading..." : "Upload from computer"}
+                    {isUploading ? <Loader2 className="w-3 h-3 lg:w-4 lg:h-4 mr-1.5 lg:mr-2 animate-spin" /> : <Upload className="w-3 h-3 lg:w-4 lg:h-4 mr-1.5 lg:mr-2" />}
+                    {isUploading ? "Uploading..." : "Upload"}
                   </Button>
                   
                   {activeTab === 'video' && (
-                    <div className="flex items-center gap-2 h-10">
-                      <Switch checked={isReel} onCheckedChange={setIsReel} className="data-[state=checked]:bg-primary" />
-                      <Label className="text-sm text-[var(--muted-foreground)]">Reels post for instagram</Label>
+                    <div className="flex items-center gap-2 h-9 lg:h-11">
+                      <Switch checked={isReel} onCheckedChange={setIsReel} className="data-[state=checked]:bg-primary scale-75 lg:scale-100" />
+                      <Label className="text-[10px] lg:text-sm text-[var(--muted-foreground)]">Reels</Label>
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 lg:gap-3">
                    {media.map((url, idx) => (
-                     <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[var(--border)] group shadow-sm">
+                     <div key={idx} className="relative w-16 h-16 lg:w-20 lg:h-20 rounded-lg overflow-hidden border border-[var(--border)] group shadow-sm">
                         {activeTab === 'video' ? (
                            <video src={url} className="w-full h-full object-cover" />
                         ) : (
@@ -556,35 +555,34 @@ export function Composer({
                         )}
                         <button 
                           onClick={() => removeMedia(idx)}
-                          className="absolute top-1 right-1 p-0.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-white z-10"
+                          className="absolute top-0.5 right-0.5 lg:top-1 lg:right-1 p-0.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-white z-10"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-2.5 h-2.5 lg:w-3 lg:h-3" />
                         </button>
                      </div>
                    ))}
                 </div>
 
                 {activeTab === 'image' && (
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-md text-xs">
-                    Multi Image Post Limit: 10 Images. In Facebook it will be posted as multi images post, Instagram as carousel. Instagram Carousel post also supports images+videos. For Facebook multi image post, videos will be ignored.
+                  <div className="p-2 lg:p-3 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-md text-[9px] lg:text-xs leading-relaxed">
+                    Max 10 images. Facebook = multi image, Instagram = carousel.
                   </div>
                 )}
               </div>
             )}
 
-            {/* Campaign Name & Text (Global across tabs in this flow) */}
-            <div className="space-y-2">
-              <Label className="text-[var(--muted-foreground)] text-xs font-bold">Campaign name</Label>
+            <div className="space-y-1.5 lg:space-y-2">
+              <Label className="text-[10px] lg:text-xs font-bold text-[var(--muted-foreground)]">Campaign name</Label>
               <Input 
-                  className="bg-[var(--background)] border-[var(--border)] text-[var(--foreground)]"
+                  className="bg-[var(--background)] border-[var(--border)] text-sm h-9 lg:h-11"
                   value={campaignName}
                   onChange={(e) => setCampaignName(e.target.value)}
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5 lg:space-y-2">
               <div className="flex items-center gap-1">
-                <Label className="text-[var(--muted-foreground)] text-xs font-bold">Text</Label>
+                <Label className="text-[10px] lg:text-xs font-bold text-[var(--muted-foreground)]">Text</Label>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger><HelpCircle className="w-3 h-3 text-primary" /></TooltipTrigger>
@@ -596,22 +594,21 @@ export function Composer({
               <div className="relative group">
                 <Textarea 
                   placeholder="Type your message here..."
-                  className="min-h-[150px] bg-[var(--background)] border-[var(--border)] focus:border-primary/30 transition-all resize-none text-[var(--foreground)] p-4"
+                  className="min-h-[120px] lg:min-h-[150px] bg-[var(--background)] border-[var(--border)] focus:border-primary/30 transition-all resize-none text-sm p-3 lg:p-4"
                   value={caption}
                   onChange={(e) => handleCaptionChange(e.target.value)}
                 />
-                <div className="absolute bottom-3 right-3 flex gap-2">
-                  <Button variant="ghost" size="icon" className="h-6 w-6 text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
-                    <Smile className="w-4 h-4" />
+                <div className="absolute bottom-2 right-2 lg:bottom-3 lg:right-3 flex gap-2">
+                  <Button variant="ghost" size="icon" className="h-5 w-5 lg:h-6 lg:w-6 text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+                    <Smile className="w-3 h-3 lg:w-4 lg:h-4" />
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Posting Time */}
-            <div className="space-y-4 pt-4 border-t border-[var(--border)]">
-              <div className="flex items-center gap-1 mb-2">
-                <Label className="text-[var(--muted-foreground)] text-xs font-bold">Posting time</Label>
+            <div className="space-y-3 lg:space-y-4 pt-3 lg:pt-4 border-t border-[var(--border)]">
+              <div className="flex items-center gap-1 mb-1 lg:mb-2">
+                <Label className="text-[10px] lg:text-xs font-bold text-[var(--muted-foreground)]">Posting time</Label>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger><HelpCircle className="w-3 h-3 text-primary" /></TooltipTrigger>
@@ -630,21 +627,21 @@ export function Composer({
               </div>
               
               {isScheduling && (
-                <div className="grid grid-cols-2 gap-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-300 max-w-sm">
+                <div className="grid grid-cols-2 gap-3 lg:gap-4 pt-1 lg:pt-2 max-w-sm">
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
+                    <Calendar className="absolute left-2.5 lg:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 lg:w-4 lg:h-4 text-[var(--muted-foreground)]" />
                     <Input 
                       type="date" 
-                      className="bg-[var(--card)] border-[var(--border)] pl-10 text-sm text-[var(--foreground)]" 
+                      className="bg-[var(--card)] border-[var(--border)] pl-8 lg:pl-10 text-xs lg:text-sm h-9 lg:h-11" 
                       value={scheduleDate}
                       onChange={(e) => setScheduleDate(e.target.value)}
                     />
                   </div>
                   <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
+                    <Clock className="absolute left-2.5 lg:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 lg:w-4 lg:h-4 text-[var(--muted-foreground)]" />
                     <Input 
                       type="time" 
-                      className="bg-[var(--card)] border-[var(--border)] pl-10 text-sm text-[var(--foreground)]" 
+                      className="bg-[var(--card)] border-[var(--border)] pl-8 lg:pl-10 text-xs lg:text-sm h-9 lg:h-11" 
                       value={scheduleTime}
                       onChange={(e) => setScheduleTime(e.target.value)}
                     />
@@ -653,11 +650,11 @@ export function Composer({
               )}
             </div>
 
-            <div>
+            <div className="sticky bottom-0 bg-[var(--card)] pt-3 lg:pt-4 pb-1">
               <Button 
                 onClick={handlePublish}
                 disabled={isPublishing}
-                className="bg-[#1877F2] hover:bg-[#1877F2]/90 text-white shadow-md shadow-blue-500/20 px-8"
+                className="w-full sm:w-auto bg-[#1877F2] hover:bg-[#1877F2]/90 text-white shadow-md shadow-blue-500/20 px-6 lg:px-8 h-10 lg:h-12 text-sm lg:text-base"
               >
                 {isPublishing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2 transform -rotate-45" />}
                 Submit
