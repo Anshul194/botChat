@@ -5,7 +5,7 @@ import {
     ArrowLeft, Save, Loader2, Check, Zap,
     MessageSquare, Users, Bot, CreditCard,
     Smartphone, Globe, Send, BarChart3,
-    DollarSign, Clock, Tag, CheckCircle,
+    IndianRupee, Clock, Tag, CheckCircle,
     Facebook, Instagram, Wifi, Activity,
     Radio, Settings2, ChevronRight
 } from "lucide-react";
@@ -246,9 +246,9 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
 
                                         <Section title="Pricing" description="Set the billing amount and cycle for this plan.">
                                             <div className="grid grid-cols-2 gap-4">
-                                                <Field label="Price (USD)" required>
+                                                <Field label="Price (INR)" required>
                                                     <div className="relative">
-                                                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                                         <Input
                                                             type="number"
                                                             placeholder="0.00"

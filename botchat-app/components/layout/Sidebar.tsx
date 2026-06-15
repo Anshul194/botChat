@@ -140,7 +140,6 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
 
     const [showLogout, setShowLogout] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
-    const [mounted, setMounted] = useState(false);
     const [facebookOpen, setFacebookOpen] = useState(false);
     const [instagramOpen, setInstagramOpen] = useState(false);
     const [bioLinksOpen, setBioLinksOpen] = useState(false);
@@ -163,8 +162,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     };
 
     useEffect(() => {
-        setMounted(true);
-        const current = pendingRoute || pathname || "";
+            const current = pendingRoute || pathname || "";
 
         setFacebookOpen(current.startsWith("/dashboard/facebook"));
 
@@ -188,10 +186,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     }, [pathname, pendingRoute]);
 
     const isSuperAdmin = useMemo(() => {
-        if (!mounted || !user) return false;
-        const role = (user.role || user.type || "").toLowerCase();
-        return role.includes("super_admin");
-    }, [user, mounted]);
+        return user?.role === 'SUPER_ADMIN';
+    }, [user]);
 
     const { showModal } = useModal();
 
