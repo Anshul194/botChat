@@ -24,7 +24,7 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
     }
   }
 
-  const apiUrl = `https://${apiDomain}/api/v1/public/resolve/${slug}`;
+  const apiUrl = `https://${apiDomain}/api/v1/public/resolve/${slug}?host=${encodeURIComponent(host)}`;
 
   // ── Build forwarded headers ──────────────────────────────────────────
   const forwardHeaders: Record<string, string> = {
