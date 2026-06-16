@@ -16,11 +16,19 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
 
   if (!devDomain && host) {
     const cleanHostname = host.replace('www.', '').split(':')[0];
-    const prefix = cleanHostname.split('.')[0];
-    if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
-      apiDomain = 'api.megadm.chat';
+    
+    // Check if it is a platform subdomain
+    if (cleanHostname.endsWith('megadm.chat')) {
+      const prefix = cleanHostname.split('.')[0];
+      if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
+        apiDomain = 'api.megadm.chat';
+      } else {
+        apiDomain = `${prefix}-api.megadm.chat`;
+      }
     } else {
-      apiDomain = `${prefix}-api.megadm.chat`;
+      // It's a custom domain! Fallback to the main agency API to resolve the link
+      // Since biolink_db is shared, any tenant API can resolve it.
+      apiDomain = 'agency-api.megadm.chat';
     }
   }
 
