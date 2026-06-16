@@ -81,7 +81,19 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
   }
 
   if (!result || !result.success) {
-    notFound();
+    // TEMPORARY DEBUGGING
+    return (
+      <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
+        <h2>DEBUG: Fetch Failed</h2>
+        <p><strong>API URL:</strong> {apiUrl}</p>
+        <p><strong>Host Header Received:</strong> {host}</p>
+        <p><strong>API Domain Computed:</strong> {apiDomain}</p>
+        <p><strong>Fetch Response Status:</strong> {fetchResponse ? fetchResponse.status : 'No Response'}</p>
+        <pre>
+          {JSON.stringify(result, null, 2)}
+        </pre>
+      </div>
+    );
   }
 
   // ── Forward Set-Cookie from Laravel ──────────────────────────────────
@@ -89,8 +101,6 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
     const setCookieHeader = fetchResponse.headers.get('set-cookie');
     if (setCookieHeader) {
       const cookieStore = await cookies();
-      // Basic split by comma (note: this might split dates, but usually tracking cookies don't have complex dates)
-      // For a robust parsing, you'd use a library, but let's do a simple parse for tracking cookies
       const splitCookies = setCookieHeader.split(/,(?=\s*[a-zA-Z0-9_-]+\=)/);
       for (const cookieStr of splitCookies) {
         const parts = cookieStr.split(';')[0].split('=');
@@ -112,5 +122,10 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
     return <BioLayout />;
   }
 
-  notFound();
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
+      <h2>DEBUG: Action Not Recognized</h2>
+      <pre>{JSON.stringify(result, null, 2)}</pre>
+    </div>
+  );
 }
