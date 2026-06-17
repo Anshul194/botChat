@@ -86,13 +86,7 @@ const SelectField = ({ label, options, value, onChange }: any) => (
 );
 
 const PIXEL_TYPES = [
-    { label: "Facebook Pixel", value: "facebook" },
-    { label: "Google Analytics", value: "google_analytics" },
-    { label: "Google Tag Manager", value: "google_tag_manager" },
-    { label: "LinkedIn Insight", value: "linkedin" },
-    { label: "Pinterest Tag", value: "pinterest" },
-    { label: "Twitter Pixel", value: "twitter" },
-    { label: "TikTok Pixel", value: "tiktok" },
+    { label: "Google Analytics 4 (GA4)", value: "google_analytics" },
 ];
 
 export default function PixelsPage() {
@@ -103,7 +97,7 @@ export default function PixelsPage() {
     const [editingPixel, setEditingPixel] = useState<any>(null);
     const [formData, setFormData] = useState({
         name: "",
-        type: "facebook",
+        type: "google_analytics",
         pixel_id_value: ""
     });
     const [search, setSearch] = useState("");
@@ -125,7 +119,7 @@ export default function PixelsPage() {
             setEditingPixel(null);
             setFormData({
                 name: "",
-                type: "facebook",
+                type: "google_analytics",
                 pixel_id_value: ""
             });
         }
@@ -180,10 +174,10 @@ export default function PixelsPage() {
                         </div>
                         <div className="space-y-1">
                             <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-                                Tracking Pixels
+                                Google Analytics
                             </h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl">
-                                Connect Facebook, Google, and other tracking pixels to your Bio Links for deep analytics.
+                                Connect Google Analytics 4 (GA4) to your Bio Links, VCards, and Short Links for deep reporting.
                             </p>
                         </div>
                     </div>
@@ -192,7 +186,7 @@ export default function PixelsPage() {
                         className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
                     >
                         <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
-                        Add Pixel
+                        Add Integration
                     </button>
                 </motion.div>
 
@@ -200,7 +194,7 @@ export default function PixelsPage() {
                     <div className="h-16 rounded-3xl border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl flex items-center px-6 shadow-sm flex-1 w-full">
                         <Search className="w-4 h-4 text-[var(--muted-foreground)] mr-3" />
                         <input 
-                            placeholder="Search your pixels..." 
+                            placeholder="Search integrations..." 
                             className="bg-transparent text-sm font-medium focus:outline-none flex-1" 
                             value={search} 
                             onChange={(e) => setSearch(e.target.value)} 
@@ -231,12 +225,12 @@ export default function PixelsPage() {
                             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
                                 <Target size={32} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Tracking Pixels</h3>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Integrations</h3>
                             <p className="text-slate-500 max-w-md mx-auto mb-8">
-                                You haven't added any tracking pixels yet. Connect one to start gathering valuable conversion data.
+                                You haven't added any Google Analytics properties yet. Connect one to start gathering valuable conversion data.
                             </p>
                             <button onClick={() => handleOpenModal()} className="rounded-2xl h-12 px-8 bg-primary text-white font-black uppercase tracking-widest flex items-center gap-2">
-                                <Plus className="w-4 h-4" /> Add Pixel
+                                <Plus className="w-4 h-4" /> Add Integration
                             </button>
                         </motion.div>
                     ) : (
@@ -273,7 +267,7 @@ export default function PixelsPage() {
             <ModalShell 
                 open={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
-                title={editingPixel ? "Edit Pixel" : "Add Tracking Pixel"}
+                title={editingPixel ? "Edit Integration" : "Add Google Analytics"}
                 icon={<Target size={20} />}
                 footer={
                     <div className="flex gap-4">
@@ -284,27 +278,27 @@ export default function PixelsPage() {
                             className="flex-[1.5] h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] transition-all"
                         >
                             <Save size={18} />
-                            Save Pixel
+                            Save Integration
                         </button>
                     </div>
                 }
             >
                 <div className="space-y-6 py-2">
                     <InputField
-                        label="Pixel Name"
-                        placeholder="e.g., My FB Pixel"
+                        label="Integration Name"
+                        placeholder="e.g., Main Website Analytics"
                         value={formData.name}
                         onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
                     />
                     <SelectField
-                        label="Pixel Provider"
+                        label="Provider"
                         options={PIXEL_TYPES}
                         value={formData.type}
                         onChange={(val: any) => setFormData({ ...formData, type: val })}
                     />
                     <InputField
-                        label="Pixel ID / Value"
-                        placeholder="e.g., 123456789"
+                        label="Measurement ID"
+                        placeholder="e.g., G-XXXXXXXXXX"
                         value={formData.pixel_id_value}
                         onChange={(e: any) => setFormData({ ...formData, pixel_id_value: e.target.value })}
                     />

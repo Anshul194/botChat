@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import BioLayout from '@/app/bio-layout/page';
+import RedirectWithTracking from '@/components/RedirectWithTracking';
 
 export default async function SlugResolverPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -96,6 +97,12 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
   }
 
   if (result.action === 'redirect' && result.destination) {
+    // If we have GA4 pixels to fire, render a client-side redirect component instead of server-side
+    if (result.data?.ga4_pixels && result.data.ga4_pixels.length > 0) {
+      return <RedirectWithTracking destination={result.destination} ga4Pixels={result.data.ga4_pixels} />;
+    }
+    
+    // Otherwise, fast server-side redirect
     redirect(result.destination);
   }
 
