@@ -1,7 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
-import { headers, cookies } from 'next/headers';
+import { headers } from 'next/headers';
 import BioLayout from '@/app/bio-layout/page';
-import * as setCookieParser from 'set-cookie-parser';
 
 export default async function SlugResolverPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -94,24 +93,6 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
         </pre>
       </div>
     );
-  }
-
-  // ── Forward Set-Cookie from Laravel ──────────────────────────────────
-  if (fetchResponse) {
-    const setCookieHeader = fetchResponse.headers.get('set-cookie');
-    if (setCookieHeader) {
-      const cookieStore = await cookies();
-      const splitCookies = setCookieHeader.split(/,(?=\s*[a-zA-Z0-9_-]+\=)/);
-      for (const cookieStr of splitCookies) {
-        const parts = cookieStr.split(';')[0].split('=');
-        if (parts.length === 2) {
-          cookieStore.set(parts[0].trim(), parts[1].trim(), {
-             maxAge: 60 * 60 * 24, // 1 day
-             path: '/',
-          });
-        }
-      }
-    }
   }
 
   if (result.action === 'redirect' && result.destination) {
