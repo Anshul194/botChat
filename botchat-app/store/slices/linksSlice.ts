@@ -52,10 +52,12 @@ export const fetchLinkStatistics = createAsyncThunk(
             if (end_date) params.append('end_date', end_date);
             
             const response = await api.get(`/links/${linkId}/statistics?${params.toString()}`);
-            if (response.data) {
-                return response.data;
+            if (response.data && response.data.success) {
+                // Return the inner data payload (not the full envelope) so the
+                // frontend can read data?.totals?.pageviews directly.
+                return response.data.data;
             }
-            return rejectWithValue('Failed to fetch statistics');
+            return rejectWithValue(response.data?.message || 'Failed to fetch statistics');
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch statistics');
         }

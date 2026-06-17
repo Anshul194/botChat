@@ -13,15 +13,15 @@ const FILTERS = [
     { id: 'overview', label: 'Overview', icon: BarChart2 },
     { id: 'entries', label: 'Entries', icon: Activity },
     { id: 'continent_code', label: 'Continent', icon: Globe },
-    { id: 'country_code', label: 'Countries', icon: Globe2 },
+    { id: 'country', label: 'Countries', icon: Globe2 },
     { id: 'city_name', label: 'Cities', icon: MapPin },
     { id: 'referrer_host', label: 'Referrers', icon: LinkIcon },
-    { id: 'device_type', label: 'Devices', icon: Smartphone },
-    { id: 'os_name', label: 'Operating systems', icon: Monitor },
-    { id: 'browser_name', label: 'Browsers', icon: Chrome },
-    { id: 'browser_language', label: 'Languages', icon: Languages },
-    { id: 'utms', label: 'UTMs', icon: Link2 },
-    { id: 'visit_hour', label: 'Visit hours', icon: Clock },
+    { id: 'device', label: 'Devices', icon: Smartphone },
+    { id: 'os', label: 'Operating systems', icon: Monitor },
+    { id: 'browser', label: 'Browsers', icon: Chrome },
+    { id: 'language', label: 'Languages', icon: Languages },
+    { id: 'utm_source', label: 'UTMs', icon: Link2 },
+    { id: 'hour', label: 'Visit hours', icon: Clock },
 ];
 
 /* ─── Quick Preset Ranges ──────────────────────────────────── */
@@ -291,7 +291,7 @@ function VcardLinksAnalyticsContent() {
     const renderDataRows = () => {
         let items: any[] = [];
         if (data?.rows) items = data.rows;
-        else if (activeTab === 'entries') items = data?.latest || [];
+        else if (activeTab === 'entries') items = data?.rows || data?.latest || [];
         else if (data?.statistics?.[activeTab]) {
             const stats = data.statistics[activeTab];
             items = Object.keys(stats).map(key => ({ name: key || 'Unknown', count: stats[key] })).sort((a, b) => b.count - a.count);
@@ -315,8 +315,15 @@ function VcardLinksAnalyticsContent() {
                         {items.length === 0 ? (
                             <tr><td colSpan={2} className="p-12 text-center text-[var(--muted-foreground)] font-bold text-sm uppercase tracking-widest">No data available for this period.</td></tr>
                         ) : items.map((item: any, i: number) => {
-                            let name = item.value !== undefined ? (item.value || 'Direct / None') : (item[activeTab] || item.name || item.key || `Item ${i + 1}`);
-                            if (name === null) name = 'Direct / None';
+                            let name: any = 'Unknown';
+                            if (item.value !== undefined) name = item.value;
+                            else if (activeTab === 'country') name = item.country_code;
+                            else if (activeTab === 'city_name') name = item.city_name;
+                            else if (activeTab === 'hour') name = item.hour !== undefined && item.hour !== null ? `${item.hour}:00` : null;
+                            else name = item[activeTab] || item.name || item.key;
+                            
+                            if (name === null || name === undefined || name === '') name = 'Unknown';
+
                             let subtext = "";
                             let count = parseInt(item.total || item.count || item.views || 1, 10);
                             if (activeTab === 'entries') {
@@ -325,7 +332,7 @@ function VcardLinksAnalyticsContent() {
                                 count = 1;
                             }
                             const pct = item.percent || item.pct || Math.round((count / Math.max(totalSum, 1)) * 100);
-                            const countryCode = item.country_code || item.code || (activeTab === 'country_code' && name !== 'Unknown' && name.length === 2 ? name : null);
+                            const countryCode = item.country_code || item.code || (activeTab === 'country' && name !== 'Unknown' && name.length === 2 ? name : null);
                             const barColor = PALETTE[i % PALETTE.length];
 
                             return (

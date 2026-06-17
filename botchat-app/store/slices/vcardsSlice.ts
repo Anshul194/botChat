@@ -47,10 +47,10 @@ export const fetchVcardStatistics = createAsyncThunk(
             if (end_date) params.append("end_date", end_date);
             
             const response = await api.get(`/vcards/${vcardId}/statistics?${params.toString()}`);
-            if (response.data) {
-                return response.data;
+            if (response.data && response.data.success) {
+                return response.data.data;
             }
-            return rejectWithValue("Failed to fetch statistics");
+            return rejectWithValue(response.data?.message || "Failed to fetch statistics");
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch statistics");
         }
