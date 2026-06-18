@@ -73,7 +73,6 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
         console.log("Fetching public profile directly from:", url);
 
         const res = await fetch(url, {
-            credentials: "include",
             headers: {
                 "x-host": resolveXHost(),
                 "Accept": "application/json",
