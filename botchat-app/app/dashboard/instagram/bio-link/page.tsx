@@ -1175,9 +1175,10 @@ function BioLinkBuilderContent() {
                     branded_button_icon: advancedSettings.brandedIconUrl,
                     branded_button_title: advancedSettings.brandedModalTitle,
                     branded_button_content: advancedSettings.brandedModalContent,
-                    pixel_ids: advancedSettings.pixelsEnabled,
                 },
             };
+            // Add pixels as top-level field, not nested in settings
+            payload.pixels_ids = (advancedSettings.pixelsEnabled as number[]) || [];
             await api.put(`/bio/pages/${linkId}`, payload);
             // Refresh profile to sync hydrated state
             await fetchBuilderData();

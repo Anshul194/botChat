@@ -133,6 +133,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                 password: currentVcard.password || "",
                 sensitiveContentWarning: !!currentVcard.sensitive_content,
                 splash_page_id: currentVcard.splash_page_id || "",
+                selectedPixels: currentVcard.pixels_ids || currentVcard.pixels || [],
             }));
         }
     }, [currentVcard]);
@@ -184,6 +185,11 @@ export default function VcardEditorClient({ slug: id }: Props) {
         
         if (draft.password) payload.append("password", draft.password);
         if (draft.splash_page_id) payload.append("splash_page_id", draft.splash_page_id);
+
+        // Pixels
+        (draft.selectedPixels as number[]).forEach((pid: number) => {
+            payload.append("pixels_ids[]", String(pid));
+        });
 
         const result = await dispatch(updateVcard({ 
             id: currentVcard.link_id || currentVcard.id, 

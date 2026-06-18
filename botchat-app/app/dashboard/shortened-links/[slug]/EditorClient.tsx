@@ -38,6 +38,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
             destinationUrl: "https://example.com",
             appLinking: false,
             pixelsEnabled: false,
+            selectedPixels: [] as number[],
             temporaryEnabled: false,
             temporaryUntil: "",
             utmSource: "",
@@ -116,6 +117,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                 cloaking_opengraph: currentLink.cloaking?.opengraph || null,
                 http_status_code: currentLink.http_status_code || 301,
                 splash_page_id: currentLink.splash_page_id || "",
+                selectedPixels: currentLink.pixels_ids || currentLink.pixels || [],
             } as any));
         }
     }, [currentLink]);
@@ -190,6 +192,9 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                 payload[`targeting_${draft.targetingType}_value[${i}]`] = r.value;
             });
         }
+
+        // Pixels
+        payload.pixels_ids = (draft as any).selectedPixels || [];
 
         // If we have files, we must use FormData
         const hasFiles = payload.cloaking_favicon instanceof File || payload.cloaking_opengraph instanceof File;

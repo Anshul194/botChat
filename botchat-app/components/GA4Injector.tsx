@@ -12,45 +12,60 @@ interface GA4InjectorProps {
     ga4Pixels?: GA4Pixel[];
 }
 
-/**
- * GA4Injector
- *
- * Dynamically loads Google Tag (gtag.js) for each assigned GA4 Measurement ID.
- * - Deduplicates: each Measurement ID is only loaded once per page lifecycle.
- * - Safe: validates G-XXXXXXXXXX format before injection.
- * - Non-blocking: uses async script loading.
- * - Multi-tenant safe: works across Bio Links, VCards, and Short Links.
- */
+const GA4_PREFIX = "ga4-gtag-";
+const G_CLIENT_ID_KEY = "ga4_client_id_";
+
+function generateClientId(): string {
+    const random = () => Math.floor(Math.random() * 2147483648).toString(16);
+    return `${random()}-${random()}`;
+}
+
+function getOrCreateClientId(measurementId: string): string {
+    const storageKey = G_CLIENT_ID_KEY + measurementId;
+    let cid: string | null = null;
+    try {
+        cid = sessionStorage.getItem(storageKey);
+    } catch {}
+    if (!cid) {
+        cid = generateClientId();
+        try {
+            sessionStorage.setItem(storageKey, cid);
+        } catch {}
+    }
+    return cid;
+}
+
 export default function GA4Injector({ ga4Pixels }: GA4InjectorProps) {
     useEffect(() => {
         if (!ga4Pixels || ga4Pixels.length === 0) return;
 
-        // Validate and de-duplicate Measurement IDs
         const validIds = [
             ...new Set(
                 ga4Pixels
                     .map((p) => p.measurement_id)
                     .filter((id) => /^G-[A-Z0-9]+$/i.test(id ?? ""))
             ),
-        ];
+        ] as string[];
 
         if (validIds.length === 0) return;
 
-        // Initialize window.dataLayer and gtag if not already present
-        if (typeof window !== "undefined") {
-            (window as any).dataLayer = (window as any).dataLayer || [];
-            if (!(window as any).gtag) {
-                (window as any).gtag = function (...args: any[]) {
-                    (window as any).dataLayer.push(args);
-                };
-            }
-            (window as any).gtag("js", new Date());
+        const isBrowser = typeof window !== "undefined";
+        if (!isBrowser) return;
+
+        const win = window as any;
+
+        // Initialize dataLayer and gtag stub once
+        win.dataLayer = win.dataLayer || [];
+        if (!win.gtag) {
+            win.gtag = function gtag(...args: any[]) {
+                win.dataLayer.push(args);
+            };
         }
 
-        // Load gtag.js script for the first Measurement ID (it supports multiple configs)
         const primaryId = validIds[0];
-        const scriptId = `ga4-gtag-${primaryId}`;
+        const scriptId = GA4_PREFIX + primaryId;
 
+        // Only inject the <script> tag for the primary Measurement ID
         if (!document.getElementById(scriptId)) {
             const script = document.createElement("script");
             script.id = scriptId;
@@ -59,16 +74,38 @@ export default function GA4Injector({ ga4Pixels }: GA4InjectorProps) {
             document.head.appendChild(script);
         }
 
-        // Configure each Measurement ID
+        // Send the standard "js" timestamp signal
+        win.gtag("js", new Date());
+
+        // Configure ALL Measurement IDs with send_page_view: false.
+        // We send a single manual page_view event afterward so it counts
+        // only once across all properties.
         validIds.forEach((measurementId) => {
-            if (typeof (window as any).gtag === "function") {
-                (window as any).gtag("config", measurementId, {
-                    send_page_view: true,
-                });
-            }
+            const clientId = getOrCreateClientId(measurementId);
+            win.gtag("config", measurementId, {
+                send_page_view: false,
+                client_id: clientId,
+            });
         });
+
+        // Fire a single page_view event that gtag.js will broadcast
+        // to every configured Measurement ID.
+        win.gtag("event", "page_view", {
+            page_title: document.title,
+            page_location: window.location.href,
+            page_path: window.location.pathname,
+        });
+
+        // Cleanup on unmount or when IDs change
+        return () => {
+            const scriptEl = document.getElementById(scriptId);
+            if (scriptEl && scriptEl.parentNode) {
+                scriptEl.parentNode.removeChild(scriptEl);
+            }
+            // Note: gtag dataLayer entries are intentionally NOT removed,
+            // as attempting to unwind them would break the analytics flow.
+        };
     }, [ga4Pixels]);
 
-    // Nothing rendered — this is a side-effect-only component
     return null;
 }
