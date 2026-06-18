@@ -511,7 +511,7 @@ function BioLinkBuilderContent() {
                         brandingTextColor: s.branding?.text_color || "",
                         pixelFacebookEnabled: !!s.pixel_facebook,
                         pixelGoogleEnabled: !!s.pixel_google,
-                        pixelsEnabled: s.pixel_ids || [],
+                        pixelsEnabled: (payload.pixels_ids || s.pixel_ids || []).map(Number),
                         utmSource: s.utm?.source || "",
                         utmMedium: s.utm?.medium || "",
                         utmCampaign: s.utm?.campaign || "",
@@ -621,6 +621,8 @@ function BioLinkBuilderContent() {
             brandedIconUrl: s.branded_button_icon ?? prev.brandedIconUrl,
             brandedModalTitle: s.branded_button_title ?? prev.brandedModalTitle,
             brandedModalContent: s.branded_button_content ?? prev.brandedModalContent,
+            // Pixels
+            pixelsEnabled: (s.pixel_ids ?? prev.pixelsEnabled).map(Number),
         }));
     }, [profile]);
 
@@ -1841,15 +1843,17 @@ function BioLinkBuilderContent() {
                                                             {/* PIXELS */}
                                                             {growthTab === "pixels" && (<div className="space-y-4">
                                                                 <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Google Analytics Integrations</p>
-                                                                {pixels.length === 0 ? (
-                                                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                                                                        <p className="text-sm text-slate-500">No integrations found. Create one first in the Google Analytics section.</p>
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="space-y-3">
-                                                                        {pixels.map((pixel: any) => {
-                                                                            const pid = pixel.id || pixel.pixel_id;
-                                                                            const isSelected = advancedSettings.pixelsEnabled.includes(pid);
+                                                                {(() => {
+                                                                    const gaPixels = pixels.filter((p: any) => p.type === "google_analytics");
+                                                                    return gaPixels.length === 0 ? (
+                                                                        <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                                                                            <p className="text-sm text-slate-500">No GA4 integrations found. Create one first in the Google Analytics section.</p>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="space-y-3">
+                                                                             {gaPixels.map((pixel: any) => {
+                                                                                const pid = Number(pixel.id || pixel.pixel_id);
+                                                                                const isSelected = advancedSettings.pixelsEnabled.includes(pid);
                                                                             return (
                                                                                 <div key={pid} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                                                                     <div>
@@ -1873,7 +1877,8 @@ function BioLinkBuilderContent() {
                                                                             );
                                                                         })}
                                                                     </div>
-                                                                )}
+                                                                    );
+                                                                })()}
                                                             </div>)}
 
                                                             {/* UTM */}
