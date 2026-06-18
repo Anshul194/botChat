@@ -13,27 +13,6 @@ interface GA4InjectorProps {
 }
 
 const GA4_PREFIX = "ga4-gtag-";
-const G_CLIENT_ID_KEY = "ga4_client_id_";
-
-function generateClientId(): string {
-    const random = () => Math.floor(Math.random() * 2147483648).toString(16);
-    return `${random()}-${random()}`;
-}
-
-function getOrCreateClientId(measurementId: string): string {
-    const storageKey = G_CLIENT_ID_KEY + measurementId;
-    let cid: string | null = null;
-    try {
-        cid = sessionStorage.getItem(storageKey);
-    } catch {}
-    if (!cid) {
-        cid = generateClientId();
-        try {
-            sessionStorage.setItem(storageKey, cid);
-        } catch {}
-    }
-    return cid;
-}
 
 export default function GA4Injector({ ga4Pixels }: GA4InjectorProps) {
     useEffect(() => {
@@ -49,8 +28,7 @@ export default function GA4Injector({ ga4Pixels }: GA4InjectorProps) {
 
         if (validIds.length === 0) return;
 
-        const isBrowser = typeof window !== "undefined";
-        if (!isBrowser) return;
+        if (typeof window === "undefined") return;
 
         const win = window as any;
 
@@ -62,10 +40,10 @@ export default function GA4Injector({ ga4Pixels }: GA4InjectorProps) {
             };
         }
 
+        // Load gtag.js for the primary Measurement ID only (it supports multiple configs)
         const primaryId = validIds[0];
         const scriptId = GA4_PREFIX + primaryId;
 
-        // Only inject the <script> tag for the primary Measurement ID
         if (!document.getElementById(scriptId)) {
             const script = document.createElement("script");
             script.id = scriptId;
@@ -74,36 +52,23 @@ export default function GA4Injector({ ga4Pixels }: GA4InjectorProps) {
             document.head.appendChild(script);
         }
 
-        // Send the standard "js" timestamp signal
+        // Standard gtag init
         win.gtag("js", new Date());
 
-        // Configure ALL Measurement IDs with send_page_view: false.
-        // We send a single manual page_view event afterward so it counts
-        // only once across all properties.
-        validIds.forEach((measurementId) => {
-            const clientId = getOrCreateClientId(measurementId);
-            win.gtag("config", measurementId, {
-                send_page_view: false,
-                client_id: clientId,
-            });
-        });
+        // Primary ID: auto-fires page_view (Google-standard behavior, guaranteed to work)
+        win.gtag("config", primaryId, { send_page_view: true });
 
-        // Fire a single page_view event that gtag.js will broadcast
-        // to every configured Measurement ID.
-        win.gtag("event", "page_view", {
-            page_title: document.title,
-            page_location: window.location.href,
-            page_path: window.location.pathname,
-        });
+        // Secondary IDs: no automatic page_view to avoid double-counting
+        for (let i = 1; i < validIds.length; i++) {
+            win.gtag("config", validIds[i], { send_page_view: false });
+        }
 
-        // Cleanup on unmount or when IDs change
+        // Cleanup on unmount
         return () => {
             const scriptEl = document.getElementById(scriptId);
             if (scriptEl && scriptEl.parentNode) {
                 scriptEl.parentNode.removeChild(scriptEl);
             }
-            // Note: gtag dataLayer entries are intentionally NOT removed,
-            // as attempting to unwind them would break the analytics flow.
         };
     }, [ga4Pixels]);
 
