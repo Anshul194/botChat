@@ -22,6 +22,11 @@ interface LinksState {
     isLoading: boolean;
     error: string | null;
     currentLink: Link | null;
+    statistics: {
+        data: any;
+        isLoading: boolean;
+        error: string | null;
+    };
 }
 
 const initialState: LinksState = {
@@ -30,7 +35,34 @@ const initialState: LinksState = {
     isLoading: false,
     error: null,
     currentLink: null,
+    statistics: {
+        data: null,
+        isLoading: false,
+        error: null,
+    },
 };
+
+export const fetchLinkStatistics = createAsyncThunk(
+    'links/fetchLinkStatistics',
+    async ({ linkId, type, start_date, end_date }: any, { rejectWithValue }) => {
+        try {
+            const params = new URLSearchParams();
+            if (type) params.append('type', type);
+            if (start_date) params.append('start_date', start_date);
+            if (end_date) params.append('end_date', end_date);
+            
+            const response = await api.get(`/links/${linkId}/statistics?${params.toString()}`);
+            if (response.data && response.data.success) {
+                // Return the inner data payload (not the full envelope) so the
+                // frontend can read data?.totals?.pageviews directly.
+                return response.data.data;
+            }
+            return rejectWithValue(response.data?.message || 'Failed to fetch statistics');
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch statistics');
+        }
+    }
+);
 
 export const fetchLinks = createAsyncThunk(
     'links/fetchLinks',
@@ -110,6 +142,18 @@ const linksSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(fetchLinkStatistics.pending, (state) => {
+                state.statistics.isLoading = true;
+                state.statistics.error = null;
+            })
+            .addCase(fetchLinkStatistics.fulfilled, (state, action) => {
+                state.statistics.isLoading = false;
+                state.statistics.data = action.payload;
+            })
+            .addCase(fetchLinkStatistics.rejected, (state, action) => {
+                state.statistics.isLoading = false;
+                state.statistics.error = action.payload as string;
+            })
             .addCase(fetchLinks.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;

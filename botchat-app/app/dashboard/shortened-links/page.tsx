@@ -481,6 +481,7 @@ function ShortLinkRow({ item, onEdit, onCopy, copied }: any) {
 
 function ActionDropdown({ item, onEdit }: any) {
     const { showModal } = useModal();
+    const router = useRouter();
 
     return (
         <DropdownMenu>
@@ -496,7 +497,7 @@ function ActionDropdown({ item, onEdit }: any) {
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => window.open(item.full_url, '_blank')}>
                     <ExternalLink size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Visit Live</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
+                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/shortened-links/analytics?page=${item.id}`)}>
                     <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">

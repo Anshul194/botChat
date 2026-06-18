@@ -14,7 +14,7 @@ type Props = { slug: string };
 
 const SECTION_META: Array<{ key: string; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }> = [
     { key: "app", label: "App linking", icon: Link2 },
-    { key: "pixels", label: "Pixels", icon: ActivitySquare },
+    { key: "pixels", label: "Google Analytics", icon: ActivitySquare },
     { key: "temporary", label: "Temporary URL", icon: CalendarClock },
     // { key: "utm", label: "UTM Parameters", icon: Globe },
     { key: "password", label: "Protection", icon: Shield },
@@ -38,6 +38,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
             destinationUrl: "https://example.com",
             appLinking: false,
             pixelsEnabled: false,
+            selectedPixels: [] as number[],
             temporaryEnabled: false,
             temporaryUntil: "",
             utmSource: "",
@@ -116,6 +117,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                 cloaking_opengraph: currentLink.cloaking?.opengraph || null,
                 http_status_code: currentLink.http_status_code || 301,
                 splash_page_id: currentLink.splash_page_id || "",
+                selectedPixels: currentLink.pixels_ids || currentLink.pixels || [],
             } as any));
         }
     }, [currentLink]);
@@ -190,6 +192,9 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                 payload[`targeting_${draft.targetingType}_value[${i}]`] = r.value;
             });
         }
+
+        // Pixels
+        payload.pixels_ids = (draft as any).selectedPixels || [];
 
         // If we have files, we must use FormData
         const hasFiles = payload.cloaking_favicon instanceof File || payload.cloaking_opengraph instanceof File;
@@ -371,10 +376,10 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             {openSection === "pixels" && (
                                 <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/50 p-6 rounded-2xl mb-6">
                                     <div className="flex items-center justify-between mb-4">
-                                        <div className="form-label">Pixels</div>
+                                        <div className="form-label">Google Analytics Integrations</div>
                                     </div>
                                     {pixels.length === 0 ? (
-                                        <p className="text-sm text-slate-500 text-center py-4">No pixels found. Create one in the Pixels section.</p>
+                                        <p className="text-sm text-slate-500 text-center py-4">No integrations found. Create one in the Google Analytics section.</p>
                                     ) : (
                                         <div className="space-y-3">
                                             {pixels.map((pixel: any) => {

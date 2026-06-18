@@ -1,56 +1,108 @@
 import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import BioLayout from '@/app/bio-layout/page';
+import RedirectWithTracking from '@/components/RedirectWithTracking';
 
 export default async function SlugResolverPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  // We are running on the server, so we must construct the API URL.
-  // In Next.js App Router 15+, headers() and params are asynchronous:
+  // Read ALL incoming visitor headers so we can forward them to Laravel.
   const headersList = await headers();
   const host = headersList.get('host') || '';
 
-  // Custom API endpoint resolution based on the host
-  // If local DEV_DOMAIN is set, use it. Otherwise compute from host.
+  // ── API domain resolution ────────────────────────────────────────────
   const devDomain = process.env.NEXT_PUBLIC_DEV_DOMAIN;
   let apiDomain = devDomain || 'agency-api.megadm.chat';
 
   if (!devDomain && host) {
     const cleanHostname = host.replace('www.', '').split(':')[0];
-    const prefix = cleanHostname.split('.')[0];
-    if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
-      apiDomain = 'api.megadm.chat';
+    
+    // Check if it is a platform subdomain
+    if (cleanHostname.endsWith('megadm.chat')) {
+      const prefix = cleanHostname.split('.')[0];
+      if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
+        apiDomain = 'api.megadm.chat';
+      } else {
+        apiDomain = `${prefix}-api.megadm.chat`;
+      }
     } else {
-      apiDomain = `${prefix}-api.megadm.chat`;
+      // It's a custom domain! Fallback to the main agency API to resolve the link
+      // Since biolink_db is shared, any tenant API can resolve it.
+      apiDomain = 'agency-api.megadm.chat';
     }
   }
 
-  const apiUrl = `https://${apiDomain}/api/v1/public/resolve/${slug}`;
+  const apiUrl = `https://${apiDomain}/api/v1/public/resolve/${slug}?host=${encodeURIComponent(host)}`;
 
+  // ── Build forwarded headers ──────────────────────────────────────────
+  const forwardHeaders: Record<string, string> = {
+    'Accept': 'application/json',
+  };
+
+  const userAgent = headersList.get('user-agent');
+  if (userAgent) forwardHeaders['User-Agent'] = userAgent;
+
+  const acceptLanguage = headersList.get('accept-language');
+  if (acceptLanguage) forwardHeaders['Accept-Language'] = acceptLanguage;
+
+  const referer = headersList.get('referer');
+  if (referer) forwardHeaders['Referer'] = referer;
+
+  const cookie = headersList.get('cookie');
+  if (cookie) forwardHeaders['Cookie'] = cookie;
+
+  const realIp =
+    headersList.get('cf-connecting-ip') ||
+    headersList.get('x-real-ip') ||
+    headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    null;
+
+  if (realIp) {
+    forwardHeaders['X-Forwarded-For'] = realIp;
+    forwardHeaders['X-Real-IP']       = realIp;
+  }
+
+  // ── Call Laravel ─────────────────────────────────────────────────────
   let result = null;
+  let fetchResponse = null;
 
   try {
-    const response = await fetch(apiUrl, {
+    fetchResponse = await fetch(apiUrl, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers: forwardHeaders,
       cache: 'no-store',
     });
 
-    if (response.ok) {
-      result = await response.json();
+    if (fetchResponse.ok) {
+      result = await fetchResponse.json();
     }
   } catch (error) {
-    console.error("Link Resolution Fetch Error:", error);
+    console.error('Link Resolution Fetch Error:', error);
   }
 
   if (!result || !result.success) {
-    notFound();
+    // TEMPORARY DEBUGGING
+    return (
+      <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
+        <h2>DEBUG: Fetch Failed</h2>
+        <p><strong>API URL:</strong> {apiUrl}</p>
+        <p><strong>Host Header Received:</strong> {host}</p>
+        <p><strong>API Domain Computed:</strong> {apiDomain}</p>
+        <p><strong>Fetch Response Status:</strong> {fetchResponse ? fetchResponse.status : 'No Response'}</p>
+        <pre>
+          {JSON.stringify(result, null, 2)}
+        </pre>
+      </div>
+    );
   }
 
   if (result.action === 'redirect' && result.destination) {
-    // redirect() throws an error internally, so it must be outside try/catch
+    // If we have GA4 pixels to fire, render a client-side redirect component instead of server-side
+    if (result.data?.ga4_pixels && result.data.ga4_pixels.length > 0) {
+      return <RedirectWithTracking destination={result.destination} ga4Pixels={result.data.ga4_pixels} />;
+    }
+    
+    // Otherwise, fast server-side redirect
     redirect(result.destination);
   }
 
@@ -58,5 +110,10 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
     return <BioLayout />;
   }
 
-  notFound();
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'monospace' }}>
+      <h2>DEBUG: Action Not Recognized</h2>
+      <pre>{JSON.stringify(result, null, 2)}</pre>
+    </div>
+  );
 }

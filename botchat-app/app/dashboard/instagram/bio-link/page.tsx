@@ -511,7 +511,7 @@ function BioLinkBuilderContent() {
                         brandingTextColor: s.branding?.text_color || "",
                         pixelFacebookEnabled: !!s.pixel_facebook,
                         pixelGoogleEnabled: !!s.pixel_google,
-                        pixelsEnabled: s.pixel_ids || [],
+                        pixelsEnabled: (payload.pixels_ids || s.pixel_ids || []).map(Number),
                         utmSource: s.utm?.source || "",
                         utmMedium: s.utm?.medium || "",
                         utmCampaign: s.utm?.campaign || "",
@@ -621,6 +621,8 @@ function BioLinkBuilderContent() {
             brandedIconUrl: s.branded_button_icon ?? prev.brandedIconUrl,
             brandedModalTitle: s.branded_button_title ?? prev.brandedModalTitle,
             brandedModalContent: s.branded_button_content ?? prev.brandedModalContent,
+            // Pixels
+            pixelsEnabled: (s.pixel_ids ?? prev.pixelsEnabled).map(Number),
         }));
     }, [profile]);
 
@@ -1175,9 +1177,10 @@ function BioLinkBuilderContent() {
                     branded_button_icon: advancedSettings.brandedIconUrl,
                     branded_button_title: advancedSettings.brandedModalTitle,
                     branded_button_content: advancedSettings.brandedModalContent,
-                    pixel_ids: advancedSettings.pixelsEnabled,
                 },
             };
+            // Add pixels as top-level field, not nested in settings
+            payload.pixels_ids = (advancedSettings.pixelsEnabled as number[]) || [];
             await api.put(`/bio/pages/${linkId}`, payload);
             // Refresh profile to sync hydrated state
             await fetchBuilderData();
@@ -1615,7 +1618,7 @@ function BioLinkBuilderContent() {
                                     const GROWTH_TABS = [
                                         { id: "seo", label: "SEO", icon: Globe, color: "emerald", bg: "bg-emerald-500", ring: "ring-emerald-200 dark:ring-emerald-800", text: "text-emerald-600 dark:text-emerald-400", light: "bg-emerald-50 dark:bg-emerald-950/30" },
                                         { id: "branding", label: "Branding", icon: Shuffle, color: "violet", bg: "bg-violet-500", ring: "ring-violet-200 dark:ring-violet-800", text: "text-violet-600 dark:text-violet-400", light: "bg-violet-50 dark:bg-violet-950/30" },
-                                        { id: "pixels", label: "Pixels", icon: CircleDot, color: "blue", bg: "bg-blue-500", ring: "ring-blue-200 dark:ring-blue-800", text: "text-blue-600 dark:text-blue-400", light: "bg-blue-50 dark:bg-blue-950/30" },
+                                        { id: "pixels", label: "Google Analytics", icon: CircleDot, color: "blue", bg: "bg-blue-500", ring: "ring-blue-200 dark:ring-blue-800", text: "text-blue-600 dark:text-blue-400", light: "bg-blue-50 dark:bg-blue-950/30" },
                                         { id: "utm", label: "UTM", icon: Grid, color: "amber", bg: "bg-amber-500", ring: "ring-amber-200 dark:ring-amber-800", text: "text-amber-600 dark:text-amber-400", light: "bg-amber-50 dark:bg-amber-950/30" },
                                         { id: "protection", label: "Protection", icon: ShieldAlert, color: "red", bg: "bg-red-500", ring: "ring-red-200 dark:ring-red-800", text: "text-red-600 dark:text-red-400", light: "bg-red-50 dark:bg-red-950/30" },
                                         { id: "popup", label: "Popup", icon: SmartphoneNfc, color: "fuchsia", bg: "bg-fuchsia-500", ring: "ring-fuchsia-200 dark:ring-fuchsia-800", text: "text-fuchsia-600 dark:text-fuchsia-400", light: "bg-fuchsia-50 dark:bg-fuchsia-950/30" },
@@ -1839,16 +1842,18 @@ function BioLinkBuilderContent() {
 
                                                             {/* PIXELS */}
                                                             {growthTab === "pixels" && (<div className="space-y-4">
-                                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Tracking & Ad Pixels</p>
-                                                                {pixels.length === 0 ? (
-                                                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                                                                        <p className="text-sm text-slate-500">No pixels found. Create one first in the Pixels section.</p>
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="space-y-3">
-                                                                        {pixels.map((pixel: any) => {
-                                                                            const pid = pixel.id || pixel.pixel_id;
-                                                                            const isSelected = advancedSettings.pixelsEnabled.includes(pid);
+                                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Google Analytics Integrations</p>
+                                                                {(() => {
+                                                                    const gaPixels = pixels.filter((p: any) => p.type === "google_analytics");
+                                                                    return gaPixels.length === 0 ? (
+                                                                        <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                                                                            <p className="text-sm text-slate-500">No GA4 integrations found. Create one first in the Google Analytics section.</p>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="space-y-3">
+                                                                             {gaPixels.map((pixel: any) => {
+                                                                                const pid = Number(pixel.id || pixel.pixel_id);
+                                                                                const isSelected = advancedSettings.pixelsEnabled.includes(pid);
                                                                             return (
                                                                                 <div key={pid} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                                                                     <div>
@@ -1872,7 +1877,8 @@ function BioLinkBuilderContent() {
                                                                             );
                                                                         })}
                                                                     </div>
-                                                                )}
+                                                                    );
+                                                                })()}
                                                             </div>)}
 
                                                             {/* UTM */}

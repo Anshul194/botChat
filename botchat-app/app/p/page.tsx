@@ -23,6 +23,7 @@ import { InstaMinimalLayout } from "@/app/dashboard/instagram/bio-link/layouts/I
 import { SundayBrunchLayout } from "@/app/dashboard/instagram/bio-link/layouts/SundayBrunchLayout";
 import { Globe, MessageCircle, User, MoreHorizontal, Instagram, MapPin, ArrowUpRight, Camera, Sparkles, Youtube, Video, Clock, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
+import GA4Injector from "@/components/GA4Injector";
 
 // ─────────────────────────────────────────────────────────
 // Types
@@ -43,6 +44,7 @@ interface PublicProfile {
     tabs: PublicTab[];
     url: string;
     blocks?: any[];
+    ga4_pixels?: any[];
 }
 interface PublicTab {
     id: number;
@@ -1539,10 +1541,14 @@ function PublicBioContent() {
     const rawLayout = (profile as any).template_name || (profile as any).layout || (profile as any).settings?.layoutStyle || "standard";
     const layoutStyle = rawLayout === 'custom' ? 'standard' : rawLayout;
 
+    // The injector handles deduplication and injection safely without rendering visible UI
+    const ga4InjectorNode = <GA4Injector ga4Pixels={profile?.ga4_pixels} />;
+
     if (layoutStyle === "portfolio") {
         return (
             <>
                 <title>{profile.title || username} · Portfolio</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
                     <div className="w-full max-w-[480px] min-h-screen shadow-2xl relative bg-[#f4f6f8] overflow-hidden flex flex-col">
                         <PortfolioLayout
@@ -1575,6 +1581,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Bio</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
@@ -1606,6 +1613,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Luxury Pro</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full bg-[#050505]">
                     <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col shadow-2xl">
                         <InstaProLayout profile={profile} tabs={rawTabs} />
@@ -1619,6 +1627,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Insta Trendy</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full bg-[#050505]">
                     <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col shadow-2xl">
                         <InstaTrendyLayout profile={profile} tabs={rawTabs} />
@@ -1632,6 +1641,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Studio Minimal</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full bg-white">
                     <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col shadow-2xl">
                         <InstaMinimalLayout profile={profile} tabs={rawTabs} />
@@ -1645,6 +1655,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Sunday Brunch</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full bg-[#fdfaf5]">
                     <div className="w-full max-w-[540px] min-h-screen relative overflow-hidden flex flex-col shadow-2xl">
                         <SundayBrunchLayout profile={profile} tabs={rawTabs} />
@@ -1658,6 +1669,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Olivia</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
@@ -1683,6 +1695,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Universal</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen flex justify-center w-full" style={theme.bgStyle}>
                     <ThemeAnimationStyles />
                     <ThemeEffectsLayer theme={theme} />
@@ -1707,6 +1720,7 @@ function PublicBioContent() {
         return (
             <>
                 <title>{profile.title || username} · Store</title>
+                {ga4InjectorNode}
                 <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex justify-center w-full">
                     <div className="w-full max-w-[540px] min-h-screen shadow-2xl relative bg-white overflow-hidden flex flex-col">
                         <CreatorStoreLayout
@@ -1726,6 +1740,7 @@ function PublicBioContent() {
     return (
         <>
             <title>{profile.title || username} · Bio Link</title>
+            {ga4InjectorNode}
             <div className="min-h-screen flex justify-center w-full bg-[#f8fafc] dark:bg-[#0f172a]">
                 <div className={`w-full max-w-[480px] min-h-screen relative overflow-x-hidden flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.1)] border-x border-slate-200 dark:border-white/10`}
                     style={theme.bgStyle}>

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Calendar, Eye, Users, ArrowLeft, Loader2, BarChart2, Globe2, Chrome, Smartphone, Activity, Globe, MapPin, Link as LinkIcon, Monitor, Languages, Link2, Clock, TrendingUp, TrendingDown, Zap, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, RadialBarChart, RadialBar } from "recharts";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchBioStatistics } from "@/store/slices/bioSlice";
+import { fetchLinkStatistics } from "@/store/slices/linksSlice";
 
 const FILTERS = [
     { id: 'overview', label: 'Overview', icon: BarChart2 },
@@ -242,13 +242,13 @@ const StatCard = ({ label, value, icon: Icon, color, gradient, trend, trendVal, 
     </div>
 );
 
-function BioLinksAnalyticsContent() {
+function ShortenedLinksAnalyticsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const dispatch = useAppDispatch();
     const pageId = searchParams.get("page");
 
-    const { data, isLoading } = useAppSelector(s => s.bio.statistics);
+    const { data, isLoading } = useAppSelector((s: any) => s.links.statistics);
     const [activeTab, setActiveTab] = useState("overview");
     const [hoveredBar, setHoveredBar] = useState<string | null>(null);
 
@@ -259,7 +259,7 @@ function BioLinksAnalyticsContent() {
 
     useEffect(() => {
         if (!pageId) return;
-        dispatch(fetchBioStatistics({ pageId, type: activeTab, start_date: dateRange.start, end_date: dateRange.end }));
+        dispatch(fetchLinkStatistics({ linkId: pageId, type: activeTab, start_date: dateRange.start, end_date: dateRange.end }));
     }, [dispatch, pageId, activeTab, dateRange]);
 
     const pageviews = activeTab === 'overview' ? (data?.totals?.pageviews || 0) : 0;
@@ -397,17 +397,17 @@ function BioLinksAnalyticsContent() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <button onClick={() => router.push('/dashboard/instagram/bio-links')} className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-xl shadow-primary/10 hover:scale-[1.02] transition-transform">
+                            <button onClick={() => router.push('/dashboard/shortened-links')} className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-xl shadow-primary/10 hover:scale-[1.02] transition-transform">
                                 <ArrowLeft size={24} />
                             </button>
                             <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
-                                Biolink Statistics
+                                Short Link Statistics
                             </div>
                         </div>
                         <div className="space-y-1">
                             <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">Traffic Overview</h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl">
-                                Detailed breakdown of views, visitors, and engagement for your bio link.
+                                Detailed breakdown of views, visitors, and engagement for your short link.
                             </p>
                         </div>
                     </div>
@@ -606,14 +606,14 @@ function BioLinksAnalyticsContent() {
     );
 }
 
-export default function BioLinksAnalyticsPage() {
+export default function ShortenedLinksAnalyticsPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         }>
-            <BioLinksAnalyticsContent />
+            <ShortenedLinksAnalyticsContent />
         </Suspense>
     );
 }

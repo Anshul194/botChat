@@ -19,7 +19,7 @@ type Props = { slug: string }; // 'slug' is actually the ID in the URL now
 const SECTION_META: Array<{ key: string; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }> = [
     { key: "vcard", label: "Vcard Details", icon: User },
     { key: "socials", label: "Social Links", icon: Share2 },
-    { key: "pixels", label: "Pixels", icon: ActivitySquare },
+    { key: "pixels", label: "Google Analytics", icon: ActivitySquare },
     { key: "temporary", label: "Temporary URL", icon: CalendarClock },
     { key: "protection", label: "Protection", icon: Shield },
     { key: "advanced", label: "Advanced", icon: Settings2 },
@@ -133,6 +133,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                 password: currentVcard.password || "",
                 sensitiveContentWarning: !!currentVcard.sensitive_content,
                 splash_page_id: currentVcard.splash_page_id || "",
+                selectedPixels: currentVcard.pixels_ids || currentVcard.pixels || [],
             }));
         }
     }, [currentVcard]);
@@ -184,6 +185,11 @@ export default function VcardEditorClient({ slug: id }: Props) {
         
         if (draft.password) payload.append("password", draft.password);
         if (draft.splash_page_id) payload.append("splash_page_id", draft.splash_page_id);
+
+        // Pixels
+        (draft.selectedPixels as number[]).forEach((pid: number) => {
+            payload.append("pixels_ids[]", String(pid));
+        });
 
         const result = await dispatch(updateVcard({ 
             id: currentVcard.link_id || currentVcard.id, 
@@ -388,10 +394,10 @@ export default function VcardEditorClient({ slug: id }: Props) {
 
                             {openSection === "pixels" && (
                                 <div className="space-y-6">
-                                    <SectionHeader title="Tracking Pixels" icon={ActivitySquare} />
+                                    <SectionHeader title="Google Analytics Integrations" icon={ActivitySquare} />
                                     {pixels.length === 0 ? (
                                         <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                                            <p className="text-sm text-slate-500">No pixels found. Create one first in the Pixels section.</p>
+                                            <p className="text-sm text-slate-500">No integrations found. Create one first in the Google Analytics section.</p>
                                         </div>
                                     ) : (
                                         <div className="space-y-3">

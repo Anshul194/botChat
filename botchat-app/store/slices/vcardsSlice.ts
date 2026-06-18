@@ -12,6 +12,11 @@ interface VcardState {
         current_page: number;
         per_page: number;
     };
+    statistics: {
+        data: any;
+        isLoading: boolean;
+        error: string | null;
+    };
 }
 
 const initialState: VcardState = {
@@ -25,7 +30,32 @@ const initialState: VcardState = {
         current_page: 1,
         per_page: 25,
     },
+    statistics: {
+        data: null,
+        isLoading: false,
+        error: null,
+    },
 };
+
+export const fetchVcardStatistics = createAsyncThunk(
+    "vcards/fetchVcardStatistics",
+    async ({ vcardId, type, start_date, end_date }: any, { rejectWithValue }) => {
+        try {
+            const params = new URLSearchParams();
+            if (type) params.append("type", type);
+            if (start_date) params.append("start_date", start_date);
+            if (end_date) params.append("end_date", end_date);
+            
+            const response = await api.get(`/vcards/${vcardId}/statistics?${params.toString()}`);
+            if (response.data && response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data?.message || "Failed to fetch statistics");
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch statistics");
+        }
+    }
+);
 
 export const fetchVcards = createAsyncThunk(
     "vcards/fetchAll",
@@ -134,6 +164,19 @@ const vcardsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // Statistics
+            .addCase(fetchVcardStatistics.pending, (state) => {
+                state.statistics.isLoading = true;
+                state.statistics.error = null;
+            })
+            .addCase(fetchVcardStatistics.fulfilled, (state, action) => {
+                state.statistics.isLoading = false;
+                state.statistics.data = action.payload;
+            })
+            .addCase(fetchVcardStatistics.rejected, (state, action) => {
+                state.statistics.isLoading = false;
+                state.statistics.error = action.payload as string;
+            })
             // Fetch All
             .addCase(fetchVcards.pending, (state) => {
                 state.isLoading = true;

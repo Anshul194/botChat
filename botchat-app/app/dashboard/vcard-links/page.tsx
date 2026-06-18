@@ -312,6 +312,7 @@ export default function VcardLinksPage() {
                                         if (type === 'delete') handleDelete(item);
                                         if (type === 'duplicate') handleDuplicate(item);
                                         if (type === 'reset') handleReset(item);
+                                        if (type === 'analytics') router.push(`/dashboard/vcard-links/analytics?page=${item.id}`);
                                     }}
                                 />
                             ))}
@@ -340,6 +341,7 @@ export default function VcardLinksPage() {
                                                 if (type === 'delete') handleDelete(item);
                                                 if (type === 'duplicate') handleDuplicate(item);
                                                 if (type === 'reset') handleReset(item);
+                                                if (type === 'analytics') router.push(`/dashboard/vcard-links/analytics?page=${item.id}`);
                                             }}
                                         />
                                     ))}
@@ -557,6 +559,9 @@ function ActionDropdown({ item, onEdit, onAction }: any) {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction('duplicate')} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm">
                     <Copy size={16} /> Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAction('analytics')} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm">
+                    <BarChart3 size={16} /> Deep Analytics
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction('reset')} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-sm">
                     <RefreshCcw size={16} /> Reset Analytics
