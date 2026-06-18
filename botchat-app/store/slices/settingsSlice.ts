@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../lib/api';
+import { mapSettingsToApi } from '../../lib/utils';
 
 // --- Types ---
 export interface GeneralSettings {
@@ -24,20 +25,10 @@ export interface GeneralSettings {
     timeFormat?: string;
     logo?: string;
     favicon?: string;
-}
-
-export interface EmailProfile {
-    _id: string;
-    profileName: string;
-    provider: string;
-    senderEmail: string;
-    senderName: string;
-    isDefault: boolean;
-    smtpConfig?: any;
-    mailgunConfig?: any;
-    postmarkConfig?: any;
-    sesConfig?: any;
-    mandrillConfig?: any;
+    gtag?: string;
+    databasePermission?: boolean;
+    roles?: string;
+    appName?: string;
 }
 
 export interface FacebookSettings {
@@ -64,12 +55,10 @@ export interface AISettings {
 
 interface SettingsState {
     general: GeneralSettings | null;
-    emailProfiles: EmailProfile[];
     facebook: FacebookSettings | null;
     ai: AISettings | null;
 
     isLoadingGeneral: boolean;
-    isLoadingEmail: boolean;
     isLoadingFacebook: boolean;
     isLoadingAi: boolean;
 
@@ -78,11 +67,9 @@ interface SettingsState {
 
 const initialState: SettingsState = {
     general: null,
-    emailProfiles: [],
     facebook: null,
     ai: null,
     isLoadingGeneral: false,
-    isLoadingEmail: false,
     isLoadingFacebook: false,
     isLoadingAi: false,
     error: null,
@@ -93,10 +80,9 @@ const initialState: SettingsState = {
 // General Settings
 export const fetchGeneralSettings = createAsyncThunk(
     'settings/fetchGeneral',
-    async (params: { scopeType: string; scopeId?: string }, { rejectWithValue }) => {
+    async (_: any, { rejectWithValue }) => {
         try {
-            const { scopeType, scopeId } = params;
-            const res = await api.get('/settings/general', { params: { scopeType, scopeId } });
+            const res = await api.get('/settings');
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -106,9 +92,10 @@ export const fetchGeneralSettings = createAsyncThunk(
 
 export const updateGeneralSettings = createAsyncThunk(
     'settings/updateGeneral',
-    async (payload: FormData | { scopeType: string; scopeId?: string | null; data: GeneralSettings }, { rejectWithValue }) => {
+    async (payload: GeneralSettings, { rejectWithValue }) => {
         try {
-            const res = await api.post('/settings/general/update', payload);
+            const mapped = mapSettingsToApi(payload as any);
+            const res = await api.patch('/settings', mapped);
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -116,20 +103,6 @@ export const updateGeneralSettings = createAsyncThunk(
     }
 );
 
-// Email Profiles
-export const fetchEmailProfiles = createAsyncThunk(
-    'settings/fetchEmailProfiles',
-    async (params: { scopeType: string }, { rejectWithValue }) => {
-        try {
-            const res = await api.get('/settings/email/profiles', { params });
-            return res.data?.data || res.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || error.message);
-        }
-    }
-);
-
-// We will add createEmailProfile assuming we might need it for dynamic creations, but for now we focus on fetching
 // Facebook Settings
 export const fetchFacebookSettings = createAsyncThunk(
     'settings/fetchFacebook',
@@ -180,6 +153,78 @@ export const updateAiSettings = createAsyncThunk(
     }
 );
 
+// Email Settings
+export const updateEmailSettings = createAsyncThunk(
+    'settings/updateEmail',
+    async (payload: Record<string, any>, { rejectWithValue }) => {
+        try {
+            const res = await api.patch('/settings/email', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// SMS Settings
+export const updateSmsSettings = createAsyncThunk(
+    'settings/updateSms',
+    async (payload: Record<string, any>, { rejectWithValue }) => {
+        try {
+            const res = await api.patch('/settings/sms', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// Payment Settings
+export const updatePaymentSettings = createAsyncThunk(
+    'settings/updatePayment',
+    async (payload: Record<string, any>, { rejectWithValue }) => {
+        try {
+            const res = await api.patch('/settings/payment', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// Storage Settings
+export const updateStorageSettings = createAsyncThunk(
+    'settings/updateStorage',
+    async (payload: Record<string, any>, { rejectWithValue }) => {
+        try {
+            const res = await api.patch('/settings/storage', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// App Settings (logo & favicon upload)
+export const updateAppSettings = createAsyncThunk(
+    'settings/updateApp',
+    async (payload: { app_name?: string; app_logo?: File | null; app_dark_logo?: File | null; favicon_logo?: File | null }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData();
+            if (payload.app_name) formData.append('app_name', payload.app_name);
+            if (payload.app_logo) formData.append('app_logo', payload.app_logo);
+            if (payload.app_dark_logo) formData.append('app_dark_logo', payload.app_dark_logo);
+            if (payload.favicon_logo) formData.append('favicon_logo', payload.favicon_logo);
+            const res = await api.post('/settings/app', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
 // Asset Upload
 export const uploadFile = createAsyncThunk(
     'settings/uploadFile',
@@ -221,17 +266,6 @@ const settingsSlice = createSlice({
         builder.addCase(updateGeneralSettings.fulfilled, (state, action) => {
             state.general = action.payload;
         });
-
-        // Email Modules
-        builder.addCase(fetchEmailProfiles.pending, (state) => { state.isLoadingEmail = true; })
-            .addCase(fetchEmailProfiles.fulfilled, (state, action) => {
-                state.isLoadingEmail = false;
-                state.emailProfiles = Array.isArray(action.payload) ? action.payload : [];
-            })
-            .addCase(fetchEmailProfiles.rejected, (state, action) => {
-                state.isLoadingEmail = false;
-                state.error = action.payload as string;
-            });
 
         // Facebook
         builder.addCase(fetchFacebookSettings.pending, (state) => { state.isLoadingFacebook = true; })

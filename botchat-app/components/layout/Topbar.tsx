@@ -194,9 +194,11 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                 <div className="flex-shrink-0"><ThemeToggle /></div>
 
                 {/* Settings */}
-                <TopBtn title="Settings" isLight={isLight}>
-                    <Settings className="w-[16px] h-[16px]" />
-                </TopBtn>
+                <Link href="/dashboard/settings">
+                    <TopBtn title="Settings" isLight={isLight}>
+                        <Settings className="w-[16px] h-[16px]" />
+                    </TopBtn>
+                </Link>
 
                 {/* Notifications */}
                 <div className="relative" ref={notifRef}>
