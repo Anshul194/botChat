@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../store/store";
 import {
     fetchGeneralSettings,
+    fetchFacebookSettings,
     updateFacebookSettings,
     fetchAiSettings, updateAiSettings,
     updateEmailSettings,
@@ -17,7 +18,7 @@ import {
 import { useModal } from "@/components/providers/ModalProvider";
 import {
     User, Shield, Database, Save,
-    Plus, Check,
+    Plus, Check, Eye, EyeOff, Copy, RefreshCw,
     Globe, Palette, UploadCloud,
     Mail, Smartphone, Facebook, Sparkles, CreditCard
 } from "lucide-react";
@@ -75,19 +76,28 @@ export default function SettingsPage() {
         if (tab === "int-ai") {
             dispatch(fetchAiSettings());
         }
+        if (tab === "int-social") {
+            dispatch(fetchFacebookSettings());
+        }
     }, [tab, dispatch, user]);
 
     const [aiForm, setAiForm] = useState({ provider: 'openai', secretKey: '', promptModel: 'gpt-4o', instructionToAi: '' });
-    const [fbForm, setFbForm] = useState({ appName: '', appId: '', appSecret: '', siteUrl: '' });
+    const [fbForm, setFbForm] = useState({
+        appName: '', appVersion: '', appId: '', appSecret: '',
+        socialLoginEnabled: false, appDomain: '', siteUrl: '',
+        privacyPolicyUrl: '', termsOfServiceUrl: '',
+    });
+    const [showFbSecret, setShowFbSecret] = useState(false);
+    const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
     const [passwordForm, setPasswordForm] = useState({ current_password: '', password: '', password_confirmation: '' });
 
     const [paymentForm, setPaymentForm] = useState({
         currency: 'USD',
         currency_symbol: '$',
-        paymentsetting: ['stripe'],
-        stripe_key: '',
-        stripe_secret: '',
-        stripe_description: 'Stripe Payment',
+        razorpaysetting: 'off',
+        razorpay_key: '',
+        razorpay_secret: '',
+        razorpay_description: 'Razorpay Payment',
     });
 
     const [storageForm, setStorageForm] = useState({
@@ -125,24 +135,36 @@ export default function SettingsPage() {
 
     useEffect(() => {
         if (facebook) {
-            setFbForm({
+            setFbForm(prev => ({
+                ...prev,
                 appName: facebook.appName || '',
+                appVersion: facebook.appVersion || '',
                 appId: facebook.appId || '',
-                appSecret: '', // Don't pre-fill secret
-                siteUrl: facebook.siteUrl || ''
-            });
+                appSecret: '',
+                socialLoginEnabled: facebook.socialLoginEnabled ?? false,
+                appDomain: facebook.appDomain || '',
+                siteUrl: facebook.siteUrl || '',
+                privacyPolicyUrl: facebook.privacyPolicyUrl || '',
+                termsOfServiceUrl: facebook.termsOfServiceUrl || '',
+            }));
         }
     }, [facebook]);
+
+    const handleCopyUrl = (url: string) => {
+        navigator.clipboard.writeText(url);
+        setCopiedUrl(url);
+        setTimeout(() => setCopiedUrl(null), 2000);
+    };
 
     useEffect(() => {
         if (general) {
             setPaymentForm({
                 currency: general.currency || 'USD',
                 currency_symbol: general.currency_symbol || '$',
-                paymentsetting: general.paymentsetting || ['stripe'],
-                stripe_key: general.stripe_key || '',
-                stripe_secret: general.stripe_secret || '',
-                stripe_description: general.stripe_description || 'Stripe Payment',
+                razorpaysetting: general.razorpaysetting === 'on' ? 'on' : 'off',
+                razorpay_key: general.razorpay_key || '',
+                razorpay_secret: general.razorpay_secret || '',
+                razorpay_description: general.razorpay_description || 'Razorpay Payment',
             });
             setStorageForm({
                 storage_type: general.storage_type || 's3',
@@ -178,9 +200,13 @@ export default function SettingsPage() {
         e.preventDefault();
         const payload: any = { ...fbForm };
         if (!payload.appSecret) delete payload.appSecret;
-
-        await dispatch(updateFacebookSettings(payload)).unwrap();
-        showModal("success", "Saved", "Facebook settings saved successfully!");
+        try {
+            await dispatch(updateFacebookSettings(payload)).unwrap();
+            dispatch(fetchFacebookSettings());
+            showModal("success", "Saved", "Facebook settings saved successfully!");
+        } catch (err: any) {
+            showModal("error", "Error", err || "Failed to save Facebook settings.");
+        }
     };
 
     const [isSavingEmail, setIsSavingEmail] = useState(false);
@@ -440,33 +466,176 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* Social Integration */}
+                    {/* Facebook API Integration */}
                     {tab === "int-social" && (
                         <div className="space-y-6 slide-up">
-                            <IntegrationHeader title="Meta for Business" desc="Connect Facebook Pages and Instagram via Developer App Credentials." Icon={Facebook} color="#3b82f6" isConnected={!!facebook?.appId} />
-                            <form onSubmit={handleSaveFacebook}>
-                                <Section title="Developer Credentials">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <InputField label="App Name" value={fbForm.appName} onChange={(e: any) => setFbForm({ ...fbForm, appName: e.target.value })} placeholder="My AI Assistant" />
-                                        <InputField label="Site URL" value={fbForm.siteUrl} onChange={(e: any) => setFbForm({ ...fbForm, siteUrl: e.target.value })} placeholder="https://example.com" />
-                                        <InputField label="Facebook App ID" value={fbForm.appId} onChange={(e: any) => setFbForm({ ...fbForm, appId: e.target.value })} placeholder="1234567890" />
-                                        <InputField label="App Secret" type="password" value={fbForm.appSecret} onChange={(e: any) => setFbForm({ ...fbForm, appSecret: e.target.value })} placeholder="•••••••• (Leave blank to keep)" />
-                                    </div>
+                            {/* Header */}
+                            <div className="flex items-center gap-3 pb-4 border-b" style={{ borderColor: "var(--glass-border)" }}>
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1877F2, #0a5ec4)" }}>
+                                    <Facebook className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Facebook API Integration</h2>
+                                    <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>Configure your Meta / Facebook App credentials and integration URLs.</p>
+                                </div>
+                                {facebook?.appId && (
+                                    <span className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                                        Connected
+                                    </span>
+                                )}
+                            </div>
 
-                                    {facebook?.webhookVerifyToken && (
-                                        <div className="mt-4 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
-                                            <p className="text-xs text-blue-500 mb-2 font-medium">Webhook Verify Token (Generated by server)</p>
-                                            <code className="text-sm font-mono text-foreground">{facebook.webhookVerifyToken}</code>
+                            <form onSubmit={handleSaveFacebook} className="space-y-5">
+                                {/* Row 1: App Name + App Version */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <InputField label="App Name" value={fbForm.appName} onChange={(e: any) => setFbForm({ ...fbForm, appName: e.target.value })} placeholder="BotSocial" />
+                                    <InputField label="App Version" value={fbForm.appVersion} onChange={(e: any) => setFbForm({ ...fbForm, appVersion: e.target.value })} placeholder="v19.0" />
+                                </div>
+
+                                {/* Row 2: App ID + App Secret */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <InputField label="App ID" value={fbForm.appId} onChange={(e: any) => setFbForm({ ...fbForm, appId: e.target.value })} placeholder="1453440466490610" />
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>App Secret</label>
+                                        <div className="relative">
+                                            <input
+                                                type={showFbSecret ? "text" : "password"}
+                                                value={fbForm.appSecret}
+                                                onChange={(e: any) => setFbForm({ ...fbForm, appSecret: e.target.value })}
+                                                placeholder="Leave unchanged to keep existing secret."
+                                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm outline-none transition-all"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                                                onFocus={(e) => { e.currentTarget.style.borderColor = "#1877F2"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(24,119,242,0.15)"; }}
+                                                onBlur={(e) => { e.currentTarget.style.borderColor = "var(--glass-border)"; e.currentTarget.style.boxShadow = "none"; }}
+                                            />
+                                            <button type="button" onClick={() => setShowFbSecret(v => !v)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70"
+                                                style={{ color: "var(--muted-foreground)" }}>
+                                                {showFbSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                            </button>
                                         </div>
-                                    )}
+                                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Leave unchanged to keep existing secret.</p>
+                                    </div>
+                                </div>
 
-                                    <div className="flex justify-end pt-4">
-                                        <button type="submit" disabled={isLoadingFacebook} className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 shadow-md"
-                                            style={{ background: "#1877F2", opacity: isLoadingFacebook ? 0.7 : 1 }}>
-                                            <Save className="w-4 h-4" /> {isLoadingFacebook ? "Saving..." : "Save App Credentials"}
+                                {/* Row 3: Social Login toggle + Webhook Verify Token */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div className="p-4 rounded-xl flex items-center justify-between" style={{ background: "var(--card-bg)", border: "1px solid var(--glass-border)" }}>
+                                        <div>
+                                            <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>Social Login</p>
+                                            <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>Enable Facebook social login for users</p>
+                                        </div>
+                                        <button type="button"
+                                            onClick={() => setFbForm(f => ({ ...f, socialLoginEnabled: !f.socialLoginEnabled }))}
+                                            className="relative flex-shrink-0 w-12 h-6 rounded-full transition-all duration-300"
+                                            style={{ background: fbForm.socialLoginEnabled ? "#1877F2" : "var(--glass-border)" }}>
+                                            <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                                                style={{ left: fbForm.socialLoginEnabled ? "calc(100% - 22px)" : "2px" }} />
                                         </button>
                                     </div>
-                                </Section>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Webhook Verify Token</label>
+                                        <div className="relative">
+                                            <input
+                                                readOnly
+                                                value={facebook?.webhookVerifyToken || ''}
+                                                className="w-full px-3.5 py-2.5 pr-32 rounded-xl text-sm font-mono outline-none"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                                            />
+                                            <button type="button"
+                                                onClick={() => dispatch(fetchFacebookSettings())}
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
+                                                style={{ background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.3)" }}>
+                                                <RefreshCw className="w-3 h-3" /> Regenerate
+                                            </button>
+                                        </div>
+                                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Paste this token in your Meta App → Webhooks → Verify Token.</p>
+                                    </div>
+                                </div>
+
+                                {/* Row 4: App Domain + Webhook Callback URL */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <InputField label="App Domain" value={fbForm.appDomain} onChange={(e: any) => setFbForm({ ...fbForm, appDomain: e.target.value })} placeholder="divyangtechlabs.com" />
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Webhook Callback URL</label>
+                                        <div className="relative">
+                                            <input readOnly value={`${fbForm.siteUrl}/api/v1/facebook/webhook`}
+                                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/api/v1/facebook/webhook`)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
+                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/api/v1/facebook/webhook` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                <Copy className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Row 5: Site URL + Valid OAuth Redirect URI */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <InputField label="Site URL" value={fbForm.siteUrl} onChange={(e: any) => setFbForm({ ...fbForm, siteUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com" />
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Valid OAuth Redirect URI</label>
+                                        <div className="relative">
+                                            <input readOnly value={`${fbForm.siteUrl}/meta/import/account/`}
+                                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/meta/import/account/`)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
+                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/meta/import/account/` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                <Copy className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Row 6: Privacy Policy URL + Login Callback URL */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <InputField label="Privacy Policy URL" value={fbForm.privacyPolicyUrl} onChange={(e: any) => setFbForm({ ...fbForm, privacyPolicyUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com/policy/privacy" />
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Login Callback URL</label>
+                                        <div className="relative">
+                                            <input readOnly value={`${fbForm.siteUrl}/login/facebook/callback`}
+                                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/login/facebook/callback`)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
+                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/login/facebook/callback` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                <Copy className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Row 7: Terms of Service URL + Data Deletion Callback URL */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <InputField label="Terms of Service URL" value={fbForm.termsOfServiceUrl} onChange={(e: any) => setFbForm({ ...fbForm, termsOfServiceUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com/terms" />
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Data Deletion Callback URL</label>
+                                        <div className="relative">
+                                            <input readOnly value={`${fbForm.siteUrl}/webhook/data-deletion`}
+                                                className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/webhook/data-deletion`)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
+                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/webhook/data-deletion` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                <Copy className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Save */}
+                                <div className="flex justify-end pt-2">
+                                    <button type="submit" disabled={isLoadingFacebook}
+                                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 shadow-md"
+                                        style={{ background: "#1877F2", opacity: isLoadingFacebook ? 0.7 : 1 }}>
+                                        <Save className="w-4 h-4" />
+                                        {isLoadingFacebook ? "Saving..." : "Save"}
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     )}
@@ -545,26 +714,91 @@ export default function SettingsPage() {
                     {/* Payments */}
                     {tab === "int-payments" && (
                         <div className="space-y-6 slide-up">
-                            <IntegrationHeader title="Stripe Payments" desc="Process subscriptions and invoices directly inside chat flows." Icon={CreditCard} color="#6366f1" />
+                            <IntegrationHeader title="Razorpay" desc="Process payments securely with Razorpay." Icon={CreditCard} color="#6366f1" isConnected={!!paymentForm.razorpay_key} />
                             <form onSubmit={handleSavePayment}>
-                                <Section title="API Environment (Live)">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <InputField label="Currency" value={paymentForm.currency} onChange={(e: any) => setPaymentForm({ ...paymentForm, currency: e.target.value })} placeholder="USD" />
-                                        <InputField label="Currency Symbol" value={paymentForm.currency_symbol} onChange={(e: any) => setPaymentForm({ ...paymentForm, currency_symbol: e.target.value })} placeholder="$" />
-                                        <div className="md:col-span-2">
-                                            <InputField label="Publishable Key" value={paymentForm.stripe_key} onChange={(e: any) => setPaymentForm({ ...paymentForm, stripe_key: e.target.value })} placeholder="pk_live_..." />
+                                <div className="p-6 rounded-2xl transition-all duration-300" style={{
+                                    background: "var(--card-bg)",
+                                    border: paymentForm.razorpaysetting === 'on' ? "1px solid rgba(99,102,241,0.3)" : "1px solid var(--glass-border)",
+                                    boxShadow: paymentForm.razorpaysetting === 'on' ? "0 0 0 1px rgba(99,102,241,0.1)" : "none"
+                                }}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300" style={{
+                                                background: paymentForm.razorpaysetting === 'on' ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "rgba(99,102,241,0.1)",
+                                                boxShadow: paymentForm.razorpaysetting === 'on' ? "0 4px 12px rgba(99,102,241,0.3)" : "none"
+                                            }}>
+                                                <svg viewBox="0 0 24 24" className="w-8 h-8" fill={paymentForm.razorpaysetting === 'on' ? "white" : "#6366f1"}>
+                                                    <path d="M22.436 0l-11.91 7.773-1.174 4.276 6.625-4.297L11.98 24h4.31zM1.565 0l.086.078 7.53 13.994 1.02 3.396L5.835 7.428l-.852 4.276L9.56 24H5.282z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-bold" style={{ color: "var(--foreground)" }}>Razorpay</h3>
+                                                <p className="text-sm mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                                                    {paymentForm.razorpaysetting === 'on' ? "Active — accept payments via UPI, cards, wallets & more" : "Click to enable Razorpay payment gateway"}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="md:col-span-2">
-                                            <InputField label="Secret Key" type="password" value={paymentForm.stripe_secret} onChange={(e: any) => setPaymentForm({ ...paymentForm, stripe_secret: e.target.value })} placeholder="sk_live_..." />
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end pt-4">
-                                        <button type="submit" disabled={isSavingPayment} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
-                                            style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingPayment ? 0.7 : 1 }}>
-                                            <Check className="w-4 h-4" /> {isSavingPayment ? "Saving..." : "Verify Key & Save"}
+                                        <button type="button" onClick={() => setPaymentForm({ ...paymentForm, razorpaysetting: paymentForm.razorpaysetting === 'on' ? 'off' : 'on' })}
+                                            className="relative w-12 h-7 rounded-full transition-all duration-300 flex-shrink-0 cursor-pointer"
+                                            style={{ background: paymentForm.razorpaysetting === 'on' ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "var(--glass-border)" }}>
+                                            <span className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 flex items-center justify-center"
+                                                style={{ left: paymentForm.razorpaysetting === 'on' ? "calc(100% - 26px)" : "2px" }}>
+                                                {paymentForm.razorpaysetting === 'on' && (
+                                                    <svg className="w-3 h-3" fill="#6366f1" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
+                                                )}
+                                            </span>
                                         </button>
                                     </div>
-                                </Section>
+                                </div>
+
+                                {paymentForm.razorpaysetting === 'on' && (
+                                    <div className="p-6 rounded-2xl space-y-5 animate-in fade-in slide-in-from-top-2 duration-300" style={{ background: "var(--card-bg)", border: "1px solid var(--glass-border)" }}>
+                                        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>API Credentials</p>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>Razorpay Key ID</label>
+                                                <div className="relative">
+                                                    <input value={paymentForm.razorpay_key} onChange={(e: any) => setPaymentForm({ ...paymentForm, razorpay_key: e.target.value })}
+                                                        placeholder="rzp_live_..." className="w-full px-3.5 py-2.5 pl-10 rounded-xl text-sm outline-none transition-all duration-300"
+                                                        style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                                                        onFocus={(e) => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.15)"; }}
+                                                        onBlur={(e) => { e.currentTarget.style.borderColor = "var(--glass-border)"; e.currentTarget.style.boxShadow = "none"; }} />
+                                                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: "var(--muted-foreground)" }}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>Razorpay Key Secret</label>
+                                                <div className="relative">
+                                                    <input type="password" value={paymentForm.razorpay_secret} onChange={(e: any) => setPaymentForm({ ...paymentForm, razorpay_secret: e.target.value })}
+                                                        placeholder="••••••••" className="w-full px-3.5 py-2.5 pl-10 rounded-xl text-sm outline-none transition-all duration-300"
+                                                        style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                                                        onFocus={(e) => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.15)"; }}
+                                                        onBlur={(e) => { e.currentTarget.style.borderColor = "var(--glass-border)"; e.currentTarget.style.boxShadow = "none"; }} />
+                                                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: "var(--muted-foreground)" }}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-sm font-medium block mb-1.5" style={{ color: "var(--foreground)" }}>Payment Description</label>
+                                                <input value={paymentForm.razorpay_description} onChange={(e: any) => setPaymentForm({ ...paymentForm, razorpay_description: e.target.value })}
+                                                    placeholder="e.g. Razorpay Payment" className="w-full px-3.5 py-2.5 rounded-xl text-sm outline-none transition-all duration-300"
+                                                    style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                                                    onFocus={(e) => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.15)"; }}
+                                                    onBlur={(e) => { e.currentTarget.style.borderColor = "var(--glass-border)"; e.currentTarget.style.boxShadow = "none"; }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end pt-4">
+                                    <button type="submit" disabled={isSavingPayment} className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                        style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingPayment ? 0.7 : 1 }}>
+                                        <Check className="w-4 h-4" /> {isSavingPayment ? "Saving..." : "Save Payment Settings"}
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     )}

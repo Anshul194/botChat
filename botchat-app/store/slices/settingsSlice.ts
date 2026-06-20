@@ -120,7 +120,7 @@ export const updateFacebookSettings = createAsyncThunk(
     'settings/updateFacebook',
     async (payload: any, { rejectWithValue }) => {
         try {
-            const res = await api.post('/settings/facebook', payload);
+            const res = await api.patch('/settings/facebook', payload);
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);

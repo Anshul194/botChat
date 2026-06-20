@@ -1,5 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../store/store";
+import { fetchGeneralSettings } from "../store/slices/settingsSlice";
 import dynamic from "next/dynamic";
 import PageMeta from "@/components/PageMeta";
 import Navbar from "./landing/components/Navbar";
@@ -24,6 +29,25 @@ const StepsSection = dynamic(() => import("./landing/components/StepsSection"));
 const BlogSection = dynamic(() => import("./landing/components/BlogSection"));
 
 export default function Home() {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
+  const { general } = useSelector((state: RootState) => state.settings);
+
+  useEffect(() => {
+    if (isAuthenticated && !general) {
+      dispatch(fetchGeneralSettings({}));
+    }
+  }, [isAuthenticated, general, dispatch]);
+
+  useEffect(() => {
+    if (isInitialized && isAuthenticated && general) {
+      if (general.landingPageEnabled === false) {
+        router.replace("/auth/sign-in");
+      }
+    }
+  }, [isInitialized, isAuthenticated, general, router]);
+
   return (
     <>
       <PageMeta
