@@ -83,6 +83,21 @@ export const toggleUserStatus = createAsyncThunk(
     }
 );
 
+export const assignPlanToUser = createAsyncThunk(
+    'users/assignPlanToUser',
+    async ({ id, plan_id, plan_expired_date }: { id: number; plan_id: number; plan_expired_date?: string }, { rejectWithValue }) => {
+        try {
+            const response = await api.patch(`/users/${id}/assign-plan`, { plan_id, plan_expired_date });
+            if (response.data.success) {
+                return response.data.data || { id, plan_id, plan_expired_date };
+            }
+            return rejectWithValue(response.data.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to assign plan');
+        }
+    }
+);
+
 export const createUser = createAsyncThunk(
     'users/createUser',
     async (userData: {
@@ -136,6 +151,17 @@ const usersSlice = createSlice({
             .addCase(createUser.fulfilled, (state, action) => {
                 state.users.unshift(action.payload);
                 state.total += 1;
+            })
+            .addCase(assignPlanToUser.fulfilled, (state, action) => {
+                const user = state.users.find(u => u.id === action.payload.id);
+                if (user) {
+                    user.plan_id = action.payload.plan_id;
+                    user.plan_expired_date = action.payload.plan_expired_date;
+                }
+                if (state.selectedUser?.id === action.payload.id) {
+                    state.selectedUser.plan_id = action.payload.plan_id;
+                    state.selectedUser.plan_expired_date = action.payload.plan_expired_date;
+                }
             })
             .addCase(toggleUserStatus.fulfilled, (state, action) => {
                 const user = state.users.find(u => u.id === action.payload.id);

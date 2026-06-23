@@ -10,8 +10,10 @@ export interface User {
     country?: string;
     avatar?: string;
     email_verified_at?: string;
+    plan_id?: number | null;
+    plan_expired_date?: string | null;
     roles?: string | string[];
-    role?: string; // Normalized role: SUPER_ADMIN, RESELLER, TENANT
+    role?: string;
 }
 
 export interface AuthState {
@@ -298,7 +300,6 @@ const authSlice = createSlice({
             .addCase(fetchMe.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
-                // If fetching me fails, it might mean the token is invalid
                 state.isAuthenticated = false;
                 state.user = null;
                 state.token = null;

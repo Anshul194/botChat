@@ -4,15 +4,24 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 import { usePathname, useRouter } from "next/navigation";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchPlans, fetchMyPlan } from "@/store/slices/plansSlice";
 import VerificationBanner from "@/components/VerificationBanner";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    const dispatch = useAppDispatch();
     const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
     const router = useRouter();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
+
+    useEffect(() => {
+        if (isInitialized && isAuthenticated) {
+            dispatch(fetchPlans());
+            dispatch(fetchMyPlan());
+        }
+    }, [dispatch, isAuthenticated, isInitialized]);
 
     // Protection logic
     useEffect(() => {

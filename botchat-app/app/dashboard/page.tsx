@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { fetchPlans, fetchMyPlan } from "@/store/slices/plansSlice";
 import dynamic from "next/dynamic";
 import {
     MessageSquare,
@@ -115,6 +118,13 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 };
 
 export default function DashboardPage() {
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        dispatch(fetchMyPlan());
+        dispatch(fetchPlans());
+    }, [dispatch]);
+
     const stats = [
         { label: "Total Messages", value: "48,291", change: "+18.2%", up: true, icon: MessageSquare, color: "var(--primary)" },
         { label: "Automated Replies", value: "44,180", change: "+22.4%", up: true, icon: Zap, color: "#a855f7" },

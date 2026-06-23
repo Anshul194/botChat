@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchUsers, toggleUserStatus, fetchUserById, createUser } from "@/store/slices/usersSlice";
+import { fetchUsers, toggleUserStatus, fetchUserById, createUser, assignPlanToUser } from "@/store/slices/usersSlice";
 import { fetchPlans } from "@/store/slices/plansSlice";
 import { Users, Search, Filter, MoreVertical, Shield, UserCheck, UserMinus, Mail } from "lucide-react";
 import { Phone, Globe, Calendar, ArrowUpRight, Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
@@ -25,6 +25,7 @@ import {
     DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -53,6 +54,12 @@ export default function UserManagementPage() {
         phone: "",
         plan_id: "",
     });
+
+    // Assign Plan Dialog
+    const [isAssignPlanOpen, setIsAssignPlanOpen] = useState(false);
+    const [assignPlanTarget, setAssignPlanTarget] = useState<{ id: number; name: string } | null>(null);
+    const [assignPlanData, setAssignPlanData] = useState({ plan_id: "", plan_expired_date: "" });
+    const [isAssigningPlan, setIsAssigningPlan] = useState(false);
 
     // Confirmation States
     const [confirmState, setConfirmState] = useState<{
@@ -95,7 +102,7 @@ export default function UserManagementPage() {
             setIsAddUserOpen(false);
             setAddUserForm({ name: "", email: "", password: "", domains: "", country_code: "US", dial_code: "+1", phone: "", plan_id: "" });
         } catch (error: any) {
-            showModal("error", "Error", error || "Failed to create user.");
+            showModal("error", "Error", typeof error === 'string' ? error : "Failed to create user.");
         } finally {
             setIsAddingUser(false);
         }
@@ -109,7 +116,7 @@ export default function UserManagementPage() {
             showModal("success", "Status Updated", `User ${confirmState.currentStatus ? 'deactivated' : 'activated'} successfully`);
             setConfirmState(s => ({ ...s, open: false }));
         } catch (error: any) {
-            showModal("error", "Error", error || "Failed to update status");
+            showModal("error", "Error", typeof error === 'string' ? error : "Failed to update status");
         }
     };
 
@@ -123,13 +130,32 @@ export default function UserManagementPage() {
         });
     };
 
+    const handleAssignPlan = async () => {
+        if (!assignPlanTarget || !assignPlanData.plan_id) return;
+        setIsAssigningPlan(true);
+        try {
+            await dispatch(assignPlanToUser({
+                id: assignPlanTarget.id,
+                plan_id: Number(assignPlanData.plan_id),
+                plan_expired_date: assignPlanData.plan_expired_date || undefined,
+            })).unwrap();
+            showModal("success", "Plan Assigned", `Plan assigned to ${assignPlanTarget.name} successfully!`);
+            setIsAssignPlanOpen(false);
+            setAssignPlanData({ plan_id: "", plan_expired_date: "" });
+        } catch (error: any) {
+            showModal("error", "Error", typeof error === 'string' ? error : "Failed to assign plan.");
+        } finally {
+            setIsAssigningPlan(false);
+        }
+    };
+
     const handleViewDetails = async (id: number) => {
         setIsFetchingDetail(true);
         setIsDetailOpen(true);
         try {
             await dispatch(fetchUserById(id)).unwrap();
         } catch (error: any) {
-            showModal("error", "Error", error || "Failed to fetch user details");
+            showModal("error", "Error", typeof error === 'string' ? error : "Failed to fetch user details");
             setIsDetailOpen(false);
         } finally {
             setIsFetchingDetail(false);
@@ -362,8 +388,12 @@ export default function UserManagementPage() {
                                                         <DropdownMenuItem className="gap-2" onClick={() => handleViewDetails(user.id)}>
                                                             <ArrowUpRight className="h-3.5 w-3.5" /> View Details
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem className="gap-2">
-                                                            <Shield className="h-3.5 w-3.5" /> Edit Permissions
+                                                        <DropdownMenuItem className="gap-2" onClick={() => {
+                                                            setAssignPlanTarget({ id: user.id, name: user.name });
+                                                            setAssignPlanData({ plan_id: "", plan_expired_date: "" });
+                                                            setIsAssignPlanOpen(true);
+                                                        }}>
+                                                            <Shield className="h-3.5 w-3.5" /> Assign Plan
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem className="gap-2 text-rose-500 focus:text-rose-500 focus:bg-rose-500/10" onClick={(e: React.MouseEvent) => triggerConfirm(e, user)}>
@@ -391,6 +421,12 @@ export default function UserManagementPage() {
                 if (!open) dispatch({ type: 'users/clearSelectedUser' });
             }}>
                 <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none bg-background shadow-2xl">
+                    <VisuallyHidden asChild>
+                        <DialogTitle>User Details</DialogTitle>
+                    </VisuallyHidden>
+                    <VisuallyHidden asChild>
+                        <DialogDescription>View and manage user profile details</DialogDescription>
+                    </VisuallyHidden>
                     {isFetchingDetail || !selectedUser ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-4">
                             <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -492,6 +528,9 @@ export default function UserManagementPage() {
             {/* Confirmation Dialog */}
             <Dialog open={confirmState.open} onOpenChange={(open) => setConfirmState(s => ({ ...s, open }))}>
                 <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden rounded-[2rem] border-none bg-background shadow-2xl">
+                    <VisuallyHidden asChild>
+                        <DialogTitle>{confirmState.currentStatus ? "Deactivate User" : "Activate User"}</DialogTitle>
+                    </VisuallyHidden>
                     <div className="p-8 flex flex-col items-center text-center">
                         <div className={cn(
                             "w-16 h-16 rounded-3xl flex items-center justify-center mb-6",
@@ -526,6 +565,87 @@ export default function UserManagementPage() {
                                 Cancel
                             </Button>
                         </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* ── Assign Plan Dialog ── */}
+            <Dialog open={isAssignPlanOpen} onOpenChange={(open) => {
+                setIsAssignPlanOpen(open);
+                if (!open) setAssignPlanData({ plan_id: "", plan_expired_date: "" });
+            }}>
+                <DialogContent className="sm:max-w-[480px] rounded-3xl border-none bg-background shadow-2xl p-0 overflow-hidden">
+                    <DialogHeader className="px-8 pt-8 pb-4">
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                <Shield className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-lg font-black tracking-tight">Assign Plan</DialogTitle>
+                                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                                    Assign a subscription plan to <span className="font-bold text-foreground">{assignPlanTarget?.name}</span>
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="px-8 pb-6 space-y-4">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                Subscription Plan <span className="text-destructive">*</span>
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    value={assignPlanData.plan_id}
+                                    onChange={e => setAssignPlanData(f => ({ ...f, plan_id: e.target.value }))}
+                                    className="w-full rounded-xl bg-muted/30 border-none h-10 px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-primary pr-8"
+                                    required
+                                >
+                                    <option value="">Select a plan...</option>
+                                    {plans.map(plan => (
+                                        <option key={plan.id} value={plan.id}>
+                                            {plan.name} — ₹{plan.price} / {plan.duration} {plan.duration_type}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                Expiry Date <span className="text-muted-foreground font-normal">(optional)</span>
+                            </Label>
+                            <Input
+                                type="date"
+                                value={assignPlanData.plan_expired_date}
+                                onChange={e => setAssignPlanData(f => ({ ...f, plan_expired_date: e.target.value }))}
+                                className="rounded-xl bg-muted/30 border-none h-10"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="px-8 py-5 border-t border-border bg-muted/20 flex gap-3">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            className="flex-1 rounded-xl font-bold"
+                            onClick={() => setIsAssignPlanOpen(false)}
+                            disabled={isAssigningPlan}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleAssignPlan}
+                            className="flex-1 rounded-xl font-black gap-2 shadow-lg shadow-primary/20"
+                            disabled={isAssigningPlan || !assignPlanData.plan_id}
+                        >
+                            {isAssigningPlan ? (
+                                <><Loader2 className="h-4 w-4 animate-spin" /> Assigning...</>
+                            ) : (
+                                <><Shield className="h-4 w-4" /> Assign Plan</>
+                            )}
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -666,7 +786,7 @@ export default function UserManagementPage() {
                                         <option value="">Select a plan...</option>
                                         {plans.map(plan => (
                                             <option key={plan.id} value={plan.id}>
-                                                {plan.name} — ${plan.price} / {plan.duration} {plan.duration_type}
+                                                {plan.name} — ₹{plan.price} / {plan.duration} {plan.duration_type}
                                             </option>
                                         ))}
                                     </select>

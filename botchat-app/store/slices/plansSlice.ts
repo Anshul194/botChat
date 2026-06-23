@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import axios from 'axios';
 import api from '../../lib/api';
 
 export interface Plan {
@@ -30,14 +31,18 @@ export interface Plan {
 interface PlansState {
     plans: Plan[];
     selectedPlan: Plan | null;
+    userPlan: Plan | null;
     isLoading: boolean;
+    isLoadingUserPlan: boolean;
     error: string | null;
 }
 
 const initialState: PlansState = {
     plans: [],
     selectedPlan: null,
-    isLoading: false,
+    userPlan: null,
+    isLoading: true,
+    isLoadingUserPlan: false,
     error: null,
 };
 
@@ -86,6 +91,42 @@ export const updatePlan = createAsyncThunk(
     }
 );
 
+export const fetchPublicPlans = createAsyncThunk(
+    'plans/fetchPublicPlans',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get('https://api.megadm.chat/api/v1/public/plans', {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer 2|SEjhqz8RiNIReWskv4No2rERcQncuVIEizJ1ShBI66ea70b9',
+                },
+            });
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch plans');
+        }
+    }
+);
+
+export const fetchMyPlan = createAsyncThunk(
+    'plans/fetchMyPlan',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/plans/my');
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch my plan');
+        }
+    }
+);
+
 export const deletePlan = createAsyncThunk(
     'plans/deletePlan',
     async (id: number, { rejectWithValue }) => {
@@ -121,9 +162,36 @@ const plansSlice = createSlice({
             .addCase(fetchPlans.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.plans = action.payload;
+                if (state.userPlan) {
+                    const updated = action.payload.find((p: Plan) => p.id === state.userPlan!.id);
+                    if (updated) state.userPlan = updated;
+                }
             })
             .addCase(fetchPlans.rejected, (state, action) => {
                 state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(fetchPublicPlans.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchPublicPlans.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.plans = action.payload;
+            })
+            .addCase(fetchPublicPlans.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(fetchMyPlan.pending, (state) => {
+                state.isLoadingUserPlan = true;
+            })
+            .addCase(fetchMyPlan.fulfilled, (state, action) => {
+                state.isLoadingUserPlan = false;
+                state.userPlan = action.payload;
+            })
+            .addCase(fetchMyPlan.rejected, (state, action) => {
+                state.isLoadingUserPlan = false;
                 state.error = action.payload as string;
             })
             .addCase(createPlan.fulfilled, (state, action) => {
@@ -134,9 +202,15 @@ const plansSlice = createSlice({
                 if (index !== -1) {
                     state.plans[index] = action.payload;
                 }
+                if (state.userPlan?.id === action.payload.id) {
+                    state.userPlan = action.payload;
+                }
             })
             .addCase(deletePlan.fulfilled, (state, action) => {
                 state.plans = state.plans.filter(p => p.id !== action.payload);
+                if (state.userPlan?.id === action.payload) {
+                    state.userPlan = null;
+                }
             });
     },
 });

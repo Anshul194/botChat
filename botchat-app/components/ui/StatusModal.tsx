@@ -20,20 +20,26 @@ export function StatusModal({
   title = "Success",
   message = "Action completed successfully.",
 }: StatusModalProps) {
+  const safeTitle = typeof title === 'string' ? title : "Notification";
+  const safeMessage = typeof message === 'string' ? message : "Something went wrong";
   const getIcon = () => {
-    switch (type) {
-      case "success":
-        return <CheckCircle2 className="w-16 h-16 text-emerald-500" />;
-      case "error":
-        return <XCircle className="w-16 h-16 text-rose-500" />;
-      case "warning":
-        return <AlertTriangle className="w-16 h-16 text-amber-500" />;
-      case "info":
-        return <Info className="w-16 h-16 text-blue-500" />;
-      case "loading":
-        return <Loader2 className="w-16 h-16 text-pink-500 animate-spin" />;
-      default:
-        return <CheckCircle2 className="w-16 h-16 text-emerald-500" />;
+    try {
+      switch (type) {
+        case "success":
+          return <CheckCircle2 className="w-16 h-16 text-emerald-500" />;
+        case "error":
+          return <XCircle className="w-16 h-16 text-rose-500" />;
+        case "warning":
+          return <AlertTriangle className="w-16 h-16 text-amber-500" />;
+        case "info":
+          return <Info className="w-16 h-16 text-blue-500" />;
+        case "loading":
+          return <Loader2 className="w-16 h-16 text-pink-500 animate-spin" />;
+        default:
+          return <CheckCircle2 className="w-16 h-16 text-emerald-500" />;
+      }
+    } catch {
+      return <Info className="w-16 h-16 text-pink-500" />;
     }
   };
 
@@ -141,7 +147,7 @@ export function StatusModal({
                 transition={{ delay: 0.2 }}
                 className={cn("text-2xl font-bold mb-2 tracking-tight", theme.text === 'font-bold' ? 'text-slate-900 dark:text-white' : theme.text)}
               >
-                {title}
+                {safeTitle}
               </motion.h3>
               
               <motion.p 
@@ -150,7 +156,7 @@ export function StatusModal({
                 transition={{ delay: 0.3 }}
                 className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed max-w-[240px]"
               >
-                {message}
+                {safeMessage}
               </motion.p>
               
               <motion.div
