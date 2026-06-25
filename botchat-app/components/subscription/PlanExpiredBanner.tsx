@@ -5,8 +5,9 @@ import { AlertTriangle, ArrowRight } from "lucide-react";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
 
 export default function PlanExpiredBanner() {
-    const { isExpired, expiryDate, currentPlan } = usePlanFeature();
+    const { isExpired, expiryDate, currentPlan, isSuperAdmin } = usePlanFeature();
 
+    if (isSuperAdmin) return null;
     if (!isExpired()) return null;
 
     return (

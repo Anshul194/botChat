@@ -14,9 +14,12 @@ function keysFor(feature: string) {
 
 export function usePlanFeature() {
     const subscription = useAppSelector((state) => state.subscription);
+    const user = useAppSelector((state) => state.auth.user);
+    const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.type === "Super Admin";
 
     return useMemo(() => {
         const canAccess = (feature: string) => {
+            if (isSuperAdmin) return true;
             if (!feature) return true;
             if (subscription.loading) return false;
             if (subscription.expired) return false;
@@ -35,8 +38,9 @@ export function usePlanFeature() {
         const used = (feature: string) => usageFor(feature)?.used ?? 0;
         const limit = (feature: string) => usageFor(feature)?.limit ?? -1;
         const remaining = (feature: string) => usageFor(feature)?.remaining ?? -1;
-        const isExpired = () => subscription.expired;
+        const isExpired = () => isSuperAdmin ? false : subscription.expired;
         const daysRemaining = () => {
+            if (isSuperAdmin) return null;
             if (!subscription.expiryDate) return null;
             const end = new Date(subscription.expiryDate).getTime();
             if (Number.isNaN(end)) return null;
@@ -45,6 +49,7 @@ export function usePlanFeature() {
 
         return {
             ...subscription,
+            isSuperAdmin,
             canAccess,
             remaining,
             used,
@@ -52,5 +57,5 @@ export function usePlanFeature() {
             isExpired,
             daysRemaining,
         };
-    }, [subscription]);
+    }, [subscription, isSuperAdmin]);
 }

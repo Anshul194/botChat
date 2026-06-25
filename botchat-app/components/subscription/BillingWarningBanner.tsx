@@ -5,10 +5,11 @@ import { AlertTriangle, Clock } from "lucide-react";
 import Link from "next/link";
 
 export default function BillingWarningBanner() {
-    const { currentPlan } = usePlanFeature();
+    const { currentPlan, isSuperAdmin } = usePlanFeature();
     const expired = usePlanFeature().isExpired();
     const remaining = usePlanFeature().daysRemaining();
 
+    if (isSuperAdmin) return null;
     if (!currentPlan) return null;
 
     if (expired) {

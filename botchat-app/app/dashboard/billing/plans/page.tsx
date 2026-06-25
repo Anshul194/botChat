@@ -21,6 +21,8 @@ export default function BillingPlansPage() {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const { plans, userPlan, isLoading } = useAppSelector((s) => s.plans);
+    const user = useAppSelector((s) => s.auth.user);
+    const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.type === "Super Admin";
     const { checkout, processing } = useRazorpay();
     const [couponData, setCouponData] = useState<{ code: string; discount: number; finalAmount: number } | null>(null);
     const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
@@ -157,7 +159,12 @@ export default function BillingPlansPage() {
                                         })}
                                     </ul>
 
-                                    {isCurrent ? (
+                                    {isSuperAdmin ? (
+                                        <div className="w-full py-3 rounded-xl text-sm font-bold text-center"
+                                            style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
+                                            Full Access — Super Admin
+                                        </div>
+                                    ) : isCurrent ? (
                                         <div className="w-full py-3 rounded-xl text-sm font-bold text-center"
                                             style={{ background: "rgba(139,92,246,0.1)", color: "#8b5cf6" }}>
                                             Current Plan

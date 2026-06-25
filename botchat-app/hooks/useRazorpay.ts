@@ -33,12 +33,13 @@ export function useRazorpay() {
         try {
             const { data } = await api.post("/payment/initiate", {
                 plan_id: planId,
+                gateway: "razorpay",
                 ...(couponCode ? { coupon_code: couponCode } : {}),
             });
 
             const result = data?.data ?? data;
             const orderId = result.order_id ?? result.id;
-            const key = result.razorpay_key ?? "";
+            const key = result.key ?? result.razorpay_key ?? "";
 
             if (!orderId) throw new Error("No order ID returned");
 

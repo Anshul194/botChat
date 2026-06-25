@@ -49,7 +49,10 @@ export const initiatePayment = createAsyncThunk(
     'payment/initiate',
     async (params: { plan_id: number; coupon_code?: string }, { rejectWithValue }) => {
         try {
-            const response = await api.post('/payment/initiate', params);
+            const response = await api.post('/payment/initiate', {
+                ...params,
+                gateway: 'razorpay',
+            });
             return response.data?.data ?? response.data;
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };

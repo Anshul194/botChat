@@ -16,12 +16,12 @@ const EXPIRED_ALLOWED_PATHS = ["/dashboard/billing", "/dashboard/profile"];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
-    const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
+    const { isAuthenticated, isInitialized, user } = useAppSelector((state) => state.auth);
     const router = useRouter();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
-    const { canAccess, loading: subscriptionLoading, isExpired, expired } = usePlanFeature();
+    const { canAccess, loading: subscriptionLoading, isExpired, expired, isSuperAdmin } = usePlanFeature();
 
     const routeFeature = getRouteFeature(pathname);
 
@@ -41,19 +41,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }, [isAuthenticated, isInitialized, router]);
 
     useEffect(() => {
+        if (isSuperAdmin) return;
         if (!isInitialized || !isAuthenticated || subscriptionLoading || !routeFeature) return;
         if (!canAccess(routeFeature)) router.replace("/dashboard/billing");
-    }, [canAccess, isAuthenticated, isInitialized, routeFeature, router, subscriptionLoading]);
+    }, [canAccess, isAuthenticated, isInitialized, routeFeature, router, subscriptionLoading, isSuperAdmin]);
 
     // Expired plan guard: redirect to billing unless on allowed paths
     useEffect(() => {
+        if (isSuperAdmin) return;
         if (!isInitialized || !isAuthenticated || subscriptionLoading) return;
         if (!expired && !isExpired()) return;
         const isAllowed = EXPIRED_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
         if (!isAllowed && pathname.startsWith("/dashboard")) {
             router.replace("/dashboard/billing");
         }
-    }, [expired, isExpired, isAuthenticated, isInitialized, pathname, router, subscriptionLoading]);
+    }, [expired, isExpired, isAuthenticated, isInitialized, pathname, router, subscriptionLoading, isSuperAdmin]);
 
     // Handle global sidebar toggle events
     useEffect(() => {

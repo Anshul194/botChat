@@ -7,7 +7,7 @@ import { X, Crown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function RenewalPopup() {
-    const { currentPlan } = usePlanFeature();
+    const { currentPlan, isSuperAdmin } = usePlanFeature();
     const expired = usePlanFeature().isExpired();
     const remaining = usePlanFeature().daysRemaining();
     const router = useRouter();
@@ -15,6 +15,7 @@ export default function RenewalPopup() {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
+        if (isSuperAdmin) return;
         if (dismissed) return;
         const key = `renewal_popup_dismissed_${currentPlan?.id}`;
         if ((expired || (remaining !== null && remaining <= 3)) && currentPlan?.id && !sessionStorage.getItem(key)) {
@@ -22,7 +23,7 @@ export default function RenewalPopup() {
             setShow(true);
             /* eslint-enable react-hooks/set-state-in-effect */
         }
-    }, [expired, remaining, currentPlan?.id, dismissed]);
+    }, [expired, remaining, currentPlan?.id, dismissed, isSuperAdmin]);
 
     const handleDismiss = () => {
         setDismissed(true);
