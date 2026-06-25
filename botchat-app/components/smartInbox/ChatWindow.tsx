@@ -7,7 +7,7 @@ import MessageInput from "./MessageInput";
 import TypingIndicator from "./TypingIndicator";
 import EmptyState from "./EmptyState";
 import { Star, Pin, Archive, VolumeX, MoreVertical, ShieldAlert, Instagram, Facebook } from "lucide-react";
-import { isSameDay, parseISO, format } from "date-fns";
+import { formatDate } from "@/lib/date";
 import { motion } from "framer-motion";
 
 export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => void }) {
@@ -43,7 +43,7 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
 
         messages.forEach((msg, idx) => {
             const rawDate = msg.created_at || msg.sent_at || new Date().toISOString();
-            const dateStr = format(parseISO(rawDate), "eeee, MMMM d, yyyy");
+            const dateStr = formatDate(new Date(rawDate), 'dddd, MMMM D, YYYY');
             if (dateStr !== lastDateStr) {
                 groups.push(
                     <div key={`date-${dateStr}`} className="flex items-center justify-center my-6 gap-3">

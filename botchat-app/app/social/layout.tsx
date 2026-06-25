@@ -6,6 +6,8 @@ import Topbar from "@/components/layout/Topbar";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 import VerificationBanner from "@/components/VerificationBanner";
+import PlanExpiredBanner from "@/components/subscription/PlanExpiredBanner";
+import { usePlanFeature } from "@/hooks/usePlanFeature";
 
 export default function SocialLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
@@ -13,6 +15,7 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
     const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
+    const { canAccess, loading: subscriptionLoading } = usePlanFeature();
 
     // Protection logic
     useEffect(() => {
@@ -20,6 +23,13 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
             router.push("/auth/sign-in");
         }
     }, [isAuthenticated, isInitialized, router]);
+
+    useEffect(() => {
+        if (!isInitialized || !isAuthenticated || subscriptionLoading) return;
+        if (pathname.startsWith("/social/smart-inbox") && !canAccess("smart_inbox")) {
+            router.replace("/dashboard/billing");
+        }
+    }, [canAccess, isAuthenticated, isInitialized, pathname, router, subscriptionLoading]);
 
     // Handle global sidebar toggle events
     useEffect(() => {
@@ -54,8 +64,10 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
 
     // Collapse sidebar on navigation
     useEffect(() => {
+        /* eslint-disable react-hooks/set-state-in-effect */
         setSidebarCollapsed(true);
         setMobileSidebarOpen(false);
+        /* eslint-enable react-hooks/set-state-in-effect */
     }, [pathname]);
 
     // Show loading state while initializing or while not authenticated
@@ -112,6 +124,7 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
                 />
                 <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     <VerificationBanner />
+                    <PlanExpiredBanner />
                     {children}
                 </main>
             </div>

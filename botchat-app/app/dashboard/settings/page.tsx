@@ -20,10 +20,12 @@ import {
     User, Shield, Database, Save,
     Plus, Check, Eye, EyeOff, Copy, RefreshCw,
     Globe, Palette, UploadCloud,
-    Mail, Smartphone, Facebook, Sparkles, CreditCard
+    Mail,     Smartphone, Facebook, Sparkles, CreditCard,
+    MessageCircle, Radio, Image
 } from "lucide-react";
 import BrandingTab from "./components/BrandingTab";
 import AppearanceTab from "./components/AppearanceTab";
+import ModuleSettings from "./components/ModuleSettings";
 import { Section, InputField, IntegrationHeader, Toggle, ApiKeyRow } from "./components/shared-ui";
 
 const navigationGroups = [
@@ -49,6 +51,14 @@ const navigationGroups = [
             { id: "int-ai", label: "AI Models", Icon: Sparkles },
             { id: "int-payments", label: "Payment Gateways", Icon: CreditCard },
             { id: "int-storage", label: "File Storage", Icon: UploadCloud },
+        ]
+    },
+    {
+        title: "Module Config",
+        items: [
+            { id: "mod-smart-inbox", label: "Smart Inbox", Icon: MessageCircle },
+            { id: "mod-broadcast", label: "Broadcast", Icon: Radio },
+            { id: "mod-social-posting", label: "Social Posting", Icon: Image },
         ]
     },
     {
@@ -831,6 +841,21 @@ export default function SettingsPage() {
                                 </Section>
                             </form>
                         </div>
+                    )}
+
+                    {/* Smart Inbox Settings */}
+                    {tab === "mod-smart-inbox" && (
+                        <ModuleSettings module="smart-inbox" title="Smart Inbox" icon={MessageCircle} color="#8b5cf6" />
+                    )}
+
+                    {/* Broadcast Settings */}
+                    {tab === "mod-broadcast" && (
+                        <ModuleSettings module="broadcast" title="Broadcast" icon={Radio} color="#10b981" />
+                    )}
+
+                    {/* Social Posting Settings */}
+                    {tab === "mod-social-posting" && (
+                        <ModuleSettings module="social-posting" title="Social Posting" icon={Image} color="#f59e0b" />
                     )}
 
                 </div>

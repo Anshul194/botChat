@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-    Bell, Search, ChevronDown, Sparkles, Zap, X,
-    MessageSquare, TrendingUp, AlertTriangle, CheckCircle2,
-    ArrowUpRight, Settings, PanelLeftClose, PanelLeftOpen, Menu,
+    Search, ChevronDown, X,
+    Settings, PanelLeftClose, PanelLeftOpen, Menu,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
@@ -13,6 +12,8 @@ import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser, fetchMe } from "@/store/slices/authSlice";
 import { cn } from "@/lib/utils";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 interface TopbarProps {
     onMenuToggle: () => void;
@@ -20,13 +21,6 @@ interface TopbarProps {
     onToggleSidebar: () => void;
     mobileSidebarOpen?: boolean;
 }
-
-const NOTIFS = [
-    { id: 1, icon: CheckCircle2, color: "#10b981", title: "Flow completed", desc: "Story Reply → DM — 1,284 done", time: "2m" },
-    { id: 2, icon: TrendingUp, color: "#6C5CE7", title: "Lead spike +31%", desc: "3,847 new leads captured today", time: "15m" },
-    { id: 3, icon: MessageSquare, color: "#ec4899", title: "2 unread DMs", desc: "Sarah J. and Mike C. need attention", time: "22m" },
-    { id: 4, icon: AlertTriangle, color: "#f59e0b", title: "API rate limit", desc: "Facebook API at 80% of hourly quota", time: "1h" },
-];
 
 const PAGE_MAP: Record<string, string> = {
     "/dashboard": "Overview",
@@ -48,13 +42,12 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { user } = useAppSelector((state) => state.auth);
+    const { settings } = useTenantSettings();
     const pathname = usePathname();
     const isLight = theme === "light";
-    const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [pulse, setPulse] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const notifRef = useRef<HTMLDivElement>(null);
     const profileRef = useRef<HTMLDivElement>(null);
     const page = PAGE_MAP[pathname] ?? "Dashboard";
 
@@ -74,7 +67,6 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
     useEffect(() => {
         const h = (e: MouseEvent) => {
-            if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
             if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
         };
         document.addEventListener("mousedown", h);
@@ -142,7 +134,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
             {/* ── Breadcrumb ── */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
-                <span className="hidden sm:inline text-[11px] font-semibold" style={{ color: "var(--foreground)", opacity: 0.78 }}>BotChat</span>
+                <span className="hidden sm:inline text-[11px] font-semibold" style={{ color: "var(--foreground)", opacity: 0.78 }}>{settings.appName}</span>
                 <span className="hidden sm:inline" style={{ color: "var(--muted-foreground)", opacity: 0.35, fontSize: 13 }}>/</span>
                 <span className="text-[13px] font-black tracking-tight" style={{ color: "var(--foreground)" }}>{page}</span>
             </div>
@@ -201,63 +193,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                 </Link>
 
                 {/* Notifications */}
-                <div className="relative" ref={notifRef}>
-                    <TopBtn title="Notifications" isLight={isLight} active={notifOpen} onClick={() => setNotifOpen(o => !o)}>
-                        <Bell className="w-[16px] h-[16px]" />
-                        <span className="absolute top-[7px] right-[7px] w-[7px] h-[7px] rounded-full border-[1.5px]"
-                            style={{ background: "#ef4444", borderColor: isLight ? "white" : "#09111e" }} />
-                    </TopBtn>
-
-                    {/* Notif dropdown */}
-                    {notifOpen && (
-                        <div className="absolute right-0 top-[calc(100%+10px)] w-[calc(100vw-2rem)] sm:w-[340px] max-w-[340px] rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
-                            style={{ background: isLight ? "rgba(255,255,255,0.98)" : "rgba(12,16,28,0.98)", border: `1px solid ${isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.07)"}`, backdropFilter: "blur(20px)" }}>
-                            <div className="flex items-center justify-between px-4 py-3"
-                                style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.05)"}` }}>
-                                <div className="flex items-center gap-2">
-                                    <Bell className="w-3.5 h-3.5" style={{ color: "#6C5CE7" }} />
-                                    <span className="text-[13px] font-black">Notifications</span>
-                                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
-                                        style={{ background: "rgba(108,92,231,0.14)", color: "#6C5CE7" }}>4</span>
-                                </div>
-                                <button onClick={() => setNotifOpen(false)}
-                                    className="p-1 rounded-lg transition-colors"
-                                    style={{ color: "var(--muted-foreground)" }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)")}
-                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-
-                            {NOTIFS.map((n, i) => (
-                                <div key={n.id}
-                                    className="flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors"
-                                    style={{ borderBottom: i < NOTIFS.length - 1 ? `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)"}` : "none" }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = isLight ? "rgba(0,0,0,0.025)" : "rgba(255,255,255,0.03)")}
-                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                                        style={{ background: `${n.color}15` }}>
-                                        <n.icon className="w-3.5 h-3.5" style={{ color: n.color }} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[12px] font-bold" style={{ color: "var(--foreground)" }}>{n.title}</p>
-                                        <p className="text-[11px] mt-0.5 leading-snug" style={{ color: "var(--muted-foreground)" }}>{n.desc}</p>
-                                    </div>
-                                    <span className="text-[10px] font-semibold flex-shrink-0" style={{ color: "var(--muted-foreground)" }}>{n.time}</span>
-                                </div>
-                            ))}
-
-                            <div className="p-3" style={{ borderTop: `1px solid ${isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.05)"}` }}>
-                                <button className="w-full text-[11px] font-bold flex items-center justify-center gap-1 py-2 rounded-xl transition-colors"
-                                    style={{ color: "#6C5CE7" }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(108,92,231,0.08)")}
-                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                                    View all notifications <ArrowUpRight className="w-3 h-3" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                <NotificationBell />
 
                 {/* Divider */}
                 <div className="w-px h-5 mx-0.5" style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />

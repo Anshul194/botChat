@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Facebook, Instagram, Star, Pin, VolumeX, Archive } from "lucide-react";
-import { formatDistanceToNowStrict } from "date-fns";
+import { formatRelativeTime } from "@/lib/date";
 import { SmartInboxConversation } from "@/store/slices/smartInboxSlice";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
 
@@ -29,20 +29,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
     // Format timestamp nicely (e.g., 2m, 1h, 5d)
     const formatTime = (isoString: string | null) => {
         if (!isoString) return "";
-        try {
-            const date = new Date(isoString);
-            return formatDistanceToNowStrict(date)
-                .replace(" seconds", "s")
-                .replace(" second", "s")
-                .replace(" minutes", "m")
-                .replace(" minute", "m")
-                .replace(" hours", "h")
-                .replace(" hour", "h")
-                .replace(" days", "d")
-                .replace(" day", "d");
-        } catch {
-            return "";
-        }
+        try { return formatRelativeTime(isoString); } catch { return ""; }
     };
 
     // ── Rich last-message preview ─────────────────────────────────────────────

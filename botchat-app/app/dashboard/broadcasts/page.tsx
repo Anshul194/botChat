@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePlanFeature } from "@/hooks/usePlanFeature";
 import {
     getBroadcastCampaigns,
     createBroadcastCampaign,
@@ -11,6 +12,7 @@ import {
     createTemplateFromCampaign
 } from "@/services/messengerBroadcast.service";
 import { toast } from "sonner";
+import { formatDate } from "@/lib/date";
 import {
     Plus, Radio, MoreVertical, Trash2, Edit3, Users,
     MessageSquare, Clock, CheckCircle2, XCircle, Send,
@@ -226,7 +228,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
                 {[
                     { icon: Users,          label: "Recipients",  value: campaign.total_recipients?.toLocaleString() ?? "—" },
                     { icon: MessageSquare,  label: "Msg Type",    value: campaign.message_type ? campaign.message_type.charAt(0).toUpperCase() + campaign.message_type.slice(1) : "—" },
-                    { icon: CalendarDays,   label: "Scheduled",   value: campaign.scheduled_at ? new Date(campaign.scheduled_at).toLocaleDateString() : "—" },
+                    { icon: CalendarDays,   label: "Scheduled",   value: campaign.scheduled_at ? formatDate(new Date(campaign.scheduled_at)) : "—" },
                 ].map((s) => (
                     <div key={s.label} className="p-2 rounded-xl text-center" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
                         <s.icon className="w-3.5 h-3.5 mx-auto mb-1" style={{ color: "var(--muted-foreground)" }} />
@@ -249,6 +251,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
 export default function BroadcastsPage() {
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { canAccess } = usePlanFeature();
     const [showCreate, setShowCreate] = useState(false);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -322,13 +325,15 @@ export default function BroadcastsPage() {
                         Send bulk Messenger campaigns to your subscribers
                     </p>
                 </div>
-                <button
-                    onClick={() => setShowCreate(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-                    style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 4px 15px rgba(124,58,237,0.4)" }}
-                >
-                    <Plus className="w-4 h-4" /> New Campaign
-                </button>
+                {canAccess("broadcast") && (
+                    <button
+                        onClick={() => setShowCreate(true)}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+                        style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 4px 15px rgba(124,58,237,0.4)" }}
+                    >
+                        <Plus className="w-4 h-4" /> New Campaign
+                    </button>
+                )}
             </div>
 
             {/* Stats */}
@@ -403,13 +408,15 @@ export default function BroadcastsPage() {
                     <p className="text-sm mt-1 mb-5" style={{ color: "var(--muted-foreground)" }}>
                         Create your first Messenger broadcast campaign
                     </p>
-                    <button
-                        onClick={() => setShowCreate(true)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-all"
-                        style={{ background: "var(--brand-gradient)" }}
-                    >
-                        <Plus className="w-4 h-4" /> Create Campaign
-                    </button>
+                    {canAccess("broadcast") && (
+                        <button
+                            onClick={() => setShowCreate(true)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-all"
+                            style={{ background: "var(--brand-gradient)" }}
+                        >
+                            <Plus className="w-4 h-4" /> Create Campaign
+                        </button>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -428,17 +435,19 @@ export default function BroadcastsPage() {
                     ))}
 
                     {/* New Campaign Card */}
-                    <button
-                        onClick={() => setShowCreate(true)}
-                        className="glass-card rounded-2xl p-5 flex flex-col items-center justify-center gap-3 hover:opacity-80 transition-opacity min-h-[200px]"
-                        style={{ borderStyle: "dashed", borderColor: "var(--glass-border)" }}
-                    >
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                            style={{ background: "rgba(124,58,237,0.1)", border: "1px dashed rgba(124,58,237,0.3)" }}>
-                            <Plus className="w-6 h-6" style={{ color: "var(--brand-purple)" }} />
-                        </div>
-                        <span className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>New Broadcast</span>
-                    </button>
+                    {canAccess("broadcast") && (
+                        <button
+                            onClick={() => setShowCreate(true)}
+                            className="glass-card rounded-2xl p-5 flex flex-col items-center justify-center gap-3 hover:opacity-80 transition-opacity min-h-[200px]"
+                            style={{ borderStyle: "dashed", borderColor: "var(--glass-border)" }}
+                        >
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                                style={{ background: "rgba(124,58,237,0.1)", border: "1px dashed rgba(124,58,237,0.3)" }}>
+                                <Plus className="w-6 h-6" style={{ color: "var(--brand-purple)" }} />
+                            </div>
+                            <span className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>New Broadcast</span>
+                        </button>
+                    )}
                 </div>
             )}
 

@@ -95,6 +95,7 @@ export const fetchPublicPlans = createAsyncThunk(
     'plans/fetchPublicPlans',
     async (_, { rejectWithValue }) => {
         try {
+            // TODO: Replace hardcoded URL with dynamic API base from config (resolveApiBaseUrl)
             const response = await axios.get('https://api.megadm.chat/api/v1/public/plans', {
                 headers: {
                     Accept: 'application/json',

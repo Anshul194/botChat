@@ -54,6 +54,7 @@ export default function BlogDetailPage({ params }: BlogDetailProps) {
     if (slug) fetchData();
   }, [slug]);
 
+  // TODO: Replace 'en-US' with tenant locale from settings.locale
   const formatDate = (d: string) =>
     d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
 

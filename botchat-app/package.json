@@ -29,6 +29,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.21",
     "emoji-picker-react": "^4.18.0",
     "framer-motion": "^12.34.3",
     "gsap": "^3.14.2",

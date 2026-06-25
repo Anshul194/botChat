@@ -7,6 +7,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPlans, fetchMyPlan } from "@/store/slices/plansSlice";
 import VerificationBanner from "@/components/VerificationBanner";
+import PlanExpiredBanner from "@/components/subscription/PlanExpiredBanner";
+import BillingWarningBanner from "@/components/subscription/BillingWarningBanner";
+import RenewalPopup from "@/components/subscription/RenewalPopup";
+import { usePlanFeature } from "@/hooks/usePlanFeature";
+
+const EXPIRED_ALLOWED_PATHS = ["/dashboard/billing", "/dashboard/profile"];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
@@ -15,6 +21,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const pathname = usePathname();
+    const { canAccess, loading: subscriptionLoading, isExpired, expired } = usePlanFeature();
+
+    const routeFeature = getRouteFeature(pathname);
 
     useEffect(() => {
         if (isInitialized && isAuthenticated) {
@@ -31,7 +40,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     }, [isAuthenticated, isInitialized, router]);
 
+    useEffect(() => {
+        if (!isInitialized || !isAuthenticated || subscriptionLoading || !routeFeature) return;
+        if (!canAccess(routeFeature)) router.replace("/dashboard/billing");
+    }, [canAccess, isAuthenticated, isInitialized, routeFeature, router, subscriptionLoading]);
 
+    // Expired plan guard: redirect to billing unless on allowed paths
+    useEffect(() => {
+        if (!isInitialized || !isAuthenticated || subscriptionLoading) return;
+        if (!expired && !isExpired()) return;
+        const isAllowed = EXPIRED_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
+        if (!isAllowed && pathname.startsWith("/dashboard")) {
+            router.replace("/dashboard/billing");
+        }
+    }, [expired, isExpired, isAuthenticated, isInitialized, pathname, router, subscriptionLoading]);
 
     // Handle global sidebar toggle events
     useEffect(() => {
@@ -70,8 +92,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     // Collapse sidebar on navigation
     useEffect(() => {
+        /* eslint-disable react-hooks/set-state-in-effect */
         setSidebarCollapsed(true);
         setMobileSidebarOpen(false);
+        /* eslint-enable react-hooks/set-state-in-effect */
     }, [pathname]);
 
     // Show loading state while initializing or while not authenticated
@@ -83,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         );
     }
 
-    return (
+    return (<>
         <div
             data-dashboard-theme="true"
             className="flex h-screen overflow-hidden"
@@ -129,9 +153,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 />
                 <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     <VerificationBanner />
+                    <PlanExpiredBanner />
+                    <BillingWarningBanner />
                     {children}
                 </main>
             </div>
         </div>
+        <RenewalPopup />
+        </>
     );
+}
+
+function getRouteFeature(pathname: string): string | null {
+    if (pathname.startsWith("/dashboard/billing")) return null;
+    if (pathname.startsWith("/dashboard/broadcasts") || pathname.startsWith("/dashboard/broadcast-templates") || pathname.startsWith("/dashboard/content-library")) return "broadcast";
+    if (pathname.startsWith("/dashboard/posts/studio")) return "social_posting";
+    if (pathname.includes("/analytics") || pathname.startsWith("/dashboard/analytics")) return "analytics";
+    if (pathname.includes("custom-domain")) return "domains";
+    if (pathname.includes("pixels")) return "pixels";
+    if (pathname.startsWith("/dashboard/inbox")) return "smart_inbox";
+    if (pathname.startsWith("/dashboard/instagram/bio-links") || pathname.startsWith("/dashboard/instagram/bio-link")) return "bio_links";
+    if (pathname.startsWith("/dashboard/shortened-links")) return "short_links";
+    if (pathname.startsWith("/dashboard/vcard-links")) return "vcard";
+    if (pathname.startsWith("/dashboard/ai-training")) return "bot_ai_agent";
+    return null;
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SmartInboxMessage } from "@/store/slices/smartInboxSlice";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
 import { Check, CheckCheck, Smile, Bot, User, Settings, Sparkles, Instagram, Facebook } from "lucide-react";
-import { format } from "date-fns";
+import { formatTime } from "@/lib/date";
 import { motion } from "framer-motion";
 import ReactionPicker from "./ReactionPicker";
 import MediaPreview from "./MediaPreview";
@@ -28,7 +28,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     // ── Format timestamp ──────────────────────────────────────────────────────
     const formatTime = (isoString: string | null | undefined) => {
         if (!isoString) return "";
-        try { return format(new Date(isoString), "h:mm a"); } catch { return ""; }
+        try { return formatTime(new Date(isoString), 'h:mm A'); } catch { return ""; }
     };
 
     // ── Reaction list parsing ─────────────────────────────────────────────────
@@ -143,7 +143,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             {/* Time / sender / delivery bar */}
             <div className={`flex items-center gap-2 text-[10px] text-muted-foreground/70 px-1.5 ${isInbound ? "ml-1" : "mr-1"}`} style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
                 {renderSenderBadge()}
-                <span>{formatTime((message as any).sent_at || (message as any).created_at)}</span>
+                <span>{formatMsgTime((message as any).sent_at || (message as any).created_at)}</span>
                 {renderDeliveryStatus()}
             </div>
 

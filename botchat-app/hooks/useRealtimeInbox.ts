@@ -27,6 +27,7 @@ export const useRealtimeInbox = () => {
     // ── 1. Connect once and join global inbox room ────────────────────────────
     useEffect(() => {
         const tenantDomain = getTenantDomain();
+        // TODO: Replace hardcoded fallback with dynamic tenant-based socket URL from config
         const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "https://socket.megadm.chat";
 
         const socket: Socket = io(socketUrl, {

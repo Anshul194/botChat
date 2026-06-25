@@ -8,6 +8,7 @@ import {
     getRecipientTimeline,
     getBroadcastCampaign,
 } from "@/services/messengerBroadcast.service";
+import { formatDateTime } from "@/lib/date";
 import {
     Loader2, ArrowLeft, Search, X, Send, CheckCircle2, BookOpen,
     MousePointerClick, XCircle, Clock, Link2, User, ExternalLink,
@@ -64,7 +65,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 const fmtTime = (iso: string | null) =>
-    iso ? new Date(iso).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "—";
+    iso ? formatDateTime(new Date(iso)) : "—";
 
 // ─── Timeline Modal ───────────────────────────────────────────────────────────
 

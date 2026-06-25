@@ -10,6 +10,7 @@ import {
     cancelBroadcast
 } from "@/services/messengerBroadcast.service";
 import { toast } from "sonner";
+import { formatTime } from "@/lib/date";
 import {
     Loader2, ArrowLeft, Play, Pause, XCircle, Send,
     CheckCircle2, AlertCircle, Clock, Calendar
@@ -146,7 +147,7 @@ export default function BroadcastMonitorPage() {
                                 {status}
                             </span>
                         </div>
-                        {eta && <p className="text-sm text-neutral-500 mt-2">Estimated completion: {new Date(eta).toLocaleTimeString()}</p>}
+                        {eta && <p className="text-sm text-neutral-500 mt-2">Estimated completion: {formatTime(new Date(eta))}</p>}
                     </div>
                     <div className="text-right">
                         <p className="text-4xl font-bold text-brand-purple">{percent}%</p>

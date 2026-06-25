@@ -14,6 +14,10 @@ import carouselReducer from './slices/carouselSlice';
 import domainsReducer from './slices/domainsSlice';
 import pixelsReducer from './slices/pixelsSlice';
 import smartInboxReducer from './slices/smartInboxSlice';
+import subscriptionReducer from './slices/subscriptionSlice';
+import paymentReducer from './slices/paymentSlice';
+import superadminSubscriptionReducer from './slices/superadminSubscriptionSlice';
+import notificationReducer from './slices/notificationSlice';
 
 export const store = configureStore({
     reducer: {
@@ -31,6 +35,10 @@ export const store = configureStore({
         domains: domainsReducer,
         pixels: pixelsReducer,
         smartInbox: smartInboxReducer,
+        subscription: subscriptionReducer,
+        payment: paymentReducer,
+        superadminSubscription: superadminSubscriptionReducer,
+        notification: notificationReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 

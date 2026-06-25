@@ -17,7 +17,7 @@ api.interceptors.request.use(
                     config.headers.set(name, value);
                 }
                 if (config.headers) {
-                    (config.headers as any)[name] = value;
+                    (config.headers as Record<string, string>)[name] = value;
                 }
             };
 
@@ -35,6 +35,21 @@ api.interceptors.request.use(
         }
 
         return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+    (response) => {
+        if (typeof window !== 'undefined') {
+            const url = response.config?.url || '';
+            if (url.includes('/payment/razorpay/verify') && response.data?.success !== false) {
+                window.dispatchEvent(new CustomEvent('payment:success'));
+                window.dispatchEvent(new CustomEvent('subscription:refresh'));
+            }
+        }
+
+        return response;
     },
     (error) => Promise.reject(error)
 );

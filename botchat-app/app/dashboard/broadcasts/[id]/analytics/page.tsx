@@ -7,6 +7,7 @@ import {
     getBroadcastAnalytics,
     getBroadcastCampaign,
 } from "@/services/messengerBroadcast.service";
+import { formatTime, formatDateTime } from "@/lib/date";
 import {
     Loader2, ArrowLeft, Send, CheckCircle2, BookOpen, MousePointerClick,
     XCircle, BarChart2, TrendingUp, Link2, Users, Clock, ExternalLink,
@@ -304,7 +305,7 @@ export default function BroadcastAnalyticsPage() {
                                 <div className="absolute bottom-full mb-1 hidden group-hover:block z-10 whitespace-nowrap
                                     text-xs px-2 py-1 rounded shadow-lg"
                                     style={{ background: "var(--card)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}>
-                                    {new Date(h.hour).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} — {h.count} sent
+                                    {formatTime(new Date(h.hour), 'HH:mm')} — {h.count} sent
                                 </div>
                             </div>
                         ))}
@@ -374,7 +375,7 @@ export default function BroadcastAnalyticsPage() {
                             <p className="text-xs font-semibold uppercase tracking-wider mb-1"
                                 style={{ color: "var(--muted-foreground)" }}>{label}</p>
                             <p style={{ color: "var(--foreground)" }}>
-                                {value ? new Date(value).toLocaleString() : "—"}
+                                {value ? formatDateTime(new Date(value)) : "—"}
                             </p>
                         </div>
                     ))}

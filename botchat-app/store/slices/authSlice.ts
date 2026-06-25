@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../lib/api';
+import { clearSubscription, fetchSubscription } from './subscriptionSlice';
 
 export interface User {
     id: number;
@@ -74,7 +75,7 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
-    async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+    async (credentials: { email: string; password: string }, { dispatch, rejectWithValue }) => {
         try {
             const response = await api.post('/auth/login', credentials);
 
@@ -100,6 +101,8 @@ export const loginUser = createAsyncThunk(
                 if (token) localStorage.setItem('token', token);
                 if (normalizedUser) localStorage.setItem('user', JSON.stringify(normalizedUser));
             }
+
+            setTimeout(() => dispatch(fetchSubscription()), 0);
 
             return { token, user: normalizedUser };
         } catch (error: any) {
@@ -176,7 +179,7 @@ export const fetchMe = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
-    async (_, { rejectWithValue }) => {
+    async (_, { dispatch, rejectWithValue }) => {
         try {
             // Per production request: using DELETE for logout
             await api.delete('/auth/logout').catch(() => { });
@@ -186,6 +189,7 @@ export const logoutUser = createAsyncThunk(
                 localStorage.removeItem('user');
                 localStorage.removeItem('refreshToken');
             }
+            dispatch(clearSubscription());
             return null;
         } catch (error: any) {
             if (typeof window !== 'undefined') {
@@ -193,6 +197,7 @@ export const logoutUser = createAsyncThunk(
                 localStorage.removeItem('user');
                 localStorage.removeItem('refreshToken');
             }
+            dispatch(clearSubscription());
             return rejectWithValue(error.message);
         }
     }

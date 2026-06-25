@@ -118,6 +118,7 @@ export default function BlogPage() {
                                     <div className="h-8 w-px bg-white/10" />
                                     <div className="text-gray-500 flex flex-col justify-center">
                                         <span className="text-[9px] font-black uppercase tracking-widest text-[#FF2D78]">
+                                            {/* TODO: Replace 'en-US' with tenant locale from settings.locale */}
                                             {new Date(featuredPost.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </span>
                                         <span className="text-[9px] font-black uppercase tracking-widest text-gray-600">
@@ -217,6 +218,7 @@ export default function BlogPage() {
 
                                         <div className="p-6 flex flex-col flex-1">
                                             <div className="flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
+                                                {/* TODO: Replace 'en-US' with tenant locale from settings.locale */}
                                                 <span>{new Date(post.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                                 <span className="w-1 h-1 rounded-full bg-gray-200" />
                                                 <Clock className="w-3 h-3" />

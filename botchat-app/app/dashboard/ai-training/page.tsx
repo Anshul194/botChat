@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Edit2, Trash2, Bot, Target, Zap, MessageSquare, Sparkles, ChevronRight, Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
     fetchCampaigns, deleteCampaign, setSelectedCampaign,
@@ -240,7 +241,7 @@ export default function AITrainingPage() {
                                                                     <Calendar className="w-3.5 h-3.5" />
                                                                     <span>
                                                                         {campaign.created_at
-                                                                            ? new Date(campaign.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                                                                            ? formatDate(new Date(campaign.created_at), 'MMM D, YYYY')
                                                                             : "—"}
                                                                     </span>
                                                                 </div>

@@ -1844,7 +1844,7 @@ function PublicBioContent() {
                             <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-[#db2777] to-[#f472b6] flex items-center justify-center">
                                 <LinkIcon size={10} className="text-white" />
                             </div>
-                            Made with BotChat Bio
+                            Made with BotChat Bio{/* TODO: Replace with settings.appName from tenant settings */}
                         </a>
                     </div>
                 </div>

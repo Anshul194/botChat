@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser } from "@/store/slices/authSlice";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
     ChevronDown,
@@ -32,6 +33,7 @@ import {
     Fingerprint,
     Unlink2,
     UserCog,
+    Crown,
     ShieldCheck,
     Blocks,
     SendHorizonal,
@@ -43,10 +45,13 @@ import {
     Cpu,
     Tag,
     LayoutGrid,
+    TrendingUp,
+    Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
+import { usePlanFeature } from "@/hooks/usePlanFeature";
 import {
     Dialog, DialogContent, DialogDescription,
     DialogHeader, DialogTitle, DialogFooter,
@@ -80,12 +85,14 @@ const growthNav = [
         href: "/dashboard/posts/studio",
         badge: "Pro",
         ariaLabel: "Social media post studio",
+        feature: "social_posting",
     },
     {
         label: "Broadcasts",
         icon: SendHorizonal,
         href: "/dashboard/broadcasts",
         ariaLabel: "Send broadcast messages",
+        feature: "broadcast",
     },
     {
         label: "AI Training",
@@ -93,6 +100,7 @@ const growthNav = [
         href: "/dashboard/ai-training",
         badge: "New",
         ariaLabel: "Train your AI assistant",
+        feature: "bot_ai_agent",
     },
 ];
 
@@ -109,6 +117,12 @@ const workspaceNav = [
         href: "/dashboard/billing",
         ariaLabel: "Billing and subscription",
     },
+    {
+        label: "Notifications",
+        icon: Bell,
+        href: "/dashboard/notifications",
+        ariaLabel: "View notifications",
+    },
 ];
 
 const adminNav = [
@@ -117,6 +131,18 @@ const adminNav = [
         icon: UserCog,
         href: "/dashboard/users",
         ariaLabel: "Manage users",
+    },
+    {
+        label: "Revenue Center",
+        icon: TrendingUp,
+        href: "/dashboard/superadmin/revenue",
+        ariaLabel: "Revenue analytics",
+    },
+    {
+        label: "Subscriptions",
+        icon: Crown,
+        href: "/dashboard/superadmin/subscriptions",
+        ariaLabel: "Manage tenant subscriptions",
     },
     {
         label: "Plan Management",
@@ -137,6 +163,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { user } = useAppSelector(s => s.auth);
+    const { settings } = useTenantSettings();
+    const { canAccess } = usePlanFeature();
 
     const [showLogout, setShowLogout] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -188,6 +216,21 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const isSuperAdmin = useMemo(() => {
         return user?.role === 'SUPER_ADMIN';
     }, [user]);
+
+    const canShow = (feature?: string) => !feature || isSuperAdmin || canAccess(feature);
+
+    const visibleGrowthNav = useMemo(
+        () => growthNav.filter(item => canShow(item.feature)),
+        [isSuperAdmin, canAccess]
+    );
+
+    const bioLinkItems = useMemo(() => [
+        { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", icon: LayoutGrid, badge: "Premium", ariaLabel: "Manage bio links", feature: "bio_links" },
+        { label: "Shortened Links", href: "/dashboard/shortened-links", icon: Unlink2, badge: "Premium", ariaLabel: "Manage shortened URLs", feature: "short_links" },
+        { label: "Vcard Links", href: "/dashboard/vcard-links", icon: QrCode, badge: "Premium", ariaLabel: "Manage vcard links", feature: "vcard" },
+        { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", icon: Globe2, ariaLabel: "Manage custom domains", feature: "domains" },
+        { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", icon: Fingerprint, ariaLabel: "Manage tracking pixels", feature: "pixels" },
+    ].filter(item => canShow(item.feature)), [isSuperAdmin, canAccess]);
 
     const { showModal } = useModal();
 
@@ -275,7 +318,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                 >
                     <Link
                         href="/dashboard"
-                        aria-label="BotChat – go to dashboard"
+                        aria-label={`${settings.appName} – go to dashboard`}
                         className="flex items-center gap-2.5"
                     >
                         <motion.div
@@ -283,7 +326,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
                             style={{ background: "var(--primary)" }}
                         >
-                            <MessagesSquare className="w-4 h-4 text-white" aria-hidden="true" />
+                            {settings.logo ? (
+                                <img src={settings.logo} alt={settings.appName} className="w-5 h-5 object-contain" />
+                            ) : (
+                                <MessagesSquare className="w-4 h-4 text-white" aria-hidden="true" />
+                            )}
                         </motion.div>
                         <AnimatePresence mode="wait">
                             {!collapsed && (
@@ -294,7 +341,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     className="font-semibold text-lg tracking-tight"
                                     style={{ color: "var(--foreground)" }}
                                 >
-                                    BotChat
+                                    {settings.appName}
                                 </motion.span>
                             )}
                         </AnimatePresence>
@@ -328,17 +375,19 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     {/* SOCIAL */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && <SectionLabel label="Social" />}
-                        <NavItem
-                            item={{
-                                label: "Smart Inbox",
-                                icon: Inbox,
-                                href: "/social/smart-inbox",
-                                ariaLabel: "Open shared smart inbox",
-                            }}
-                            collapsed={collapsed}
-                            pathname={currentPath}
-                            onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
-                        />
+                        {canShow("smart_inbox") && (
+                            <NavItem
+                                item={{
+                                    label: "Smart Inbox",
+                                    icon: Inbox,
+                                    href: "/social/smart-inbox",
+                                    ariaLabel: "Open shared smart inbox",
+                                }}
+                                collapsed={collapsed}
+                                pathname={currentPath}
+                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
+                            />
+                        )}
                     </motion.div>
 
                     {/* PLATFORMS */}
@@ -351,15 +400,17 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 >
                                     Platforms
                                 </span>
-                                <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    onClick={handleInstagramConnect}
-                                    aria-label="Connect a new social platform"
-                                    className="text-xs font-medium flex items-center gap-1 opacity-90 hover:opacity-100"
-                                    style={{ color: "var(--nav-active-color)" }}
-                                >
-                                    <Plus className="w-3.5 h-3.5" aria-hidden="true" /> Connect
-                                </motion.button>
+                                {canShow("connect_account") && (
+                                    <motion.button
+                                        whileHover={{ scale: 1.1 }}
+                                        onClick={handleInstagramConnect}
+                                        aria-label="Connect a new social platform"
+                                        className="text-xs font-medium flex items-center gap-1 opacity-90 hover:opacity-100"
+                                        style={{ color: "var(--nav-active-color)" }}
+                                    >
+                                        <Plus className="w-3.5 h-3.5" aria-hidden="true" /> Connect
+                                    </motion.button>
+                                )}
                             </div>
                         )}
 
@@ -398,29 +449,25 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         />
 
                         {/* Bio Links */}
-                        <NavAccordion
-                            label="Bio Links"
-                            icon={Link2}
-                            isOpen={bioLinksOpen}
-                            onToggle={() => setBioLinksOpen(!bioLinksOpen)}
-                            collapsed={collapsed}
-                            items={[
-                                { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", icon: LayoutGrid, badge: "Premium", ariaLabel: "Manage bio links" },
-                                { label: "Shortened Links", href: "/dashboard/shortened-links", icon: Unlink2, badge: "Premium", ariaLabel: "Manage shortened URLs" },
-                                { label: "Vcard Links", href: "/dashboard/vcard-links", icon: QrCode, badge: "Premium", ariaLabel: "Manage vcard links" },
-                                { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", icon: Globe2, ariaLabel: "Manage custom domains" },
-                                { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", icon: Fingerprint, ariaLabel: "Manage tracking pixels" },
-                            ]}
-                            pathname={currentPath}
-                            navigate={navigate}
-                            onClose={onClose}
-                        />
+                        {bioLinkItems.length > 0 && (
+                            <NavAccordion
+                                label="Bio Links"
+                                icon={Link2}
+                                isOpen={bioLinksOpen}
+                                onToggle={() => setBioLinksOpen(!bioLinksOpen)}
+                                collapsed={collapsed}
+                                items={bioLinkItems}
+                                pathname={currentPath}
+                                navigate={navigate}
+                                onClose={onClose}
+                            />
+                        )}
                     </motion.div>
 
                     {/* GROWTH */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && <SectionLabel label="Growth" />}
-                        {growthNav.map(item => (
+                        {visibleGrowthNav.map(item => (
                             <NavItem
                                 key={item.href}
                                 item={item}

@@ -12,6 +12,7 @@ import {
 } from "@/store/slices/vcardsSlice";
 import { fetchDomains } from "@/store/slices/domainsSlice";
 import { useRouter } from "next/navigation";
+import { usePlanFeature } from "@/hooks/usePlanFeature";
 import {
     Plus,
     Copy,
@@ -84,6 +85,7 @@ const InputField = ({ label, ...props }: any) => (
 export default function VcardLinksPage() {
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const { canAccess } = usePlanFeature();
     const { vcards, isLoading } = useAppSelector((state) => state.vcards);
     const { domains } = useAppSelector((state) => state.domains);
     const { showModal, showConfirm } = useModal();
@@ -219,13 +221,15 @@ export default function VcardLinksPage() {
                         </div>
                     </div>
 
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="h-12 sm:h-14 px-6 sm:px-8 rounded-2xl bg-primary text-white text-xs sm:text-[13px] font-black uppercase tracking-widest flex items-center justify-center gap-2.5 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.97] transition-all group w-full sm:w-auto"
-                    >
-                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
-                        Create New Vcard
-                    </button>
+                    {canAccess("vcard") && (
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="h-12 sm:h-14 px-6 sm:px-8 rounded-2xl bg-primary text-white text-xs sm:text-[13px] font-black uppercase tracking-widest flex items-center justify-center gap-2.5 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.97] transition-all group w-full sm:w-auto"
+                        >
+                            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
+                            Create New Vcard
+                        </button>
+                    )}
                 </motion.div>
 
                 {/* Search & View Toggle - Improved Mobile */}
@@ -289,7 +293,7 @@ export default function VcardLinksPage() {
                             <p className="text-[var(--muted-foreground)] max-w-xs mx-auto mb-8 text-balance">
                                 {query ? "No matches found. Try different keywords." : "Create your first digital business card to get started."}
                             </p>
-                            {!query && (
+                            {!query && canAccess("vcard") && (
                                 <button
                                     onClick={() => setShowCreateModal(true)}
                                     className="h-12 px-8 rounded-2xl bg-primary text-white font-semibold flex items-center gap-3 hover:bg-primary/90 transition-colors text-sm"

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { fetchUsers, toggleUserStatus, fetchUserById, createUser, assignPlanToUser } from "@/store/slices/usersSlice";
 import { fetchPlans } from "@/store/slices/plansSlice";
 import { Users, Search, Filter, MoreVertical, Shield, UserCheck, UserMinus, Mail } from "lucide-react";
@@ -28,10 +29,12 @@ import { Label } from "@/components/ui/label";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/date";
+import FeatureGate from "@/components/subscription/FeatureGate";
 
 export default function UserManagementPage() {
     const dispatch = useAppDispatch();
+    const { settings } = useTenantSettings();
     const { users, isLoading, selectedUser } = useAppSelector((state) => state.users);
     const { plans } = useAppSelector((state) => state.plans);
     const { showModal } = useModal();
@@ -77,7 +80,7 @@ export default function UserManagementPage() {
     useEffect(() => {
         dispatch(fetchUsers());
         dispatch(fetchPlans());
-        document.title = "User Management | BotChat Admin";
+        document.title = `User Management | ${settings.appName}`;
     }, [dispatch]);
 
     const handleAddUser = async (e: React.FormEvent) => {
@@ -185,13 +188,15 @@ export default function UserManagementPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button
-                        className="rounded-xl font-bold shadow-lg shadow-primary/20"
-                        onClick={() => setIsAddUserOpen(true)}
-                    >
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Add New User
-                    </Button>
+                    <FeatureGate feature="team_member" hide>
+                        <Button
+                            className="rounded-xl font-bold shadow-lg shadow-primary/20"
+                            onClick={() => setIsAddUserOpen(true)}
+                        >
+                            <UserPlus className="mr-2 h-4 w-4" />
+                            Add New User
+                        </Button>
+                    </FeatureGate>
                 </div>
             </div>
 
@@ -374,7 +379,7 @@ export default function UserManagementPage() {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2 text-[11px] font-black text-muted-foreground uppercase italic">
                                                     <Calendar className="h-3.5 w-3.5" />
-                                                    {format(new Date(user.created_at), "MMM d, yyyy")}
+                                                    {formatDate(new Date(user.created_at), 'MMM D, YYYY')}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-right">
@@ -486,7 +491,7 @@ export default function UserManagementPage() {
                                         <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Joined Date</p>
                                         <p className="text-sm font-bold flex items-center gap-2">
                                             <Calendar className="h-3.5 w-3.5 text-primary" />
-                                            {format(new Date(selectedUser.created_at), "MMM d, yyyy")}
+                                            {formatDate(new Date(selectedUser.created_at), 'MMM D, YYYY')}
                                         </p>
                                     </div>
                                 </div>

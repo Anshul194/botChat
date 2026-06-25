@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchLinks, createLink, fetchLinkById } from "@/store/slices/linksSlice";
 import { fetchDomains } from "@/store/slices/domainsSlice";
 import { useRouter } from "next/navigation";
+import { usePlanFeature } from "@/hooks/usePlanFeature";
 import {
     Plus,
     Copy,
@@ -100,6 +101,7 @@ export default function ShortenedLinksPage() {
     const router = useRouter();
     const { showModal } = useModal();
     const dispatch = useAppDispatch();
+    const { canAccess } = usePlanFeature();
     const { links, isLoading, error } = useAppSelector((state) => state.links);
     const { domains } = useAppSelector((state) => state.domains);
     const [query, setQuery] = useState("");
@@ -204,13 +206,15 @@ export default function ShortenedLinksPage() {
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
-                    >
-                        <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
-                        Create Short URL
-                    </button>
+                    {canAccess("short_links") && (
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="h-14 px-8 rounded-2xl bg-primary text-white text-[12px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+                        >
+                            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-500" />
+                            Create Short URL
+                        </button>
+                    )}
                 </motion.div>
 
                 {/* Search & View Toggle Bar */}

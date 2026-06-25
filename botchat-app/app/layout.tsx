@@ -8,6 +8,9 @@ import { ModalProvider } from "@/components/providers/ModalProvider";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Toaster } from "sonner";
 import NavigationOverlay from "@/components/NavigationOverlay";
+import { TenantSettingsProvider } from "@/providers/TenantSettingsProvider";
+import SubscriptionProvider from "@/providers/SubscriptionProvider";
+import DynamicBranding from "@/components/DynamicBranding";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,53 +20,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "BotChat — Instagram DM & Facebook Messenger Automation Platform",
+    default: "BotChat",
     template: "%s — BotChat",
   },
   description:
-    "Automate Instagram DMs and Facebook Messenger with AI-powered chatbots. Convert comments into customers in under 1 second. Trusted by 47,000+ creators and brands. Fully Meta policy compliant.",
-  keywords: [
-    "Instagram DM automation",
-    "Facebook Messenger chatbot",
-    "convert comments to customers",
-    "AI social media automation",
-    "Instagram lead generation",
-    "Facebook bot for business",
-    "DM auto reply Instagram",
-    "social media AI chatbot",
-    "link in bio tool",
-    "Instagram comment automation",
-    "Facebook comment responder",
-    "social selling automation",
-    "Instagram follow gated content",
-    "AI chat flows",
-    "Instagram and Facebook automation platform",
-  ],
-  openGraph: {
-    title: "BotChat — Instagram DM & Facebook Messenger Automation",
-    description:
-      "Turn every Instagram and Facebook comment into a paying customer. AI-powered DM automation trusted by 47,000+ businesses. Fully Meta compliant.",
-    type: "website",
-    siteName: "BotChat",
-    locale: "en_IN",
-    countryName: "India",
-    images: [{ url: "https://botchat.divyangtechlabs.com/og-image.png", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@botchat",
-    title: "BotChat — Instagram DM & Facebook Messenger Automation",
-    description:
-      "Turn every Instagram and Facebook comment into a paying customer. AI-powered DM automation trusted by 47,000+ businesses.",
-    images: ["https://botchat.divyangtechlabs.com/og-image.png"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: "https://botchat.divyangtechlabs.com",
-  },
+    "Automate Instagram DMs and Facebook Messenger with AI-powered chatbots.",
 };
 
 export const viewport: Viewport = {
@@ -140,6 +101,9 @@ export default function RootLayout({
           }}
         />
 
+        {/* Dynamic tenant favicon/logo injected by client component */}
+        <DynamicBranding />
+
         {/* Prevent flash of wrong theme on first load */}
         <script
           dangerouslySetInnerHTML={{
@@ -160,13 +124,17 @@ export default function RootLayout({
         <ReduxProvider>
           <AuthProvider>
             <ReactQueryProvider>
-              <ThemeProvider>
-                <ModalProvider>
-                  {children}
-                  <NavigationOverlay />
-                  <Toaster richColors position="top-right" />
-                </ModalProvider>
-              </ThemeProvider>
+              <TenantSettingsProvider>
+                <SubscriptionProvider>
+                  <ThemeProvider>
+                    <ModalProvider>
+                      {children}
+                      <NavigationOverlay />
+                      <Toaster richColors position="top-right" />
+                    </ModalProvider>
+                  </ThemeProvider>
+                </SubscriptionProvider>
+              </TenantSettingsProvider>
             </ReactQueryProvider>
           </AuthProvider>
         </ReduxProvider>

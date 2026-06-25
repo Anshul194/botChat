@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSmartInbox } from "@/hooks/useSmartInbox";
 import { Mail, Phone, MapPin, Clock, Calendar, User, Tag, Plus, ExternalLink, X, Instagram, Facebook, MessageSquare } from "lucide-react";
-import { format } from "date-fns";
+import { formatTime } from "@/lib/date";
 
 interface ContactSidebarProps {
     onClose?: () => void;
@@ -18,7 +18,7 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
     const isOnline = onlineUsers[selectedConversation.customer_id] ?? selectedConversation.is_online;
 
     const contactInfo: { email?: string; phone?: string; location?: string; localTime: string } = {
-        localTime: format(new Date(), "h:mm a")
+        localTime: formatTime(new Date())
     };
 
     const recentActivities: { id: number; text: string; time: string }[] = [];

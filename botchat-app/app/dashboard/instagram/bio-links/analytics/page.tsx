@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { format, subDays, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isWithinInterval, startOfDay } from "date-fns";
+import { subDays, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isWithinInterval, startOfDay } from "date-fns";
+import { formatDate, formatDateTime } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { Calendar, Eye, Users, ArrowLeft, Loader2, BarChart2, Globe2, Chrome, Smartphone, Activity, Globe, MapPin, Link as LinkIcon, Monitor, Languages, Link2, Clock, TrendingUp, TrendingDown, Zap, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, RadialBarChart, RadialBar } from "recharts";
@@ -78,14 +79,14 @@ function DateRangePicker({ value, onChange }: {
             setPicking({ start: day });
         } else {
             const [a, b] = picking.start <= day ? [picking.start, day] : [day, picking.start];
-            onChange({ start: format(a, 'yyyy-MM-dd'), end: format(b, 'yyyy-MM-dd') });
+            onChange({ start: formatDate(a, 'YYYY-MM-DD'), end: formatDate(b, 'YYYY-MM-DD') });
             setPicking(null);
             setOpen(false);
         }
     };
 
     const applyPreset = (preset: typeof PRESETS[0]) => {
-        onChange({ start: format(preset.start(), 'yyyy-MM-dd'), end: format(preset.end(), 'yyyy-MM-dd') });
+        onChange({ start: formatDate(preset.start(), 'YYYY-MM-DD'), end: formatDate(preset.end(), 'YYYY-MM-DD') });
         setOpen(false);
         setPicking(null);
     };
@@ -100,7 +101,7 @@ function DateRangePicker({ value, onChange }: {
                 className="h-14 px-8 rounded-2xl border border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl flex items-center gap-3 text-[12px] font-black uppercase tracking-widest text-[var(--foreground)] shadow-sm hover:shadow-md hover:bg-[var(--card)] transition-all"
             >
                 <Calendar size={18} className="text-primary" />
-                {format(new Date(value.start), 'dd MMM, yyyy')} – {format(new Date(value.end), 'dd MMM, yyyy')}
+                {formatDate(new Date(value.start), 'DD MMM, YYYY')} – {formatDate(new Date(value.end), 'DD MMM, YYYY')}
             </button>
 
             {/* Dropdown */}
@@ -112,7 +113,7 @@ function DateRangePicker({ value, onChange }: {
                             <ChevronLeft size={16} />
                         </button>
                         <span className="text-sm font-black text-[var(--foreground)] uppercase tracking-widest">
-                            {format(month, 'MMMM yyyy')}
+                            {formatDate(month, 'MMMM YYYY')}
                         </span>
                         <button onClick={() => setMonth(m => addMonths(m, 1))} className="w-9 h-9 rounded-xl bg-[var(--background)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
                             <ChevronRight size={16} />
@@ -151,7 +152,7 @@ function DateRangePicker({ value, onChange }: {
                                         today && !start && !end && !inRange && "ring-1 ring-primary/40 rounded-xl"
                                     )}
                                 >
-                                    {format(day, 'd')}
+                                    {formatDate(day, 'D')}
                                 </button>
                             );
                         })}
@@ -253,8 +254,8 @@ function BioLinksAnalyticsContent() {
     const [hoveredBar, setHoveredBar] = useState<string | null>(null);
 
     const [dateRange, setDateRange] = useState({
-        start: format(subDays(new Date(), 30), "yyyy-MM-dd"),
-        end: format(new Date(), "yyyy-MM-dd"),
+        start: formatDate(subDays(new Date(), 30), 'YYYY-MM-DD'),
+        end: formatDate(new Date(), 'YYYY-MM-DD'),
     });
 
     useEffect(() => {
@@ -274,7 +275,7 @@ function BioLinksAnalyticsContent() {
         const raw = data?.chart || [];
         if (raw.length > 0) {
             return raw.map((item: any) => ({
-                date: format(new Date(item.date), "dd MMM"),
+                date: formatDate(new Date(item.date), 'DD MMM'),
                 pageviews: item.pageviews || 0,
                 visitors: item.visitors || 0,
             }));
@@ -352,7 +353,7 @@ function BioLinksAnalyticsContent() {
                                                 <p className="font-bold text-base truncate group-hover:text-primary transition-colors leading-tight">{name}</p>
                                                 {subtext && (
                                                     <p className="text-[11px] text-[var(--muted-foreground)] font-bold flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity mt-1">
-                                                        {subtext} • {item.datetime ? format(new Date(item.datetime), "dd MMM, HH:mm") : ''}
+                                                        {subtext} • {item.datetime ? formatDateTime(new Date(item.datetime), 'DD MMM', 'HH:mm') : ''}
                                                     </p>
                                                 )}
                                             </div>

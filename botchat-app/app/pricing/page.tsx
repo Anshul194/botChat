@@ -67,6 +67,7 @@ export default function PricingPage() {
 
     useEffect(() => {
         setIsLoading(true);
+        // TODO: Replace hardcoded URL with dynamic API base from config (resolveApiBaseUrl)
         fetch('https://api.megadm.chat/api/v1/public/plans', {
             headers: {
                 Accept: 'application/json',

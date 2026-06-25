@@ -5,6 +5,7 @@ import { MessageSquare, Plus, Trash2, Edit2, Loader2, Check, X, ChevronLeft, Ref
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
 import { useRouter } from "next/navigation";
 
 // ── Emoji DB (Same as others) ──────────────────────────────────────────────────
@@ -22,7 +23,7 @@ const EC = [
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface CommentTemplate { id:number; name:string; messages:string[]; is_active:boolean; created_at?:string; }
 interface ApiMeta { current_page:number; last_page:number; per_page:number; total:number; }
-function fmtDate(d?:string){ if(!d) return "—"; return new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
+function fmtDate(d?:string){ if(!d) return "—"; return formatDate(new Date(d), 'DD MMM, YYYY'); }
 
 // ── Emoji Picker ──────────────────────────────────────────────────────
 function EmojiPicker({ onSelect, onClose, recent }: { onSelect:(e:string)=>void; onClose:()=>void; recent:string[] }) {

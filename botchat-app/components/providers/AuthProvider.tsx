@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials, setInitialized, fetchMe } from '@/store/slices/authSlice';
 import { fetchPlans, fetchMyPlan } from '@/store/slices/plansSlice';
+import { fetchSubscription } from '@/store/slices/subscriptionSlice';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                     // 2. Fetch critical app data right away
                     dispatch(fetchMyPlan());
                     dispatch(fetchPlans());
+                    dispatch(fetchSubscription());
                     // 3. Silently validate & refresh user from server
                     dispatch(fetchMe());
                 }
