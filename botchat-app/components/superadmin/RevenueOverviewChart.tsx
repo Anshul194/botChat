@@ -5,10 +5,7 @@ import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchRevenueTrends } from "@/store/slices/superadminSubscriptionSlice";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
-}
+import { formatCurrency } from "@/lib/formatCurrency";
 
 export default function RevenueOverviewChart() {
     const dispatch = useAppDispatch();

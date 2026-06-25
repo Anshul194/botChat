@@ -17,12 +17,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
                 if (token && userStr) {
                     const rawUser = JSON.parse(userStr);
+                    const rawType = (rawUser.type || '').toLowerCase().trim();
+                    const role = rawType === 'super admin' ? 'SUPER_ADMIN' :
+                        rawType === 'reseller' ? 'RESELLER' :
+                            rawType === 'tenant' ? 'TENANT' : 'ADMIN';
                     const user = {
                         ...rawUser,
-                        role: rawUser.type === 'Super Admin' ? 'SUPER_ADMIN' :
-                            rawUser.type === 'Reseller' ? 'RESELLER' :
-                                rawUser.type === 'Tenant' ? 'TENANT' :
-                                    rawUser.type === 'Admin' ? 'SUPER_ADMIN' : rawUser.type
+                        role,
                     };
                     // 1. Restore auth immediately from localStorage
                     dispatch(setCredentials({ user, token }));

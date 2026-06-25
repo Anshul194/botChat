@@ -35,6 +35,13 @@ const initialState: AuthState = {
     error: null,
 };
 
+function normalizeRole(user: Record<string, unknown>) {
+    const rawType = String(user?.type || '').toLowerCase().trim();
+    return rawType === 'super admin' ? 'SUPER_ADMIN' :
+        rawType === 'reseller' ? 'RESELLER' :
+            rawType === 'tenant' ? 'TENANT' : 'ADMIN';
+}
+
 export const registerUser = createAsyncThunk(
     'auth/registerUser',
     async (
@@ -52,13 +59,7 @@ export const registerUser = createAsyncThunk(
             const token = data.token;
             const user = data.user || data;
 
-            const normalizedUser = {
-                ...user,
-                role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
-                    user.type === 'Reseller' ? 'RESELLER' :
-                        user.type === 'Tenant' ? 'TENANT' :
-                            user.type === 'Admin' ? 'SUPER_ADMIN' : user.type
-            };
+            const normalizedUser = { ...user, role: normalizeRole(user) };
 
             if (typeof window !== 'undefined') {
                 if (token) localStorage.setItem('token', token);
@@ -66,8 +67,8 @@ export const registerUser = createAsyncThunk(
             }
 
             return { token, user: normalizedUser };
-        } catch (error: any) {
-            const message = error.response?.data?.message || error.message || 'Registration failed.';
+        } catch (error: unknown) {
+            const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Registration failed.';
             return rejectWithValue(message);
         }
     }
@@ -85,17 +86,9 @@ export const loginUser = createAsyncThunk(
 
             const data = response.data.data;
             const token = data.token;
-            // Handle both flat and nested user objects
             const user = data.user || data;
 
-            // Normalize role for existing selectors
-            const normalizedUser = {
-                ...user,
-                role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
-                    user.type === 'Reseller' ? 'RESELLER' :
-                        user.type === 'Tenant' ? 'TENANT' :
-                            user.type === 'Admin' ? 'SUPER_ADMIN' : user.type
-            };
+            const normalizedUser = { ...user, role: normalizeRole(user) };
 
             if (typeof window !== 'undefined') {
                 if (token) localStorage.setItem('token', token);
@@ -105,8 +98,8 @@ export const loginUser = createAsyncThunk(
             setTimeout(() => dispatch(fetchSubscription()), 0);
 
             return { token, user: normalizedUser };
-        } catch (error: any) {
-            const message = error.response?.data?.message || error.message || 'Login failed.';
+        } catch (error: unknown) {
+            const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Login failed.';
             return rejectWithValue(message);
         }
     }
@@ -157,21 +150,15 @@ export const fetchMe = createAsyncThunk(
             // Handle both flat and nested user objects
             const user = data.user || data;
 
-            const normalizedUser = {
-                ...user,
-                role: user.type === 'Super Admin' ? 'SUPER_ADMIN' :
-                    user.type === 'Reseller' ? 'RESELLER' :
-                        user.type === 'Tenant' ? 'TENANT' :
-                            user.type === 'Admin' ? 'SUPER_ADMIN' : user.type
-            };
+            const normalizedUser = { ...user, role: normalizeRole(user) };
 
             if (typeof window !== 'undefined') {
                 localStorage.setItem('user', JSON.stringify(normalizedUser));
             }
 
             return normalizedUser;
-        } catch (error: any) {
-            const message = error.response?.data?.message || error.message || 'Failed to fetch user.';
+        } catch (error: unknown) {
+            const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch user.';
             return rejectWithValue(message);
         }
     }

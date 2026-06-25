@@ -5,12 +5,9 @@ import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchSubscriptionStats } from "@/store/slices/superadminSubscriptionSlice";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const COLORS = ["#8b5cf6", "#0ea5e9", "#10b981", "#f59e0b", "#ec4899", "#ef4444", "#06b6d4", "#f97316"];
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
-}
 
 export default function RevenueByPlanChart() {
     const dispatch = useAppDispatch();

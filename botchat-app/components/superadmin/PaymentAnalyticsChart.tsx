@@ -5,10 +5,7 @@ import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPaymentAnalytics } from "@/store/slices/superadminSubscriptionSlice";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
-}
+import { formatCurrency } from "@/lib/formatCurrency";
 
 export default function PaymentAnalyticsChart() {
     const dispatch = useAppDispatch();

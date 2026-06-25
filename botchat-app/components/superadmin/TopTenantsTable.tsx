@@ -6,10 +6,7 @@ import { Trophy, Crown, ChevronRight } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchTopTenants } from "@/store/slices/superadminSubscriptionSlice";
 import Link from "next/link";
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
-}
+import { formatCurrency } from "@/lib/formatCurrency";
 
 function statusColor(status: string) {
     switch (status) {

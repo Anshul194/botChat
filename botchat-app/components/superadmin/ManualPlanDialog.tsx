@@ -5,6 +5,7 @@ import { Loader2, Crown } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPlans } from "@/store/slices/plansSlice";
 import { assignTenantPlan } from "@/store/slices/superadminSubscriptionSlice";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 export default function ManualPlanDialog({ open, onClose, userId, userName }: {
     open: boolean;
@@ -104,8 +105,4 @@ export default function ManualPlanDialog({ open, onClose, userId, userName }: {
             </div>
         </div>
     );
-}
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
 }

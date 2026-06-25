@@ -51,7 +51,26 @@ api.interceptors.response.use(
 
         return response;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        if (typeof window !== 'undefined') {
+            const status = error.response?.status;
+            const url = error.config?.url || '';
+            const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/forgot-password');
+
+            if (status === 401 && !isAuthRoute) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('user');
+                window.location.href = '/auth/login';
+            }
+
+            if (status === 403 && !isAuthRoute) {
+                window.location.href = '/dashboard?error=unauthorized';
+            }
+        }
+
+        return Promise.reject(error);
+    }
 );
 
 export default api;

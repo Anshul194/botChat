@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchTenantDetail, clearDetail } from "@/store/slices/superadminSubscriptionSlice";
+import { formatCurrency } from "@/lib/formatCurrency";
 import ManualPlanDialog from "@/components/superadmin/ManualPlanDialog";
 import ExtendExpiryDialog from "@/components/superadmin/ExtendExpiryDialog";
 import SuspendDialog from "@/components/superadmin/SuspendDialog";
@@ -217,8 +218,4 @@ export default function TenantSubscriptionDetailPage() {
             <ResetUsageDialog open={showReset} onClose={() => setShowReset(false)} userId={id} userName={user.name} />
         </motion.div>
     );
-}
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
 }

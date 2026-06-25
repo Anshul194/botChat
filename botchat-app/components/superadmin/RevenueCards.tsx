@@ -5,15 +5,12 @@ import { motion } from "framer-motion";
 import { DollarSign, Users, AlertTriangle, TrendingUp, Crown } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchSubscriptionStats } from "@/store/slices/superadminSubscriptionSlice";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 const itemVariants = {
     hidden: { opacity: 0, y: 16 },
     show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 28 } },
 };
-
-function formatCurrency(v: number): string {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(v);
-}
 
 export default function RevenueCards() {
     const dispatch = useAppDispatch();
