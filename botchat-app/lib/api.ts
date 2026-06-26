@@ -55,6 +55,7 @@ api.interceptors.response.use(
         if (typeof window !== 'undefined') {
             const status = error.response?.status;
             const url = error.config?.url || '';
+            const responseData = error.response?.data || {};
             const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/forgot-password');
 
             if (status === 401 && !isAuthRoute) {
@@ -65,7 +66,23 @@ api.interceptors.response.use(
             }
 
             if (status === 403 && !isAuthRoute) {
-                window.location.href = '/dashboard?error=unauthorized';
+                const isPlanError = responseData.expired
+                    || responseData.feature
+                    || responseData.limit !== undefined
+                    || (typeof responseData.message === 'string' && (
+                        responseData.message.includes('plan')
+                        || responseData.message.includes('Plan')
+                        || responseData.message.includes('expired')
+                        || responseData.message.includes('limit')
+                        || responseData.message.includes('feature')
+                        || responseData.message.includes('Feature')
+                        || responseData.message.includes('upgrade')
+                        || responseData.message.includes('Upgrade')
+                    ));
+
+                if (!isPlanError) {
+                    window.location.href = '/dashboard?error=unauthorized';
+                }
             }
         }
 
