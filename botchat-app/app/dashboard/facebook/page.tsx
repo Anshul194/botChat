@@ -76,8 +76,12 @@ export default function FacebookPage() {
                     }));
                 setPages(fetchedPages);
             }
-        } catch (err) {
-            showModal("error", "Error", "Couldn't load your Facebook pages");
+        } catch (err: any) {
+            const message = err.response?.data?.message || "Couldn't load your Facebook pages";
+            const expired = err.response?.data?.expired;
+            const feature = err.response?.data?.feature;
+            const title = expired ? "Subscription Expired" : feature ? "Feature Not Available" : "Error";
+            showModal("error", title, message);
         } finally {
             setIsLoading(false);
         }
@@ -141,7 +145,11 @@ export default function FacebookPage() {
         } catch (err: any) {
             console.error("Facebook connect error:", err);
             setIsConnecting(false);
-            showModal("error", "Error", "Failed to start Facebook connection");
+            const message = err.response?.data?.message || "Failed to start Facebook connection";
+            const feature = err.response?.data?.feature;
+            const expired = err.response?.data?.expired;
+            const title = expired ? "Subscription Expired" : feature ? "Feature Not Available" : "Error";
+            showModal("error", title, message);
         }
     }, [isConnecting, api, showModal, fetchConnectedPages]);
 
