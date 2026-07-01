@@ -1,183 +1,164 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Target, Heart, Workflow, Sparkles, User } from "lucide-react";
+import { useRef } from "react";
+import { motion } from "framer-motion";
+import { MessageSquareText, HeartPulse, Workflow, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import Image from "next/image";
 
-const CREATORS = [
+const CAROUSEL_FEATURES = [
   {
-    title: "AI Sniper Replies",
-    name: "@alex_digital",
-    role: "280K Followers",
-    desc: "Instantly targets comments with context-aware AI responses that feel 100% human.",
-    icon: <Target className="w-5 h-5" />,
-    metric: "3x Faster Conversion",
-    color: "#FF2D78"
+    id: "ai-replies",
+    title: "AI Auto-Replies",
+    subtitle: "Conversations on Autopilot",
+    desc: "Instantly reply to comments and DMs with context-aware AI. Grow your social media presence with human-like responses.",
+    icon: <MessageSquareText className="w-8 h-8 text-white" />,
+    color: "from-pink-500 to-rose-500",
+    image: "/images/botchat_ai_replies.png",
+    metrics: ["100% Automated", "< 2s Response Time"]
   },
   {
-    title: "Story Magnet",
-    name: "@sarah.social",
-    role: "120K Followers",
-    desc: "Auto-engages with story mentions and reactions. Deepen bonds while you sleep.",
-    icon: <Heart className="w-5 h-5" />,
-    metric: "+45% Engagement",
-    color: "#006AFF" // Messenger Blue
+    id: "story-magnet",
+    title: "Story Automations",
+    subtitle: "Turn Views into Sales",
+    desc: "Maximize social media ROI. Instantly reply to followers who mention you or react to your stories silently in the background.",
+    icon: <HeartPulse className="w-8 h-8 text-white" />,
+    color: "from-fuchsia-500 to-pink-500",
+    image: "/images/botchat_story_magnet.png",
+    metrics: ["+45% Brand Loyalty", "24/7 Lead Gen"]
   },
   {
-    title: "Flow Logic Builder",
-    name: "@marketing_guru",
-    role: "500K Followers",
-    desc: "No-code drag & drop builder for automated journeys that speak your brand voice.",
-    icon: <Workflow className="w-5 h-5" />,
-    metric: "Saves 20h/Week",
-    color: "#25D366" // WhatsApp Green
+    id: "flow-builder",
+    title: "No-Code Builder",
+    subtitle: "Custom Workflows",
+    desc: "Drag-and-drop conversational flow builder to qualify leads, handle support, and close sales without any coding.",
+    icon: <Workflow className="w-8 h-8 text-white" />,
+    color: "from-rose-400 to-pink-600",
+    image: "/images/botchat_flow.png",
+    metrics: ["Zero Coding", "Infinite Scaling"]
   }
 ];
 
 export default function TrendyStacks() {
-  const [hoveredIndex, setHoveredIndex] = useState<number>(0);
-  const [isHovering, setIsHovering] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-cycle the cards every 3 seconds if the user isn't hovering
-  useEffect(() => {
-    if (isHovering) return;
-    
-    const timer = setInterval(() => {
-      setHoveredIndex((prev) => (prev + 1) % CREATORS.length);
-    }, 3000);
-    
-    return () => clearInterval(timer);
-  }, [isHovering]);
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -scrollRef.current.clientWidth, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: scrollRef.current.clientWidth, behavior: "smooth" });
+    }
+  };
 
   return (
-    <section className="bg-black text-white relative overflow-hidden py-32">
-      {/* Background Orbs */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none opacity-20">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#FF2D78] rounded-full blur-[150px] animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500 rounded-full blur-[150px] animate-pulse" />
+    <section className="bg-black text-white py-24 md:py-32 relative overflow-hidden font-sans">
+
+      {/* Aesthetic Background */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-rose-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10 hidden sm:block">
+        <style jsx>{`
+          .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}</style>
       </div>
 
-      <div className="max-w-7xl w-full mx-auto px-8 flex flex-col relative z-20">
-        
-        {/* Header Content */}
-        <div className="flex flex-col items-center text-center mb-16">
-           <div className="relative w-24 h-24 mb-8">
-              <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 border-2 border-dashed border-[#FF2D78]/20 rounded-full"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                 <div className="p-4 bg-[#FF2D78]/10 rounded-full border border-[#FF2D78]/30">
-                    <Sparkles className="w-8 h-8 text-[#FF2D78]" />
-                 </div>
-              </div>
-           </div>
-           
-           <h2 className="text-5xl lg:text-7xl font-black font-display tracking-tighter leading-[0.9] mb-6">
-              Strategy <span className="text-[#FF2D78]">Stacks</span>
-           </h2>
-           <p className="text-gray-400 text-lg font-body leading-relaxed max-w-2xl">
-             Three powerful modules that stack together to build your digital empire automatically. Hover to explore.
-           </p>
+      <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+
+        {/* Header */}
+        <div className="max-w-xl">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6"
+          >
+            <Sparkles className="w-4 h-4 text-pink-400" />
+            <span className="text-sm font-semibold tracking-wide text-gray-300">Feature Carousel</span>
+          </motion.div>
+          <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
+            Powerful features. <br /><span className="text-gray-500">Stunningly simple.</span>
+          </h2>
         </div>
 
-        {/* Hover Expansion Accordion */}
-        <div 
-          className="flex flex-col md:flex-row gap-4 w-full h-[650px] md:h-[500px]"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          {CREATORS.map((c, i) => {
-            const isActive = hoveredIndex === i;
+        {/* Desktop Controls */}
+        <div className="hidden md:flex gap-3">
+          <button
+            onClick={scrollLeft}
+            className="w-14 h-14 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 hover:text-pink-400 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={scrollRight}
+            className="w-14 h-14 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 hover:text-pink-400 transition-colors"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
 
-            return (
-              <motion.div
-                key={c.title}
-                onMouseEnter={() => setHoveredIndex(i)}
-                animate={{
-                  flex: isActive ? 3 : 1,
-                  borderColor: isActive ? `${c.color}50` : "rgba(255,255,255,0.1)",
-                  backgroundColor: isActive ? "#0f0f0f" : "#050505",
-                }}
-                transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                className="relative overflow-hidden rounded-[32px] md:rounded-[40px] border cursor-pointer min-h-[100px]"
-                style={{
-                  boxShadow: isActive ? `0 20px 60px -20px ${c.color}30` : "none"
-                }}
-              >
-                {/* Always Visible Top-Left Icon */}
-                <div className="absolute top-6 left-6 z-20">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform shadow-lg"
-                    style={{ backgroundColor: `${c.color}15`, color: c.color, borderColor: `${c.color}30`, borderWidth: 1 }}
-                  >
-                    {c.icon}
-                  </div>
+      {/* CSS Scroll Snap Carousel - Butter Smooth Native Scrolling */}
+      <div className="relative z-20 w-full overflow-hidden">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-6 px-6 md:px-12 pb-12 w-full max-w-[100vw]"
+          style={{ scrollPaddingLeft: "1.5rem" }}
+        >
+          {CAROUSEL_FEATURES.map((feature) => (
+            <div
+              key={feature.id}
+              className="snap-center shrink-0 w-full md:w-[85%] lg:w-[1000px] bg-[#0A0A0A] border border-white/10 rounded-[2rem] overflow-hidden flex flex-col lg:flex-row shadow-2xl relative"
+            >
+              {/* Left Content Area (Text) */}
+              <div className="flex-1 p-8 md:p-14 flex flex-col justify-center relative z-10 w-full">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-8 shadow-lg shadow-pink-500/20`}>
+                  {feature.icon}
                 </div>
 
-                {/* Collapsed Title (Vertical on Desktop, Horizontal on Mobile) */}
-                <motion.div 
-                  initial={false}
-                  animate={{ opacity: isActive ? 0 : 1 }}
-                  className="absolute inset-0 flex items-center justify-center md:items-end md:pb-16 pointer-events-none z-10"
-                >
-                  <h3 className="text-xl md:text-2xl font-bold font-display text-white/60 md:-rotate-90 whitespace-nowrap origin-center tracking-wide pl-16 md:pl-0">
-                    {c.title}
-                  </h3>
-                </motion.div>
+                <h3 className="text-3xl md:text-4xl font-bold mb-3">{feature.title}</h3>
+                <h4 className="text-lg font-medium text-gray-500 mb-6 uppercase tracking-wider">{feature.subtitle}</h4>
+                <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+                  {feature.desc}
+                </p>
 
-                {/* Expanded Content */}
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3, delay: 0.05 }}
-                      className="absolute inset-0 p-8 flex flex-col z-10"
-                    >
-                      {/* Top Right Creator Profile */}
-                      <div className="flex items-center justify-end mb-8">
-                         <div className="flex items-center gap-3">
-                            <div className="text-right hidden sm:block">
-                               <div className="text-sm font-bold font-display text-white">{c.name}</div>
-                               <div className="text-xs text-gray-500 font-bold tracking-wider">{c.role}</div>
-                            </div>
-                            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                               <User className="w-5 h-5 text-gray-500" />
-                            </div>
-                         </div>
-                      </div>
+                <div className="flex gap-4 flex-wrap mt-auto">
+                  {feature.metrics.map((metric, i) => (
+                    <div key={i} className="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm font-semibold text-pink-200">
+                      {metric}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-                      {/* Bottom Content */}
-                      <div className="mt-auto">
-                        <h3 className="text-3xl font-bold font-display text-white mb-3">{c.title}</h3>
-                        <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-8 max-w-[320px]">
-                          {c.desc}
-                        </p>
-
-                        <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                           <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase text-white/30 tracking-widest mb-1">Impact</span>
-                              <span className="text-xl font-bold font-display" style={{ color: c.color }}>{c.metric}</span>
-                           </div>
-                           <div 
-                              className="px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all hover:scale-105 shadow-xl"
-                              style={{ backgroundColor: c.color, color: "#fff" }}
-                           >
-                              Preview Flow
-                           </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
+              {/* Right Image/Visual Area */}
+              <div className="flex-1 min-h-[300px] lg:min-h-full relative overflow-hidden bg-black lg:border-l border-white/5">
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  fill
+                  className="object-cover object-center opacity-60 lg:opacity-80 transition-transform duration-700 hover:scale-105"
+                  priority
+                />
+                {/* Fade gradient from left text to right image on Desktop */}
+                <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-transparent to-transparent opacity-80" />
+                {/* Fade gradient from top to bottom on Mobile */}
+                <div className="block lg:hidden absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+
     </section>
   );
 }

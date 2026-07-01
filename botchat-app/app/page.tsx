@@ -55,46 +55,46 @@ export default function Home() {
         description="Automate Instagram DMs and Facebook Messenger with AI-powered chatbots. Convert comments into customers in under 1 second. Trusted by 47,000+ creators and brands. Fully Meta policy compliant."
       />
       <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
-      <SmoothScrollingUI />
-      <Navbar />
+        <SmoothScrollingUI />
+        <Navbar />
 
-      {/* HERO: The main entry point */}
-      <Hero />
+        {/* HERO: The main entry point */}
+        <Hero />
 
-      {/* SUBSEQUENT SECTIONS */}
-      <div className="relative z-10">
-        <div id="features">
-          <FeaturesOverview />
+        {/* SUBSEQUENT SECTIONS */}
+        <div className="relative z-10">
+          <div id="features">
+            <FeaturesOverview />
+          </div>
+          <BioLinkShowcase />
+          <MotiveSection />
+          <Features />
+          <ScrollWritingSection />
+          <PerformanceChart />
+          <div id="solutions">
+            {/* <GrowthSections /> */}
+          </div>
+          <TrendyStacks />
+
+          <CreatorProof />
+
+          <Testimonials />
+
+          <BlogSection />
+
+          <div id="pricing">
+            <Pricing />
+          </div>
+
+          <FAQ />
+
+          <div id="company">
+            <TrustAndFinalCTA />
+          </div>
+
+          <Footer />
         </div>
-        <BioLinkShowcase />
-        <MotiveSection />
-        <Features />
-        <ScrollWritingSection />
-        <PerformanceChart />
-        <div id="solutions">
-          <GrowthSections />
-        </div>
-        <TrendyStacks />
-
-        <CreatorProof />
-
-        <Testimonials />
-
-        <BlogSection />
-
-        <div id="pricing">
-          <Pricing />
-        </div>
-
-        <FAQ />
-
-        <div id="company">
-          <TrustAndFinalCTA />
-        </div>
-
-        <Footer />
-      </div>
-    </main>
+      </main>
     </>
   );
 }
