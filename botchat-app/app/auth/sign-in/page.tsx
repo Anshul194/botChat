@@ -60,6 +60,7 @@ export default function SignInPage() {
         try {
             await dispatch(loginUser({ email: form.email, password: form.password })).unwrap();
             setStatus("success");
+            toast.success("Welcome back! Redirecting to dashboard...");
             setTimeout(() => router.push("/dashboard"), 1000);
         } catch (err: any) {
             setStatus("error");
