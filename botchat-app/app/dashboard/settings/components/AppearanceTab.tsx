@@ -30,22 +30,24 @@ const fontOptions = [
 ];
 
 const creatorPresets = [
+    // LIGHT GROUP
     { name: "Reels Pop", vibe: "Bold creator funnel", mode: "Light", primary: "#FF4D6D", secondary: "#7C3AED", tertiary: "#2DD4BF", fontFamily: "Poppins, sans-serif", fontSize: 16, fontWeight: 600, darkMode: false },
-    { name: "Midnight Studio", vibe: "Premium dark creator", mode: "Dark", primary: "#8B5CF6", secondary: "#06B6D4", tertiary: "#F59E0B", fontFamily: "Montserrat, sans-serif", fontSize: 16, fontWeight: 500, darkMode: true },
-    { name: "Cyberpunk 2077", vibe: "High contrast neon glow", mode: "Dark", primary: "#FCE205", secondary: "#FF003C", tertiary: "#00FF9F", fontFamily: "Urbanist, sans-serif", fontSize: 16, fontWeight: 700, darkMode: true },
     { name: "Nordic Minimal", vibe: "Clean, organic, airy", mode: "Light", primary: "#4A5568", secondary: "#A0AEC0", tertiary: "#E2E8F0", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 400, darkMode: false },
-    { name: "Velvet Royal", vibe: "Luxurious & elegant", mode: "Dark", primary: "#D4AF37", secondary: "#4A0404", tertiary: "#800020", fontFamily: "Playfair Display, serif", fontSize: 17, fontWeight: 600, darkMode: true },
     { name: "Matcha Zen", vibe: "Peaceful holistic brand", mode: "Light", primary: "#7C9082", secondary: "#E8EAE6", tertiary: "#D6E5D8", fontFamily: "Nunito, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
-    { name: "Aurora Borealis", vibe: "Northern lights gradient", mode: "Dark", primary: "#4ade80", secondary: "#818cf8", tertiary: "#c084fc", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
     { name: "Neobrutalism", vibe: "Bold startup energy", mode: "Light", primary: "#000000", secondary: "#FF90E8", tertiary: "#FFC900", fontFamily: "IBM Plex Sans, sans-serif", fontSize: 16, fontWeight: 700, darkMode: false },
-    { name: "Ocean Depths", vibe: "Tech and SaaS scale", mode: "Dark", primary: "#0EA5E9", secondary: "#0369A1", tertiary: "#38BDF8", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 500, darkMode: true },
-    { name: "Sunset Drive", vibe: "Vibrant synthwave", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "Work Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
     { name: "Golden Hour", vibe: "Warm photography portfolio", mode: "Light", primary: "#F6A867", secondary: "#D7816A", tertiary: "#F4EBD9", fontFamily: "Lora, serif", fontSize: 17, fontWeight: 500, darkMode: false },
-    { name: "Monokai Dev", vibe: "Hacker / Coder aesthetic", mode: "Dark", primary: "#A6E22E", secondary: "#F92672", tertiary: "#66D9EF", fontFamily: "Fira Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
     { name: "Soft Editorial", vibe: "Course creator aesthetic", mode: "Light", primary: "#2563EB", secondary: "#EC4899", tertiary: "#14B8A6", fontFamily: "Playfair Display, serif", fontSize: 17, fontWeight: 600, darkMode: false },
-    { name: "Noir Creator", vibe: "Dark black and white focus", mode: "Dark", primary: "#E5E7EB", secondary: "#9CA3AF", tertiary: "#6B7280", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
     { name: "Growth Mint", vibe: "Clean coaching brand", mode: "Light", primary: "#0EA5A4", secondary: "#2563EB", tertiary: "#F97316", fontFamily: "Nunito, sans-serif", fontSize: 17, fontWeight: 600, darkMode: false },
     { name: "Creator Luxe", vibe: "Elegant product launch", mode: "Light", primary: "#BE185D", secondary: "#9333EA", tertiary: "#F59E0B", fontFamily: "Roboto, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
+    // DARK GROUP
+    { name: "Midnight Studio", vibe: "Premium dark creator", mode: "Dark", primary: "#8B5CF6", secondary: "#06B6D4", tertiary: "#F59E0B", fontFamily: "Montserrat, sans-serif", fontSize: 16, fontWeight: 500, darkMode: true },
+    { name: "Cyberpunk 2077", vibe: "High contrast neon glow", mode: "Dark", primary: "#FCE205", secondary: "#FF003C", tertiary: "#00FF9F", fontFamily: "Urbanist, sans-serif", fontSize: 16, fontWeight: 700, darkMode: true },
+    { name: "Velvet Royal", vibe: "Luxurious & elegant", mode: "Dark", primary: "#D4AF37", secondary: "#4A0404", tertiary: "#800020", fontFamily: "Playfair Display, serif", fontSize: 17, fontWeight: 600, darkMode: true },
+    { name: "Aurora Borealis", vibe: "Northern lights gradient", mode: "Dark", primary: "#4ade80", secondary: "#818cf8", tertiary: "#c084fc", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
+    { name: "Ocean Depths", vibe: "Tech and SaaS scale", mode: "Dark", primary: "#0EA5E9", secondary: "#0369A1", tertiary: "#38BDF8", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 500, darkMode: true },
+    { name: "Sunset Drive", vibe: "Vibrant synthwave", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "Work Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
+    { name: "Monokai Dev", vibe: "Hacker / Coder aesthetic", mode: "Dark", primary: "#A6E22E", secondary: "#F92672", tertiary: "#66D9EF", fontFamily: "Fira Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Noir Creator", vibe: "Dark black and white focus", mode: "Dark", primary: "#E5E7EB", secondary: "#9CA3AF", tertiary: "#6B7280", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
 ];
 
 export default function AppearanceTab({ showModal }: { showModal: (type: string, title: string, desc: string) => void }) {
