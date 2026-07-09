@@ -46,20 +46,23 @@ export function CampaignReportModal({
             const endpoint = `/${platform}/report/${reportType}`;
             const res = await api.get(`${endpoint}?page_id=${pageId}`);
             
-            // Handle different API response structures
-            if (Array.isArray(res.data?.data)) {
-                // Structure: { success, data: [...] }
-                setData(res.data.data);
-            } else if (res.data?.data?.data && Array.isArray(res.data.data.data)) {
-                // Structure: { success, data: { stats, data: { data: [...] } } }
-                setData(res.data.data.data);
-                setStats(res.data.data.stats);
-            } else if (res.data?.data && !Array.isArray(res.data.data)) {
-                // Structure: { success, data: { stats, data: [...] } }
-                const nestedData = res.data.data.data?.data || res.data.data.data || [];
-                setData(Array.isArray(nestedData) ? nestedData : []);
-                setStats(res.data.data.stats);
+            const responseData = res.data?.data;
+
+            // API returns { success: true, data: { stats: {...}, data: [...templates] } }
+            if (responseData?.stats) {
+                setStats(responseData.stats);
             }
+
+            // data.data can be an array of templates, or a paginated object
+            const items = Array.isArray(responseData?.data)
+                ? responseData.data
+                : Array.isArray(responseData?.data?.data)
+                    ? responseData.data.data
+                    : Array.isArray(responseData)
+                        ? responseData
+                        : [];
+
+            setData(items);
         } catch (error) {
             console.error("Fetch Campaign Report Error:", error);
             showModal("error", "Error", "Failed to load report analytics");
@@ -185,14 +188,14 @@ export function CampaignReportModal({
                                         <div className="flex items-center gap-3 mt-2 pl-1">
                                             <div className="flex flex-col">
                                                 <span className="text-[10px] font-black text-neutral-800 dark:text-white leading-none">
-                                                    {item.multiple_reply_enabled === "1" ? "ON" : "OFF"}
+                                                    {(item.multiple_reply_enabled == 1 || item.multiple_reply_enabled === "1") ? "ON" : "OFF"}
                                                 </span>
                                                 <span className="text-[8px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Multi</span>
                                             </div>
                                             <div className="h-5 w-px bg-primary/10" />
                                             <div className="flex flex-col">
                                                 <span className="text-[10px] font-black text-neutral-800 dark:text-white leading-none">
-                                                    {item.comment_reply_enabled === "1" ? "ON" : "OFF"}
+                                                    {(item.comment_reply_enabled == 1 || item.comment_reply_enabled === "1") ? "ON" : "OFF"}
                                                 </span>
                                                 <span className="text-[8px] font-bold text-neutral-400 uppercase tracking-widest mt-1">Inline</span>
                                             </div>
@@ -202,12 +205,12 @@ export function CampaignReportModal({
                                     <div className="col-span-3 flex flex-col justify-center">
                                         <div className={cn(
                                             "px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 w-fit",
-                                            (item.is_active === "1" || item.status === 'active' || item.is_enabled === "1")
+                                            (item.is_active == 1 || item.is_active === "1" || item.status === 'active')
                                                 ? "bg-primary text-white shadow-lg shadow-primary/20"
                                                 : "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 border border-neutral-200 dark:border-neutral-700"
                                         )}>
-                                            {(item.is_active === "1" || item.status === 'active' || item.is_enabled === "1") ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
-                                            {(item.is_active === "1" || item.status === 'active' || item.is_enabled === "1") ? "Active Flow" : "Paused Flow"}
+                                            {(item.is_active == 1 || item.is_active === "1" || item.status === 'active') ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
+                                            {(item.is_active == 1 || item.is_active === "1" || item.status === 'active') ? "Active Flow" : "Paused Flow"}
                                         </div>
                                         <div className="flex items-center gap-2 mt-2 ml-1 text-neutral-400 text-[10px] font-bold uppercase tracking-widest">
                                             <Calendar size={12} className="text-primary/40" />
@@ -234,6 +237,22 @@ export function CampaignReportModal({
                                             className="overflow-hidden"
                                         >
                                             <div className="mx-8 p-8 rounded-[32px] bg-primary/[0.02] border border-primary/10 space-y-8">
+                                                {/* Per-campaign log stats */}
+                                                {(item.log_total !== undefined) && (
+                                                    <div className="grid grid-cols-4 gap-4">
+                                                        {[
+                                                            { label: 'Total', value: item.log_total },
+                                                            { label: 'Sent', value: item.log_sent },
+                                                            { label: 'Failed', value: item.log_failed },
+                                                            { label: 'Hidden', value: item.log_hidden },
+                                                        ].map((s, i) => (
+                                                            <div key={i} className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-center">
+                                                                <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest mb-1">{s.label}</p>
+                                                                <h5 className="text-xl font-black text-primary tracking-tighter">{s.value ?? 0}</h5>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                                 <div className="grid grid-cols-2 gap-10">
                                                     <div className="space-y-4">
                                                         <h5 className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] ml-2">Message Content</h5>
@@ -244,14 +263,14 @@ export function CampaignReportModal({
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-primary/10 shadow-sm flex flex-col justify-center">
                                                             <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest mb-2">Privacy Control</p>
-                                                            <div className={cn("text-[11px] font-black", item.hide_after_reply === "1" ? "text-primary" : "text-neutral-400")}>
-                                                                {item.hide_after_reply === "1" ? "HIDE ENABLED" : "DISPLAY PUBLIC"}
+                                                            <div className={cn("text-[11px] font-black", (item.hide_after_reply == 1 || item.hide_after_reply === "1") ? "text-primary" : "text-neutral-400")}>
+                                                                {(item.hide_after_reply == 1 || item.hide_after_reply === "1") ? "HIDE ENABLED" : "DISPLAY PUBLIC"}
                                                             </div>
                                                         </div>
                                                         <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-primary/10 shadow-sm flex flex-col justify-center">
                                                             <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest mb-2">Source Type</p>
-                                                            <div className={cn("text-[11px] font-black", item.is_template === "1" ? "text-primary" : "text-neutral-400")}>
-                                                                {item.is_template === "1" ? "SYSTEM TEMPLATE" : "CUSTOM CAMPAIGN"}
+                                                            <div className={cn("text-[11px] font-black", (item.is_template == 1 || item.is_template === "1") ? "text-primary" : "text-neutral-400")}>
+                                                                {(item.is_template == 1 || item.is_template === "1") ? "SYSTEM TEMPLATE" : "CUSTOM CAMPAIGN"}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -263,11 +282,11 @@ export function CampaignReportModal({
                                                             METRIC.TENANT: {item.tenant_id}
                                                         </div>
                                                         <div className="px-4 py-2 rounded-xl bg-primary/5 text-[10px] font-bold text-primary uppercase tracking-widest">
-                                                            PLATFORM.EDGE: {item.platform}
+                                                            POSTS MAPPED: {item.posts_count ?? 0}
                                                         </div>
                                                     </div>
                                                     <div className="text-[10px] font-bold text-primary/40 uppercase tracking-widest">
-                                                        Last Sync: {new Date(item.updated_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                                                        Last Sync: {item.updated_at ? new Date(item.updated_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '—'}
                                                     </div>
                                                 </div>
                                             </div>
