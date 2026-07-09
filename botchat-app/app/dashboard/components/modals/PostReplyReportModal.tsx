@@ -5,7 +5,7 @@ import {
     X, BarChart3, Clock, RefreshCw, 
     MessageSquare, User, Calendar, 
     ExternalLink, CheckCircle2, AlertCircle,
-    Instagram, Facebook, MessageCircle
+    Instagram, Facebook, MessageCircle, EyeOff, Trash2, Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -16,6 +16,9 @@ interface ReportSummary {
     total: number;
     success: number;
     failed: number;
+    hidden: number;
+    deleted: number;
+    private_replies: number;
     campaign?: {
         id: number;
         name: string;
@@ -27,12 +30,14 @@ interface ReportSummary {
 interface ReportItem {
     id: number;
     comment_id: string;
+    commenter_id: string;
     comment_text: string;
-    reply_text: string;
-    reply_id: string;
+    reply_message: string;
+    reply_type: string;
     status: string;
+    is_hidden: boolean;
+    is_deleted: boolean;
     created_at: string;
-    error_message?: string;
 }
 
 interface PostReplyReportModalProps {
@@ -53,6 +58,7 @@ export function PostReplyReportModal({
     const { showModal } = useModal();
     const [reports, setReports] = useState<ReportItem[]>([]);
     const [summary, setSummary] = useState<ReportSummary | null>(null);
+    const [campaignInfo, setCampaignInfo] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -71,20 +77,42 @@ export function PostReplyReportModal({
             const res = await api.get(`${endpoint}?platform=${platform}&instagram_id=${instagramId}`);
             
             if (res.data.success || res.data.is_success) {
-                const results = res.data.data?.results || res.data.data || [];
-                setReports(Array.isArray(results) ? results : []);
-                if (res.data.data?.summary) {
-                    setSummary(res.data.data.summary);
-                } else {
-                    // Fallback summary
-                    const total = results.length;
-                    const success = results.filter((r: any) => r.status === "success" || !r.error_message).length;
+                const data = res.data.data || {};
+                
+                // The API returns 'logs' (paginated items) as the interaction list
+                const logItems = data.logs || data.results || [];
+                setReports(Array.isArray(logItems) ? logItems : []);
+                
+                // Campaign info
+                setCampaignInfo(data.campaign_info || null);
+
+                // The API returns a 'summary' object with these keys:
+                // total_comments, comment_replies, private_replies, hidden_comments, deleted_comments
+                const apiSummary = data.summary;
+                if (apiSummary) {
+                    const total = apiSummary.total_comments ?? 0;
+                    const commentReplies = apiSummary.comment_replies ?? 0;
+                    const privateReplies = apiSummary.private_replies ?? 0;
+                    const successCount = commentReplies + privateReplies;
                     setSummary({
                         total,
-                        success,
-                        failed: total - success,
-                        campaign: res.data.data?.campaign
+                        success: successCount,
+                        failed: total - successCount,
+                        hidden: apiSummary.hidden_comments ?? 0,
+                        deleted: apiSummary.deleted_comments ?? 0,
+                        private_replies: privateReplies,
+                        campaign: data.campaign_info?.template ? {
+                            id: data.campaign_info.id,
+                            name: data.campaign_info.template?.name || 'Campaign',
+                            status: data.campaign_info.status,
+                            reply_type: data.campaign_info.template?.reply_type || '',
+                        } : undefined,
                     });
+                } else {
+                    // Fallback: compute from logs
+                    const total = logItems.length;
+                    const success = logItems.filter((r: ReportItem) => r.status === 'sent').length;
+                    setSummary({ total, success, failed: total - success, hidden: 0, deleted: 0, private_replies: 0 });
                 }
             }
         } catch (error) {
@@ -142,18 +170,22 @@ export function PostReplyReportModal({
                     
                     {/* Summary Stats */}
                     {summary && (
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Hits</p>
-                                <h4 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{summary.total}</h4>
+                                <h4 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{summary.total}</h4>
                             </div>
                             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10">
                                 <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Successful</p>
-                                <h4 className="text-xl font-bold text-emerald-600 tracking-tight">{summary.success}</h4>
+                                <h4 className="text-2xl font-bold text-emerald-600 tracking-tight">{summary.success}</h4>
                             </div>
                             <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10">
                                 <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1">Failed</p>
-                                <h4 className="text-xl font-bold text-rose-600 tracking-tight">{summary.failed}</h4>
+                                <h4 className="text-2xl font-bold text-rose-600 tracking-tight">{summary.failed}</h4>
+                            </div>
+                            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10">
+                                <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1">Hidden</p>
+                                <h4 className="text-2xl font-bold text-amber-600 tracking-tight">{summary.hidden}</h4>
                             </div>
                         </div>
                     )}
@@ -187,34 +219,38 @@ export function PostReplyReportModal({
                             </div>
                         ) : reports.length > 0 ? (
                             <div className="space-y-3">
-                                {reports.map((item) => (
-                                    <div key={item.id} className="group p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/20 border border-slate-100 dark:border-slate-800 hover:border-pink-500/30 transition-all hover:bg-white dark:hover:bg-slate-800/40 shadow-sm">
+                                {reports.map((item, idx) => (
+                                    <div key={item.id ?? idx} className="group p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/20 border border-slate-100 dark:border-slate-800 hover:border-pink-500/30 transition-all hover:bg-white dark:hover:bg-slate-800/40 shadow-sm">
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex gap-4 min-w-0">
                                                 <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 flex items-center justify-center flex-shrink-0">
                                                     <MessageSquare className="w-5 h-5 text-pink-500" />
                                                 </div>
-                                                <div className="min-w-0">
+                                                <div className="min-w-0 flex-1">
                                                     <div className="space-y-1">
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Comment</p>
                                                         <p className="text-[13px] font-medium text-slate-600 dark:text-slate-400 italic">
-                                                            "{item.comment_text}"
+                                                            &ldquo;{item.comment_text || <span className="opacity-40">No text</span>}&rdquo;
                                                         </p>
                                                     </div>
-                                                    <div className="mt-3 p-3 rounded-xl bg-pink-50/50 dark:bg-pink-500/5 border border-pink-100/50 dark:border-pink-500/10">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <MessageCircle className="w-3 h-3 text-pink-500" />
-                                                            <span className="text-[10px] font-bold text-pink-600 uppercase tracking-widest">Reply Sent</span>
+                                                    {item.reply_message && (
+                                                        <div className="mt-3 p-3 rounded-xl bg-pink-50/50 dark:bg-pink-500/5 border border-pink-100/50 dark:border-pink-500/10">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <MessageCircle className="w-3 h-3 text-pink-500" />
+                                                                <span className="text-[10px] font-bold text-pink-600 uppercase tracking-widest">
+                                                                    {item.reply_type === 'private' ? 'DM Sent' : 'Reply Sent'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[13px] font-bold text-slate-800 dark:text-slate-200 leading-relaxed">
+                                                                {item.reply_message}
+                                                            </p>
                                                         </div>
-                                                        <p className="text-[13px] font-bold text-slate-800 dark:text-slate-200 leading-relaxed">
-                                                            {item.reply_text}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex items-center gap-4 mt-3">
+                                                    )}
+                                                    <div className="flex items-center gap-4 mt-3 flex-wrap">
                                                         <div className="flex items-center gap-1.5 text-slate-400">
                                                             <Calendar size={12} className="text-slate-300" />
                                                             <span className="text-[10px] font-bold uppercase tracking-tight">
-                                                                {new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                                                {new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-1.5 text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-4">
@@ -223,6 +259,11 @@ export function PostReplyReportModal({
                                                                 {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </span>
                                                         </div>
+                                                        {item.reply_type && (
+                                                            <div className="flex items-center gap-1.5 text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-4">
+                                                                <span className="text-[10px] font-bold uppercase tracking-widest text-pink-500">{item.reply_type}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -230,26 +271,25 @@ export function PostReplyReportModal({
                                             <div className="flex flex-col items-end gap-2 flex-shrink-0">
                                                 <div className={cn(
                                                     "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5",
-                                                    item.status === "success" || !item.error_message
+                                                    item.status === "sent"
                                                         ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
                                                         : "bg-rose-500/10 text-rose-600 border border-rose-500/20"
                                                 )}>
-                                                    {(item.status === "success" || !item.error_message) ? <CheckCircle2 size={10} /> : <AlertCircle size={10} />}
-                                                    {(item.status === "success" || !item.error_message) ? "Success" : "Failed"}
+                                                    {item.status === "sent" ? <CheckCircle2 size={10} /> : <AlertCircle size={10} />}
+                                                    {item.status === "sent" ? "Sent" : "Failed"}
                                                 </div>
-                                                {item.reply_id && (
-                                                    <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                                                        ID: {item.reply_id.slice(0, 8)}...
+                                                {item.is_hidden && (
+                                                    <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500 uppercase tracking-widest">
+                                                        <EyeOff size={10} /> Hidden
+                                                    </div>
+                                                )}
+                                                {item.is_deleted && (
+                                                    <div className="flex items-center gap-1 text-[9px] font-bold text-rose-500 uppercase tracking-widest">
+                                                        <Trash2 size={10} /> Deleted
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
-                                        {item.error_message && (
-                                            <div className="mt-4 p-3 rounded-xl bg-rose-500/5 border border-rose-500/10 text-[11px] font-medium text-rose-500/80 flex items-center gap-2">
-                                                <AlertCircle size={12} />
-                                                {item.error_message}
-                                            </div>
-                                        )}
                                     </div>
                                 ))}
                             </div>
