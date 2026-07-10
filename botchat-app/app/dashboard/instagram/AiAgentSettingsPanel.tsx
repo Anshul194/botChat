@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
+import Link from "next/link";
 import { useModal } from "@/components/providers/ModalProvider";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchCampaigns } from "@/store/slices/aiTrainingSlice";
@@ -218,9 +219,9 @@ export function AiAgentSettingsPanel({
                             <p className="text-[13px] text-amber-700 dark:text-amber-600/80 mt-0.5">You must configure an AI Provider and API Key before the AI Agent can respond to users.</p>
                         </div>
                     </div>
-                    <a href="/dashboard/settings?tab=int-ai" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition-all whitespace-nowrap shadow-sm shadow-amber-500/20 active:scale-95">
+                    <Link href="/dashboard/settings?tab=int-ai" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition-all whitespace-nowrap shadow-sm shadow-amber-500/20 active:scale-95">
                         Configure AI Settings
-                    </a>
+                    </Link>
                 </div>
             )}
             {/* Header Area */}

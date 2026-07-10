@@ -13,6 +13,7 @@ import {
 } from "@/store/slices/aiTrainingSlice";
 import { fetchAiSettings } from "@/store/slices/settingsSlice";
 import { useModal } from "@/components/providers/ModalProvider";
+import Link from "next/link";
 import CreateCampaignPanel from "./CreateCampaignPanel";
 import EditCampaignDialog from "./EditCampaignDialog";
 
@@ -96,9 +97,9 @@ export default function AITrainingPage() {
                                     <p className="text-[13px] text-amber-700 dark:text-amber-600/80 mt-0.5">You must configure an AI Provider and API Key to train and generate models.</p>
                                 </div>
                             </div>
-                            <a href="/dashboard/settings?tab=int-ai" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition-all whitespace-nowrap shadow-sm shadow-amber-500/20 active:scale-95">
+                            <Link href="/dashboard/settings?tab=int-ai" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition-all whitespace-nowrap shadow-sm shadow-amber-500/20 active:scale-95">
                                 Configure AI Settings
-                            </a>
+                            </Link>
                         </div>
                     )}
 

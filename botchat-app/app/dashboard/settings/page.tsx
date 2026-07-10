@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "next/navigation";
 import { AppDispatch, RootState } from "../../../store/store";
 import {
     fetchGeneralSettings,
@@ -157,9 +158,16 @@ const SearchableSelect = ({ options, value, onChange, placeholder }: any) => {
 };
 
 export default function SettingsPage() {
+    const searchParams = useSearchParams();
     const [tab, setTab] = useState("profile");
     const dispatch = useDispatch<AppDispatch>();
     const { showModal } = useModal();
+
+    // Read ?tab= from URL on mount
+    useEffect(() => {
+        const tabFromUrl = searchParams?.get("tab");
+        if (tabFromUrl) setTab(tabFromUrl);
+    }, [searchParams]);
 
     // File selection state
     // Selectors
