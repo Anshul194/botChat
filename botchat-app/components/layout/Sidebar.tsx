@@ -190,7 +190,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     };
 
     useEffect(() => {
-            const current = pendingRoute || pathname || "";
+        const current = pendingRoute || pathname || "";
 
         setFacebookOpen(current.startsWith("/dashboard/facebook"));
 
@@ -376,17 +376,19 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && <SectionLabel label="Social" />}
                         {canShow("smart_inbox") && (
-                            <NavItem
-                                item={{
-                                    label: "Smart Inbox",
-                                    icon: Inbox,
-                                    href: "/social/smart-inbox",
-                                    ariaLabel: "Open shared smart inbox",
-                                }}
-                                collapsed={collapsed}
-                                pathname={currentPath}
-                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
-                            />
+                            <div data-tour="sidebar-inbox">
+                                <NavItem
+                                    item={{
+                                        label: "Smart Inbox",
+                                        icon: Inbox,
+                                        href: "/social/smart-inbox",
+                                        ariaLabel: "Open shared smart inbox",
+                                    }}
+                                    collapsed={collapsed}
+                                    pathname={currentPath}
+                                    onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/social/smart-inbox"); }}
+                                />
+                            </div>
                         )}
                     </motion.div>
 
@@ -415,67 +417,83 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         )}
 
                         {/* Facebook */}
-                        <NavAccordion
-                            label="Facebook"
-                            icon={Facebook}
-                            isOpen={facebookOpen}
-                            onToggle={() => setFacebookOpen(!facebookOpen)}
-                            collapsed={collapsed}
-                            items={[
-                                { label: "Connect Account", href: "/dashboard/facebook", icon: PlugZap, ariaLabel: "Connect Facebook account" },
-                                { label: "Bot Replies", href: "/dashboard/facebook/bot-replies", icon: Cpu, ariaLabel: "Manage Facebook bot replies" },
-                                { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Facebook comments" },
-                            ]}
-                            pathname={currentPath}
-                            navigate={navigate}
-                            onClose={onClose}
-                        />
-
-                        {/* Instagram */}
-                        <NavAccordion
-                            label="Instagram"
-                            icon={Instagram}
-                            isOpen={instagramOpen}
-                            onToggle={() => setInstagramOpen(!instagramOpen)}
-                            collapsed={collapsed}
-                            items={[
-                                { label: "Connect Account", href: "/dashboard/instagram", icon: PlugZap, ariaLabel: "Connect Instagram account" },
-                                { label: "Bot Replies", href: "/dashboard/instagram/bot-replies", icon: Cpu, ariaLabel: "Manage Instagram bot replies" },
-                                { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Instagram comments" },
-                            ]}
-                            pathname={currentPath}
-                            navigate={navigate}
-                            onClose={onClose}
-                        />
-
-                        {/* Bio Links */}
-                        {bioLinkItems.length > 0 && (
+                        <div data-tour="sidebar-facebook">
                             <NavAccordion
-                                label="Bio Links"
-                                icon={Link2}
-                                isOpen={bioLinksOpen}
-                                onToggle={() => setBioLinksOpen(!bioLinksOpen)}
+                                label="Facebook"
+                                icon={Facebook}
+                                isOpen={facebookOpen}
+                                onToggle={() => setFacebookOpen(!facebookOpen)}
                                 collapsed={collapsed}
-                                items={bioLinkItems}
+                                items={[
+                                    { label: "Connect Account", href: "/dashboard/facebook", icon: PlugZap, ariaLabel: "Connect Facebook account" },
+                                    { label: "Bot Replies", href: "/dashboard/facebook/bot-replies", icon: Cpu, ariaLabel: "Manage Facebook bot replies" },
+                                    { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Facebook comments" },
+                                ]}
                                 pathname={currentPath}
                                 navigate={navigate}
                                 onClose={onClose}
                             />
+                        </div>
+
+                        {/* Instagram */}
+                        <div data-tour="sidebar-instagram">
+                            <NavAccordion
+                                label="Instagram"
+                                icon={Instagram}
+                                isOpen={instagramOpen}
+                                onToggle={() => setInstagramOpen(!instagramOpen)}
+                                collapsed={collapsed}
+                                items={[
+                                    { label: "Connect Account", href: "/dashboard/instagram", icon: PlugZap, ariaLabel: "Connect Instagram account" },
+                                    { label: "Bot Replies", href: "/dashboard/instagram/bot-replies", icon: Cpu, ariaLabel: "Manage Instagram bot replies" },
+                                    { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Instagram comments" },
+                                ]}
+                                pathname={currentPath}
+                                navigate={navigate}
+                                onClose={onClose}
+                            />
+                        </div>
+
+                        {/* Bio Links */}
+                        {bioLinkItems.length > 0 && (
+                            <div data-tour="sidebar-bio-links">
+                                <NavAccordion
+                                    label="Bio Links"
+                                    icon={Link2}
+                                    isOpen={bioLinksOpen}
+                                    onToggle={() => setBioLinksOpen(!bioLinksOpen)}
+                                    collapsed={collapsed}
+                                    items={bioLinkItems}
+                                    pathname={currentPath}
+                                    navigate={navigate}
+                                    onClose={onClose}
+                                />
+                            </div>
                         )}
                     </motion.div>
 
                     {/* GROWTH */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && <SectionLabel label="Growth" />}
-                        {visibleGrowthNav.map(item => (
-                            <NavItem
-                                key={item.href}
-                                item={item}
-                                collapsed={collapsed}
-                                pathname={currentPath}
-                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
-                            />
-                        ))}
+                        {visibleGrowthNav.map(item => {
+                            const tourId = item.href === "/dashboard/broadcasts"
+                                ? "sidebar-broadcasts"
+                                : item.href === "/dashboard/ai-training"
+                                    ? "sidebar-ai-training"
+                                    : item.href === "/dashboard/posts/studio"
+                                        ? "sidebar-posts"
+                                        : undefined;
+                            return (
+                                <div key={item.href} data-tour={tourId}>
+                                    <NavItem
+                                        item={item}
+                                        collapsed={collapsed}
+                                        pathname={currentPath}
+                                        onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
+                                    />
+                                </div>
+                            );
+                        })}
 
                         {isSuperAdmin && (
                             <NavAccordion
@@ -500,13 +518,14 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     <motion.div variants={itemVariants} className="space-y-0.5">
                         {!collapsed && <SectionLabel label="Workspace" />}
                         {workspaceNav.map(item => (
-                            <NavItem
-                                key={item.href}
-                                item={item}
-                                collapsed={collapsed}
-                                pathname={currentPath}
-                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
-                            />
+                            <div key={item.href} data-tour={item.href === "/dashboard/billing" ? "sidebar-billing" : undefined}>
+                                <NavItem
+                                    item={item}
+                                    collapsed={collapsed}
+                                    pathname={currentPath}
+                                    onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(item.href); }}
+                                />
+                            </div>
                         ))}
                     </motion.div>
 

@@ -8,6 +8,7 @@ import { useAppSelector } from "@/store/hooks";
 import VerificationBanner from "@/components/VerificationBanner";
 import PlanExpiredBanner from "@/components/subscription/PlanExpiredBanner";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
+import { OnboardingTourProvider } from "@/components/onboarding/OnboardingTour";
 
 export default function SocialLayout({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
@@ -79,7 +80,7 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
         );
     }
 
-    return (
+    return (<OnboardingTourProvider>
         <div
             data-dashboard-theme="true"
             className="flex h-screen overflow-hidden"
@@ -129,5 +130,5 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
                 </main>
             </div>
         </div>
-    );
+    </OnboardingTourProvider>);
 }

@@ -38,7 +38,7 @@ export default function ContactsPage() {
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Contacts</h1>
+                    <h1 data-tour="page-heading" className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Contacts</h1>
                     <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>Manage and track all your contacts</p>
                 </div>
                 <button className="px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"

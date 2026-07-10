@@ -187,7 +187,7 @@ export default function InstagramPage() {
         <div className="bg-transparent min-h-screen pb-16"
             style={{ background: 'var(--app-surface-bg, var(--background))' }}>
             {/* Header */}
-            <header className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+            <header data-tour="page-heading" className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20">
                         <Instagram className="w-5 h-5" />

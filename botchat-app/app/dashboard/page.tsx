@@ -145,7 +145,7 @@ export default function DashboardPage() {
     return (
         <div className="mx-auto flex max-w-[1400px] flex-col gap-6 p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div data-tour="dashboard-header" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-black tracking-tighter sm:text-3xl md:text-4xl">
                         Overview<span className="text-primary">.</span>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div data-tour="stats-grid" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {stats.map((s) => (
                     <Card key={s.label} className="group relative overflow-hidden border-none bg-card/50 shadow-premium transition-all hover:translate-y-[-4px] hover:shadow-hover">
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -202,7 +202,7 @@ export default function DashboardPage() {
             {/* Main Content Grid: Advanced Charts */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {/* Performance Flow (Composed Chart) */}
-                <Card className="col-span-1 border-none bg-card/30 shadow-premium lg:col-span-2">
+                <Card data-tour="performance-flow" className="col-span-1 border-none bg-card/30 shadow-premium lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
@@ -242,7 +242,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Engagement Peak (Bar Chart) */}
-                <Card className="border-none bg-card/30 shadow-premium flex flex-col justify-between">
+                <Card data-tour="channel-impact" className="border-none bg-card/30 shadow-premium flex flex-col justify-between">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
                             <BarChart3 className="h-5 w-5 text-indigo-500" />
@@ -275,7 +275,7 @@ export default function DashboardPage() {
             {/* Bottom Row */}
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 {/* Top Automations */}
-                <Card className="border-none bg-card/30 shadow-premium">
+                <Card data-tour="elite-flows" className="border-none bg-card/30 shadow-premium">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
@@ -319,7 +319,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Recent Inbox */}
-                <Card className="border-none bg-card/30 shadow-premium">
+                <Card data-tour="smart-inbox-preview" className="border-none bg-card/30 shadow-premium">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
@@ -381,7 +381,7 @@ export default function DashboardPage() {
             {/* Final Row: Team & System */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {/* Team Pulse */}
-                <Card className="border-none bg-card/30 shadow-premium">
+                <Card data-tour="team-pulse" className="border-none bg-card/30 shadow-premium">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">
                             <Users className="h-5 w-5 text-emerald-500" />
@@ -424,7 +424,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* System Integrity */}
-                <Card className="col-span-1 border-none bg-card/30 shadow-premium lg:col-span-2">
+                <Card data-tour="infrastructure" className="col-span-1 border-none bg-card/30 shadow-premium lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight">

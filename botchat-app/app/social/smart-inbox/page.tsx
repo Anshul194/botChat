@@ -45,6 +45,7 @@ export default function SmartInboxPage() {
                 TOP HEADER — Platform filter bar
             ══════════════════════════════════════ */}
             <header
+                data-tour="page-heading"
                 className="flex-shrink-0 flex items-center gap-4 px-4 sm:px-6 border-b"
                 style={{
                     background: "var(--card)",

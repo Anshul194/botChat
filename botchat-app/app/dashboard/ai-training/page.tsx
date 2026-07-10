@@ -63,9 +63,9 @@ export default function AITrainingPage() {
                     {/* ── Header ── */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                                AI Training
-                            </h1>
+                        <h1 data-tour="page-heading" className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
+                            AI Training
+                        </h1>
                             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
                                 Manage campaigns and train your AI agents
                             </p>

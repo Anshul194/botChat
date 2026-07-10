@@ -71,7 +71,7 @@ export default function AnalyticsPage() {
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Analytics</h1>
+                    <h1 data-tour="page-heading" className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>Analytics</h1>
                     <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>Deep insights into your messaging performance</p>
                 </div>
                 <div className="flex items-center gap-3">

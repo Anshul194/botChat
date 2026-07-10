@@ -318,7 +318,7 @@ export default function BroadcastsPage() {
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>
+                    <h1 data-tour="page-heading" className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>
                         Messenger Broadcasts
                     </h1>
                     <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>

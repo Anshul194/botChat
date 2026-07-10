@@ -14,6 +14,8 @@ import { logoutUser, fetchMe } from "@/store/slices/authSlice";
 import { cn } from "@/lib/utils";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import { useTourContext } from "@/components/onboarding/OnboardingTour";
+import { HelpCircle } from "lucide-react";
 
 interface TopbarProps {
     onMenuToggle: () => void;
@@ -49,6 +51,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
     const [pulse, setPulse] = useState(false);
     const [mounted, setMounted] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null);
+    const { startTour } = useTourContext();
     const page = PAGE_MAP[pathname] ?? "Dashboard";
 
     useEffect(() => {
@@ -183,23 +186,27 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
 
                 {/* Theme */}
-                <div className="flex-shrink-0"><ThemeToggle /></div>
+                <div data-tour="topbar-theme" className="flex-shrink-0"><ThemeToggle /></div>
 
                 {/* Settings */}
-                <Link href="/dashboard/settings">
-                    <TopBtn title="Settings" isLight={isLight}>
-                        <Settings className="w-[16px] h-[16px]" />
-                    </TopBtn>
-                </Link>
+                <div data-tour="topbar-settings">
+                    <Link href="/dashboard/settings">
+                        <TopBtn title="Settings" isLight={isLight}>
+                            <Settings className="w-[16px] h-[16px]" />
+                        </TopBtn>
+                    </Link>
+                </div>
 
                 {/* Notifications */}
-                <NotificationBell />
+                <div data-tour="topbar-notifications">
+                    <NotificationBell />
+                </div>
 
                 {/* Divider */}
                 <div className="w-px h-5 mx-0.5" style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
 
                 {/* Profile */}
-                <div className="relative" ref={profileRef}>
+                <div className="relative" ref={profileRef} data-tour="topbar-profile">
                     <button
                         onClick={() => setProfileOpen(o => !o)}
                         className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full transition-all duration-200 hover:scale-[1.02]"
@@ -260,6 +267,17 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                                     {item.label}
                                 </Link>
                             ))}
+                            {/* Restart Tour */}
+                            <button
+                                className="w-full text-left px-4 py-3 text-[12px] font-semibold transition-colors flex items-center gap-2.5"
+                                style={{ color: "var(--foreground)", borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)"}` }}
+                                onMouseEnter={e => (e.currentTarget.style.background = "rgba(108,92,231,0.08)")}
+                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                                onClick={() => { setProfileOpen(false); startTour(); }}
+                            >
+                                <HelpCircle className="w-3.5 h-3.5 text-[#6C5CE7]" />
+                                Restart Product Tour
+                            </button>
                             <button className="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                 onClick={handleLogout}>
                                 Sign out

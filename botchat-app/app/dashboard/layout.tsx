@@ -11,6 +11,7 @@ import PlanExpiredBanner from "@/components/subscription/PlanExpiredBanner";
 import BillingWarningBanner from "@/components/subscription/BillingWarningBanner";
 import RenewalPopup from "@/components/subscription/RenewalPopup";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
+import { OnboardingTourProvider } from "@/components/onboarding/OnboardingTour";
 
 const EXPIRED_ALLOWED_PATHS = ["/dashboard/billing", "/dashboard/profile"];
 
@@ -109,61 +110,62 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         );
     }
 
-    return (<>
-        <div
-            data-dashboard-theme="true"
-            className="flex h-screen overflow-hidden"
-            style={{
-                background: "var(--app-surface-bg, var(--background))",
-                fontFamily: "var(--app-font-family, inherit)",
-                fontSize: "var(--app-font-size, inherit)",
-                fontWeight: "var(--app-font-weight, inherit)",
-            }}
-        >
-
-            {/* ── Mobile overlay backdrop ── */}
-            {mobileSidebarOpen && (
-                <div
-                    className="fixed inset-0 z-[190] md:hidden"
-                    style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
-                    onClick={() => setMobileSidebarOpen(false)}
-                />
-            )}
-
-            {/* ── Sidebar: desktop always visible, mobile as drawer ── */}
+    return (<OnboardingTourProvider>
+        <>
             <div
-                className={[
-                    "fixed inset-y-0 left-0 z-[200] md:relative md:flex md:z-auto",
-                    "transition-transform duration-300 ease-in-out",
-                    mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-                ].join(" ")}
+                data-dashboard-theme="true"
+                className="flex h-screen overflow-hidden"
+                style={{
+                    background: "var(--app-surface-bg, var(--background))",
+                    fontFamily: "var(--app-font-family, inherit)",
+                    fontSize: "var(--app-font-size, inherit)",
+                    fontWeight: "var(--app-font-weight, inherit)",
+                }}
             >
-                <Sidebar
-                    collapsed={mobileSidebarOpen ? false : sidebarCollapsed}
-                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    onClose={() => setMobileSidebarOpen(false)}
-                />
-            </div>
 
-            {/* ── Main area ─ topbar + page content ── */}
-            <div className="flex flex-col flex-1 min-w-0 relative">
-                <Topbar
-                    onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                    collapsed={sidebarCollapsed}
-                    onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    mobileSidebarOpen={mobileSidebarOpen}
-                />
-                <main className="flex-1 overflow-y-auto p-4 md:p-6">
-                    <VerificationBanner />
-                    <PlanExpiredBanner />
-                    <BillingWarningBanner />
-                    {children}
-                </main>
+                {/* ── Mobile overlay backdrop ── */}
+                {mobileSidebarOpen && (
+                    <div
+                        className="fixed inset-0 z-[190] md:hidden"
+                        style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
+                        onClick={() => setMobileSidebarOpen(false)}
+                    />
+                )}
+
+                {/* ── Sidebar: desktop always visible, mobile as drawer ── */}
+                <div
+                    className={[
+                        "fixed inset-y-0 left-0 z-[200] md:relative md:flex md:z-auto",
+                        "transition-transform duration-300 ease-in-out",
+                        mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+                    ].join(" ")}
+                >
+                    <Sidebar
+                        collapsed={mobileSidebarOpen ? false : sidebarCollapsed}
+                        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                        onClose={() => setMobileSidebarOpen(false)}
+                    />
+                </div>
+
+                {/* ── Main area ─ topbar + page content ── */}
+                <div className="flex flex-col flex-1 min-w-0 relative">
+                    <Topbar
+                        onMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                        collapsed={sidebarCollapsed}
+                        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+                        mobileSidebarOpen={mobileSidebarOpen}
+                    />
+                    <main className="flex-1 overflow-y-auto p-4 md:p-6">
+                        <VerificationBanner />
+                        <PlanExpiredBanner />
+                        <BillingWarningBanner />
+                        {children}
+                    </main>
+                </div>
             </div>
-        </div>
-        <RenewalPopup />
+            <RenewalPopup />
         </>
-    );
+    </OnboardingTourProvider>);
 }
 
 function getRouteFeature(pathname: string): string | null {
@@ -180,3 +182,4 @@ function getRouteFeature(pathname: string): string | null {
     if (pathname.startsWith("/dashboard/ai-training")) return "bot_ai_agent";
     return null;
 }
+

@@ -26,7 +26,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     const isAgent = message.sender_type === "agent";
 
     // ── Format timestamp ──────────────────────────────────────────────────────
-    const formatTime = (isoString: string | null | undefined) => {
+    const formatMsgTime = (isoString: string | null | undefined) => {
         if (!isoString) return "";
         try { return formatTime(new Date(isoString), 'h:mm A'); } catch { return ""; }
     };

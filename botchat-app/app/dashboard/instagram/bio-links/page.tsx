@@ -220,7 +220,7 @@ export default function InstagramBioLinksPage() {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                            <h1 data-tour="page-heading" className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
                                 Bio Link Manager
                             </h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl text-sm sm:text-base">

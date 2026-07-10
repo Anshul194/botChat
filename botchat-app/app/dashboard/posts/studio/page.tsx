@@ -339,7 +339,7 @@ export default function PostStudioPage() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 sm:mb-12 relative z-10">
           <Badge variant="secondary" className="mb-4 px-4 py-1">Choose Campaign Type</Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-foreground)]">
+          <h1 data-tour="page-heading" className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-foreground)]">
             What are we creating today?
           </h1>
         </motion.div>

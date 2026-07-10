@@ -208,7 +208,7 @@ export default function FacebookPage() {
     return (
         <div className="bg-gray-50/50 dark:bg-gray-950 min-h-screen pb-16">
             {/* Header */}
-            <header className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30">
+            <header data-tour="page-heading" className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
                         <Facebook className="w-5 h-5" />
