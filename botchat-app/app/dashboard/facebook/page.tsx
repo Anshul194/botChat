@@ -19,6 +19,9 @@ import {
     ExternalLink,
     AlertCircle,
     Info,
+    ChevronLeft,
+    Settings,
+    Plus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -208,23 +211,31 @@ export default function FacebookPage() {
     return (
         <div className="bg-gray-50/50 dark:bg-gray-950 min-h-screen pb-16">
             {/* Header */}
-            <header data-tour="page-heading" className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
+            <header data-tour="page-heading" className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-0 z-30">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                    {/* Back arrow — mobile only */}
+                    <button
+                        onClick={() => window.history.back()}
+                        className="sm:hidden -ml-1 p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    {/* FB icon — desktop only */}
+                    <div className="hidden sm:flex w-10 h-10 rounded-xl bg-blue-600 items-center justify-center text-white shadow-sm flex-shrink-0">
                         <Facebook className="w-5 h-5" />
                     </div>
-                    <div>
-                        <h1 className="text-lg font-semibold text-gray-900 dark:text-white leading-tight">Facebook Integration</h1>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className={cn("flex h-2 w-2 rounded-full", isLoading ? "bg-amber-500" : "bg-emerald-500")} />
-                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div className="min-w-0">
+                        <h1 className="text-[15px] sm:text-lg font-semibold text-gray-900 dark:text-white leading-tight truncate">Facebook Integration</h1>
+                        <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
+                            <span className={cn("flex h-1.5 sm:h-2 w-1.5 sm:w-2 rounded-full flex-shrink-0", isLoading ? "bg-amber-500" : "bg-emerald-500")} />
+                            <p className="text-[11px] sm:text-xs font-medium text-gray-500 dark:text-gray-400">
                                 {isLoading ? "Synchronizing..." : "System Active"}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                     <Button
                         variant="outline"
                         size="icon"
@@ -234,35 +245,53 @@ export default function FacebookPage() {
                     >
                         <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-primary")} />
                     </Button>
+                    {/* Settings — mobile only */}
+                    <button className="sm:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <Settings className="w-4 h-4" />
+                    </button>
+                    {/* Connect button — desktop only */}
                     <Button
                         onClick={handleConnectFacebook}
                         disabled={isConnecting}
-                        className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-2 shadow-sm"
+                        className="hidden sm:flex h-10 px-4 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 active:scale-95 transition-all items-center gap-2 shadow-sm"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Facebook className="w-4 h-4" />}
-                        <span className="hidden sm:inline">{isConnecting ? "Authorizing..." : "Connect Account"}</span>
-                        <span className="sm:hidden">{isConnecting ? "..." : "Connect"}</span>
+                        {isConnecting ? "Authorizing..." : "Connect Account"}
                     </Button>
                 </div>
             </header>
 
-            <main className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 space-y-8">
+            <main className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 space-y-5 sm:space-y-8">
+
+                {/* Full-width CTA — mobile only */}
+                <button
+                    onClick={handleConnectFacebook}
+                    disabled={isConnecting}
+                    className="sm:hidden w-full h-12 rounded-2xl bg-primary text-white font-semibold text-[14px] flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
+                >
+                    {isConnecting ? <><Loader2 className="w-4 h-4 animate-spin" /> Authorizing...</> : <><Plus className="w-4 h-4" /> Connect Account</>}
+                </button>
+
                 {/* Stats Panel */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {stats.map((stat) => (
+                {/* Mobile: 2-col grid w/ first stat full-width | Desktop: 3-col equal */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+                    {stats.map((stat, idx) => (
                         <div
                             key={stat.label}
-                            className="rounded-2xl border bg-white dark:bg-neutral-900 p-6 shadow-sm dark:border-neutral-800 transition duration-200"
+                            className={cn(
+                                "rounded-2xl border bg-white dark:bg-neutral-900 p-4 sm:p-6 shadow-sm dark:border-neutral-800 transition duration-200",
+                                idx === 0 && "col-span-2 md:col-span-1"
+                            )}
                         >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", stat.bg)}>
-                                    <stat.icon className={cn("w-6 h-6", stat.color)} />
+                            <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                <div className={cn("w-9 h-9 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center", stat.bg)}>
+                                    <stat.icon className={cn("w-4 h-4 sm:w-6 sm:h-6", stat.color)} />
                                 </div>
-                                <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                                <h3 className="text-[11px] sm:text-sm font-medium text-neutral-500 dark:text-neutral-400 leading-tight">
                                     {stat.label}
                                 </h3>
                             </div>
-                            <div className="text-2xl font-bold text-neutral-900 dark:text-white">
+                            <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">
                                 {isLoading ? "..." : stat.value}
                             </div>
                         </div>
@@ -287,42 +316,59 @@ export default function FacebookPage() {
                 ) : accounts.length > 0 ? (
                     <div className="space-y-8">
                         {accounts.map(account => (
-                            <div key={account.id} className="space-y-6">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-neutral-900 p-5 rounded-2xl border dark:border-neutral-800 shadow-sm">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full overflow-hidden border dark:border-neutral-700 bg-gray-100 flex items-center justify-center text-gray-500 text-lg font-bold">
+                            <div key={account.id} className="space-y-3 sm:space-y-6">
+                                {/* Account row: compact card on mobile, side-by-side on desktop */}
+                                <div className="bg-white dark:bg-neutral-900 rounded-2xl border dark:border-neutral-800 shadow-sm overflow-hidden">
+                                    <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5">
+                                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden border dark:border-neutral-700 bg-gray-100 flex items-center justify-center text-gray-500 text-lg font-bold flex-shrink-0">
                                             {account.avatar ? <img src={account.avatar} className="w-full h-full object-cover" /> : account.name[0]}
                                         </div>
-                                        <div>
+                                        <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">{account.name}</h3>
-                                                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 text-xs font-medium">Verified</span>
+                                                <h3 className="text-[14px] sm:text-lg font-semibold text-neutral-900 dark:text-white truncate">{account.name}</h3>
+                                                <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 text-[10px] sm:text-xs font-medium flex-shrink-0">Verified</span>
                                             </div>
-                                            <p className="text-sm text-neutral-500">Facebook Authenticator · {account.pages.length} Pages</p>
+                                            <p className="text-[12px] sm:text-sm text-neutral-500">Facebook Authenticator · {account.pages.length} Pages</p>
                                         </div>
+                                        {/* Desktop: inline Disconnect button */}
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
+                                            className={cn(
+                                                "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
+                                                account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
+                                            )}
+                                            disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            Delete Account
+                                        </Button>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
-                                        className={cn(
-                                            "h-10 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium flex items-center gap-2 border border-rose-100 dark:border-rose-900/50",
-                                            account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
-                                        )}
-                                        disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                        Delete Account
-                                    </Button>
+                                    {/* Mobile: full-width disconnect at bottom */}
+                                    <div className="sm:hidden border-t dark:border-neutral-800">
+                                        <button
+                                            onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
+                                            disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
+                                            className={cn(
+                                                "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
+                                                account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-40 pointer-events-none"
+                                            )}
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                            Disconnect Account
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && (
-                                    <div className="mx-4 mt-2 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 flex items-center gap-3 text-amber-800 dark:text-amber-400 text-sm">
-                                        <Info className="w-4 h-4 shrink-0" />
+                                    <div className="mx-2 sm:mx-4 px-3.5 sm:px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 flex items-start gap-2.5 sm:gap-3 text-amber-800 dark:text-amber-400 text-[12px] sm:text-sm">
+                                        <Info className="w-4 h-4 shrink-0 mt-0.5" />
                                         <p>You must disable all pages before you can disconnect this Facebook account.</p>
                                     </div>
                                 )}
 
-                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pl-4 md:pl-8 border-l-2 ml-4 dark:border-neutral-800 pb-4">
+                                {/* Page cards grid */}
+                                <div className="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 pl-3 sm:pl-8 border-l-2 ml-2 sm:ml-4 dark:border-neutral-800 pb-4">
                                     {account.pages.map((rawPage) => {
                                         const page = {
                                             ...rawPage,
@@ -363,7 +409,8 @@ export default function FacebookPage() {
                                                     )}
                                                 </div>
 
-                                                <div className="flex flex-wrap items-center gap-3">
+                                                {/* Mobile: compact flat action bar | Desktop: wrapped buttons */}
+                                                <div className="hidden sm:flex flex-wrap items-center gap-3">
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
@@ -384,52 +431,37 @@ export default function FacebookPage() {
                                                     >
                                                         {page.is_enabled ? "Disable Page" : "Enable Page"}
                                                     </Button>
-
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon-sm"
-                                                        asChild
-                                                        title="View on Facebook"
-                                                        className="rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 transition-colors"
-                                                    >
-                                                        <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer">
-                                                            <ExternalLink className="h-4 w-4" />
-                                                        </a>
+                                                    <Button variant="ghost" size="icon-sm" asChild title="View on Facebook" className="rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 transition-colors">
+                                                        <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /></a>
                                                     </Button>
-
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon-sm"
-                                                        onClick={() =>
-                                                            setConfirmModal({
-                                                                show: true,
-                                                                type: "clean",
-                                                                pageId: page.id,
-                                                                pageName: page.page_name,
-                                                            })
-                                                        }
-                                                        title="Clean Data"
-                                                        className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors"
-                                                    >
+                                                    <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "clean", pageId: page.id, pageName: page.page_name })} title="Clean Data" className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors">
                                                         <Eraser className="h-4 w-4" />
                                                     </Button>
-
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon-sm"
-                                                        onClick={() =>
-                                                            setConfirmModal({
-                                                                show: true,
-                                                                type: "disconnect",
-                                                                pageId: page.id,
-                                                                pageName: page.page_name,
-                                                            })
-                                                        }
-                                                        title="Disconnect Page"
-                                                        className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors"
-                                                    >
+                                                    <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: page.id, pageName: page.page_name })} title="Disconnect Page" className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors">
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
+                                                </div>
+                                                {/* Mobile action bar: divider-separated icon row */}
+                                                <div className="sm:hidden -mx-4 -mb-4 mt-3 border-t dark:border-neutral-800 flex items-center">
+                                                    <button
+                                                        onClick={() => setConfirmModal({ show: true, type: page.is_enabled ? "disable" : "enable", pageId: page.id, pageName: page.page_name })}
+                                                        className={cn(
+                                                            "flex-1 py-2.5 flex items-center justify-center gap-1.5 text-[12px] font-semibold transition-colors border-r dark:border-neutral-800",
+                                                            page.is_enabled ? "text-amber-600 hover:bg-amber-50" : "text-emerald-600 hover:bg-emerald-50"
+                                                        )}
+                                                    >
+                                                        {page.is_enabled ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
+                                                        {page.is_enabled ? "Pause Bot" : "Find Out"}
+                                                    </button>
+                                                    <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer" className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors border-r dark:border-neutral-800">
+                                                        <ExternalLink className="w-4 h-4" />
+                                                    </a>
+                                                    <button onClick={() => setConfirmModal({ show: true, type: "clean", pageId: page.id, pageName: page.page_name })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-primary transition-colors border-r dark:border-neutral-800">
+                                                        <Eraser className="w-4 h-4" />
+                                                    </button>
+                                                    <button onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: page.id, pageName: page.page_name })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-rose-600 transition-colors">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
                                                 </div>
                                             </div>
                                         );
