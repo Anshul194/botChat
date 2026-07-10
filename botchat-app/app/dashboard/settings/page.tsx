@@ -27,6 +27,9 @@ import BrandingTab from "./components/BrandingTab";
 import AppearanceTab from "./components/AppearanceTab";
 import ModuleSettings from "./components/ModuleSettings";
 import { Section, InputField, IntegrationHeader, Toggle, ApiKeyRow } from "./components/shared-ui";
+import { useAIProviders } from "../../../hooks/useAIProviders";
+import { useAIModels } from "../../../hooks/useAIModels";
+import api from "../../../lib/api";
 
 const navigationGroups = [
     {
@@ -69,6 +72,90 @@ const navigationGroups = [
     }
 ];
 
+const SearchableSelect = ({ options, value, onChange, placeholder }: any) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    
+    const filteredOptions = options.filter((opt: any) => (opt.name || opt.id).toLowerCase().includes(search.toLowerCase()));
+    const selectedOption = options.find((opt: any) => opt.id === value);
+
+    return (
+        <div className="relative w-full" style={{ position: "relative" }}>
+            <div 
+                className="w-full px-3.5 py-3 rounded-xl text-sm outline-none transition-all duration-300 font-medium flex justify-between items-center cursor-pointer select-none"
+                style={{ background: "var(--glass-bg)", border: `1px solid ${isOpen ? "#10b981" : "var(--glass-border)"}`, color: "var(--foreground)", boxShadow: isOpen ? "0 0 0 3px rgba(16,185,129,0.12)" : "none" }}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span className="truncate" style={{ color: selectedOption ? "var(--foreground)" : "var(--muted-foreground)" }}>
+                    {selectedOption ? selectedOption.name : (value || placeholder || "Select a model...")}
+                </span>
+                <span style={{ fontSize: 10, opacity: 0.5, marginLeft: 8, flexShrink: 0, transition: "transform 0.2s", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+            </div>
+            {isOpen && (
+                <>
+                    <div className="fixed inset-0 z-40" onClick={() => { setIsOpen(false); setSearch(""); }} />
+                    <div 
+                        className="absolute z-50 w-full mt-2 rounded-xl shadow-2xl flex flex-col"
+                        style={{ 
+                            borderColor: "var(--glass-border)", 
+                            background: "var(--card-bg)", 
+                            border: "1px solid var(--glass-border)",
+                            maxHeight: "320px",
+                            overflow: "hidden",
+                            top: "100%",
+                            left: 0,
+                        }}
+                    >
+                        <div className="p-2 flex-shrink-0" style={{ borderBottom: "1px solid var(--glass-border)" }}>
+                            <input 
+                                type="text" 
+                                className="w-full px-3 py-2 text-sm outline-none rounded-lg"
+                                style={{ background: "var(--glass-bg)", color: "var(--foreground)", border: "1px solid var(--glass-border)" }}
+                                placeholder="Search models..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                autoFocus
+                            />
+                        </div>
+                        <div style={{ overflowY: "auto", padding: "4px" }}>
+                            {filteredOptions.length === 0 ? (
+                                <div className="px-3 py-4 text-sm text-center" style={{ color: "var(--muted-foreground)" }}>No models found</div>
+                            ) : (
+                                filteredOptions.map((opt: any) => (
+                                    <div 
+                                        key={opt.id}
+                                        className="px-3 py-2.5 text-sm rounded-lg cursor-pointer flex items-center justify-between"
+                                        style={{ 
+                                            color: value === opt.id ? "#10b981" : "var(--foreground)", 
+                                            background: value === opt.id ? "rgba(16,185,129,0.1)" : "transparent",
+                                            transition: "background 0.15s"
+                                        }}
+                                        onClick={() => {
+                                            onChange(opt.id);
+                                            setIsOpen(false);
+                                            setSearch("");
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (value !== opt.id) (e.currentTarget as HTMLElement).style.background = "var(--glass-bg)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (value !== opt.id) (e.currentTarget as HTMLElement).style.background = "transparent";
+                                        }}
+                                    >
+                                        <span className="truncate">{opt.name}</span>
+                                        {value === opt.id && <Check className="w-4 h-4 ml-2 flex-shrink-0" style={{ color: "#10b981" }} />}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
+
 export default function SettingsPage() {
     const [tab, setTab] = useState("profile");
     const dispatch = useDispatch<AppDispatch>();
@@ -92,6 +179,11 @@ export default function SettingsPage() {
     }, [tab, dispatch, user]);
 
     const [aiForm, setAiForm] = useState({ provider: 'openai', secretKey: '', promptModel: 'gpt-4o', instructionToAi: '' });
+
+    const { providers, isLoading: isLoadingProviders } = useAIProviders();
+    const { models, isLoading: isLoadingModels } = useAIModels(aiForm.provider, aiForm.secretKey || ai?.secretKey);
+    const [isTestingAi, setIsTestingAi] = useState(false);
+
     const [fbForm, setFbForm] = useState({
         appName: '', appVersion: '', appId: '', appSecret: '',
         socialLoginEnabled: false, appDomain: '', siteUrl: '',
@@ -204,6 +296,30 @@ export default function SettingsPage() {
         await dispatch(updateAiSettings(aiForm)).unwrap();
         dispatch(fetchAiSettings());
         showModal("success", "Saved", "AI Integration saved successfully!");
+    };
+
+    const handleTestAiConnection = async () => {
+        if (!aiForm.provider || (!aiForm.secretKey && !ai?.secretKey) || !aiForm.promptModel) {
+            showModal("error", "Validation", "Provider, API Key, and Model are required to test.");
+            return;
+        }
+        setIsTestingAi(true);
+        try {
+            const res = await api.post('/settings/ai/test', {
+                provider: aiForm.provider,
+                api_key: aiForm.secretKey || ai?.secretKey,
+                model: aiForm.promptModel
+            });
+            if (res.data?.is_success) {
+                showModal("success", "Connection Successful", `Latency: ${res.data.data.latency}ms`);
+            } else {
+                showModal("error", "Connection Failed", res.data?.message || res.data?.error || "Invalid credentials");
+            }
+        } catch (err: any) {
+            showModal("error", "Connection Error", err.response?.data?.message || err.message);
+        } finally {
+            setIsTestingAi(false);
+        }
     };
 
     const handleSaveFacebook = async (e: React.FormEvent) => {
@@ -665,37 +781,30 @@ export default function SettingsPage() {
                                 <Section title="Model Configuration">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                                         <div className="space-y-1.5">
-                                            <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>AI Provider</label>
+                                            <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>AI Provider {isLoadingProviders && <span className="text-xs text-blue-500">(Loading...)</span>}</label>
                                             <select className="w-full px-3.5 py-3 rounded-xl text-sm outline-none transition-all duration-300 font-medium cursor-pointer"
                                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
-                                                value={aiForm.provider} onChange={(e) => setAiForm({ ...aiForm, provider: e.target.value })}
+                                                value={aiForm.provider} onChange={(e) => setAiForm({ ...aiForm, provider: e.target.value, promptModel: '' })}
                                             >
-                                                <option value="openai">OpenAI</option>
-                                                <option value="deepseek">DeepSeek AI</option>
+                                                {providers.map((p) => (
+                                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                                ))}
+                                                {providers.length === 0 && <option value={aiForm.provider}>{aiForm.provider}</option>}
                                             </select>
                                         </div>
                                         <InputField label="Secret API Key" type="password" placeholder="sk-..." value={aiForm.secretKey} onChange={(e: any) => setAiForm({ ...aiForm, secretKey: e.target.value })} />
 
                                         <div className="space-y-1.5 md:col-span-2">
-                                            <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Default Model</label>
-                                            <select className="w-full px-3.5 py-3 rounded-xl text-sm outline-none transition-all duration-300 font-medium cursor-pointer"
-                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
-                                                value={aiForm.promptModel} onChange={(e) => setAiForm({ ...aiForm, promptModel: e.target.value })}
-                                            >
-                                                {aiForm.provider === 'openai' ? (
-                                                    <>
-                                                        <option value="gpt-4o">GPT-4o (Balanced)</option>
-                                                        <option value="gpt-4-turbo">GPT-4 Turbo (Smartest, Expensive)</option>
-                                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <option value="deepseek-chat">DeepSeek Chat</option>
-                                                        <option value="deepseek-coder">DeepSeek Coder</option>
-                                                        <option value="deepseek-reasoner">DeepSeek Reasoner</option>
-                                                    </>
-                                                )}
-                                            </select>
+                                            <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Default Model {isLoadingModels && <span className="text-xs text-blue-500">(Loading...)</span>}</label>
+                                            <SearchableSelect 
+                                                options={models} 
+                                                value={aiForm.promptModel} 
+                                                onChange={(val: string) => setAiForm({ ...aiForm, promptModel: val })} 
+                                                placeholder="Select a model..." 
+                                            />
+                                            {models.length === 0 && !isLoadingModels && (aiForm.secretKey || ai?.secretKey) && (
+                                                <p className="text-xs text-red-500 mt-1">No models found for this provider and API key.</p>
+                                            )}
                                         </div>
 
                                         <div className="space-y-1.5 md:col-span-2">
@@ -709,7 +818,11 @@ export default function SettingsPage() {
                                     </div>
 
                                     {(ai?.canEdit !== false) && (
-                                        <div className="flex justify-end pt-2">
+                                        <div className="flex justify-end pt-2 gap-3">
+                                            <button type="button" onClick={handleTestAiConnection} disabled={isTestingAi} className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-opacity"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)", opacity: isTestingAi ? 0.7 : 1 }}>
+                                                {isTestingAi ? "Testing..." : "Test Connection"}
+                                            </button>
                                             <button disabled={isLoadingAi} type="submit" className="px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm"
                                                 style={{ background: "var(--brand-gradient)", color: "white", opacity: isLoadingAi ? 0.7 : 1 }}>
                                                 {isLoadingAi ? "Saving AI Settings..." : "Save AI Engine"}

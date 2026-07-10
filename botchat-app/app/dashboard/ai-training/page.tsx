@@ -11,6 +11,7 @@ import {
     fetchCampaigns, deleteCampaign, setSelectedCampaign,
     clearSelectedCampaign, type Campaign,
 } from "@/store/slices/aiTrainingSlice";
+import { fetchAiSettings } from "@/store/slices/settingsSlice";
 import { useModal } from "@/components/providers/ModalProvider";
 import CreateCampaignPanel from "./CreateCampaignPanel";
 import EditCampaignDialog from "./EditCampaignDialog";
@@ -19,13 +20,17 @@ import EditCampaignDialog from "./EditCampaignDialog";
 export default function AITrainingPage() {
     const dispatch = useAppDispatch();
     const { campaigns, isLoading, selectedCampaign } = useAppSelector((s) => s.aiTraining);
+    const { ai } = useAppSelector((s: any) => s.settings);
     const { showConfirm, showModal } = useModal();
 
     const [search, setSearch] = useState("");
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
-    useEffect(() => { dispatch(fetchCampaigns()); }, [dispatch]);
+    useEffect(() => { 
+        dispatch(fetchCampaigns()); 
+        dispatch(fetchAiSettings() as any);
+    }, [dispatch]);
 
     const openEdit = (campaign: Campaign) => {
         dispatch(setSelectedCampaign(campaign));
@@ -80,7 +85,22 @@ export default function AITrainingPage() {
                         </button>
                     </div>
 
-
+                    {(!ai?.secretKey && !ai?.isInherited) && (
+                        <div className="p-4 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/10 dark:border-amber-900/30 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-800/30 flex items-center justify-center flex-shrink-0">
+                                    <Sparkles className="w-6 h-6 text-amber-600 dark:text-amber-500" />
+                                </div>
+                                <div>
+                                    <h4 className="text-[15px] font-bold text-amber-900 dark:text-amber-500">AI Engine Not Configured</h4>
+                                    <p className="text-[13px] text-amber-700 dark:text-amber-600/80 mt-0.5">You must configure an AI Provider and API Key to train and generate models.</p>
+                                </div>
+                            </div>
+                            <a href="/dashboard/settings?tab=int-ai" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl transition-all whitespace-nowrap shadow-sm shadow-amber-500/20 active:scale-95">
+                                Configure AI Settings
+                            </a>
+                        </div>
+                    )}
 
                     {/* ── Search ── */}
                     <div className="relative w-full sm:max-w-xs">
