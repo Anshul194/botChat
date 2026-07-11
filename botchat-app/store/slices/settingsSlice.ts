@@ -64,6 +64,7 @@ interface SettingsState {
     ai: AISettings | null;
     socialLogin: SocialLoginSettings | null;
 
+    isLoading: boolean;
     isLoadingGeneral: boolean;
     isLoadingFacebook: boolean;
     isLoadingAi: boolean;
