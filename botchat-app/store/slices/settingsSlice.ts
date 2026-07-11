@@ -53,10 +53,16 @@ export interface AISettings {
     canEdit?: boolean;
 }
 
+export interface SocialLoginSettings {
+    facebook_login_enable: 'on' | 'off';
+    google_login_enable: 'on' | 'off';
+}
+
 interface SettingsState {
     general: GeneralSettings | null;
     facebook: FacebookSettings | null;
     ai: AISettings | null;
+    socialLogin: SocialLoginSettings | null;
 
     isLoadingGeneral: boolean;
     isLoadingFacebook: boolean;
@@ -69,6 +75,8 @@ const initialState: SettingsState = {
     general: null,
     facebook: null,
     ai: null,
+    socialLogin: null,
+    isLoading: false,
     isLoadingGeneral: false,
     isLoadingFacebook: false,
     isLoadingAi: false,
@@ -242,6 +250,22 @@ export const uploadFile = createAsyncThunk(
     }
 );
 
+export const fetchSocialLoginSettings = createAsyncThunk(
+    'settings/fetchSocialLoginSettings',
+    async () => {
+        // Only valid for tenant admin panel, not public login
+        const response = await api.get('/settings/social-login');
+        return response.data.data;
+    }
+);
+
+export const updateSocialLoginSettings = createAsyncThunk(
+    'settings/updateSocialLoginSettings',
+    async (payload: SocialLoginSettings) => {
+        const response = await api.patch('/settings/social-login', payload);
+        return response.data;
+    }
+);
 
 const settingsSlice = createSlice({
     name: 'settings',
@@ -291,6 +315,23 @@ const settingsSlice = createSlice({
             .addCase(fetchAiSettings.rejected, (state, action) => {
                 state.isLoadingAi = false;
                 state.error = action.payload as string;
+            })
+            .addCase(updateAiSettings.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to update AI Settings';
+            })
+            // Social Login Settings
+            .addCase(fetchSocialLoginSettings.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchSocialLoginSettings.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.socialLogin = action.payload;
+            })
+            .addCase(fetchSocialLoginSettings.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to fetch social login settings';
             });
 
         builder.addCase(updateAiSettings.fulfilled, (state, action) => {

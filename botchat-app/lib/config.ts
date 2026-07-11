@@ -25,6 +25,10 @@
 
 const DEV_DOMAIN = process.env.NEXT_PUBLIC_DEV_DOMAIN;
 
+export function isCentralAdminApp(): boolean {
+    return process.env.NEXT_PUBLIC_APP_TYPE === 'admin';
+}
+
 /**
  * Returns the active tenant domain.
  * - Local/Vercel: reads NEXT_PUBLIC_DEV_DOMAIN
