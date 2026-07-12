@@ -25,6 +25,17 @@
 
 const DEV_DOMAIN = process.env.NEXT_PUBLIC_DEV_DOMAIN;
 
+export function isCentralAdminApp(): boolean {
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname.replace('www.', '');
+        if (hostname === 'megadm.chat' || hostname === 'localhost') {
+            // Localhost can be tricky, but we fall back to env var below for true local dev distinction
+            if (hostname === 'megadm.chat') return true;
+        }
+    }
+    return process.env.NEXT_PUBLIC_APP_TYPE === 'admin';
+}
+
 /**
  * Returns the active tenant domain.
  * - Local/Vercel: reads NEXT_PUBLIC_DEV_DOMAIN

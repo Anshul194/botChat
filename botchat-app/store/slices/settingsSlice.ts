@@ -31,11 +31,10 @@ export interface GeneralSettings {
     appName?: string;
 }
 
-export interface FacebookSettings {
+export interface FacebookPlatformSettings {
     appName?: string;
     appVersion?: string;
     appId?: string;
-    socialLoginEnabled?: boolean;
     appDomain?: string;
     siteUrl?: string;
     privacyPolicyUrl?: string;
@@ -45,7 +44,7 @@ export interface FacebookSettings {
 
 export interface AISettings {
     provider?: string;
-    secretKey?: string; // will only be visible on write/placeholder
+    secretKey?: string;
     promptModel?: string;
     instructionToAi?: string;
     forceUserToUseOwnApiKey?: boolean;
@@ -53,11 +52,31 @@ export interface AISettings {
     canEdit?: boolean;
 }
 
+export interface SocialLoginProviderSettings {
+    fb_login_client_id?: string;
+    fb_login_client_secret?: string;
+    global_facebook_login_enable?: 'on' | 'off';
+    google_login_client_id?: string;
+    google_login_client_secret?: string;
+    global_google_login_enable?: 'on' | 'off';
+    fb_login_redirect_uri?: string;
+    google_login_redirect_uri?: string;
+    tenant_domain?: string;
+}
+
+export interface TenantSocialLoginSettings {
+    facebook_enabled: boolean;
+    google_enabled: boolean;
+}
+
 interface SettingsState {
     general: GeneralSettings | null;
-    facebook: FacebookSettings | null;
+    facebookPlatform: FacebookPlatformSettings | null;
     ai: AISettings | null;
+    socialLogin: SocialLoginProviderSettings | null;
+    tenantSocialLogin: TenantSocialLoginSettings | null;
 
+    isLoading: boolean;
     isLoadingGeneral: boolean;
     isLoadingFacebook: boolean;
     isLoadingAi: boolean;
@@ -67,8 +86,11 @@ interface SettingsState {
 
 const initialState: SettingsState = {
     general: null,
-    facebook: null,
+    facebookPlatform: null,
     ai: null,
+    socialLogin: null,
+    tenantSocialLogin: null,
+    isLoading: false,
     isLoadingGeneral: false,
     isLoadingFacebook: false,
     isLoadingAi: false,
@@ -103,12 +125,12 @@ export const updateGeneralSettings = createAsyncThunk(
     }
 );
 
-// Facebook Settings
+// Facebook Platform Settings
 export const fetchFacebookSettings = createAsyncThunk(
     'settings/fetchFacebook',
     async (_, { rejectWithValue }) => {
         try {
-            const res = await api.get('/settings/facebook');
+            const res = await api.get('/settings/facebook-platform');
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -120,7 +142,7 @@ export const updateFacebookSettings = createAsyncThunk(
     'settings/updateFacebook',
     async (payload: any, { rejectWithValue }) => {
         try {
-            const res = await api.patch('/settings/facebook', payload);
+            const res = await api.patch('/settings/facebook-platform', payload);
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -242,6 +264,21 @@ export const uploadFile = createAsyncThunk(
     }
 );
 
+export const fetchSocialLoginSettings = createAsyncThunk(
+    'settings/fetchSocialLoginSettings',
+    async () => {
+        const response = await api.get('/settings/social-login');
+        return response.data.data;
+    }
+);
+
+export const updateSocialLoginSettings = createAsyncThunk(
+    'settings/updateSocialLoginSettings',
+    async (payload: any) => {
+        const response = await api.patch('/settings/social-login', payload);
+        return response.data;
+    }
+);
 
 const settingsSlice = createSlice({
     name: 'settings',
@@ -267,11 +304,11 @@ const settingsSlice = createSlice({
             state.general = action.payload;
         });
 
-        // Facebook
+        // Facebook Platform
         builder.addCase(fetchFacebookSettings.pending, (state) => { state.isLoadingFacebook = true; })
             .addCase(fetchFacebookSettings.fulfilled, (state, action) => {
                 state.isLoadingFacebook = false;
-                state.facebook = action.payload;
+                state.facebookPlatform = action.payload;
             })
             .addCase(fetchFacebookSettings.rejected, (state, action) => {
                 state.isLoadingFacebook = false;
@@ -279,7 +316,7 @@ const settingsSlice = createSlice({
             });
 
         builder.addCase(updateFacebookSettings.fulfilled, (state, action) => {
-            state.facebook = action.payload;
+            state.facebookPlatform = action.payload;
         });
 
         // AI
@@ -291,6 +328,37 @@ const settingsSlice = createSlice({
             .addCase(fetchAiSettings.rejected, (state, action) => {
                 state.isLoadingAi = false;
                 state.error = action.payload as string;
+            })
+            .addCase(updateAiSettings.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to update AI Settings';
+            })
+            // Social Login Settings
+            .addCase(fetchSocialLoginSettings.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchSocialLoginSettings.fulfilled, (state, action) => {
+                state.isLoading = false;
+                // Determine if this is the tenant response or central response
+                if ('facebook_enabled' in action.payload) {
+                    state.tenantSocialLogin = action.payload;
+                } else {
+                    state.socialLogin = action.payload;
+                }
+            })
+            .addCase(fetchSocialLoginSettings.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to load Social Login Settings';
+            })
+            .addCase(updateSocialLoginSettings.fulfilled, (state, action) => {
+                if (action.payload?.data) {
+                    if ('facebook_enabled' in action.payload.data) {
+                        state.tenantSocialLogin = action.payload.data;
+                    } else {
+                        state.socialLogin = action.payload.data;
+                    }
+                }
             });
 
         builder.addCase(updateAiSettings.fulfilled, (state, action) => {
