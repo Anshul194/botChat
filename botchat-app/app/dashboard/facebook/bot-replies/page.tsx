@@ -74,6 +74,9 @@ export default function FacebookBotRepliesPage() {
     const [showActionModal, setShowActionModal] = useState(false);
     const [selectedActionType, setSelectedActionType] = useState<string | null>(null);
 
+    // Edit modal state
+    const [editReply, setEditReply] = useState<BotReply | null>(null);
+
     const [newReply, setNewReply] = useState({
         name: "",
         facebook_page_id: "",
@@ -327,31 +330,42 @@ export default function FacebookBotRepliesPage() {
 
     return (
         <div className="min-h-screen bg-transparent font-sans w-full min-w-0 -m-4 md:-m-6">
-            {/* 1. PREMIUM BRANDED HEADER */}
-            <div className="sticky top-[-16px] md:top-[-24px] z-[50] bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
-                <div className="flex items-center gap-2 sm:gap-4">
+            {/* ── MOBILE HEADER (hidden on md+) ─────────────────────────────── */}
+            <div className="md:hidden sticky top-0 z-[50] bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
                     <button
-                        onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
-                        className="md:hidden w-9 h-9 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all bg-neutral-100 dark:bg-neutral-800 rounded-full"
+                        onClick={() => router.back()}
+                        className="-ml-1 p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
                     >
-                        <Menu className="w-5 h-5" />
+                        <ChevronLeft className="w-5 h-5" />
                     </button>
+                    <span className="text-[15px] font-semibold text-gray-900 dark:text-white leading-tight truncate">Facebook Integration</span>
+                </div>
+                <button className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <Settings2 className="w-4 h-4" />
+                </button>
+            </div>
+
+            {/* ── DESKTOP HEADER (hidden on mobile) ────────────────────────────── */}
+            {/* 1. PREMIUM BRANDED HEADER */}
+            <div className="hidden md:flex sticky top-[-24px] z-[50] bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-8 py-3 flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
+                <div className="flex items-center gap-4">
                     <button
                         onClick={() => router.push('/dashboard')}
-                        className="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
+                        className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
                     >
-                        <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+                        <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2.5} />
                     </button>
                     <div className="flex flex-col">
-                        <div className="flex items-center gap-1 sm:gap-2">
-                            <span className="text-[8px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
-                            <div className="hidden xs:block w-1 h-1 rounded-full bg-neutral-300" />
-                            <div className="hidden xs:flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
-                                <FacebookIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#0866FF]" />
-                                <span className="text-[8px] sm:text-[9px] font-medium text-[#0866FF]">Neural Node</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
+                            <div className="w-1 h-1 rounded-full bg-neutral-300" />
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
+                                <FacebookIcon className="w-2.5 h-2.5 text-[#0866FF]" />
+                                <span className="text-[9px] font-medium text-[#0866FF]">Neural Node</span>
                             </div>
                         </div>
-                        <h1 className="text-sm xs:text-base sm:text-lg lg:text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase whitespace-normal">Facebook Reply Manager</h1>
+                        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Facebook Reply Manager</h1>
                     </div>
                 </div>
 
@@ -362,28 +376,85 @@ export default function FacebookBotRepliesPage() {
                                 key={menu.id}
                                 onClick={() => setActiveMenu(menu.id)}
                                 className={cn(
-                                    "px-4 sm:px-5 py-2 rounded-xl text-[12px] sm:text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
+                                    "px-5 py-2 rounded-xl text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
                                     activeMenu === menu.id
                                         ? "bg-[#0866FF] text-white shadow-md"
                                         : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
                                 )}
                             >
-                                <menu.icon className="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px]" strokeWidth={2} />
+                                <menu.icon className="w-[14px] h-[14px]" strokeWidth={2} />
                                 {menu.label}
                             </button>
                         ))}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 sm:gap-3">
-                    <button className="p-2 sm:p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 transition-all"><Settings2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /></button>
-                    <button className="hidden xs:block px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl text-white text-[12px] sm:text-[13px] font-medium uppercase tracking-wider hover:scale-105 active:scale-95 transition-all" style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)", boxShadow: "0 10px 20px -5px rgba(8, 102, 255, 0.3)" }}>Pulse stats</button>
+                <div className="flex items-center gap-3">
+                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 transition-all"><Settings2 className="w-[18px] h-[18px]" /></button>
+                    <button className="px-6 py-2.5 rounded-2xl text-white text-[13px] font-medium uppercase tracking-wider hover:scale-105 active:scale-95 transition-all" style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)", boxShadow: "0 10px 20px -5px rgba(8, 102, 255, 0.3)" }}>Pulse stats</button>
                 </div>
             </div>
 
-            <div className="p-4 sm:p-8 space-y-8 pb-32 lg:pb-8">
-                {/* 2. PAGES SELECTOR (Scrollable + Dropdown) */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
+            <div className="w-full pt-4 sm:p-8 space-y-4 sm:space-y-8 pb-28 lg:pb-8 px-4 sm:px-8 md:px-0">
+
+                {/* ── MOBILE: Main Navigation Tabs (hidden on desktop) ────────────── */}
+                <div className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4">
+                    {MENUS.map(menu => (
+                        <button
+                            key={menu.id}
+                            onClick={() => setActiveMenu(menu.id)}
+                            className={cn(
+                                "px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0",
+                                activeMenu === menu.id
+                                    ? "bg-[#0866FF] text-white shadow-md"
+                                    : "bg-white dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 border border-neutral-200 dark:border-neutral-700"
+                            )}
+                        >
+                            <menu.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                            {menu.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* ── MOBILE: title + subtitle ──────────────────────────────────── */}
+                <div className="md:hidden pt-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#0866FF] mb-1">Facebook Automation</p>
+                    <h2 className="text-[20px] font-bold text-neutral-900 dark:text-white leading-tight">
+                        {MENUS.find(m => m.id === activeMenu)?.label || 'Facebook Reply Manager'}
+                    </h2>
+                </div>
+
+                {/* ── MOBILE: pill page tabs ────────────────────────────────── */}
+                <div className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+                    <button
+                        onClick={() => handlePageSelect("all")}
+                        className={cn(
+                            "px-4 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all flex-shrink-0 border",
+                            selectedPageId === "all"
+                                ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm shadow-blue-500/30"
+                                : "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400"
+                        )}
+                    >
+                        All Pages
+                    </button>
+                    {pages.map(page => (
+                        <button
+                            key={page.id}
+                            onClick={() => handlePageSelect(page.page_id)}
+                            className={cn(
+                                "px-4 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap transition-all flex-shrink-0 border",
+                                selectedPageId === page.page_id
+                                    ? "bg-neutral-800 border-neutral-800 text-white dark:bg-white dark:border-white dark:text-neutral-900"
+                                    : "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400"
+                            )}
+                        >
+                            {page.page_name}
+                        </button>
+                    ))}
+                </div>
+
+                {/* 2. PAGES SELECTOR (desktop only) */}
+                <div className="hidden md:flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
                         <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
                             <ChevronLeft className="w-5 h-5" />
@@ -497,10 +568,10 @@ export default function FacebookBotRepliesPage() {
                 </div>
 
                 {/* 3. MAIN WORKSPACE */}
-                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
+                <div className="w-full min-w-0 md:bg-white md:dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-neutral-800 md:rounded-3xl md:p-8 md:shadow-sm">
                     <AnimatePresence mode="wait">
 
-                        {/* BOT REPLIES CONTENT */}
+                        {/* ── BOT REPLIES CONTENT */}
                         {activeMenu === 'bot_reply' && (
                             <motion.div
                                 key="bot_reply"
@@ -508,35 +579,36 @@ export default function FacebookBotRepliesPage() {
                                 transition={{ duration: 0.2 }}
                                 className="flex flex-col"
                             >
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                                    <div className="relative w-full max-w-sm">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                {/* Search + Create */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-8">
+                                    <div className="relative w-full sm:max-w-sm">
+                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                                         <input
                                             type="text"
                                             placeholder="Search replies..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white focus:border-blue-300 dark:focus:border-blue-500/30 text-sm outline-none transition-all placeholder:text-neutral-400"
+                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 focus:border-[#0866FF]/50 focus:ring-2 focus:ring-[#0866FF]/10 text-sm outline-none transition-all placeholder:text-neutral-400 shadow-sm"
                                         />
                                     </div>
                                     <button
                                         onClick={() => setShowCreateModal(true)}
-                                        className="text-white px-6 py-2.5 rounded-xl font-medium uppercase text-[12px] tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
-                                        style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)", boxShadow: "0 10px 20px -5px rgba(8, 102, 255, 0.3)" }}
+                                        className="w-full sm:w-auto text-white px-5 py-3 rounded-xl font-semibold text-[13px] tracking-wide transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap shadow-lg shadow-blue-500/20"
+                                        style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)" }}
                                     >
-                                        <Sparkles className="w-4 h-4" /> Create FB Flow
+                                        <Plus className="w-4 h-4" /> Create FB Flow
                                     </button>
                                 </div>
 
                                 {isLoading ? (
                                     <div className="space-y-3">
                                         {[1, 2, 3].map(i => (
-                                            <div key={i} className="h-20 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+                                            <div key={i} className="h-24 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
                                         ))}
                                     </div>
                                 ) : filteredReplies.length > 0 ? (
                                     <div className="flex flex-col gap-3">
-                                        {/* Header row for a professional table-like appearance in grid, hidden on mobile */}
+                                        {/* Header row — desktop only */}
                                         <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-800">
                                             <div className="col-span-5">Automation Name</div>
                                             <div className="col-span-2">Status</div>
@@ -547,87 +619,140 @@ export default function FacebookBotRepliesPage() {
                                         {filteredReplies.map((reply) => (
                                             <div
                                                 key={reply.id}
-                                                onClick={() => goToFlow(reply.id)}
-                                                className="group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 transition-all hover:shadow-md hover:border-[#0866FF]/30 cursor-pointer overflow-hidden"
+                                                className="group relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 md:border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#0866FF]/30 transition-all"
                                             >
-                                                {/* Left Accent indicator for active/draft */}
-                                                <div className={cn("absolute left-0 top-0 bottom-0 w-1 transition-colors", reply.status === 'published' ? 'bg-[#0866FF]' : 'bg-neutral-300 dark:bg-neutral-700')} />
+                                                {/* Left accent bar */}
+                                                <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-l-full transition-colors", reply.status === 'published' ? 'bg-[#0866FF]' : 'bg-neutral-200 dark:bg-neutral-700')} />
 
-                                                {/* Name and Icon */}
-                                                <div className="flex items-center gap-4 col-span-5 min-w-0">
-                                                    <div className={cn(
-                                                        "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all",
-                                                        reply.status === 'published' ? "bg-[#0866FF]/10 text-[#0866FF]" : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
-                                                    )}>
-                                                        <MessageSquare className="w-5 h-5" />
-                                                    </div>
-                                                    <div className="flex flex-col min-w-0">
-                                                        <h4 className="text-sm md:text-[15px] font-bold text-neutral-900 dark:text-white truncate" title={reply.name}>
-                                                            {reply.name}
-                                                        </h4>
-                                                        {selectedPageId === "all" && (
-                                                            <div className="flex items-center mt-1">
-                                                                <span className="text-[10px] text-[#0866FF] font-semibold uppercase tracking-wider bg-[#0866FF]/10 px-2 py-0.5 rounded-md truncate max-w-[150px]">
-                                                                    {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown Page"}
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Status */}
-                                                <div className="flex items-center col-span-2 mt-2 md:mt-0">
-                                                    {reply.status === 'published' ? (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                            Live
-                                                        </span>
-                                                    ) : (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                                            Draft
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Trigger Type */}
-                                                <div className="flex items-center col-span-2">
-                                                    <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 uppercase tracking-wider border border-neutral-200 dark:border-neutral-700 px-2.5 py-1 rounded-lg bg-neutral-50 dark:bg-neutral-800/50">
-                                                        {reply.trigger_type}
-                                                    </span>
-                                                </div>
-
-                                                {/* Actions */}
-                                                <div className="flex flex-wrap md:flex-nowrap items-center md:justify-end gap-2 col-span-3 w-full md:w-auto mt-2 md:mt-0">
+                                                {/* ── MOBILE CARD LAYOUT ── */}
+                                                <div className="md:hidden">
+                                                    {/* Card body — tappable to open edit modal */}
                                                     <button
-                                                        onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }}
-                                                        className="flex-1 md:flex-none py-2 px-4 rounded-xl bg-[#0866FF]/10 hover:bg-[#0866FF]/20 text-[#0866FF] border border-[#0866FF]/20 text-xs font-bold transition-all text-center whitespace-nowrap active:scale-95"
+                                                        onClick={() => setEditReply(reply)}
+                                                        className="w-full text-left pl-5 pr-4 pt-4 pb-3.5"
                                                     >
-                                                        Edit Flow
+                                                        {/* Row 1: Icon + Name + Status badge */}
+                                                        <div className="flex items-center gap-3 mb-3">
+                                                            <div className={cn(
+                                                                "w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-sm",
+                                                                reply.status === 'published'
+                                                                    ? "bg-gradient-to-br from-blue-50 to-blue-100 text-[#0866FF]"
+                                                                    : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
+                                                            )}>
+                                                                <MessageSquare className="w-4.5 h-4.5" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="text-[14px] font-semibold text-neutral-900 dark:text-white truncate leading-snug">{reply.name}</h4>
+                                                                {selectedPageId === "all" && (
+                                                                    <span className="text-[11px] text-[#0866FF] font-medium">
+                                                                        {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown Page"}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {reply.status === 'published' ? (
+                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Draft
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        {/* Row 2: Trigger badge + Tap hint */}
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <Target className="w-3 h-3 text-neutral-400" />
+                                                                <span className="text-[11px] text-neutral-500 font-medium">{reply.trigger_type}</span>
+                                                            </div>
+                                                            <span className="text-[10px] text-neutral-300 dark:text-neutral-600 font-medium">Tap to manage →</span>
+                                                        </div>
                                                     </button>
 
-                                                    <div className="flex items-center gap-2">
+                                                    {/* Action row — 4 buttons */}
+                                                    <div className="border-t border-neutral-100 dark:border-neutral-800 grid grid-cols-4 divide-x divide-neutral-100 dark:divide-neutral-800">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setEditReply(reply); }}
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-[#0866FF] hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group/btn"
+                                                        >
+                                                            <Settings2 className="w-4 h-4" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
+                                                        </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
-                                                            className={cn("p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 transition-all active:scale-95", reply.status === 'published' ? "hover:bg-amber-50 text-neutral-400 hover:text-amber-500 hover:border-amber-200 dark:hover:bg-amber-500/10" : "hover:bg-emerald-50 text-neutral-400 hover:text-emerald-500 hover:border-emerald-200 dark:hover:bg-emerald-500/10")}
-                                                            title={reply.status === 'published' ? "Pause Flow" : "Go Live"}
+                                                            className={cn("py-3 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn",
+                                                                reply.status === 'published' ? "text-amber-500 hover:bg-amber-50" : "text-emerald-600 hover:bg-emerald-50"
+                                                            )}
                                                         >
                                                             {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">
+                                                                {reply.status === 'published' ? 'Pause' : 'Go Live'}
+                                                            </span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
-                                                            className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:border-blue-200 text-neutral-400 hover:text-blue-500 transition-all active:scale-95"
-                                                            title="Duplicate"
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group/btn"
                                                         >
                                                             <Copy className="w-4 h-4" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Copy</span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
-                                                            className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 text-neutral-400 hover:text-red-500 transition-all active:scale-95"
-                                                            title="Delete"
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group/btn"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Delete</span>
                                                         </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* ── DESKTOP CARD LAYOUT (unchanged) ── */}
+                                                <div className="hidden md:grid grid-cols-12 items-center gap-4 px-6 py-4">
+                                                    {/* Name + Icon */}
+                                                    <div className="flex items-center gap-4 col-span-5 min-w-0">
+                                                        <div className={cn(
+                                                            "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all",
+                                                            reply.status === 'published' ? "bg-[#0866FF]/10 text-[#0866FF]" : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
+                                                        )}>
+                                                            <MessageSquare className="w-5 h-5" />
+                                                        </div>
+                                                        <div className="flex flex-col min-w-0">
+                                                            <h4 className="text-[15px] font-bold text-neutral-900 dark:text-white truncate">{reply.name}</h4>
+                                                            {selectedPageId === "all" && (
+                                                                <div className="flex items-center mt-1">
+                                                                    <span className="text-[10px] text-[#0866FF] font-semibold uppercase tracking-wider bg-[#0866FF]/10 px-2 py-0.5 rounded-md truncate max-w-[150px]">
+                                                                        {pages.find(p => p.page_id === reply.facebook_page_id)?.page_name || "Unknown Page"}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {/* Status */}
+                                                    <div className="flex items-center col-span-2">
+                                                        {reply.status === 'published' ? (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />Draft
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {/* Trigger */}
+                                                    <div className="flex items-center col-span-2">
+                                                        <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 uppercase tracking-wider border border-neutral-200 dark:border-neutral-700 px-2.5 py-1 rounded-lg bg-neutral-50 dark:bg-neutral-800/50">{reply.trigger_type}</span>
+                                                    </div>
+                                                    {/* Actions */}
+                                                    <div className="flex items-center justify-end gap-2 col-span-3">
+                                                        <button onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }} className="py-2 px-4 rounded-xl bg-[#0866FF]/10 hover:bg-[#0866FF]/20 text-[#0866FF] border border-[#0866FF]/20 text-xs font-bold transition-all text-center active:scale-95">Edit Flow</button>
+                                                        <div className="flex items-center gap-2">
+                                                            <button onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }} className={cn("p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 transition-all active:scale-95", reply.status === 'published' ? "hover:bg-amber-50 text-neutral-400 hover:text-amber-500" : "hover:bg-emerald-50 text-neutral-400 hover:text-emerald-500")} title={reply.status === 'published' ? "Pause" : "Go Live"}>
+                                                                {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                                            </button>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-neutral-400 hover:text-blue-500 transition-all active:scale-95" title="Duplicate"><Copy className="w-4 h-4" /></button>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -819,160 +944,296 @@ export default function FacebookBotRepliesPage() {
                     </AnimatePresence>
                 </div>
 
+                {/* EDIT REPLY MODAL */}
+                <AnimatePresence>
+                    {editReply && (
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm"
+                                onClick={() => setEditReply(null)}
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, y: 60 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 60 }}
+                                transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-[28px] sm:rounded-3xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
+                            >
+                                {/* Drag handle */}
+                                <div className="sm:hidden flex justify-center pt-3.5 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                                </div>
+
+                                {/* Blue accent header */}
+                                <div className="relative px-6 pt-5 pb-5 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+                                    <div className="absolute top-3 right-4">
+                                        <button
+                                            onClick={() => setEditReply(null)}
+                                            className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-blue-200 mb-1">Bot Reply</p>
+                                    <h3 className="text-[17px] font-bold leading-tight pr-8 truncate">{editReply.name}</h3>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        {editReply.status === 'published' ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />Live
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Draft
+                                            </span>
+                                        )}
+                                        <span className="text-[11px] text-blue-200 font-medium">· {editReply.trigger_type}</span>
+                                    </div>
+                                </div>
+
+                                {/* Body */}
+                                <div className="px-6 py-5 space-y-3">
+                                    {/* Info rows */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-3.5">
+                                            <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest mb-1">Trigger Type</p>
+                                            <p className="text-[13px] font-bold text-neutral-800 dark:text-white uppercase">{editReply.trigger_type}</p>
+                                        </div>
+                                        {editReply.trigger_value && (
+                                            <div className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-3.5">
+                                                <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest mb-1">Keyword</p>
+                                                <p className="text-[13px] font-bold text-neutral-800 dark:text-white truncate">{editReply.trigger_value}</p>
+                                            </div>
+                                        )}
+                                        {selectedPageId === "all" && (
+                                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-3.5 col-span-2">
+                                                <p className="text-[10px] font-semibold text-blue-400 uppercase tracking-widest mb-1">Facebook Page</p>
+                                                <p className="text-[13px] font-bold text-blue-700 dark:text-blue-300 truncate">
+                                                    {pages.find(p => p.page_id === editReply.facebook_page_id)?.page_name || "Unknown"}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* CTA — Open Flow Builder */}
+                                    <button
+                                        onClick={() => { setEditReply(null); goToFlow(editReply.id); }}
+                                        className="w-full py-3.5 rounded-xl text-white font-semibold text-[14px] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-blue-500/25"
+                                        style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)" }}
+                                    >
+                                        <Box className="w-4 h-4" /> Open Flow Builder
+                                    </button>
+
+                                    {/* Secondary actions */}
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <button
+                                            onClick={() => { handleToggleStatus(editReply); setEditReply(null); }}
+                                            className={cn("py-3 rounded-xl text-[12px] font-semibold flex flex-col items-center gap-1.5 transition-all border",
+                                                editReply.status === 'published'
+                                                    ? "bg-amber-50 text-amber-600 border-amber-100 hover:bg-amber-100"
+                                                    : "bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100"
+                                            )}
+                                        >
+                                            {editReply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                            {editReply.status === 'published' ? 'Pause' : 'Go Live'}
+                                        </button>
+                                        <button
+                                            onClick={() => { handleDuplicate(editReply.id); setEditReply(null); }}
+                                            className="py-3 rounded-xl text-[12px] font-semibold flex flex-col items-center gap-1.5 bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-all"
+                                        >
+                                            <Copy className="w-4 h-4" />
+                                            Duplicate
+                                        </button>
+                                        <button
+                                            onClick={() => { setEditReply(null); handleDelete(editReply.id); }}
+                                            className="py-3 rounded-xl text-[12px] font-semibold flex flex-col items-center gap-1.5 bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition-all"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Safe area bottom (mobile) */}
+                                <div className="h-safe-area-inset-bottom pb-6 sm:pb-0" />
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
                 {/* CREATE MODAL */}
                 <AnimatePresence>
                     {showCreateModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm"
+                                className="absolute inset-0 bg-neutral-950/50 backdrop-blur-sm"
                                 onClick={() => setShowCreateModal(false)}
                             />
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-3xl p-5 xs:p-6 sm:p-8 w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 shadow-xl relative z-10"
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 40 }}
+                                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-3xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
                             >
-                                <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-6">
-                                    New FB Flow {selectedPageId !== "all" ? `for ${selectedPageObj?.page_name}` : ""}
-                                </h3>
-                                <div className="space-y-4">
-                                    {selectedPageId === "all" && (
-                                        <div className="space-y-2">
-                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select FB Page</label>
-                                            <div className="relative">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsCreatePageDropdownOpen(!isCreatePageDropdownOpen)}
-                                                    className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-blue-500 transition-all cursor-pointer flex items-center justify-between"
-                                                >
-                                                    <span className={cn(
-                                                        "truncate",
-                                                        !(newReply.facebook_page_id || creationPageFallback?.page_id) && "text-neutral-400"
-                                                    )}>
-                                                        {pages.find(p => p.page_id === (newReply.facebook_page_id || creationPageFallback?.page_id))?.page_name || "Select a page..."}
-                                                    </span>
-                                                    <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreatePageDropdownOpen && "rotate-180")} />
-                                                </button>
+                                {/* Modal drag handle (mobile) */}
+                                <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                                </div>
+                                <div className="px-6 pt-4 pb-7 sm:p-8">
+                                    {/* Modal header */}
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#0866FF] mb-1">Facebook Automation</p>
+                                            <h3 className="text-[18px] font-bold text-neutral-900 dark:text-white leading-tight">
+                                                New FB Flow {selectedPageId !== "all" ? `— ${selectedPageObj?.page_name}` : ""}
+                                            </h3>
+                                        </div>
+                                        <button
+                                            onClick={() => setShowCreateModal(false)}
+                                            className="ml-3 mt-0.5 p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {selectedPageId === "all" && (
+                                            <div className="space-y-2">
+                                                <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select FB Page</label>
+                                                <div className="relative">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsCreatePageDropdownOpen(!isCreatePageDropdownOpen)}
+                                                        className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-blue-500 transition-all cursor-pointer flex items-center justify-between"
+                                                    >
+                                                        <span className={cn(
+                                                            "truncate",
+                                                            !(newReply.facebook_page_id || creationPageFallback?.page_id) && "text-neutral-400"
+                                                        )}>
+                                                            {pages.find(p => p.page_id === (newReply.facebook_page_id || creationPageFallback?.page_id))?.page_name || "Select a page..."}
+                                                        </span>
+                                                        <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreatePageDropdownOpen && "rotate-180")} />
+                                                    </button>
 
-                                                <AnimatePresence>
-                                                    {isCreatePageDropdownOpen && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-                                                            className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
-                                                        >
-                                                            <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
-                                                                <div className="relative">
-                                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                                                                    <input
-                                                                        type="text"
-                                                                        placeholder="Search pages..."
-                                                                        value={createPageSearchQuery}
-                                                                        onChange={(e) => setCreatePageSearchQuery(e.target.value)}
-                                                                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-blue-500/30 text-sm outline-none transition-all"
-                                                                        autoFocus
-                                                                    />
+                                                    <AnimatePresence>
+                                                        {isCreatePageDropdownOpen && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                                                className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
+                                                            >
+                                                                <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
+                                                                    <div className="relative">
+                                                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Search pages..."
+                                                                            value={createPageSearchQuery}
+                                                                            onChange={(e) => setCreatePageSearchQuery(e.target.value)}
+                                                                            className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-blue-500/30 text-sm outline-none transition-all"
+                                                                            autoFocus
+                                                                        />
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
-                                                                {pages.filter(p => !createPageSearchQuery || p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).map(p => (
-                                                                    <button
-                                                                        key={p.id}
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            setNewReply({ ...newReply, facebook_page_id: p.page_id });
-                                                                            setIsCreatePageDropdownOpen(false);
-                                                                        }}
-                                                                        className={cn(
-                                                                            "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
-                                                                            (newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id
-                                                                                ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold"
-                                                                                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                                                        )}
-                                                                    >
-                                                                        <FacebookIcon className="w-4 h-4 opacity-50 text-[#0866FF]" />
-                                                                        <span className="truncate">{p.page_name}</span>
-                                                                        {(newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id && (
-                                                                            <CheckCircle2 className="w-4 h-4 ml-auto text-blue-500" />
-                                                                        )}
-                                                                    </button>
-                                                                ))}
-                                                                {pages.filter(p => p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).length === 0 && (
-                                                                    <div className="py-4 text-center text-xs text-neutral-500">No pages found</div>
-                                                                )}
-                                                            </div>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
+                                                                <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
+                                                                    {pages.filter(p => !createPageSearchQuery || p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).map(p => (
+                                                                        <button
+                                                                            key={p.id}
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setNewReply({ ...newReply, facebook_page_id: p.page_id });
+                                                                                setIsCreatePageDropdownOpen(false);
+                                                                            }}
+                                                                            className={cn(
+                                                                                "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
+                                                                                (newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id
+                                                                                    ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold"
+                                                                                    : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                                            )}
+                                                                        >
+                                                                            <FacebookIcon className="w-4 h-4 opacity-50 text-[#0866FF]" />
+                                                                            <span className="truncate">{p.page_name}</span>
+                                                                            {(newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id && (
+                                                                                <CheckCircle2 className="w-4 h-4 ml-auto text-blue-500" />
+                                                                            )}
+                                                                        </button>
+                                                                    ))}
+                                                                    {pages.filter(p => p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).length === 0 && (
+                                                                        <div className="py-4 text-center text-xs text-neutral-500">No pages found</div>
+                                                                    )}
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Template Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Support Bot (FB)"
+                                                value={newReply.name}
+                                                onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Reply Type</label>
+                                            <select
+                                                value={newReply.trigger_type}
+                                                onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 appearance-none transition-all cursor-pointer"
+                                            >
+                                                <option value="exact">Exact Match</option>
+                                                <option value="contains">Contains Word</option>
+                                                <option value="starts_with">Starts With</option>
+                                                <option value="keywords">Multiple Keywords</option>
+                                                <option value="welcome">Welcome</option>
+                                                <option value="fallback">Fallback</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Keywords</label>
+                                            <input
+                                                type="text"
+                                                placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "help, support"}
+                                                value={newReply.trigger_value}
+                                                onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 transition-all disabled:opacity-50"
+                                                disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
+                                            />
+                                        </div>
+                                        <div className="pt-4 flex flex-col gap-3">
+                                            <button
+                                                onClick={async () => {
+                                                    await handleCreate();
+                                                    const latest = replies[replies.length - 1];
+                                                    if (latest) await handleToggleStatus({ ...latest, status: 'draft' });
+                                                }}
+                                                disabled={isCreating}
+                                                className="w-full py-3 rounded-xl bg-[#0866FF] text-white font-semibold text-sm shadow-md hover:bg-[#0055D4] hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            >
+                                                {isCreating ? 'Creating...' : '⚡ Save & Publish'}
+                                            </button>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => setShowCreateModal(false)}
+                                                    className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={handleCreate}
+                                                    disabled={isCreating}
+                                                    className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {isCreating ? 'Creating...' : 'Save as Draft'}
+                                                </button>
                                             </div>
                                         </div>
-                                    )}
-                                    <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Template Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="e.g. Support Bot (FB)"
-                                            value={newReply.name}
-                                            onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                                        />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Reply Type</label>
-                                        <select
-                                            value={newReply.trigger_type}
-                                            onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 appearance-none transition-all cursor-pointer"
-                                        >
-                                            <option value="exact">Exact Match</option>
-                                            <option value="contains">Contains Word</option>
-                                            <option value="starts_with">Starts With</option>
-                                            <option value="keywords">Multiple Keywords</option>
-                                            <option value="welcome">Welcome</option>
-                                            <option value="fallback">Fallback</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Keywords</label>
-                                        <input
-                                            type="text"
-                                            placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "help, support"}
-                                            value={newReply.trigger_value}
-                                            onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-blue-500 transition-all disabled:opacity-50"
-                                            disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
-                                        />
-                                    </div>
-                                    <div className="pt-4 flex flex-col gap-3">
-                                        <button
-                                            onClick={async () => {
-                                                await handleCreate();
-                                                const latest = replies[replies.length - 1];
-                                                if (latest) await handleToggleStatus({ ...latest, status: 'draft' });
-                                            }}
-                                            disabled={isCreating}
-                                            className="w-full py-3 rounded-xl bg-[#0866FF] text-white font-semibold text-sm shadow-md hover:bg-[#0055D4] hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                        >
-                                            {isCreating ? 'Creating...' : '⚡ Save & Publish'}
-                                        </button>
-                                        <div className="flex gap-3">
-                                            <button
-                                                onClick={() => setShowCreateModal(false)}
-                                                className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                onClick={handleCreate}
-                                                disabled={isCreating}
-                                                className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                            >
-                                                {isCreating ? 'Creating...' : 'Save as Draft'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                </div>{/* end inner px-6 */}
                             </motion.div>
                         </div>
                     )}
@@ -980,47 +1241,58 @@ export default function FacebookBotRepliesPage() {
                 {/* ACTION CONFIGURATION MODAL */}
                 <AnimatePresence>
                     {showActionModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-[40px] p-10 w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 shadow-2xl relative z-10">
-                                <h3 className="text-2xl font-black text-neutral-900 dark:text-white mb-2 uppercase tracking-tight">Map FB Shortcut</h3>
-                                <p className="text-sm text-neutral-500 mb-8 font-medium">Select a system event to automate with a new flow.</p>
-
-                                <div className="space-y-3">
-                                    {[
-                                        { type: 'action_get_started', label: 'Get Started', icon: <Play className="w-4 h-4" /> },
-                                        { type: 'action_no_match', label: 'No Match / Fallback', icon: <RefreshCw className="w-4 h-4" /> },
-                                        { type: 'action_ice_breaker', label: 'Ice Breakers', icon: <Layers className="w-4 h-4" /> },
-                                    ].map(opt => {
-                                        const exists = actions.some(a => a.type === opt.type);
-                                        return (
-                                            <button
-                                                key={opt.type}
-                                                onClick={() => handleActionCreate(opt.type)}
-                                                disabled={exists || isCreating}
-                                                className={cn(
-                                                    "w-full p-4 rounded-3xl border text-left flex items-center justify-between group transition-all",
-                                                    exists
-                                                        ? "bg-neutral-50/50 border-neutral-100 dark:bg-neutral-900/50 dark:border-neutral-800 opacity-50 cursor-not-allowed"
-                                                        : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 hover:border-blue-500/50 hover:bg-blue-50/20"
-                                                )}
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-neutral-100 text-neutral-400" : "bg-blue-50 text-blue-500 group-hover:bg-blue-100")}>
-                                                        {opt.icon}
-                                                    </div>
-                                                    <div>
-                                                        <span className="text-sm font-bold text-neutral-900 dark:text-white block leading-none">{opt.label}</span>
-                                                        {exists && <span className="text-[10px] font-black uppercase text-amber-500 tracking-widest mt-1 block">Already Configured</span>}
-                                                    </div>
-                                                </div>
-                                                {!exists && <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-blue-500" />}
-                                            </button>
-                                        );
-                                    })}
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/50 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 40 }}
+                                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-[32px] w-full max-w-md max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
+                            >
+                                <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
                                 </div>
+                                <div className="px-6 pt-5 pb-8 sm:p-10">
+                                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-1 tracking-tight">Map FB Shortcut</h3>
+                                    <p className="text-sm text-neutral-500 mb-6 font-medium">Select a system event to automate with a new flow.</p>
 
-                                <button onClick={() => setShowActionModal(false)} className="w-full mt-6 py-3.5 rounded-2xl text-neutral-400 hover:text-neutral-600 font-bold text-xs uppercase tracking-[0.2em] transition-all">Cancel</button>
+                                    <div className="space-y-3">
+                                        {[
+                                            { type: 'action_get_started', label: 'Get Started', icon: <Play className="w-4 h-4" /> },
+                                            { type: 'action_no_match', label: 'No Match / Fallback', icon: <RefreshCw className="w-4 h-4" /> },
+                                            { type: 'action_ice_breaker', label: 'Ice Breakers', icon: <Layers className="w-4 h-4" /> },
+                                        ].map(opt => {
+                                            const exists = actions.some(a => a.type === opt.type);
+                                            return (
+                                                <button
+                                                    key={opt.type}
+                                                    onClick={() => handleActionCreate(opt.type)}
+                                                    disabled={exists || isCreating}
+                                                    className={cn(
+                                                        "w-full p-4 rounded-3xl border text-left flex items-center justify-between group transition-all",
+                                                        exists
+                                                            ? "bg-neutral-50/50 border-neutral-100 dark:bg-neutral-900/50 dark:border-neutral-800 opacity-50 cursor-not-allowed"
+                                                            : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 hover:border-blue-500/50 hover:bg-blue-50/20"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-neutral-100 text-neutral-400" : "bg-blue-50 text-blue-500 group-hover:bg-blue-100")}>
+                                                            {opt.icon}
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm font-bold text-neutral-900 dark:text-white block leading-none">{opt.label}</span>
+                                                            {exists && <span className="text-[10px] font-black uppercase text-amber-500 tracking-widest mt-1 block">Already Configured</span>}
+                                                        </div>
+                                                    </div>
+                                                    {!exists && <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-blue-500" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <button onClick={() => setShowActionModal(false)} className="w-full mt-5 py-3 rounded-2xl text-neutral-400 hover:text-neutral-600 font-bold text-xs uppercase tracking-[0.2em] transition-all">Cancel</button>
+                                </div>{/* end inner px-6 */}
                             </motion.div>
                         </div>
                     )}

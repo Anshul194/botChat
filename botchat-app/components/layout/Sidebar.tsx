@@ -402,17 +402,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 >
                                     Platforms
                                 </span>
-                                {canShow("connect_account") && (
-                                    <motion.button
-                                        whileHover={{ scale: 1.1 }}
-                                        onClick={handleInstagramConnect}
-                                        aria-label="Connect a new social platform"
-                                        className="text-xs font-medium flex items-center gap-1 opacity-90 hover:opacity-100"
-                                        style={{ color: "var(--nav-active-color)" }}
-                                    >
-                                        <Plus className="w-3.5 h-3.5" aria-hidden="true" /> Connect
-                                    </motion.button>
-                                )}
+
                             </div>
                         )}
 

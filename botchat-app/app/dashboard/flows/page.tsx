@@ -12,8 +12,8 @@ import {
   Tag as TagIcon, ShieldCheck, UserCog, Bell, Users, Zap,
   ExternalLink, Table, CheckCircle2, Search, Wand2, Plus, Trash2,
   Copy, MoreVertical, GripHorizontal, ChevronRight, Share,
-  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, Save, Play, SquareStack,
-  Sparkle, Sparkles, Smartphone, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload, Smile
+  Instagram as InstagramIcon, Facebook as FacebookIcon, X, ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Save, Play, SquareStack,
+  Sparkle, Sparkles, Settings2, HelpCircle, MessageCircle, Star, Mic, File, Upload, Smile, Eye
 } from "lucide-react";
 import { EmojiPicker } from "@/components/ui/EmojiPicker";
 
@@ -88,6 +88,39 @@ const ACTIONS = [
   { id: "follower_gate", icon: UserCog, label: "Follower Gate", desc: "Require users to follow you" },
   // { id: "trigger_action", icon: Zap, label: "Trigger Action", desc: "Fire a postback payload" },
 ];
+
+/* Step-type accent colors for visual differentiation */
+const STEP_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  message: { bg: "#EFF6FF", text: "#2563EB", border: "#93C5FD" },
+  image: { bg: "#F0FDF4", text: "#16A34A", border: "#86EFAC" },
+  video: { bg: "#FFF7ED", text: "#EA580C", border: "#FDB97D" },
+  audio: { bg: "#FAF5FF", text: "#7C3AED", border: "#C4B5FD" },
+  file: { bg: "#F0F9FF", text: "#0369A1", border: "#7DD3FC" },
+  carousel: { bg: "#FFFBEB", text: "#D97706", border: "#FDE68A" },
+  user_input: { bg: "#FFF1F2", text: "#E11D48", border: "#FECDD3" },
+  condition: { bg: "#F0FDFA", text: "#0D9488", border: "#99F6E4" },
+  follower_gate: { bg: "#FDF2F8", text: "#9D174D", border: "#F9A8D4" },
+  trigger_action: { bg: "#FFFBEB", text: "#B45309", border: "#FCD34D" },
+};
+const getStepColor = (type: string) => {
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const light = STEP_COLORS[type] || { bg: "#F8FAFC", text: "#475569", border: "#CBD5E1" };
+  if (!isDark) return light;
+
+  const darkMap: Record<string, { bg: string; text: string; border: string }> = {
+    message: { bg: "rgba(37, 99, 235, 0.16)", text: "#93C5FD", border: "rgba(37, 99, 235, 0.35)" },
+    image: { bg: "rgba(22, 163, 74, 0.16)", text: "#86EFAC", border: "rgba(22, 163, 74, 0.35)" },
+    video: { bg: "rgba(234, 88, 12, 0.16)", text: "#FDB97D", border: "rgba(234, 88, 12, 0.35)" },
+    audio: { bg: "rgba(124, 58, 237, 0.16)", text: "#C4B5FD", border: "rgba(124, 58, 237, 0.35)" },
+    file: { bg: "rgba(3, 105, 161, 0.16)", text: "#7DD3FC", border: "rgba(3, 105, 161, 0.35)" },
+    carousel: { bg: "rgba(217, 119, 6, 0.16)", text: "#FDE68A", border: "rgba(217, 119, 6, 0.35)" },
+    user_input: { bg: "rgba(225, 29, 72, 0.16)", text: "#FECDD3", border: "rgba(225, 29, 72, 0.35)" },
+    condition: { bg: "rgba(13, 148, 136, 0.16)", text: "#99F6E4", border: "rgba(13, 148, 136, 0.35)" },
+    follower_gate: { bg: "rgba(157, 23, 77, 0.16)", text: "#F9A8D4", border: "rgba(157, 23, 77, 0.35)" },
+    trigger_action: { bg: "rgba(180, 83, 9, 0.16)", text: "#FCD34D", border: "rgba(180, 83, 9, 0.35)" },
+  };
+  return darkMap[type] || { bg: "rgba(255,255,255,0.05)", text: "#94A3B8", border: "rgba(255,255,255,0.1)" };
+};
 
 const VARS = [
   { v: "{{first_name}}", label: "First Name" },
@@ -744,68 +777,68 @@ function FollowerGateFields({ step, update, allSteps, onSaveStep, onAddStep }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
         <Label>Title Message</Label>
-        <Input 
-          value={c.title || "Looks like you're not following me yet 🙂"} 
-          onChange={e => set({ title: e.target.value })} 
-          placeholder="Looks like you're not following me yet 🙂" 
+        <Input
+          value={c.title || "Looks like you're not following me yet 🙂"}
+          onChange={e => set({ title: e.target.value })}
+          placeholder="Looks like you're not following me yet 🙂"
         />
       </div>
       <div>
         <Label>Description / Call to Action</Label>
-        <Input 
+        <Input
           multiline rows={2}
-          value={c.description || "Follow my profile and tap 'I'm following' below to get the link ✨"} 
-          onChange={e => set({ description: e.target.value })} 
-          placeholder="Follow my profile and tap 'I'm following' below to get the link ✨" 
+          value={c.description || "Follow my profile and tap 'I'm following' below to get the link ✨"}
+          onChange={e => set({ description: e.target.value })}
+          placeholder="Follow my profile and tap 'I'm following' below to get the link ✨"
         />
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         <div style={{ flex: 1 }}>
           <Label>Follow Button Text</Label>
-          <Input 
-            value={c.follow_button_text || "Visit Profile"} 
-            onChange={e => set({ follow_button_text: e.target.value })} 
-            placeholder="Visit Profile" 
+          <Input
+            value={c.follow_button_text || "Visit Profile"}
+            onChange={e => set({ follow_button_text: e.target.value })}
+            placeholder="Visit Profile"
           />
         </div>
         <div style={{ flex: 1 }}>
           <Label>Confirm Button Text</Label>
-          <Input 
-            value={c.confirm_button_text || "I'm following ✅"} 
-            onChange={e => set({ confirm_button_text: e.target.value })} 
-            placeholder="I'm following ✅" 
+          <Input
+            value={c.confirm_button_text || "I'm following ✅"}
+            onChange={e => set({ confirm_button_text: e.target.value })}
+            placeholder="I'm following ✅"
           />
         </div>
       </div>
       <div>
         <Label>Retry Message (If verification fails)</Label>
-        <Input 
+        <Input
           multiline rows={2}
-          value={c.retry_message || "Still not following 😕 Please follow first."} 
-          onChange={e => set({ retry_message: e.target.value })} 
-          placeholder="Still not following 😕 Please follow first." 
+          value={c.retry_message || "Still not following 😕 Please follow first."}
+          onChange={e => set({ retry_message: e.target.value })}
+          placeholder="Still not following 😕 Please follow first."
         />
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         <div style={{ flex: 1 }}>
           <Label>Max Retries</Label>
-          <Input 
+          <Input
             type="number"
-            value={c.max_retry || 3} 
-            onChange={e => set({ max_retry: parseInt(e.target.value) || 3 })} 
-            placeholder="3" 
+            value={c.max_retry || 3}
+            onChange={e => set({ max_retry: parseInt(e.target.value) || 3 })}
+            placeholder="3"
           />
         </div>
         <div style={{ flex: 1 }}>
           <Label>Verification Method</Label>
-          <Select 
-            value={c.verification_method || "manual"} 
-            onChange={e => set({ verification_method: e.target.value })} 
+          <Select
+            value={c.verification_method || "manual"}
+            onChange={e => set({ verification_method: e.target.value })}
             options={[
               { value: "manual", label: "Manual (Simulated Pause)" },
               { value: "api", label: "Official API (If available)" },
               { value: "custom", label: "Custom Script" },
-            ]} 
+            ]}
           />
         </div>
       </div>
@@ -1873,43 +1906,54 @@ function StepSummary({ step, actions }) {
 function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, onDelete, onDup, onMoveUp, onMoveDown, onSaveStep, onAddStep, pageId, platform, actions, loadingActions }) {
   const DS = useDS();
   const def = getDef(step.kind, step.type);
-  const color = step.kind === "trigger" ? def.color : DS.ink;
   const isFirst = index === 0, isLast = index === total - 1;
-  const isTrigger = step.kind === "trigger";
+  const stepColor = getStepColor(step.type);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div style={{ position: "relative" }} id={`step-card-${step.id}`}>
-      {!isLast && (
-        <div style={{
-          position: "absolute", left: 27, bottom: -14, width: 2, height: 14, zIndex: 0,
-          background: `linear-gradient(${DS.accent}40, ${DS.accent}15)`,
-        }} />
-      )}
-      <div style={{
-        background: DS.card, borderRadius: DS.radius, overflow: "hidden", position: "relative", zIndex: 1,
-        border: expanded ? `2px solid ${DS.ink}` : `1.5px solid ${DS.border}`,
-        boxShadow: expanded ? `0 0 0 4px rgba(0,0,0,0.07), ${DS.shadowHover}` : DS.shadowCard,
-        transition: "all 0.15s",
+    <div style={{ position: "relative", zIndex: menuOpen ? 100 : 1 }} id={`step-card-${step.id}`} className="step-card-container">
+      <div className="step-card-main" style={{
+        background: expanded ? "var(--secondary)" : DS.card,
+        borderRadius: 20,
+        /* NOTE: NO overflow:hidden here — it would clip the mobile ⋮ dropdown */
+        position: "relative",
+        zIndex: 1,
+        border: `1.5px solid ${expanded ? "var(--primary)" : DS.border}`,
+        boxShadow: expanded
+          ? "0 12px 30px rgba(59, 130, 246, 0.08), 0 2px 8px rgba(59, 130, 246, 0.03)"
+          : "0 4px 18px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03)",
+        transition: "all 0.22s cubic-bezier(0.16, 1, 0.3, 1)",
       }}>
+        {/* Colored left accent — borderRadius handles the pill shape without overflow:hidden */}
+        <div style={{
+          position: "absolute", left: 0, top: 0, bottom: 0, width: 4,
+          background: stepColor.text,
+          borderRadius: "20px 0 0 20px",
+          opacity: expanded ? 1 : 0.5,
+          transition: "opacity 0.22s",
+        }} />
+
         {/* HEADER */}
-        <div onClick={onToggle} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", cursor: "pointer", userSelect: "none" }}>
-          {/* Step number */}
-          <div style={{
-            width: 22, height: 22, borderRadius: 7, fontSize: 11, fontWeight: 800, flexShrink: 0, transition: "all 0.15s",
-            background: expanded ? DS.ink : DS.bg,
-            color: expanded ? "#fff" : DS.ink3,
+        <div className="step-card-header" onClick={onToggle} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px 14px 20px", cursor: "pointer", userSelect: "none" }}>
+          {/* Step number - colored circle badge */}
+          <div className="step-num" style={{
+            width: 22, height: 22, borderRadius: "50%", fontSize: 10.5, fontWeight: 900, flexShrink: 0,
+            background: stepColor.bg,
+            color: stepColor.text,
             display: "flex", alignItems: "center", justifyContent: "center",
+            border: `1px solid ${stepColor.border}`,
+            boxShadow: `0 2px 6px ${stepColor.bg}`,
           }}>{index + 1}</div>
 
           {/* Icon */}
-          <div style={{
-            width: 38, height: 38, borderRadius: 11, flexShrink: 0,
-            background: DS.bg,
-            border: `1.5px solid ${DS.border}`,
+          <div className="step-icon" style={{
+            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+            background: stepColor.bg,
+            border: `1.5px solid ${stepColor.border}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: DS.ink
+            color: stepColor.text,
           }}>
-            {typeof def.icon === 'string' ? def.icon : <def.icon size={20} />}
+            {typeof def.icon === 'string' ? def.icon : <def.icon size={18} />}
           </div>
 
           {/* Name & summary */}
@@ -1918,33 +1962,235 @@ function StepCard({ step, index, total, allSteps, expanded, onToggle, onUpdate, 
               <input
                 value={step.label}
                 onClick={e => e.stopPropagation()}
+                onTouchStart={e => e.stopPropagation()}
                 onChange={e => onUpdate({ ...step, label: e.target.value })}
-                style={{ border: "none", background: "transparent", fontSize: 13.5, fontWeight: 700, color: DS.ink, outline: "none", fontFamily: "inherit", minWidth: 0, flex: 1 }}
+                style={{
+                  border: "none", background: "transparent", fontSize: 14.5, fontWeight: 700,
+                  color: DS.ink, outline: "none", fontFamily: "inherit", minWidth: 0, flex: 1,
+                }}
               />
             </div>
             {!expanded && (
-              <div style={{ fontSize: 12, marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <div style={{ fontSize: 12.5, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: DS.ink3 }}>
                 <StepSummary step={step} actions={actions} />
               </div>
             )}
           </div>
 
-          {/* Controls */}
-          <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
-            {!isFirst && <IconBtn onClick={e => { e.stopPropagation(); onMoveUp(); }} title="Move up">↑</IconBtn>}
-            {!isLast && <IconBtn onClick={e => { e.stopPropagation(); onMoveDown(); }} title="Move down">↓</IconBtn>}
-            <IconBtn onClick={e => { e.stopPropagation(); onDup(); }} title="Duplicate"><SquareStack size={14} /></IconBtn>
-            <IconBtn onClick={e => { e.stopPropagation(); onDelete(); }} danger title="Delete">✕</IconBtn>
+          {/* Desktop Controls - hidden on mobile via CSS */}
+          <div className="step-actions-desktop" style={{ display: "flex", gap: 6, flexShrink: 0, alignItems: "center" }} onClick={e => e.stopPropagation()}>
+            {!isFirst && <IconBtn onClick={() => onMoveUp()} title="Move up"><ArrowUp size={14} /></IconBtn>}
+            {!isLast && <IconBtn onClick={() => onMoveDown()} title="Move down"><ArrowDown size={14} /></IconBtn>}
+            <IconBtn onClick={() => onDup()} title="Duplicate"><Copy size={13} /></IconBtn>
+            <IconBtn onClick={() => onDelete()} danger title="Delete"><Trash2 size={13} /></IconBtn>
+            <div
+              onClick={onToggle}
+              style={{
+                padding: "6px 14px", borderRadius: 10, fontSize: 11.5, fontWeight: 800,
+                background: expanded ? "#2563EB" : "rgba(0, 0, 0, 0.04)",
+                color: expanded ? "#fff" : DS.ink2,
+                border: "none", cursor: "pointer", transition: "all 0.18s",
+                display: "flex", alignItems: "center", gap: 4,
+              }}
+            >
+              Edit
+            </div>
           </div>
+
+          {/* Mobile Controls - compact overflow menu, shown only on mobile via CSS */}
+          <MobileStepActions
+            expanded={expanded}
+            isFirst={isFirst}
+            isLast={isLast}
+            onToggle={onToggle}
+            onMoveUp={onMoveUp}
+            onMoveDown={onMoveDown}
+            onDup={onDup}
+            onDelete={onDelete}
+            DS={DS}
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+          />
         </div>
 
         {/* EXPANDED BODY */}
         {expanded && (
-          <div style={{ borderTop: `1px solid ${DS.border}`, padding: "16px 16px 18px" }}>
+          <div className="step-card-expanded" style={{
+            borderTop: `1.5px solid ${stepColor.border}`,
+            padding: "16px 20px 20px 20px",
+            background: stepColor.bg + "30",
+            borderRadius: "0 0 18px 18px",
+          }}>
             <StepFields step={step} update={onUpdate} allSteps={allSteps} onSaveStep={onSaveStep} onAddStep={onAddStep} pageId={pageId} platform={platform} actions={actions} loadingActions={loadingActions} />
           </div>
         )}
       </div>
+      {!isLast && (
+        <div className="step-connector" style={{
+          position: "absolute", left: 31, bottom: -28, width: 2, height: 28, zIndex: 0,
+          background: `linear-gradient(${stepColor.border}, ${DS.border})`,
+        }} />
+      )}
+    </div>
+  );
+}
+
+function MobileStepActions({ expanded, isFirst, isLast, onToggle, onMoveUp, onMoveDown, onDup, onDelete, DS, menuOpen, setMenuOpen }) {
+  const ref = useRef(null);
+  const btnRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler, true);
+    document.addEventListener("touchstart", handler, true);
+    return () => {
+      document.removeEventListener("mousedown", handler, true);
+      document.removeEventListener("touchstart", handler, true);
+    };
+  }, [menuOpen, setMenuOpen]);
+
+  const menuItems = [
+    {
+      label: expanded ? "Close Edit" : "Edit Step",
+      icon: <Settings2 size={15} />,
+      action: () => { onToggle(); setMenuOpen(false); },
+      accent: true,
+    },
+    ...(!isFirst ? [{
+      label: "Move Up",
+      icon: <ArrowUp size={15} />,
+      action: () => { onMoveUp(); setMenuOpen(false); },
+    }] : []),
+    ...(!isLast ? [{
+      label: "Move Down",
+      icon: <ArrowDown size={15} />,
+      action: () => { onMoveDown(); setMenuOpen(false); },
+    }] : []),
+    {
+      label: "Duplicate",
+      icon: <Copy size={15} />,
+      action: () => { onDup(); setMenuOpen(false); },
+    },
+    { divider: true },
+    {
+      label: "Delete",
+      icon: <Trash2 size={15} />,
+      action: () => { onDelete(); setMenuOpen(false); },
+      danger: true,
+    },
+  ];
+
+  return (
+    <div
+      className="step-actions-mobile"
+      ref={ref}
+      style={{ position: "relative", flexShrink: 0, zIndex: menuOpen ? 500 : 1 }}
+      onClick={e => {
+        e.stopPropagation();
+      }}
+      onTouchStart={e => {
+        e.stopPropagation();
+      }}
+      onTouchEnd={e => {
+        e.stopPropagation();
+      }}
+    >
+      {/* Trigger button */}
+      <button
+        ref={btnRef}
+        onClick={(e) => {
+          e.stopPropagation();
+          setMenuOpen(!menuOpen);
+        }}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+        }}
+        style={{
+          width: 34, height: 34, borderRadius: 10,
+          border: `1.5px solid ${menuOpen || expanded ? "#3B82F6" : DS.border}`,
+          background: menuOpen ? "#2563EB" : expanded ? "#EFF6FF" : "transparent",
+          color: menuOpen ? "#fff" : expanded ? "#2563EB" : DS.ink2,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", transition: "all 0.15s ease", outline: "none",
+          boxShadow: menuOpen ? "0 4px 12px rgba(37,99,235,0.3)" : "none",
+        }}
+      >
+        <MoreVertical size={15} />
+      </button>
+
+      {/* Dropdown — renders on top, never clipped */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: -6 }}
+            transition={{ duration: 0.14, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 40,
+              zIndex: 9999,
+              background: "#fff",
+              borderRadius: 16,
+              border: "1px solid #E5E7EB",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08)",
+              minWidth: 176,
+              padding: "6px",
+              pointerEvents: "auto",
+            }}
+          >
+            {menuItems.map((item, i) =>
+              item.divider ? (
+                <div key={`div-${i}`} style={{ height: 1, background: "#F3F4F6", margin: "4px 8px" }} />
+              ) : (
+                <button
+                  key={i}
+                  onClick={item.action}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "10px 12px",
+                    border: "none",
+                    background: item.accent ? "#EFF6FF" : "transparent",
+                    cursor: "pointer",
+                    borderRadius: 10,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: item.danger ? "#DC2626" : item.accent ? "#1D4ED8" : "#374151",
+                    transition: "background 0.1s",
+                    textAlign: "left",
+                    letterSpacing: "-0.01em",
+                    fontFamily: "inherit",
+                  }}
+                  onTouchStart={e => { e.currentTarget.style.background = item.danger ? "#FEF2F2" : item.accent ? "#DBEAFE" : "#F3F4F6"; }}
+                  onTouchEnd={e => { setTimeout(() => { if (e.currentTarget) e.currentTarget.style.background = item.accent ? "#EFF6FF" : "transparent"; }, 200); }}
+                  onMouseEnter={e => { e.currentTarget.style.background = item.danger ? "#FEF2F2" : item.accent ? "#DBEAFE" : "#F3F4F6"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = item.accent ? "#EFF6FF" : "transparent"; }}
+                >
+                  <span style={{
+                    width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                    background: item.danger ? "#FEF2F2" : item.accent ? "#DBEAFE" : "#F3F4F6",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: item.danger ? "#DC2626" : item.accent ? "#1D4ED8" : "#6B7280",
+                  }}>
+                    {item.icon}
+                  </span>
+                  {item.label}
+                </button>
+              )
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1956,11 +2202,12 @@ function IconBtn({ children, onClick, danger, title }) {
     <button onClick={onClick} title={title}
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{
-        width: 26, height: 26, borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 700,
-        border: `1.5px solid ${danger && hov ? DS.destructiveBorder : DS.border}`,
-        background: danger && hov ? DS.destructiveSoft : hov ? DS.bg : "transparent",
+        width: 32, height: 32, borderRadius: 10, cursor: "pointer", fontSize: 12, fontWeight: 700,
+        border: `1.5px solid ${danger && hov ? DS.destructiveBorder : hov ? "rgba(0,0,0,0.08)" : DS.border}`,
+        background: danger && hov ? DS.destructiveSoft : hov ? "rgba(0, 0, 0, 0.04)" : "transparent",
         color: danger ? (hov ? DS.destructive : DS.ink3) : hov ? DS.ink : DS.ink3,
-        display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.1s",
+        display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s",
+        outline: "none",
       }}>{children}</button>
   );
 }
@@ -1975,19 +2222,20 @@ function AddActionPicker({ onAdd, isCreating }) {
   return (
     <div style={{ position: "relative" }}>
       <button
+        className="add-node-btn"
         onClick={() => setOpen(!open)}
         style={{
           width: "100%", padding: "20px", borderRadius: 28, cursor: "pointer",
           border: `2px dashed ${open ? DS.accent : DS.border}`, background: open ? DS.card : DS.bg,
           color: open ? DS.accent : DS.ink3, fontSize: 15, fontWeight: 900, fontFamily: "inherit",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 12, transition: "all 0.3s ease",
+          display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center", gap: 12, transition: "all 0.3s ease",
           boxShadow: open ? `0 10px 30px ${DS.accent}20` : "none"
         }}
       >
         <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ type: "spring", damping: 12 }}>
           <Plus size={22} strokeWidth={3} />
         </motion.div>
-        {open ? "CHOOSE AN ACTION" : "ADD NEW STEP"}
+        {open ? "CHOOSE AN ACTION" : "ADD NODE"}
       </button>
 
       <AnimatePresence>
@@ -2012,6 +2260,7 @@ function AddActionPicker({ onAdd, isCreating }) {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                className="action-modal"
                 style={{
                   width: "100%", maxWidth: 640, pointerEvents: "auto",
                   background: "rgba(255, 255, 255, 0.98)", backdropFilter: "blur(20px)",
@@ -2030,7 +2279,7 @@ function AddActionPicker({ onAdd, isCreating }) {
                   </button>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(135px, 1fr))", gap: 16 }}>
+                <div className="action-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(135px, 1fr))", gap: 16 }}>
                   {ACTIONS.map(a => (
                     <motion.button
                       key={a.id}
@@ -2104,7 +2353,7 @@ function buildPreviewMsgs(steps) {
       const btn1 = c.follow_button_text || "Visit Profile";
       const btn2 = c.confirm_button_text || "I'm following ✅";
       out.push({
-        type: "bot", 
+        type: "bot",
         text: `${title}\n\n${desc}`,
         buttons: [{ title: btn1 }, { title: btn2 }]
       });
@@ -2142,7 +2391,7 @@ function PhonePreview({ steps, platform }) {
   };
 
   return (
-    <div style={{ width: 340, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div className="phone-preview-wrapper" style={{ width: 340, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
       {/* Label */}
       <div style={{ fontSize: 11, fontWeight: 800, color: DS.ink3, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: DS.green, boxShadow: `0 0 8px ${DS.green}` }} />
@@ -2538,12 +2787,50 @@ function FlowBuilder() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
   const [settings, setSettings] = useState({ dmLimit: 30, slowMode: true, humanize: true });
   const bottomRef = useRef(null);
   const [pageId, setPageId] = useState(null);
   const [actions, setActions] = useState([]);
   const [loadingActions, setLoadingActions] = useState(false);
   const [replyData, setReplyData] = useState(null);
+
+  // Resize handler states
+  const [previewWidth, setPreviewWidth] = useState(380);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResize = useCallback((e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const doResize = (e) => {
+      const containerElement = document.querySelector(".instdm-body");
+      if (containerElement) {
+        const rect = containerElement.getBoundingClientRect();
+        const newWidth = rect.right - e.clientX;
+        setPreviewWidth(Math.max(300, Math.min(600, newWidth)));
+      }
+    };
+    const endResize = () => {
+      setIsResizing(false);
+    };
+    window.addEventListener("mousemove", doResize);
+    window.addEventListener("mouseup", endResize);
+    return () => {
+      window.removeEventListener("mousemove", doResize);
+      window.removeEventListener("mouseup", endResize);
+    };
+  }, [isResizing]);
 
   // Fetch Flow Data if ID exists
   useEffect(() => {
@@ -2875,9 +3162,9 @@ function FlowBuilder() {
 
   return (
     <DSContext.Provider value={DS}>
-      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Sora', 'DM Sans', -apple-system, sans-serif", margin: "-16px" }} className="md:-m-6">
+      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Inter', 'Sora', 'DM Sans', -apple-system, sans-serif" }} className="-mx-4 md:-mx-6">
         <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -2886,352 +3173,797 @@ function FlowBuilder() {
         input[type=range] { -webkit-appearance: none; height: 5px; border-radius: 99px; background: ${DS.border}; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: ${DS.accent}; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
-        /* Responsive utility for flows layout */
-        .instdm-body { width: 100%; max-width: 1080px; margin: 0 auto; padding: 22px 18px; display: flex; gap: 22px; align-items: flex-start; }
-        .instdm-left { flex: 1; min-width: 0; }
-        .instdm-preview { width: 320px; flex-shrink: 0; position: sticky; top: 90px; }
-
-        /* Tablet: stack vertically earlier and use full width */
-        @media (max-width: 1024px) {
-          .instdm-body { flex-direction: column; padding: 16px; max-width: 100%; width: 100%; }
-          .instdm-left { width: 100%; }
-          .instdm-preview { width: 100%; margin-top: 14px; }
-          /* make header actions wrap */
-        }
-
-        /* Mobile: ensure preview fills viewport width and UI scales */
-        @media (max-width: 520px) {
-          .instdm-body { padding: 12px; gap: 12px; }
-          .instdm-left { width: 100%; }
-          .instdm-preview { width: 100%; margin-top: 12px; }
-          .instdm-body, .instdm-left, .instdm-preview { box-sizing: border-box; }
-        }
-
-        /* Very small screens: tighten spacing */
-        @media (max-width: 360px) {
-          .instdm-body { padding: 8px; }
-        }
-
-        /* Flow header responsive */
-        .flow-hdr { 
-          background: ${DS.card}; 
-          border-bottom: 1.5px solid ${DS.border}; 
-          padding: 8px 12px; 
-          position: sticky; 
-          top: -16px; 
-          z-index: 100; 
-          backdrop-filter: blur(8px); 
+        /* ─── Canvas background ─── */
+        .flow-builder-container {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          min-height: 100vh;
+          background-color: #F8FAFC;
+          background-image: radial-gradient(circle, #CBD5E1 1.2px, transparent 1.2px);
+          background-size: 24px 24px;
+          background-attachment: scroll;
+          position: relative;
         }
 
-        @media (min-width: 768px) {
-          .flow-hdr { 
-             flex-direction: row; 
-             padding: 12px 24px;
-             gap: 20px;
-             top: -24px;
+        /* ─── Dark mode canvas ─── */
+        html.dark .flow-builder-container,
+        .dark .flow-builder-container {
+          background-color: #0b0f19 !important;
+          background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1.2px, transparent 1.2px) !important;
+        }
+
+        /* ─── Desktop action visibility ─── */
+        .step-actions-desktop { display: flex; }
+        .step-actions-mobile  { display: none; }
+
+        /* ─── Body: two-column desktop layout ─── */
+        .instdm-body {
+          width: 100%;
+          padding: 28px 24px 24px;
+          display: flex;
+          gap: 0;
+          align-items: flex-start;
+          flex: 1;
+        }
+        .instdm-left {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          gap: 24px;
+          align-items: flex-start;
+        }
+        .flow-column {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 28px;
+        }
+        .instdm-preview {
+          flex-shrink: 0;
+          position: sticky;
+          top: 76px;
+          z-index: 100;
+        }
+
+        /* ─── Tablet: stack preview below ─── */
+        @media (max-width: 1100px) {
+          .instdm-body { flex-direction: column; padding: 14px 12px; }
+          .instdm-left { width: 100%; }
+          .instdm-preview { width: 100% !important; position: static; margin-top: 16px; }
+          .resize-divider { display: none !important; }
+        }
+
+        /* ─── Mobile: single-column, compact ─── */
+        @media (max-width: 768px) {
+          /* Show overflow menu; hide full desktop row */
+          .step-actions-desktop { display: none !important; }
+          .step-actions-mobile  { display: flex !important; }
+
+          /* Flatten left column — sticky-fab hidden, flow-column fills width */
+          .instdm-left {
+            flex-direction: column !important;
+            gap: 0 !important;
+            width: 100% !important;
+            align-items: stretch !important;
+          }
+          .flow-column {
+            gap: 20px !important;
+            padding: 0 !important;
+          }
+          .sticky-fab { display: none !important; }
+
+          .instdm-body {
+            padding: 20px 16px 90px !important;
+            flex-direction: column;
+          }
+           .instdm-preview { display: none !important; }
+          .flow-builder-container { background-size: 20px 20px; }
+
+          /* Responsive Publish button text */
+          .publish-btn {
+            padding: 8px 14px !important;
+            border-radius: 10px !important;
+          }
+          .publish-btn-text {
+            font-size: 0px !important;
+          }
+          .publish-btn-text::after {
+            content: "Publish" !important;
+            font-size: 12.5px !important;
+          }
+
+          /* Header action buttons — icon-only on mobile to prevent overflow */
+          .flow-hdr-live-text { display: none !important; }
+          .flow-hdr-live-btn {
+            padding: 7px 10px !important;
+            gap: 0 !important;
+          }
+
+          /* Header */
+          .flow-hdr {
+            padding: 0 12px !important;
+            min-height: 56px !important;
+            height: 56px !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+          }
+          .flow-hdr-breadcrumb { display: none !important; }
+          .flow-hdr-center { display: none !important; }
+
+          /* Step cards */
+          .step-card-main { border-radius: 16px !important; }
+          .step-card-header { padding: 11px 12px 11px 14px !important; gap: 9px !important; }
+          .step-num { width: 20px !important; height: 20px !important; font-size: 9.5px !important; }
+          .step-icon { width: 32px !important; height: 32px !important; border-radius: 9px !important; }
+          .step-icon svg { width: 15px !important; height: 15px !important; }
+          .step-card-header input { font-size: 13.5px !important; }
+          .step-card-expanded { padding: 12px 14px 16px 14px !important; border-radius: 0 0 14px 14px !important; }
+
+          /* Trigger card */
+          .trigger-card { padding: 10px 12px !important; border-radius: 14px !important; }
+          .trigger-card-icon { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
+
+          /* Empty state */
+          .empty-state { padding: 24px 14px !important; border-radius: 20px !important; }
+          .empty-state-icon { width: 52px !important; height: 52px !important; border-radius: 16px !important; margin-bottom: 14px !important; }
+          .empty-state-title { font-size: 16px !important; }
+          .empty-state-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; margin-bottom: 18px !important; }
+          .empty-state-grid button { padding: 11px 6px !important; border-radius: 14px !important; gap: 6px !important; }
+          .empty-state-grid button > div { width: 26px !important; height: 26px !important; }
+          .empty-state-grid button span { font-size: 10.5px !important; }
+
+          /* Publish footer */
+          .publish-footer {
+            padding: 14px 16px !important;
+            border-radius: 14px !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+          }
+          .publish-footer-btn { width: 100% !important; justify-content: center !important; }
+
+          /* Add-action modal */
+          .action-modal { border-radius: 24px 24px 0 0 !important; max-width: 100% !important; padding: 20px 14px 28px !important; }
+          .action-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
+          .action-grid button { padding: 13px 6px !important; border-radius: 18px !important; }
+          .action-grid button > div:first-child { width: 36px !important; height: 36px !important; border-radius: 11px !important; }
+
+          /* Step connector alignment (20px badge, 14px padding-left → center ≈ 23px) */
+          .step-connector { left: 23px !important; }
+        }
+
+        .preview-backdrop {
+          padding: 16px;
+        }
+        @media (max-width: 360px) {
+          .preview-backdrop {
+            padding: 8px !important;
           }
         }
 
-        @media (max-width: 600px) {
-          .btn-text { display: none; }
-          .flow-hdr-title { font-size: 14px !important; }
+        @media (max-width: 360px) {
+          .instdm-body { padding: 6px 6px 90px !important; }
+          .action-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
 
+        /* --- Responsive Phone Preview --- */
+        @media (max-width: 440px) {
+          .phone-preview-wrapper {
+            transform: scale(0.88);
+            transform-origin: top center;
+            margin-bottom: -70px;
+            margin-top: 10px;
+          }
+        }
+        @media (max-width: 400px) {
+          .phone-preview-wrapper {
+            transform: scale(0.8);
+            transform-origin: top center;
+            margin-bottom: -120px;
+            margin-top: 10px;
+          }
+        }
+        @media (max-width: 360px) {
+          .phone-preview-wrapper {
+            transform: scale(0.72);
+            transform-origin: top center;
+            margin-bottom: -170px;
+            margin-top: 10px;
+          }
+        }
+        @media (max-width: 335px) {
+          .phone-preview-wrapper {
+            transform: scale(0.66);
+            transform-origin: top center;
+            margin-bottom: -210px;
+            margin-top: 10px;
+          }
+        }
+
+        /* ─── Sticky header ─── */
+        .flow-hdr {
+          background: var(--card);
+          border-bottom: 1.5px solid ${DS.border};
+          padding: 0 24px;
+          flex-shrink: 0;
+          z-index: 300;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          height: 60px;
+          min-height: 60px;
+        }
+
+        /* ─── Publish button ─── */
+        .publish-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 9px 20px; border-radius: 12px; border: none;
+          background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+          color: #fff; font-size: 13px; font-weight: 700;
+          cursor: pointer; font-family: inherit; white-space: nowrap;
+          box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+          transition: all 0.2s;
+        }
+        .publish-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.45); }
+        .publish-btn:active { transform: translateY(0); }
+        .publish-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+        /* ─── Mobile Preview FAB ─── */
         .phone-fab {
           position: fixed;
           bottom: 24px;
-          right: 24px;
-          z-index: 150;
-          height: 72px;
-          padding: 0 12px;
+          right: 20px;
+          z-index: 250;
+          height: 48px;
+          padding: 0 20px;
           border-radius: 24px;
-          background: rgba(255, 255, 255, 0.8);
-          backdrop-filter: blur(16px);
-          box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.15), inset 0 0 0 1.5px rgba(255, 255, 255, 0.2);
+          background: linear-gradient(135deg, ${DS.accent} 0%, #1D4ED8 100%);
+          box-shadow: 0 8px 24px rgba(29,78,216,0.3);
           display: none;
           align-items: center;
-          gap: 12px;
-          border: 3px solid #fff;
+          justify-content: center;
+          gap: 8px;
+          border: none;
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @media (max-width: 1100px) { .phone-fab { display: flex; } }
+        .phone-fab:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 12px 28px rgba(29,78,216,0.4); }
+        .phone-fab:active { transform: scale(0.96); }
+        .fab-text { color: #fff; font-weight: 700; font-size: 13.5px; }
+        .fab-icon { color: #fff; display: flex; align-items: center; }
+
+        /* ─── Step connector line ─── */
+        .step-connector {
+          position: absolute;
+          left: 31px;
+          bottom: -28px;
+          width: 2px;
+          height: 28px;
+          z-index: 0;
         }
 
-        @media (max-width: 1024px) {
-          .phone-fab { display: flex; }
-        }
+        /* ─── Misc ─── */
+        .tab-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all 0.18s; white-space: nowrap; }
+        .tab-pill-active { background: ${DS.bg}; color: ${DS.ink}; box-shadow: 0 1px 5px rgba(0,0,0,0.1), 0 0 0 1.5px ${DS.border}; }
+        .tab-pill-inactive { background: transparent; color: ${DS.ink3}; }
+        .tab-pill-inactive:hover { background: ${DS.bg}; color: ${DS.ink2}; }
 
-        .phone-fab:hover { transform: translateY(-10px) scale(1.08); box-shadow: 0 20px 50px -15px rgba(255, 0, 128, 0.3); }
-        .phone-fab:active { transform: scale(0.95); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        `}</style>
 
-        .fab-text {
-          color: #333;
-          font-weight: 900;
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          background: linear-gradient(90deg, #FF0080, #7928CA);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          padding-right: 8px;
-        }
-
-        .fab-illustration {
-          width: 54px;
-          height: 54px;
-          object-fit: contain;
-          filter: drop-shadow(0 8px 12px rgba(255, 0, 128, 0.2));
-        }
-      `}</style>
+        <div className="flow-builder-container">
 
 
-        {/* ── MOBILE PREVIEW FAB (3D 5 Illustration) ────────────────── */}
-        <motion.button
-          className="phone-fab"
-          animate={{ y: [0, -12, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          onClick={() => {
-            const el = document.querySelector('.instdm-preview');
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth' });
-              el.classList.add('preview-highlight');
-              setTimeout(() => el.classList.remove('preview-highlight'), 1500);
-            }
-          }}
-        >
-          <img
-            src="/mobile_preview.png"
-            className="fab-illustration"
-            alt="Preview"
-          />
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <span className="fab-text">Swipe to</span>
-            <span style={{ fontSize: 13, fontWeight: 900, opacity: 0.8, color: "#FF0080", textTransform: "uppercase", letterSpacing: "0.02em", marginTop: -2 }}>Preview →</span>
-          </div>
-        </motion.button>
+          {/* ── MOBILE PREVIEW FAB (3D 5 Illustration) ────────────────── */}
+          <motion.button
+            className="phone-fab"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setShowMobilePreview(true);
+            }}
+          >
+            <div className="fab-icon"><Eye size={20} /></div>
+            <span className="fab-text">Preview</span>
+          </motion.button>
 
-        {/* ── HEADER ─────────────────────────────────────────────── */}
-        <div className="flow-hdr">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", flexWrap: "wrap" }}>
+          {/* ── HEADER ─────────────────────────────────────────────── */}
+          <div className="flow-hdr">
 
-            {/* Left Section: Back + Branding */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: "auto" }}>
+            {/* Left: Breadcrumb + platform logo + editable name */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "1 1 auto", minWidth: 0 }}>
+              {/* Back button */}
               <button
                 onClick={() => router.push(`/dashboard/${platform}/bot-replies`)}
                 style={{
-                  padding: "8px 12px", borderRadius: 12, border: `1.5px solid ${DS.border}`,
+                  width: 34, height: 34, borderRadius: 10, border: `1.5px solid ${DS.border}`,
                   background: DS.bg, color: DS.ink2, cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 800,
-                  transition: "all 0.2s"
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, transition: "all 0.2s"
                 }}
               >
-                <ArrowLeft size={16} /> <span className="btn-text">Back</span>
+                <ArrowLeft size={15} />
               </button>
 
-              <div style={{
-                width: 32, height: 32, borderRadius: 10, background: DS.gradient,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 16, flexShrink: 0, boxShadow: `0 4px 12px ${DS.accent}20`
-              }}>
-                {platform === "facebook" ? <FacebookIcon size={16} color="#fff" fill={DS.bg} /> : <InstagramIcon size={16} color="#fff" />}
+              {/* Breadcrumb */}
+              <div className="flow-hdr-breadcrumb" style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                <div style={{
+                  width: 30, height: 30, borderRadius: 9,
+                  background: platform === "facebook" ? "#1877F2" : DS.gradient,
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  {platform === "facebook"
+                    ? <FacebookIcon size={15} color="#fff" fill="#fff" />
+                    : <InstagramIcon size={15} color="#fff" />}
+                </div>
+                <span style={{ fontSize: 12, color: DS.ink3, fontWeight: 600 }}>BotChat</span>
+                <ChevronRight size={13} color={DS.ink3} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: DS.ink2 }}>Flow Builder</span>
+                <ChevronRight size={13} color={DS.ink3} />
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <span style={{ fontSize: 9, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.08em" }}>{platform.toUpperCase()}</span>
-                <input
-                  value={flowName}
-                  className="flow-hdr-title"
-                  onChange={e => setFlowName(e.target.value)}
-                  placeholder="Untitled Flow"
-                  style={{ border: "none", background: "transparent", fontSize: 15, fontWeight: 900, color: DS.ink, outline: "none", fontFamily: "inherit", width: "100%", padding: 0 }}
-                />
-              </div>
-            </div>
-
-            {/* Center: Navigation Tabs (Scrollable on small screens if needed) */}
-            <div style={{ display: "flex", background: DS.bg, padding: 3, borderRadius: 12, border: `1.5px solid ${DS.border}`, overflowX: "auto", className: "no-scrollbar" }}>
-              {[
-                { id: "flow", label: "Workflow", icon: GitBranch },
-                { id: "settings", label: "Settings", icon: Settings2 },
-                { id: "analytics", label: "Vitals", icon: Brain },
-              ].map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setTab(t.id)}
-                  style={{
-                    padding: "6px 12px", borderRadius: 9, fontSize: 12, fontWeight: tab === t.id ? 900 : 600, border: "none",
-                    background: tab === t.id ? DS.bg : "transparent",
-                    color: tab === t.id ? DS.ink : DS.ink3,
-                    boxShadow: tab === t.id ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
-                    cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 4, fontFamily: "inherit", whiteSpace: "nowrap"
-                  }}
-                >
-                  <t.icon size={13} color={tab === t.id ? DS.accent : "currentColor"} />
-                  <span className="btn-text">{t.label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Right: Actions */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "auto", justifyContent: "flex-end" }}>
-              <button
-                onClick={() => setIsLive(!isLive)}
-                title={isLive ? "Live Sync Enabled" : "Draft Only"}
+              {/* Editable flow name */}
+              <input
+                value={flowName}
+                className="flow-hdr-title"
+                onChange={e => setFlowName(e.target.value)}
+                placeholder="Untitled Flow"
                 style={{
-                  padding: "8px 12px", borderRadius: 12, fontSize: 12, fontWeight: 800, border: `1.5px solid ${isLive ? DS.green : DS.border}`,
-                  background: isLive ? DS.greenSoft : "#fff", color: isLive ? DS.green : DS.ink3, cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s",
+                  border: "none", background: "transparent",
+                  fontSize: 14, fontWeight: 700, color: DS.ink,
+                  outline: "none", fontFamily: "inherit",
+                  minWidth: 0, flex: 1, maxWidth: 200,
+                }}
+              />
+            </div>
+
+            {/* Flow builder label */}
+            <div className="flow-hdr-center" style={{ display: "flex", alignItems: "center", gap: 6, color: DS.ink3, flexShrink: 0 }}>
+              <GitBranch size={14} color={DS.accent} />
+              <span style={{ fontSize: 12, fontWeight: 600 }}>Flow Builder</span>
+            </div>
+
+            {/* Right: Live status + Save + Publish */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+              {/* Live toggle */}
+              <button
+                className="flow-hdr-live-btn"
+                onClick={() => setIsLive(!isLive)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "7px 12px", borderRadius: 10, cursor: "pointer",
+                  border: `1.5px solid ${isLive ? "#10B981" : DS.border}`,
+                  background: isLive ? "rgba(16,185,129,0.08)" : DS.bg,
+                  color: isLive ? "#10B981" : DS.ink3,
+                  fontSize: 12.5, fontWeight: 700, transition: "all 0.2s", fontFamily: "inherit",
                 }}
               >
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: isLive ? DS.green : DS.ink3 }} />
-                <span className="btn-text">{isLive ? "Live" : "Draft"}</span>
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: isLive ? "#10B981" : DS.border, flexShrink: 0, boxShadow: isLive ? "0 0 0 3px rgba(16,185,129,0.18)" : "none", transition: "all 0.2s" }} />
+                <span className="flow-hdr-live-text">{isLive ? "Live" : "Draft"}</span>
               </button>
 
-              <button onClick={handleSave} style={{
-                padding: "8px 12px", borderRadius: 12, fontSize: 12, fontWeight: 800, border: `1.5px solid ${saved ? DS.green : DS.border}`,
-                background: saved ? DS.greenSoft : "#fff", color: saved ? DS.green : DS.ink2, cursor: "pointer", transition: "all 0.2s",
-                display: "flex", alignItems: "center", gap: 6
-              }}>
-                {saved ? "✓" : <Save size={14} />}
-                <span className="btn-text"> {saved ? "Saved!" : "Publish Flow"}</span>
+              {/* Publish button */}
+              <button
+                onClick={() => handleSave(true)}
+                disabled={isSaving}
+                className="publish-btn"
+              >
+                {isSaving
+                  ? <><span style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", display: "inline-block", animation: "spin 0.7s linear infinite" }} /> <span className="btn-text">Saving...</span></>
+                  : saved
+                    ? <><CheckCircle2 size={14} /> <span className="btn-text">Published!</span></>
+                    : <><Play size={14} fill="currentColor" /> <span className="btn-text publish-btn-text">Publish Flow</span></>}
               </button>
+            </div>
+          </div>
+
+          {/* ── BODY ────────────────────────────────────────────────── */}
+          <div className="instdm-body">
+
+            {/* ── LEFT: FLOW BUILDER ─── */}
+            <div className="instdm-left" style={{ flex: 1, position: "relative" }}>
+
+              {/* Sticky floating Add button on the left side of flow stack */}
+              {steps.length > 0 && (
+                <div className="sticky-fab" style={{ position: "sticky", top: 96, display: "flex", flexDirection: "column", gap: 12, flexShrink: 0, zIndex: 80 }}>
+                  <button
+                    onClick={() => bottomRef.current?.scrollIntoView({ behavior: "smooth" })}
+                    title="Add block"
+                    style={{
+                      width: 44, height: 44, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)",
+                      color: "#fff", border: "none",
+                      boxShadow: "0 6px 16px rgba(59, 130, 246, 0.3)", cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.1) translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}
+                  >
+                    <Plus size={20} strokeWidth={2.5} />
+                  </button>
+                </div>
+              )}
+
+              <div className="flow-column" style={{ flex: 1 }}>
+                {isMobile && expandedId ? (
+                  (() => {
+                    const editingStep = steps.find(s => s.id === expandedId);
+                    if (!editingStep) return null;
+                    const gi = steps.findIndex(s => s.id === expandedId);
+                    const stepColor = getStepColor(editingStep.type);
+                    const def = getDef(editingStep.kind, editingStep.type);
+
+                    return (
+                      <div className="mobile-step-editor" style={{
+                        background: DS.bg,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 16,
+                      }}>
+                        {/* Header card with name and step details */}
+                        <div style={{
+                          background: DS.card,
+                          borderRadius: 20,
+                          padding: "16px 20px",
+                          border: `1.5px solid ${stepColor.border}`,
+                          boxShadow: "0 4px 18px rgba(0, 0, 0, 0.02)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                        }}>
+                          {/* Back Button */}
+                          <button
+                            onClick={() => setExpandedId(null)}
+                            style={{
+                              width: 34, height: 34, borderRadius: 10,
+                              background: DS.bg, border: `1.5px solid ${DS.border}`,
+                              color: DS.ink2, cursor: "pointer",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              flexShrink: 0,
+                            }}
+                          >
+                            <ArrowLeft size={16} />
+                          </button>
+
+                          {/* Icon badge */}
+                          <div style={{
+                            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                            background: stepColor.bg,
+                            border: `1.5px solid ${stepColor.border}`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            color: stepColor.text,
+                          }}>
+                            {typeof def.icon === 'string' ? def.icon : <def.icon size={18} />}
+                          </div>
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 10, fontWeight: 800, color: stepColor.text, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                              Edit Step {gi + 1}
+                            </div>
+                            <input
+                              value={editingStep.label}
+                              onChange={e => updateStep(editingStep.id, { ...editingStep, label: e.target.value })}
+                              style={{
+                                border: "none", background: "transparent", fontSize: 14.5, fontWeight: 700,
+                                color: DS.ink, outline: "none", fontFamily: "inherit", width: "100%",
+                              }}
+                              placeholder="Step Name"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Fields container */}
+                        <div style={{
+                          background: DS.card,
+                          borderRadius: 20,
+                          padding: "20px",
+                          border: `1.5px solid ${DS.border}`,
+                          boxShadow: "0 4px 18px rgba(0, 0, 0, 0.02)",
+                        }}>
+                          <StepFields
+                            step={editingStep}
+                            update={data => updateStep(editingStep.id, data)}
+                            allSteps={steps}
+                            onSaveStep={handleStepSave}
+                            onAddStep={addStep}
+                            pageId={pageId}
+                            platform={platform}
+                            actions={actions}
+                            loadingActions={loadingActions}
+                          />
+                        </div>
+
+                        {/* Actions row */}
+                        <div style={{ display: "flex", gap: 12 }}>
+                          <button
+                            onClick={() => setExpandedId(null)}
+                            style={{
+                              flex: 1,
+                              padding: "14px 20px",
+                              background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+                              color: "#fff",
+                              borderRadius: 14,
+                              border: "none",
+                              fontWeight: 700,
+                              fontSize: 14.5,
+                              boxShadow: "0 6px 20px rgba(29, 78, 216, 0.25)",
+                              cursor: "pointer",
+                              textAlign: "center",
+                            }}
+                          >
+                            Done Editing
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <>
+                    {/* Empty state */}
+                    {steps.length === 0 && (
+                      <div className="empty-state" style={{ padding: "50px 30px", textAlign: "center", background: DS.card, border: `2px dashed ${DS.border}`, borderRadius: 32, marginBottom: 10, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <div className="empty-state-icon" style={{ width: 84, height: 84, borderRadius: 32, background: DS.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, marginBottom: 24, color: DS.accent }}>
+                          <Bot size={42} />
+                        </div>
+                        <div style={{ marginBottom: 30 }}>
+                          <h3 className="empty-state-title" style={{ fontSize: 22, fontWeight: 900, color: DS.ink, marginBottom: 10, letterSpacing: "-0.02em" }}>Build Your First Template</h3>
+                          <p style={{ fontSize: 14, color: DS.ink3, maxWidth: 360, lineHeight: 1.6, margin: "0 auto", fontWeight: 500 }}>
+                            Select an action below to start your automation flow. A "Message" is usually the best place to start!
+                          </p>
+                        </div>
+
+                        <div className="empty-state-grid" style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 10, marginBottom: 32 }}>
+                          {ACTIONS.map(a => (
+                            <button
+                              key={a.id}
+                              onClick={() => addStep(a.id)}
+                              style={{
+                                padding: "16px 12px", borderRadius: 20, border: `1.5px solid ${DS.border}`,
+                                background: DS.bg, color: DS.ink, cursor: "pointer", transition: "all 0.2s",
+                                display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(0,0,0,0.1)"; }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
+                            >
+                              <div style={{ width: 34, height: 34, borderRadius: 10, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink, border: `1px solid ${DS.border}` }}>
+                                <a.icon size={18} />
+                              </div>
+                              <span style={{ fontSize: 13, fontWeight: 800 }}>{a.label}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        <div style={{ display: "flex", gap: 8, alignItems: "center", background: DS.bg, padding: "10px 18px", borderRadius: 18, border: `1.5px solid ${DS.border}` }}>
+                          <Sparkles size={16} className="text-amber-500" />
+                          <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink2, letterSpacing: "0.03em" }}>PRO TIP: START WITH A WELCOME MESSAGE</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Trigger Info Card (Virtual) */}
+                    {replyData?.trigger_type && (
+                      <div className="trigger-card" style={{
+                        background: DS.card,
+                        border: `1.5px solid ${DS.border}`,
+                        borderRadius: 16,
+                        padding: "14px 18px",
+                        display: "flex", alignItems: "center", gap: 14,
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+                        position: "relative",
+                        borderLeft: `4px solid ${DS.accent}`,
+                      }}>
+                        <div className="trigger-card-icon" style={{
+                          width: 40, height: 40, borderRadius: 12,
+                          background: DS.accentSoft,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          color: DS.accent, flexShrink: 0,
+                        }}>
+                          <Bot size={20} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: DS.ink3, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>SYSTEM TRIGGER MAPPING</div>
+                          <div style={{ fontSize: 15, fontWeight: 800, color: DS.ink, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {actions?.find(a => a.type === replyData.trigger_type)?.label || replyData.trigger_type}
+                          </div>
+                        </div>
+                        <div style={{ position: "absolute", left: steps.length > 0 ? 31 : 30, bottom: -28, width: 2, height: 28, background: `linear-gradient(${DS.border}, transparent)`, zIndex: 0 }} />
+                      </div>
+                    )}
+
+                    {/* Step list */}
+                    {steps.map((s, gi) => (
+                      <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
+                        expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                        onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
+                        onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
+                        onSaveStep={handleStepSave} onAddStep={addStep}
+                        pageId={pageId} platform={platform} actions={actions} loadingActions={loadingActions}
+                      />
+                    ))}
+
+                    {/* Add step (hidden for first-time onboarding) */}
+                    {steps.length > 0 && (
+                      <div style={{ marginTop: 16 }} ref={bottomRef}>
+                        <AddActionPicker onAdd={addStep} isCreating={isCreating} />
+                      </div>
+                    )}
+
+                    {/* Publish Footer */}
+                    {steps.length > 0 && (
+                      <div className="publish-footer" style={{
+                        marginTop: 28,
+                        padding: "16px 24px",
+                        background: DS.card,
+                        backdropFilter: "blur(12px)",
+                        WebkitBackdropFilter: "blur(12px)",
+                        border: `1.5px solid ${DS.border}`,
+                        borderRadius: 16,
+                        display: "flex",
+                        gap: 20, justifyContent: "space-between", alignItems: "center",
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)",
+                        flexWrap: "wrap",
+                      }}>
+                        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 3, background: "linear-gradient(90deg, #3B82F6, #6366F1)" }} />
+                        <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0, flex: "1 1 auto" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+                            <div style={{ width: 26, height: 26, borderRadius: 8, background: "rgba(59,130,246,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                              <Zap size={14} color="#2563EB" fill="#2563EB" />
+                            </div>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: "#1E3A8A", letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>Everything looks good?</span>
+                          </div>
+                          <span style={{ fontSize: 11.5, color: "#3B82F6", fontWeight: 500, paddingLeft: 33, overflowWrap: "break-word", wordBreak: "break-word" }}>Publish your flow to make all changes live for your audience.</span>
+                        </div>
+                        <button
+                          onClick={() => handleSave(true)}
+                          disabled={isSaving}
+                          className="publish-btn publish-footer-btn"
+                          style={{ flexShrink: 0 }}
+                        >
+                          {isSaving ? "Publishing..." : <><Play size={14} fill="currentColor" /> Publish Flow</>}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* ── RESIZE HANDLE Divider ── */}
+            <div
+              onMouseDown={startResize}
+              style={{
+                width: 6,
+                cursor: "col-resize",
+                alignSelf: "stretch",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: isResizing ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                borderRadius: 4,
+                margin: "0 8px",
+                transition: "background 0.2s",
+                position: "relative",
+                zIndex: 100,
+              }}
+              className="resize-divider"
+              title="Drag to resize panels"
+            >
+              <div style={{
+                width: 2,
+                height: 48,
+                borderRadius: 1,
+                background: isResizing ? "#3B82F6" : "#CBD5E1",
+                transition: "all 0.2s",
+              }} />
+            </div>
+
+            {/* ── RIGHT: PHONE PREVIEW ─── */}
+            <div className="instdm-preview" style={{ width: previewWidth }}>
+              <PhonePreview steps={steps} platform={platform} />
             </div>
           </div>
         </div>
 
-        {/* ── BODY ────────────────────────────────────────────────── */}
-        <div className="instdm-body" style={{ maxWidth: 1080 }}>
 
-          {/* ── LEFT: FLOW / SETTINGS / ANALYTICS ─── */}
-          <div className="instdm-left" style={{ flex: 1 }}>
-
-            {tab === "flow" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {/* Empty state */}
-                {steps.length === 0 && (
-                  <div style={{ padding: "50px 30px", textAlign: "center", background: DS.card, border: `2px dashed ${DS.border}`, borderRadius: 32, marginBottom: 10, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <div style={{ width: 84, height: 84, borderRadius: 32, background: DS.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, marginBottom: 24, color: DS.accent }}>
-                      <Bot size={42} />
-                    </div>
-                    <div style={{ marginBottom: 30 }}>
-                      <h3 style={{ fontSize: 22, fontWeight: 900, color: DS.ink, marginBottom: 10, letterSpacing: "-0.02em" }}>Build Your First Template</h3>
-                      <p style={{ fontSize: 14, color: DS.ink3, maxWidth: 360, lineHeight: 1.6, margin: "0 auto", fontWeight: 500 }}>
-                        Select an action below to start your automation flow. A "Message" is usually the best place to start!
-                      </p>
-                    </div>
-
-                    <div style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 10, marginBottom: 32 }}>
-                      {ACTIONS.map(a => (
-                        <button
-                          key={a.id}
-                          onClick={() => addStep(a.id)}
-                          style={{
-                            padding: "16px 12px", borderRadius: 20, border: `1.5px solid ${DS.border}`,
-                            background: DS.bg, color: DS.ink, cursor: "pointer", transition: "all 0.2s",
-                            display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-                          }}
-                          onMouseEnter={e => { e.currentTarget.style.borderColor = DS.accent; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 10px 20px -10px rgba(0,0,0,0.1)"; }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = DS.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
-                        >
-                          <div style={{ width: 34, height: 34, borderRadius: 10, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", color: DS.ink, border: `1px solid ${DS.border}` }}>
-                            <a.icon size={18} />
-                          </div>
-                          <span style={{ fontSize: 13, fontWeight: 800 }}>{a.label}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div style={{ display: "flex", gap: 8, alignItems: "center", background: DS.bg, padding: "10px 18px", borderRadius: 18, border: `1.5px solid ${DS.border}` }}>
-                      <Sparkles size={16} className="text-amber-500" />
-                      <span style={{ fontSize: 11, fontWeight: 800, color: DS.ink2, letterSpacing: "0.03em" }}>PRO TIP: START WITH A WELCOME MESSAGE</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Trigger Info Card (Virtual) */}
-                {replyData?.trigger_type && (
-                  <div style={{
-                    background: `${DS.bg}80`, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius, padding: "16px 20px",
-                    display: "flex", alignItems: "center", gap: 16, boxShadow: "0 4px 15px rgba(0,0,0,0.03)", position: "relative",
-                    backdropFilter: "blur(10px)", marginBottom: 4
-                  }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 14, background: DS.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", color: DS.accent, border: `1.5px solid ${DS.accentBorder}`, boxShadow: `0 0 15px ${DS.accent}15` }}>
-                      <Bot size={24} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 10.5, fontWeight: 900, color: DS.accent, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>SYSTEM TRIGGER MAPPING</div>
-                      <div style={{ fontSize: 15, fontWeight: 900, color: DS.ink, letterSpacing: "-0.01em" }}>
-                        {actions?.find(a => a.type === replyData.trigger_type)?.label || replyData.trigger_type}
-                      </div>
-                    </div>
-                    <div style={{ position: "absolute", left: 39, bottom: -18, width: 2, height: 18, background: `linear-gradient(${DS.accent}60, ${DS.accent}10)` }} />
-                  </div>
-                )}
-
-                {/* Step list */}
-                {steps.map((s, gi) => (
-                  <StepCard key={s.id} step={s} index={gi} total={steps.length} allSteps={steps}
-                    expanded={expandedId === s.id} onToggle={() => setExpandedId(expandedId === s.id ? null : s.id)}
-                    onUpdate={data => updateStep(s.id, data)} onDelete={() => deleteStep(s.id)}
-                    onDup={() => dupStep(s.id)} onMoveUp={() => moveUp(gi)} onMoveDown={() => moveDown(gi)}
-                    onSaveStep={handleStepSave} onAddStep={addStep}
-                    pageId={pageId} platform={platform} actions={actions} loadingActions={loadingActions}
-                  />
-                ))}
-
-                {/* Add step (hidden for first-time onboarding) */}
-                {steps.length > 0 && (
-                  <div style={{ marginTop: 16 }} ref={bottomRef}>
-                    <AddActionPicker onAdd={addStep} isCreating={isCreating} />
-                  </div>
-                )}
-
-                {/* Publish Footer */}
-                {steps.length > 0 && (
-                  <div style={{
-                    marginTop: 32, padding: "24px 30px", background: DS.card, border: `1.5px solid ${DS.border}`, borderRadius: DS.radius,
-                    display: "flex", flexDirection: "column", sm: "row", gap: 20, justifyContent: "space-between", alignItems: "center",
-                    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.1)", position: "relative", overflow: "hidden"
-                  }}>
-                    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 3, background: `linear-gradient(90deg, ${DS.accent}, ${DS.accent}80)` }} />
-                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <Zap size={15} fill={DS.accent} color={DS.accent} />
-                        <span style={{ fontSize: 15, fontWeight: 900, color: DS.ink, letterSpacing: "-0.01em" }}>Everything looks good?</span>
-                      </div>
-                      <span style={{ fontSize: 12, color: DS.ink3, fontWeight: 500 }}>Publish your flow now to make all changes live for your audience.</span>
-                    </div>
-                    <button
-                      onClick={() => handleSave(true)}
-                      disabled={isSaving}
-                      style={{
-                        padding: "12px 32px", borderRadius: 16, fontSize: 13, fontWeight: 900, border: "none", fontFamily: "inherit",
-                        background: DS.gradient,
-                        color: "#fff", cursor: isSaving ? "default" : "pointer",
-                        boxShadow: `0 8px 25px ${DS.accent}30`, transition: "all 0.2s",
-                        display: "flex", alignItems: "center", gap: 10,
-                        opacity: isSaving ? 0.7 : 1
-                      }}
-                    >
-                      <Play size={16} fill="currentColor" /> {isSaving ? "Publishing..." : "PUBLISH FLOW"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {tab === "settings" && <SettingsPanel settings={settings} setSettings={setSettings} />}
-            {tab === "analytics" && <AnalyticsPanel />}
-          </div>
-
-          {/* ── RIGHT: PHONE PREVIEW ─── */}
-          <div className="instdm-preview">
-            <PhonePreview steps={steps} platform={platform} />
-          </div>
-        </div>
       </div>
+
+      {/* Mobile/Tablet Preview Modal Overlay */}
+      <AnimatePresence>
+        {showMobilePreview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="preview-backdrop"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 99999,
+              background: "rgba(15, 23, 42, 0.65)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setShowMobilePreview(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.92, y: 15 }}
+              transition={{ type: "spring", damping: 25, stiffness: 380 }}
+              style={{
+                background: "#fff",
+                borderRadius: 24,
+                width: "100%",
+                maxWidth: 390,
+                maxHeight: "92vh",
+                overflow: "hidden",
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div style={{
+                padding: "16px 20px",
+                borderBottom: "1.5px solid #F1F5F9",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                background: "#fff",
+                zIndex: 10,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Eye size={18} color="#2563EB" />
+                  <span style={{ fontWeight: 800, fontSize: 15, color: "#1E293B", letterSpacing: "-0.01em" }}>Interactive Preview</span>
+                </div>
+                <button
+                  onClick={() => setShowMobilePreview(false)}
+                  style={{
+                    border: "none",
+                    background: "#F1F5F9",
+                    color: "#64748B",
+                    borderRadius: "50%",
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: 12,
+                    fontWeight: "bold",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#E2E8F0"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F9"; }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Body wrapper */}
+              <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 24px", display: "flex", justifyContent: "center" }} className="mobile-preview-scroll-container">
+                <div style={{ width: "100%", maxWidth: 340, display: "flex", justifyContent: "center" }}>
+                  <PhonePreview steps={steps} platform={platform} />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </DSContext.Provider>
   );
 }
