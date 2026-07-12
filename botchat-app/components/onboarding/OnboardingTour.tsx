@@ -23,15 +23,12 @@ const SHIMMER_STYLE = `
 }
 `;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Context — allows any child to call startTour()
-// ─────────────────────────────────────────────────────────────────────────────
+const TourContext = createContext<TourContextValue | null>(null);
+
 interface TourContextValue {
     startTour: () => void;
     isOpen: boolean;
 }
-
-const TourContext = createContext<TourContextValue | null>(null);
 
 export function useTourContext() {
     const ctx = useContext(TourContext);
@@ -39,10 +36,7 @@ export function useTourContext() {
     return ctx;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-const PADDING = 12; // spotlight ring padding
+const PADDING = 12;
 
 interface Rect {
     top: number;
@@ -67,7 +61,6 @@ function computeTooltipPos(
     vpH: number
 ): { top: number; left: number } {
     if (!rect) {
-        // center of screen
         return { top: vpH / 2 - tooltipH / 2, left: vpW / 2 - tooltipW / 2 };
     }
 
@@ -75,14 +68,16 @@ function computeTooltipPos(
     let top = 0;
     let left = 0;
 
+    const effectiveW = Math.min(tooltipW, vpW - 32);
+
     switch (placement) {
         case "top":
             top = rect.top - tooltipH - gap;
-            left = rect.left + rect.width / 2 - tooltipW / 2;
+            left = rect.left + rect.width / 2 - effectiveW / 2;
             break;
         case "bottom":
             top = rect.top + rect.height + gap;
-            left = rect.left + rect.width / 2 - tooltipW / 2;
+            left = rect.left + rect.width / 2 - effectiveW / 2;
             break;
         case "left":
             top = rect.top + rect.height / 2 - tooltipH / 2;
@@ -95,20 +90,16 @@ function computeTooltipPos(
         case "center":
         default:
             top = vpH / 2 - tooltipH / 2;
-            left = vpW / 2 - tooltipW / 2;
+            left = vpW / 2 - effectiveW / 2;
             break;
     }
 
-    // Clamp within viewport
-    left = Math.max(16, Math.min(left, vpW - tooltipW - 16));
+    left = Math.max(16, Math.min(left, vpW - effectiveW - 16));
     top = Math.max(16, Math.min(top, vpH - tooltipH - 16));
 
     return { top, left };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Spotlight mask (SVG cutout)
-// ─────────────────────────────────────────────────────────────────────────────
 function SpotlightMask({ rect }: { rect: Rect | null }) {
     const vw = typeof window !== "undefined" ? window.innerWidth : 1920;
     const vh = typeof window !== "undefined" ? window.innerHeight : 1080;
@@ -146,7 +137,6 @@ function SpotlightMask({ rect }: { rect: Rect | null }) {
                 fill="rgba(0,0,0,0.68)"
                 mask="url(#tour-spotlight-mask)"
             />
-            {/* Glow ring around target */}
             <rect
                 x={x - 2}
                 y={y - 2}
@@ -166,9 +156,6 @@ function SpotlightMask({ rect }: { rect: Rect | null }) {
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Step progress dots
-// ─────────────────────────────────────────────────────────────────────────────
 function StepDots({
     total,
     current,
@@ -178,7 +165,6 @@ function StepDots({
     current: number;
     onDotClick: (i: number) => void;
 }) {
-    // Show max 10 dots, rest as ellipsis
     const maxDots = 10;
     const dots = total <= maxDots ? Array.from({ length: total }, (_, i) => i)
         : [
@@ -209,9 +195,6 @@ function StepDots({
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Arrow indicator pointing to the target
-// ─────────────────────────────────────────────────────────────────────────────
 function Arrow({ placement }: { placement: TourPlacement }) {
     const base = "absolute w-3 h-3 rotate-45";
     const bg = "bg-[#1a1a2e] dark:bg-[#0d0d1a] border border-white/10";
@@ -227,12 +210,9 @@ function Arrow({ placement }: { placement: TourPlacement }) {
     return <div className={map[placement]} />;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Tooltip Card
-// ─────────────────────────────────────────────────────────────────────────────
-
 const TOOLTIP_W = 380;
 const TOOLTIP_H_EST = 340;
+const MOBILE_BREAKPOINT = 480;
 
 interface TooltipCardProps {
     step: TourStep;
@@ -259,19 +239,31 @@ function TooltipCard({
 }: TooltipCardProps) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [pos, setPos] = useState({ top: -9999, left: -9999 });
+    const [tooltipW, setTooltipW] = useState(TOOLTIP_W);
     const isFirst = stepIndex === 0;
     const isLast = stepIndex === totalSteps - 1;
+    const isMobile = tooltipW < MOBILE_BREAKPOINT;
+
+    useEffect(() => {
+        const updateWidth = () => {
+            const vpW = window.innerWidth;
+            setTooltipW(vpW < MOBILE_BREAKPOINT ? vpW - 24 : TOOLTIP_W);
+        };
+        updateWidth();
+        window.addEventListener("resize", updateWidth);
+        return () => window.removeEventListener("resize", updateWidth);
+    }, []);
 
     useEffect(() => {
         if (!cardRef.current) return;
         const vpW = window.innerWidth;
         const vpH = window.innerHeight;
         const { height } = cardRef.current.getBoundingClientRect();
-        const computed = computeTooltipPos(targetRect, step.placement, TOOLTIP_W, height || TOOLTIP_H_EST, vpW, vpH);
+        const w = vpW < MOBILE_BREAKPOINT ? vpW - 24 : TOOLTIP_W;
+        const computed = computeTooltipPos(targetRect, step.placement, w, height || TOOLTIP_H_EST, vpW, vpH);
         setPos(computed);
-    }, [targetRect, step.placement, stepIndex]);
+    }, [targetRect, step.placement, stepIndex, tooltipW]);
 
-    // Keyboard navigation
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (e.key === "ArrowRight" || e.key === "Enter") {
@@ -298,13 +290,13 @@ function TooltipCard({
             style={{
                 top: pos.top,
                 left: pos.left,
-                width: TOOLTIP_W,
+                width: tooltipW,
+                maxWidth: "calc(100vw - 24px)",
                 pointerEvents: "auto",
             }}
         >
             <style>{SHIMMER_STYLE}</style>
 
-            {/* Top animated accent line */}
             <div
                 className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl z-20"
                 style={{ background: "linear-gradient(90deg, #6C5CE7, #00d2ff, #ec4899, #6C5CE7)", backgroundSize: "200% 100%", pointerEvents: "none" }}
@@ -314,7 +306,6 @@ function TooltipCard({
 
             <Arrow placement={step.placement} />
 
-            {/* Explanatory Video/Image Header */}
             {(step.youtubeId || step.mediaUrl) && (
                 <div className="relative w-full aspect-video bg-muted border-b border-border overflow-hidden">
                     {step.youtubeId ? (
@@ -330,21 +321,20 @@ function TooltipCard({
                 </div>
             )}
 
-            <div className="p-6 relative z-10">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4 gap-3">
-                    <div className="flex items-center gap-3">
+            <div className="p-5 sm:p-6 relative z-10">
+                <div className="flex items-start justify-between mb-3 sm:mb-4 gap-2 sm:gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-black text-white flex-shrink-0"
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-[13px] font-black text-white flex-shrink-0"
                             style={{ background: "var(--primary)", boxShadow: "0 4px 15px rgba(108,92,231,0.4)" }}
                         >
                             {stepIndex + 1}
                         </div>
-                        <div>
-                            <p className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground mb-0.5">
+                        <div className="min-w-0">
+                            <p className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground mb-0.5">
                                 Step {stepIndex + 1} of {totalSteps}
                             </p>
-                            <h3 className="text-[15px] font-black tracking-tight text-foreground leading-tight">
+                            <h3 className="text-[14px] sm:text-[15px] font-black tracking-tight text-foreground leading-tight truncate">
                                 {step.title}
                             </h3>
                         </div>
@@ -354,59 +344,55 @@ function TooltipCard({
                         aria-label="Skip tour"
                         className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
                     >
-                        <X className="w-4 h-4" />
+                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                 </div>
 
-                {/* Description - Practical Guidance */}
-                <div className="text-[13px] text-muted-foreground leading-relaxed font-medium mb-5">
+                <div className="text-[12px] sm:text-[13px] text-muted-foreground leading-relaxed font-medium mb-4 sm:mb-5">
                     {step.description}
                 </div>
 
-                {/* Progress dots */}
-                <div className="mb-4">
+                <div className="mb-3 sm:mb-4">
                     <StepDots total={totalSteps} current={stepIndex} onDotClick={onDotClick} />
                 </div>
 
-                {/* Separator */}
-                <div className="h-px bg-border mb-4" />
+                <div className="h-px bg-border mb-3 sm:mb-4" />
 
-                {/* Actions */}
                 <div className="flex items-center justify-between gap-2">
                     <button
                         onClick={onSkip}
-                        className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                        className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <SkipForward className="w-3 h-3" />
-                        Skip tour
+                        <span className="hidden sm:inline">Skip tour</span>
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                         {!isFirst && (
                             <button
                                 onClick={onPrev}
-                                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted transition-all border border-transparent hover:border-border"
+                                className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-[12px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted transition-all border border-transparent hover:border-border"
                             >
                                 <ChevronLeft className="w-3.5 h-3.5" />
-                                Previous
+                                <span className="hidden sm:inline">Previous</span>
                             </button>
                         )}
                         {isLast ? (
                             <button
                                 onClick={onFinish}
-                                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-[12px] font-black text-white transition-all hover:opacity-90 active:scale-95"
+                                className="flex items-center gap-1 px-3 sm:px-4 py-1.5 rounded-xl text-[11px] sm:text-[12px] font-black text-white transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
                                 style={{ background: "var(--primary,#6C5CE7)", boxShadow: "0 4px 14px rgba(108,92,231,0.4)" }}
                             >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
-                                Finish
+                                <span>Finish</span>
                             </button>
                         ) : (
                             <button
                                 onClick={onNext}
-                                className="flex items-center gap-1 px-4 py-1.5 rounded-xl text-[12px] font-black text-white transition-all hover:opacity-90 active:scale-95"
+                                className="flex items-center gap-1 px-3 sm:px-4 py-1.5 rounded-xl text-[11px] sm:text-[12px] font-black text-white transition-all hover:opacity-90 active:scale-95 whitespace-nowrap"
                                 style={{ background: "var(--primary,#6C5CE7)", boxShadow: "0 4px 14px rgba(108,92,231,0.4)" }}
                             >
-                                Next
+                                <span>Next</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
                             </button>
                         )}
@@ -417,9 +403,6 @@ function TooltipCard({
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Provider — wraps the dashboard layout; exposes startTour to children
-// ─────────────────────────────────────────────────────────────────────────────
 export function OnboardingTourProvider({ children }: { children: React.ReactNode }) {
     const tour = useTour();
 
@@ -431,7 +414,6 @@ export function OnboardingTourProvider({ children }: { children: React.ReactNode
     );
 }
 
-/** Inner component that has access to the same tour instance from the provider */
 function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
     const [targetRect, setTargetRect] = useState<Rect | null>(null);
     const [mounted, setMounted] = useState(false);
@@ -444,11 +426,6 @@ function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
 
     useEffect(() => setMounted(true), []);
 
-    /**
-     * Auto-adapt: if a step's route requires a plan the user doesn't have,
-     * the dashboard guard redirects them away. In that case we skip the step
-     * instead of getting stuck, so the tour always keeps flowing.
-     */
     useEffect(() => {
         if (!isOpen || !step?.route) return;
         const t = setTimeout(() => {
@@ -463,7 +440,7 @@ function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
         if (!step) return;
 
         let attempts = 0;
-        const maxAttempts = 20; // Try for 2 seconds (100ms intervals)
+        const maxAttempts = 20;
 
         const tryMeasure = () => {
             const rect = getTargetRect(step.target);
@@ -472,13 +449,12 @@ function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
                 if (step.scrollToTarget) {
                     const el = document.querySelector(step.target);
                     el?.scrollIntoView({ behavior: "smooth", block: "center" });
-                    setTimeout(() => setTargetRect(getTargetRect(step.target)), 400); // re-measure after scroll
+                    setTimeout(() => setTargetRect(getTargetRect(step.target)), 400);
                 }
             } else if (attempts < maxAttempts) {
                 attempts++;
                 setTimeout(tryMeasure, 100);
             } else {
-                // Give up and center
                 setTargetRect(null);
             }
         };
@@ -493,7 +469,6 @@ function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
             router.push(step.route);
         }
 
-        // We only trigger measureTarget once here, and let the polling handle the route transition delay
         measureTarget();
     }, [isOpen, currentStep, mounted, step, router, measureTarget]);
 
@@ -516,7 +491,6 @@ function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
                 className="fixed inset-0"
                 style={{ pointerEvents: "none", zIndex: 9989 }}
             >
-                {/* Click blocker */}
                 <div
                     className="fixed inset-0"
                     style={{ pointerEvents: "all", zIndex: 9990 }}
@@ -546,4 +520,3 @@ function TourOverlayWithTour({ tour }: { tour: ReturnType<typeof useTour> }) {
 }
 
 export default OnboardingTourProvider;
-
