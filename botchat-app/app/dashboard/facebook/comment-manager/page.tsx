@@ -335,38 +335,38 @@ export default function CommentManager() {
     }, [selectedPage]);
 
     return (
-        <div className="min-h-screen w-full overflow-x-hidden bg-[#f8fafc] dark:bg-[#0f172a] transition-all duration-300 pb-32">
+        <div className="min-h-screen w-full overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 pb-32">
             {/* 1. STICKY UNIFIED HEADER */}
-            <div className="sticky top-0 z-[100] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3 flex items-center justify-between">
+            <div className="sticky top-0 z-[100] bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
-                        className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all bg-slate-100 dark:bg-slate-800 rounded-lg shadow-sm"
+                        className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all bg-[var(--muted)]/50 rounded-lg shadow-sm"
                     >
                         <Menu className="w-5 h-5" />
                     </button>
                     <button
                         onClick={() => router.push('/dashboard')}
-                        className="hidden md:flex w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm"
+                        className="hidden md:flex w-9 h-9 rounded-full bg-[var(--muted)] hover:bg-[var(--muted)]/80 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all shadow-sm"
                     >
-                         <ChevronLeft className="w-4 h-4" strokeWidth={3} />
+                        <ChevronLeft className="w-4 h-4" strokeWidth={3} />
                     </button>
                     <div className="flex flex-col">
-                        <span className="text-[9px] sm:text-[10px] font-bold text-pink-600 uppercase tracking-[0.2em] leading-none">Intelligence Hub</span>
-                        <h1 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white uppercase mt-0.5 tracking-tight flex items-center gap-2">
-                           <Facebook className="w-4 h-4 text-[#0866FF] fill-[#0866FF] hidden sm:block" />
-                           Comment Manager
+                        <span className="text-[9px] sm:text-[10px] font-bold text-[var(--primary)] uppercase tracking-[0.2em] leading-none">Intelligence Hub</span>
+                        <h1 className="text-sm sm:text-base lg:text-lg font-bold text-[var(--foreground)] uppercase mt-0.5 tracking-tight flex items-center gap-2">
+                            <Facebook className="w-4 h-4 text-[#0866FF] fill-[#0866FF] hidden sm:block" />
+                            Comment Manager
                         </h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700">
-                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Neural Live</span>
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[var(--muted)]/55 rounded-full border border-[var(--border)]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Neural Live</span>
                     </div>
-                    <button className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><Search className="w-4 h-4" /></button>
-                    <div className="w-9 h-9 rounded-full bg-slate-800 dark:bg-pink-600 border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
-                         <img src={user?.avatar || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
+                    <button className="w-9 h-9 rounded-lg bg-[var(--muted)] hover:bg-[var(--muted)]/80 flex items-center justify-center text-[var(--muted-foreground)]"><Search className="w-4 h-4" /></button>
+                    <div className="w-9 h-9 rounded-full bg-slate-800 dark:bg-[var(--primary)] border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
+                        <img src={user?.avatar || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
                     </div>
                 </div>
             </div>
@@ -375,8 +375,8 @@ export default function CommentManager() {
 
                 {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
                 <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
-                    <div className="flex-1 min-w-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
-                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                    <div className="flex-1 min-w-0 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
+                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors z-10 bg-[var(--card)] shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
                             <ChevronLeft className="w-5 h-5" />
                         </button>
 
@@ -388,9 +388,10 @@ export default function CommentManager() {
                                     className={cn(
                                         "px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap flex items-center gap-3",
                                         selectedPage?.id === p.id
-                                            ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md shadow-pink-200"
+                                            ? "text-white"
                                             : "bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700"
                                     )}
+                                    style={selectedPage?.id === p.id ? { background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" } : undefined}
                                 >
                                     <div className={cn("w-6 h-6 rounded-lg overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
                                         <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
@@ -400,7 +401,7 @@ export default function CommentManager() {
                             ))}
                         </div>
 
-                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-slate-400 hover:text-pink-600 transition-colors z-10 bg-white dark:bg-slate-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
+                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors z-10 bg-[var(--card)] shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>
@@ -408,30 +409,30 @@ export default function CommentManager() {
                     <div className="relative shrink-0 z-[60]">
                         <button
                             onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-6 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-pink-300 transition-colors text-slate-700 dark:text-slate-300 group"
+                            className="h-full px-6 py-3.5 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-[var(--primary)]/30 transition-colors text-[var(--foreground)] group"
                         >
                             <div className="flex items-center gap-2">
-                                <Search className="w-4 h-4 text-pink-500 group-hover:scale-110 transition-transform" />
+                                <Search className="w-4 h-4 text-[var(--primary)] group-hover:scale-110 transition-transform" />
                                 Quick Find
                             </div>
-                            <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", showPageDropdown && "rotate-180")} />
+                            <ChevronDown className={cn("w-4 h-4 text-[var(--muted-foreground)] transition-transform", showPageDropdown && "rotate-180")} />
                         </button>
 
                         <AnimatePresence>
                             {showPageDropdown && (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 top-[calc(100%+8px)] w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden"
+                                    className="absolute right-0 top-[calc(100%+8px)] w-72 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden"
                                 >
-                                    <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
-                                        <div className="relative border border-slate-200 rounded-xl bg-white overflow-hidden focus-within:border-pink-500 transition-all">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <div className="p-3 border-b border-[var(--border)] bg-[var(--muted)]/20">
+                                        <div className="relative border border-[var(--border)] rounded-xl bg-[var(--card)] overflow-hidden focus-within:border-[var(--primary)] transition-all">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
                                             <input
                                                 type="text"
                                                 placeholder="Search pages..."
                                                 value={quickFindSearch}
                                                 onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-2 text-[13px] font-semibold outline-none bg-transparent"
+                                                className="w-full pl-10 pr-4 py-2 text-[13px] font-semibold outline-none bg-transparent text-[var(--foreground)]"
                                                 autoFocus
                                             />
                                         </div>
@@ -443,7 +444,7 @@ export default function CommentManager() {
                                                 onClick={() => { setSelectedPage(p); setShowPageDropdown(false); }}
                                                 className={cn(
                                                     "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center gap-3",
-                                                    selectedPage?.id === p.id ? "bg-pink-50 text-pink-600 dark:bg-pink-500/10" : "text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                    selectedPage?.id === p.id ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50"
                                                 )}
                                             >
                                                 <div className="w-8 h-8 rounded-lg overflow-hidden border-2 border-white shadow-sm">
@@ -464,15 +465,15 @@ export default function CommentManager() {
 
                     {/* ── LEFT COLUMN (1/3): STRATEGY & ACTIONS ── */}
                     <aside className="lg:col-span-4 space-y-6">
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-6">
+                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm space-y-6">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-md font-bold text-slate-900 dark:text-white uppercase tracking-tight">Strategy Lab</h2>
+                                <h2 className="text-md font-bold text-[var(--foreground)] uppercase tracking-tight">Strategy Lab</h2>
 
                                 {/* ── Manage Templates button + dropdown ─────── */}
                                 <div className="relative" ref={templateMenuRef}>
                                     <button
                                         onClick={() => setShowTemplateMenu(v => !v)}
-                                        className="flex items-center gap-1.5 text-[12px] font-bold text-primary hover:text-pink-700 dark:hover:text-pink-300 transition-colors group"
+                                        className="flex items-center gap-1.5 text-[12px] font-bold text-[var(--primary)] hover:opacity-85 transition-colors group"
                                     >
                                         Manage Templates
                                         <ChevronDown className={cn(
@@ -488,7 +489,7 @@ export default function CommentManager() {
                                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                                 exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                                 transition={{ duration: 0.15 }}
-                                                className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl overflow-hidden z-50"
+                                                className="absolute right-0 top-full mt-2 w-52 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden z-50"
                                             >
                                                 {[
                                                     {
@@ -496,16 +497,16 @@ export default function CommentManager() {
                                                         label: "Comment Template",
                                                         icon: MessageSquare,
                                                         desc: "Preset comment sets",
-                                                        color: "text-pink-600",
-                                                        bg: "bg-pink-50 dark:bg-pink-500/10",
+                                                        color: "text-[var(--primary)]",
+                                                        bg: "bg-[var(--primary)]/10",
                                                     },
                                                     {
                                                         id: "reply",
                                                         label: "Reply Template",
                                                         icon: FileText,
                                                         desc: "Auto-reply messages",
-                                                        color: "text-pink-600",
-                                                        bg: "bg-pink-50 dark:bg-pink-500/10",
+                                                        color: "text-[var(--primary)]",
+                                                        bg: "bg-[var(--primary)]/10",
                                                     },
                                                     {
                                                         id: "custom",
@@ -530,16 +531,16 @@ export default function CommentManager() {
                                                                 setActiveTemplateView(opt.id as "custom");
                                                             }
                                                         }}
-                                                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left group border-b border-slate-50 dark:border-slate-800 last:border-0"
+                                                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--muted)]/50 transition-colors text-left group border-b border-[var(--border)] last:border-0"
                                                     >
                                                         <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", opt.bg)}>
                                                             <opt.icon className={cn("w-4 h-4", opt.color)} />
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <p className="text-[13px] font-bold text-slate-800 dark:text-white truncate">{opt.label}</p>
-                                                            <p className="text-[10px] text-slate-400 font-medium">{opt.desc}</p>
+                                                            <p className="text-[13px] font-bold text-[var(--foreground)] truncate">{opt.label}</p>
+                                                            <p className="text-[10px] text-[var(--muted-foreground)] font-medium">{opt.desc}</p>
                                                         </div>
-                                                        <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 ml-auto flex-shrink-0" />
+                                                        <ChevronRight className="w-3.5 h-3.5 text-slate-350 group-hover:text-slate-500 ml-auto flex-shrink-0" />
                                                     </button>
                                                 ))}
                                             </motion.div>
@@ -550,28 +551,28 @@ export default function CommentManager() {
 
                             {/* Enabled Stats Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                                    <p className="text-3xl font-bold text-primary">{pageStats.auto_reply_count}</p>
-                                    <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Replies</p>
+                                <div className="p-4 rounded-xl bg-[var(--muted)]/40 border border-[var(--border)] text-center">
+                                    <p className="text-3xl font-bold text-[var(--primary)]">{pageStats.auto_reply_count}</p>
+                                    <p className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase mt-1">Auto Replies</p>
                                 </div>
-                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center">
-                                    <p className="text-3xl font-bold text-pink-500">{pageStats.auto_comment_count}</p>
-                                    <p className="text-[10px] font-semibold text-slate-500 uppercase mt-1">Auto Comments</p>
+                                <div className="p-4 rounded-xl bg-[var(--muted)]/40 border border-[var(--border)] text-center">
+                                    <p className="text-3xl font-bold text-[var(--primary)]">{pageStats.auto_comment_count}</p>
+                                    <p className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase mt-1">Auto Comments</p>
                                 </div>
                             </div>
 
                             {/* Full Page CTA */}
-                            <div className="p-4 sm:p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4 text-center">
-                                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+                            <div className="p-4 sm:p-6 rounded-2xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-4 text-center">
+                                <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mx-auto">
                                     <Sparkles className="w-6 h-6" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase">Full Page Campaign</h3>
-                                    <p className="text-[11px] text-slate-500">Configure global override logic for entire page activity</p>
+                                    <h3 className="text-sm font-bold text-[var(--foreground)] uppercase">Full Page Campaign</h3>
+                                    <p className="text-[11px] text-[var(--muted-foreground)]">Configure global override logic for entire page activity</p>
                                 </div>
                                 <button
                                     onClick={() => setIsCampaignModalOpen(true)}
-                                    className="w-full py-2.5 rounded-xl bg-primary text-white font-bold text-[12px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                    className="w-full py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[12px] shadow-lg shadow-[var(--primary)]/20 hover:scale-[1.02] active:scale-95 transition-all"
                                 >
                                     {pageStats.has_full_page_reply ? "Edit Global Reply" : "Enable Full Page Reply"}
                                 </button>
@@ -581,7 +582,7 @@ export default function CommentManager() {
                             <div className="relative" ref={reportDropdownRef}>
                                 <button
                                     onClick={() => setShowReportDropdown(!showReportDropdown)}
-                                    className="w-full py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-[12px] flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 shadow-sm uppercase tracking-wider"
+                                    className="w-full py-3.5 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] border border-[var(--border)] font-bold text-[12px] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm uppercase tracking-wider"
                                 >
                                     <ClipboardList className="w-4 h-4" />
                                     See Campaign Reports
@@ -594,24 +595,24 @@ export default function CommentManager() {
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute bottom-full left-0 right-0 mb-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[60] py-2"
+                                            className="absolute bottom-full left-0 right-0 mb-3 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden z-[60] py-2"
                                         >
                                             {[
-                                                { id: "auto-reply", label: "Auto Reply Report", icon: Megaphone, color: "text-pink-500" },
-                                                { id: "auto-comment", label: "Auto Comment Report", icon: MessageSquare, color: "text-pink-500" },
-                                                { id: "full-page-reply", label: "Full Page Reply Report", icon: Layers, color: "text-primary" }
+                                                { id: "auto-reply", label: "Auto Reply Report", icon: Megaphone, color: "text-[var(--primary)]" },
+                                                { id: "auto-comment", label: "Auto Comment Report", icon: MessageSquare, color: "text-[var(--primary)]" },
+                                                { id: "full-page-reply", label: "Full Page Reply Report", icon: Layers, color: "text-[var(--primary)]" }
                                             ].map((report) => (
                                                 <button
                                                     key={report.id}
                                                     onClick={() => handleFetchReport(report.id as any)}
-                                                    className="w-full flex items-center gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-left group"
+                                                    className="w-full flex items-center gap-4 px-5 py-4 hover:bg-[var(--muted)]/50 transition-all text-left group"
                                                 >
-                                                    <div className={cn("w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-white dark:group-hover:bg-slate-700 shadow-sm transition-all", report.color)}>
+                                                    <div className={cn("w-10 h-10 rounded-xl bg-[var(--muted)] flex items-center justify-center group-hover:bg-[var(--card)] shadow-xs transition-all", report.color)}>
                                                         <report.icon className="w-5 h-5" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[13px] font-bold text-slate-800 dark:text-slate-200">{report.label}</p>
-                                                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Sync latest analytics</p>
+                                                        <p className="text-[13px] font-bold text-[var(--foreground)]">{report.label}</p>
+                                                        <p className="text-[10px] text-[var(--muted-foreground)] font-medium uppercase tracking-tight">Sync latest analytics</p>
                                                     </div>
                                                 </button>
                                             ))}
@@ -624,26 +625,26 @@ export default function CommentManager() {
 
                     {/* ── RIGHT COLUMN (2/3): POST FEED ── */}
                     <main className="lg:col-span-8 flex flex-col gap-6">
-                        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm flex-1 flex flex-col">
-                            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-50 dark:border-slate-800">
+                        <section className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm flex-1 flex flex-col">
+                            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)]">
                                 <section>
-                                    <h2 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 uppercase tracking-tight">
+                                    <h2 className="text-sm sm:text-base lg:text-lg font-bold text-[var(--foreground)] flex items-center gap-2 uppercase tracking-tight">
                                         Latest Interactions
                                     </h2>
-                                    <p className="text-[10px] font-semibold text-slate-400 mt-0.5 tracking-wider uppercase">Live Activity Feed</p>
+                                    <p className="text-[10px] font-semibold text-[var(--muted-foreground)] mt-0.5 tracking-wider uppercase">Live Activity Feed</p>
                                 </section>
                                 <div className="flex items-center gap-3">
                                     <div className="relative group flex-1 md:w-64">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
                                         <input
                                             type="text"
                                             placeholder="Search interactions..."
-                                            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[13px] outline-none focus:ring-2 focus:ring-primary/20"
+                                            className="w-full pl-9 pr-4 py-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[13px] text-[var(--foreground)] outline-none focus:ring-1 focus:ring-[var(--primary)]/30"
                                         />
                                     </div>
                                     <button
                                         onClick={() => setIsIdModalOpen(true)}
-                                        className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-[11px] uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm"
+                                        className="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[11px] uppercase tracking-wide hover:opacity-90 transition-colors shadow-sm"
                                     >
                                         ID Lookup
                                     </button>
@@ -653,14 +654,14 @@ export default function CommentManager() {
                             <div className="space-y-4">
                                 {isPostsLoading ? (
                                     [1, 2, 3].map(i => (
-                                        <div key={i} className="h-24 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl animate-pulse" />
+                                        <div key={i} className="h-24 bg-[var(--muted)]/30 border border-[var(--border)] rounded-2xl animate-pulse" />
                                     ))
                                 ) : posts.length > 0 ? (
                                     posts.map((post, idx) => (
-                                        <div key={post.id || `post-${idx}`} className="group bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 flex gap-4 transition-all hover:border-primary/30 relative">
-                                            <a 
-                                                href={post.url} 
-                                                target="_blank" 
+                                        <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/20 border border-[var(--border)] rounded-2xl p-4 flex gap-4 transition-all hover:border-[var(--primary)]/30 relative">
+                                            <a
+                                                href={post.url}
+                                                target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800 cursor-pointer block group/thumb"
                                                 title="View on Facebook"
@@ -674,17 +675,17 @@ export default function CommentManager() {
                                                 <div className="space-y-1">
                                                     <div className="flex items-center justify-between">
                                                         <div>
-                                                            <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[14px] font-bold text-slate-800 dark:text-white truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
+                                                            <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[14px] font-bold text-[var(--foreground)] truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
                                                                 {post.user}
                                                                 <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5" />
                                                             </a>
                                                             <div className="flex flex-col xs:flex-row xs:items-center gap-2 mt-0.5 flex-wrap">
-                                                                <p className="text-[10px] text-slate-400 font-semibold whitespace-nowrap">{post.time}</p>
-                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20 max-w-full">
+                                                                <p className="text-[10px] text-[var(--muted-foreground)] font-semibold whitespace-nowrap">{post.time}</p>
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 max-w-full">
                                                                     <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-none">ID: {post.id}</span>
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
-                                                                        className="hover:text-pink-900 dark:hover:text-pink-200 transition-colors active:scale-95 flex-shrink-0"
+                                                                        className="hover:opacity-80 transition-colors active:scale-95 flex-shrink-0"
                                                                         title="Copy ID"
                                                                     >
                                                                         <Copy className="w-3 h-3" />
@@ -707,7 +708,7 @@ export default function CommentManager() {
                                                             {post.status?.comment && (
                                                                 <span className={cn(
                                                                     "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
-                                                                    post.status.comment === "active" ? "bg-pink-500/10 text-pink-600" : "bg-slate-100 text-slate-400"
+                                                                    post.status.comment === "active" ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]"
                                                                 )}>
                                                                     Comment {post.status.comment}
                                                                 </span>
@@ -715,9 +716,9 @@ export default function CommentManager() {
                                                             <div className="relative" ref={dropdownRef}>
                                                                 <button
                                                                     onClick={() => setActiveDropdown(activeDropdown === post.id ? null : post.id)}
-                                                                    className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-primary transition-all border border-transparent hover:border-pink-100 group/btn"
+                                                                    className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-all border border-transparent hover:border-[var(--primary)]/20 group/btn"
                                                                 >
-                                                                    <Settings2 size={16} className={cn("transition-transform duration-300", activeDropdown === post.id && "rotate-90 text-primary")} />
+                                                                    <Settings2 size={16} className={cn("transition-transform duration-300", activeDropdown === post.id && "rotate-90 text-[var(--primary)]")} />
                                                                 </button>
 
                                                                 <AnimatePresence>
@@ -728,18 +729,18 @@ export default function CommentManager() {
                                                                             animate={{ opacity: 1, scale: 1, y: 0 }}
                                                                             exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                                                             transition={{ duration: 0.15 }}
-                                                                            className="absolute right-0 top-full mt-2 w-[260px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 py-2 overflow-hidden flex flex-col"
+                                                                            className="absolute right-0 top-full mt-2 w-[260px] bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-xl z-50 py-2 overflow-hidden flex flex-col"
                                                                         >
                                                                             {/* Auto Reply Section */}
                                                                             {post.status?.reply ? (
                                                                                 <>
-                                                                                    <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
-                                                                                        <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto reply</span>
+                                                                                    <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors">
+                                                                                        <Edit3 className="w-4 h-4 text-[var(--primary)]" />
+                                                                                        <span className="text-[12px] font-bold text-[var(--foreground)]">Edit auto reply</span>
                                                                                     </button>
-                                                                                    <button onClick={() => { setSelectedPostForReportReply(post); setShowReplyReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                    <button onClick={() => { setSelectedPostForReportReply(post); setShowReplyReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors">
                                                                                         <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto reply report</span>
+                                                                                        <span className="text-[12px] font-bold text-[var(--foreground)]">View auto reply report</span>
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={() => {
@@ -751,10 +752,10 @@ export default function CommentManager() {
                                                                                             });
                                                                                             setActiveDropdown(null);
                                                                                         }}
-                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors"
                                                                                     >
                                                                                         {post.status.reply === "paused" ? <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">
+                                                                                        <span className="text-[12px] font-bold text-[var(--foreground)]">
                                                                                             {post.status.reply === "paused" ? "Resume Campaign" : "Pause Campaign"}
                                                                                         </span>
                                                                                     </button>
@@ -767,29 +768,29 @@ export default function CommentManager() {
                                                                                             });
                                                                                             setActiveDropdown(null);
                                                                                         }}
-                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800"
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors pb-3 border-b border-[var(--border)]"
                                                                                     >
                                                                                         <Trash2 className="w-4 h-4 text-rose-500" />
                                                                                         <span className="text-[12px] font-bold text-rose-600 dark:text-rose-400">Delete auto reply</span>
                                                                                     </button>
                                                                                 </>
                                                                             ) : (
-                                                                                <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800">
-                                                                                    <Megaphone className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                                                                                    <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable Auto Reply Campaign</span>
+                                                                                <button onClick={() => { setSelectedPostForReply(post); setShowAutoReplyModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors border-b border-[var(--border)]">
+                                                                                    <Megaphone className="w-4 h-4 text-[var(--primary)]" />
+                                                                                    <span className="text-[12px] font-bold text-[var(--foreground)]">Enable Auto Reply Campaign</span>
                                                                                 </button>
                                                                             )}
 
                                                                             {/* Auto Comment Section */}
                                                                             {post.status?.comment ? (
                                                                                 <>
-                                                                                    <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1">
-                                                                                        <Edit3 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Edit auto comment</span>
+                                                                                    <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors mt-1">
+                                                                                        <Edit3 className="w-4 h-4 text-[var(--primary)]" />
+                                                                                        <span className="text-[12px] font-bold text-[var(--foreground)]">Edit auto comment</span>
                                                                                     </button>
-                                                                                    <button onClick={() => { setSelectedPostForReport(post); setShowReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors">
+                                                                                    <button onClick={() => { setSelectedPostForReport(post); setShowReportModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors">
                                                                                         <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">View auto comment report</span>
+                                                                                        <span className="text-[12px] font-bold text-[var(--foreground)]">View auto comment report</span>
                                                                                     </button>
                                                                                     <button
                                                                                         onClick={() => {
@@ -801,10 +802,10 @@ export default function CommentManager() {
                                                                                             });
                                                                                             setActiveDropdown(null);
                                                                                         }}
-                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors"
                                                                                     >
                                                                                         {post.status.comment === "paused" ? <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />}
-                                                                                        <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">
+                                                                                        <span className="text-[12px] font-bold text-[var(--foreground)]">
                                                                                             {post.status.comment === "paused" ? "Resume Campaign" : "Pause Campaign"}
                                                                                         </span>
                                                                                     </button>
@@ -817,45 +818,45 @@ export default function CommentManager() {
                                                                                             });
                                                                                             setActiveDropdown(null);
                                                                                         }}
-                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors pb-3 border-b border-slate-100 dark:border-slate-800"
+                                                                                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors pb-3 border-b border-[var(--border)]"
                                                                                     >
                                                                                         <Trash2 className="w-4 h-4 text-rose-500" />
                                                                                         <span className="text-[12px] font-bold text-rose-600 dark:text-rose-400">Delete auto comment</span>
                                                                                     </button>
                                                                                 </>
                                                                             ) : (
-                                                                                <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors border-b border-slate-100 dark:border-slate-800 mt-1">
-                                                                                    <MessageSquare className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                                                                                    <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Enable auto comment</span>
+                                                                                <button onClick={() => { setSelectedPostForAuto(post); setShowAutoCommentModal(true); setActiveDropdown(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors border-b border-[var(--border)] mt-1">
+                                                                                    <MessageSquare className="w-4 h-4 text-[var(--primary)]" />
+                                                                                    <span className="text-[12px] font-bold text-[var(--foreground)]">Enable auto comment</span>
                                                                                 </button>
                                                                             )}
 
                                                                             {/* Default Actions */}
                                                                             <button
-                                                                                onClick={() => { 
-                                                                                    setManualPostId(post.id); 
-                                                                                    setIsIdModalOpen(true); 
-                                                                                    handleCheckPostId(); 
-                                                                                    setActiveDropdown(null); 
+                                                                                onClick={() => {
+                                                                                    setManualPostId(post.id);
+                                                                                    setIsIdModalOpen(true);
+                                                                                    handleCheckPostId();
+                                                                                    setActiveDropdown(null);
                                                                                 }}
-                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors mt-1"
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors mt-1"
                                                                             >
                                                                                 <Target className="w-4 h-4 text-emerald-500" />
-                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Quick Sync Identity</span>
+                                                                                <span className="text-[12px] font-bold text-[var(--foreground)]">Quick Sync Identity</span>
                                                                             </button>
                                                                             <button
                                                                                 onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
-                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors"
                                                                             >
                                                                                 <MessageSquare className="w-4 h-4 text-slate-400" />
-                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Latest comments</span>
+                                                                                <span className="text-[12px] font-bold text-[var(--foreground)]">Latest comments</span>
                                                                             </button>
                                                                             <button
                                                                                 onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
-                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors"
                                                                             >
                                                                                 <Edit3 className="w-4 h-4 text-slate-400" />
-                                                                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">Leave a comment now</span>
+                                                                                <span className="text-[12px] font-bold text-[var(--foreground)]">Leave a comment now</span>
                                                                             </button>
                                                                         </motion.div>
                                                                     )}
@@ -863,15 +864,15 @@ export default function CommentManager() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 italic">"{post.text}"</p>
+                                                    <p className="text-[13px] text-[var(--muted-foreground)] line-clamp-1 italic">"{post.text}"</p>
                                                 </div>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="py-20 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">
-                                        <Box className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                        <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">No Interaction Active</p>
+                                    <div className="py-20 text-center bg-[var(--muted)]/20 rounded-2xl border-2 border-dashed border-[var(--border)]">
+                                        <Box className="w-12 h-12 text-[var(--muted-foreground)]/50 mx-auto mb-4" />
+                                        <p className="text-[12px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">No Interaction Active</p>
                                     </div>
                                 )}
 
@@ -905,23 +906,23 @@ export default function CommentManager() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+                            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-lg min-h-screen sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
+                            className="bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-lg min-h-screen sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
                         >
                             <div className="p-6 space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tight">Post ID Reconciliation</h3>
-                                    <button onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }} className="text-slate-400 hover:text-rose-500">
+                                    <h3 className="text-lg font-bold text-[var(--foreground)] uppercase tracking-tight">Post ID Reconciliation</h3>
+                                    <button onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }} className="text-[var(--muted-foreground)] hover:text-rose-500">
                                         <X className="w-5 h-5" />
                                     </button>
                                 </div>
 
-                                <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-500/80">
+                                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
                                     <div className="flex gap-3">
                                         <AlertCircle className="w-5 h-5 flex-shrink-0" />
                                         <p className="text-[12px] font-medium leading-relaxed">
@@ -933,14 +934,14 @@ export default function CommentManager() {
                                 {checkData ? (
                                     <div className="space-y-4">
                                         {/* Auto Reply Box */}
-                                        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex items-center justify-between">
+                                        <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/20 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
                                                     <Megaphone className="w-5 h-5" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-[13px] font-bold text-slate-800 dark:text-white">Auto Reply Campaign</h4>
-                                                    <p className="text-[10px] font-semibold text-slate-400">
+                                                    <h4 className="text-[13px] font-bold text-[var(--foreground)]">Auto Reply Campaign</h4>
+                                                    <p className="text-[10px] font-semibold text-[var(--muted-foreground)]">
                                                         {checkData.reply_exists ? "Currently Active or Configured" : "No campaign attached"}
                                                     </p>
                                                 </div>
@@ -948,14 +949,14 @@ export default function CommentManager() {
                                             {checkData.reply_exists ? (
                                                 <button
                                                     onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: manualPostId } as any); setShowAutoReplyModal(true); }}
-                                                    className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors"
+                                                    className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-colors border border-[var(--border)]"
                                                 >
                                                     Edit Reply
                                                 </button>
                                             ) : (
                                                 <button
                                                     onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: manualPostId } as any); setShowAutoReplyModal(true); }}
-                                                    className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+                                                    className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
                                                 >
                                                     Enable Auto Reply
                                                 </button>
@@ -963,14 +964,14 @@ export default function CommentManager() {
                                         </div>
 
                                         {/* Auto Comment Box */}
-                                        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex items-center justify-between">
+                                        <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/20 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
                                                     <MessageSquare className="w-5 h-5" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-[13px] font-bold text-slate-800 dark:text-white">Auto Comment Campaign</h4>
-                                                    <p className="text-[10px] font-semibold text-slate-400">
+                                                    <h4 className="text-[13px] font-bold text-[var(--foreground)]">Auto Comment Campaign</h4>
+                                                    <p className="text-[10px] font-semibold text-[var(--muted-foreground)]">
                                                         {checkData.comment_exists ? "Currently Active or Configured" : "No campaign attached"}
                                                     </p>
                                                 </div>
@@ -983,7 +984,7 @@ export default function CommentManager() {
                                                         setSelectedPostForAuto({ id: manualPostId } as any);
                                                         setShowAutoCommentModal(true);
                                                     }}
-                                                    className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-all"
+                                                    className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-all border border-[var(--border)]"
                                                 >
                                                     Edit Comment
                                                 </button>
@@ -995,7 +996,7 @@ export default function CommentManager() {
                                                         setSelectedPostForAuto({ id: manualPostId } as any);
                                                         setShowAutoCommentModal(true);
                                                     }}
-                                                    className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+                                                    className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
                                                 >
                                                     Enable Auto Comment
                                                 </button>
@@ -1005,7 +1006,7 @@ export default function CommentManager() {
                                         <div className="pt-2">
                                             <button
                                                 onClick={() => setCheckData(null)}
-                                                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-200 transition-all"
+                                                className="w-full py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] border border-[var(--border)] font-bold text-[13px] transition-all"
                                             >
                                                 Check Another Post ID
                                             </button>
@@ -1014,26 +1015,26 @@ export default function CommentManager() {
                                 ) : (
                                     <div className="space-y-4">
                                         <div className="space-y-1">
-                                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Manual Post ID</label>
+                                            <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest ml-1">Manual Post ID</label>
                                             <input
                                                 type="text"
                                                 value={manualPostId}
                                                 onChange={(e) => setManualPostId(e.target.value)}
                                                 placeholder="Example: 15692151032057..."
-                                                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                                className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-[var(--primary)]/30 transition-all"
                                             />
                                         </div>
                                         <div className="flex gap-3 pt-2">
                                             <button
                                                 onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
-                                                className="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[13px] hover:bg-slate-200 transition-all"
+                                                className="flex-1 py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)] border border-[var(--border)] text-[var(--foreground)] font-bold text-[13px] transition-all"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 onClick={handleCheckPostId}
                                                 disabled={isCheckingId}
-                                                className="flex-[1.5] flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-bold text-[13px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100"
+                                                className="flex-[1.5] flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[13px] shadow-lg shadow-[var(--primary)]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100"
                                             >
                                                 {isCheckingId ? <RefreshCw className="w-4 h-4 animate-spin" /> : null}
                                                 {isCheckingId ? "Syncing..." : "Sync Interaction ID"}
@@ -1258,42 +1259,42 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
     }
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-slate-200 dark:border-slate-800">
-                <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-[var(--border)]">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--card)]">
+                    <div className="flex items-center gap-3 text-[var(--primary)]">
                         <Megaphone className="w-5 h-5" />
-                        <h2 className="text-[14px] font-bold text-slate-800 dark:text-white">Please give the following information for post auto reply</h2>
+                        <h2 className="text-[14px] font-bold text-[var(--foreground)]">Please give the following information for post auto reply</h2>
                     </div>
-                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><X className="w-5 h-5" /></button>
+                    <button onClick={onClose} className="p-2 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-50/10 rounded-xl transition-all"><X className="w-5 h-5" /></button>
                 </div>
-                <div className="p-6 space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="p-6 space-y-4 bg-[var(--muted)]/20">
+                    <div className="flex items-center justify-between p-4 bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm">
                         <div className="flex items-center gap-2">
-                            <Tag className="w-4 h-4 text-slate-400" />
-                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
+                            <Tag className="w-4 h-4 text-[var(--muted-foreground)]" />
+                            <span className="text-[13px] font-bold text-[var(--foreground)]">Do you want to use saved template?</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
-                            <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
-                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-pink-600" : "bg-slate-300")}>
+                            <span className="text-[11px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] mr-1">{useSaved ? "YES" : "NO"}</span>
+                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-[var(--primary)]" : "bg-[var(--border)]")}>
                                 <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                        <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-pink-500" /> Auto Reply Template
+                    <div className="p-5 bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm space-y-3">
+                        <label className="text-[13px] font-bold text-[var(--foreground)] flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-[var(--primary)]" /> Auto Reply Template
                         </label>
-                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
+                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-[var(--muted)]/50 text-[var(--foreground)] disabled:opacity-50">
                             <option value="">{isLoading ? "Loading templates..." : "Please select a template"}</option>
                             {dropdownTemplates.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
                     </div>
                 </div>
-                <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
-                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-bold text-[13px] shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
+                <div className="flex justify-end gap-3 px-6 py-4 border-t border-[var(--border)] bg-[var(--card)]">
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-[var(--muted)] text-[var(--foreground)] border border-[var(--border)] font-bold text-[13px] hover:bg-[var(--muted)]/80 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[13px] shadow-lg shadow-[var(--primary)]/10 flex items-center gap-2 hover:opacity-90 transition-all">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
@@ -1345,42 +1346,42 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
     }
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[#f1f5f9] dark:bg-[#0f172a] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-slate-200 dark:border-slate-800">
-                <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3 text-pink-600 dark:text-pink-400">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-[var(--border)]">
+                <div className="flex items-center justify-between px-6 py-4 bg-[var(--card)] border-b border-[var(--border)]">
+                    <div className="flex items-center gap-3 text-[var(--primary)]">
                         <MessageSquare className="w-5 h-5" />
-                        <h2 className="text-[14px] font-bold text-slate-800 dark:text-white">Please give the following information for post auto comment</h2>
+                        <h2 className="text-[14px] font-bold text-[var(--foreground)]">Please give the following information for post auto comment</h2>
                     </div>
-                    <button onClick={onClose} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><X className="w-5 h-5" /></button>
+                    <button onClick={onClose} className="p-2 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-50/10 rounded-xl transition-all"><X className="w-5 h-5" /></button>
                 </div>
-                <div className="p-6 space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="p-6 space-y-4 bg-[var(--muted)]/20">
+                    <div className="flex items-center justify-between p-4 bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm">
                         <div className="flex items-center gap-2">
-                            <Tag className="w-4 h-4 text-slate-400" />
-                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Do you want to use saved template?</span>
+                            <Tag className="w-4 h-4 text-[var(--muted-foreground)]" />
+                            <span className="text-[13px] font-bold text-[var(--foreground)]">Do you want to use saved template?</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
-                            <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-700 mr-1">{useSaved ? "YES" : "NO"}</span>
-                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-pink-600" : "bg-slate-300")}>
+                            <span className="text-[11px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] mr-1">{useSaved ? "YES" : "NO"}</span>
+                            <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-[var(--primary)]" : "bg-[var(--border)]")}>
                                 <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                        <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-pink-500" /> Auto Comment Template
+                    <div className="p-5 bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm space-y-3">
+                        <label className="text-[13px] font-bold text-[var(--foreground)] flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-[var(--primary)]" /> Auto Comment Template
                         </label>
-                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-slate-50 dark:bg-slate-800 dark:text-white disabled:opacity-50">
+                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} disabled={isLoading} className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-[var(--muted)]/50 text-[var(--foreground)] disabled:opacity-50">
                             <option value="">{isLoading ? "Loading templates..." : "Please select a template"}</option>
                             {dropdownTemplates.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
                     </div>
                 </div>
-                <div className="flex justify-end gap-3 px-6 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-slate-500 text-white font-bold text-[13px] hover:bg-slate-600 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
-                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-bold text-[13px] shadow-lg shadow-blue-100 dark:shadow-blue-900/20 flex items-center gap-2 hover:bg-pink-700 transition-all">
+                <div className="flex justify-end gap-3 px-6 py-4 bg-[var(--card)] border-t border-[var(--border)]">
+                    <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-[var(--muted)] text-[var(--foreground)] border border-[var(--border)] font-bold text-[13px] hover:bg-[var(--muted)]/80 transition-all flex items-center gap-2"><X className="w-4 h-4" /> Cancel</button>
+                    <button onClick={handleSubmit} disabled={isSaving} className="px-8 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[13px] shadow-lg shadow-[var(--primary)]/10 flex items-center gap-2 hover:opacity-90 transition-all">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Submit
                     </button>
                 </div>
@@ -1393,9 +1394,9 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
 function FPC_Field({ label, required, children, icon: Icon }: { label: string; required?: boolean; children: React.ReactNode; icon?: any }) {
     return (
         <div className="space-y-1.5 flex-1 min-w-0">
-            <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
-                {label} {required && <span className="text-rose-400">*</span>}
+            <label className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-1.5">
+                {Icon && <Icon className="w-3.5 h-3.5 text-[var(--muted-foreground)]" />}
+                {label} {required && <span className="text-rose-500">*</span>}
             </label>
             {children}
         </div>
@@ -1405,12 +1406,12 @@ function FPC_Field({ label, required, children, icon: Icon }: { label: string; r
 function FPC_Toggle({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
     return (
         <div className="flex items-center gap-3 group cursor-pointer" onClick={onClick}>
-            {label && <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">{label}</span>}
+            {label && <span className="text-sm font-medium text-[var(--foreground)] group-hover:text-[var(--foreground)]/80 transition-colors">{label}</span>}
             <div className="flex items-center gap-2">
-                <div className={"w-10 h-5 rounded-full relative transition-all duration-200 " + (active ? "bg-pink-500" : "bg-slate-200")}>
+                <div className={"w-10 h-5 rounded-full relative transition-all duration-200 " + (active ? "bg-[var(--primary)]" : "bg-[var(--border)]")}>
                     <div className={"absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all " + (active ? "left-5.5" : "left-0.5")} />
                 </div>
-                <span className="text-xs font-medium text-slate-400 w-6">{active ? "On" : "Off"}</span>
+                <span className="text-xs font-medium text-[var(--muted-foreground)] w-6">{active ? "On" : "Off"}</span>
             </div>
         </div>
     );
@@ -1430,15 +1431,15 @@ function FPC_UploadBox({ label, value, onChange, icon: Icon }: { label: string; 
 
     return (
         <div className="space-y-2 flex-1">
-            <label className="text-[11px] font-bold text-slate-500 px-1 flex items-center gap-2">
+            <label className="text-[11px] font-bold text-[var(--muted-foreground)] px-1 flex items-center gap-2">
                 <Icon className="w-3.5 h-3.5" /> {label}
             </label>
-            <div className="flex items-center gap-0 rounded-xl border border-slate-200 bg-white group focus-within:border-pink-400 overflow-hidden transition-all shadow-xs h-[44px]">
+            <div className="flex items-center gap-0 rounded-xl border border-[var(--border)] bg-[var(--card)] group focus-within:border-[var(--primary)] overflow-hidden transition-all shadow-xs h-[44px]">
                 <input type="file" ref={fileInputRef} className="hidden" accept={isVideo ? "video/*" : "image/*"} onChange={handleFileChange} />
-                <div onClick={() => fileInputRef.current?.click()} className="bg-pink-600 text-white px-5 h-full text-[12px] font-semibold flex items-center justify-center gap-2 transition-colors flex-shrink-0 cursor-pointer hover:bg-pink-700">
+                <div onClick={() => fileInputRef.current?.click()} className="bg-[var(--primary)] text-[var(--primary-foreground)] px-5 h-full text-[12px] font-semibold flex items-center justify-center gap-2 transition-colors flex-shrink-0 cursor-pointer hover:opacity-90">
                     <Plus className="w-4 h-4" /> Upload
                 </div>
-                <input type="text" placeholder={"Put your " + (isVideo ? 'video' : 'image') + " URL here or click upload"} value={value || ""} onChange={e => onChange(e.target.value || null)} className="flex-1 bg-transparent border-none outline-none text-[13px] font-medium text-slate-700 px-4 placeholder:text-slate-300" />
+                <input type="text" placeholder={"Put your " + (isVideo ? 'video' : 'image') + " URL here or click upload"} value={value || ""} onChange={e => onChange(e.target.value || null)} className="flex-1 bg-transparent border-none outline-none text-[13px] font-medium text-[var(--foreground)] px-4 placeholder:text-[var(--muted-foreground)]/50" />
             </div>
         </div>
     );
@@ -1446,7 +1447,7 @@ function FPC_UploadBox({ label, value, onChange, icon: Icon }: { label: string; 
 
 function FPC_CapsuleSwitch({ active }: { active: boolean }) {
     return (
-        <div className={"w-11 h-5 rounded-full relative transition-all " + (active ? "bg-pink-600" : "bg-slate-300 shadow-inner")}>
+        <div className={"w-11 h-5 rounded-full relative transition-all " + (active ? "bg-[var(--primary)]" : "bg-[var(--border)] shadow-inner")}>
             <div className={"absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all " + (active ? "left-6.5" : "left-0.5")} />
         </div>
     );
@@ -1613,53 +1614,53 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
     return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
                 className={cn(
-                    "relative z-10 w-full bg-white rounded-none sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[96vh] transition-all min-h-screen sm:min-h-0",
+                    "relative z-10 w-full bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[96vh] transition-all min-h-screen sm:min-h-0",
                     "max-w-none sm:max-w-[980px]"
                 )}
             >
-                <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">
+                <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
                     <div className="flex items-center gap-3">
                         <div>
-                            <h2 className="text-[13px] font-semibold text-slate-800">
+                            <h2 className="text-[13px] font-bold text-[var(--foreground)]">
                                 {campaignId ? "Edit Full Page Campaign" : "Create Full Page Campaign"}
                             </h2>
-                            <p className="text-[10px] font-bold text-pink-500 uppercase leading-none mt-1">Page: {page.page_name}</p>
+                            <p className="text-[10px] font-bold text-[var(--primary)] uppercase leading-none mt-1">Page: {page.page_name}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={onClose} className="text-slate-300 hover:text-rose-500 transition-colors ml-4">
+                        <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors ml-4">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#FDFDFF]">
+                <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--muted)]/10">
                     {isLoadingData ? (
                         <div className="flex items-center justify-center p-12">
-                            <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                            <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
                         </div>
                     ) : (
                         <AnimatePresence mode="wait">
                             <motion.div key="custom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
 
-                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs">
+                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
                                     <FPC_Field label="Auto Reply Campaign Name" required>
                                         <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px]"
                                             placeholder="Write your auto reply campaign name here"
                                         />
                                     </FPC_Field>
                                 </div>
 
-                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6">
+                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
                                     <div className="flex items-center gap-2 mb-2">
                                         <ShieldAlert className="w-4 h-4 text-rose-400" />
-                                        <h3 className="text-sm font-semibold text-slate-700">Offensive Comments Settings</h3>
+                                        <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
                                     </div>
                                     <div className="flex gap-8">
                                         <FPC_Toggle label="Hide Comment" active={form.offensive.hide_comment} onClick={() => setForm({ ...form, offensive: { ...form.offensive, hide_comment: !form.offensive.hide_comment } })} />
@@ -1667,19 +1668,19 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-600">Offensive keywords <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                                            <label className="text-sm font-medium text-[var(--foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)] font-normal">(comma separated)</span></label>
                                             <div className="relative">
                                                 <textarea rows={4} value={form.offensive.offensive_keywords} onChange={e => setForm({ ...form, offensive: { ...form.offensive, offensive_keywords: e.target.value } })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] resize-none"
+                                                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px] resize-none"
                                                     placeholder="keyword1, keyword2..."
                                                 />
-                                                <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-slate-300" />
+                                                <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                             </div>
                                         </div>
                                         <div className="space-y-5">
                                             <div className="flex items-center justify-between px-1">
-                                                <label className="text-sm font-medium text-slate-600">Private reply template</label>
-                                                <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                <label className="text-sm font-medium text-[var(--foreground)]">Private reply template</label>
+                                                <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                     <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                         <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                     </button>
@@ -1689,61 +1690,61 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                 <select
                                                     value={form.offensive.private_reply_template_id ?? ""}
                                                     onChange={e => setForm({ ...form, offensive: { ...form.offensive, private_reply_template_id: e.target.value } })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                                                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px] appearance-none cursor-pointer"
                                                 >
                                                     <option value="">Please select a message template</option>
                                                     {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                 </select>
-                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] pointer-events-none" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs grid grid-cols-1 gap-4">
+                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
                                     <div className="flex items-center justify-between py-1 px-1">
                                         <div className="flex items-center gap-3">
-                                            <RefreshCw className="w-4 h-4 text-slate-400" />
-                                            <span className="text-[13px] font-medium text-slate-600">Do you want to send reply message to a user multiple times?</span>
+                                            <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]" />
+                                            <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to send reply message to a user multiple times?</span>
                                         </div>
                                         <FPC_Toggle label="" active={form.multiple_reply_enabled} onClick={() => setForm({ ...form, multiple_reply_enabled: !form.multiple_reply_enabled })} />
                                     </div>
-                                    <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+                                    <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
                                         <div className="flex items-center gap-3">
-                                            <MessageCircle className="w-4 h-4 text-slate-400" />
-                                            <span className="text-[13px] font-medium text-slate-600">Do you want to enable comment reply?</span>
+                                            <MessageCircle className="w-4 h-4 text-[var(--muted-foreground)]" />
+                                            <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to enable comment reply?</span>
                                         </div>
                                         <FPC_Toggle label="" active={form.comment_reply_enabled} onClick={() => setForm({ ...form, comment_reply_enabled: !form.comment_reply_enabled })} />
                                     </div>
-                                    <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+                                    <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
                                         <div className="flex items-center gap-3">
-                                            <EyeOff className="w-4 h-4 text-slate-400" />
-                                            <span className="text-[13px] font-medium text-slate-600">Do you want to hide comments after comment reply?</span>
+                                            <EyeOff className="w-4 h-4 text-[var(--muted-foreground)]" />
+                                            <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to hide comments after comment reply?</span>
                                         </div>
                                         <FPC_Toggle label="" active={form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
                                     </div>
                                 </div>
 
-                                <div className="bg-white border border-slate-100 rounded-[22px] p-6 shadow-xs space-y-5">
+                                <div className="bg-[var(--card)] border border-[var(--border)] rounded-[22px] p-6 shadow-xs space-y-5">
                                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, reply_type: "generic" })}>
                                         <FPC_CapsuleSwitch active={form.reply_type === "generic"} />
-                                        <span className={cn("text-sm font-medium", form.reply_type === "generic" ? "text-pink-600" : "text-slate-400")}>Generic message for all comments</span>
+                                        <span className={cn("text-sm font-medium", form.reply_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Generic message for all comments</span>
                                     </div>
                                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, reply_type: "filter" })}>
                                         <FPC_CapsuleSwitch active={form.reply_type === "filter"} />
-                                        <span className={cn("text-sm font-medium", form.reply_type === "filter" ? "text-pink-600" : "text-slate-400")}>Send different messages by keyword filter</span>
+                                        <span className={cn("text-sm font-medium", form.reply_type === "filter" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Send different messages by keyword filter</span>
                                     </div>
                                 </div>
 
                                 <div className="space-y-8">
                                     {form.reply_type === "generic" ? (
-                                        <div className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm space-y-8 animate-in fade-in duration-300">
+                                        <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 animate-in fade-in duration-300">
                                             <FPC_Field label="Message for Comment Reply" required icon={MessageCircle}>
-                                                <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                                                <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--muted)]/50">
                                                     <textarea rows={5} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                                                        className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[120px]" placeholder="Type your message here..."
+                                                        className="w-full outline-none font-medium text-[14px] text-[var(--foreground)] bg-transparent resize-none h-[120px]" placeholder="Type your message here..."
                                                     />
-                                                    <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
+                                                    <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                                 </div>
                                             </FPC_Field>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

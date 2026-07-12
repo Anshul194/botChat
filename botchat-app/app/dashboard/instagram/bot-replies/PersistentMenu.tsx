@@ -50,29 +50,29 @@ const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, act
 
     return (
         <div className={cn(
-            "p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm relative group/item",
+            "p-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm relative group/item",
             subIndex !== undefined ? "ml-6 mt-3" : "mt-4"
         )}>
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1 space-y-3">
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 px-1">Title (Max 30)</label>
+                        <label className="text-[10px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] px-1">Title (Max 30)</label>
                         <input
                             type="text"
                             maxLength={30}
                             placeholder="Menu Item Label"
                             value={title}
                             onChange={(e) => handleTitleChange(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold"
+                            className="w-full px-4 py-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] transition-all font-semibold"
                         />
                     </div>
 
                     <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 px-1">Type</label>
+                        <label className="text-[10px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] px-1">Type</label>
                         <select
                             value={item.type}
                             onChange={(e) => onUpdate(index, subIndex, { type: e.target.value as any })}
-                            className="w-full px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
+                            className="w-full px-4 py-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] transition-all font-semibold appearance-none cursor-pointer"
                         >
                             <option value="url">Web URL</option>
                             <option value="postback">Postback</option>
@@ -82,15 +82,15 @@ const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, act
 
                     {item.type === 'url' && (
                         <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
-                            <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 px-1">URL</label>
+                            <label className="text-[10px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] px-1">URL</label>
                             <div className="relative">
-                                <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
                                 <input
                                     type="url"
                                     placeholder="https://example.com"
                                     value={item.url || ""}
                                     onChange={(e) => onUpdate(index, subIndex, { url: e.target.value })}
-                                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-medium"
+                                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] transition-all font-medium animate-in fade-in"
                                 />
                             </div>
                         </div>
@@ -98,13 +98,13 @@ const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, act
 
                     {item.type === 'postback' && (
                         <div className="flex flex-col gap-1 animate-in slide-in-from-top-2 duration-300">
-                            <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 px-1">Postback Payload / Bot Flow</label>
+                            <label className="text-[10px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] px-1">Postback Payload / Bot Flow</label>
                             <div className="relative">
-                                <MousePointerClick className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-300" />
+                                <MousePointerClick className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
                                 <select
                                     value={item.payload || ""}
                                     onChange={(e) => onUpdate(index, subIndex, { payload: e.target.value })}
-                                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 text-sm outline-none focus:border-pink-300 dark:focus:border-pink-500/30 transition-all font-semibold appearance-none"
+                                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] transition-all font-semibold appearance-none cursor-pointer"
                                 >
                                     <option value="" disabled>Select Bot Flow</option>
                                     {actions.map((a: any) => (
@@ -119,7 +119,7 @@ const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, act
                 <div className="flex sm:flex-col justify-end gap-2 pt-2 sm:pt-6">
                     <button
                         onClick={() => onRemove(index, subIndex)}
-                        className="p-2.5 rounded-xl border border-transparent hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-300 hover:text-red-500 transition-all"
+                        className="p-2.5 rounded-xl border border-transparent hover:bg-rose-500/10 text-neutral-400 hover:text-red-500 transition-all cursor-pointer"
                     >
                         <Trash2 size={18} />
                     </button>
@@ -127,28 +127,28 @@ const MenuItemForm = ({ item, index, subIndex, onUpdate, onRemove, onAddSub, act
             </div>
 
             {item.type === 'nested' && (
-                <div className="mt-4 pt-4 border-t border-neutral-50 dark:border-neutral-800/50">
+                <div className="mt-4 pt-4 border-t border-[var(--border)]">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                            <Layers className="w-3.5 h-3.5 text-pink-500" />
-                            <span className="text-[11px] font-semibold uppercase text-neutral-500 tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
+                            <Layers className="w-3.5 h-3.5 text-[var(--primary)]" />
+                            <span className="text-[11px] font-semibold uppercase text-[var(--muted-foreground)] tracking-wider">Sub Menu Items ({item.children?.length || 0}/5)</span>
                         </div>
                         <button
                             onClick={() => onAddSub(index)}
-                            className="px-3 py-1.5 rounded-lg bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 text-[10px] font-semibold uppercase tracking-widest hover:bg-pink-100 transition-all flex items-center gap-1.5"
+                            className="px-3 py-1.5 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] font-semibold uppercase tracking-widest hover:bg-[var(--primary)]/20 transition-all flex items-center gap-1.5 cursor-pointer"
                         >
                             <Plus className="w-3 h-3" /> Add Sub
                         </button>
                     </div>
 
                     {item.children?.map((subItem, si) => (
-                        <MenuItemForm 
-                            key={subItem.id || si} 
-                            item={subItem} 
-                            index={index} 
-                            subIndex={si} 
-                            onUpdate={onUpdate} 
-                            onRemove={onRemove} 
+                        <MenuItemForm
+                            key={subItem.id || si}
+                            item={subItem}
+                            index={index}
+                            subIndex={si}
+                            onUpdate={onUpdate}
+                            onRemove={onRemove}
                             onAddSub={onAddSub}
                             actions={actions}
                         />
@@ -343,16 +343,16 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
     return (
         <div className="w-full space-y-6 pb-12 animate-in fade-in duration-500">
             {/* Header Controls */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-[var(--card)] border border-[var(--border)] p-5 rounded-2xl shadow-sm">
                 <div>
-                    <h2 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">Persistent Menu</h2>
-                    <p className="text-[11px] text-neutral-400 font-medium uppercase tracking-widest mt-1">Configure the permanent menu visible in Instagram DMs</p>
+                    <h2 className="text-xl font-semibold text-[var(--foreground)] uppercase tracking-tight">Persistent Menu</h2>
+                    <p className="text-[11px] text-[var(--muted-foreground)] font-medium uppercase tracking-widest mt-1">Configure the permanent menu visible in Instagram DMs</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={handleDelete}
                         disabled={isDeleting}
-                        className="px-5 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-red-500 hover:bg-red-50 transition-all text-[11px] font-medium uppercase tracking-widest flex items-center gap-2"
+                        className="px-5 py-2.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-red-500 hover:bg-rose-500/10 transition-all text-[11px] font-medium uppercase tracking-widest flex items-center gap-2 cursor-pointer"
                     >
                         {isDeleting ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Trash className="w-3 h-3" />}
                         Delete
@@ -360,7 +360,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="px-5 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border-2 border-pink-100 dark:border-pink-900/30 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all text-[11px] font-medium uppercase tracking-widest flex items-center gap-2 shadow-sm"
+                        className="px-5 py-2.5 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 transition-all text-[11px] font-medium uppercase tracking-widest flex items-center gap-2 shadow-sm cursor-pointer"
                     >
                         {isSaving ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                         Save Local
@@ -368,7 +368,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     <button
                         onClick={handleSync}
                         disabled={isSyncing}
-                        className="px-5 py-2.5 rounded-xl bg-[#db2777] hover:bg-[#be185d] text-white font-medium text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[#db2777]/20 active:scale-95 transition-all"
+                        className="px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-medium text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-[var(--primary)]/20 active:scale-95 transition-all cursor-pointer"
                     >
                         {isSyncing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Instagram className="w-3 h-3" />}
                         Sync to Instagram
@@ -381,25 +381,25 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                 <div className={cn(
                     "w-full max-w-sm p-5 rounded-3xl border transition-all flex flex-col gap-4 shadow-sm",
                     composerInputDisabled
-                        ? "bg-pink-50/50 border-pink-200 dark:bg-pink-950/10 dark:border-pink-900/40"
-                        : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800"
+                        ? "bg-[var(--primary)]/5 border-[var(--primary)]/20"
+                        : "bg-[var(--card)] border border-[var(--border)]"
                 )}>
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                             <div className={cn(
+                            <div className={cn(
                                 "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
-                                composerInputDisabled ? "bg-pink-100 text-pink-600 dark:bg-pink-900/50" : "bg-neutral-50 text-neutral-400 dark:bg-neutral-800"
+                                composerInputDisabled ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]"
                             )}>
                                 <Info className="w-5 h-5" />
                             </div>
-                            <span className="text-xs font-semibold text-pink-900 dark:text-pink-100 uppercase tracking-widest leading-none">Composer Lock</span>
+                            <span className="text-xs font-semibold text-[var(--primary)] uppercase tracking-widest leading-none">Composer Lock</span>
                         </div>
 
                         <button
                             onClick={() => setComposerInputDisabled(!composerInputDisabled)}
                             className={cn(
-                                "w-12 h-6 rounded-full relative transition-all duration-300",
-                                composerInputDisabled ? "bg-pink-600" : "bg-neutral-200 dark:bg-neutral-800"
+                                "w-12 h-6 rounded-full relative transition-all duration-300 cursor-pointer",
+                                composerInputDisabled ? "bg-[var(--primary)]" : "bg-[var(--muted)]"
                             )}
                         >
                             <div className={cn(
@@ -410,23 +410,23 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     </div>
 
                     <div>
-                        <h4 className="text-[13px] font-bold text-neutral-800 dark:text-neutral-200 mb-1">Disable Chat Composer?</h4>
-                        <p className="text-[10px] text-neutral-500 font-medium leading-relaxed">If enabled, users can only interact via menu buttons. Keyboard input will be disabled in the IG DM bar.</p>
+                        <h4 className="text-[13px] font-bold text-[var(--foreground)] mb-1">Disable Chat Composer?</h4>
+                        <p className="text-[10px] text-[var(--muted-foreground)] font-medium leading-relaxed">If enabled, users can only interact via menu buttons. Keyboard input will be disabled in the IG DM bar.</p>
                     </div>
                 </div>
 
-                <div className="flex-1 min-w-[300px] flex items-center justify-between px-2 bg-neutral-50/30 dark:bg-neutral-900/30 border border-dashed border-neutral-100 dark:border-neutral-800 rounded-3xl p-5">
+                <div className="flex-1 min-w-[300px] flex items-center justify-between px-2 bg-[var(--muted)]/20 border border-dashed border-[var(--border)] rounded-3xl p-5">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-pink-600" />
-                            <h3 className="text-xs font-semibold text-pink-900 dark:text-pink-100 uppercase tracking-widest">Menu Items ({items.length}/3)</h3>
+                            <Layers className="w-4 h-4 text-[var(--primary)]" />
+                            <h3 className="text-xs font-semibold text-[var(--foreground)] uppercase tracking-widest">Menu Items ({items.length}/3)</h3>
                         </div>
-                        <p className="text-[10px] text-neutral-400 font-medium uppercase tracking-widest">Main persistent menu navigation</p>
+                        <p className="text-[10px] text-[var(--muted-foreground)] font-medium uppercase tracking-widest">Main persistent menu navigation</p>
                     </div>
                     <button
                         onClick={() => handleAddItem()}
                         disabled={items.length >= 3}
-                        className="px-6 py-2.5 rounded-2xl bg-[#db2777] hover:bg-[#be185d] text-white text-[10px] font-semibold uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 shadow-xl shadow-[#db2777]/20 disabled:opacity-50"
+                        className="px-6 py-2.5 rounded-2xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] text-[10px] font-semibold uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 shadow-xl shadow-[var(--primary)]/20 disabled:opacity-50 cursor-pointer"
                     >
                         <Plus size={14} strokeWidth={2} /> Add Item
                     </button>
@@ -438,9 +438,9 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     {items.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                            className="py-12 border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[32px] text-center"
+                            className="py-12 border-2 border-dashed border-[var(--border)] rounded-[32px] text-center"
                         >
-                            <p className="text-xs text-neutral-400 font-medium italic">No menu items configured yet.</p>
+                            <p className="text-xs text-[var(--muted-foreground)] font-medium italic">No menu items configured yet.</p>
                         </motion.div>
                     ) : (
                         items.map((item, idx) => (
@@ -450,10 +450,10 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                             >
-                                <MenuItemForm 
-                                    key={item.id || idx} 
-                                    item={item} 
-                                    index={idx} 
+                                <MenuItemForm
+                                    key={item.id || idx}
+                                    item={item}
+                                    index={idx}
                                     onUpdate={handleUpdateItem}
                                     onRemove={handleRemoveItem}
                                     onAddSub={handleAddItem}

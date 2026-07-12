@@ -66,9 +66,9 @@ export interface FilterRule {
 function Field({ label, required, children, icon: Icon }: { label: string; required?: boolean; children: React.ReactNode; icon?: any }) {
   return (
     <div className="space-y-1.5 flex-1 min-w-0">
-      <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-        {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
-        {label} {required && <span className="text-rose-400">*</span>}
+      <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+        {Icon && <Icon className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" />}
+        {label} {required && <span className="text-rose-500">*</span>}
       </label>
       {children}
     </div>
@@ -78,15 +78,15 @@ function Field({ label, required, children, icon: Icon }: { label: string; requi
 function Toggle({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <div className="flex items-center gap-3 group">
-      {label && <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">{label}</span>}
+      {label && <span className="text-sm font-medium text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors">{label}</span>}
       <div className="flex items-center gap-2">
         <button onClick={onClick} className={cn(
-          "w-10 h-5 rounded-full relative transition-all duration-200",
-          active ? "bg-pink-500" : "bg-slate-200"
+          "w-10 h-5 rounded-full relative transition-all duration-200 cursor-pointer",
+          active ? "bg-[var(--primary)]" : "bg-[var(--muted)]"
         )}>
-          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all", active ? "left-5.5" : "left-0.5")} />
+          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-slate-100 shadow transition-all", active ? "left-5.5" : "left-0.5")} />
         </button>
-        <span className="text-xs font-medium text-slate-400 w-6">{active ? "On" : "Off"}</span>
+        <span className="text-xs font-medium text-[var(--muted-foreground)] w-6">{active ? "On" : "Off"}</span>
       </div>
     </div>
   );
@@ -111,10 +111,10 @@ function UploadBox({ label, value, onChange, icon: Icon }: { label: string; valu
 
   return (
     <div className="space-y-2 flex-1">
-      <label className="text-[11px] font-bold text-slate-500  px-1 flex items-center gap-2">
+      <label className="text-[11px] font-bold text-[var(--muted-foreground)] px-1 flex items-center gap-2">
         <Icon className="w-3.5 h-3.5" /> {label}
       </label>
-      <div className="flex items-center gap-0 rounded-xl border border-slate-200 bg-white group focus-within:border-pink-400 overflow-hidden transition-all shadow-xs h-[44px]">
+      <div className="flex items-center gap-0 rounded-xl border border-[var(--border)] bg-[var(--card)] group focus-within:border-[var(--primary)] overflow-hidden transition-all shadow-xs h-[44px]">
         <input
           type="file"
           ref={fileInputRef}
@@ -124,12 +124,12 @@ function UploadBox({ label, value, onChange, icon: Icon }: { label: string; valu
         />
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="bg-pink-600 text-white px-5 h-full text-[12px] font-semibold flex items-center justify-center gap-2 transition-colors flex-shrink-0 cursor-pointer hover:bg-pink-700"
+          className="bg-[var(--primary)] text-[var(--primary-foreground)] px-5 h-full text-[12px] font-semibold flex items-center justify-center gap-2 transition-colors flex-shrink-0 cursor-pointer hover:opacity-90"
         >
           <Plus className="w-4 h-4" /> Upload
         </div>
         <input type="text" placeholder={`Put your ${isVideo ? 'video' : 'image'} URL here or click upload`} value={value} onChange={e => onChange(e.target.value)}
-          className="flex-1 bg-transparent border-none outline-none text-[13px] font-medium text-slate-700 px-4 placeholder:text-slate-300"
+          className="flex-1 bg-transparent border-none outline-none text-[13px] font-medium text-[var(--foreground)] px-4 placeholder:text-slate-350"
         />
       </div>
     </div>
@@ -138,8 +138,8 @@ function UploadBox({ label, value, onChange, icon: Icon }: { label: string; valu
 
 function CapsuleSwitch({ active }: { active: boolean }) {
   return (
-    <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-pink-600" : "bg-slate-300 shadow-inner")}>
-      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all", active ? "left-6.5" : "left-0.5")} />
+    <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-[var(--primary)]" : "bg-[var(--muted)] shadow-inner")}>
+      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-slate-100 transition-all", active ? "left-6.5" : "left-0.5")} />
     </div>
   );
 }
@@ -259,11 +259,11 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
       fd.append("platform", "facebook");
       fd.append("name", form.name);
       fd.append("page_id", form.page_id ?? "");
-      
+
       // Standardize reply_type to 'filter' for keyword logic as per CURL
       const apiReplyType = form.message_type === "filter" ? "filter" : "generic";
       fd.append("reply_type", apiReplyType);
-      
+
       fd.append("comment_reply_enabled", form.comment_reply_enabled ? "1" : "0");
       fd.append("hide_after_reply", form.hide_after_reply ? "1" : "0");
       fd.append("multiple_reply_enabled", form.multiple_reply_enabled ? "1" : "0");
@@ -315,23 +315,23 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[980px] min-h-screen sm:min-h-0 bg-white rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[980px] min-h-screen sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">
-          <h2 className="text-[13px] font-semibold text-slate-800">Create / Edit Auto Reply Template</h2>
-          <button onClick={onClose} className="text-slate-300 hover:text-rose-500 transition-colors">
+        <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+          <h2 className="text-[13px] font-semibold text-[var(--foreground)]">Create / Edit Auto Reply Template</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#FDFDFF]">
+        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--background)]">
 
           {/* SECTION 1: BASICS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-2xl border border-slate-100 shadow-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
             <Field label="Auto Reply Campaign Name" required>
               <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/50 focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] text-[var(--foreground)]"
                 placeholder="Write your auto reply campaign name here"
               />
             </Field>
@@ -340,23 +340,23 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                 <select
                   value={form.page_id}
                   onChange={e => setForm({ ...form, page_id: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                 >
-                  <option value="">{isLoadingPages ? "Syncing Pages..." : "Select a page"}</option>
+                  <option value="" className="bg-[var(--card)]">{isLoadingPages ? "Syncing Pages..." : "Select a page"}</option>
                   {pages.map(p => (
-                    <option key={p.id} value={p.page_id}>{p.page_name}</option>
+                    <option key={p.id} value={p.page_id} className="bg-[var(--card)]">{p.page_name}</option>
                   ))}
                 </select>
-                <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]" />
               </div>
             </Field>
           </div>
 
           {/* SECTION 2: OFFENSIVE */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6">
+          <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
             <div className="flex items-center gap-2 mb-2">
-              <ShieldAlert className="w-4 h-4 text-rose-400" />
-              <h3 className="text-sm font-semibold text-slate-700">Offensive Comments Settings</h3>
+              <ShieldAlert className="w-4 h-4 text-rose-500" />
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
             </div>
             <div className="flex gap-8">
               <Toggle label="Hide Comment" active={form.hide_comment!!} onClick={() => setForm({ ...form, hide_comment: !form.hide_comment })} />
@@ -364,83 +364,83 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-600">Offensive keywords <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                <label className="text-sm font-medium text-[var(--muted-foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)]/60 font-normal">(comma separated)</span></label>
                 <div className="relative">
                   <textarea rows={4} value={form.offensive_keywords} onChange={e => setForm({ ...form, offensive_keywords: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/50 focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] text-[var(--foreground)] resize-none"
                     placeholder="keyword1, keyword2..."
                   />
-                  <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-slate-300" />
+                  <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-[var(--muted-foreground)]/40" />
                 </div>
               </div>
               <div className="space-y-5">
                 <div className="flex items-center justify-between px-1">
-                  <label className="text-sm font-medium text-slate-600">Private reply template</label>
-                  <div className="flex gap-3 text-xs font-medium text-pink-500">
-                    <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                  <label className="text-sm font-medium text-[var(--muted-foreground)]">Private reply template</label>
+                  <div className="flex gap-3 text-xs font-semibold text-[var(--primary)]">
+                    <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1 cursor-pointer">
                       <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                     </button>
-                    <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
+                    <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline cursor-pointer">+ Add Template</button>
                   </div>
                 </div>
                 <div className="relative">
-                  <select 
+                  <select
                     value={form.offensive_template_id}
                     onChange={e => setForm({ ...form, offensive_template_id: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                   >
-                    <option value="">Please select a message template</option>
-                    {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    <option value="" className="bg-[var(--card)]">Please select a message template</option>
+                    {dropdownTemplates.map(t => <option key={t.id} value={t.id} className="bg-[var(--card)]">{t.name}</option>)}
                   </select>
-                  <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                  <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]" />
                 </div>
               </div>
             </div>
           </div>
 
           {/* SECTION 3: REPLAY TOGGLES */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs grid grid-cols-1 gap-4">
+          <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
             <div className="flex items-center justify-between py-1 px-1">
               <div className="flex items-center gap-3">
-                <RefreshCw className="w-4 h-4 text-slate-400" />
-                <span className="text-[13px] font-medium text-slate-600">Do you want to send reply message to a user multiple times?</span>
+                <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]" />
+                <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to send reply message to a user multiple times?</span>
               </div>
               <Toggle label="" active={!!form.multiple_reply_enabled} onClick={() => setForm({ ...form, multiple_reply_enabled: !form.multiple_reply_enabled })} />
             </div>
-            <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+            <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
               <div className="flex items-center gap-3">
-                <MessageCircle className="w-4 h-4 text-slate-400" />
-                <span className="text-[13px] font-medium text-slate-600">Do you want to enable comment reply?</span>
+                <MessageCircle className="w-4 h-4 text-[var(--muted-foreground)]" />
+                <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to enable comment reply?</span>
               </div>
               <Toggle label="" active={!!form.comment_reply_enabled} onClick={() => setForm({ ...form, comment_reply_enabled: !form.comment_reply_enabled })} />
             </div>
-            <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+            <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
               <div className="flex items-center gap-3">
-                <EyeOff className="w-4 h-4 text-slate-400" />
-                <span className="text-[13px] font-medium text-slate-600">Do you want to hide comments after comment reply?</span>
+                <EyeOff className="w-4 h-4 text-[var(--muted-foreground)]" />
+                <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to hide comments after comment reply?</span>
               </div>
               <Toggle label="" active={!!form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
             </div>
           </div>
 
           {/* SECTION 4: LOGIC SELECTION */}
-          <div className="bg-white border border-slate-100 rounded-[22px] p-6 shadow-xs space-y-5">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-[22px] p-6 shadow-xs space-y-5">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "generic" })}>
               <CapsuleSwitch active={form.message_type === "generic"} />
-              <span className={cn("text-sm font-medium", form.message_type === "generic" ? "text-pink-600" : "text-slate-400")}>Generic message for all comments</span>
+              <span className={cn("text-sm font-medium transition-colors", form.message_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Generic message for all comments</span>
             </div>
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "filter" })}>
               <CapsuleSwitch active={form.message_type === "filter"} />
-              <span className={cn("text-sm font-medium", form.message_type === "filter" ? "text-pink-600" : "text-slate-400")}>Send different messages by keyword filter</span>
+              <span className={cn("text-sm font-medium transition-colors", form.message_type === "filter" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Send different messages by keyword filter</span>
             </div>
           </div>
 
           {/* SECTION 5: EDITOR */}
           <div className="space-y-8">
             {form.message_type === "generic" ? (
-              <div className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm space-y-8 animate-in fade-in duration-300">
+              <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 animate-in fade-in duration-300">
                 <Field label="Message for Comment Reply" required icon={MessageCircle}>
-                  <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                  <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                     <TextareaWithEmoji
                       value={form.message}
                       onChange={v => setForm({ ...form, message: v })}
@@ -458,48 +458,48 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between px-1">
-                    <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                      <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                    <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                      <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/50" /> Private reply template
                     </label>
-                    <div className="flex gap-3 text-xs font-medium text-pink-500">
-                      <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                    <div className="flex gap-3 text-xs font-semibold text-[var(--primary)]">
+                      <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1 cursor-pointer">
                         <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                       </button>
-                      <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
+                      <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline cursor-pointer">+ Add Template</button>
                     </div>
                   </div>
                   <div className="relative">
                     <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                     >
-                      <option value="">Please select a message template</option>
-                      {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                      <option value="" className="bg-[var(--card)]">Please select a message template</option>
+                      {dropdownTemplates.map(t => <option key={t.id} value={t.id} className="bg-[var(--card)]">{t.name}</option>)}
                     </select>
-                    <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                    <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]" />
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-8 animate-in fade-in duration-300">
                 {filterRules.map((rule, idx) => (
-                  <div key={rule.id} className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-8 relative group">
+                  <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
-                          <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
-                            {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
+                            {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
                           </div>
-                          <span className={cn("text-xs font-medium", rule.match_type === "exact" ? "text-slate-700" : "text-slate-400")}>Exact match</span>
+                          <span className={cn("text-xs font-semibold transition-colors", rule.match_type === "exact" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Exact match</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "contains" } : r))}>
-                          <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
-                            {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
+                            {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
                           </div>
-                          <span className={cn("text-xs font-medium", rule.match_type === "contains" ? "text-slate-700" : "text-slate-400")}>Contains word</span>
+                          <span className={cn("text-xs font-semibold transition-colors", rule.match_type === "contains" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Contains word</span>
                         </div>
                       </div>
                       {filterRules.length > 1 && (
-                        <button onClick={() => setFilterRules(filterRules.filter(r => r.id !== rule.id))} className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-100 transition-colors">
+                        <button onClick={() => setFilterRules(filterRules.filter(r => r.id !== rule.id))} className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500/20 transition-colors cursor-pointer">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
@@ -507,13 +507,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
                     <Field label="Filter Word/Sentence" required>
                       <input type="text" value={rule.keywords} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, keywords: e.target.value } : r))}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                        className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/50 focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)]"
                         placeholder="Write your filter word here"
                       />
                     </Field>
 
                     <Field label="Message for Comment Reply" required icon={MessageCircle}>
-                      <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                      <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                         <TextareaWithEmoji
                           value={rule.message}
                           onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, message: v } : r))}
@@ -533,47 +533,45 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between px-1">
-                        <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                          <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                        <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                          <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/50" /> Private reply template
                         </label>
-                        <div className="flex gap-3 text-xs font-medium text-pink-500">
-                          <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                        <div className="flex gap-3 text-xs font-semibold text-[var(--primary)]">
+                          <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1 cursor-pointer">
                             <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                           </button>
-                          <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
+                          <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline cursor-pointer">+ Add Template</button>
                         </div>
                       </div>
                       <div className="relative">
                         <select value={rule.template_id} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, template_id: e.target.value } : r))}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                          className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                         >
-                          <option value="">Please select a message template</option>
-                          {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                          <option value="" className="bg-[var(--card)]">Please select a message template</option>
+                          {dropdownTemplates.map(t => <option key={t.id} value={t.id} className="bg-[var(--card)]">{t.name}</option>)}
                         </select>
-                        <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                        <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]" />
                       </div>
                     </div>
                   </div>
                 ))}
 
-                <div className="flex justify-end">
-                  <button onClick={handleAddRule} className="px-6 py-2.5 rounded-xl border-2 border-pink-600 text-pink-600 font-semibold text-[11px]  hover:bg-pink-50 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-pink-100/20">
-                    <Plus className="w-4 h-4" /> Add another filter rule
-                  </button>
-                </div>
+                <button onClick={handleAddRule} className="w-full py-4 rounded-xl border-2 border-dashed border-[var(--primary)]/20 text-[var(--primary)] font-bold text-[12px] hover:bg-[var(--primary)]/5 hover:border-[var(--primary)]/30 transition-all flex items-center justify-center gap-2 uppercase tracking-widest cursor-pointer">
+                  <Plus className="w-4 h-4" /> Add Another Filter Rule
+                </button>
 
                 {/* Fallback */}
-                <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-200 border-dashed space-y-8">
+                <div className="bg-[var(--muted)]/20 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
                   <div className="flex items-center gap-3">
-                    <Info className="w-4 h-4 text-slate-400" />
-                    <span className="text-sm font-medium text-slate-500">Fallback reply (when no filter matches)</span>
+                    <Info className="w-4 h-4 text-[var(--muted-foreground)]" />
+                    <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
                   </div>
                   <Field label="Message for Comment Reply" icon={MessageCircle}>
-                    <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                    <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                       <TextareaWithEmoji
-                        value={form.message}
-                        onChange={v => setForm({ ...form, message: v })}
-                        placeholder="Type your message here..."
+                        value={form.fallback_message ?? ""}
+                        onChange={v => setForm({ ...form, fallback_message: v })}
+                        placeholder="Type fallback message here..."
                         rows={4}
                         minHeight="100px"
                         recent={recentEmojis}
@@ -582,29 +580,29 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                     </div>
                   </Field>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
-                    <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
+                    <UploadBox label="Image for Comment Reply" value={form.fallback_image ?? ""} onChange={v => setForm({ ...form, fallback_image: v })} icon={ImageIcon} />
+                    <UploadBox label="Video for Comment Reply" value={form.fallback_video ?? ""} onChange={v => setForm({ ...form, fallback_video: v })} icon={Video} />
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
-                      <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                        <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template (Fallback)
+                      <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                        <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/50" /> Private reply template (Fallback)
                       </label>
-                      <div className="flex gap-3 text-xs font-medium text-pink-500">
-                        <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1">
+                      <div className="flex gap-3 text-xs font-semibold text-[var(--primary)]">
+                        <button onClick={() => fetchDropdown()} className="hover:underline flex items-center gap-1 cursor-pointer">
                           <RefreshCw className={cn("w-2.5 h-2.5", isLoadingDropdown && "animate-spin")} /> Refresh List
                         </button>
-                        <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline">+ Add Message Template</button>
+                        <button onClick={() => window.location.href = "/dashboard/facebook/bot-replies"} className="hover:underline cursor-pointer">+ Add Template</button>
                       </div>
                     </div>
                     <div className="relative">
-                      <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                      <select value={form.fallback_template_id} onChange={e => setForm({ ...form, fallback_template_id: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                       >
-                        <option value="">Please select a message template</option>
-                        {dropdownTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        <option value="" className="bg-[var(--card)]">Please select a message template</option>
+                        {dropdownTemplates.map(t => <option key={t.id} value={t.id} className="bg-[var(--card)]">{t.name}</option>)}
                       </select>
-                      <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-slate-400" />
+                      <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]" />
                     </div>
                   </div>
                 </div>
@@ -613,9 +611,9 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
         </div>
 
-        <div className="flex gap-4 p-8 bg-white border-t border-slate-100 flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-500 font-bold text-[13px] hover:bg-slate-50 transition-all">Cancel</button>
-          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-pink-600 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+        <div className="flex gap-4 p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
+          <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all bg-transparent cursor-pointer">Cancel</button>
+          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
             <span>SAVE CHANGES</span>
           </button>
@@ -676,20 +674,20 @@ export default function ReplyTemplatesPage() {
     .sort((a, b) => b.id - a.id);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0f172a] font-sans pb-20">
+    <div className="min-h-screen bg-[var(--background)] font-sans pb-20">
       {/* 1. Header Navigation */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center sticky top-0 z-40 shadow-xs">
+      <div className="bg-[var(--card)] border-b border-[var(--border)] flex items-center justify-center sticky top-0 z-40 shadow-xs">
         <div className="max-w-[1400px] w-full px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <button onClick={() => router.back()} className="w-10 h-10 rounded-2xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-pink-600 hover:border-pink-100 transition-all">
+            <button onClick={() => router.back()} className="w-10 h-10 rounded-2xl border border-[var(--border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all cursor-pointer">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-2xl font-semibold text-slate-900">Reply Templates</h1>
-              <p className="text-[10px] font-bold text-slate-400  mt-1">Facebook Automation Hub</p>
+              <p className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none">Facebook Automation</p>
+              <h1 className="text-2xl font-black text-[var(--foreground)] uppercase tracking-tighter mt-1">Reply Templates</h1>
             </div>
           </div>
-          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-8 py-3.5 rounded-2xl bg-pink-600 text-white font-semibold text-[13px] shadow-xl shadow-pink-100 active:scale-95 transition-all flex items-center gap-2">
+          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-8 py-3.5 rounded-[22px] bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-3 uppercase tracking-widest cursor-pointer">
             <Plus className="w-5 h-5" /> NEW TEMPLATE
           </button>
         </div>
@@ -698,60 +696,62 @@ export default function ReplyTemplatesPage() {
       <div className="max-w-[1400px] mx-auto px-8 py-10 space-y-8">
         {/* Search controls */}
         <div className="flex items-center justify-between gap-6">
-          <div className="px-5 py-3 rounded-2xl bg-white border border-slate-200 flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[13px] font-semibold text-slate-800">{templates.length} <span className="text-slate-400 ml-1">Total Active</span></span>
+          <div className="px-6 py-3 rounded-2xl bg-[var(--card)] border border-[var(--border)] flex items-center gap-3 shadow-sm">
+            <div className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="text-[12px] font-black text-[var(--foreground)] uppercase tracking-widest">{templates.length} Total Active</span>
           </div>
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <div className="relative flex-1 max-w-md group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/50 group-focus-within:text-[var(--primary)] transition-colors" />
             <input type="text" placeholder="Search templates…" value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-6 py-3.5 rounded-2xl bg-white border border-slate-200 focus:border-pink-400 outline-none shadow-sm font-medium transition-all"
+              className="w-full pl-12 pr-6 py-3.5 rounded-[22px] bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
             />
           </div>
         </div>
 
         {/* List View */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-5 bg-slate-50/50 border-b border-slate-50">
+        <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden">
+          <div className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-5 bg-[var(--muted)]/20 border-b border-[var(--border)]">
             {["Template Name", "Logic Type", "Last Sync", "Actions"].map(h => (
-              <span key={h} className="text-[10px] font-medium text-slate-500">{h}</span>
+              <span key={h} className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">{h}</span>
             ))}
           </div>
 
           {isLoading ? (
             <div className="p-20 text-center flex flex-col items-center gap-4">
-              <Loader2 className="w-10 h-10 animate-spin text-pink-400" />
-              <p className="text-[12px] font-bold text-slate-400 ">Compiling Database...</p>
+              <div className="w-16 h-16 rounded-[24px] bg-[var(--primary)]/10 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
+              </div>
+              <p className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">Compiling Database...</p>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-24 text-center">
-              <div className="w-20 h-20 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-6">
-                <Settings className="w-10 h-10 text-slate-200" />
+            <div className="p-24 text-center flex flex-col items-center">
+              <div className="w-20 h-20 rounded-[32px] bg-[var(--muted)] flex items-center justify-center mb-6">
+                <Settings className="w-10 h-10 text-[var(--muted-foreground)]/40" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-800">Empty Inventory</h3>
-              <p className="text-sm text-slate-400 italic mt-2">Initialize your first auto-reply preset using the 'New' button.</p>
+              <h3 className="text-xl font-black text-[var(--foreground)] uppercase tracking-tight">Empty Inventory</h3>
+              <p className="text-sm text-[var(--muted-foreground)] italic mt-2">Initialize your first auto-reply preset using the button above.</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-[var(--border)]/55">
               {filtered.map(t => (
-                <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-6 items-center hover:bg-slate-50/30 transition-all group">
+                <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-6 items-center hover:bg-[var(--muted)]/10 transition-all group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-[22px] bg-pink-50 flex items-center justify-center text-pink-500 group-hover:bg-pink-600 group-hover:text-white transition-all shadow-xs">
+                    <div className="w-12 h-12 rounded-[22px] bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
                       <LayoutGrid className="w-6 h-6" />
                     </div>
-                    <span className="text-[16px] font-bold text-slate-900">{t.name}</span>
+                    <span className="text-[15px] font-black text-[var(--foreground)] truncate max-w-[280px]">{t.name}</span>
                   </div>
-                  <span className={cn("px-4 py-1.5 rounded-xl text-[10px] font-semibold w-fit", t.reply_type === "filtered" ? "bg-purple-50 text-purple-600" : "bg-pink-50 text-pink-600")}>
-                    {t.reply_type}
+                  <span className={cn("px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest w-fit", t.reply_type === "filter" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]")}>
+                    {t.reply_type || 'Generic'}
                   </span>
-                  <span className="text-[13px] font-medium text-slate-400 flex items-center gap-2">
-                    <Clock className="w-4 h-4" /> Nov 22, 2026
+                  <span className="text-[12px] font-semibold text-[var(--muted-foreground)] flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5" /> Nov 22, 2026
                   </span>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(t)} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all active:scale-90">
+                    <button onClick={() => handleEdit(t)} className="p-3 rounded-xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all active:scale-90 cursor-pointer">
                       <Edit3 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => setDeleteId(t.id)} className="p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90">
+                    <button onClick={() => setDeleteId(t.id)} className="p-3 rounded-xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90 cursor-pointer">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -776,13 +776,13 @@ export default function ReplyTemplatesPage() {
       <AnimatePresence>
         {deleteId && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl border border-slate-100">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl border border-[var(--border)]">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold text-slate-900 leading-none">Scrub Item?</h3>
-              <p className="text-sm text-slate-400 mt-4 leading-relaxed font-medium">This command will permanently remove the template from the automation hub.</p>
+              <h3 className="text-2xl font-semibold text-[var(--foreground)] leading-none">Scrub Item?</h3>
+              <p className="text-sm text-[var(--muted-foreground)] mt-4 leading-relaxed font-medium">This command will permanently remove the template from the automation hub.</p>
               <div className="flex gap-4 mt-10">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-4 rounded-2xl bg-slate-100 text-slate-600 font-bold text-[13px]">ABORT</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-4 rounded-2xl bg-rose-600 text-white font-semibold text-[14px] shadow-xl shadow-rose-100">CONFIRM</button>
+                <button onClick={() => setDeleteId(null)} className="flex-1 py-4 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all">ABORT</button>
+                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-4 rounded-2xl bg-rose-600 text-white font-semibold text-[14px] shadow-xl shadow-rose-600/20 active:scale-[0.98] transition-all">CONFIRM</button>
               </div>
             </motion.div>
           </div>
