@@ -329,85 +329,52 @@ export default function FacebookBotRepliesPage() {
     const creationPageFallback = selectedPageId === "all" ? (pages[0] || null) : selectedPageObj;
 
     return (
-        <div className="min-h-screen bg-transparent font-sans w-full min-w-0 -m-4 md:-m-6">
-            {/* ── MOBILE HEADER (hidden on md+) ─────────────────────────────── */}
-            <div className="md:hidden sticky top-0 z-[50] bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2.5 min-w-0">
-                    <button
-                        onClick={() => router.back()}
-                        className="-ml-1 p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
-                    >
-                        <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <span className="text-[15px] font-semibold text-gray-900 dark:text-white leading-tight truncate">Facebook Integration</span>
-                </div>
-                <button className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <Settings2 className="w-4 h-4" />
-                </button>
-            </div>
+        <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
 
-            {/* ── DESKTOP HEADER (hidden on mobile) ────────────────────────────── */}
-            {/* 1. PREMIUM BRANDED HEADER */}
-            <div className="hidden md:flex sticky top-[-24px] z-[50] bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 px-8 py-3 flex-wrap md:flex-nowrap items-center justify-between gap-y-4">
-                <div className="flex items-center gap-4">
+            {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
+            <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col -mx-4 -mt-4 md:-mx-6 md:-mt-6" style={{
+                background: "var(--card)",
+                borderBottom: "1px solid var(--border)",
+                boxShadow: "0 2px 16px rgba(0,0,0,0.10)"
+            }}>
+                {/* Top row: back + title + settings */}
+                <div className="flex items-center gap-3 px-4 md:px-8 h-14 md:h-[60px]">
                     <button
                         onClick={() => router.push('/dashboard')}
-                        className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+                        style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
                     >
-                        <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                        <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
                     </button>
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#0866FF]">Facebook Automation</span>
-                            <div className="w-1 h-1 rounded-full bg-neutral-300" />
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#0866FF]/10 rounded-full">
-                                <FacebookIcon className="w-2.5 h-2.5 text-[#0866FF]" />
-                                <span className="text-[9px] font-medium text-[#0866FF]">Neural Node</span>
-                            </div>
-                        </div>
-                        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white tracking-tight leading-none mt-1 uppercase">Facebook Reply Manager</h1>
+
+                    <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#0866FF]">
+                            Facebook Automation
+                        </span>
+                        <h1 className="text-[15px] md:text-[17px] font-black leading-none tracking-tight truncate" style={{ color: "var(--foreground)" }}>
+                            {MENUS.find(m => m.id === activeMenu)?.label || 'Bot Replies'}
+                        </h1>
                     </div>
+
+                    <button
+                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+                        style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
+                    >
+                        <Settings2 className="w-4 h-4" />
+                    </button>
                 </div>
 
-                <div className="order-last md:order-none w-full md:w-auto flex items-center bg-neutral-100 dark:bg-neutral-800 p-1 rounded-2xl border border-neutral-200 dark:border-neutral-700 overflow-x-auto no-scrollbar scroll-smooth">
-                    <div className="flex items-center min-w-max">
-                        {MENUS.map(menu => (
-                            <button
-                                key={menu.id}
-                                onClick={() => setActiveMenu(menu.id)}
-                                className={cn(
-                                    "px-5 py-2 rounded-xl text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
-                                    activeMenu === menu.id
-                                        ? "bg-[#0866FF] text-white shadow-md"
-                                        : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
-                                )}
-                            >
-                                <menu.icon className="w-[14px] h-[14px]" strokeWidth={2} />
-                                {menu.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <button className="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 transition-all"><Settings2 className="w-[18px] h-[18px]" /></button>
-                    <button className="px-6 py-2.5 rounded-2xl text-white text-[13px] font-medium uppercase tracking-wider hover:scale-105 active:scale-95 transition-all" style={{ background: "linear-gradient(135deg, #0866FF 0%, #0055D4 100%)", boxShadow: "0 10px 20px -5px rgba(8, 102, 255, 0.3)" }}>Pulse stats</button>
-                </div>
-            </div>
-
-            <div className="w-full pt-4 sm:p-8 space-y-4 sm:space-y-8 pb-28 lg:pb-8 px-4 sm:px-8 md:px-0">
-
-                {/* ── MOBILE: Main Navigation Tabs (hidden on desktop) ────────────── */}
-                <div className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4">
+                {/* Tab strip: scrollable pill tabs */}
+                <div className="flex items-center gap-1.5 px-4 md:px-8 pb-2.5 overflow-x-auto no-scrollbar">
                     {MENUS.map(menu => (
                         <button
                             key={menu.id}
                             onClick={() => setActiveMenu(menu.id)}
                             className={cn(
-                                "px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0",
+                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 border",
                                 activeMenu === menu.id
-                                    ? "bg-[#0866FF] text-white shadow-md"
-                                    : "bg-white dark:bg-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 border border-neutral-200 dark:border-neutral-700"
+                                    ? "bg-[#0866FF] border-[#0866FF] text-white shadow-md shadow-blue-500/25"
+                                    : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--border)]"
                             )}
                         >
                             <menu.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -415,24 +382,20 @@ export default function FacebookBotRepliesPage() {
                         </button>
                     ))}
                 </div>
+            </div>
 
-                {/* ── MOBILE: title + subtitle ──────────────────────────────────── */}
-                <div className="md:hidden pt-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#0866FF] mb-1">Facebook Automation</p>
-                    <h2 className="text-[20px] font-bold text-neutral-900 dark:text-white leading-tight">
-                        {MENUS.find(m => m.id === activeMenu)?.label || 'Facebook Reply Manager'}
-                    </h2>
-                </div>
+            {/* ── PAGE BODY ─────────────────────────────────────────────────── */}
+            <div className="w-full pt-5 pb-28 md:pb-10 space-y-4 md:space-y-6">
 
-                {/* ── MOBILE: pill page tabs ────────────────────────────────── */}
-                <div className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+                {/* Page filter pills */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
                     <button
                         onClick={() => handlePageSelect("all")}
                         className={cn(
-                            "px-4 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all flex-shrink-0 border",
+                            "px-3.5 py-1.5 rounded-full text-[11.5px] font-semibold whitespace-nowrap transition-all flex-shrink-0 border",
                             selectedPageId === "all"
-                                ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm shadow-blue-500/30"
-                                : "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400"
+                                ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm"
+                                : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                         )}
                     >
                         All Pages
@@ -442,10 +405,10 @@ export default function FacebookBotRepliesPage() {
                             key={page.id}
                             onClick={() => handlePageSelect(page.page_id)}
                             className={cn(
-                                "px-4 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap transition-all flex-shrink-0 border",
+                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all flex-shrink-0 border",
                                 selectedPageId === page.page_id
-                                    ? "bg-neutral-800 border-neutral-800 text-white dark:bg-white dark:border-white dark:text-neutral-900"
-                                    : "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400"
+                                    ? "bg-[var(--foreground)] border-[var(--foreground)] text-[var(--background)]"
+                                    : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                             )}
                         >
                             {page.page_name}
@@ -453,122 +416,8 @@ export default function FacebookBotRepliesPage() {
                     ))}
                 </div>
 
-                {/* 2. PAGES SELECTOR (desktop only) */}
-                <div className="hidden md:flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
-                    <div className="flex-1 min-w-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-1.5 shadow-sm flex items-center relative">
-                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-
-                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
-                            <button
-                                onClick={() => handlePageSelect("all")}
-                                className={cn(
-                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold uppercase tracking-widest transition-all whitespace-nowrap",
-                                    selectedPageId === "all"
-                                        ? "bg-neutral-900 text-white shadow-md dark:bg-white dark:text-neutral-900"
-                                        : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                )}
-                            >
-                                All Pages
-                            </button>
-                            <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 flex-shrink-0" />
-                            {pages.map(page => (
-                                <button
-                                    key={page.id}
-                                    onClick={() => handlePageSelect(page.page_id)}
-                                    className={cn(
-                                        "px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all whitespace-nowrap",
-                                        selectedPageId === page.page_id
-                                            ? "shadow-sm border border-[#0866FF]/30 bg-[#0866FF]/5 text-[#0866FF]"
-                                            : "bg-transparent text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 border border-transparent"
-                                    )}
-                                >
-                                    {page.page_name}
-                                </button>
-                            ))}
-                        </div>
-
-                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-neutral-400 transition-colors z-10 bg-white dark:bg-neutral-900 shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <div className="relative shrink-0 z-20">
-                        <button
-                            onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-medium uppercase tracking-wider transition-colors text-neutral-700 dark:text-neutral-300"
-                            style={{ borderColor: showPageDropdown ? "#0866FF" : undefined }}
-                        >
-                            <div className="flex items-center gap-2">
-                                <ListFilter className="w-4 h-4 text-[#0866FF]" />
-                                Quick Find
-                            </div>
-                            <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
-                        </button>
-                        <AnimatePresence>
-                            {showPageDropdown && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                    className="absolute right-0 top-[calc(100%+8px)] w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl overflow-hidden"
-                                >
-                                    <div className="flex flex-col max-h-[350px]">
-                                        <div className="p-2 border-b border-neutral-100 dark:border-neutral-800 sticky top-0 bg-white dark:bg-neutral-900 z-10">
-                                            <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search pages..."
-                                                    value={quickFindSearch}
-                                                    onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-transparent focus:bg-white dark:focus:bg-neutral-800 text-xs outline-none transition-all"
-                                                    autoFocus
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="p-1 overflow-y-auto custom-scrollbar">
-                                            <button
-                                                onClick={() => { handlePageSelect("all"); setQuickFindSearch(""); }}
-                                                className={cn(
-                                                    "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                                    selectedPageId === "all" ? "bg-[#0866FF]/10 text-[#0866FF]" : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                                )}
-                                            >
-                                                All Pages
-                                            </button>
-                                            <div className="h-px bg-neutral-100 dark:bg-neutral-800 my-1" />
-                                            {pages
-                                                .filter(page => !quickFindSearch || page.page_name.toLowerCase().includes(quickFindSearch.toLowerCase()))
-                                                .map(page => (
-                                                    <button
-                                                        key={page.id}
-                                                        onClick={() => { handlePageSelect(page.page_id); setQuickFindSearch(""); }}
-                                                        className={cn(
-                                                            "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all truncate flex items-center gap-2",
-                                                            selectedPageId === page.page_id ? "bg-[#0866FF]/10 text-[#0866FF]" : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                                                        )}
-                                                    >
-                                                        <FacebookIcon className="w-3.5 h-3.5 shrink-0 text-[#0866FF]" />
-                                                        <span className="truncate">{page.page_name}</span>
-                                                    </button>
-                                                ))}
-                                            {pages.filter(page => page.page_name.toLowerCase().includes(quickFindSearch.toLowerCase())).length === 0 && (
-                                                <div className="py-8 text-center px-4">
-                                                    <Search className="w-8 h-8 text-neutral-200 dark:text-neutral-800 mx-auto mb-2" />
-                                                    <p className="text-xs text-neutral-400 font-medium italic">No pages found</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-
                 {/* 3. MAIN WORKSPACE */}
-                <div className="w-full min-w-0 md:bg-white md:dark:bg-neutral-900 md:border md:border-neutral-200 md:dark:border-neutral-800 md:rounded-3xl md:p-8 md:shadow-sm">
+                <div className="w-full min-w-0 bg-transparent md:bg-[var(--card)] border border-transparent md:border-[var(--border)] p-0 md:p-6 rounded-2xl md:shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
                     <AnimatePresence mode="wait">
 
                         {/* ── BOT REPLIES CONTENT */}
