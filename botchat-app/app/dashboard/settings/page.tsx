@@ -53,7 +53,8 @@ const baseNavigationGroups = [
         title: "App Integrations",
         items: [
             { id: "int-email", label: "Email & SMTP", Icon: Mail },
-            { id: "int-social", label: "Social (Facebook, IG)", Icon: Facebook },
+            { id: "int-social", label: "Facebook Platform API", Icon: Facebook },
+            { id: "int-social-login-providers", label: "Social Login Providers", Icon: User },
             { id: "int-social-login", label: "Social Login", Icon: User },
             { id: "int-ai", label: "AI Models", Icon: Sparkles },
             { id: "int-payments", label: "Payment Gateways", Icon: CreditCard },
@@ -177,8 +178,8 @@ export default function SettingsPage() {
                         if (item.id === "int-social-login") return false;
                         return true;
                     } else {
-                        // Tenants do not configure Facebook API Integration
-                        if (item.id === "int-social") return false;
+                        // Tenants do not configure Facebook API Integration or Global Social Login Providers
+                        if (item.id === "int-social" || item.id === "int-social-login-providers") return false;
                         return true;
                     }
                 })
@@ -196,7 +197,7 @@ export default function SettingsPage() {
     // File selection state
     // Selectors
     const { user, isLoading: authLoading } = useSelector((state: RootState) => state.auth);
-    const { general, facebook, ai, socialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
+    const { general, facebookPlatform, ai, socialLogin, tenantSocialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
 
     // Initial Fetch (when opening relevant tabs for the first time or mounted)
     useEffect(() => {
@@ -208,7 +209,7 @@ export default function SettingsPage() {
         if (tab === "int-social") {
             dispatch(fetchFacebookSettings());
         }
-        if (tab === "int-social-login") {
+        if (tab === "int-social-login" || tab === "int-social-login-providers") {
             dispatch(fetchSocialLoginSettings());
         }
     }, [tab, dispatch, user]);
@@ -221,13 +222,22 @@ export default function SettingsPage() {
 
     const [fbForm, setFbForm] = useState({
         appName: '', appVersion: '', appId: '', appSecret: '',
-        socialLoginEnabled: false, appDomain: '', siteUrl: '',
+        appDomain: '', siteUrl: '',
         privacyPolicyUrl: '', termsOfServiceUrl: '',
     });
     
     const [socialLoginForm, setSocialLoginForm] = useState({
-        facebook_login_enable: 'off',
-        google_login_enable: 'off',
+        facebook_enabled: false,
+        google_enabled: false,
+    });
+
+    const [socialLoginProvidersForm, setSocialLoginProvidersForm] = useState({
+        fb_login_client_id: '',
+        fb_login_client_secret: '',
+        global_facebook_login_enable: 'off',
+        google_login_client_id: '',
+        google_login_client_secret: '',
+        global_google_login_enable: 'off',
     });
     const [showFbSecret, setShowFbSecret] = useState(false);
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
@@ -276,27 +286,39 @@ export default function SettingsPage() {
     }, [ai]);
 
     useEffect(() => {
-        if (facebook) {
+        if (facebookPlatform) {
             setFbForm(prev => ({
                 ...prev,
-                appName: facebook.appName || '',
-                appVersion: facebook.appVersion || '',
-                appId: facebook.appId || '',
+                appName: facebookPlatform.appName || '',
+                appVersion: facebookPlatform.appVersion || '',
+                appId: facebookPlatform.appId || '',
                 appSecret: '',
-                socialLoginEnabled: facebook.socialLoginEnabled ?? false,
-                appDomain: facebook.appDomain || '',
-                siteUrl: facebook.siteUrl || '',
-                privacyPolicyUrl: facebook.privacyPolicyUrl || '',
-                termsOfServiceUrl: facebook.termsOfServiceUrl || '',
+                appDomain: facebookPlatform.appDomain || '',
+                siteUrl: facebookPlatform.siteUrl || '',
+                privacyPolicyUrl: facebookPlatform.privacyPolicyUrl || '',
+                termsOfServiceUrl: facebookPlatform.termsOfServiceUrl || '',
             }));
         }
-    }, [facebook]);
+    }, [facebookPlatform]);
+
+    useEffect(() => {
+        if (tenantSocialLogin) {
+            setSocialLoginForm({
+                facebook_enabled: tenantSocialLogin.facebook_enabled,
+                google_enabled: tenantSocialLogin.google_enabled,
+            });
+        }
+    }, [tenantSocialLogin]);
 
     useEffect(() => {
         if (socialLogin) {
-            setSocialLoginForm({
-                facebook_login_enable: socialLogin.facebook?.enabled ? 'on' : 'off',
-                google_login_enable: socialLogin.google?.enabled ? 'on' : 'off',
+            setSocialLoginProvidersForm({
+                fb_login_client_id: socialLogin.fb_login_client_id || '',
+                fb_login_client_secret: '', // never populate secrets to frontend forms
+                global_facebook_login_enable: socialLogin.global_facebook_login_enable || 'off',
+                google_login_client_id: socialLogin.google_login_client_id || '',
+                google_login_client_secret: '',
+                global_google_login_enable: socialLogin.global_google_login_enable || 'off',
             });
         }
     }, [socialLogin]);
@@ -622,19 +644,19 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* Social Login Configuration */}
+                    {/* Tenant Social Login Configuration */}
                     {tab === "int-social-login" && (
                         <div className="space-y-6 slide-up">
-                            <IntegrationHeader title="Social Login Settings" desc="Configure Google and Facebook OAuth login for your tenants." Icon={User} color="#8b5cf6" />
+                            <IntegrationHeader title="Social Login" desc="Enable Google and Facebook OAuth login for your workspace." Icon={User} color="#8b5cf6" />
                             <form onSubmit={handleSaveSocialLogin} className="space-y-6">
                                 {/* Google Section */}
                                 <Section title="Google Authentication" desc="Enable Google SSO for your users." icon={<svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>}
                                     rightContent={
                                         <div className="flex items-center gap-3">
-                                            <span className="text-sm font-medium" style={{ color: socialLoginForm.google_login_enable === 'on' ? "#10b981" : "var(--muted-foreground)" }}>{socialLoginForm.google_login_enable === 'on' ? 'Enabled' : 'Disabled'}</span>
+                                            <span className="text-sm font-medium" style={{ color: socialLoginForm.google_enabled ? "#10b981" : "var(--muted-foreground)" }}>{socialLoginForm.google_enabled ? 'Enabled' : 'Disabled'}</span>
                                             <Toggle
-                                                enabled={socialLoginForm.google_login_enable === 'on'}
-                                                onClick={() => setSocialLoginForm(f => ({ ...f, google_login_enable: f.google_login_enable === 'on' ? 'off' : 'on' }))}
+                                                enabled={socialLoginForm.google_enabled}
+                                                onClick={() => setSocialLoginForm(f => ({ ...f, google_enabled: !f.google_enabled }))}
                                             />
                                         </div>
                                     }
@@ -645,10 +667,10 @@ export default function SettingsPage() {
                                 <Section title="Facebook Authentication" desc="Enable Facebook SSO for your users." icon={<Facebook className="w-5 h-5 text-blue-600" />}
                                     rightContent={
                                         <div className="flex items-center gap-3">
-                                            <span className="text-sm font-medium" style={{ color: socialLoginForm.facebook_login_enable === 'on' ? "#10b981" : "var(--muted-foreground)" }}>{socialLoginForm.facebook_login_enable === 'on' ? 'Enabled' : 'Disabled'}</span>
+                                            <span className="text-sm font-medium" style={{ color: socialLoginForm.facebook_enabled ? "#10b981" : "var(--muted-foreground)" }}>{socialLoginForm.facebook_enabled ? 'Enabled' : 'Disabled'}</span>
                                             <Toggle
-                                                enabled={socialLoginForm.facebook_login_enable === 'on'}
-                                                onClick={() => setSocialLoginForm(f => ({ ...f, facebook_login_enable: f.facebook_login_enable === 'on' ? 'off' : 'on' }))}
+                                                enabled={socialLoginForm.facebook_enabled}
+                                                onClick={() => setSocialLoginForm(f => ({ ...f, facebook_enabled: !f.facebook_enabled }))}
                                             />
                                         </div>
                                     }
@@ -659,6 +681,86 @@ export default function SettingsPage() {
                                     <button type="submit" disabled={isSavingSocialLogin} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
                                         style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingSocialLogin ? 0.7 : 1 }}>
                                         <Save className="w-4 h-4" /> {isSavingSocialLogin ? "Saving..." : "Save Configuration"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* SuperAdmin Social Login Providers */}
+                    {tab === "int-social-login-providers" && (
+                        <div className="space-y-6 slide-up">
+                            <IntegrationHeader title="Social Login Providers" desc="Configure Global App IDs and Secrets for Facebook & Google Login." Icon={User} color="#8b5cf6" />
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                try {
+                                    await dispatch(updateSocialLoginSettings(socialLoginProvidersForm)).unwrap();
+                                    toast.success("Providers updated!");
+                                } catch(e: any) {
+                                    toast.error(e.message || "Failed to update");
+                                }
+                            }} className="space-y-6">
+                                
+                                {/* Facebook Login Provider */}
+                                <Section title="Facebook Login Config" desc="Configure the global Facebook OAuth App details." icon={<Facebook className="w-5 h-5 text-blue-600" />}
+                                    rightContent={
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium" style={{ color: socialLoginProvidersForm.global_facebook_login_enable === 'on' ? "#10b981" : "var(--muted-foreground)" }}>{socialLoginProvidersForm.global_facebook_login_enable === 'on' ? 'Enabled' : 'Disabled'}</span>
+                                            <Toggle
+                                                enabled={socialLoginProvidersForm.global_facebook_login_enable === 'on'}
+                                                onClick={() => setSocialLoginProvidersForm(f => ({ ...f, global_facebook_login_enable: f.global_facebook_login_enable === 'on' ? 'off' : 'on' }))}
+                                            />
+                                        </div>
+                                    }
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+                                        <InputField label="Facebook App ID" value={socialLoginProvidersForm.fb_login_client_id} onChange={(e: any) => setSocialLoginProvidersForm({ ...socialLoginProvidersForm, fb_login_client_id: e.target.value })} placeholder="App ID" />
+                                        <InputField type="password" label="Facebook App Secret" value={socialLoginProvidersForm.fb_login_client_secret} onChange={(e: any) => setSocialLoginProvidersForm({ ...socialLoginProvidersForm, fb_login_client_secret: e.target.value })} placeholder="Leave unchanged to keep secret" />
+                                    </div>
+                                    <div className="space-y-1.5 mt-2">
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Facebook Login Redirect URI</label>
+                                        <input readOnly value={socialLogin?.fb_login_redirect_uri || ''}
+                                            className="w-full px-3.5 py-2.5 rounded-xl text-sm font-mono outline-none truncate"
+                                            style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                    </div>
+                                </Section>
+
+                                {/* Google Login Provider */}
+                                <Section title="Google Login Config" desc="Configure the global Google OAuth Client details." icon={<svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>}
+                                    rightContent={
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-medium" style={{ color: socialLoginProvidersForm.global_google_login_enable === 'on' ? "#10b981" : "var(--muted-foreground)" }}>{socialLoginProvidersForm.global_google_login_enable === 'on' ? 'Enabled' : 'Disabled'}</span>
+                                            <Toggle
+                                                enabled={socialLoginProvidersForm.global_google_login_enable === 'on'}
+                                                onClick={() => setSocialLoginProvidersForm(f => ({ ...f, global_google_login_enable: f.global_google_login_enable === 'on' ? 'off' : 'on' }))}
+                                            />
+                                        </div>
+                                    }
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+                                        <InputField label="Google Client ID" value={socialLoginProvidersForm.google_login_client_id} onChange={(e: any) => setSocialLoginProvidersForm({ ...socialLoginProvidersForm, google_login_client_id: e.target.value })} placeholder="Client ID" />
+                                        <InputField type="password" label="Google Client Secret" value={socialLoginProvidersForm.google_login_client_secret} onChange={(e: any) => setSocialLoginProvidersForm({ ...socialLoginProvidersForm, google_login_client_secret: e.target.value })} placeholder="Leave unchanged to keep secret" />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
+                                        <div className="space-y-1.5">
+                                            <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Google Redirect URI</label>
+                                            <input readOnly value={socialLogin?.google_login_redirect_uri || ''}
+                                                className="w-full px-3.5 py-2.5 rounded-xl text-sm font-mono outline-none truncate"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Tenant Domain (For OAuth Scopes)</label>
+                                            <input readOnly value={socialLogin?.tenant_domain || ''}
+                                                className="w-full px-3.5 py-2.5 rounded-xl text-sm font-mono outline-none truncate"
+                                                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
+                                        </div>
+                                    </div>
+                                </Section>
+
+                                <div className="flex justify-end pt-4">
+                                    <button type="submit" className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                        style={{ background: "var(--brand-gradient)", color: "white" }}>
+                                        <Save className="w-4 h-4" /> Save Global OAuth Config
                                     </button>
                                 </div>
                             </form>

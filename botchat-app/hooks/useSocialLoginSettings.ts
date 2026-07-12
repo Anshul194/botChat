@@ -32,8 +32,8 @@ export function useSocialLoginSettings() {
                 .then(response => {
                     const data = response.data.data;
                     const parsedSettings = {
-                        facebookEnabled: !!data?.facebook?.enabled,
-                        googleEnabled: !!data?.google?.enabled,
+                        facebookEnabled: !!data?.facebook_enabled,
+                        googleEnabled: !!data?.google_enabled,
                     };
                     cachedSettings = parsedSettings;
                     return parsedSettings;
