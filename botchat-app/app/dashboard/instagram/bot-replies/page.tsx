@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
+import { SwipeHint } from "@/components/ui/swipe-hint";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
 import { AiAgentSettingsPanel } from "../AiAgentSettingsPanel";
@@ -399,6 +400,7 @@ export default function InstagramBotRepliesPage() {
                 {/* 2. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-1.5 shadow-sm flex items-center relative">
+                        <SwipeHint containerRef={scrollRef} storageKey="ig-account-pills" align="right" className="absolute -top-5 right-4 z-10" />
                         <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] transition-colors z-10 bg-transparent rounded-l-xl">
                             <ChevronLeft className="w-5 h-5" />
                         </button>

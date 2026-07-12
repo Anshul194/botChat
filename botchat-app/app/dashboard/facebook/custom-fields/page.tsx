@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Search, Trash2, Edit3, X, Sparkles,
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { SwipeHint } from "@/components/ui/swipe-hint";
 
 interface CustomField {
   id: number;
@@ -179,6 +180,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
 
 export default function CustomFieldsPage() {
   const router = useRouter();
+  const tableScrollRef = useRef<HTMLDivElement>(null);
   const [fields, setFields] = useState<CustomField[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -295,7 +297,9 @@ export default function CustomFieldsPage() {
             </div>
           ) : (
             <>
-              <div className="hidden sm:block overflow-x-auto">
+              <div className="hidden sm:block relative">
+                <SwipeHint containerRef={tableScrollRef} storageKey="fb-custom-fields" align="right" className="absolute -top-6 right-2" />
+                <div ref={tableScrollRef} className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[500px]">
                   <thead>
                     <tr className="border-b border-[var(--border)] bg-[var(--muted)]/30">
@@ -373,6 +377,7 @@ export default function CustomFieldsPage() {
                     </AnimatePresence>
                   </tbody>
                 </table>
+                </div>
               </div>
 
               <div className="sm:hidden divide-y divide-[var(--border)]/50">

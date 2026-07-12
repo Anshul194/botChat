@@ -309,26 +309,34 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[980px] min-h-screen sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+        className="relative z-10 w-full max-w-none sm:max-w-[980px] mt-auto sm:mt-0 min-h-[60vh] sm:min-h-0 bg-[var(--card)] rounded-t-[28px] sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
       >
+        {/* Mobile drag handle */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-          <h2 className="text-[13px] font-semibold text-[var(--foreground)]">Create / Edit Auto Reply Template</h2>
-          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer">
-            <X className="w-5 h-5" />
+        <div className="flex items-center justify-between px-4 sm:px-8 py-3 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+          <h2 className="text-[12px] sm:text-[13px] font-semibold text-[var(--foreground)]">Create / Edit Auto Reply Template</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer p-1">
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--background)]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--background)]">
 
           {/* SECTION 1: BASICS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 bg-[var(--card)] p-4 sm:p-6 rounded-2xl border border-[var(--border)] shadow-xs">
             <Field label="Auto Reply Campaign Name" required>
               <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/50 focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] text-[var(--foreground)]"
@@ -353,16 +361,16 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
 
           {/* SECTION 2: OFFENSIVE */}
-          <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
+          <div className="bg-[var(--card)] p-4 sm:p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-4 sm:space-y-6">
             <div className="flex items-center gap-2 mb-2">
-              <ShieldAlert className="w-4 h-4 text-rose-500" />
-              <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
+              <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500" />
+              <h3 className="text-xs sm:text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
             </div>
-            <div className="flex gap-8">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-8">
               <Toggle label="Hide Comment" active={form.hide_comment!!} onClick={() => setForm({ ...form, hide_comment: !form.hide_comment })} />
               <Toggle label="Delete Comment" active={form.delete_comment!!} onClick={() => setForm({ ...form, delete_comment: !form.delete_comment })} />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[var(--muted-foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)]/60 font-normal">(comma separated)</span></label>
                 <div className="relative">
@@ -399,32 +407,32 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
 
           {/* SECTION 3: REPLAY TOGGLES */}
-          <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
-            <div className="flex items-center justify-between py-1 px-1">
-              <div className="flex items-center gap-3">
-                <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]" />
-                <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to send reply message to a user multiple times?</span>
+          <div className="bg-[var(--card)] p-4 sm:p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-2 sm:gap-4">
+            <div className="flex items-center justify-between py-2 sm:py-1 px-1 gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--muted-foreground)] shrink-0" />
+                <span className="text-[11px] sm:text-[13px] font-medium text-[var(--foreground)]">Multiple replies?</span>
               </div>
               <Toggle label="" active={!!form.multiple_reply_enabled} onClick={() => setForm({ ...form, multiple_reply_enabled: !form.multiple_reply_enabled })} />
             </div>
-            <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
-              <div className="flex items-center gap-3">
-                <MessageCircle className="w-4 h-4 text-[var(--muted-foreground)]" />
-                <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to enable comment reply?</span>
+            <div className="flex items-center justify-between py-2 sm:py-1 px-1 gap-3 border-t border-[var(--border)]">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--muted-foreground)] shrink-0" />
+                <span className="text-[11px] sm:text-[13px] font-medium text-[var(--foreground)]">Comment reply?</span>
               </div>
               <Toggle label="" active={!!form.comment_reply_enabled} onClick={() => setForm({ ...form, comment_reply_enabled: !form.comment_reply_enabled })} />
             </div>
-            <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
-              <div className="flex items-center gap-3">
-                <EyeOff className="w-4 h-4 text-[var(--muted-foreground)]" />
-                <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to hide comments after comment reply?</span>
+            <div className="flex items-center justify-between py-2 sm:py-1 px-1 gap-3 border-t border-[var(--border)]">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--muted-foreground)] shrink-0" />
+                <span className="text-[11px] sm:text-[13px] font-medium text-[var(--foreground)]">Hide after reply?</span>
               </div>
               <Toggle label="" active={!!form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
             </div>
           </div>
 
           {/* SECTION 4: LOGIC SELECTION */}
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-[22px] p-6 shadow-xs space-y-5">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-[18px] sm:rounded-[22px] p-4 sm:p-6 shadow-xs space-y-4 sm:space-y-5">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "generic" })}>
               <CapsuleSwitch active={form.message_type === "generic"} />
               <span className={cn("text-sm font-medium transition-colors", form.message_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Generic message for all comments</span>
@@ -438,9 +446,9 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           {/* SECTION 5: EDITOR */}
           <div className="space-y-8">
             {form.message_type === "generic" ? (
-              <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 animate-in fade-in duration-300">
+              <div className="bg-[var(--card)] p-4 sm:p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-5 sm:space-y-8 animate-in fade-in duration-300">
                 <Field label="Message for Comment Reply" required icon={MessageCircle}>
-                  <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
+                  <div className="relative border border-[var(--border)] rounded-xl sm:rounded-2xl p-3 sm:p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                     <TextareaWithEmoji
                       value={form.message}
                       onChange={v => setForm({ ...form, message: v })}
@@ -452,7 +460,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                     />
                   </div>
                 </Field>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                   <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
                   <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
                 </div>
@@ -482,9 +490,9 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             ) : (
               <div className="space-y-8 animate-in fade-in duration-300">
                 {filterRules.map((rule, idx) => (
-                  <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-6">
+                  <div key={rule.id} className="bg-[var(--card)] p-4 sm:p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-5 sm:space-y-8 relative group">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+                      <div className="flex items-center gap-4 sm:gap-6">
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
                           <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
                             {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
@@ -526,7 +534,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       </div>
                     </Field>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                       <UploadBox label="Image for Comment Reply" value={rule.image} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, image: v } : r))} icon={ImageIcon} />
                       <UploadBox label="Video for Comment Reply" value={rule.video} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, video: v } : r))} icon={Video} />
                     </div>
@@ -561,7 +569,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                 </button>
 
                 {/* Fallback */}
-                <div className="bg-[var(--muted)]/20 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
+                <div className="bg-[var(--muted)]/20 p-4 sm:p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-5 sm:space-y-8">
                   <div className="flex items-center gap-3">
                     <Info className="w-4 h-4 text-[var(--muted-foreground)]" />
                     <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
@@ -579,7 +587,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       />
                     </div>
                   </Field>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                     <UploadBox label="Image for Comment Reply" value={form.fallback_image ?? ""} onChange={v => setForm({ ...form, fallback_image: v })} icon={ImageIcon} />
                     <UploadBox label="Video for Comment Reply" value={form.fallback_video ?? ""} onChange={v => setForm({ ...form, fallback_video: v })} icon={Video} />
                   </div>
@@ -611,10 +619,10 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
         </div>
 
-        <div className="flex gap-4 p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all bg-transparent cursor-pointer">Cancel</button>
-          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
+        <div className="flex gap-3 sm:gap-4 p-4 sm:p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
+          <button onClick={onClose} className="flex-1 py-3 sm:py-3.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all bg-transparent cursor-pointer">Cancel</button>
+          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 sm:py-3.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 sm:w-5 sm:h-5" />}
             <span>SAVE CHANGES</span>
           </button>
         </div>
@@ -677,87 +685,121 @@ export default function ReplyTemplatesPage() {
     <div className="min-h-screen bg-[var(--background)] font-sans pb-20">
       {/* 1. Header Navigation */}
       <div className="bg-[var(--card)] border-b border-[var(--border)] flex items-center justify-center sticky top-0 z-40 shadow-xs">
-        <div className="max-w-[1400px] w-full px-8 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <button onClick={() => router.back()} className="w-10 h-10 rounded-2xl border border-[var(--border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all cursor-pointer">
-              <ChevronLeft className="w-5 h-5" />
+        <div className="max-w-[1400px] w-full px-4 sm:px-8 py-3 sm:py-5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+            <button onClick={() => router.back()} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl border border-[var(--border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all cursor-pointer shrink-0">
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            <div>
-              <p className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none">Facebook Automation</p>
-              <h1 className="text-2xl font-black text-[var(--foreground)] uppercase tracking-tighter mt-1">Reply Templates</h1>
+            <div className="min-w-0">
+              <p className="text-[9px] sm:text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none truncate">Facebook Automation</p>
+              <h1 className="text-base sm:text-xl lg:text-2xl font-black text-[var(--foreground)] uppercase tracking-tighter mt-0.5 sm:mt-1 truncate">Reply Templates</h1>
             </div>
           </div>
-          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-8 py-3.5 rounded-[22px] bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-3 uppercase tracking-widest cursor-pointer">
-            <Plus className="w-5 h-5" /> NEW TEMPLATE
+          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl sm:rounded-[22px] bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[10px] sm:text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-2 sm:gap-3 uppercase tracking-widest cursor-pointer whitespace-nowrap">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" /> <span className="hidden xs:inline">NEW</span> TEMPLATE
           </button>
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-8 py-10 space-y-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
         {/* Search controls */}
-        <div className="flex items-center justify-between gap-6">
-          <div className="px-6 py-3 rounded-2xl bg-[var(--card)] border border-[var(--border)] flex items-center gap-3 shadow-sm">
-            <div className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
-            <span className="text-[12px] font-black text-[var(--foreground)] uppercase tracking-widest">{templates.length} Total Active</span>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6">
+          <div className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-[var(--card)] border border-[var(--border)] flex items-center gap-2 sm:gap-3 shadow-sm w-fit">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="text-[10px] sm:text-[12px] font-black text-[var(--foreground)] uppercase tracking-widest whitespace-nowrap">{templates.length} Total Active</span>
           </div>
-          <div className="relative flex-1 max-w-md group">
+          <div className="relative flex-1 max-w-none sm:max-w-md group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/50 group-focus-within:text-[var(--primary)] transition-colors" />
             <input type="text" placeholder="Search templates…" value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-6 py-3.5 rounded-[22px] bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
+              className="w-full pl-12 pr-6 py-3 sm:py-3.5 rounded-xl sm:rounded-[22px] bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[13px] sm:text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
             />
           </div>
         </div>
 
         {/* List View */}
         <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden">
-          <div className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-5 bg-[var(--muted)]/20 border-b border-[var(--border)]">
+          {/* Desktop header row */}
+          <div className="hidden sm:grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-5 bg-[var(--muted)]/20 border-b border-[var(--border)]">
             {["Template Name", "Logic Type", "Last Sync", "Actions"].map(h => (
               <span key={h} className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">{h}</span>
             ))}
           </div>
 
           {isLoading ? (
-            <div className="p-20 text-center flex flex-col items-center gap-4">
-              <div className="w-16 h-16 rounded-[24px] bg-[var(--primary)]/10 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
+            <div className="p-10 sm:p-20 text-center flex flex-col items-center gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-[16px] sm:rounded-[24px] bg-[var(--primary)]/10 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-[var(--primary)]" />
               </div>
-              <p className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">Compiling Database...</p>
+              <p className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">Compiling Database...</p>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-24 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-[32px] bg-[var(--muted)] flex items-center justify-center mb-6">
-                <Settings className="w-10 h-10 text-[var(--muted-foreground)]/40" />
+            <div className="p-12 sm:p-24 text-center flex flex-col items-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] sm:rounded-[32px] bg-[var(--muted)] flex items-center justify-center mb-4 sm:mb-6">
+                <Settings className="w-8 h-8 sm:w-10 sm:h-10 text-[var(--muted-foreground)]/40" />
               </div>
-              <h3 className="text-xl font-black text-[var(--foreground)] uppercase tracking-tight">Empty Inventory</h3>
-              <p className="text-sm text-[var(--muted-foreground)] italic mt-2">Initialize your first auto-reply preset using the button above.</p>
+              <h3 className="text-lg sm:text-xl font-black text-[var(--foreground)] uppercase tracking-tight">Empty Inventory</h3>
+              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] italic mt-2">Initialize your first auto-reply preset using the button above.</p>
             </div>
           ) : (
-            <div className="divide-y divide-[var(--border)]/55">
-              {filtered.map(t => (
-                <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-6 items-center hover:bg-[var(--muted)]/10 transition-all group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-[22px] bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
-                      <LayoutGrid className="w-6 h-6" />
+            <>
+              {/* Mobile cards */}
+              <div className="sm:hidden divide-y divide-[var(--border)]/50">
+                {filtered.map(t => (
+                  <div key={t.id} className="p-4 flex items-center justify-between gap-3 hover:bg-[var(--muted)]/10 transition-all">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] shrink-0">
+                        <LayoutGrid className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-black text-[var(--foreground)] truncate">{t.name}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={cn("px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest", t.reply_type === "filter" ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]")}>
+                            {t.reply_type || 'Generic'}
+                          </span>
+                          <span className="text-[9px] font-semibold text-[var(--muted-foreground)]">{t.id}</span>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-[15px] font-black text-[var(--foreground)] truncate max-w-[280px]">{t.name}</span>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => handleEdit(t)} className="p-2 rounded-lg bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all active:scale-90 cursor-pointer">
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => setDeleteId(t.id)} className="p-2 rounded-lg bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90 cursor-pointer">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <span className={cn("px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest w-fit", t.reply_type === "filter" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]")}>
-                    {t.reply_type || 'Generic'}
-                  </span>
-                  <span className="text-[12px] font-semibold text-[var(--muted-foreground)] flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5" /> Nov 22, 2026
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(t)} className="p-3 rounded-xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all active:scale-90 cursor-pointer">
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => setDeleteId(t.id)} className="p-3 rounded-xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90 cursor-pointer">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden sm:block divide-y divide-[var(--border)]/55">
+                {filtered.map(t => (
+                  <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-6 items-center hover:bg-[var(--muted)]/10 transition-all group">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-[22px] bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
+                        <LayoutGrid className="w-6 h-6" />
+                      </div>
+                      <span className="text-[15px] font-black text-[var(--foreground)] truncate max-w-[280px]">{t.name}</span>
+                    </div>
+                    <span className={cn("px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest w-fit", t.reply_type === "filter" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]")}>
+                      {t.reply_type || 'Generic'}
+                    </span>
+                    <span className="text-[12px] font-semibold text-[var(--muted-foreground)] flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5" /> Nov 22, 2026
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleEdit(t)} className="p-3 rounded-xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all active:scale-90 cursor-pointer">
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => setDeleteId(t.id)} className="p-3 rounded-xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90 cursor-pointer">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -775,14 +817,23 @@ export default function ReplyTemplatesPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl border border-[var(--border)]">
-              <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold text-[var(--foreground)] leading-none">Scrub Item?</h3>
-              <p className="text-sm text-[var(--muted-foreground)] mt-4 leading-relaxed font-medium">This command will permanently remove the template from the automation hub.</p>
-              <div className="flex gap-4 mt-10">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-4 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all">ABORT</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-4 rounded-2xl bg-rose-600 text-white font-semibold text-[14px] shadow-xl shadow-rose-600/20 active:scale-[0.98] transition-all">CONFIRM</button>
+          <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              className="bg-[var(--card)] rounded-t-[28px] sm:rounded-2xl p-6 sm:p-10 max-w-sm w-full text-center shadow-2xl border border-[var(--border)]"
+            >
+              <div className="sm:hidden flex justify-center pb-2">
+                <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
+              </div>
+              <Trash2 className="w-10 h-10 sm:w-12 sm:h-12 text-rose-500 mx-auto mb-4 sm:mb-6" />
+              <h3 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] leading-none">Scrub Item?</h3>
+              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-3 sm:mt-4 leading-relaxed font-medium">This command will permanently remove the template from the automation hub.</p>
+              <div className="flex gap-3 sm:gap-4 mt-6 sm:mt-10">
+                <button onClick={() => setDeleteId(null)} className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all">ABORT</button>
+                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-rose-600 text-white font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-rose-600/20 active:scale-[0.98] transition-all">CONFIRM</button>
               </div>
             </motion.div>
           </div>

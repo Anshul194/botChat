@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { SwipeHint } from "@/components/ui/swipe-hint";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -230,7 +231,7 @@ export default function CommentManager() {
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Deletion failed");
         } finally {
-            setIsDeleting(true);
+            setIsDeleting(false);
         }
     };
 
@@ -376,6 +377,7 @@ export default function CommentManager() {
                 {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
                 <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
                     <div className="flex-1 min-w-0 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
+                        <SwipeHint containerRef={scrollRef} storageKey="fb-comment-manager-pages" align="right" className="absolute -top-5 right-4 z-10" />
                         <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors z-10 bg-[var(--card)] shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
                             <ChevronLeft className="w-5 h-5" />
                         </button>
@@ -464,20 +466,20 @@ export default function CommentManager() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
                     {/* ── LEFT COLUMN (1/3): STRATEGY & ACTIONS ── */}
-                    <aside className="lg:col-span-4 space-y-6">
-                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm space-y-6">
+                    <aside className="lg:col-span-4 space-y-4 sm:space-y-6">
+                        <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3 sm:p-6 shadow-sm space-y-4 sm:space-y-6">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-md font-bold text-[var(--foreground)] uppercase tracking-tight">Strategy Lab</h2>
+                                <h2 className="text-sm sm:text-md font-bold text-[var(--foreground)] uppercase tracking-tight">Strategy Lab</h2>
 
                                 {/* ── Manage Templates button + dropdown ─────── */}
                                 <div className="relative" ref={templateMenuRef}>
                                     <button
                                         onClick={() => setShowTemplateMenu(v => !v)}
-                                        className="flex items-center gap-1.5 text-[12px] font-bold text-[var(--primary)] hover:opacity-85 transition-colors group"
+                                        className="flex items-center gap-1.5 text-[11px] sm:text-[12px] font-bold text-[var(--primary)] hover:opacity-85 transition-colors group"
                                     >
                                         Manage Templates
                                         <ChevronDown className={cn(
-                                            "w-3.5 h-3.5 transition-transform duration-200",
+                                            "w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200",
                                             showTemplateMenu && "rotate-180"
                                         )} />
                                     </button>
@@ -489,7 +491,7 @@ export default function CommentManager() {
                                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                                 exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                                 transition={{ duration: 0.15 }}
-                                                className="absolute right-0 top-full mt-2 w-52 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden z-50"
+                                                className="absolute right-0 sm:left-0 top-full mt-2 w-52 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden z-50"
                                             >
                                                 {[
                                                     {
@@ -562,13 +564,13 @@ export default function CommentManager() {
                             </div>
 
                             {/* Full Page CTA */}
-                            <div className="p-4 sm:p-6 rounded-2xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-4 text-center">
-                                <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mx-auto">
-                                    <Sparkles className="w-6 h-6" />
+                            <div className="p-3 sm:p-6 rounded-2xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 space-y-3 sm:space-y-4 text-center">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mx-auto">
+                                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-bold text-[var(--foreground)] uppercase">Full Page Campaign</h3>
-                                    <p className="text-[11px] text-[var(--muted-foreground)]">Configure global override logic for entire page activity</p>
+                                    <h3 className="text-xs sm:text-sm font-bold text-[var(--foreground)] uppercase">Full Page Campaign</h3>
+                                    <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]">Configure global override logic for entire page activity</p>
                                 </div>
                                 <button
                                     onClick={() => setIsCampaignModalOpen(true)}
@@ -633,8 +635,8 @@ export default function CommentManager() {
                                     </h2>
                                     <p className="text-[10px] font-semibold text-[var(--muted-foreground)] mt-0.5 tracking-wider uppercase">Live Activity Feed</p>
                                 </section>
-                                <div className="flex items-center gap-3">
-                                    <div className="relative group flex-1 md:w-64">
+                                <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 w-full sm:w-auto">
+                                    <div className="relative flex-1 min-w-0">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
                                         <input
                                             type="text"
@@ -644,7 +646,7 @@ export default function CommentManager() {
                                     </div>
                                     <button
                                         onClick={() => setIsIdModalOpen(true)}
-                                        className="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[11px] uppercase tracking-wide hover:opacity-90 transition-colors shadow-sm"
+                                        className="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[11px] uppercase tracking-wide hover:opacity-90 transition-colors shadow-sm whitespace-nowrap"
                                     >
                                         ID Lookup
                                     </button>
@@ -658,12 +660,12 @@ export default function CommentManager() {
                                     ))
                                 ) : posts.length > 0 ? (
                                     posts.map((post, idx) => (
-                                        <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/20 border border-[var(--border)] rounded-2xl p-4 flex gap-4 transition-all hover:border-[var(--primary)]/30 relative">
+                                        <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/20 border border-[var(--border)] rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:gap-4 gap-3 transition-all hover:border-[var(--primary)]/30 relative">
                                             <a
                                                 href={post.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800 cursor-pointer block group/thumb"
+                                                className="w-full sm:w-16 aspect-video sm:aspect-square h-auto sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800 cursor-pointer block group/thumb relative"
                                                 title="View on Facebook"
                                             >
                                                 <img src={post.thumbnail} className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-500" />
@@ -673,16 +675,16 @@ export default function CommentManager() {
                                             </a>
                                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                                 <div className="space-y-1">
-                                                    <div className="flex items-center justify-between">
-                                                        <div>
-                                                            <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[14px] font-bold text-[var(--foreground)] truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                        <div className="min-w-0">
+                                                            <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[13px] sm:text-[14px] font-bold text-[var(--foreground)] truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
                                                                 {post.user}
                                                                 <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5" />
                                                             </a>
-                                                            <div className="flex flex-col xs:flex-row xs:items-center gap-2 mt-0.5 flex-wrap">
+                                                            <div className="flex flex-col xs:flex-row xs:items-center gap-1.5 mt-0.5 flex-wrap">
                                                                 <p className="text-[10px] text-[var(--muted-foreground)] font-semibold whitespace-nowrap">{post.time}</p>
-                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 max-w-full">
-                                                                    <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-none">ID: {post.id}</span>
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 max-w-full w-fit">
+                                                                    <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[120px] sm:max-w-none">ID: {post.id}</span>
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
                                                                         className="hover:opacity-80 transition-colors active:scale-95 flex-shrink-0"
@@ -694,7 +696,7 @@ export default function CommentManager() {
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex items-center gap-2">
+                                                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                                                             {/* Reply Status Tag */}
                                                             {post.status?.reply && (
                                                                 <span className={cn(
@@ -908,12 +910,17 @@ export default function CommentManager() {
                             onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
                             className="absolute inset-0 bg-black/60 backdrop-blur-xs"
                         />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-lg min-h-screen sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
-                        >
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 40 }}
+                                transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                                className="bg-[var(--card)] border border-[var(--border)] rounded-t-[28px] sm:rounded-2xl w-full max-w-none sm:max-w-lg mt-auto sm:mt-0 sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
+                            >
+                                {/* Mobile drag handle */}
+                                <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
+                                </div>
                             <div className="p-6 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-[var(--foreground)] uppercase tracking-tight">Post ID Reconciliation</h3>
@@ -1132,28 +1139,37 @@ export default function CommentManager() {
             {/* Status Toggle Modal */}
             <AnimatePresence>
                 {statusConfirm.isOpen && (
-                    <div key="status-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
+                    <div key="status-confirm-modal" className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
-                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
-                            <div className="p-8 text-center space-y-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 40 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                            className="bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                        >
+                            <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                <div className="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                            </div>
+                            <div className="p-6 sm:p-8 text-center space-y-5 sm:space-y-6">
                                 <div className={cn(
-                                    "w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg",
+                                    "w-16 h-16 sm:w-20 sm:h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg",
                                     statusConfirm.action === "paused" ? "bg-amber-100 text-amber-600" : "bg-emerald-100 text-emerald-600"
                                 )}>
-                                    {statusConfirm.action === "paused" ? <Pause size={32} /> : <Play size={32} />}
+                                    {statusConfirm.action === "paused" ? <Pause size={28} /> : <Play size={28} />}
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
+                                    <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
                                         {statusConfirm.action === "paused" ? "Pause Campaign?" : "Resume Campaign?"}
                                     </h3>
-                                    <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                    <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-2 sm:px-4">
                                         Are you sure you want to {statusConfirm.action} this automated {statusConfirm.type} lifecycle?
                                     </p>
                                 </div>
-                                <div className="flex gap-3 pt-4">
+                                <div className="flex gap-3 pt-2 sm:pt-4">
                                     <button
                                         onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
-                                        className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
                                     >
                                         No, Cancel
                                     </button>
@@ -1161,7 +1177,7 @@ export default function CommentManager() {
                                         onClick={handleToggleStatus}
                                         disabled={isUpdatingStatus}
                                         className={cn(
-                                            "flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
+                                            "flex-[2] py-3.5 sm:py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
                                             statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
                                         )}
                                     >
@@ -1177,32 +1193,41 @@ export default function CommentManager() {
             {/* Deletion Confirmation Modal */}
             <AnimatePresence>
                 {deleteConfirm.isOpen && (
-                    <div key="delete-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
+                    <div key="delete-confirm-modal" className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
-                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-white dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
-                            <div className="p-8 text-center space-y-6">
-                                <div className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
-                                    <Trash2 size={32} />
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 40 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                            className="bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                        >
+                            <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                <div className="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                            </div>
+                            <div className="p-6 sm:p-8 text-center space-y-5 sm:space-y-6">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl mx-auto flex items-center justify-center shadow-lg bg-rose-100 text-rose-600">
+                                    <Trash2 size={28} />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
+                                    <h3 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">
                                         Delete Campaign?
                                     </h3>
-                                    <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-4">
+                                    <p className="text-[13px] font-medium text-neutral-500 leading-relaxed px-2 sm:px-4">
                                         Are you absolutely sure you want to delete this automated {deleteConfirm.type} lifecycle? This action is irreversible.
                                     </p>
                                 </div>
-                                <div className="flex gap-3 pt-4">
+                                <div className="flex gap-3 pt-2 sm:pt-4">
                                     <button
                                         onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
-                                        className="flex-1 py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
                                     >
                                         No, Keep it
                                     </button>
                                     <button
                                         onClick={handleDeleteCampaign}
                                         disabled={isDeleting}
-                                        className="flex-[2] py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-gradient-to-r from-rose-500 to-pink-600 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                        className="flex-[2] py-3.5 sm:py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-gradient-to-r from-rose-500 to-pink-600 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
                                     >
                                         {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
                                     </button>
