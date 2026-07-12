@@ -811,7 +811,7 @@ export default function SettingsPage() {
                                     <h2 className="text-base font-bold" style={{ color: "var(--foreground)" }}>Facebook API Integration</h2>
                                     <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>Configure your Meta / Facebook App credentials and integration URLs.</p>
                                 </div>
-                                {facebook?.appId && (
+                                {facebookPlatform?.appId && (
                                     <span className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold" style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
                                         <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                                         Connected
@@ -859,7 +859,7 @@ export default function SettingsPage() {
                                         <div className="relative">
                                             <input
                                                 readOnly
-                                                value={facebook?.webhookVerifyToken || ''}
+                                                value={facebookPlatform?.webhookVerifyToken || ''}
                                                 className="w-full px-3.5 py-2.5 pr-32 rounded-xl text-sm font-mono outline-none"
                                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
                                             />
