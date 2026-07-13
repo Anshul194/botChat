@@ -395,8 +395,18 @@ export default function SettingsPage() {
 
     const handleSaveFacebook = async (e: React.FormEvent) => {
         e.preventDefault();
-        const payload: any = { ...fbForm };
-        if (!payload.appSecret) delete payload.appSecret;
+        const payload: any = {
+            fb_app_name: fbForm.appName,
+            fb_app_version: fbForm.appVersion,
+            fb_app_id: fbForm.appId,
+            fb_app_domain: fbForm.appDomain,
+            fb_site_url: fbForm.siteUrl,
+            fb_privacy_policy_url: fbForm.privacyPolicyUrl,
+            fb_terms_of_service_url: fbForm.termsOfServiceUrl,
+        };
+        if (fbForm.appSecret) {
+            payload.fb_app_secret = fbForm.appSecret;
+        }
         try {
             await dispatch(updateFacebookSettings(payload)).unwrap();
             dispatch(fetchFacebookSettings());
