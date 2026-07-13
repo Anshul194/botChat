@@ -30,19 +30,23 @@ export interface Plan {
 
 interface PlansState {
     plans: Plan[];
+    myPlans: Plan[];
     selectedPlan: Plan | null;
     userPlan: Plan | null;
     isLoading: boolean;
     isLoadingUserPlan: boolean;
+    isLoadingMyPlans: boolean;
     error: string | null;
 }
 
 const initialState: PlansState = {
     plans: [],
+    myPlans: [],
     selectedPlan: null,
     userPlan: null,
     isLoading: true,
     isLoadingUserPlan: false,
+    isLoadingMyPlans: false,
     error: null,
 };
 
@@ -128,6 +132,21 @@ export const fetchMyPlan = createAsyncThunk(
     }
 );
 
+export const fetchMyPlans = createAsyncThunk(
+    'plans/fetchMyPlans',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/plans/my-plans');
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch my plans');
+        }
+    }
+);
+
 export const deletePlan = createAsyncThunk(
     'plans/deletePlan',
     async (id: number, { rejectWithValue }) => {
@@ -193,6 +212,18 @@ const plansSlice = createSlice({
             })
             .addCase(fetchMyPlan.rejected, (state, action) => {
                 state.isLoadingUserPlan = false;
+                state.error = action.payload as string;
+            })
+            .addCase(fetchMyPlans.pending, (state) => {
+                state.isLoadingMyPlans = true;
+                state.error = null;
+            })
+            .addCase(fetchMyPlans.fulfilled, (state, action) => {
+                state.isLoadingMyPlans = false;
+                state.myPlans = action.payload;
+            })
+            .addCase(fetchMyPlans.rejected, (state, action) => {
+                state.isLoadingMyPlans = false;
                 state.error = action.payload as string;
             })
             .addCase(createPlan.fulfilled, (state, action) => {
