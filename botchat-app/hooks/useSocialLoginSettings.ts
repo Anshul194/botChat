@@ -28,7 +28,7 @@ export function useSocialLoginSettings() {
 
         // Avoid multiple concurrent API calls if multiple components mount simultaneously
         if (!fetchPromise) {
-            fetchPromise = api.get('/settings/social-login')
+            fetchPromise = api.get('/auth/social-login-status')
                 .then(response => {
                     const data = response.data.data;
                     const parsedSettings = {
