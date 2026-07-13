@@ -59,6 +59,7 @@ api.interceptors.response.use(
             const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/forgot-password') || url.includes('/auth/me');
 
             if (status === 401 && !isAuthRoute) {
+                console.warn(`[API INTERCEPTOR] 401 on ${url}`, responseData);
                 try {
                     localStorage.removeItem('token');
                     localStorage.removeItem('accessToken');
@@ -71,6 +72,7 @@ api.interceptors.response.use(
             }
 
             if (status === 403 && !isAuthRoute) {
+                console.error(`[API INTERCEPTOR] 403 on ${url}`, { data: JSON.stringify(responseData), headers: error.config?.headers });
                 const isPlanError = responseData.expired
                     || responseData.feature
                     || responseData.limit !== undefined
@@ -86,7 +88,15 @@ api.interceptors.response.use(
                     ));
 
                 if (!isPlanError) {
+                    console.error(`[API INTERCEPTOR] Redirecting to /dashboard?error=unauthorized due to 403 on ${url}`);
+                    try {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('user');
+                    } catch (e) {}
                     window.location.href = '/dashboard?error=unauthorized';
+                } else {
+                    console.warn(`[API INTERCEPTOR] 403 on ${url} is a plan error, NOT redirecting`);
                 }
             }
         }

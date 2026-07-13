@@ -16,11 +16,16 @@ function CallbackContent() {
         const token = searchParams.get('token');
         const error = searchParams.get('error');
 
+        console.log(`[AUTH CALLBACK] Page loaded`, { hasToken: !!token, hasError: !!error, tokenPreview: token?.substring(0, 30) });
+
         // Check if we are currently inside a popup window
         const isPopup = window.opener && window.opener !== window;
+        console.log(`[AUTH CALLBACK] Is popup:`, isPopup);
 
         if (error) {
+            console.error(`[AUTH CALLBACK] Error received:`, error);
             if (isPopup) {
+                console.log(`[AUTH CALLBACK] Sending oauth-error postMessage`);
                 window.opener.postMessage({ type: 'oauth-error', error: error || 'Authentication failed' }, window.location.origin);
                 window.close();
                 return;
@@ -32,11 +37,14 @@ function CallbackContent() {
 
         if (token) {
             if (isPopup) {
+                console.log(`[AUTH CALLBACK] Sending oauth-success postMessage with token`);
                 window.opener.postMessage({ type: 'oauth-success', token }, window.location.origin);
+                console.log(`[AUTH CALLBACK] Closing popup`);
                 window.close();
                 return;
             }
 
+            console.log(`[AUTH CALLBACK] Non-popup flow, saving token and calling fetchMe`);
             localStorage.setItem('token', token);
 
             // Fallback for non-popup flow (e.g., standard browser redirect)
@@ -45,16 +53,18 @@ function CallbackContent() {
                     const user = action.payload;
                     const name = user?.name || user?.email?.split('@')[0] || 'User';
                     
+                    console.log(`[AUTH CALLBACK] fetchMe succeeded, navigating to dashboard`);
                     showModal("success", "Welcome Back!", `Welcome back, ${name}! You've successfully connected via social login.`);
                     
                     router.push('/dashboard');
                 } else {
+                    console.error(`[AUTH CALLBACK] fetchMe failed`);
                     showModal("error", "Error", 'Failed to retrieve user information');
                     router.push('/auth/sign-in');
                 }
             });
         } else {
-            // No token found, redirect back
+            console.log(`[AUTH CALLBACK] No token or error found, redirecting back`);
             if (isPopup) {
                 window.close();
             } else {

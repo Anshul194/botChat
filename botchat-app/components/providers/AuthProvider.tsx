@@ -15,6 +15,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 const token = localStorage.getItem('token');
                 const userStr = localStorage.getItem('user');
 
+                console.log(`[AUTH PROVIDER] Initializing`, { hasToken: !!token, hasUser: !!userStr });
+
                 if (token && userStr) {
                     const rawUser = JSON.parse(userStr);
                     const rawType = (rawUser.type || '').toLowerCase().trim();
@@ -28,14 +30,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                     // 1. Restore auth immediately from localStorage
                     dispatch(setCredentials({ user, token }));
                     // 2. Fetch critical app data right away
+                    console.log(`[AUTH PROVIDER] Dispatching fetchMyPlan, fetchPlans, fetchSubscription, fetchMe`);
                     dispatch(fetchMyPlan());
                     dispatch(fetchPlans());
                     dispatch(fetchSubscription());
                     // 3. Silently validate & refresh user from server
                     dispatch(fetchMe());
+                } else {
+                    console.log(`[AUTH PROVIDER] No token or user found, skipping auth init`);
                 }
             } catch (e) {
-                console.error('Auth initialization error:', e);
+                console.error('[AUTH PROVIDER] Auth initialization error:', e);
             } finally {
                 dispatch(setInitialized());
             }

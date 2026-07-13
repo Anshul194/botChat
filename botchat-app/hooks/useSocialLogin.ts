@@ -21,6 +21,7 @@ export function useSocialLogin() {
     }, []);
 
     const handleSocialLogin = useCallback(async (platform: string) => {
+        console.log(`[SOCIAL LOGIN] Starting ${platform} login`);
         if (socialLoading) return;
         setSocialLoading(platform);
 
@@ -29,6 +30,7 @@ export function useSocialLogin() {
         const left = window.screenX + (window.innerWidth - width) / 2;
         const top = window.screenY + (window.innerHeight - height) / 2;
 
+        console.log(`[SOCIAL LOGIN] Opening popup`);
         const popup = window.open(
             'about:blank',
             `social-auth-${platform}`,
@@ -36,6 +38,7 @@ export function useSocialLogin() {
         );
 
         if (!popup) {
+            console.error(`[SOCIAL LOGIN] Popup blocked`);
             showModal("error", "Error", "Popup blocked! Please allow popups for this site.");
             setSocialLoading(null);
             return;
@@ -44,20 +47,25 @@ export function useSocialLogin() {
         popupRef.current = popup;
 
         const handleMessage = (event: MessageEvent) => {
+            console.log(`[SOCIAL LOGIN] postMessage received`, { origin: event.origin, data: event.data });
             if (event.origin !== window.location.origin) return;
 
             if (event.data?.type === 'oauth-success') {
+                console.log(`[SOCIAL LOGIN] OAuth success, saving token`);
                 cleanup();
                 const { token } = event.data;
+                console.log(`[SOCIAL LOGIN] Token preview:`, token?.substring(0, 30) + '...');
 
                 localStorage.setItem('token', token);
                 dispatch(fetchMe()).then((result) => {
                     if (fetchMe.fulfilled.match(result)) {
+                        console.log(`[SOCIAL LOGIN] fetchMe succeeded, navigating to dashboard`);
                         toast.success(`Welcome back!`, {
                             description: "You've successfully connected your account."
                         });
                         router.push('/dashboard');
                     } else {
+                        console.error(`[SOCIAL LOGIN] fetchMe failed`, result);
                         localStorage.removeItem('token');
                         localStorage.removeItem('user');
                         toast.error('Failed to authenticate. Please try again.');
@@ -65,6 +73,7 @@ export function useSocialLogin() {
                     }
                 });
             } else if (event.data?.type === 'oauth-error') {
+                console.error(`[SOCIAL LOGIN] OAuth error:`, event.data.error);
                 cleanup();
                 popup.close();
                 toast.error(event.data.error || 'Authentication failed');
@@ -74,17 +83,20 @@ export function useSocialLogin() {
 
         const closedInterval = setInterval(() => {
             if (popup.closed) {
+                console.log(`[SOCIAL LOGIN] Popup closed by user`);
                 cleanup();
 
                 const result = dispatch(fetchMe());
                 if (typeof result === 'object' && 'then' in result) {
                     (result as ReturnType<typeof dispatch>).then((action) => {
                         if (fetchMe.fulfilled.match(action)) {
+                            console.log(`[SOCIAL LOGIN] fetchMe succeeded after popup close`);
                             toast.success(`Welcome back!`, {
                                 description: "You've successfully connected your account."
                             });
                             router.push('/dashboard');
                         } else {
+                            console.warn(`[SOCIAL LOGIN] fetchMe failed after popup close`);
                             localStorage.removeItem('token');
                             localStorage.removeItem('user');
                             setSocialLoading(null);
@@ -105,11 +117,16 @@ export function useSocialLogin() {
         window.addEventListener('message', handleMessage);
 
         try {
+            console.log(`[SOCIAL LOGIN] Fetching redirect URL from API`);
             const response = await api.get(`/auth/social/${platform}`);
+            console.log(`[SOCIAL LOGIN] API response:`, { success: response.data.success, has_redirect_url: !!response.data?.data?.redirect_url });
 
             if (response.data.success && response.data.data.redirect_url) {
-                popup.location.href = response.data.data.redirect_url;
+                const redirectUrl = response.data.data.redirect_url;
+                console.log(`[SOCIAL LOGIN] Navigating popup to:`, redirectUrl.substring(0, 150) + '...');
+                popup.location.href = redirectUrl;
             } else {
+                console.error(`[SOCIAL LOGIN] No redirect_url in API response`);
                 popup.close();
                 cleanup();
                 toast.error(`Failed to initialize ${platform} login`);
@@ -118,7 +135,11 @@ export function useSocialLogin() {
         } catch (err: any) {
             popup.close();
             cleanup();
-            console.error(`${platform} Login Error:`, err);
+            console.error(`[SOCIAL LOGIN] API error:`, {
+                status: err.response?.status,
+                data: err.response?.data,
+                message: err.message,
+            });
             toast.error(err.response?.data?.message || `Error connecting to ${platform}`);
             setSocialLoading(null);
         }
