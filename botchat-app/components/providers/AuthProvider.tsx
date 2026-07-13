@@ -22,7 +22,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                     const rawType = (rawUser.type || '').toLowerCase().trim();
                     const role = rawType === 'super admin' ? 'SUPER_ADMIN' :
                         rawType === 'reseller' ? 'RESELLER' :
-                            rawType === 'tenant' ? 'TENANT' : 'ADMIN';
+                            rawType === 'tenant' ? 'TENANT' :
+                            rawType === 'admin' ? 'ADMIN' : 'USER';
                     const user = {
                         ...rawUser,
                         role,

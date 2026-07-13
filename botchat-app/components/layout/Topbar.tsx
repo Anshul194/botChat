@@ -37,6 +37,7 @@ const PAGE_MAP: Record<string, string> = {
     "/dashboard/campaigns": "Campaigns",
     "/dashboard/settings": "Settings",
     "/dashboard/billing": "Billing",
+    "/dashboard/users": "User Management",
 };
 
 export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobileSidebarOpen }: TopbarProps) {

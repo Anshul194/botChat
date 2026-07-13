@@ -39,7 +39,8 @@ function normalizeRole(user: Record<string, unknown>) {
     const rawType = String(user?.type || '').toLowerCase().trim();
     return rawType === 'super admin' ? 'SUPER_ADMIN' :
         rawType === 'reseller' ? 'RESELLER' :
-            rawType === 'tenant' ? 'TENANT' : 'ADMIN';
+            rawType === 'tenant' ? 'TENANT' :
+            rawType === 'admin' ? 'ADMIN' : 'USER';
 }
 
 export const registerUser = createAsyncThunk(

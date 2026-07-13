@@ -127,12 +127,6 @@ const workspaceNav = [
 
 const adminNav = [
     {
-        label: "User Management",
-        icon: UserCog,
-        href: "/dashboard/users",
-        ariaLabel: "Manage users",
-    },
-    {
         label: "Revenue Center",
         icon: TrendingUp,
         href: "/dashboard/superadmin/revenue",
@@ -216,6 +210,14 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const isSuperAdmin = useMemo(() => {
         return user?.role === 'SUPER_ADMIN';
     }, [user]);
+
+    const isTenantAdmin = useMemo(() => {
+        return user?.role === 'ADMIN';
+    }, [user]);
+
+    const canManageUsers = useMemo(() => {
+        return isSuperAdmin || isTenantAdmin;
+    }, [isSuperAdmin, isTenantAdmin]);
 
     const canShow = (feature?: string) => !feature || isSuperAdmin || canAccess(feature);
 
@@ -503,6 +505,19 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             />
                         )}
                     </motion.div>
+
+                    {/* TEAM */}
+                    {canManageUsers && (
+                        <motion.div variants={itemVariants} className="space-y-0.5">
+                            {!collapsed && <SectionLabel label="Team" />}
+                            <NavItem
+                                item={{ label: "User Management", icon: UserCog, href: "/dashboard/users", ariaLabel: "Manage users" }}
+                                collapsed={collapsed}
+                                pathname={currentPath}
+                                onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/dashboard/users"); }}
+                            />
+                        </motion.div>
+                    )}
 
                     {/* WORKSPACE */}
                     <motion.div variants={itemVariants} className="space-y-0.5">
