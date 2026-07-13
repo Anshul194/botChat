@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchPlans, createPlan, updatePlan, deletePlan, setSelectedPlan } from "@/store/slices/plansSlice";
+import { fetchMyPlans, createPlan, updatePlan, deletePlan, setSelectedPlan } from "@/store/slices/plansSlice";
 import {
     Plus, MoreHorizontal, Edit2, Trash2, Loader2,
     Users, DollarSign, CheckCircle2, FileText, Smartphone,
@@ -25,7 +25,7 @@ import PlanForm from "./PlanForm";
 
 export default function PlansPage() {
     const dispatch = useAppDispatch();
-    const { plans, isLoading, selectedPlan } = useAppSelector((state) => state.plans);
+    const { myPlans, isLoading, selectedPlan } = useAppSelector((state) => state.plans);
     const { showModal } = useModal();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function PlansPage() {
     const [planToDelete, setPlanToDelete] = useState<number | null>(null);
 
     useEffect(() => {
-        dispatch(fetchPlans());
+        dispatch(fetchMyPlans());
     }, [dispatch]);
 
     const handleAdd = () => {
@@ -112,10 +112,10 @@ export default function PlansPage() {
             {/* Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: "Total Plans", value: plans.length, icon: FileText },
-                    { label: "Active", value: plans.filter(p => p.status).length, icon: CheckCircle2, accent: "text-emerald-600" },
-                    { label: "Highest Price", value: plans.length ? formatCurrency(Math.max(...plans.map(p => Number(p.price)))) : formatCurrency(0), icon: DollarSign },
-                    { label: "WhatsApp Enabled", value: plans.filter(p => p.features?.whatsapp === "1").length, icon: Smartphone },
+                    { label: "Total Plans", value: myPlans.length, icon: FileText },
+                    { label: "Active", value: myPlans.filter(p => p.status).length, icon: CheckCircle2, accent: "text-emerald-600" },
+                    { label: "Highest Price", value: myPlans.length ? formatCurrency(Math.max(...myPlans.map(p => Number(p.price)))) : formatCurrency(0), icon: DollarSign },
+                    { label: "WhatsApp Enabled", value: myPlans.filter(p => p.features?.whatsapp === "1").length, icon: Smartphone },
                 ].map((stat) => (
                     <div key={stat.label} className="rounded-lg border border-border bg-card p-4">
                         <div className="flex items-center justify-between">
@@ -128,11 +128,11 @@ export default function PlansPage() {
             </div>
 
             {/* Plans Grid */}
-            {isLoading && plans.length === 0 ? (
+            {isLoading && myPlans.length === 0 ? (
                 <div className="flex items-center justify-center py-24">
                     <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                 </div>
-            ) : plans.length === 0 ? (
+            ) : myPlans.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center border border-dashed border-border rounded-xl">
                     <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4">
                         <FileText className="w-5 h-5 text-muted-foreground" />
@@ -147,7 +147,7 @@ export default function PlansPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <AnimatePresence mode="popLayout">
-                        {plans.map((plan, index) => {
+                        {myPlans.map((plan, index) => {
                             const getVal = (v: any) => (typeof v === "object" && v !== null ? v.value : v);
                             return (
                                 <motion.div

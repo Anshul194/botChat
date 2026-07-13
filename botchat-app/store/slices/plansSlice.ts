@@ -228,11 +228,16 @@ const plansSlice = createSlice({
             })
             .addCase(createPlan.fulfilled, (state, action) => {
                 state.plans.unshift(action.payload);
+                state.myPlans.unshift(action.payload);
             })
             .addCase(updatePlan.fulfilled, (state, action) => {
                 const index = state.plans.findIndex(p => p.id === action.payload.id);
                 if (index !== -1) {
                     state.plans[index] = action.payload;
+                }
+                const myIndex = state.myPlans.findIndex(p => p.id === action.payload.id);
+                if (myIndex !== -1) {
+                    state.myPlans[myIndex] = action.payload;
                 }
                 if (state.userPlan?.id === action.payload.id) {
                     state.userPlan = action.payload;
@@ -240,6 +245,7 @@ const plansSlice = createSlice({
             })
             .addCase(deletePlan.fulfilled, (state, action) => {
                 state.plans = state.plans.filter(p => p.id !== action.payload);
+                state.myPlans = state.myPlans.filter(p => p.id !== action.payload);
                 if (state.userPlan?.id === action.payload) {
                     state.userPlan = null;
                 }

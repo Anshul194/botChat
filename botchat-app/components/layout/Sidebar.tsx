@@ -516,6 +516,14 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 pathname={currentPath}
                                 onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/dashboard/users"); }}
                             />
+                            {isTenantAdmin && (
+                                <NavItem
+                                    item={{ label: "Plan Management", icon: ShieldCheck, href: "/dashboard/plans", ariaLabel: "Manage subscription plans" }}
+                                    collapsed={collapsed}
+                                    pathname={currentPath}
+                                    onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/dashboard/plans"); }}
+                                />
+                            )}
                         </motion.div>
                     )}
 
