@@ -287,17 +287,35 @@ export const uploadFile = createAsyncThunk(
 
 export const fetchSocialLoginSettings = createAsyncThunk(
     'settings/fetchSocialLoginSettings',
-    async () => {
-        const response = await api.get('/settings/social-login');
-        return response.data.data;
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/settings/social-login');
+            return response.data.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
     }
 );
 
 export const updateSocialLoginSettings = createAsyncThunk(
     'settings/updateSocialLoginSettings',
-    async (payload: any) => {
-        const response = await api.patch('/settings/social-login', payload);
-        return response.data;
+    async (payload: any, { rejectWithValue }) => {
+        try {
+            // Map boolean facebook_enabled/google_enabled → 'on'/'off' keys the backend expects
+            const mapped: Record<string, any> = { ...payload };
+            if (typeof payload.facebook_enabled === 'boolean') {
+                mapped.facebook_login_enable = payload.facebook_enabled ? 'on' : 'off';
+                delete mapped.facebook_enabled;
+            }
+            if (typeof payload.google_enabled === 'boolean') {
+                mapped.google_login_enable = payload.google_enabled ? 'on' : 'off';
+                delete mapped.google_enabled;
+            }
+            const response = await api.patch('/settings/social-login', mapped);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
     }
 );
 
