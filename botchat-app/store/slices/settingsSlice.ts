@@ -97,7 +97,28 @@ const initialState: SettingsState = {
     error: null,
 };
 
+// --- Helpers ---
+// Map snake_case Facebook API response → camelCase FacebookPlatformSettings
+function mapFbApiToState(data: any): any {
+    if (!data) return null;
+    return {
+        appName: data.fb_app_name || data.appName || '',
+        appVersion: data.fb_app_version || data.appVersion || '',
+        appId: data.fb_app_id || data.appId || '',
+        appDomain: data.fb_app_domain || data.appDomain || '',
+        siteUrl: data.fb_site_url || data.siteUrl || '',
+        privacyPolicyUrl: data.fb_privacy_policy_url || data.privacyPolicyUrl || '',
+        termsOfServiceUrl: data.fb_terms_of_service_url || data.termsOfServiceUrl || '',
+        webhookVerifyToken: data.fb_webhook_verify_token || data.webhookVerifyToken || '',
+        webhookCallbackUrl: data.fb_webhook_callback_url || '',
+        oauthRedirectUri: data.fb_oauth_redirect_uri || '',
+        loginCallbackUrl: data.fb_login_callback_url || '',
+        dataDeletionCallbackUrl: data.fb_data_deletion_callback_url || '',
+    };
+}
+
 // --- Thunks ---
+
 
 // General Settings
 export const fetchGeneralSettings = createAsyncThunk(
@@ -308,7 +329,7 @@ const settingsSlice = createSlice({
         builder.addCase(fetchFacebookSettings.pending, (state) => { state.isLoadingFacebook = true; })
             .addCase(fetchFacebookSettings.fulfilled, (state, action) => {
                 state.isLoadingFacebook = false;
-                state.facebookPlatform = action.payload;
+                state.facebookPlatform = mapFbApiToState(action.payload);
             })
             .addCase(fetchFacebookSettings.rejected, (state, action) => {
                 state.isLoadingFacebook = false;
@@ -316,7 +337,7 @@ const settingsSlice = createSlice({
             });
 
         builder.addCase(updateFacebookSettings.fulfilled, (state, action) => {
-            state.facebookPlatform = action.payload;
+            state.facebookPlatform = mapFbApiToState(action.payload);
         });
 
         // AI
