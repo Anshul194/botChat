@@ -59,9 +59,14 @@ api.interceptors.response.use(
             const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/forgot-password');
 
             if (status === 401 && !isAuthRoute) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('user');
+                try {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('user');
+                } catch (e) {
+                    // Ignore localStorage errors (e.g. strict privacy modes)
+                }
+                window.dispatchEvent(new CustomEvent('auth:logout'));
                 window.location.href = '/auth/sign-in';
             }
 

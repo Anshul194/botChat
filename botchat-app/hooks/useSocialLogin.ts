@@ -55,17 +55,22 @@ export function useSocialLogin() {
                     }
 
                     try {
-                        if (popup.location.href.includes('/callback')) {
-                            const bodyText = popup.document.body.innerText;
-                            if (bodyText.includes('"success":true')) {
+                        if (popup.location.href.includes('/callback') || popup.location.href.includes('/social-success')) {
+                            const url = new URL(popup.location.href);
+                            const token = url.searchParams.get('token');
+                            const error = url.searchParams.get('error');
+
+                            if (token) {
                                 clearInterval(pollTimer);
-                                const data = JSON.parse(bodyText);
-                                if (data.data?.token) {
-                                    localStorage.setItem('token', data.data.token);
-                                    await dispatch(fetchMe());
-                                    popup.close();
-                                    router.push('/dashboard');
-                                }
+                                localStorage.setItem('token', token);
+                                await dispatch(fetchMe());
+                                popup.close();
+                                router.push('/dashboard');
+                            } else if (error) {
+                                clearInterval(pollTimer);
+                                popup.close();
+                                toast.error(decodeURIComponent(error.replace(/\+/g, ' ')));
+                                setSocialLoading(null);
                             }
                         }
                     } catch (e) {
