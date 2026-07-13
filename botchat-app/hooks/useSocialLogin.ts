@@ -58,6 +58,9 @@ export function useSocialLogin() {
                         });
                         router.push('/dashboard');
                     } else {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        toast.error('Failed to authenticate. Please try again.');
                         setSocialLoading(null);
                     }
                 });
@@ -82,6 +85,8 @@ export function useSocialLogin() {
                             });
                             router.push('/dashboard');
                         } else {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
                             setSocialLoading(null);
                         }
                     });

@@ -56,7 +56,7 @@ api.interceptors.response.use(
             const status = error.response?.status;
             const url = error.config?.url || '';
             const responseData = error.response?.data || {};
-            const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/forgot-password');
+            const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/forgot-password') || url.includes('/auth/me');
 
             if (status === 401 && !isAuthRoute) {
                 try {
