@@ -906,14 +906,14 @@ export default function SettingsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <InputField label="Site URL" value={fbForm.siteUrl} onChange={(e: any) => setFbForm({ ...fbForm, siteUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com" />
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Valid OAuth Redirect URI</label>
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Valid OAuth Redirect URI (Connect)</label>
                                         <div className="relative">
-                                            <input readOnly value={`${fbForm.siteUrl}/meta/import/account/`}
+                                            <input readOnly value={`${fbForm.siteUrl}/api/v1/oauth/facebook-connect/callback`}
                                                 className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
                                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
-                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/meta/import/account/`)}
+                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/api/v1/oauth/facebook-connect/callback`)}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
-                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/meta/import/account/` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/api/v1/oauth/facebook-connect/callback` ? "#22c55e" : "var(--muted-foreground)" }}>
                                                 <Copy className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -924,14 +924,14 @@ export default function SettingsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <InputField label="Privacy Policy URL" value={fbForm.privacyPolicyUrl} onChange={(e: any) => setFbForm({ ...fbForm, privacyPolicyUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com/policy/privacy" />
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Login Callback URL</label>
+                                        <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Login Callback URL (Social)</label>
                                         <div className="relative">
-                                            <input readOnly value={`${fbForm.siteUrl}/login/facebook/callback`}
+                                            <input readOnly value={`${fbForm.siteUrl}/api/v1/oauth/social/facebook/callback`}
                                                 className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
                                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
-                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/login/facebook/callback`)}
+                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/api/v1/oauth/social/facebook/callback`)}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
-                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/login/facebook/callback` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/api/v1/oauth/social/facebook/callback` ? "#22c55e" : "var(--muted-foreground)" }}>
                                                 <Copy className="w-4 h-4" />
                                             </button>
                                         </div>
