@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchMe } from "@/store/slices/authSlice";
@@ -11,8 +11,16 @@ export function useSocialLogin() {
     const dispatch = useAppDispatch();
     const { showModal } = useModal();
     const [socialLoading, setSocialLoading] = useState<string | null>(null);
+    const popupRef = useRef<Window | null>(null);
+    const cleanupRef = useRef<(() => void) | null>(null);
 
-    const handleSocialLogin = async (platform: string) => {
+    useEffect(() => {
+        return () => {
+            cleanupRef.current?.();
+        };
+    }, []);
+
+    const handleSocialLogin = useCallback(async (platform: string) => {
         if (socialLoading) return;
         setSocialLoading(platform);
 
@@ -33,63 +41,83 @@ export function useSocialLogin() {
             return;
         }
 
+        popupRef.current = popup;
+
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) return;
+
+            if (event.data?.type === 'oauth-success') {
+                cleanup();
+                const { token } = event.data;
+
+                localStorage.setItem('token', token);
+                dispatch(fetchMe()).then((result) => {
+                    if (fetchMe.fulfilled.match(result)) {
+                        toast.success(`Welcome back!`, {
+                            description: "You've successfully connected your account."
+                        });
+                        router.push('/dashboard');
+                    } else {
+                        setSocialLoading(null);
+                    }
+                });
+            } else if (event.data?.type === 'oauth-error') {
+                cleanup();
+                popup.close();
+                toast.error(event.data.error || 'Authentication failed');
+                setSocialLoading(null);
+            }
+        };
+
+        const closedInterval = setInterval(() => {
+            if (popup.closed) {
+                cleanup();
+
+                const result = dispatch(fetchMe());
+                if (typeof result === 'object' && 'then' in result) {
+                    (result as ReturnType<typeof dispatch>).then((action) => {
+                        if (fetchMe.fulfilled.match(action)) {
+                            toast.success(`Welcome back!`, {
+                                description: "You've successfully connected your account."
+                            });
+                            router.push('/dashboard');
+                        } else {
+                            setSocialLoading(null);
+                        }
+                    });
+                }
+            }
+        }, 1000);
+
+        const cleanup = () => {
+            window.removeEventListener('message', handleMessage);
+            clearInterval(closedInterval);
+            cleanupRef.current = null;
+        };
+
+        cleanupRef.current = cleanup;
+
+        window.addEventListener('message', handleMessage);
+
         try {
             const response = await api.get(`/auth/social/${platform}`);
 
             if (response.data.success && response.data.data.redirect_url) {
                 popup.location.href = response.data.data.redirect_url;
-
-                const pollTimer = setInterval(async () => {
-                    if (popup.closed) {
-                        clearInterval(pollTimer);
-                        setSocialLoading(null);
-
-                        const result = await dispatch(fetchMe());
-                        if (fetchMe.fulfilled.match(result)) {
-                            toast.success(`Welcome back!`, {
-                                description: "You've successfully connected your account."
-                            });
-                            router.push('/dashboard');
-                        }
-                        return;
-                    }
-
-                    try {
-                        if (popup.location.href.includes('/callback') || popup.location.href.includes('/social-success')) {
-                            const url = new URL(popup.location.href);
-                            const token = url.searchParams.get('token');
-                            const error = url.searchParams.get('error');
-
-                            if (token) {
-                                clearInterval(pollTimer);
-                                localStorage.setItem('token', token);
-                                await dispatch(fetchMe());
-                                popup.close();
-                                router.push('/dashboard');
-                            } else if (error) {
-                                clearInterval(pollTimer);
-                                popup.close();
-                                toast.error(decodeURIComponent(error.replace(/\+/g, ' ')));
-                                setSocialLoading(null);
-                            }
-                        }
-                    } catch (e) {
-                        // Ignore cross-origin errors
-                    }
-                }, 1000);
-
             } else {
                 popup.close();
+                cleanup();
                 toast.error(`Failed to initialize ${platform} login`);
                 setSocialLoading(null);
             }
         } catch (err: any) {
             popup.close();
+            cleanup();
             console.error(`${platform} Login Error:`, err);
             toast.error(err.response?.data?.message || `Error connecting to ${platform}`);
             setSocialLoading(null);
         }
-    };
+    }, [socialLoading, router, dispatch, showModal]);
 
     return {
         handleSocialLogin,

@@ -20,25 +20,24 @@ function CallbackContent() {
         const isPopup = window.opener && window.opener !== window;
 
         if (error) {
-            showModal("error", "Auth Error", error || 'Authentication failed');
             if (isPopup) {
+                window.opener.postMessage({ type: 'oauth-error', error: error || 'Authentication failed' }, window.location.origin);
                 window.close();
-            } else {
-                router.push('/auth/sign-in');
+                return;
             }
+            showModal("error", "Auth Error", error || 'Authentication failed');
+            router.push('/auth/sign-in');
             return;
         }
 
         if (token) {
-            // Save token to localStorage so the main window can pick it up
-            localStorage.setItem('token', token);
-            
             if (isPopup) {
-                // If it's a popup, just close it. The parent window's pollTimer will 
-                // detect the closure, check localStorage, fetch user, and navigate to dashboard.
+                window.opener.postMessage({ type: 'oauth-success', token }, window.location.origin);
                 window.close();
-                return; // Stop execution here
+                return;
             }
+
+            localStorage.setItem('token', token);
 
             // Fallback for non-popup flow (e.g., standard browser redirect)
             dispatch(fetchMe()).then((action) => {
