@@ -4,12 +4,24 @@
 import { useState } from "react";
 import { Eye, EyeOff, Check, Copy, Trash2 } from "lucide-react";
 
-export function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }) {
+export function Section({ title, desc, children, icon, rightContent }: {
+    title: string;
+    desc?: string;
+    children?: React.ReactNode;
+    icon?: React.ReactNode;
+    rightContent?: React.ReactNode;
+}) {
     return (
         <div className="glass-card rounded-2xl p-6 space-y-5">
-            <div>
-                <h3 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>{title}</h3>
-                {desc && <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{desc}</p>}
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    {icon && <div className="shrink-0">{icon}</div>}
+                    <div>
+                        <h3 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>{title}</h3>
+                        {desc && <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{desc}</p>}
+                    </div>
+                </div>
+                {rightContent && <div className="shrink-0">{rightContent}</div>}
             </div>
             {children}
         </div>
@@ -69,19 +81,58 @@ export function IntegrationHeader({ title, desc, Icon, color, isConnected = fals
     );
 }
 
-export function Toggle({ label, desc, defaultChecked = false }: { label: string; desc?: string; defaultChecked?: boolean }) {
-    const [on, setOn] = useState(defaultChecked);
+export function Toggle({
+    label, desc, defaultChecked = false,
+    enabled, onClick
+}: {
+    label?: string;
+    desc?: string;
+    defaultChecked?: boolean;
+    // Controlled mode
+    enabled?: boolean;
+    onClick?: () => void;
+}) {
+    const [internalOn, setInternalOn] = useState(defaultChecked);
+    // Controlled if 'enabled' prop is provided, uncontrolled otherwise
+    const isControlled = enabled !== undefined;
+    const on = isControlled ? enabled : internalOn;
+    const handleClick = isControlled
+        ? onClick
+        : () => setInternalOn(v => !v);
+
+    if (!label) {
+        // Compact toggle-only (used inside rightContent)
+        return (
+            <button
+                type="button"
+                onClick={handleClick}
+                className="relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0"
+                style={{ background: on ? "var(--primary)" : "var(--glass-border)" }}
+            >
+                <span
+                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                    style={{ left: on ? "calc(100% - 22px)" : "2px" }}
+                />
+            </button>
+        );
+    }
+
     return (
         <div className="flex items-center justify-between py-3" style={{ borderBottom: "1px solid var(--glass-border)" }}>
             <div>
                 <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{label}</p>
                 {desc && <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{desc}</p>}
             </div>
-            <button onClick={() => setOn(!on)}
+            <button
+                type="button"
+                onClick={handleClick}
                 className="relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0"
-                style={{ background: on ? "var(--primary)" : "var(--glass-border)" }}>
-                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
-                    style={{ left: on ? "calc(100% - 22px)" : "2px" }} />
+                style={{ background: on ? "var(--primary)" : "var(--glass-border)" }}
+            >
+                <span
+                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                    style={{ left: on ? "calc(100% - 22px)" : "2px" }}
+                />
             </button>
         </div>
     );
