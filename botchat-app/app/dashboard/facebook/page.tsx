@@ -100,6 +100,9 @@ export default function FacebookPage() {
             if (event.data?.type === 'SOCIAL_CONNECTION_SUCCESS') {
                 fetchConnectedPages();
                 setIsConnecting(false);
+            } else if (event.data?.type === 'oauth-error') {
+                setIsConnecting(false);
+                showModal("error", "Connection Failed", event.data.error || 'Failed to connect Facebook account.');
             }
         };
 

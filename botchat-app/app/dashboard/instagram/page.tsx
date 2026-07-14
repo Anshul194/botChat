@@ -98,6 +98,21 @@ export default function InstagramPage() {
             return;
         }
 
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) return;
+
+            if (event.data?.type === 'SOCIAL_CONNECTION_SUCCESS') {
+                window.removeEventListener('message', handleMessage);
+                setIsConnecting(false);
+                fetchConnectedAccounts();
+            } else if (event.data?.type === 'oauth-error') {
+                window.removeEventListener('message', handleMessage);
+                setIsConnecting(false);
+                showModal("error", "Connection Failed", event.data.error || 'Failed to connect Instagram account.');
+            }
+        };
+        window.addEventListener('message', handleMessage);
+
         try {
             const response = await api.get("/social/instagram-connect/redirect");
             const redirectUrl = response.data.data?.url || response.data.data?.redirect_url;
@@ -108,16 +123,19 @@ export default function InstagramPage() {
                 const pollTimer = setInterval(() => {
                     if (popup.closed) {
                         clearInterval(pollTimer);
+                        window.removeEventListener('message', handleMessage);
                         setIsConnecting(false);
                         fetchConnectedAccounts();
                     }
                 }, 800);
             } else {
                 popup.close();
+                window.removeEventListener('message', handleMessage);
                 setIsConnecting(false);
                 showModal("error", "Error", "No redirect URL received from server");
             }
         } catch (err: any) {
+            window.removeEventListener('message', handleMessage);
             popup?.close();
             setIsConnecting(false);
             showModal("error", "Error", "Failed to start Instagram connection");
