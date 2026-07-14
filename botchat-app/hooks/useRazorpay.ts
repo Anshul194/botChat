@@ -38,6 +38,13 @@ export function useRazorpay() {
             });
 
             const result = data?.data ?? data;
+
+            // Free plan — assigned directly, no Razorpay flow
+            if (result.free) {
+                window.dispatchEvent(new CustomEvent("payment:success"));
+                return { status: "success" as const };
+            }
+
             const orderId = result.order_id ?? result.id;
             const key = result.key ?? result.razorpay_key ?? "";
 
