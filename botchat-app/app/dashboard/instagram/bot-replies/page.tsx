@@ -5,13 +5,12 @@ import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick, ArrowLeft,
     Menu, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Instagram, Layers,
-    ChevronLeft, ChevronDown, ListFilter
+    ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
-import { SwipeHint } from "@/components/ui/swipe-hint";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
 import { AiAgentSettingsPanel } from "../AiAgentSettingsPanel";
@@ -19,7 +18,7 @@ import { AiAgentSettingsPanel } from "../AiAgentSettingsPanel";
 
 interface BotReply {
     id: number;
-    instagram_id: string; // Used in API calls
+    instagram_id: string;
     name: string;
     trigger_type: string;
     trigger_value: string;
@@ -69,14 +68,12 @@ export default function InstagramBotRepliesPage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
 
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const [showPageDropdown, setShowPageDropdown] = useState(false);
-    const [quickFindSearch, setQuickFindSearch] = useState("");
-
     const [actions, setActions] = useState<ActionData[]>([]);
     const [isActionsLoading, setIsActionsLoading] = useState(false);
     const [showActionModal, setShowActionModal] = useState(false);
     const [selectedActionType, setSelectedActionType] = useState<string | null>(null);
+
+    const [editReply, setEditReply] = useState<BotReply | null>(null);
 
     const [newReply, setNewReply] = useState({
         name: "",
@@ -300,16 +297,8 @@ export default function InstagramBotRepliesPage() {
         router.push(`/dashboard/flows?id=${replyId}&platform=instagram`);
     };
 
-    const scroll = (direction: 'left' | 'right') => {
-        if (scrollRef.current) {
-            const amount = 200;
-            scrollRef.current.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
-        }
-    };
-
     const handleAccountSelect = (id: string | "all") => {
         setSelectedAccountId(id);
-        setShowPageDropdown(false);
         if (id !== "all") {
             const acc = pages.find(p => p.instagram_id === id);
             if (acc) {
@@ -332,195 +321,104 @@ export default function InstagramBotRepliesPage() {
 
     const creationAccountFallback = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
 
+    const IG_PINK = "#db2777";
+
     return (
-        <div className="min-h-screen bg-transparent font-sans w-full min-w-0 -m-4 md:-m-6">
+        <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
+
             {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
-            <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col" style={{
+            <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col -mx-4 -mt-4 md:-mx-6 md:-mt-6" style={{
                 background: "var(--card)",
                 borderBottom: "1px solid var(--border)",
                 boxShadow: "0 2px 16px rgba(0,0,0,0.10)"
             }}>
-                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4 px-4 sm:px-8 py-3">
-                    <div className="flex items-center gap-2 sm:gap-4 font-sans">
-                        <button
-                            onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
-                            className="md:hidden w-9 h-9 flex items-center justify-center rounded-full transition-all"
-                            style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
-                        >
-                            <Menu className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={() => router.push('/dashboard')}
-                            className="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full items-center justify-center transition-all shadow-sm"
-                            style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
-                        >
-                            <ArrowLeft className="w-4 h-4 sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
-                        </button>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-1 sm:gap-2">
-                                <span className="text-[8px] sm:text-[10px] font-semibold uppercase tracking-widest text-[#db2777]">Instagram Automation</span>
-                                <div className="hidden xs:block w-1 h-1 rounded-full bg-neutral-300" />
-                                <div className="hidden xs:flex items-center gap-1.5 px-2 py-0.5 bg-[#db2777]/10 rounded-full">
-                                    <Instagram className="w-2.5 h-2.5 text-[#db2777]" />
-                                    <span className="text-[8px] sm:text-[9px] font-medium text-[#db2777]">Neural Node</span>
-                                </div>
-                            </div>
-                            <h1 className="text-sm xs:text-base sm:text-lg lg:text-xl font-bold tracking-tight leading-none mt-1 uppercase whitespace-normal" style={{ color: "var(--foreground)" }}>Instagram Reply Manager</h1>
-                        </div>
+                {/* Top row: back + title + settings */}
+                <div className="flex items-center gap-3 px-4 md:px-8 h-14 md:h-[60px]">
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+                        style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
+                    >
+                        <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
+                    </button>
+
+                    <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: IG_PINK }}>
+                            Instagram Automation
+                        </span>
+                        <h1 className="text-[15px] md:text-[17px] font-black leading-none tracking-tight truncate" style={{ color: "var(--foreground)" }}>
+                            {MENUS.find(m => m.id === activeMenu)?.label || 'Bot Replies'}
+                        </h1>
                     </div>
 
-                    <div className="order-last md:order-none w-full md:w-auto flex items-center p-1 rounded-2xl border overflow-x-auto no-scrollbar scroll-smooth" style={{ background: "var(--muted)", borderColor: "var(--border)" }}>
-                        <div className="flex items-center min-w-max">
-                            {MENUS.map(menu => (
-                                <button
-                                    key={menu.id}
-                                    onClick={() => setActiveMenu(menu.id)}
-                                    className={cn(
-                                        "px-4 sm:px-5 py-2 rounded-xl text-[12px] sm:text-[13px] font-medium uppercase tracking-wider flex items-center gap-2 transition-all whitespace-nowrap",
-                                        activeMenu === menu.id
-                                            ? "bg-[#db2777] text-white shadow-md shadow-pink-500/25"
-                                            : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                                    )}
-                                >
-                                    <menu.icon className="w-3.5 h-3.5 sm:w-[14px] sm:h-[14px]" strokeWidth={2} />
-                                    {menu.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    <button
+                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+                        style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
+                    >
+                        <Settings2 className="w-4 h-4" />
+                    </button>
+                </div>
 
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <button className="p-2 sm:p-2.5 rounded-full transition-all" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}><Settings2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /></button>
-                        <button className="hidden xs:block px-4 sm:px-6 py-2 sm:py-2.5 rounded-2xl text-[var(--primary-foreground)] text-[12px] sm:text-[13px] font-medium uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-md" style={{ background: "var(--primary)" }}>Pulse stats</button>
-                    </div>
+                {/* Tab strip: scrollable pill tabs */}
+                <div className="flex items-center gap-1.5 px-4 md:px-8 pb-2.5 overflow-x-auto no-scrollbar">
+                    {MENUS.map(menu => (
+                        <button
+                            key={menu.id}
+                            onClick={() => setActiveMenu(menu.id)}
+                            className={cn(
+                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 border",
+                                activeMenu === menu.id
+                                    ? "border-transparent text-white shadow-md"
+                                    : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--border)]"
+                            )}
+                            style={activeMenu === menu.id ? { background: IG_PINK, boxShadow: `0 4px 14px ${IG_PINK}40` } : undefined}
+                        >
+                            <menu.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                            {menu.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            <div className="p-4 sm:p-8 space-y-8 pb-32 lg:pb-8">
-                {/* 2. ACCOUNTS SELECTOR (Scrollable + Dropdown) */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full min-w-0">
-                    <div className="flex-1 min-w-0 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-1.5 shadow-sm flex items-center relative">
-                        <SwipeHint containerRef={scrollRef} storageKey="ig-account-pills" align="right" className="absolute -top-5 right-4 z-10" />
-                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] transition-colors z-10 bg-transparent rounded-l-xl">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
+            {/* ── PAGE BODY ─────────────────────────────────────────────────── */}
+            <div className="w-full pt-5 pb-28 md:pb-10 space-y-4 md:space-y-6">
 
-                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
-                            <button
-                                onClick={() => handleAccountSelect("all")}
-                                className={cn(
-                                    "px-5 py-2.5 rounded-xl text-[14px] font-semibold uppercase tracking-widest transition-all whitespace-nowrap",
-                                    selectedAccountId === "all"
-                                        ? "bg-[var(--foreground)] text-[var(--background)] shadow-md"
-                                        : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50"
-                                )}
-                            >
-                                All Accounts
-                            </button>
-                            <div className="w-px h-6 bg-[var(--border)] mx-1 flex-shrink-0" />
-                            {pages.map(acc => (
-                                <button
-                                    key={acc.id}
-                                    onClick={() => handleAccountSelect(acc.instagram_id)}
-                                    className={cn(
-                                        "px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all whitespace-nowrap",
-                                        selectedAccountId === acc.instagram_id
-                                            ? "shadow-sm border"
-                                            : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 border border-transparent"
-                                    )}
-                                    style={selectedAccountId === acc.instagram_id ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)", borderColor: "var(--nav-active-border)" } : undefined}
-                                >
-                                    @{acc.username}
-                                </button>
-                            ))}
-                        </div>
-
-                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] transition-colors z-10 bg-transparent rounded-r-xl">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <div className="relative shrink-0 z-20">
+                {/* Account filter pills */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                    <button
+                        onClick={() => handleAccountSelect("all")}
+                        className={cn(
+                            "px-3.5 py-1.5 rounded-full text-[11.5px] font-semibold whitespace-nowrap transition-all flex-shrink-0 border",
+                            selectedAccountId === "all"
+                                ? "border-transparent text-white shadow-sm"
+                                : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                        )}
+                        style={selectedAccountId === "all" ? { background: IG_PINK } : undefined}
+                    >
+                        All Accounts
+                    </button>
+                    {pages.map(acc => (
                         <button
-                            onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-5 py-3 sm:py-0 w-full sm:w-auto bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm flex items-center justify-between sm:justify-center gap-3 text-[13px] font-medium uppercase tracking-wider transition-colors text-[var(--foreground)]"
-                            style={{ borderColor: showPageDropdown ? "var(--nav-active-border)" : undefined }}
-                        >
-                            <div className="flex items-center gap-2">
-                                <ListFilter className="w-4 h-4" style={{ color: "var(--nav-active-color)" }} />
-                                Quick Find
-                            </div>
-                            <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", showPageDropdown && "rotate-180")} />
-                        </button>
-                        <AnimatePresence>
-                            {showPageDropdown && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                                    className="absolute right-0 top-[calc(100%+8px)] w-64 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden"
-                                >
-                                    <div className="flex flex-col max-h-[350px]">
-                                        <div className="p-2 border-b border-[var(--border)] sticky top-0 bg-[var(--card)] z-10">
-                                            <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search accounts..."
-                                                    value={quickFindSearch}
-                                                    onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--muted)] border border-transparent focus:bg-[var(--card)] text-xs outline-none transition-all"
-                                                    style={{ borderColor: quickFindSearch ? "var(--nav-active-border)" : undefined }}
-                                                    autoFocus
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="p-1 overflow-y-auto custom-scrollbar">
-                                            <button
-                                                onClick={() => { handleAccountSelect("all"); setQuickFindSearch(""); }}
-                                                className={cn(
-                                                    "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                                    selectedAccountId === "all" ? "" : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50"
-                                                )}
-                                                style={selectedAccountId === "all" ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : undefined}
-                                            >
-                                                All Accounts
-                                            </button>
-                                            <div className="h-px bg-[var(--border)] my-1" />
-                                            {pages
-                                                .filter(acc => !quickFindSearch || acc.username.toLowerCase().includes(quickFindSearch.toLowerCase()))
-                                                .map(acc => (
-                                                    <button
-                                                        key={acc.id}
-                                                        onClick={() => { handleAccountSelect(acc.instagram_id); setQuickFindSearch(""); }}
-                                                        className={cn(
-                                                            "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all truncate flex items-center gap-2",
-                                                            selectedAccountId === acc.instagram_id ? "" : "text-[var(--foreground)] hover:bg-[var(--muted)]/50"
-                                                        )}
-                                                        style={selectedAccountId === acc.instagram_id ? { background: "var(--nav-active-bg)", color: "var(--nav-active-color)" } : undefined}
-                                                    >
-                                                        <Instagram className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--nav-active-color)" }} />
-                                                        <span className="truncate">{acc.username}</span>
-                                                    </button>
-                                                ))}
-                                            {pages.filter(acc => acc.username.toLowerCase().includes(quickFindSearch.toLowerCase())).length === 0 && (
-                                                <div className="py-8 text-center px-4">
-                                                    <Search className="w-8 h-8 text-neutral-200 dark:text-neutral-800 mx-auto mb-2" />
-                                                    <p className="text-xs text-neutral-400 font-medium italic">No accounts found</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </motion.div>
+                            key={acc.id}
+                            onClick={() => handleAccountSelect(acc.instagram_id)}
+                            className={cn(
+                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all flex-shrink-0 border",
+                                selectedAccountId === acc.instagram_id
+                                    ? "border-transparent text-[var(--background)]"
+                                    : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                             )}
-                        </AnimatePresence>
-                    </div>
+                            style={selectedAccountId === acc.instagram_id ? { background: "var(--foreground)" } : undefined}
+                        >
+                            @{acc.username}
+                        </button>
+                    ))}
                 </div>
 
                 {/* 3. MAIN WORKSPACE */}
-                <div className="bg-[var(--card)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-sm w-full min-w-0">
+                <div className="w-full min-w-0 bg-transparent md:bg-[var(--card)] border border-transparent md:border-[var(--border)] p-0 md:p-6 rounded-2xl md:shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
                     <AnimatePresence mode="wait">
 
-                        {/* BOT REPLIES CONTENT */}
+                        {/* ── BOT REPLIES CONTENT */}
                         {activeMenu === 'bot_reply' && (
                             <motion.div
                                 key="bot_reply"
@@ -528,35 +426,37 @@ export default function InstagramBotRepliesPage() {
                                 transition={{ duration: 0.2 }}
                                 className="flex flex-col"
                             >
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                                    <div className="relative w-full max-w-sm">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                {/* Search + Create */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-8">
+                                    <div className="relative w-full sm:max-w-sm">
+                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                                         <input
                                             type="text"
                                             placeholder="Search replies..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-[var(--muted)] border border-[var(--border)] focus:bg-[var(--card)] focus:border-[var(--primary)] text-sm outline-none transition-all placeholder:text-neutral-400"
+                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 focus:border-[#db2777]/50 focus:ring-2 focus:ring-[#db2777]/10 text-sm outline-none transition-all placeholder:text-neutral-400 shadow-sm"
                                         />
                                     </div>
                                     <button
                                         onClick={() => setShowCreateModal(true)}
-                                        className="bg-[var(--primary)] text-[var(--primary-foreground)] px-6 py-2.5 rounded-xl font-medium uppercase text-[12px] tracking-wider transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap shadow-md"
+                                        className="w-full sm:w-auto text-white px-5 py-3 rounded-xl font-semibold text-[13px] tracking-wide transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap shadow-lg"
+                                        style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
                                     >
-                                        <Sparkles className="w-4 h-4" /> Create IG Flow
+                                        <Plus className="w-4 h-4" /> Create IG Flow
                                     </button>
                                 </div>
 
                                 {isLoading ? (
                                     <div className="space-y-3">
                                         {[1, 2, 3].map(i => (
-                                            <div key={i} className="h-20 rounded-2xl bg-[var(--muted)]/50 animate-pulse" />
+                                            <div key={i} className="h-24 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
                                         ))}
                                     </div>
                                 ) : filteredReplies.length > 0 ? (
                                     <div className="flex flex-col gap-3">
-                                        {/* Header row for a professional table-like appearance in grid, hidden on mobile */}
-                                        <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider border-b border-[var(--border)]">
+                                        {/* Header row — desktop only */}
+                                        <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-800">
                                             <div className="col-span-5">Automation Name</div>
                                             <div className="col-span-2">Status</div>
                                             <div className="col-span-2">Trigger Type</div>
@@ -566,87 +466,140 @@ export default function InstagramBotRepliesPage() {
                                         {filteredReplies.map((reply) => (
                                             <div
                                                 key={reply.id}
-                                                onClick={() => goToFlow(reply.id)}
-                                                className="group relative bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 transition-all hover:shadow-md hover:border-[var(--primary)]/30 cursor-pointer overflow-hidden"
+                                                className="group relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 md:border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#db2777]/30 transition-all"
                                             >
-                                                {/* Left Accent indicator for active/draft */}
-                                                <div className={cn("absolute left-0 top-0 bottom-0 w-1 transition-colors", reply.status === 'published' ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]')} />
+                                                {/* Left accent bar */}
+                                                <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-l-full transition-colors", reply.status === 'published' ? 'bg-[#db2777]' : 'bg-neutral-200 dark:bg-neutral-700')} />
 
-                                                {/* Name and Icon */}
-                                                <div className="flex items-center gap-4 col-span-5 min-w-0">
-                                                    <div className={cn(
-                                                        "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all",
-                                                        reply.status === 'published' ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]"
-                                                    )}>
-                                                        <MessageSquare className="w-5 h-5" />
-                                                    </div>
-                                                    <div className="flex flex-col min-w-0">
-                                                        <h4 className="text-sm md:text-[15px] font-bold text-[var(--foreground)] truncate" title={reply.name}>
-                                                            {reply.name}
-                                                        </h4>
-                                                        {selectedAccountId === "all" && (
-                                                            <div className="flex items-center mt-1">
-                                                                <span className="text-[10px] text-[var(--primary)] font-semibold uppercase tracking-wider bg-[var(--primary)]/10 px-2 py-0.5 rounded-md truncate max-w-[150px]">
-                                                                    @{pages.find(p => p.instagram_id === reply.instagram_id)?.username || "Unknown"}
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Status */}
-                                                <div className="flex items-center col-span-2 mt-2 md:mt-0">
-                                                    {reply.status === 'published' ? (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                            Live
-                                                        </span>
-                                                    ) : (
-                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                                            Draft
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Trigger Type */}
-                                                <div className="flex items-center col-span-2">
-                                                    <span className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider border border-[var(--border)] px-2.5 py-1 rounded-lg bg-[var(--muted)]/50">
-                                                        {reply.trigger_type}
-                                                    </span>
-                                                </div>
-
-                                                {/* Actions */}
-                                                <div className="flex flex-wrap md:flex-nowrap items-center md:justify-end gap-2 col-span-3 w-full md:w-auto mt-2 md:mt-0">
+                                                {/* ── MOBILE CARD LAYOUT ── */}
+                                                <div className="md:hidden">
+                                                    {/* Card body — tappable to open edit modal */}
                                                     <button
-                                                        onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }}
-                                                        className="flex-1 md:flex-none py-2 px-4 rounded-xl bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/20 text-xs font-bold transition-all text-center whitespace-nowrap active:scale-95"
+                                                        onClick={() => setEditReply(reply)}
+                                                        className="w-full text-left pl-5 pr-4 pt-4 pb-3.5"
                                                     >
-                                                        Edit Flow
+                                                        {/* Row 1: Icon + Name + Status badge */}
+                                                        <div className="flex items-center gap-3 mb-3">
+                                                            <div className={cn(
+                                                                "w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-sm",
+                                                                reply.status === 'published'
+                                                                    ? "bg-gradient-to-br from-pink-50 to-pink-100 text-[#db2777]"
+                                                                    : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
+                                                            )}>
+                                                                <MessageSquare className="w-4.5 h-4.5" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className="text-[14px] font-semibold text-neutral-900 dark:text-white truncate leading-snug">{reply.name}</h4>
+                                                                {selectedAccountId === "all" && (
+                                                                    <span className="text-[11px] font-medium" style={{ color: IG_PINK }}>
+                                                                        @{pages.find(p => p.instagram_id === reply.instagram_id)?.username || "Unknown"}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {reply.status === 'published' ? (
+                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Draft
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        {/* Row 2: Trigger badge + Tap hint */}
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <Target className="w-3 h-3 text-neutral-400" />
+                                                                <span className="text-[11px] text-neutral-500 font-medium">{reply.trigger_type}</span>
+                                                            </div>
+                                                            <span className="text-[10px] text-neutral-300 dark:text-neutral-600 font-medium">Tap to manage →</span>
+                                                        </div>
                                                     </button>
 
-                                                    <div className="flex items-center gap-2">
+                                                    {/* Action row — 4 buttons */}
+                                                    <div className="border-t border-neutral-100 dark:border-neutral-800 grid grid-cols-4 divide-x divide-neutral-100 dark:divide-neutral-800">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setEditReply(reply); }}
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-[#db2777] hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors group/btn"
+                                                        >
+                                                            <Settings2 className="w-4 h-4" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
+                                                        </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
-                                                            className={cn("p-2 rounded-xl border border-[var(--border)] transition-all active:scale-95 bg-transparent", reply.status === 'published' ? "hover:bg-amber-500/10 text-[var(--muted-foreground)] hover:text-amber-500 hover:border-amber-200" : "hover:bg-emerald-500/10 text-[var(--muted-foreground)] hover:text-emerald-500 hover:border-emerald-200")}
-                                                            title={reply.status === 'published' ? "Pause Flow" : "Go Live"}
+                                                            className={cn("py-3 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn",
+                                                                reply.status === 'published' ? "text-amber-500 hover:bg-amber-50" : "text-emerald-600 hover:bg-emerald-50"
+                                                            )}
                                                         >
                                                             {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">
+                                                                {reply.status === 'published' ? 'Pause' : 'Go Live'}
+                                                            </span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
-                                                            className="p-2 rounded-xl border border-[var(--border)] hover:bg-[var(--primary)]/10 hover:border-[var(--primary)]/20 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-all active:scale-95 bg-transparent"
-                                                            title="Duplicate"
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors group/btn"
                                                         >
                                                             <Copy className="w-4 h-4" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Copy</span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
-                                                            className="p-2 rounded-xl border border-[var(--border)] hover:bg-rose-500/10 hover:border-rose-500/20 text-[var(--muted-foreground)] hover:text-rose-500 transition-all active:scale-95 bg-transparent"
-                                                            title="Delete"
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group/btn"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Delete</span>
                                                         </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* ── DESKTOP CARD LAYOUT ── */}
+                                                <div className="hidden md:grid grid-cols-12 items-center gap-4 px-6 py-4">
+                                                    {/* Name + Icon */}
+                                                    <div className="flex items-center gap-4 col-span-5 min-w-0">
+                                                        <div className={cn(
+                                                            "w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all",
+                                                            reply.status === 'published' ? "bg-[#db2777]/10 text-[#db2777]" : "bg-neutral-100 text-neutral-400 dark:bg-neutral-800"
+                                                        )}>
+                                                            <MessageSquare className="w-5 h-5" />
+                                                        </div>
+                                                        <div className="flex flex-col min-w-0">
+                                                            <h4 className="text-[15px] font-bold text-neutral-900 dark:text-white truncate">{reply.name}</h4>
+                                                            {selectedAccountId === "all" && (
+                                                                <div className="flex items-center mt-1">
+                                                                    <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md truncate max-w-[150px]" style={{ background: `${IG_PINK}18`, color: IG_PINK }}>
+                                                                        @{pages.find(p => p.instagram_id === reply.instagram_id)?.username || "Unknown"}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {/* Status */}
+                                                    <div className="flex items-center col-span-2">
+                                                        {reply.status === 'published' ? (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />Draft
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {/* Trigger */}
+                                                    <div className="flex items-center col-span-2">
+                                                        <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400 uppercase tracking-wider border border-neutral-200 dark:border-neutral-700 px-2.5 py-1 rounded-lg bg-neutral-50 dark:bg-neutral-800/50">{reply.trigger_type}</span>
+                                                    </div>
+                                                    {/* Actions */}
+                                                    <div className="flex items-center justify-end gap-2 col-span-3">
+                                                        <button onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }} className="py-2 px-4 rounded-xl text-xs font-bold transition-all text-center active:scale-95" style={{ background: `${IG_PINK}18`, color: IG_PINK, border: `1px solid ${IG_PINK}33` }}>Edit Flow</button>
+                                                        <div className="flex items-center gap-2">
+                                                            <button onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }} className={cn("p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 transition-all active:scale-95", reply.status === 'published' ? "hover:bg-amber-50 text-neutral-400 hover:text-amber-500" : "hover:bg-emerald-50 text-neutral-400 hover:text-emerald-500")} title={reply.status === 'published' ? "Pause" : "Go Live"}>
+                                                                {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                                            </button>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-neutral-400 hover:text-pink-500 transition-all active:scale-95" title="Duplicate"><Copy className="w-4 h-4" /></button>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -654,14 +607,14 @@ export default function InstagramBotRepliesPage() {
                                     </div>
                                 ) : (
                                     <div className="py-16 text-center flex flex-col items-center">
-                                        <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 flex items-center justify-center mb-4">
-                                            <MessageSquare className="w-8 h-8 text-[var(--primary)]" />
+                                        <div className="w-16 h-16 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center mb-4">
+                                            <MessageSquare className="w-8 h-8 text-pink-400" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-[var(--foreground)]">No Automations Found</h3>
-                                        <p className="text-sm text-[var(--muted-foreground)] max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Instagram DMs and comments.</p>
+                                        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
+                                        <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Instagram messages.</p>
                                         <button
                                             onClick={() => setShowCreateModal(true)}
-                                            className="bg-[var(--primary)] text-[var(--primary-foreground)] px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
+                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
                                         >
                                             Build First Reply
                                         </button>
@@ -684,12 +637,6 @@ export default function InstagramBotRepliesPage() {
                                         >
                                             <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
                                         </button>
-                                        {/* <button
-                                            onClick={() => setShowActionModal(true)}
-                                            className="bg-[#db2777] hover:bg-[#be185d] text-white px-6 py-2.5 rounded-xl font-medium text-[12px] uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
-                                        >
-                                            <Plus className="w-4 h-4" /> Create custom layer
-                                        </button> */}
                                     </div>
                                 </div>
 
@@ -706,9 +653,6 @@ export default function InstagramBotRepliesPage() {
                                                 'action_get_started': { label: 'Get Started', desc: 'Triggered when someone opens your DM' },
                                                 'action_no_match': { label: 'No Match / Fallback', desc: 'Triggered when no bot reply matches' },
                                                 'action_ice_breaker': { label: 'Ice Breakers', desc: 'Precomputed conversation starters' },
-                                                'action_story_mention': { label: 'Story Mention', desc: 'Triggered when someone mentions you in their story' },
-                                                'action_story_private_reply': { label: 'Story Private Reply', desc: 'Send a private reply when someone interacts with your story' },
-                                                'action_message_unsend': { label: 'Message Unsend Private Reply', desc: 'Send a private reply when someone unsends a message' },
                                             };
                                             const def = labels[action.type] || { label: action.label || action.type, desc: 'Custom System Action' };
 
@@ -722,13 +666,13 @@ export default function InstagramBotRepliesPage() {
                                                             handleConfigureAction(action.type);
                                                         }
                                                     }}
-                                                    className="group bg-[var(--card)] border border-[var(--border)] rounded-[32px] p-6 hover:border-[var(--primary)]/30 transition-all flex flex-col justify-between cursor-pointer"
+                                                    className="group bg-neutral-50/50 dark:bg-neutral-950/20 shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-[32px] p-6 hover:border-pink-500/30 transition-all flex flex-col justify-between cursor-pointer"
                                                 >
                                                     <div>
                                                         <div className="flex items-center justify-between mb-4">
                                                             <div className={cn(
                                                                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm",
-                                                                action.automation_id ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]"
+                                                                action.automation_id ? "bg-pink-100 text-[#db2777] dark:bg-pink-900/40" : "bg-white dark:bg-neutral-900 text-neutral-400 dark:border-neutral-800"
                                                             )}>
                                                                 {action.type === 'action_get_started' ? <Play className="w-6 h-6 fill-current" /> : <RefreshCw className="w-6 h-6" />}
                                                             </div>
@@ -738,8 +682,8 @@ export default function InstagramBotRepliesPage() {
                                                                         <button
                                                                             onClick={(e) => { e.stopPropagation(); handleActionToggle(action); }}
                                                                             className={cn(
-                                                                                "p-2 rounded-lg border border-[var(--border)] bg-transparent transition-all active:scale-90",
-                                                                                action.status === 'published' ? "text-amber-600 hover:bg-amber-500/10 border-amber-200" : "text-emerald-600 hover:bg-emerald-500/10 border-emerald-200"
+                                                                                "p-2 rounded-lg border transition-all active:scale-90",
+                                                                                action.status === 'published' ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
                                                                             )}
                                                                             title={action.status === 'published' ? "Pause Action" : "Resume Action"}
                                                                         >
@@ -747,7 +691,7 @@ export default function InstagramBotRepliesPage() {
                                                                         </button>
                                                                         <button
                                                                             onClick={(e) => { e.stopPropagation(); handleActionDelete(action); }}
-                                                                            className="p-2 rounded-lg border border-[var(--border)] bg-transparent text-[var(--muted-foreground)] hover:text-red-505 hover:bg-red-500/10 hover:border-red-200 transition-all active:scale-90"
+                                                                            className="p-2 rounded-lg border bg-red-50 text-red-500 border-red-100 hover:bg-red-100 transition-all active:scale-90"
                                                                             title="Unmap Action"
                                                                         >
                                                                             <Trash2 size={14} />
@@ -757,29 +701,30 @@ export default function InstagramBotRepliesPage() {
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <h3 className="text-sm font-semibold text-[var(--foreground)] uppercase tracking-wider">{def.label}</h3>
+                                                            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
                                                             {action.automation_id && (
                                                                 <div className={cn(
                                                                     "w-1.5 h-1.5 rounded-full",
-                                                                    action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-[var(--muted)]"
+                                                                    action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
                                                                 )} />
                                                             )}
                                                         </div>
-                                                        <p className="text-[11px] text-[var(--muted-foreground)] font-medium leading-relaxed">{def.desc}</p>
+                                                        <p className="text-[11px] text-neutral-400 font-medium leading-relaxed">{def.desc}</p>
                                                     </div>
 
                                                     <div className="mt-8">
                                                         {action.automation_id ? (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); goToFlow(action.automation_id!); }}
-                                                                className="w-full py-3.5 rounded-2xl bg-transparent border-2 border-[var(--primary)]/10 text-[var(--primary)] text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-[var(--primary)]/10 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3.5 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-pink-100 dark:border-pink-900/10 text-[#db2777] dark:text-pink-400 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-pink-50/50 dark:hover:bg-pink-900/20 transition-all flex items-center justify-center gap-2"
                                                             >
                                                                 <Box size={14} /> Open Flow Logic
                                                             </button>
                                                         ) : (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); handleActionCreate(action.type); }}
-                                                                className="w-full py-3.5 rounded-2xl bg-[var(--primary)] text-[var(--primary-foreground)] text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-pink-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3.5 rounded-2xl text-white text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                                style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
                                                             >
                                                                 <Plus size={14} strokeWidth={2.5} /> Create Custom Layer
                                                             </button>
@@ -790,15 +735,15 @@ export default function InstagramBotRepliesPage() {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="py-20 text-center flex flex-col items-center border-2 border-dashed border-[var(--border)] rounded-[40px]">
-                                        <div className="w-20 h-20 rounded-3xl bg-[var(--primary)]/5 flex items-center justify-center mb-6">
-                                            <MousePointerClick className="w-10 h-10 text-[var(--primary)]" />
+                                    <div className="py-20 text-center flex flex-col items-center border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[40px]">
+                                        <div className="w-20 h-20 rounded-3xl bg-pink-50 dark:bg-pink-500/5 flex items-center justify-center mb-6">
+                                            <MousePointerClick className="w-10 h-10 text-pink-400" />
                                         </div>
-                                        <h3 className="text-xl font-black text-[var(--foreground)] uppercase tracking-tight leading-none">No custom shortcuts</h3>
-                                        <p className="text-[11px] text-[var(--muted-foreground)] font-bold uppercase tracking-[0.15em] max-w-xs mt-2 mb-8 mx-auto leading-relaxed">Map IG system events to neural automation layers to handle complex edge cases.</p>
+                                        <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight leading-none">No custom shortcuts</h3>
+                                        <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] max-w-xs mt-2 mb-8 mx-auto leading-relaxed">Map IG system events to neural automation layers to handle complex edge cases.</p>
                                         <button
                                             onClick={() => setShowActionModal(true)}
-                                            className="bg-[var(--primary)] text-[var(--primary-foreground)] px-8 py-3 rounded-2xl font-medium text-[11px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-8 py-3 rounded-2xl font-medium text-[11px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
                                         >
                                             Build custom layer
                                         </button>
@@ -834,13 +779,13 @@ export default function InstagramBotRepliesPage() {
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="w-full max-w-md p-10 bg-[var(--primary)]/5 rounded-[40px] border border-[var(--primary)]/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
+                                        className="w-full max-w-md p-10 bg-pink-50 dark:bg-pink-500/10 rounded-[40px] border border-pink-100 dark:border-pink-500/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
                                     >
-                                        <div className="w-16 h-16 rounded-3xl bg-[var(--primary)]/10 flex items-center justify-center mb-2">
-                                            <Bot className="w-8 h-8 text-[var(--primary)]" />
+                                        <div className="w-16 h-16 rounded-3xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-2">
+                                            <Bot className="w-8 h-8 text-pink-600" />
                                         </div>
-                                        <h4 className="text-lg font-black text-[var(--foreground)] uppercase tracking-tight leading-tight">Environment Required</h4>
-                                        <p className="text-xs font-bold text-[var(--muted-foreground)] uppercase tracking-widest leading-relaxed">Please select a specific Instagram account from the sidebar to enable neural agent configuration.</p>
+                                        <h4 className="text-lg font-black text-pink-900 dark:text-pink-400 uppercase tracking-tight leading-tight">Environment Required</h4>
+                                        <p className="text-xs font-bold text-pink-700 dark:text-pink-500/80 uppercase tracking-widest leading-relaxed">Please select a specific Instagram account from the header to enable neural agent configuration.</p>
                                     </motion.div>
                                 )}
                             </motion.div>
@@ -848,208 +793,357 @@ export default function InstagramBotRepliesPage() {
                     </AnimatePresence>
                 </div>
 
-                {/* CREATE MODAL */}
+                {/* EDIT REPLY MODAL */}
                 <AnimatePresence>
-                    {showCreateModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
+                    {editReply && (
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm"
-                                onClick={() => setShowCreateModal(false)}
+                                className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm"
+                                onClick={() => setEditReply(null)}
                             />
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                className="bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-3xl p-5 xs:p-6 sm:p-8 w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 shadow-xl relative z-10"
+                                initial={{ opacity: 0, y: 60 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 60 }}
+                                transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-[28px] sm:rounded-3xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
                             >
-                                <h3 className="text-xl font-bold text-[var(--foreground)] mb-6">
-                                    New IG Flow {selectedAccountId !== "all" ? `for ${selectedAccountObj?.username}` : ""}
-                                </h3>
-                                <div className="space-y-4">
-                                    {selectedAccountId === "all" && (
-                                        <div className="space-y-2">
-                                            <label className="text-[13px] font-semibold text-[var(--muted-foreground)]">Select IG Account</label>
-                                            <div className="relative">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsCreateAccountDropdownOpen(!isCreateAccountDropdownOpen)}
-                                                    className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus-visible:border-[var(--primary)] transition-all cursor-pointer flex items-center justify-between"
-                                                >
-                                                    <span className={cn(
-                                                        "truncate",
-                                                        !(newReply.instagram_id || creationAccountFallback?.instagram_id) && "text-neutral-400"
-                                                    )}>
-                                                        {pages.find(p => p.instagram_id === (newReply.instagram_id || creationAccountFallback?.instagram_id))?.username || "Select an account..."}
-                                                    </span>
-                                                    <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreateAccountDropdownOpen && "rotate-180")} />
-                                                </button>
+                                {/* Drag handle */}
+                                <div className="sm:hidden flex justify-center pt-3.5 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                                </div>
 
-                                                <AnimatePresence>
-                                                    {isCreateAccountDropdownOpen && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-                                                            className="absolute z-50 w-full mt-2 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-xl overflow-hidden"
-                                                        >
-                                                            <div className="p-2 border-b border-[var(--border)]">
-                                                                <div className="relative">
-                                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                                                                    <input
-                                                                        type="text"
-                                                                        placeholder="Search accounts..."
-                                                                        value={createAccountSearchQuery}
-                                                                        onChange={(e) => setCreateAccountSearchQuery(e.target.value)}
-                                                                        className="w-full pl-9 pr-3 py-2 rounded-lg bg-[var(--muted)]/55 border border-[var(--border)] focus:border-[var(--primary)] text-sm outline-none transition-all"
-                                                                        autoFocus
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
-                                                                {pages.filter(p => !createAccountSearchQuery || p.username.toLowerCase().includes(createAccountSearchQuery.toLowerCase())).map(p => (
-                                                                    <button
-                                                                        key={p.id}
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            setNewReply({ ...newReply, instagram_id: p.instagram_id, page_id: p.page?.page_id || "" });
-                                                                            setIsCreateAccountDropdownOpen(false);
-                                                                        }}
-                                                                        className={cn(
-                                                                            "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
-                                                                            (newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id
-                                                                                ? "bg-[var(--primary)]/10 text-[var(--primary)] font-semibold"
-                                                                                : "text-[var(--foreground)] hover:bg-[var(--muted)]/50"
-                                                                        )}
-                                                                    >
-                                                                        <Instagram className="w-4 h-4 opacity-50" />
-                                                                        <span className="truncate">{p.username}</span>
-                                                                        {(newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id && (
-                                                                            <CheckCircle2 className="w-4 h-4 ml-auto" />
-                                                                        )}
-                                                                    </button>
-                                                                ))}
-                                                                {pages.filter(p => p.username.toLowerCase().includes(createAccountSearchQuery.toLowerCase())).length === 0 && (
-                                                                    <div className="py-4 text-center text-xs text-neutral-500">No accounts found</div>
-                                                                )}
-                                                            </div>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-[var(--muted-foreground)]">Template Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="e.g. Support Bot (IG)"
-                                            value={newReply.name}
-                                            onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] transition-all"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-[var(--muted-foreground)]">Reply Type</label>
-                                        <select
-                                            value={newReply.trigger_type}
-                                            onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] appearance-none transition-all cursor-pointer"
-                                        >
-                                            <option value="exact">Exact Match</option>
-                                            <option value="contains">Contains Word</option>
-                                            <option value="starts_with">Starts With</option>
-                                            <option value="keywords">Multiple Keywords</option>
-                                            <option value="welcome">Welcome</option>
-                                            <option value="fallback">Fallback</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[13px] font-semibold text-[var(--muted-foreground)]">Keywords</label>
-                                        <input
-                                            type="text"
-                                            placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "help, support"}
-                                            value={newReply.trigger_value}
-                                            onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-[var(--foreground)] text-sm outline-none focus:border-[var(--primary)] transition-all disabled:opacity-50"
-                                            disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
-                                        />
-                                    </div>
-                                    <div className="pt-4 flex flex-col gap-3">
+                                {/* Pink accent header */}
+                                <div className="relative px-6 pt-5 pb-5 text-white" style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)` }}>
+                                    <div className="absolute top-3 right-4">
                                         <button
-                                            onClick={async () => {
-                                                await handleCreate();
-                                                const latest = replies[replies.length - 1];
-                                                if (latest) await handleToggleStatus({ ...latest, status: 'draft' });
-                                            }}
-                                            disabled={isCreating}
-                                            className="w-full py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-sm shadow-md hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            onClick={() => setEditReply(null)}
+                                            className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                                         >
-                                            {isCreating ? 'Creating...' : '⚡ Save & Publish'}
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
-                                        <div className="flex gap-3">
-                                            <button
-                                                onClick={() => setShowCreateModal(false)}
-                                                className="flex-1 py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--muted-foreground)] font-semibold text-sm transition-all"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                onClick={handleCreate}
-                                                disabled={isCreating}
-                                                className="flex-1 py-3 rounded-xl border border-[var(--border)] bg-transparent text-[var(--muted-foreground)] font-semibold text-sm hover:bg-[var(--muted)]/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                            >
-                                                {isCreating ? 'Creating...' : 'Save as Draft'}
-                                            </button>
-                                        </div>
+                                    </div>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-pink-200 mb-1">Bot Reply</p>
+                                    <h3 className="text-[17px] font-bold leading-tight pr-8 truncate">{editReply.name}</h3>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        {editReply.status === 'published' ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />Live
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Draft
+                                            </span>
+                                        )}
+                                        <span className="text-[11px] text-pink-200 font-medium">· {editReply.trigger_type}</span>
                                     </div>
                                 </div>
+
+                                {/* Body */}
+                                <div className="px-6 py-5 space-y-3">
+                                    {/* Info rows */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-3.5">
+                                            <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest mb-1">Trigger Type</p>
+                                            <p className="text-[13px] font-bold text-neutral-800 dark:text-white uppercase">{editReply.trigger_type}</p>
+                                        </div>
+                                        {editReply.trigger_value && (
+                                            <div className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-3.5">
+                                                <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest mb-1">Keyword</p>
+                                                <p className="text-[13px] font-bold text-neutral-800 dark:text-white truncate">{editReply.trigger_value}</p>
+                                            </div>
+                                        )}
+                                        {selectedAccountId === "all" && (
+                                            <div className="rounded-2xl p-3.5 col-span-2" style={{ background: `${IG_PINK}12` }}>
+                                                <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: IG_PINK }}>Instagram Account</p>
+                                                <p className="text-[13px] font-bold truncate" style={{ color: IG_PINK }}>
+                                                    @{pages.find(p => p.instagram_id === editReply.instagram_id)?.username || "Unknown"}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* CTA — Open Flow Builder */}
+                                    <button
+                                        onClick={() => { setEditReply(null); goToFlow(editReply.id); }}
+                                        className="w-full py-3.5 rounded-xl text-white font-semibold text-[14px] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
+                                        style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
+                                    >
+                                        <Box className="w-4 h-4" /> Open Flow Builder
+                                    </button>
+
+                                    {/* Secondary actions */}
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <button
+                                            onClick={() => { handleToggleStatus(editReply); setEditReply(null); }}
+                                            className={cn("py-3 rounded-xl text-[12px] font-semibold flex flex-col items-center gap-1.5 transition-all border",
+                                                editReply.status === 'published'
+                                                    ? "bg-amber-50 text-amber-600 border-amber-100 hover:bg-amber-100"
+                                                    : "bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100"
+                                            )}
+                                        >
+                                            {editReply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                            {editReply.status === 'published' ? 'Pause' : 'Go Live'}
+                                        </button>
+                                        <button
+                                            onClick={() => { handleDuplicate(editReply.id); setEditReply(null); }}
+                                            className="py-3 rounded-xl text-[12px] font-semibold flex flex-col items-center gap-1.5 bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-all"
+                                        >
+                                            <Copy className="w-4 h-4" />
+                                            Duplicate
+                                        </button>
+                                        <button
+                                            onClick={() => { setEditReply(null); handleDelete(editReply.id); }}
+                                            className="py-3 rounded-xl text-[12px] font-semibold flex flex-col items-center gap-1.5 bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition-all"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Safe area bottom (mobile) */}
+                                <div className="h-safe-area-inset-bottom pb-6 sm:pb-0" />
                             </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
-                {/* ACTION CREATION MODAL */}
+
+                {/* CREATE MODAL */}
+                <AnimatePresence>
+                    {showCreateModal && (
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-neutral-950/50 backdrop-blur-sm"
+                                onClick={() => setShowCreateModal(false)}
+                            />
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 40 }}
+                                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-3xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
+                            >
+                                {/* Modal drag handle (mobile) */}
+                                <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+                                </div>
+                                <div className="px-6 pt-4 pb-7 sm:p-8">
+                                    {/* Modal header */}
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: IG_PINK }}>Instagram Automation</p>
+                                            <h3 className="text-[18px] font-bold text-neutral-900 dark:text-white leading-tight">
+                                                New IG Flow {selectedAccountId !== "all" ? `— ${selectedAccountObj?.username}` : ""}
+                                            </h3>
+                                        </div>
+                                        <button
+                                            onClick={() => setShowCreateModal(false)}
+                                            className="ml-3 mt-0.5 p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex-shrink-0"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {selectedAccountId === "all" && (
+                                            <div className="space-y-2">
+                                                <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Select IG Account</label>
+                                                <div className="relative">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsCreateAccountDropdownOpen(!isCreateAccountDropdownOpen)}
+                                                        className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-pink-500 transition-all cursor-pointer flex items-center justify-between"
+                                                    >
+                                                        <span className={cn(
+                                                            "truncate",
+                                                            !(newReply.instagram_id || creationAccountFallback?.instagram_id) && "text-neutral-400"
+                                                        )}>
+                                                            {pages.find(p => p.instagram_id === (newReply.instagram_id || creationAccountFallback?.instagram_id))?.username || "Select an account..."}
+                                                        </span>
+                                                        <ChevronDown className={cn("w-4 h-4 text-neutral-400 transition-transform", isCreateAccountDropdownOpen && "rotate-180")} />
+                                                    </button>
+
+                                                    <AnimatePresence>
+                                                        {isCreateAccountDropdownOpen && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                                                className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
+                                                            >
+                                                                <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
+                                                                    <div className="relative">
+                                                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Search accounts..."
+                                                                            value={createAccountSearchQuery}
+                                                                            onChange={(e) => setCreateAccountSearchQuery(e.target.value)}
+                                                                            className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-pink-500/30 text-sm outline-none transition-all"
+                                                                            autoFocus
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
+                                                                    {pages.filter(p => !createAccountSearchQuery || p.username.toLowerCase().includes(createAccountSearchQuery.toLowerCase())).map(p => (
+                                                                        <button
+                                                                            key={p.id}
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setNewReply({ ...newReply, instagram_id: p.instagram_id, page_id: p.page?.page_id || "" });
+                                                                                setIsCreateAccountDropdownOpen(false);
+                                                                            }}
+                                                                            className={cn(
+                                                                                "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
+                                                                                (newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id
+                                                                                    ? "bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 font-semibold"
+                                                                                    : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                                                                            )}
+                                                                        >
+                                                                            <Instagram className="w-4 h-4 opacity-50" style={{ color: IG_PINK }} />
+                                                                            <span className="truncate">{p.username}</span>
+                                                                            {(newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id && (
+                                                                                <CheckCircle2 className="w-4 h-4 ml-auto" style={{ color: IG_PINK }} />
+                                                                            )}
+                                                                        </button>
+                                                                    ))}
+                                                                    {pages.filter(p => p.username.toLowerCase().includes(createAccountSearchQuery.toLowerCase())).length === 0 && (
+                                                                        <div className="py-4 text-center text-xs text-neutral-500">No accounts found</div>
+                                                                    )}
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Template Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Support Bot (IG)"
+                                                value={newReply.name}
+                                                onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Reply Type</label>
+                                            <select
+                                                value={newReply.trigger_type}
+                                                onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 appearance-none transition-all cursor-pointer"
+                                            >
+                                                <option value="exact">Exact Match</option>
+                                                <option value="contains">Contains Word</option>
+                                                <option value="starts_with">Starts With</option>
+                                                <option value="keywords">Multiple Keywords</option>
+                                                <option value="welcome">Welcome</option>
+                                                <option value="fallback">Fallback</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-semibold text-neutral-700 dark:text-neutral-300">Keywords</label>
+                                            <input
+                                                type="text"
+                                                placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "help, support"}
+                                                value={newReply.trigger_value}
+                                                onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 transition-all disabled:opacity-50"
+                                                disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
+                                            />
+                                        </div>
+                                        <div className="pt-4 flex flex-col gap-3">
+                                            <button
+                                                onClick={async () => {
+                                                    await handleCreate();
+                                                    const latest = replies[replies.length - 1];
+                                                    if (latest) await handleToggleStatus({ ...latest, status: 'draft' });
+                                                }}
+                                                disabled={isCreating}
+                                                className="w-full py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                                style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
+                                            >
+                                                {isCreating ? 'Creating...' : '⚡ Save & Publish'}
+                                            </button>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => setShowCreateModal(false)}
+                                                    className="flex-1 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold text-sm transition-all"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={handleCreate}
+                                                    disabled={isCreating}
+                                                    className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {isCreating ? 'Creating...' : 'Save as Draft'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>{/* end inner px-6 */}
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* ACTION CONFIGURATION MODAL */}
                 <AnimatePresence>
                     {showActionModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-[40px] p-10 w-full max-w-none sm:max-w-md min-h-screen sm:min-h-0 shadow-2xl relative z-10">
-                                <h3 className="text-2xl font-black text-[var(--foreground)] mb-2 uppercase tracking-tight">Create IG Shortcut</h3>
-                                <p className="text-sm text-[var(--muted-foreground)] mb-8 font-medium">Select a system event to automate with a new flow.</p>
-
-                                <div className="space-y-3">
-                                    {[
-                                        { type: 'action_get_started', label: 'Get Started', icon: <Play className="w-4 h-4" /> },
-                                        { type: 'action_no_match', label: 'No Match / Fallback', icon: <RefreshCw className="w-4 h-4" /> },
-                                        { type: 'action_ice_breaker', label: 'Ice Breakers', icon: <Layers className="w-4 h-4" /> },
-                                    ].map(opt => {
-                                        const exists = actions.some(a => a.type === opt.type);
-                                        return (
-                                            <button
-                                                key={opt.type}
-                                                onClick={() => handleActionCreate(opt.type)}
-                                                disabled={exists || isCreating}
-                                                className={cn(
-                                                    "w-full p-4 rounded-3xl border text-left flex items-center justify-between group transition-all",
-                                                    exists
-                                                        ? "bg-[var(--muted)]/50 border-[var(--border)] opacity-50 cursor-not-allowed"
-                                                        : "bg-[var(--card)] border-[var(--border)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/10"
-                                                )}
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-[var(--muted)] text-[var(--muted-foreground)]" : "bg-[var(--primary)]/10 text-[var(--primary)] group-hover:bg-[var(--primary)]/20")}>
-                                                        {opt.icon}
-                                                    </div>
-                                                    <div>
-                                                        <span className="text-sm font-bold text-[var(--foreground)] block leading-none">{opt.label}</span>
-                                                        {exists && <span className="text-[10px] font-black uppercase text-amber-500 tracking-widest mt-1 block">Already Configured</span>}
-                                                    </div>
-                                                </div>
-                                                {!exists && <ChevronRight className="w-4 h-4 text-[var(--muted-foreground)] group-hover:text-[var(--primary)]" />}
-                                            </button>
-                                        );
-                                    })}
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/50 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
+                            <motion.div
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 40 }}
+                                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-[32px] w-full max-w-md max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
+                            >
+                                <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                    <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
                                 </div>
+                                <div className="px-6 pt-5 pb-8 sm:p-10">
+                                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-1 tracking-tight">Map IG Shortcut</h3>
+                                    <p className="text-sm text-neutral-500 mb-6 font-medium">Select a system event to automate with a new flow.</p>
 
-                                <button onClick={() => setShowActionModal(false)} className="w-full mt-6 py-3.5 rounded-2xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-bold text-xs uppercase tracking-[0.2em] transition-all">Cancel</button>
+                                    <div className="space-y-3">
+                                        {[
+                                            { type: 'action_get_started', label: 'Get Started', icon: <Play className="w-4 h-4" /> },
+                                            { type: 'action_no_match', label: 'No Match / Fallback', icon: <RefreshCw className="w-4 h-4" /> },
+                                            { type: 'action_ice_breaker', label: 'Ice Breakers', icon: <Layers className="w-4 h-4" /> },
+                                        ].map(opt => {
+                                            const exists = actions.some(a => a.type === opt.type);
+                                            return (
+                                                <button
+                                                    key={opt.type}
+                                                    onClick={() => handleActionCreate(opt.type)}
+                                                    disabled={exists || isCreating}
+                                                    className={cn(
+                                                        "w-full p-4 rounded-3xl border text-left flex items-center justify-between group transition-all",
+                                                        exists
+                                                            ? "bg-neutral-50/50 border-neutral-100 dark:bg-neutral-900/50 dark:border-neutral-800 opacity-50 cursor-not-allowed"
+                                                            : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 hover:border-pink-500/50 hover:bg-pink-50/20"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-neutral-100 text-neutral-400" : "bg-pink-50 text-pink-500 group-hover:bg-pink-100")}>
+                                                            {opt.icon}
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-sm font-bold text-neutral-900 dark:text-white block leading-none">{opt.label}</span>
+                                                            {exists && <span className="text-[10px] font-black uppercase text-amber-500 tracking-widest mt-1 block">Already Configured</span>}
+                                                        </div>
+                                                    </div>
+                                                    {!exists && <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-pink-500" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <button onClick={() => setShowActionModal(false)} className="w-full mt-5 py-3 rounded-2xl text-neutral-400 hover:text-neutral-600 font-bold text-xs uppercase tracking-[0.2em] transition-all">Cancel</button>
+                                </div>{/* end inner px-6 */}
                             </motion.div>
                         </div>
                     )}
