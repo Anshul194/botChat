@@ -26,14 +26,14 @@ const SECTION_META: Array<{ key: string; label: string; icon: React.ComponentTyp
 ];
 
 const SectionHeader = ({ title, icon: Icon }: { title: string; icon: any }) => (
-    <div className="w-full h-12 bg-[#F1F5F9] dark:bg-slate-800 rounded-xl flex items-center justify-center gap-2 mb-8">
-        <Icon size={16} className="text-slate-600 dark:text-slate-400" />
-        <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{title}</span>
+    <div className="w-full h-10 sm:h-12 bg-[#F1F5F9] dark:bg-slate-800 rounded-xl flex items-center justify-center gap-2 mb-6 sm:mb-8">
+        <Icon size={14} className="sm:size-[16px] text-slate-600 dark:text-slate-400" />
+        <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200">{title}</span>
     </div>
 );
 
 const InputBlock = ({ label, icon: Icon, value, onChange, placeholder, type = "text", description }: any) => (
-    <div className="space-y-2 mb-6">
+    <div className="space-y-2 mb-4 sm:mb-6">
         <label className="flex items-center gap-2 text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">
             {Icon && <Icon size={12} />}
             {label}
@@ -43,7 +43,7 @@ const InputBlock = ({ label, icon: Icon, value, onChange, placeholder, type = "t
             value={value} 
             onChange={(e) => onChange(e.target.value)} 
             placeholder={placeholder}
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 outline-none focus:ring-1 focus:ring-primary/20 transition-all text-sm" 
+            className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 outline-none focus:ring-1 focus:ring-primary/20 transition-all text-xs sm:text-sm" 
         />
         {description && <p className="text-[10px] text-slate-400 ml-1 leading-relaxed">{description}</p>}
     </div>
@@ -133,7 +133,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                 password: currentVcard.password || "",
                 sensitiveContentWarning: !!currentVcard.sensitive_content,
                 splash_page_id: currentVcard.splash_page_id || "",
-                selectedPixels: currentVcard.pixels_ids || currentVcard.pixels || [],
+                selectedPixels: Array.isArray(currentVcard.pixels_ids) ? currentVcard.pixels_ids : Array.isArray(currentVcard.pixels) ? currentVcard.pixels : [],
             }));
         }
     }, [currentVcard]);
@@ -207,23 +207,23 @@ export default function VcardEditorClient({ slug: id }: Props) {
     };
 
     return (
-        <div className="min-h-screen w-full px-6 py-8 bg-slate-50 dark:bg-[#020617]">
-            <div className="w-full max-w-7xl mx-auto">
-                <div className="w-full rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-slate-900/50 p-6 mb-6 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl">
-                    <div className="flex items-start gap-4">
-                        <div className="w-14 h-14 rounded-lg bg-primary grid place-items-center text-white font-black text-lg shadow-lg shadow-primary/20">VC</div>
-                        <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Vcard Manager <span className="text-slate-300">›</span> <span className="text-primary">{vcardSlug}</span></p>
-                                    <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">{vcardSlug}</h2>
+        <div className="min-h-screen w-full px-3 sm:px-6 py-4 sm:py-8 bg-slate-50 dark:bg-[#020617]">
+            <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
+                <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-slate-900/50 p-4 sm:p-6 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-primary grid place-items-center text-white font-black text-base sm:text-lg shadow-lg shadow-primary/20 shrink-0">VC</div>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 truncate">Vcard Manager <span className="text-slate-300">›</span> <span className="text-primary">{vcardSlug}</span></p>
+                                    <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white truncate">{vcardSlug}</h2>
                                 </div>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                                     <button onClick={() => setDraft((prev: any) => ({ ...prev, active: !prev.active }))} className={cn("w-9 h-5 rounded-full relative transition-colors", draft.active ? "bg-primary" : "bg-slate-300")}>
                                         <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", draft.active ? "left-[18px]" : "left-[2px]")} />
                                     </button>
-                                    <Link href="/dashboard/vcard-links" className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-xs font-bold">
-                                        <ArrowLeft size={14} /> Back
+                                    <Link href="/dashboard/vcard-links" className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg sm:rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-xs font-bold">
+                                        <ArrowLeft size={14} /> <span className="hidden xs:inline">Back</span>
                                     </Link>
                                 </div>
                             </div>
@@ -231,28 +231,46 @@ export default function VcardEditorClient({ slug: id }: Props) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                    <div className="bg-white dark:bg-slate-900/50 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl">
+                <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                    <div className="bg-white dark:bg-slate-900/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Your Digital Vcard URL</label>
-                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/80 p-1 pl-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                            <Globe size={14} className="text-slate-400" />
-                            <span className="text-sm font-bold text-slate-400">botchat.io/</span>
-                            <input value={vcardSlug} onChange={(e) => setDraft({...draft, url: e.target.value})} className="bg-transparent text-sm font-bold text-slate-900 dark:text-white flex-1 outline-none" />
+                        <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 dark:bg-slate-800/80 p-1 pl-3 sm:pl-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                            <Globe size={14} className="text-slate-400 shrink-0" />
+                            <span className="text-xs sm:text-sm font-bold text-slate-400 shrink-0">botchat.io/</span>
+                            <input value={vcardSlug} onChange={(e) => setDraft({...draft, url: e.target.value})} className="bg-transparent text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex-1 outline-none min-w-0" />
                             <button
                                 onClick={() => {
                                     navigator?.clipboard?.writeText(shortUrl);
                                     setCopied(true);
                                     setTimeout(() => setCopied(false), 2000);
                                 }}
-                                className={cn("px-6 py-2 rounded-lg font-bold text-xs transition-all", copied ? "bg-emerald-500 text-white" : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm hover:bg-slate-50")}
+                                className={cn("px-4 sm:px-6 py-2 rounded-lg font-bold text-xs transition-all shrink-0", copied ? "bg-emerald-500 text-white" : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm hover:bg-slate-50")}
                             >
                                 {copied ? "Copied!" : "Copy URL"}
                             </button>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-                        <nav className="space-y-1.5 p-2 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl h-fit">
+                    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 sm:gap-6">
+                        <nav className="lg:hidden flex gap-1.5 p-1 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl overflow-x-auto no-scrollbar">
+                            {SECTION_META.map(({ key, label, icon: Icon }) => (
+                                <button
+                                    key={key}
+                                    onClick={() => setOpenSection(key)}
+                                    className={cn(
+                                        "flex items-center gap-1.5 px-3 py-2 rounded-lg text-left transition-all whitespace-nowrap shrink-0",
+                                        openSection === key
+                                            ? "bg-primary text-white shadow-md shadow-primary/20"
+                                            : "hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400"
+                                    )}
+                                >
+                                    <Icon size={14} />
+                                    <span className="text-[11px] font-bold">{label}</span>
+                                </button>
+                            ))}
+                        </nav>
+
+                        <nav className="hidden lg:flex flex-col gap-1.5 p-2 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl h-fit">
                             {SECTION_META.map(({ key, label, icon: Icon }) => (
                                 <button
                                     key={key}
@@ -275,18 +293,18 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             ))}
                         </nav>
 
-                        <div className="bg-white dark:bg-slate-900/50 rounded-2xl p-8 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl shadow-sm min-h-[600px]">
+                        <div className="bg-white dark:bg-slate-900/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border border-slate-100 dark:border-slate-800/50 backdrop-blur-xl shadow-sm min-h-[600px]">
                             {openSection === "vcard" && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <SectionHeader title="Basic Information" icon={User} />
                                     
-                                    <div className="flex items-center gap-6 pb-8 mb-4 border-b border-slate-100 dark:border-slate-800">
+                                    <div className="flex items-center gap-4 sm:gap-6 pb-6 sm:pb-8 mb-4 border-b border-slate-100 dark:border-slate-800">
                                         <div className="relative group">
-                                            <div className="w-20 h-20 rounded-2xl bg-slate-50 dark:bg-slate-800 overflow-hidden flex items-center justify-center text-slate-400 border border-slate-100 dark:border-slate-800">
+                                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-800 overflow-hidden flex items-center justify-center text-slate-400 border border-slate-100 dark:border-slate-800">
                                                 {draft.vcard_avatar ? (
                                                     <img src={typeof draft.vcard_avatar === 'string' ? draft.vcard_avatar : URL.createObjectURL(draft.vcard_avatar)} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <User size={24} />
+                                                    <User size={20} className="sm:size-[24px]" />
                                                 )}
                                             </div>
                                             <label className="absolute -bottom-2 -right-2 w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-all">
@@ -294,13 +312,13 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                                 <input type="file" className="hidden" onChange={(e) => setDraft({...draft, vcard_avatar: e.target.files?.[0]})} />
                                             </label>
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <div className="text-sm font-black text-slate-900 dark:text-white">Profile Avatar</div>
                                             <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Recommended size 400x400</p>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 sm:gap-x-6">
                                         <InputBlock label="First name" value={draft.vcard_first_name} onChange={(v: string) => setDraft({...draft, vcard_first_name: v})} />
                                         <InputBlock label="Last name" value={draft.vcard_last_name} onChange={(v: string) => setDraft({...draft, vcard_last_name: v})} />
                                     </div>
@@ -308,41 +326,41 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                     <InputBlock label="Email" icon={User} value={draft.vcard_email} onChange={(v: string) => setDraft({...draft, vcard_email: v})} />
                                     <InputBlock label="Website URL" icon={Globe} value={draft.vcard_url} onChange={(v: string) => setDraft({...draft, vcard_url: v})} />
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 sm:gap-x-6">
                                         <InputBlock label="Company" icon={Building2} value={draft.vcard_company} onChange={(v: string) => setDraft({...draft, vcard_company: v})} />
                                         <InputBlock label="Job title" icon={PencilLine} value={draft.vcard_job_title} onChange={(v: string) => setDraft({...draft, vcard_job_title: v})} />
                                     </div>
 
-                                    <div className="space-y-2 mb-6">
+                                    <div className="space-y-2 mb-4 sm:mb-6">
                                         <label className="text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">Birthday</label>
-                                        <input type="date" value={draft.vcard_birthday} onChange={(e) => setDraft({...draft, vcard_birthday: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white dark:bg-slate-900 text-sm outline-none" />
+                                        <input type="date" value={draft.vcard_birthday} onChange={(e) => setDraft({...draft, vcard_birthday: e.target.value})} className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl border border-slate-200 bg-white dark:bg-slate-900 text-xs sm:text-sm outline-none" />
                                     </div>
 
                                     <InputBlock label="Street address" icon={MapPin} value={draft.vcard_street} onChange={(v: string) => setDraft({...draft, vcard_street: v})} />
                                     
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 sm:gap-x-6">
                                         <InputBlock label="City" value={draft.vcard_city} onChange={(v: string) => setDraft({...draft, vcard_city: v})} />
                                         <InputBlock label="ZIP" value={draft.vcard_zip} onChange={(v: string) => setDraft({...draft, vcard_zip: v})} />
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 sm:gap-x-6">
                                         <InputBlock label="Region" value={draft.vcard_region} onChange={(v: string) => setDraft({...draft, vcard_region: v})} />
                                         <InputBlock label="Country" value={draft.vcard_country} onChange={(v: string) => setDraft({...draft, vcard_country: v})} />
                                     </div>
 
-                                    <div className="space-y-2 mb-6">
+                                    <div className="space-y-2 mb-4 sm:mb-6">
                                         <label className="text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">Note</label>
-                                        <textarea value={draft.vcard_note} onChange={(e) => setDraft({...draft, vcard_note: e.target.value})} className="w-full h-32 p-4 rounded-xl border border-slate-200 bg-white dark:bg-slate-900 text-sm outline-none resize-none" />
+                                        <textarea value={draft.vcard_note} onChange={(e) => setDraft({...draft, vcard_note: e.target.value})} className="w-full h-28 sm:h-32 p-3 sm:p-4 rounded-xl border border-slate-200 bg-white dark:bg-slate-900 text-xs sm:text-sm outline-none resize-none" />
                                     </div>
 
-                                    <div className="pt-8 border-t border-slate-100">
-                                        <div className="flex items-center justify-between mb-6">
+                                    <div className="pt-6 sm:pt-8 border-t border-slate-100">
+                                        <div className="flex items-center justify-between mb-4 sm:mb-6">
                                             <label className="text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">Phone Numbers</label>
                                             <button onClick={() => setDraft({...draft, vcard_phone_numbers: [...draft.vcard_phone_numbers, {label: "", value: ""}]})} className="text-xs text-primary font-bold hover:underline">+ Add Phone</button>
                                         </div>
-                                        <div className="space-y-6">
+                                        <div className="space-y-4 sm:space-y-6">
                                             {draft.vcard_phone_numbers.map((phone: any, idx: number) => (
-                                                <div key={idx} className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 relative">
+                                                <div key={idx} className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 relative">
                                                     <InputBlock label="Label" value={phone.label} onChange={(v: string) => {
                                                         const next = [...draft.vcard_phone_numbers];
                                                         next[idx].label = v;
@@ -353,8 +371,8 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                                         next[idx].value = v;
                                                         setDraft({...draft, vcard_phone_numbers: next});
                                                     }} />
-                                                    <button onClick={() => setDraft({...draft, vcard_phone_numbers: draft.vcard_phone_numbers.filter((_: any, i: number) => i !== idx)})} className="absolute top-4 right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
-                                                        <Trash2 size={16} />
+                                                    <button onClick={() => setDraft({...draft, vcard_phone_numbers: draft.vcard_phone_numbers.filter((_: any, i: number) => i !== idx)})} className="absolute top-3 right-3 sm:top-4 sm:right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
+                                                        <Trash2 size={14} className="sm:size-[16px]" />
                                                     </button>
                                                 </div>
                                             ))}
@@ -364,15 +382,15 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             )}
 
                             {openSection === "socials" && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <SectionHeader title="Social Links" icon={Share2} />
-                                    <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center justify-between mb-4 gap-2">
                                         <p className="text-xs text-slate-500">Manage your social media presence on your vCard.</p>
-                                        <button onClick={() => setDraft({...draft, vcard_socials: [...draft.vcard_socials, {label: "Instagram", value: ""}]})} className="text-xs text-primary font-bold hover:underline">+ Add Social</button>
+                                        <button onClick={() => setDraft({...draft, vcard_socials: [...draft.vcard_socials, {label: "Instagram", value: ""}]})} className="text-xs text-primary font-bold hover:underline shrink-0">+ Add Social</button>
                                     </div>
-                                    <div className="space-y-6">
+                                    <div className="space-y-4 sm:space-y-6">
                                         {draft.vcard_socials.map((social: any, idx: number) => (
-                                            <div key={idx} className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 relative">
+                                            <div key={idx} className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 relative">
                                                 <InputBlock label="Label" value={social.label} onChange={(v: string) => {
                                                     const next = [...draft.vcard_socials];
                                                     next[idx].label = v;
@@ -383,8 +401,8 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                                     next[idx].value = v;
                                                     setDraft({...draft, vcard_socials: next});
                                                 }} placeholder="https://..." />
-                                                <button onClick={() => setDraft({...draft, vcard_socials: draft.vcard_socials.filter((_: any, i: number) => i !== idx)})} className="absolute top-4 right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
-                                                    <Trash2 size={16} />
+                                                <button onClick={() => setDraft({...draft, vcard_socials: draft.vcard_socials.filter((_: any, i: number) => i !== idx)})} className="absolute top-3 right-3 sm:top-4 sm:right-4 text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
+                                                    <Trash2 size={14} className="sm:size-[16px]" />
                                                 </button>
                                             </div>
                                         ))}
@@ -393,25 +411,26 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             )}
 
                             {openSection === "pixels" && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <SectionHeader title="Google Analytics Integrations" icon={ActivitySquare} />
                                     {pixels.length === 0 ? (
-                                        <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
+                                        <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
                                             <p className="text-sm text-slate-500">No integrations found. Create one first in the Google Analytics section.</p>
                                         </div>
                                     ) : (
-                                        <div className="space-y-3">
+                                        <div className="space-y-2 sm:space-y-3">
                                             {pixels.map((pixel: any) => {
-                                                const isSelected = (draft.selectedPixels as number[]).includes(pixel.id || pixel.pixel_id);
+                                                const pixArr = Array.isArray(draft.selectedPixels) ? draft.selectedPixels : [];
+                                                const isSelected = pixArr.includes(pixel.id || pixel.pixel_id);
                                                 return (
-                                                    <div key={pixel.id || pixel.pixel_id} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                                        <div>
-                                                            <div className="text-sm font-bold text-slate-800">{pixel.name}</div>
-                                                            <p className="text-[11px] text-slate-500 mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                    <div key={pixel.id || pixel.pixel_id} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                                        <div className="min-w-0 flex-1 mr-2">
+                                                            <div className="text-sm font-bold text-slate-800 truncate">{pixel.name}</div>
+                                                            <p className="text-[11px] text-slate-500 mt-1 truncate">{pixel.type} — {pixel.pixel_id_value}</p>
                                                         </div>
                                                         <button
                                                             onClick={() => {
-                                                                const current = draft.selectedPixels as number[];
+                                                                const current = Array.isArray(draft.selectedPixels) ? draft.selectedPixels : [];
                                                                 const pid = pixel.id || pixel.pixel_id;
                                                                 setDraft({
                                                                     ...draft,
@@ -420,7 +439,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                                                         : [...current, pid]
                                                                 });
                                                             }}
-                                                            className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-primary" : "bg-slate-300")}
+                                                            className={cn("w-9 h-5 rounded-full relative transition-colors shrink-0", isSelected ? "bg-primary" : "bg-slate-300")}
                                                         >
                                                             <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
                                                         </button>
@@ -433,11 +452,11 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             )}
 
                             {openSection === "temporary" && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <SectionHeader title="Temporary URL" icon={CalendarClock} />
-                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 space-y-8">
+                                    <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 space-y-6 sm:space-y-8">
                                         <div className="flex items-center gap-4">
-                                            <button onClick={() => setDraft({...draft, temporaryEnabled: !draft.temporaryEnabled})} className={cn("w-9 h-5 rounded-full relative transition-colors", draft.temporaryEnabled ? "bg-primary" : "bg-slate-300")}>
+                                            <button onClick={() => setDraft({...draft, temporaryEnabled: !draft.temporaryEnabled})} className={cn("w-9 h-5 rounded-full relative transition-colors shrink-0", draft.temporaryEnabled ? "bg-primary" : "bg-slate-300")}>
                                                 <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", draft.temporaryEnabled ? "left-[18px]" : "left-[2px]")} />
                                             </button>
                                             <div>
@@ -446,7 +465,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                             </div>
                                         </div>
                                         {draft.temporaryEnabled && (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                                 <InputBlock label="Start Date" type="datetime-local" value={draft.temporaryStart} onChange={(v: string) => setDraft({...draft, temporaryStart: v})} />
                                                 <InputBlock label="End Date" type="datetime-local" value={draft.temporaryEnd} onChange={(v: string) => setDraft({...draft, temporaryEnd: v})} />
                                             </div>
@@ -470,12 +489,12 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             )}
 
                             {openSection === "protection" && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <SectionHeader title="Protection" icon={Shield} />
-                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 space-y-8">
+                                    <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 space-y-6 sm:space-y-8">
                                         <InputBlock label="Password" type="password" value={draft.password} onChange={(v: string) => setDraft({...draft, password: v})} description="Require users to enter a password before accessing the vCard." />
                                         <div className="flex items-center gap-4 pt-4 border-t border-slate-100">
-                                            <button onClick={() => setDraft({...draft, sensitiveContentWarning: !draft.sensitiveContentWarning})} className={cn("w-9 h-5 rounded-full relative transition-colors", draft.sensitiveContentWarning ? "bg-primary" : "bg-slate-300")}>
+                                            <button onClick={() => setDraft({...draft, sensitiveContentWarning: !draft.sensitiveContentWarning})} className={cn("w-9 h-5 rounded-full relative transition-colors shrink-0", draft.sensitiveContentWarning ? "bg-primary" : "bg-slate-300")}>
                                                 <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", draft.sensitiveContentWarning ? "left-[18px]" : "left-[2px]")} />
                                             </button>
                                             <div>
@@ -488,17 +507,17 @@ export default function VcardEditorClient({ slug: id }: Props) {
                             )}
 
                             {openSection === "advanced" && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <SectionHeader title="Advanced Settings" icon={Settings2} />
-                                    <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 space-y-4">
-                                        <div className="flex items-center justify-between">
+                                    <div className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 space-y-4">
+                                        <div className="flex items-center justify-between gap-2">
                                             <label className="text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">Splash Page</label>
-                                            <Link href="/dashboard/splash-pages/create" className="text-[10px] font-bold text-primary hover:underline">+ Create Splash Page</Link>
+                                            <Link href="/dashboard/splash-pages/create" className="text-[10px] font-bold text-primary hover:underline shrink-0">+ Create Splash Page</Link>
                                         </div>
                                         <select 
                                             value={draft.splash_page_id || ""} 
                                             onChange={(e) => setDraft({...draft, splash_page_id: e.target.value})} 
-                                            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-white dark:bg-slate-900 font-bold text-sm outline-none"
+                                            className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl border border-slate-200 bg-white dark:bg-slate-900 font-bold text-xs sm:text-sm outline-none"
                                         >
                                             <option value="">None</option>
                                         </select>
@@ -509,11 +528,11 @@ export default function VcardEditorClient({ slug: id }: Props) {
                         </div>
                     </div>
 
-                    <div className="flex justify-end pt-4">
+                    <div className="flex justify-end sticky bottom-4 sm:static">
                         <button 
                             onClick={onSave}
                             disabled={saveState === "saving"}
-                            className="h-12 px-12 rounded-2xl bg-primary text-white font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            className="w-full sm:w-auto h-12 px-12 rounded-xl sm:rounded-2xl bg-primary text-white font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                         >
                             {saveState === "saving" && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                             {saveState === "saved" ? "Saved!" : "Save Changes"}
