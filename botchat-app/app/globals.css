@@ -55,13 +55,23 @@
    Foreground  #fdf2f8  warm off-white
    Muted fg    #9a7da0  muted rose secondary text
 ═══════════════════════════════════════════════════════════════ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   transition-property: background-color, border-color, color, box-shadow, fill, stroke;
   transition-duration: 0.22s;
   transition-timing-function: ease;
 }
 
-img, svg, video, [class*="animate-"], .page-enter, .slide-up, .float-anim, .pulse-dot, .shimmer {
+img,
+svg,
+video,
+[class*="animate-"],
+.page-enter,
+.slide-up,
+.float-anim,
+.pulse-dot,
+.shimmer {
   transition-property: none !important;
 }
 
@@ -407,6 +417,21 @@ html.light :root,
     background: color-mix(in srgb, var(--primary) 28%, transparent);
     color: var(--foreground);
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR UTILITIES
+═══════════════════════════════════════════════════════════════ */
+.no-scrollbar {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 /* ═══════════════════════════════════════════════════════════════

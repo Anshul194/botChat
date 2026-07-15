@@ -1283,17 +1283,7 @@ function BioLinkBuilderContent() {
                             <BarChart2 size={18} />
                         </button>
 
-                        {/* Preview Toggle Button (Eye) */}
-                        <button
-                            onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
-                            className={cn(
-                                "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm xl:hidden",
-                                activePanel === 'preview' ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white"
-                            )}
-                            title={activePanel === 'preview' ? "Back to Editor" : "Live Preview"}
-                        >
-                            {activePanel === 'preview' ? <Edit3 size={18} /> : <Eye size={18} />}
-                        </button>
+
 
                         <button onClick={handleShareLink} className="h-9 px-4 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20">
                             {copiedLink ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
@@ -1337,7 +1327,7 @@ function BioLinkBuilderContent() {
                     "bg-white dark:bg-slate-950 flex flex-col h-full z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl shrink-0",
                     (activePanel === "preview") ? "hidden" : "flex w-full xl:flex-1",
                 )}>
-                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-32">
+                    <div className="flex-1 overflow-y-auto no-scrollbar px-4 sm:px-6 pt-6 sm:pt-8 pb-32">
 
                         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 px-4 py-3 shadow-sm">
                             <div>
@@ -1851,32 +1841,32 @@ function BioLinkBuilderContent() {
                                                                         </div>
                                                                     ) : (
                                                                         <div className="space-y-3">
-                                                                             {gaPixels.map((pixel: any) => {
+                                                                            {gaPixels.map((pixel: any) => {
                                                                                 const pid = Number(pixel.id || pixel.pixel_id);
                                                                                 const isSelected = advancedSettings.pixelsEnabled.includes(pid);
-                                                                            return (
-                                                                                <div key={pid} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                                                                    <div>
-                                                                                        <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{pixel.name}</div>
-                                                                                        <p className="text-[11px] text-slate-500 mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                                                return (
+                                                                                    <div key={pid} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                                                                        <div>
+                                                                                            <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{pixel.name}</div>
+                                                                                            <p className="text-[11px] text-slate-500 mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                                                        </div>
+                                                                                        <button
+                                                                                            onClick={() => {
+                                                                                                setAdvancedSettings({
+                                                                                                    ...advancedSettings,
+                                                                                                    pixelsEnabled: isSelected
+                                                                                                        ? advancedSettings.pixelsEnabled.filter((id: number) => id !== pid)
+                                                                                                        : [...advancedSettings.pixelsEnabled, pid]
+                                                                                                });
+                                                                                            }}
+                                                                                            className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-[#1877F2]" : "bg-slate-300 dark:bg-slate-600")}
+                                                                                        >
+                                                                                            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
+                                                                                        </button>
                                                                                     </div>
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            setAdvancedSettings({
-                                                                                                ...advancedSettings,
-                                                                                                pixelsEnabled: isSelected
-                                                                                                    ? advancedSettings.pixelsEnabled.filter((id: number) => id !== pid)
-                                                                                                    : [...advancedSettings.pixelsEnabled, pid]
-                                                                                            });
-                                                                                        }}
-                                                                                        className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-[#1877F2]" : "bg-slate-300 dark:bg-slate-600")}
-                                                                                    >
-                                                                                        <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
-                                                                                    </button>
-                                                                                </div>
-                                                                            );
-                                                                        })}
-                                                                    </div>
+                                                                                );
+                                                                            })}
+                                                                        </div>
                                                                     );
                                                                 })()}
                                                             </div>)}
@@ -3887,6 +3877,17 @@ function BioLinkBuilderContent() {
                     </div>
                 )
             }
+            {/* 📱 MOBILE PREVIEW FAB */}
+            <button
+                onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
+                className={cn(
+                    "xl:hidden fixed right-6 z-[600] w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300",
+                    isUploadingImage ? "bottom-20" : "bottom-6"
+                )}
+                title={activePanel === 'preview' ? "Back to Editor" : "Live Preview"}
+            >
+                {activePanel === 'preview' ? <Edit3 size={20} /> : <Eye size={20} />}
+            </button>
         </div >
     );
 }
