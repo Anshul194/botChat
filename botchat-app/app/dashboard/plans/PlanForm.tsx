@@ -129,27 +129,27 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
         <div className="min-h-screen bg-background">
             {/* Top Navigation Bar */}
             <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border">
-                <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={onClose}
-                            className="gap-2 text-muted-foreground hover:text-foreground font-medium"
+                            className="gap-2 text-muted-foreground hover:text-foreground font-medium shrink-0"
                         >
                             <ArrowLeft className="w-4 h-4" />
-                            Plans
+                            <span className="hidden xs:inline">Plans</span>
                         </Button>
-                        <span className="text-muted-foreground">/</span>
-                        <span className="text-sm font-semibold">
+                        <span className="text-muted-foreground shrink-0">/</span>
+                        <span className="text-sm font-semibold truncate min-w-0">
                             {isEdit ? `Edit: ${initialData?.name}` : "New Plan"}
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                         <Badge
                             variant="outline"
                             className={cn(
-                                "text-xs font-medium",
+                                "hidden text-xs font-medium sm:inline-flex",
                                 formData.status
                                     ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800"
                                     : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"
@@ -177,10 +177,10 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-6 py-8">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
                 {/* Page Title */}
-                <div className="mb-8">
-                    <h1 className="text-2xl font-bold tracking-tight">
+                <div className="mb-6 sm:mb-8">
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
                         {isEdit ? "Edit Subscription Plan" : "Create Subscription Plan"}
                     </h1>
                     <p className="text-muted-foreground mt-1 text-sm">
@@ -190,16 +190,16 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                     </p>
                 </div>
 
-                <div className="flex gap-8">
+                <div className="flex flex-col gap-6 md:flex-row md:gap-8">
                     {/* Left Sidebar — Tab Nav */}
-                    <div className="w-48 shrink-0">
-                        <nav className="space-y-1 sticky top-24">
+                    <div className="w-full md:w-48 md:shrink-0">
+                        <nav className="flex gap-2 overflow-x-auto no-scrollbar pb-1 md:flex-col md:space-y-1 md:overflow-visible md:pb-0 md:sticky md:top-24">
                             {tabs.map(tab => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={cn(
-                                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left",
+                                        "flex shrink-0 items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left md:w-full",
                                         activeTab === tab.id
                                             ? "bg-primary text-primary-foreground"
                                             : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -245,7 +245,7 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                                         </Section>
 
                                         <Section title="Pricing" description="Set the billing amount and cycle for this plan.">
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
                                                 <Field label="Price (INR)" required>
                                                     <div className="relative">
                                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -337,7 +337,7 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                                 {activeTab === "features" && (
                                     <div className="space-y-6">
                                         <Section title="Usage Limits" description="Set the resource quotas included in this plan.">
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
                                                 {[
                                                     { key: "connect_account", label: "Connected Accounts", icon: Users },
                                                     { key: "message_credit", label: "Message Credits", icon: CreditCard },
@@ -482,7 +482,7 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                                                                     />
                                                                 </div>
                                                             </Field>
-                                                            <div className="grid grid-cols-2 gap-4">
+                                                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
                                                                 <Field label="Start Date">
                                                                     <Input
                                                                         type="date"
@@ -526,11 +526,11 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                         </AnimatePresence>
 
                         {/* Bottom action bar */}
-                        <div className="flex items-center justify-between pt-6 mt-6 border-t border-border">
-                            <Button variant="ghost" onClick={onClose} className="text-muted-foreground">
+                        <div className="flex flex-col-reverse gap-3 pt-6 mt-6 border-t border-border sm:flex-row sm:items-center sm:justify-between">
+                            <Button variant="ghost" onClick={onClose} className="w-full text-muted-foreground sm:w-auto">
                                 Cancel
                             </Button>
-                            <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2 min-w-[130px]">
+                            <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full gap-2 min-w-[130px] sm:w-auto">
                                 {isSubmitting ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
                                 ) : (
@@ -554,7 +554,7 @@ function Section({ title, description, children }: {
     children: React.ReactNode;
 }) {
     return (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6 space-y-4">
             <div className="space-y-1 pb-2 border-b border-border">
                 <h3 className="text-sm font-semibold">{title}</h3>
                 {description && <p className="text-xs text-muted-foreground">{description}</p>}
