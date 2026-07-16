@@ -12,7 +12,7 @@ export function Section({ title, desc, children, icon, rightContent }: {
     rightContent?: React.ReactNode;
 }) {
     return (
-        <div className="glass-card rounded-2xl p-6 space-y-5">
+        <div className="glass-card rounded-2xl p-4 sm:p-6 space-y-5">
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     {icon && <div className="shrink-0">{icon}</div>}
