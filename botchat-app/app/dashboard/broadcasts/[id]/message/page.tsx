@@ -830,17 +830,17 @@ export default function MessageBuilderPage() {
         <div className="max-w-7xl mx-auto space-y-6">
 
             {/* Wizard Progress Bar */}
-            <div className="flex items-center justify-between bg-white dark:bg-neutral-900 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800">
-                <div className="flex items-center gap-3 text-sm font-medium text-neutral-500">
-                    <span className="flex items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> Campaign</span>
-                    <ChevronRight className="w-3 h-3 text-neutral-300" />
-                    <span className="flex items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> Audience</span>
-                    <ChevronRight className="w-3 h-3 text-neutral-300" />
-                    <span className="flex items-center gap-1.5 text-primary font-bold"><MessageSquare className="w-4 h-4" /> Message</span>
-                    <ChevronRight className="w-3 h-3 text-neutral-300" />
-                    <span className="text-neutral-400">Review & Schedule</span>
+            <div className="flex flex-col gap-3 bg-white dark:bg-neutral-900 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 sm:flex-row sm:items-center sm:justify-between">
+                <div className="-mx-4 flex items-center gap-3 overflow-x-auto px-4 text-sm font-medium text-neutral-500 no-scrollbar sm:mx-0 sm:px-0">
+                    <span className="flex shrink-0 items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> Campaign</span>
+                    <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
+                    <span className="flex shrink-0 items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> Audience</span>
+                    <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
+                    <span className="flex shrink-0 items-center gap-1.5 text-primary font-bold"><MessageSquare className="w-4 h-4" /> Message</span>
+                    <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
+                    <span className="shrink-0 text-neutral-400">Review &amp; Schedule</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex shrink-0 items-center gap-3">
                     <span className={`text-xs ${isDirty ? "text-amber-500" : "text-emerald-500"}`}>
                         {autosaveStatus}
                     </span>

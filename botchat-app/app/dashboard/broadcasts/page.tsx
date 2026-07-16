@@ -240,7 +240,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
 
             {/* Continue arrow */}
             <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <ChevronRight className="w-5 h-5" style={{ color: "var(--brand-purple)" }} />
+                <ChevronRight className="w-5 h-5" style={{ color: "#FF2D78" }} />
             </div>
         </div>
     );
@@ -316,20 +316,20 @@ export default function BroadcastsPage() {
         <div className="space-y-6 max-w-[1400px] p-4 sm:p-6">
 
             {/* Header */}
-            <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 data-tour="page-heading" className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>
+                    <h1 data-tour="page-heading" className="text-xl sm:text-2xl font-bold" style={{ color: "var(--foreground)" }}>
                         Messenger Broadcasts
                     </h1>
-                    <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="text-xs sm:text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
                         Send bulk Messenger campaigns to your subscribers
                     </p>
                 </div>
                 {canAccess("broadcast") && (
                     <button
                         onClick={() => setShowCreate(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-                        style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 4px 15px rgba(124,58,237,0.4)" }}
+                        className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shrink-0"
+                        style={{ background: "var(--brand-gradient)", color: "white", boxShadow: "0 4px 15px rgba(255,45,120,0.35)" }}
                     >
                         <Plus className="w-4 h-4" /> New Campaign
                     </button>
@@ -359,8 +359,8 @@ export default function BroadcastsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap items-center gap-3">
-                <div className="relative flex-1 min-w-[200px] max-w-xs">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
+                <div className="relative w-full sm:flex-1 sm:min-w-[200px] sm:max-w-xs">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
                     <input
                         type="text"
@@ -372,12 +372,12 @@ export default function BroadcastsPage() {
                     />
                 </div>
 
-                <div className="flex items-center rounded-xl p-1 gap-1" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
+                <div className="flex items-center rounded-xl p-1 gap-1 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-1 sm:overflow-visible" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
                     {(["all", "draft", "scheduled", "sent", "failed"] as const).map((s) => (
                         <button
                             key={s}
                             onClick={() => setStatusFilter(s)}
-                            className="px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-all"
+                            className="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium capitalize transition-all whitespace-nowrap shrink-0"
                             style={statusFilter === s
                                 ? { background: "var(--brand-gradient)", color: "white" }
                                 : { color: "var(--muted-foreground)" }
@@ -388,21 +388,21 @@ export default function BroadcastsPage() {
                     ))}
                 </div>
 
-                <span className="text-sm ml-auto" style={{ color: "var(--muted-foreground)" }}>
+                <span className="text-xs sm:text-sm sm:ml-auto" style={{ color: "var(--muted-foreground)" }}>
                     {filtered.length} campaign{filtered.length !== 1 ? "s" : ""}
                 </span>
             </div>
 
             {/* Campaigns Grid */}
             {isLoading ? (
-                <div className="flex items-center justify-center py-24">
-                    <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--brand-purple)" }} />
+                <div className="flex items-center justify-center py-16 sm:py-24">
+                    <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FF2D78" }} />
                 </div>
             ) : filtered.length === 0 ? (
-                <div className="text-center py-24">
+                <div className="text-center py-16 sm:py-24">
                     <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                        style={{ background: "rgba(124,58,237,0.1)", border: "1px dashed rgba(124,58,237,0.3)" }}>
-                        <Radio className="w-8 h-8" style={{ color: "var(--brand-purple)" }} />
+                        style={{ background: "rgba(255,45,120,0.1)", border: "1px dashed rgba(255,45,120,0.3)" }}>
+                        <Radio className="w-8 h-8" style={{ color: "#FF2D78" }} />
                     </div>
                     <p className="font-semibold" style={{ color: "var(--foreground)" }}>No campaigns yet</p>
                     <p className="text-sm mt-1 mb-5" style={{ color: "var(--muted-foreground)" }}>
@@ -442,8 +442,8 @@ export default function BroadcastsPage() {
                             style={{ borderStyle: "dashed", borderColor: "var(--glass-border)" }}
                         >
                             <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                                style={{ background: "rgba(124,58,237,0.1)", border: "1px dashed rgba(124,58,237,0.3)" }}>
-                                <Plus className="w-6 h-6" style={{ color: "var(--brand-purple)" }} />
+                                style={{ background: "rgba(255,45,120,0.1)", border: "1px dashed rgba(255,45,120,0.3)" }}>
+                                <Plus className="w-6 h-6" style={{ color: "#FF2D78" }} />
                             </div>
                             <span className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>New Broadcast</span>
                         </button>

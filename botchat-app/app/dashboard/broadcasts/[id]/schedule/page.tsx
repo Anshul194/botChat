@@ -98,16 +98,16 @@ export default function ReviewAndSchedulePage() {
     return (
         <div className="max-w-6xl mx-auto space-y-6 p-4 sm:p-6">
             {/* Wizard Progress Bar */}
-            <div className="flex items-center justify-between flex-wrap gap-4 glass-card rounded-xl px-5 py-4"
+            <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4 glass-card rounded-xl px-4 sm:px-5 py-3 sm:py-4"
                 style={{ border: "1px solid var(--glass-border)" }}>
-                <div className="flex items-center gap-3 text-sm font-medium flex-wrap">
-                    <span className="flex items-center gap-1.5 text-emerald-500"><CheckCircle2 className="w-4 h-4" /> Campaign</span>
-                    <ChevronRight className="w-3 h-3 text-neutral-300" />
-                    <span className="flex items-center gap-1.5 text-emerald-500"><CheckCircle2 className="w-4 h-4" /> Audience</span>
-                    <ChevronRight className="w-3 h-3 text-neutral-300" />
-                    <span className="flex items-center gap-1.5 text-emerald-500"><CheckCircle2 className="w-4 h-4" /> Message</span>
-                    <ChevronRight className="w-3 h-3 text-neutral-300" />
-                    <span className="flex items-center gap-1.5 font-bold" style={{ color: "var(--brand-purple)" }}><Calendar className="w-4 h-4" /> Review & Schedule</span>
+                <div className="-mx-4 flex items-center gap-3 overflow-x-auto px-4 text-sm font-medium no-scrollbar sm:mx-0 sm:px-0">
+                    <span className="flex shrink-0 items-center gap-1.5 text-emerald-500"><CheckCircle2 className="w-4 h-4" /> Campaign</span>
+                    <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
+                    <span className="flex shrink-0 items-center gap-1.5 text-emerald-500"><CheckCircle2 className="w-4 h-4" /> Audience</span>
+                    <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
+                    <span className="flex shrink-0 items-center gap-1.5 text-emerald-500"><CheckCircle2 className="w-4 h-4" /> Message</span>
+                    <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
+                    <span className="flex shrink-0 items-center gap-1.5 font-bold" style={{ color: "var(--brand-purple)" }}><Calendar className="w-4 h-4" /> Review &amp; Schedule</span>
                 </div>
             </div>
 
@@ -244,18 +244,18 @@ export default function ReviewAndSchedulePage() {
                     </Card>
                 )}
 
-                <div className="flex items-center justify-between gap-4 pt-6 border-t" style={{ borderColor: "var(--glass-border)" }}>
-                    <Button variant="ghost" onClick={() => router.back()} disabled={isScheduling}>
+                <div className="flex flex-col gap-3 pt-6 border-t sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--glass-border)" }}>
+                    <Button variant="ghost" onClick={() => router.back()} disabled={isScheduling} className="w-full sm:w-auto">
                         Back to Message
                     </Button>
-                    <div className="flex gap-3">
-                        <Button variant="outline" disabled={!review_passed || isScheduling}>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <Button variant="outline" disabled={!review_passed || isScheduling} className="w-full sm:w-auto">
                             <Clock className="w-4 h-4 mr-2" /> Schedule for Later
                         </Button>
                         <Button
                             onClick={handleSend}
                             disabled={!review_passed || isScheduling}
-                            className="bg-brand-purple hover:bg-brand-purple/90 text-white shadow-lg shadow-brand-purple/20"
+                            className="w-full bg-brand-purple hover:bg-brand-purple/90 text-white shadow-lg shadow-brand-purple/20 sm:w-auto"
                         >
                             {isScheduling ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
                             Mark Ready to Send
