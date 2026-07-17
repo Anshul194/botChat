@@ -604,7 +604,7 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
-                                    <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+                                    <button className="flex w-full items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all sm:w-auto"
                                         style={{ background: "var(--brand-gradient)", color: "white" }}>
                                         <Save className="w-4 h-4" />Save Changes
                                     </button>
@@ -626,7 +626,7 @@ export default function SettingsPage() {
                                 <InputField label="New Password" type="password" placeholder="Min 8 characters" value={passwordForm.password} onChange={(e: any) => setPasswordForm(p => ({ ...p, password: e.target.value }))} />
                                 <InputField label="Confirm Password" type="password" placeholder="Repeat new password" value={passwordForm.password_confirmation} onChange={(e: any) => setPasswordForm(p => ({ ...p, password_confirmation: e.target.value }))} />
                                 <div className="flex justify-end">
-                                    <button onClick={handleChangePassword} disabled={authLoading} className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+                                    <button onClick={handleChangePassword} disabled={authLoading} className="w-full px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50 sm:w-auto"
                                         style={{ background: "var(--brand-gradient)", color: "white" }}>{authLoading ? "Updating..." : "Update Password"}</button>
                                 </div>
                             </Section>
@@ -687,8 +687,8 @@ export default function SettingsPage() {
                                 >
                                 </Section>
 
-                                <div className="flex justify-end pt-4">
-                                    <button type="submit" disabled={isSavingSocialLogin} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
+                                    <button type="submit" disabled={isSavingSocialLogin} className="flex w-full items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
                                         style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingSocialLogin ? 0.7 : 1 }}>
                                         <Save className="w-4 h-4" /> {isSavingSocialLogin ? "Saving..." : "Save Configuration"}
                                     </button>
@@ -767,8 +767,8 @@ export default function SettingsPage() {
                                     </div>
                                 </Section>
 
-                                <div className="flex justify-end pt-4">
-                                    <button type="submit" className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
+                                    <button type="submit" className="flex w-full items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
                                         style={{ background: "var(--brand-gradient)", color: "white" }}>
                                         <Save className="w-4 h-4" /> Save Global OAuth Config
                                     </button>
@@ -798,8 +798,8 @@ export default function SettingsPage() {
                                             <InputField label="Sender Name" value={emailForm.mail_from_name} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_name: e.target.value })} placeholder="App Name" />
                                         </div>
                                     </div>
-                                    <div className="flex justify-end pt-4">
-                                        <button type="submit" disabled={isSavingEmail} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                    <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
+                                        <button type="submit" disabled={isSavingEmail} className="flex w-full items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
                                             style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingEmail ? 0.7 : 1 }}>
                                             <Save className="w-4 h-4" /> {isSavingEmail ? "Saving..." : "Save Configuration"}
                                         </button>
@@ -957,9 +957,9 @@ export default function SettingsPage() {
                                 </div>
 
                                 {/* Save */}
-                                <div className="flex justify-end pt-2">
+                                <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
                                     <button type="submit" disabled={isLoadingFacebook}
-                                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 shadow-md"
+                                        className="inline-flex w-full items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90 shadow-md sm:w-auto"
                                         style={{ background: "#1877F2", opacity: isLoadingFacebook ? 0.7 : 1 }}>
                                         <Save className="w-4 h-4" />
                                         {isLoadingFacebook ? "Saving..." : "Save"}
@@ -1021,12 +1021,12 @@ export default function SettingsPage() {
                                     </div>
 
                                     {(ai?.canEdit !== false) && (
-                                        <div className="flex justify-end pt-2 gap-3">
-                                            <button type="button" onClick={handleTestAiConnection} disabled={isTestingAi} className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-opacity"
+                                        <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+                                            <button type="button" onClick={handleTestAiConnection} disabled={isTestingAi} className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold transition-opacity sm:w-auto"
                                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)", opacity: isTestingAi ? 0.7 : 1 }}>
                                                 {isTestingAi ? "Testing..." : "Test Connection"}
                                             </button>
-                                            <button disabled={isLoadingAi} type="submit" className="px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm"
+                                            <button disabled={isLoadingAi} type="submit" className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm sm:w-auto"
                                                 style={{ background: "var(--brand-gradient)", color: "white", opacity: isLoadingAi ? 0.7 : 1 }}>
                                                 {isLoadingAi ? "Saving AI Settings..." : "Save AI Engine"}
                                             </button>
@@ -1047,8 +1047,8 @@ export default function SettingsPage() {
                                     border: paymentForm.razorpaysetting === 'on' ? "1px solid rgba(99,102,241,0.3)" : "1px solid var(--glass-border)",
                                     boxShadow: paymentForm.razorpaysetting === 'on' ? "0 0 0 1px rgba(99,102,241,0.1)" : "none"
                                 }}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="flex items-center gap-4">
                                             <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300" style={{
                                                 background: paymentForm.razorpaysetting === 'on' ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "rgba(99,102,241,0.1)",
                                                 boxShadow: paymentForm.razorpaysetting === 'on' ? "0 4px 12px rgba(99,102,241,0.3)" : "none"
@@ -1119,8 +1119,8 @@ export default function SettingsPage() {
                                     </div>
                                 )}
 
-                                <div className="flex justify-end pt-4">
-                                    <button type="submit" disabled={isSavingPayment} className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
+                                    <button type="submit" disabled={isSavingPayment} className="flex w-full items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
                                         style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingPayment ? 0.7 : 1 }}>
                                         <Check className="w-4 h-4" /> {isSavingPayment ? "Saving..." : "Save Payment Settings"}
                                     </button>
@@ -1148,8 +1148,8 @@ export default function SettingsPage() {
                                             <InputField label="AWS Secret Access Key" type="password" value={storageForm.s3_secret} onChange={(e: any) => setStorageForm({ ...storageForm, s3_secret: e.target.value })} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
                                         </div>
                                     </div>
-                                    <div className="flex justify-end pt-4">
-                                        <button type="submit" disabled={isSavingStorage} className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                                    <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
+                                        <button type="submit" disabled={isSavingStorage} className="w-full px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
                                             style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingStorage ? 0.7 : 1 }}>
                                             {isSavingStorage ? "Saving..." : "Save Credentials"}
                                         </button>

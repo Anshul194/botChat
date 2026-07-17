@@ -214,33 +214,33 @@ export default function BroadcastAudiencePage() {
         <div className="max-w-7xl mx-auto space-y-6 p-4 sm:p-6">
 
             {/* Wizard Progress */}
-            <div className="flex items-center justify-between flex-wrap gap-4 glass-card rounded-xl px-5 py-4"
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 glass-card rounded-xl px-4 sm:px-5 py-3 sm:py-4"
                 style={{ border: "1px solid var(--glass-border)" }}>
-                <div className="flex items-center gap-3 text-sm font-medium flex-wrap">
-                    <span className="flex items-center gap-1.5" style={{ color: "#10b981" }}>
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-medium overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap shrink-0" style={{ color: "#10b981" }}>
                         <CheckCircle2 className="w-4 h-4" /> Campaign
                     </span>
-                    <ChevronRight className="w-3 h-3" style={{ color: "var(--glass-border)" }} />
-                    <span className="flex items-center gap-1.5 font-bold" style={{ color: "var(--brand-purple)" }}>
+                    <ChevronRight className="w-3 h-3 shrink-0" style={{ color: "var(--glass-border)" }} />
+                    <span className="flex items-center gap-1.5 font-bold whitespace-nowrap shrink-0" style={{ color: "#FF2D78" }}>
                         <Users className="w-4 h-4" /> Audience
                     </span>
-                    <ChevronRight className="w-3 h-3" style={{ color: "var(--glass-border)" }} />
-                    <span style={{ color: "var(--muted-foreground)" }}>Message</span>
-                    <ChevronRight className="w-3 h-3" style={{ color: "var(--glass-border)" }} />
-                    <span style={{ color: "var(--muted-foreground)" }}>Review & Schedule</span>
+                    <ChevronRight className="w-3 h-3 shrink-0" style={{ color: "var(--glass-border)" }} />
+                    <span className="whitespace-nowrap shrink-0" style={{ color: "var(--muted-foreground)" }}>Message</span>
+                    <ChevronRight className="w-3 h-3 shrink-0" style={{ color: "var(--glass-border)" }} />
+                    <span className="whitespace-nowrap shrink-0" style={{ color: "var(--muted-foreground)" }}>Review &amp; Schedule</span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>
+                <div className="flex items-center gap-3 shrink-0">
+                    <p className="text-xs sm:text-sm font-bold truncate max-w-full" style={{ color: "var(--foreground)" }}>
                         {campaign?.name}
                     </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
                 {/* LEFT: Filters */}
-                <div className="lg:col-span-2 space-y-5">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-5 order-2 lg:order-1">
 
                     {/* Channel Selector */}
                     <div className="glass-card rounded-2xl p-5" style={{ border: "1px solid var(--glass-border)" }}>
@@ -397,7 +397,7 @@ export default function BroadcastAudiencePage() {
                 </div>
 
                 {/* RIGHT: Preview + Actions */}
-                <div className="space-y-4">
+                <div className="space-y-4 order-1 lg:order-2 lg:sticky lg:top-6 self-start">
                     <AudienceSizeCard count={audienceCount} isLoading={previewLoading} />
 
                     <button

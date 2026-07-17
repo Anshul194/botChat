@@ -442,14 +442,21 @@ export default function PostStudioPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto bg-[var(--background)]/50">
+        <div className="flex-1 overflow-y-auto bg-[var(--background)]/50 p-4 sm:p-6">
           {filteredCampaigns.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center opacity-40 grayscale pointer-events-none">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <Send className="w-10 h-10 text-primary" />
+            <div className="h-[300px] sm:h-[400px] flex flex-col items-center justify-center text-center p-6 sm:p-8 rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-[var(--border)]">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
+                <Send className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
-              <h3 className="text-xl font-bold">No campaigns found</h3>
-              <p className="text-sm">Start by creating your first {postType} campaign</p>
+              <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">No campaigns found</h3>
+              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] max-w-xs mx-auto mb-6 sm:mb-8">
+                {search ? "Try adjusting your search query." : `Start by creating your first ${postType} campaign.`}
+              </p>
+              {!search && (
+                <Button onClick={() => setStep('studio')} className="rounded-xl sm:rounded-2xl h-10 sm:h-12 px-6 sm:px-8 text-[11px] sm:text-[13px] font-black uppercase tracking-widest">
+                  <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" /> New Campaign
+                </Button>
+              )}
             </div>
           ) : listView === 'card' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -516,9 +523,9 @@ export default function PostStudioPage() {
               ))}
             </div>
           ) : (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse hidden sm:table">
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-[var(--border)] bg-[var(--background)]/40">
                     <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Campaign</th>
@@ -586,10 +593,11 @@ export default function PostStudioPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
 
-              <div className="block sm:hidden">
+              <div className="sm:hidden flex flex-col gap-3 p-3">
                 {filteredCampaigns.map((camp: any, idx: number) => (
-                  <div key={camp.id || idx} className="px-3 sm:px-0 py-3.5 border-b border-[var(--border)]/40 last:border-none active:bg-[var(--background)] transition-colors">
+                  <div key={camp.id || idx} className="bg-[var(--background)] border border-[var(--border)] rounded-2xl p-3 active:bg-[var(--card)] transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -621,7 +629,6 @@ export default function PostStudioPage() {
                     )}
                   </div>
                 ))}
-              </div>
               </div>
             </div>
           )}

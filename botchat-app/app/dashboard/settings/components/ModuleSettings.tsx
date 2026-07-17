@@ -231,9 +231,9 @@ export default function ModuleSettings({ module, title, icon: Icon, color }: Mod
                         </div>
                     )}
 
-                    <div className="flex justify-end pt-4">
+                    <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
                         <button type="submit" disabled={saving}
-                            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm"
+                            className="flex w-full items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
                             style={{ background: "var(--brand-gradient)", color: "white", opacity: saving ? 0.7 : 1 }}>
                             <Check className="w-4 h-4" /> {saving ? "Saving..." : "Save Settings"}
                         </button>

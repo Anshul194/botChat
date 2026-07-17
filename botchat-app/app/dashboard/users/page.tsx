@@ -32,6 +32,79 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date";
 import FeatureGate from "@/components/subscription/FeatureGate";
 
+function UserMobileCard({ user, onView, onAssignPlan, onToggleStatus }: {
+    user: any;
+    onView: () => void;
+    onAssignPlan: () => void;
+    onToggleStatus: (e: React.MouseEvent) => void;
+}) {
+    const initials = user.name.split(' ').map((n: string) => n[0]).join('');
+    return (
+        <div className="bg-card/40 border border-white/5 rounded-2xl overflow-hidden shadow-sm">
+            <button onClick={onView} className="w-full text-left px-4 pt-4 pb-3">
+                <div className="flex items-center gap-3 mb-2.5">
+                    <Avatar className="h-11 w-11 border-2 border-background shadow-lg shrink-0">
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback className="bg-primary/10 text-xs font-black text-primary">
+                            {initials}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-black leading-none truncate">{user.name}</h4>
+                        <p className="text-[11px] text-muted-foreground mt-1 truncate flex items-center gap-1">
+                            <Mail className="h-2.5 w-2.5 shrink-0" /> {user.email}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1.5 text-[10px] font-bold text-muted-foreground">
+                            <Phone className="h-2.5 w-2.5" /> {user.phone}
+                            <span className="opacity-40">•</span>
+                            <Globe className="h-2.5 w-2.5" /> {user.country}
+                        </div>
+                    </div>
+                    <div className={cn(
+                        "flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border shrink-0",
+                        user.active_status
+                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                            : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                    )}>
+                        <div className={cn("w-1.5 h-1.5 rounded-full", user.active_status ? "bg-emerald-500" : "bg-rose-500")} />
+                        {user.active_status ? "ACTIVE" : "RESTRICTED"}
+                    </div>
+                </div>
+                <div className="flex items-center justify-between">
+                    <Badge variant="outline" className={cn(
+                        "px-1.5 py-0 text-[9px] font-black uppercase tracking-wider",
+                        user.type === 'Super Admin' ? "border-indigo-500/30 text-indigo-500 bg-indigo-500/5" : "border-emerald-500/30 text-emerald-500 bg-emerald-500/5"
+                    )}>
+                        {user.type}
+                    </Badge>
+                    <span className="text-[9px] text-muted-foreground font-bold flex items-center gap-1">
+                        <Calendar className="h-2.5 w-2.5" />
+                        {formatDate(new Date(user.created_at), 'MMM D, YYYY')}
+                    </span>
+                </div>
+            </button>
+
+            <div className="border-t border-white/5 grid grid-cols-3 divide-x divide-white/5">
+                <button onClick={onView} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-primary hover:bg-primary/5 transition-colors">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span className="text-[8px] font-bold uppercase tracking-wide">View</span>
+                </button>
+                <button onClick={onAssignPlan} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span className="text-[8px] font-bold uppercase tracking-wide">Plan</span>
+                </button>
+                <button onClick={onToggleStatus} className={cn(
+                    "py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors",
+                    user.active_status ? "text-rose-500 hover:bg-rose-500/5" : "text-emerald-500 hover:bg-emerald-500/5"
+                )}>
+                    {user.active_status ? <UserMinus className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+                    <span className="text-[8px] font-bold uppercase tracking-wide">{user.active_status ? "Restrict" : "Activate"}</span>
+                </button>
+            </div>
+        </div>
+    );
+}
+
 export default function UserManagementPage() {
     const dispatch = useAppDispatch();
     const { settings } = useTenantSettings();
@@ -187,10 +260,10 @@ export default function UserManagementPage() {
                     <p className="text-muted-foreground text-sm">Monitor and control access for all platform users</p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                     <FeatureGate feature="team_member" hide>
                         <Button
-                            className="rounded-xl font-bold shadow-lg shadow-primary/20"
+                            className="w-full sm:w-auto rounded-xl font-bold shadow-lg shadow-primary/20"
                             onClick={() => setIsAddUserOpen(true)}
                         >
                             <UserPlus className="mr-2 h-4 w-4" />
@@ -277,7 +350,8 @@ export default function UserManagementPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="overflow-x-auto">
+                    {/* Desktop Table */}
+                    <div className="overflow-x-auto hidden md:block">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/5 bg-muted/20">
@@ -416,6 +490,35 @@ export default function UserManagementPage() {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden flex flex-col gap-3 p-4 sm:p-6">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center gap-3 py-16">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Loading Users...</p>
+                            </div>
+                        ) : filteredUsers.length === 0 ? (
+                            <div className="flex flex-col items-center gap-3 py-16 opacity-50">
+                                <Users className="h-12 w-12" />
+                                <p className="text-sm font-bold uppercase tracking-widest">No users found</p>
+                            </div>
+                        ) : (
+                            filteredUsers.map((user) => (
+                                <UserMobileCard
+                                    key={user.id}
+                                    user={user}
+                                    onView={() => handleViewDetails(user.id)}
+                                    onAssignPlan={() => {
+                                        setAssignPlanTarget({ id: user.id, name: user.name });
+                                        setAssignPlanData({ plan_id: "", plan_expired_date: "" });
+                                        setIsAssignPlanOpen(true);
+                                    }}
+                                    onToggleStatus={(e) => triggerConfirm(e, user)}
+                                />
+                            ))
+                        )}
                     </div>
                 </CardContent>
             </Card>

@@ -242,8 +242,8 @@ export default function BrandingTab() {
           </div>
         </Section>
 
-        <div className="flex justify-end pt-3">
-          <button type="submit" disabled={isLoadingGeneral} className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all shadow-lg"
+        <div className="flex flex-col-reverse gap-3 pt-3 sm:flex-row sm:justify-end">
+          <button type="submit" disabled={isLoadingGeneral} className="flex w-full items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all shadow-lg sm:w-auto"
             style={{ background: "var(--brand-gradient)", color: "white", opacity: isLoadingGeneral ? 0.7 : 1 }}>
             <Save className="w-5 h-4" />{isLoadingGeneral ? "Saving..." : "Save Platform Settings"}
           </button>
@@ -354,9 +354,9 @@ export default function BrandingTab() {
             </div>
           </div>
         </div>
-        <div className="flex justify-end pt-2">
+        <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
           <button type="button" onClick={handleSaveBrandAssets} disabled={isSavingBrandAssets}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
+            className="flex w-full items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all sm:w-auto"
             style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingBrandAssets ? 0.7 : 1 }}>
             <Save className="w-4 h-4" />{isSavingBrandAssets ? "Saving..." : "Save Brand Assets"}
           </button>
