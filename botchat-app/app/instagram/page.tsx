@@ -11,30 +11,35 @@ function InstagramCallback() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const status = searchParams.get('status');
+    const skipped = searchParams.get('skipped');
+    
+    const isSuccess = status === 'success';
+    const isPartial = status === 'partial';
+    const isDone = isSuccess || isPartial;
 
     useEffect(() => {
         // If it's a popup, notify the opener and close
         if (typeof window !== 'undefined' && window.opener) {
-            if (status === 'success') {
+            if (isDone) {
                 window.opener.postMessage({ type: 'SOCIAL_CONNECTION_SUCCESS' }, window.location.origin);
             }
             
             // Automatically close the popup after a short delay
             const timer = setTimeout(() => {
                 window.close();
-            }, 2000);
+            }, isPartial ? 5000 : 2000);
 
             return () => clearTimeout(timer);
         } else if (typeof window !== 'undefined') {
             // If it's not a popup (user navigated directly), redirect to dashboard
-            if (status === 'success') {
+            if (isDone) {
                 const timer = setTimeout(() => {
                     router.push('/dashboard/instagram');
-                }, 2000);
+                }, isPartial ? 5000 : 2000);
                 return () => clearTimeout(timer);
             }
         }
-    }, [status, router]);
+    }, [isDone, isPartial, router]);
 
     return (
         <>
@@ -45,7 +50,7 @@ function InstagramCallback() {
             />
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#06030f] text-white p-6 overflow-hidden">
             {/* Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none ${isPartial ? 'bg-orange-600/10' : 'bg-pink-600/10'}`} />
             
             <motion.div 
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -62,9 +67,9 @@ function InstagramCallback() {
                             damping: 20,
                             delay: 0.2 
                         }}
-                        className="w-24 h-24 bg-gradient-to-br from-pink-500 to-purple-600 rounded-[32px] flex items-center justify-center shadow-[0_0_40px_rgba(236,72,153,0.4)]"
+                        className={`w-24 h-24 rounded-[32px] flex items-center justify-center ${isPartial ? 'bg-gradient-to-br from-orange-500 to-red-600 shadow-[0_0_40px_rgba(249,115,22,0.4)]' : 'bg-gradient-to-br from-pink-500 to-purple-600 shadow-[0_0_40px_rgba(236,72,153,0.4)]'}`}
                     >
-                        {status === 'success' ? (
+                        {isDone ? (
                             <CheckCircle2 className="w-12 h-12 text-white" />
                         ) : (
                             <Loader2 className="w-12 h-12 text-white animate-spin" />
@@ -72,7 +77,7 @@ function InstagramCallback() {
                     </motion.div>
                     
                     {/* Animated Sparkles */}
-                    {status === 'success' && (
+                    {isDone && !isPartial && (
                         <div className="absolute -top-4 -right-4">
                             <Sparkles className="w-6 h-6 text-yellow-400 animate-pulse" />
                         </div>
@@ -80,16 +85,26 @@ function InstagramCallback() {
                 </div>
 
                 <h1 className="text-3xl font-black tracking-tight mb-4 uppercase">
-                    {status === 'success' ? 'Instagram Linked' : 'Processing...'}
+                    {isPartial ? 'Partial Success' : isSuccess ? 'Instagram Linked' : 'Processing...'}
                 </h1>
-                <p className="text-neutral-400 font-medium leading-relaxed">
-                    {status === 'success' 
-                        ? 'Your Instagram account has been securely connected. This window will close automatically.' 
-                        : 'We are completing your connection. Please wait a moment.'}
-                </p>
+                
+                {isPartial ? (
+                    <div className="text-neutral-400 font-medium leading-relaxed">
+                        <p className="mb-2 text-orange-400">Some accounts were not connected because they already belong to another workspace.</p>
+                        {skipped && (
+                            <p className="text-sm opacity-80 break-words">Skipped: {skipped}</p>
+                        )}
+                    </div>
+                ) : (
+                    <p className="text-neutral-400 font-medium leading-relaxed">
+                        {isSuccess 
+                            ? 'Your Instagram account has been securely connected. This window will close automatically.' 
+                            : 'We are completing your connection. Please wait a moment.'}
+                    </p>
+                )}
 
                 <div className="mt-10 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-500">
-                    <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping" />
+                    <div className={`w-1.5 h-1.5 rounded-full animate-ping ${isPartial ? 'bg-orange-500' : 'bg-pink-500'}`} />
                     Finalizing Connection...
                 </div>
 
