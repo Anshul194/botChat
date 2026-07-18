@@ -357,7 +357,7 @@ export default function FacebookBotRepliesPage() {
                     </div>
 
                     <button
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+                        className="hidden sm:flex w-9 h-9 rounded-xl items-center justify-center flex-shrink-0 transition-all hover:scale-105"
                         style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
                     >
                         <Settings2 className="w-4 h-4" />

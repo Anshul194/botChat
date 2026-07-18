@@ -248,15 +248,11 @@ export default function FacebookPage() {
                     >
                         <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-primary")} />
                     </Button>
-                    {/* Settings — mobile only */}
-                    <button className="sm:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <Settings className="w-4 h-4" />
-                    </button>
                     {/* Connect button — desktop only */}
                     <Button
                         onClick={handleConnectFacebook}
                         disabled={isConnecting}
-                        className="hidden sm:flex h-10 px-4 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 active:scale-95 transition-all items-center gap-2 shadow-sm"
+                        className="hidden sm:flex h-10 px-4 rounded-xl bg-gradient-to-r from-[#1877f2] to-[#0052d4] hover:opacity-95 text-white font-medium text-sm active:scale-95 transition-all items-center gap-2 shadow-sm border-0"
                     >
                         {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Facebook className="w-4 h-4" />}
                         {isConnecting ? "Authorizing..." : "Connect Account"}
@@ -270,7 +266,7 @@ export default function FacebookPage() {
                 <button
                     onClick={handleConnectFacebook}
                     disabled={isConnecting}
-                    className="sm:hidden w-full h-12 rounded-2xl bg-primary text-white font-semibold text-[14px] flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
+                    className="sm:hidden w-full h-12 rounded-2xl bg-gradient-to-r from-[#1877f2] to-[#0052d4] text-white font-semibold text-[14px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
                 >
                     {isConnecting ? <><Loader2 className="w-4 h-4 animate-spin" /> Authorizing...</> : <><Plus className="w-4 h-4" /> Connect Account</>}
                 </button>
@@ -482,8 +478,9 @@ export default function FacebookPage() {
                         <p className="text-neutral-500 dark:text-neutral-400 mb-8 max-w-md mx-auto text-sm">Connect your Facebook account to start managing pages, setting up auto-replies, and configuring comment macros.</p>
                         <button
                             onClick={handleConnectFacebook}
-                            className="rounded-xl bg-blue-600 px-8 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-700 transition duration-200 active:scale-95"
+                            className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-[#1877f2] to-[#0052d4] px-8 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:opacity-95 transition duration-200 active:scale-95 inline-flex items-center justify-center gap-2"
                         >
+                            <Facebook className="w-4 h-4" />
                             Connect Account
                         </button>
                     </div>

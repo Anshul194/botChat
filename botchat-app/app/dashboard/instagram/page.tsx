@@ -20,7 +20,6 @@ import {
     ArrowLeft,
     Bot,
     ChevronLeft,
-    Settings,
     Plus,
     Info,
     ExternalLink,
@@ -279,10 +278,6 @@ export default function InstagramPage() {
                     >
                         <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin text-primary")} />
                     </Button>
-                    {/* Settings — mobile only */}
-                    <button className="sm:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <Settings className="w-4 h-4" />
-                    </button>
                     {/* Connect button — desktop only */}
                     <Button
                         onClick={handleInstagramConnect}
