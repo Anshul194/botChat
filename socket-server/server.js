@@ -38,10 +38,37 @@ const server = http.createServer(app);
 
 app.use(express.json());
 
+// ── Build allowed origins list from env ───────────────────────────────────────
+const EXPLICIT_ORIGINS = ORIGINS.filter(o => o !== '*');
+const WILDCARD_ALL = ORIGINS.includes('*');
+
+// Regex to allow any *.megadm.chat subdomain (or any custom wildcard domain set via env)
+const WILDCARD_DOMAINS_ENV = process.env.ALLOWED_WILDCARD_DOMAINS
+    ? process.env.ALLOWED_WILDCARD_DOMAINS.split(',').map(d => d.trim())
+    : ['megadm.chat'];
+
+function isOriginAllowed(origin) {
+    if (!origin) return true; // server-to-server
+    if (WILDCARD_ALL) return true;
+    if (EXPLICIT_ORIGINS.includes(origin)) return true;
+    // Allow any subdomain of wildcard domains
+    return WILDCARD_DOMAINS_ENV.some(domain => {
+        const regex = new RegExp(`^https?://([a-z0-9-]+\\.)?${domain.replace('.', '\\.')}$`, 'i');
+        return regex.test(origin);
+    });
+}
+
 // ── Socket.IO server ──────────────────────────────────────────────────────────
 const io = new Server(server, {
     cors: {
-        origin: ORIGINS,
+        origin: (origin, callback) => {
+            if (isOriginAllowed(origin)) {
+                callback(null, true);
+            } else {
+                console.warn(`[cors] ❌ Blocked origin: ${origin}`);
+                callback(new Error(`Origin ${origin} not allowed by CORS`));
+            }
+        },
         methods: ['GET', 'POST'],
         credentials: true
     }
