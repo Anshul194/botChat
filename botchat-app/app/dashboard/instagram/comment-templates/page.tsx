@@ -205,7 +205,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -468,7 +468,7 @@ export default function InstagramCommentTemplatesPage() {
 
       <AnimatePresence>
         {confirmDeleteId !== null && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setConfirmDeleteId(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               className="relative z-10 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] p-10 w-full max-w-sm shadow-2xl text-center"

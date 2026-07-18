@@ -902,7 +902,7 @@ export default function CommentManager() {
             {/* ── ID Modal ── */}
             <AnimatePresence>
                 {isIdModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
+                    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -910,17 +910,17 @@ export default function CommentManager() {
                             onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
                             className="absolute inset-0 bg-black/60 backdrop-blur-xs"
                         />
-                            <motion.div
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 40 }}
-                                transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                                className="bg-[var(--card)] border border-[var(--border)] rounded-t-[28px] sm:rounded-2xl w-full max-w-none sm:max-w-lg mt-auto sm:mt-0 sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
-                            >
-                                {/* Mobile drag handle */}
-                                <div className="sm:hidden flex justify-center pt-3 pb-1">
-                                    <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
-                                </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 40 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                            className="bg-[var(--card)] border border-[var(--border)] rounded-t-[28px] sm:rounded-2xl w-full max-w-none sm:max-w-lg mt-auto sm:mt-0 sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
+                        >
+                            {/* Mobile drag handle */}
+                            <div className="sm:hidden flex justify-center pt-3 pb-1">
+                                <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
+                            </div>
                             <div className="p-6 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-[var(--foreground)] uppercase tracking-tight">Post ID Reconciliation</h3>

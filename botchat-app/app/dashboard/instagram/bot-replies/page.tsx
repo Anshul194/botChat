@@ -793,7 +793,7 @@ export default function InstagramBotRepliesPage() {
                 {/* EDIT REPLY MODAL */}
                 <AnimatePresence>
                     {editReply && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm"
@@ -910,7 +910,7 @@ export default function InstagramBotRepliesPage() {
                 {/* CREATE MODAL */}
                 <AnimatePresence>
                     {showCreateModal && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0 bg-neutral-950/50 backdrop-blur-sm"
@@ -1089,7 +1089,7 @@ export default function InstagramBotRepliesPage() {
                 {/* ACTION CONFIGURATION MODAL */}
                 <AnimatePresence>
                     {showActionModal && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-neutral-950/50 backdrop-blur-sm" onClick={() => setShowActionModal(false)} />
                             <motion.div
                                 initial={{ opacity: 0, y: 40 }}

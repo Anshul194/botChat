@@ -804,7 +804,7 @@ export default function FacebookBotRepliesPage() {
                 {/* EDIT REPLY MODAL */}
                 <AnimatePresence>
                     {editReply && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
@@ -906,7 +906,7 @@ export default function FacebookBotRepliesPage() {
                 {/* CREATE MODAL */}
                 <AnimatePresence>
                     {showCreateModal && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
@@ -1052,7 +1052,7 @@ export default function FacebookBotRepliesPage() {
                 {/* ACTION CONFIGURATION MODAL */}
                 <AnimatePresence>
                     {showActionModal && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
                                 onClick={() => setShowActionModal(false)} />

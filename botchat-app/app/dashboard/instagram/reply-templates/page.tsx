@@ -767,7 +767,7 @@ export default function InstagramReplyTemplatesPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000]" onClick={() => setDeleteId(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-900 rounded-[32px] p-10 max-w-sm w-full text-center shadow-2xl relative z-[1001] border border-slate-100 dark:border-slate-800">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
