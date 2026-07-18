@@ -327,54 +327,51 @@ export default function InstagramBotRepliesPage() {
         <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
 
             {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
-            <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col -mx-4 -mt-4 md:-mx-6 md:-mt-6" style={{
-                background: "var(--card)",
-                borderBottom: "1px solid var(--border)",
-                boxShadow: "0 2px 16px rgba(0,0,0,0.10)"
-            }}>
-                {/* Top row: back + title + settings */}
-                <div className="flex items-center gap-3 px-4 md:px-8 h-14 md:h-[60px]">
+            <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col -mx-4 -mt-4 md:-mx-6 md:-mt-6"
+                style={{ background: "var(--card)", borderBottom: "1px solid var(--border)", boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}>
+                {/* Top row: back + brand + title */}
+                <div className="flex items-center gap-3 px-4 md:px-8 pt-3 pb-2.5 md:pt-4 md:pb-3">
                     <button
-                        onClick={() => router.push('/dashboard')}
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
+                        onClick={() => router.back()}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all active:scale-90"
                         style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
                     >
-                        <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
+                        <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={2.5} />
                     </button>
-
-                    <div className="flex flex-col flex-1 min-w-0">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: IG_PINK }}>
-                            Instagram Automation
-                        </span>
-                        <h1 className="text-[15px] md:text-[17px] font-black leading-none tracking-tight truncate" style={{ color: "var(--foreground)" }}>
-                            {MENUS.find(m => m.id === activeMenu)?.label || 'Bot Replies'}
-                        </h1>
+                    {/* Brand dot + text */}
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center"
+                            style={{ background: `linear-gradient(135deg, #E1306C, #833AB4)` }}>
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-[9px] font-medium tracking-widest uppercase leading-none" style={{ color: IG_PINK }}>Instagram</span>
+                            <h1 className="text-[14px] md:text-[16px] font-semibold leading-tight truncate" style={{ color: "var(--foreground)" }}>
+                                {MENUS.find(m => m.id === activeMenu)?.label || 'Bot Replies'}
+                            </h1>
+                        </div>
                     </div>
-
-                    <button
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:scale-105"
-                        style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}
-                    >
-                        <Settings2 className="w-4 h-4" />
-                    </button>
                 </div>
-
-                {/* Tab strip: scrollable pill tabs */}
-                <div className="flex items-center gap-1.5 px-4 md:px-8 pb-2.5 overflow-x-auto no-scrollbar">
+                {/* Desktop tab strip — underline style */}
+                <div className="hidden md:flex items-end gap-0 px-8 overflow-x-auto no-scrollbar">
                     {MENUS.map(menu => (
                         <button
                             key={menu.id}
                             onClick={() => setActiveMenu(menu.id)}
                             className={cn(
-                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 border",
+                                "relative px-4 py-2.5 text-[12px] font-medium whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0",
                                 activeMenu === menu.id
-                                    ? "border-transparent text-white shadow-md"
-                                    : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--border)]"
+                                    ? "text-[var(--foreground)]"
+                                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                             )}
-                            style={activeMenu === menu.id ? { background: IG_PINK, boxShadow: `0 4px 14px ${IG_PINK}40` } : undefined}
                         >
-                            <menu.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                            <menu.icon className="w-3.5 h-3.5" strokeWidth={activeMenu === menu.id ? 2.5 : 2} />
                             {menu.label}
+                            {activeMenu === menu.id && (
+                                <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full" style={{ background: IG_PINK }} />
+                            )}
                         </button>
                     ))}
                 </div>
@@ -523,7 +520,7 @@ export default function InstagramBotRepliesPage() {
                                                             className="py-3 flex flex-col items-center justify-center gap-0.5 text-[#db2777] hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors group/btn"
                                                         >
                                                             <Settings2 className="w-4 h-4" />
-                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
+                                                            <span className="text-[9px] font-semibold tracking-wide">Edit</span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
@@ -532,7 +529,7 @@ export default function InstagramBotRepliesPage() {
                                                             )}
                                                         >
                                                             {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">
+                                                            <span className="text-[9px] font-semibold tracking-wide">
                                                                 {reply.status === 'published' ? 'Pause' : 'Go Live'}
                                                             </span>
                                                         </button>
@@ -541,14 +538,14 @@ export default function InstagramBotRepliesPage() {
                                                             className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors group/btn"
                                                         >
                                                             <Copy className="w-4 h-4" />
-                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Copy</span>
+                                                            <span className="text-[9px] font-semibold tracking-wide">Copy</span>
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
                                                             className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group/btn"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
-                                                            <span className="text-[9px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Delete</span>
+                                                            <span className="text-[9px] font-semibold tracking-wide">Delete</span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -627,8 +624,8 @@ export default function InstagramBotRepliesPage() {
                             <motion.div key="action" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pb-12">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-800 pb-6">
                                     <div>
-                                        <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight uppercase">IG Action Shortcuts</h2>
-                                        <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] mt-1">Connect system events to custom automation layers</p>
+                                        <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>IG Action Shortcuts</h2>
+                                        <p className="text-xs font-medium mt-1" style={{ color: "var(--muted-foreground)" }}>Connect system events to custom automation flows</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <button
@@ -1149,6 +1146,43 @@ export default function InstagramBotRepliesPage() {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* ── MOBILE BOTTOM NAV ── */}
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[60]"
+                style={{
+                    background: "var(--card)",
+                    borderTop: "1px solid var(--border)",
+                    boxShadow: "0 -8px 32px rgba(0,0,0,0.10)",
+                    paddingBottom: "env(safe-area-inset-bottom, 0px)"
+                }}>
+                <div className="flex items-stretch px-1 pt-1.5 pb-1">
+                    {MENUS.map(menu => (
+                        <button
+                            key={menu.id}
+                            onClick={() => setActiveMenu(menu.id)}
+                            className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
+                            style={{ color: activeMenu === menu.id ? IG_PINK : "var(--muted-foreground)" }}
+                        >
+                            {/* Active pill indicator */}
+                            {activeMenu === menu.id && (
+                                <span className="absolute top-0 left-3 right-3 h-[2.5px] rounded-full" style={{ background: IG_PINK }} />
+                            )}
+                            <div
+                                className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200"
+                                style={{
+                                    background: activeMenu === menu.id ? `${IG_PINK}15` : "transparent",
+                                    transform: activeMenu === menu.id ? "scale(1.08)" : "scale(1)"
+                                }}
+                            >
+                                <menu.icon className="w-[17px] h-[17px]" strokeWidth={activeMenu === menu.id ? 2.5 : 1.8} />
+                            </div>
+                            <span className="text-[9.5px] font-medium leading-none" style={{ opacity: activeMenu === menu.id ? 1 : 0.5 }}>
+                                {menu.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </nav>
         </div>
     );
 }
