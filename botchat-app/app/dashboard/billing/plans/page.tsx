@@ -59,31 +59,31 @@ export default function BillingPlansPage() {
         <motion.div
             initial="hidden"
             animate="show"
-            className="max-w-[1200px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8"
+            className="max-w-[1200px] mx-auto px-3 sm:px-6 lg:p-8 py-4 sm:py-6 lg:py-8 space-y-5 sm:space-y-8"
         >
-            <motion.div variants={itemVariants} className="flex items-center gap-4">
-                <button onClick={() => router.back()} className="w-9 h-9 rounded-xl flex items-center justify-center border"
+            <motion.div variants={itemVariants} className="flex items-center gap-3 sm:gap-4">
+                <button onClick={() => router.back()} className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border shrink-0"
                     style={{ borderColor: "var(--glass-border)" }}>
-                    <ArrowLeft className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
+                    <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" style={{ color: "var(--muted-foreground)" }} />
                 </button>
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--nav-active-color)" }}>Subscription</p>
-                    <h1 className="text-3xl font-black tracking-tight" style={{ color: "var(--foreground)" }}>Choose a Plan</h1>
+                    <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-0.5 sm:mb-1" style={{ color: "var(--nav-active-color)" }}>Subscription</p>
+                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight" style={{ color: "var(--foreground)" }}>Choose a Plan</h1>
                 </div>
             </motion.div>
 
             {paymentError && (
-                <motion.div variants={itemVariants} className="rounded-2xl border p-4" style={{ borderColor: "rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.1)" }}>
-                    <p className="text-sm font-semibold" style={{ color: "#ef4444" }}>{paymentError}</p>
+                <motion.div variants={itemVariants} className="rounded-2xl border p-3 sm:p-4" style={{ borderColor: "rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.1)" }}>
+                    <p className="text-xs sm:text-sm font-semibold" style={{ color: "#ef4444" }}>{paymentError}</p>
                 </motion.div>
             )}
 
             {isLoading ? (
-                <div className="flex items-center justify-center py-24">
-                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--muted-foreground)" }} />
+                <div className="flex items-center justify-center py-16 sm:py-24">
+                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" style={{ color: "var(--muted-foreground)" }} />
                 </div>
             ) : (
-                <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {plans.map((plan, idx) => {
                         const isCurrent = userPlan?.id === plan.id;
                         const isSelected = selectedPlanId === plan.id;
@@ -96,7 +96,7 @@ export default function BillingPlansPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.08 }}
                                 className={cn(
-                                    "relative rounded-3xl border-2 flex flex-col overflow-hidden transition-all",
+                                    "relative rounded-2xl sm:rounded-3xl border-2 flex flex-col overflow-hidden transition-all",
                                     isCurrent ? "border-violet-500/50" : "hover:border-violet-500/30"
                                 )}
                                 style={{
@@ -108,39 +108,39 @@ export default function BillingPlansPage() {
                             >
                                 {isPopular && (
                                     <div className="absolute top-0 left-0 right-0 flex justify-center">
-                                        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white rounded-b-xl"
+                                        <span className="inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white rounded-b-xl"
                                             style={{ background: "var(--brand-gradient)" }}>
-                                            <Sparkles className="w-3 h-3" /> Most Popular
+                                            <Sparkles className="w-2.5 sm:w-3 h-2.5 sm:h-3" /> Most Popular
                                         </span>
                                     </div>
                                 )}
 
-                                <div className={cn("p-6 flex flex-col flex-1", isPopular && "pt-12")}>
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                                <div className={cn("p-4 sm:p-6 flex flex-col flex-1", isPopular && "pt-10 sm:pt-12")}>
+                                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
                                             style={{ background: isCurrent ? "rgba(139,92,246,0.2)" : "var(--glass-border)" }}>
-                                            <Crown className="w-5 h-5" style={{ color: isCurrent ? "#8b5cf6" : "var(--muted-foreground)" }} />
+                                            <Crown className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: isCurrent ? "#8b5cf6" : "var(--muted-foreground)" }} />
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-black" style={{ color: "var(--foreground)" }}>{plan.name}</h3>
+                                            <h3 className="text-base sm:text-lg font-black" style={{ color: "var(--foreground)" }}>{plan.name}</h3>
                                             {plan.description && (
-                                                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{plan.description}</p>
+                                                <p className="text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>{plan.description}</p>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="flex items-end gap-1 mb-5">
-                                        <span className="text-4xl font-black tabular-nums" style={{ color: "var(--foreground)" }}>
+                                    <div className="flex items-end gap-1 mb-4 sm:mb-5">
+                                        <span className="text-2xl sm:text-4xl font-black tabular-nums leading-none" style={{ color: "var(--foreground)" }}>
                                             {formatCurrency(plan.price)}
                                         </span>
-                                        <span className="mb-1.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                                        <span className="mb-0.5 sm:mb-1.5 text-[10px] sm:text-sm" style={{ color: "var(--muted-foreground)" }}>
                                             / {plan.duration} {plan.duration_type}
                                         </span>
                                     </div>
 
-                                    <div className="border-t mb-4" style={{ borderColor: "var(--glass-border)" }} />
+                                    <div className="border-t mb-3 sm:mb-4" style={{ borderColor: "var(--glass-border)" }} />
 
-                                    <ul className="space-y-2.5 flex-1 mb-6">
+                                    <ul className="space-y-2 sm:space-y-2.5 flex-1 mb-4 sm:mb-6">
                                         {[
                                             { key: "connect_account", label: "Connected Accounts", icon: Users },
                                             { key: "message_credit", label: "Message Credits", icon: MessageSquare },
@@ -149,9 +149,9 @@ export default function BillingPlansPage() {
                                         ].map((f) => {
                                             const val = getFeatureVal(plan.features, f.key);
                                             return (
-                                                <li key={f.key} className="flex items-center gap-2.5">
-                                                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: val !== "0" ? "#8b5cf6" : "var(--muted-foreground)" }} />
-                                                    <span className="text-sm" style={{ color: val !== "0" ? "var(--foreground)" : "var(--muted-foreground)" }}>
+                                                <li key={f.key} className="flex items-center gap-2 sm:gap-2.5">
+                                                    <CheckCircle2 className="w-3.5 sm:w-4 h-3.5 sm:h-4 shrink-0" style={{ color: val !== "0" ? "#8b5cf6" : "var(--muted-foreground)" }} />
+                                                    <span className="text-xs sm:text-sm" style={{ color: val !== "0" ? "var(--foreground)" : "var(--muted-foreground)" }}>
                                                         {val !== "0" ? `${val} ${f.label}` : `No ${f.label}`}
                                                     </span>
                                                 </li>
@@ -160,12 +160,12 @@ export default function BillingPlansPage() {
                                     </ul>
 
                                     {isSuperAdmin ? (
-                                        <div className="w-full py-3 rounded-xl text-sm font-bold text-center"
+                                        <div className="w-full py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-center"
                                             style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
                                             Full Access — Super Admin
                                         </div>
                                     ) : isCurrent ? (
-                                        <div className="w-full py-3 rounded-xl text-sm font-bold text-center"
+                                        <div className="w-full py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-center"
                                             style={{ background: "rgba(139,92,246,0.1)", color: "#8b5cf6" }}>
                                             Current Plan
                                         </div>
@@ -173,13 +173,13 @@ export default function BillingPlansPage() {
                                         <button
                                             onClick={() => handleSubscribe(plan)}
                                             disabled={isSelected || processing}
-                                            className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            className="w-full py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                             style={{ background: "var(--brand-gradient)" }}
                                         >
                                             {isSelected || processing ? (
-                                                <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
+                                                <><Loader2 className="w-3.5 sm:w-4 h-3.5 sm:h-4 animate-spin" /> Processing…</>
                                             ) : (
-                                                <><Zap className="w-4 h-4" /> Subscribe</>
+                                                <><Zap className="w-3.5 sm:w-4 h-3.5 sm:h-4" /> Subscribe</>
                                             )}
                                         </button>
                                     )}
@@ -190,13 +190,13 @@ export default function BillingPlansPage() {
                 </motion.div>
             )}
 
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 <div className="md:col-span-2">
                     <CouponPanel planPrice={plans.find((p) => p.id === selectedPlanId)?.price ?? 0} onApplied={setCouponData} />
                 </div>
-                <div className="rounded-2xl border p-5" style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
-                    <h3 className="text-sm font-bold mb-2" style={{ color: "var(--foreground)" }}>Need help?</h3>
-                    <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                <div className="rounded-2xl border p-4 sm:p-5" style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
+                    <h3 className="text-xs sm:text-sm font-bold mb-1.5 sm:mb-2" style={{ color: "var(--foreground)" }}>Need help?</h3>
+                    <p className="text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>
                         Contact support for enterprise plans, custom requirements, or billing inquiries.
                     </p>
                 </div>
@@ -205,13 +205,13 @@ export default function BillingPlansPage() {
             <motion.div variants={itemVariants}>
                 <button
                     onClick={() => setShowComparison(!showComparison)}
-                    className="flex items-center gap-2 text-sm font-semibold py-2"
+                    className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold py-1.5 sm:py-2"
                     style={{ color: "var(--nav-active-color)" }}
                 >
-                    {showComparison ? "Hide" : "Show"} plan comparison <ChevronRight className={`w-4 h-4 transition-transform ${showComparison ? "rotate-90" : ""}`} />
+                    {showComparison ? "Hide" : "Compare"} plans <ChevronRight className={`w-3.5 sm:w-4 h-3.5 sm:h-4 transition-transform ${showComparison ? "rotate-90" : ""}`} />
                 </button>
                 {showComparison && (
-                    <div className="mt-4">
+                    <div className="mt-3 sm:mt-4">
                         <PlanComparisonTable plans={plans} currentPlanId={userPlan?.id} />
                     </div>
                 )}
