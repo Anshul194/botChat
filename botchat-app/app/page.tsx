@@ -13,6 +13,7 @@ import Hero from "./landing/components/Hero";
 const SmoothScrollingUI = dynamic(() => import("./landing/components/SmoothScrollingUI"), { ssr: false });
 const FeaturesOverview = dynamic(() => import("./landing/components/FeaturesOverview"));
 const BioLinkShowcase = dynamic(() => import("./landing/components/BioLinkShowcase"));
+const DMAutomationShowcase = dynamic(() => import("./landing/components/DMAutomationShowcase"));
 const MotiveSection = dynamic(() => import("./landing/components/MotiveSection"));
 const Features = dynamic(() => import("./landing/components/Features"));
 const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"));
@@ -67,6 +68,7 @@ export default function Home() {
             <FeaturesOverview />
           </div>
           <BioLinkShowcase />
+          <DMAutomationShowcase />
           <MotiveSection />
           <Features />
           <ScrollWritingSection />
