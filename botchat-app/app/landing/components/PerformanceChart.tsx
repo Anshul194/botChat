@@ -21,15 +21,13 @@ const PersonIcon = ({ color = "currentColor", fill = "none" }) => (
 export default function PerformanceChart() {
   const [active, setActive] = useState(false);
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: false, amount: 0.4 });
+  const isInView = useInView(containerRef, { once: true, amount: 0.4 });
 
   // Auto-toggle when someone scrolls to this section
   useEffect(() => {
     if (isInView) {
       const timer = setTimeout(() => setActive(true), 800);
       return () => clearTimeout(timer);
-    } else {
-      setActive(false);
     }
   }, [isInView]);
 

@@ -216,7 +216,7 @@ export default function FeaturesBento() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6 auto-rows-fr">
           {features.map((feature, i) => (
             <FeatureCard
-              key={i}
+              key={feature.name}
               feature={feature}
               isActive={activeIndex === i}
               onClick={() => handleSelect(i)}
@@ -229,7 +229,7 @@ export default function FeaturesBento() {
         <div className="flex justify-center gap-3 mt-12" role="tablist" aria-label="Feature navigation">
           {features.map((feature, i) => (
             <button
-              key={i}
+              key={feature.name}
               onClick={() => handleSelect(i)}
               role="tab"
               aria-selected={activeIndex === i}

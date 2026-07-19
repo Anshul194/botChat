@@ -88,7 +88,7 @@ export default function BioLinkShowcase() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
               {features.map((feature, idx) => (
                 <motion.div
-                  key={idx}
+                  key={feature.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -141,6 +141,7 @@ export default function BioLinkShowcase() {
                     alt="Bio Link Mockup"
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 320px, 400px"
                   />
                 </div>
               </div>

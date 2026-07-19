@@ -38,9 +38,9 @@ export default function Footer() {
                 { icon: <Twitter size={18} />, href: "#", name: "Twitter" },
                 { icon: <Facebook size={18} />, href: "#", name: "Facebook" },
                 { icon: <Linkedin size={18} />, href: "#", name: "LinkedIn" }
-              ].map((social, i) => (
+              ].map((social) => (
                 <Link
-                  key={i} href={social.href}
+                  key={social.name} href={social.href}
                   aria-label={`Visit us on ${social.name}`}
                   className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0a0a0b] hover:scale-110 transition-all duration-300"
                 >

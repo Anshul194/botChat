@@ -1,8 +1,10 @@
 "use client";
+// Force Next.js HMR Recompile
 
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import { BadgeCheck, Building2, Sparkles, Users, Instagram } from "lucide-react";
+import Image from "next/image";
 
 const AVATARS = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
@@ -134,7 +136,8 @@ function InfiniteMarquee({
                     <img
                       src={getAvatar(imgIndex)}
                       alt={display}
-                      loading="lazy"
+                      width={32}
+                      height={32}
                       className="w-full h-full object-cover"
                     />
                   </div>

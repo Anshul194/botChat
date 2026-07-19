@@ -5,6 +5,7 @@ import { Sparkles, Menu, X, User as UserIcon, LogOut, LayoutDashboard } from "lu
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { shallowEqual } from "react-redux";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +18,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => ({ isAuthenticated: state.auth.isAuthenticated, user: state.auth.user }), shallowEqual);
   const dispatch = useAppDispatch();
   const router = useRouter();
 

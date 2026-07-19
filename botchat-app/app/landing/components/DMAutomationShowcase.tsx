@@ -6,97 +6,78 @@ import {
   Zap, Sparkles, Bot, ArrowRight, Lock, MessageCircle, Send, Smile, Instagram,
   ChevronLeft, Phone, Video, CheckCircle, Search, Home, PlusSquare, User, Bookmark, Heart, Music2, Navigation
 } from "lucide-react";
+import Image from "next/image";
 
 export default function DMAutomationShowcase() {
-  const [phase, setPhase] = useState(0);
-  const [liked, setLiked] = useState(false);
-  const [commentsOpen, setCommentsOpen] = useState(false);
-  const [typedText, setTypedText] = useState("");
-  const [commentPosted, setCommentPosted] = useState(false);
-  const [notifVisible, setNotifVisible] = useState(false);
-  const [screen, setScreen] = useState<"reels" | "dm">("reels");
+  const [state, setState] = useState({
+    phase: 0,
+    liked: false,
+    commentsOpen: false,
+    typedText: "",
+    commentPosted: false,
+    notifVisible: false,
+    screen: "reels" as "reels" | "dm",
+    dmPhase: 0,
+    followed: false,
+    cursor: { x: 150, y: 500, visible: false, tapping: false },
+    activeStep: 0,
+  });
 
-  // dmPhase maps heavily to the chatting timeline:
-  // 1=Typing, 2=Msg1, 3=Typing, 4=Reminder, 5=TriggerFollow, 6=Typing, 7=GiveLocation
-  const [dmPhase, setDmPhase] = useState(0);
-  const [followed, setFollowed] = useState(false);
-
-  const [cursor, setCursor] = useState({ x: 150, y: 500, visible: false, tapping: false });
-  const [activeStep, setActiveStep] = useState(0);
+  const set = (partial: Partial<typeof state>) => setState(prev => ({ ...prev, ...partial }));
 
   useEffect(() => {
-    let timers: NodeJS.Timeout[] = [];
+    let timers: ReturnType<typeof setTimeout>[] = [];
     const t = (fn: () => void, ms: number) => {
       const id = setTimeout(fn, ms);
       timers.push(id);
-      return id;
     };
 
     const run = () => {
-      // RESET ALL STATE
-      setPhase(0); setLiked(false); setCommentsOpen(false);
-      setTypedText(""); setCommentPosted(false); setNotifVisible(false);
-      setScreen("reels"); setDmPhase(0); setFollowed(false);
-      setCursor({ x: 150, y: 560, visible: false, tapping: false });
-      setActiveStep(0);
+      set({
+        phase: 0, liked: false, commentsOpen: false,
+        typedText: "", commentPosted: false, notifVisible: false,
+        screen: "reels", dmPhase: 0, followed: false,
+        cursor: { x: 150, y: 560, visible: false, tapping: false },
+        activeStep: 0,
+      });
 
-      // STEP 1: Reel plays (wait 3 seconds)
-      t(() => { setCursor({ x: 282, y: 440, visible: true, tapping: false }); }, 3000);
-      t(() => setCursor(p => ({ ...p, tapping: true })), 3500);
-      t(() => { setCommentsOpen(true); setCursor(p => ({ ...p, visible: false, tapping: false })); }, 3700);
+      t(() => set({ cursor: { x: 282, y: 440, visible: true, tapping: false } }), 3000);
+      t(() => set({ cursor: { x: 282, y: 440, visible: true, tapping: true } }), 3500);
+      t(() => set({ commentsOpen: true, cursor: { x: 282, y: 440, visible: false, tapping: false } }), 3700);
 
-      // STEP 2: Type "LOCATION"
       t(() => {
         const word = "LOCATION";
         word.split("").forEach((_, i) => {
-          t(() => setTypedText(word.slice(0, i + 1)), 150 * i);
+          t(() => set({ typedText: word.slice(0, i + 1) }), 150 * i);
         });
       }, 4500);
 
-      t(() => { setCursor({ x: 288, y: 585, visible: true, tapping: false }); }, 6000);
-      t(() => { setCursor(p => ({ ...p, tapping: true })); }, 6300);
-      t(() => { setCommentPosted(true); setActiveStep(1); setCursor(p => ({ ...p, visible: false, tapping: false })); }, 6500);
+      t(() => set({ cursor: { x: 288, y: 585, visible: true, tapping: false } }), 6000);
+      t(() => set({ cursor: { x: 288, y: 585, visible: true, tapping: true } }), 6300);
+      t(() => set({ commentPosted: true, activeStep: 1, cursor: { x: 288, y: 585, visible: false, tapping: false } }), 6500);
 
-      // STEP 3: Push Notification drops in
-      t(() => { setNotifVisible(true); }, 7500);
-      t(() => { setCursor({ x: 150, y: 100, visible: true, tapping: false }); }, 8200);
-      t(() => setCursor(p => ({ ...p, tapping: true })), 8600);
+      t(() => set({ notifVisible: true }), 7500);
+      t(() => set({ cursor: { x: 150, y: 100, visible: true, tapping: false } }), 8200);
+      t(() => set({ cursor: { x: 150, y: 100, visible: true, tapping: true } }), 8600);
+      t(() => set({ screen: "dm", notifVisible: false, cursor: { x: 150, y: 100, visible: false, tapping: false } }), 8800);
 
-      // Screen switches to DM 
-      t(() => { setScreen("dm"); setNotifVisible(false); setCursor(p => ({ ...p, visible: false, tapping: false })); }, 8800);
-
-      // STEP 4: Inside DM, Show Typing Indicator
-      t(() => { setDmPhase(1); setActiveStep(2); }, 9800);
-
-      // Bot sends FIRST message (Follow prompt)
-      t(() => { setDmPhase(2); }, 11200);
-
-      // Wait 3.5 seconds (User hesitates), Bot starts typing again...
-      t(() => { setDmPhase(3); }, 14700);
-
-      // Bot drops Reminder Message
-      t(() => { setDmPhase(4); }, 15800);
-
-      // User complies: Cursor moves to click Follow Button
-      t(() => { setCursor({ x: 170, y: 350, visible: true, tapping: false }); }, 16800);
-      t(() => setCursor(p => ({ ...p, tapping: true })), 17300);
-
-      // Button clicked -> Transition to Followed state
-      t(() => { setDmPhase(5); setFollowed(true); setActiveStep(3); setCursor(p => ({ ...p, visible: false, tapping: false })); }, 17500);
-
-      // Bot sees follow -> typing indicator
-      t(() => { setDmPhase(6); }, 18000);
-
-      // Deliver secret location!
-      t(() => { setDmPhase(7); }, 19000);
-
-      // Restart Loop after viewing final state
+      t(() => set({ dmPhase: 1, activeStep: 2 }), 9800);
+      t(() => set({ dmPhase: 2 }), 11200);
+      t(() => set({ dmPhase: 3 }), 14700);
+      t(() => set({ dmPhase: 4 }), 15800);
+      t(() => set({ cursor: { x: 170, y: 350, visible: true, tapping: false } }), 16800);
+      t(() => set({ cursor: { x: 170, y: 350, visible: true, tapping: true } }), 17300);
+      t(() => set({ dmPhase: 5, followed: true, activeStep: 3, cursor: { x: 170, y: 350, visible: false, tapping: false } }), 17500);
+      t(() => set({ dmPhase: 6 }), 18000);
+      t(() => set({ dmPhase: 7 }), 19000);
       t(run, 25000);
     };
 
     run();
     return () => timers.forEach(clearTimeout);
   }, []);
+
+  const { phase, liked, commentsOpen, typedText, commentPosted, notifVisible, screen, dmPhase, followed, cursor, activeStep } = state;
 
   return (
     <section className="relative py-20 lg:py-28 overflow-hidden bg-[#050009]">
@@ -133,7 +114,7 @@ export default function DMAutomationShowcase() {
                 {/* --- REELS SCREEN --- */}
                 {screen === "reels" && (
                   <div className="absolute inset-0 w-full h-full bg-black z-10 overflow-hidden">
-                    <img src="/images/reels-bg.png" alt="Reels Background" className="absolute inset-0 w-full h-full object-cover scale-[1.03]" />
+                    <Image src="/images/reels-bg.png" alt="Reels Background" fill className="object-cover scale-[1.03]" sizes="320px" priority={false} />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent via-[40%] to-black/80" />
 
                     <div className="absolute top-14 left-5 right-5 flex justify-between text-white z-20">
@@ -156,7 +137,7 @@ export default function DMAutomationShowcase() {
                       <div className="flex flex-col items-center gap-1"><Send className="w-[26px] h-[26px] text-white drop-shadow-md" strokeWidth={2.5} /><span className="text-[10px] font-bold text-white drop-shadow-md">4,200</span></div>
                       <Bookmark className="w-[26px] h-[26px] text-white mb-2 drop-shadow-md" strokeWidth={2.5} />
                       <div className="w-9 h-9 rounded-lg overflow-hidden border-2 border-white bg-zinc-800 shadow-md">
-                        <img src="/images/reels-bg.png" className="w-full h-full object-cover opacity-60" alt="Audio Thumbnail" />
+                        <Image src="/images/reels-bg.png" className="w-full h-full object-cover opacity-60" alt="Audio Thumbnail" width={36} height={36} />
                       </div>
                     </div>
 

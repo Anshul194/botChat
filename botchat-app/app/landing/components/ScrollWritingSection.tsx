@@ -433,6 +433,7 @@ function RightPanel({ stage }: { stage: number }) {
 export default function ChatOrbitSection() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0);
   const [progress, setProgress] = useState(0);
   const [bubbleStyles, setBubbleStyles] = useState<BubbleStyle[]>(
     MESSAGES.map(() => ({ opacity: 0, transform: "translate(0px,0px)" }))
@@ -495,23 +496,28 @@ export default function ChatOrbitSection() {
   }, []);
 
   useEffect(() => {
-    const controls = animate(0, 1, {
-      duration: 12, // Loops the full sequence every 12 seconds
-      ease: "linear",
-      repeat: Infinity,
-      onUpdate: (v) => {
-        setProgress(v);
-        compute(v);
-      }
-    });
-    return () => controls.stop();
+    let animId: number;
+    const startTime = performance.now();
+    const duration = 12000;
+
+    const tick = (now: number) => {
+      const elapsed = (now - startTime) % duration;
+      const p = elapsed / duration;
+      progressRef.current = p;
+      setProgress(p);
+      compute(p);
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
   }, [compute]);
 
   useEffect(() => {
-    const onResize = () => compute(progress);
+    const onResize = () => compute(progressRef.current);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [progress, compute]);
+  }, [compute]);
 
   return (
     <div ref={wrapRef} style={{ position: "relative" }}>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, User } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const blogPosts = [
   {
@@ -56,10 +57,9 @@ export default function Blogs() {
               className="group cursor-pointer"
             >
               <div className="aspect-[16/10] rounded-[32px] overflow-hidden mb-6 relative border border-gray-100">
-                <img 
-                  src={post.image} 
-                  alt={post.title} 
-                  loading="lazy"
+                <img
+                  src={post.image}
+                  alt={post.title}
                   className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                 />
               </div>

@@ -1,7 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Star, CheckCircle2, TrendingUp, Sparkles, Quote } from "lucide-react";
+import { useRef } from "react";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -58,15 +60,18 @@ const testimonials = [
 const infiniteTestimonials = [...testimonials, ...testimonials];
 
 export default function Testimonials() {
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sliderRef, { once: false, amount: 0.1 });
+
   return (
-    <section className="py-24 bg-[#1a1235] relative overflow-hidden">
+    <section ref={sliderRef} className="py-24 bg-[#1a1235] relative overflow-hidden">
       {/* Dark Pink Ambient Glows */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#e8175d] opacity-20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#e8175d] opacity-10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10 mb-16">
         <div className="text-center space-y-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[10px] font-black tracking-widest uppercase mb-2 shadow-sm"
@@ -75,7 +80,7 @@ export default function Testimonials() {
             Social Proof
           </motion.div>
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[0.9]">
-            The Global <br /> 
+            The Global <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-[#ff2d78]">Success List.</span>
           </h2>
           <p className="text-gray-300 font-medium text-lg max-w-2xl mx-auto">
@@ -86,19 +91,19 @@ export default function Testimonials() {
 
       {/* Infinite Horizontal Slider */}
       <div className="flex overflow-hidden group">
-        <motion.div 
-          animate={{ x: [0, -2100] }}
-          transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+        <motion.div
+          animate={isInView ? { x: [0, -2100] } : { x: 0 }}
+          transition={{ duration: 45, repeat: isInView ? Infinity : 0, ease: "linear" }}
           className="flex gap-8 px-4 py-8 pointer-events-auto hover:[animation-play-state:paused]"
         >
           {infiniteTestimonials.map((t, i) => (
-            <div key={i} className="h-[400px] w-[350px] flex-shrink-0 [perspective:1200px] group/card">
+            <div key={`${t.name}-${i}`} className="h-[400px] w-[350px] flex-shrink-0 [perspective:1200px] group/card">
               <div className="relative h-full w-full rounded-[48px] transition-all duration-700 [transform-style:preserve-3d] group-hover/card:[transform:rotateY(180deg)]">
-                
+
                 {/* FRONT side */}
                 <div className="absolute inset-0 h-full w-full rounded-[48px] bg-white/5 border border-white/10 p-8 backdrop-blur-xl flex flex-col items-center justify-between text-center [backface-visibility:hidden]">
                   <div className="relative mb-6">
-                    <img src={t.avatar} alt={t.name} loading="lazy" className="w-24 h-24 rounded-full border-4 border-white/20 shadow-2xl relative z-10 object-cover" />
+                    <img src={t.avatar} alt={t.name} width={96} height={96} className="w-24 h-24 rounded-full border-4 border-white/20 shadow-2xl relative z-10 object-cover" />
                     <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white p-1 rounded-full shadow-lg border-2 border-[#1a1235] z-20">
                       <CheckCircle2 size={16} fill="currentColor" />
                     </div>
@@ -119,7 +124,7 @@ export default function Testimonials() {
                       {t.result}
                     </div>
                     <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                       {t.name} · {t.role}
+                      {t.name} · {t.role}
                     </div>
                   </div>
                 </div>
@@ -139,14 +144,14 @@ export default function Testimonials() {
             </div>
           ))}
         </motion.div>
-      </div>
+      </div >
 
       {/* Manual Controls Callout */}
-      <div className="text-center mt-12">
+      < div className="text-center mt-12" >
         <p className="text-gray-400 text-xs font-black uppercase tracking-[0.3em]">
-           Auto-sliding experience · Hover to flip
+          Auto-sliding experience · Hover to flip
         </p>
-      </div>
-    </section>
+      </div >
+    </section >
   );
 }

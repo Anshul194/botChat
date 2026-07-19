@@ -147,7 +147,7 @@ export default function TrendyStacks() {
                   alt={feature.title}
                   fill
                   className="object-cover object-center opacity-60 lg:opacity-80 transition-transform duration-700 hover:scale-105"
-                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 {/* Fade gradient from left text to right image on Desktop */}
                 <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-transparent to-transparent opacity-80" />

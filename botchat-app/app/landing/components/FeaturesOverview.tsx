@@ -65,13 +65,13 @@ export default function FeaturesOverview() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {mainFeatures.map((feature, index) => (
+          {mainFeatures.map((feature, i) => (
             <motion.article
-              key={index}
+              key={feature.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: i * 0.1 }}
               whileHover={{ y: -10, scale: 1.01 }}
               className="group relative h-[400px] w-full rounded-[28px] text-left [perspective:1200px]"
             >

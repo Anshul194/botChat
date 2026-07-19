@@ -1,47 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Lenis from "lenis";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 export default function SmoothScrollingUI() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Initialize Lenis
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
-            direction: "vertical",
-            gestureDirection: "vertical",
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        } as any);
-
-        function raf(time: number) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-
-        requestAnimationFrame(raf);
-
         const handleScroll = () => {
-            if (window.scrollY > 300) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
+            setIsVisible(window.scrollY > 300);
         };
 
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            lenis.destroy();
-            window.removeEventListener("scroll", handleScroll);
-        };
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     const scrollToTop = () => {

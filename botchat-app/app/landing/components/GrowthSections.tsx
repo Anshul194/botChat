@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Sparkles, ArrowRight, Zap, Rocket, ShieldCheck } from "lucide-react";
 
 const NARRATIVE = [
@@ -22,24 +22,18 @@ const NARRATIVE = [
   }
 ];
 
-interface CharProps {
-  char: string;
-  index: number;
-  displayLength: MotionValue<number>;
-}
-
-function Char({ char, index, displayLength }: CharProps) {
-  const opacity = useTransform(displayLength, [index - 0.5, index], [0, 1]);
+function TypewriterText({ text, progress }: { text: string; progress: number }) {
   return (
-    <motion.span style={{ opacity, display: "inline-block" }}>
-      {char === " " ? "\u00A0" : char}
-    </motion.span>
+    <span style={{ clipPath: `inset(0 ${100 - progress * 100}% 0 0)` }}>
+      {text}
+    </span>
   );
 }
 
 export default function GrowthSections() {
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [prog, setProg] = useState({ t1: 0, t2: 0, t3: 0 });
 
   useEffect(() => {
     setMounted(true);
@@ -50,18 +44,23 @@ export default function GrowthSections() {
     offset: ["start start", "end end"]
   });
 
+  const p1 = useTransform(scrollYProgress, [0.05, 0.25], [0, 1]);
+  const p2 = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
+  const p3 = useTransform(scrollYProgress, [0.75, 0.95], [0, 1]);
+
+  useMotionValueEvent(p1, "change", (v) => setProg(prev => ({ ...prev, t1: v })));
+  useMotionValueEvent(p2, "change", (v) => setProg(prev => ({ ...prev, t2: v })));
+  useMotionValueEvent(p3, "change", (v) => setProg(prev => ({ ...prev, t3: v })));
+
   // TEXT 1: 0.05 -> 0.3
-  const displayLength1 = useTransform(scrollYProgress, [0.05, 0.25], [0, NARRATIVE[0].text.length]);
   const opacity1 = useTransform(scrollYProgress, [0.05, 0.1, 0.3, 0.35], [0, 1, 1, 0]);
   const y1 = useTransform(scrollYProgress, [0.05, 0.3, 0.35], [20, 0, -20]);
 
   // TEXT 2: 0.38 -> 0.65
-  const displayLength2 = useTransform(scrollYProgress, [0.4, 0.6], [0, NARRATIVE[1].text.length]);
   const opacity2 = useTransform(scrollYProgress, [0.38, 0.43, 0.65, 0.7], [0, 1, 1, 0]);
   const y2 = useTransform(scrollYProgress, [0.38, 0.65, 0.7], [20, 0, -20]);
 
   // TEXT 3: 0.73 -> 1.0
-  const displayLength3 = useTransform(scrollYProgress, [0.75, 0.95], [0, NARRATIVE[2].text.length]);
   const opacity3 = useTransform(scrollYProgress, [0.73, 0.78], [0, 1]);
   const y3 = useTransform(scrollYProgress, [0.73, 0.78], [20, 0]);
 
@@ -92,9 +91,7 @@ export default function GrowthSections() {
               {NARRATIVE[0].icon} {NARRATIVE[0].tag}
             </div>
             <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
-              {NARRATIVE[0].text.split("").map((char, i) => (
-                <Char key={`${i}-t1-${char}`} char={char} index={i} displayLength={displayLength1} />
-              ))}
+              <TypewriterText text={NARRATIVE[0].text} progress={prog.t1} />
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.8, repeat: Infinity }}
@@ -112,9 +109,7 @@ export default function GrowthSections() {
               {NARRATIVE[1].icon} {NARRATIVE[1].tag}
             </div>
             <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
-              {NARRATIVE[1].text.split("").map((char, i) => (
-                <Char key={`${i}-t2-${char}`} char={char} index={i} displayLength={displayLength2} />
-              ))}
+              <TypewriterText text={NARRATIVE[1].text} progress={prog.t2} />
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.8, repeat: Infinity }}
@@ -133,9 +128,7 @@ export default function GrowthSections() {
                 {NARRATIVE[2].icon} {NARRATIVE[2].tag}
               </div>
               <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
-                {NARRATIVE[2].text.split("").map((char, i) => (
-                  <Char key={`${i}-t3-${char}`} char={char} index={i} displayLength={displayLength3} />
-                ))}
+                <TypewriterText text={NARRATIVE[2].text} progress={prog.t3} />
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.8, repeat: Infinity }}

@@ -1,122 +1,39 @@
 "use client";
+// NextJS HMR Force Save
 
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useAnimate, stagger } from "framer-motion";
 import { Zap, ArrowRight, Play, Server, MessageSquare, ShieldCheck, ZapIcon, BarChart3, Database } from "lucide-react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(useGSAP);
 
 /* ─────────────────────────────────────────
    AURORA BACKGROUND
 ───────────────────────────────────────── */
-function Aurora() {
+const Aurora = React.memo(function Aurora() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const springX = useSpring(mouseX, { stiffness: 40, damping: 25 });
   const springY = useSpring(mouseY, { stiffness: 40, damping: 25 });
+  const auroraRef = useRef<HTMLDivElement>(null);
 
   const glowLeft = useTransform(springX, (x) => `${x - 220}px`);
   const glowTop = useTransform(springY, (y) => `${y - 220}px`);
 
   useEffect(() => {
+    const el = auroraRef.current;
+    if (!el) return;
     const move = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+    el.addEventListener("mousemove", move);
+    return () => el.removeEventListener("mousemove", move);
   }, [mouseX, mouseY]);
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes drift1 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          33%      { transform: translate(80px,-60px) scale(1.1); }
-          66%      { transform: translate(-50px,80px) scale(0.92); }
-        }
-        @keyframes drift2 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          40%      { transform: translate(-90px,70px) scale(1.15); }
-          70%      { transform: translate(60px,-40px) scale(0.88); }
-        }
-        @keyframes drift3 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          50%      { transform: translate(40px,100px) scale(1.08); }
-        }
-        @keyframes gridScroll {
-          from { background-position: 0 0; }
-          to   { background-position: 60px 60px; }
-        }
-        @keyframes shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position:  200% center; }
-        }
-        @keyframes scanLine {
-          0%   { top: 0%; opacity: .6; }
-          100% { top: 100%; opacity: 0; }
-        }
-        @keyframes ringPulse {
-          0%   { box-shadow: 0 0 0 0 rgba(255,45,120,.5); }
-          70%  { box-shadow: 0 0 0 8px rgba(255,45,120,0); }
-          100% { box-shadow: 0 0 0 0 rgba(255,45,120,0); }
-        }
-
-        .font-display { font-family: 'Syne', sans-serif; }
-        .font-body    { font-family: 'DM Sans', sans-serif; }
-
-        .blob1 { animation: drift1 14s ease-in-out infinite; }
-        .blob2 { animation: drift2 18s ease-in-out infinite; }
-        .blob3 { animation: drift3 11s ease-in-out infinite; }
-        .grid-bg { animation: gridScroll 6s linear infinite; }
-
-        .shimmer-text {
-          background: linear-gradient(120deg,#ff80ab 0%,#ffcdd8 40%,#ff2d78 60%,#ffb6c8 100%);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: shimmer 3s linear infinite;
-        }
-
-        .cta-primary {
-          background: linear-gradient(135deg,#ff2d78 0%,#e1306c 100%);
-          box-shadow: 0 0 0 0 rgba(255,45,120,.4), 0 12px 40px rgba(255,45,120,.35);
-          animation: ringPulse 2.5s ease-out infinite;
-          transition: transform .2s ease, box-shadow .2s ease;
-        }
-        .cta-primary:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 0 0 0 rgba(255,45,120,0), 0 20px 55px rgba(255,45,120,.55);
-        }
-
-        .scan { animation: scanLine 2.8s linear infinite; }
-
-        .device-glow {
-          box-shadow:
-            0 0 80px 20px rgba(255,45,120,.22),
-            0 0 160px 40px rgba(225,48,108,.14),
-            0 40px 80px rgba(0,0,0,.5);
-        }
-        .stat-card {
-          background: rgba(255,255,255,.04);
-          border: 1px solid rgba(255,45,120,.18);
-          backdrop-filter: blur(16px);
-        }
-        .live-badge { animation: ringPulse 1.6s ease-out infinite; }
-
-        .notif-card {
-          background: rgba(15,8,20,.85);
-          border: 1px solid rgba(255,45,120,.2);
-          backdrop-filter: blur(20px);
-        }
-      `}} />
-
       {/* Base dark */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" style={{ background: "#06000d" }}>
+      <div ref={auroraRef} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" style={{ background: "#06000d" }}>
 
         {/* Subtle dot grid */}
         <div className="absolute inset-0 grid-bg opacity-20"
@@ -152,7 +69,7 @@ function Aurora() {
       </div>
     </>
   );
-}
+});
 
 /* ─────────────────────────────────────────
    FLOATING STAT CARDS
@@ -167,7 +84,7 @@ function StatChip({ value, label, delay, className }: { value: string; label: st
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       <div className="text-xl font-bold text-white leading-none" style={{ fontFamily: "'Syne', sans-serif" }}>{value}</div>
-       <div className="text-xs text-pink-300/80 mt-0.5 whitespace-nowrap">{label}</div>
+      <div className="text-xs text-pink-300/80 mt-0.5 whitespace-nowrap">{label}</div>
     </motion.div>
   );
 }
@@ -186,7 +103,7 @@ function NotifCard({ icon, text, sub, delay, className }: { icon: string; text: 
       <span className="text-2xl">{icon}</span>
       <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
         <div className="text-white text-sm font-medium leading-tight">{text}</div>
-         <div className="text-pink-300/80 text-xs mt-0.5">{sub}</div>
+        <div className="text-pink-300/80 text-xs mt-0.5">{sub}</div>
       </div>
     </motion.div>
   );
@@ -259,7 +176,7 @@ function BrowserStage() {
               <div className="text-xs font-semibold text-white/80" style={{ fontFamily: "'Syne', sans-serif" }}>@{c.user}</div>
               <p className="text-xs text-white/70 truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>{c.comment}</p>
             </div>
-              <div className={`px-2 py-1 rounded-lg text-[10px] font-semibold ${c.replied ? "text-pink-400 border border-pink-500/25 bg-pink-500/10" : "text-white/60 border border-white/10 bg-white/5"}`}>
+            <div className={`px-2 py-1 rounded-lg text-[10px] font-semibold ${c.replied ? "text-pink-400 border border-pink-500/25 bg-pink-500/10" : "text-white/60 border border-white/10 bg-white/5"}`}>
               {c.replied ? "Replied ✓" : "Replying…"}
             </div>
           </div>
@@ -400,23 +317,17 @@ function VisualCarousel() {
    HERO
 ───────────────────────────────────────── */
 export default function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [scope, animate] = useAnimate();
 
-  useGSAP(() => {
-    gsap.fromTo(".hero-text-elem",
-      { opacity: 0, y: 40 },
-      { opacity: 1, y: 0, duration: 1.1, stagger: .14, ease: "power4.out", delay: .2 }
-    );
-    gsap.fromTo(".hero-right",
-      { opacity: 0, x: 60 },
-      { opacity: 1, x: 0, duration: 1.4, ease: "expo.out", delay: .5 }
-    );
-  }, { scope: containerRef });
+  useEffect(() => {
+    animate(".hero-text-elem", { opacity: 1, y: 0 }, { duration: 1.1, delay: stagger(0.14), ease: [0.16, 0.77, 0.31, 0.99] });
+    animate(".hero-right", { opacity: 1, x: 0 }, { duration: 1.4, ease: "easeOut", delay: 0.5 });
+  }, [animate]);
 
   return (
     <section
-      ref={containerRef}
-      className="font-body relative min-h-screen flex items-center pt-28 pb-20 px-6 overflow-hidden"
+      ref={scope}
+      className="relative min-h-screen flex items-center pt-28 pb-20 px-6 overflow-hidden"
       style={{ background: "#06000d", color: "#f0e0f0" }}
     >
       <Aurora />

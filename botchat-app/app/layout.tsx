@@ -1,6 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
+import FAQSchema from "@/components/FAQSchema";
+
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -101,6 +114,9 @@ export default function RootLayout({
           }}
         />
 
+        {/* FAQ Structured Data */}
+        <FAQSchema />
+
         {/* Dynamic tenant favicon/logo injected by client component */}
         <DynamicBranding />
 
@@ -120,7 +136,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} ${syne.variable} ${dmSans.variable} antialiased`}>
         <ReduxProvider>
           <AuthProvider>
             <ReactQueryProvider>
