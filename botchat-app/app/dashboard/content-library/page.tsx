@@ -48,8 +48,8 @@ export default function ContentLibraryPage() {
         keepPreviousData: true,
     } as any);
 
-    const assets = data?.data ?? [];
-    const meta = data?.meta ?? {};
+    const assets = (data as any)?.data ?? [];
+    const meta = (data as any)?.meta ?? {};
 
     const uploadMutation = useMutation({
         mutationFn: ({ file, type }: { file: File, type: string }) => uploadBroadcastAsset(file, type),
@@ -176,7 +176,7 @@ export default function ContentLibraryPage() {
                         return (
                             <div key={asset.id} className="group relative rounded-2xl overflow-hidden flex flex-col transition-all hover:shadow-xl hover:-translate-y-1"
                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                                
+
                                 {/* Preview */}
                                 <div className="aspect-square relative bg-neutral-100 dark:bg-neutral-800/50 flex items-center justify-center overflow-hidden">
                                     {isImg ? (
@@ -186,7 +186,7 @@ export default function ContentLibraryPage() {
                                     ) : (
                                         <Icon className="w-10 h-10 opacity-30 text-neutral-500" />
                                     )}
-                                    
+
                                     {/* Hover Actions */}
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                         <button onClick={() => copyUrl(asset.url)} className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-sm transition-colors" title="Copy URL">

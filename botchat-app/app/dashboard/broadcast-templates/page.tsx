@@ -25,7 +25,7 @@ export default function BroadcastTemplatesPage() {
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("All");
     const [page, setPage] = useState(1);
-    
+
     // UI state
     const [isCreatingCampaign, setIsCreatingCampaign] = useState<number | null>(null);
 
@@ -40,8 +40,8 @@ export default function BroadcastTemplatesPage() {
         keepPreviousData: true,
     } as any);
 
-    const templates = data?.data ?? [];
-    const meta = data?.meta ?? {};
+    const templates = (data as any)?.data ?? [];
+    const meta = (data as any)?.meta ?? {};
 
     const toggleFavMutation = useMutation({
         mutationFn: ({ id, is_favorite }: { id: number, is_favorite: boolean }) => updateBroadcastTemplate(id, { is_favorite }),
@@ -143,7 +143,7 @@ export default function BroadcastTemplatesPage() {
                     {templates.map((t: any) => (
                         <div key={t.id} className="group relative rounded-2xl p-5 flex flex-col gap-4 transition-all hover:-translate-y-1 hover:shadow-xl"
                             style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                            
+
                             {/* Header */}
                             <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">

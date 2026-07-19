@@ -29,11 +29,11 @@ import {
 // ─── Status badge config ────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-    draft:     { label: "Draft",     color: "#94a3b8", bg: "rgba(148,163,184,0.1)", icon: Edit3 },
-    scheduled: { label: "Scheduled", color: "#f59e0b", bg: "rgba(245,158,11,0.1)",  icon: Clock },
-    sending:   { label: "Sending",   color: "#06b6d4", bg: "rgba(6,182,212,0.1)",   icon: Play },
-    sent:      { label: "Sent",      color: "#10b981", bg: "rgba(16,185,129,0.1)",  icon: CheckCircle2 },
-    failed:    { label: "Failed",    color: "#ef4444", bg: "rgba(239,68,68,0.1)",   icon: XCircle },
+    draft: { label: "Draft", color: "#94a3b8", bg: "rgba(148,163,184,0.1)", icon: Edit3 },
+    scheduled: { label: "Scheduled", color: "#f59e0b", bg: "rgba(245,158,11,0.1)", icon: Clock },
+    sending: { label: "Sending", color: "#06b6d4", bg: "rgba(6,182,212,0.1)", icon: Play },
+    sent: { label: "Sent", color: "#10b981", bg: "rgba(16,185,129,0.1)", icon: CheckCircle2 },
+    failed: { label: "Failed", color: "#ef4444", bg: "rgba(239,68,68,0.1)", icon: XCircle },
     cancelled: { label: "Cancelled", color: "#6b7280", bg: "rgba(107,114,128,0.1)", icon: PauseCircle },
 };
 
@@ -132,8 +132,8 @@ function CreateCampaignModal({ open, onClose, onCreated }: {
 
 // ─── Campaign Card ───────────────────────────────────────────────────────────
 
-function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: { 
-    campaign: any; 
+function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
+    campaign: any;
     onDelete: (id: number) => void;
     onClone: (id: number) => void;
     onSaveTemplate: (id: number) => void;
@@ -207,7 +207,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
                 {[
                     { label: "Campaign", done: true },
                     { label: "Audience", done: !!campaign.audience_filter },
-                    { label: "Message",  done: campaign.content_status === "completed" },
+                    { label: "Message", done: campaign.content_status === "completed" },
                     { label: "Schedule", done: !!campaign.scheduled_at },
                 ].map((step, i) => (
                     <div key={i} className="flex items-center gap-1.5">
@@ -226,9 +226,9 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-2">
                 {[
-                    { icon: Users,          label: "Recipients",  value: campaign.total_recipients?.toLocaleString() ?? "—" },
-                    { icon: MessageSquare,  label: "Msg Type",    value: campaign.message_type ? campaign.message_type.charAt(0).toUpperCase() + campaign.message_type.slice(1) : "—" },
-                    { icon: CalendarDays,   label: "Scheduled",   value: campaign.scheduled_at ? formatDate(new Date(campaign.scheduled_at)) : "—" },
+                    { icon: Users, label: "Recipients", value: campaign.total_recipients?.toLocaleString() ?? "—" },
+                    { icon: MessageSquare, label: "Msg Type", value: campaign.message_type ? campaign.message_type.charAt(0).toUpperCase() + campaign.message_type.slice(1) : "—" },
+                    { icon: CalendarDays, label: "Scheduled", value: campaign.scheduled_at ? formatDate(new Date(campaign.scheduled_at)) : "—" },
                 ].map((s) => (
                     <div key={s.label} className="p-2 rounded-xl text-center" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
                         <s.icon className="w-3.5 h-3.5 mx-auto mb-1" style={{ color: "var(--muted-foreground)" }} />
@@ -261,7 +261,7 @@ export default function BroadcastsPage() {
         queryFn: () => getBroadcastCampaigns(statusFilter !== "all" ? { status: statusFilter } : {}),
     });
 
-    const campaigns: any[] = data?.data ?? [];
+    const campaigns: any[] = (data as any)?.data ?? [];
 
     const filtered = campaigns.filter((c) =>
         c.name?.toLowerCase().includes(search.toLowerCase())
@@ -340,9 +340,9 @@ export default function BroadcastsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                     { label: "Total Campaigns", value: stats.total, color: "#7c3aed", icon: Radio },
-                    { label: "Drafts",           value: stats.draft, color: "#94a3b8", icon: Edit3 },
-                    { label: "Scheduled",        value: stats.scheduled, color: "#f59e0b", icon: Clock },
-                    { label: "Sent",             value: stats.sent, color: "#10b981", icon: Send },
+                    { label: "Drafts", value: stats.draft, color: "#94a3b8", icon: Edit3 },
+                    { label: "Scheduled", value: stats.scheduled, color: "#f59e0b", icon: Clock },
+                    { label: "Sent", value: stats.sent, color: "#10b981", icon: Send },
                 ].map((s) => (
                     <div key={s.label} className="glass-card rounded-2xl p-4">
                         <div className="flex items-center gap-3">
