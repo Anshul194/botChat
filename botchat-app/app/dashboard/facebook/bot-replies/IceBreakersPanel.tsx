@@ -107,7 +107,11 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
         try {
             const params: Record<string, string> = { target_type: targetType, channel_type: channelType };
             if (selectedPageId !== "all") {
-                params.facebook_page_id = selectedPageId;
+                if (channelType === 'instagram') {
+                    params.instagram_id = selectedPageId;
+                } else {
+                    params.facebook_page_id = selectedPageId;
+                }
             }
             const response = await api.get("/ice-breakers/target-options", { params });
             if (response.data.is_success) {
