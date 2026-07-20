@@ -13,6 +13,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
+import IceBreakersPanel from "./IceBreakersPanel";
 import { AiAgentSettingsPanel } from "../../instagram/AiAgentSettingsPanel";
 
 
@@ -44,6 +45,7 @@ interface ActionData {
 
 const MENUS = [
     { id: 'bot_reply', label: 'Bot Replies', icon: MessageSquare },
+    { id: 'ice_breakers', label: 'Ice Breakers', icon: Sparkles },
     { id: 'ai_agent', label: 'AI Agent', icon: Bot },
     { id: 'action_buttons', label: 'Action Buttons', icon: MousePointerClick },
     { id: 'persistent_menu', label: 'Persistent Menu', icon: Menu },
@@ -631,6 +633,14 @@ export default function FacebookBotRepliesPage() {
                                     </div>
                                 )}
                             </motion.div>
+                        )}
+
+                        {activeMenu === 'ice_breakers' && (
+                            <IceBreakersPanel
+                                pages={pages}
+                                selectedPageId={selectedPageId}
+                                channelType="facebook"
+                            />
                         )}
 
                         {activeMenu === 'action_buttons' && (
