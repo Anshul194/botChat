@@ -3,12 +3,13 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
     Plus, Sparkles, Trash2, RefreshCw, Globe, Bot,
-    MessageSquare, UserCircle, GripVertical,
+    MessageSquare, UserCircle, GripVertical, Smile
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
+import { EmojiPicker } from "@/components/ui/EmojiPicker";
 
 interface IceBreaker {
     id: number;
@@ -62,6 +63,7 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
 
     const [editIcebreaker, setEditIcebreaker] = useState<IceBreaker | null>(null);
     const [targetOptions, setTargetOptions] = useState<TargetOption[]>([]);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     const [form, setForm] = useState({
         title: "",
@@ -354,13 +356,34 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                             <div className="p-6 space-y-5">
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Title *</label>
-                                    <input
-                                        type="text"
-                                        value={form.title}
-                                        onChange={e => setForm({ ...form, title: e.target.value })}
-                                        placeholder="e.g. Track Order"
-                                        className="w-full px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none focus:border-blue-400 transition-all"
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            value={form.title}
+                                            onChange={e => setForm({ ...form, title: e.target.value })}
+                                            placeholder="e.g. Track Order"
+                                            className="w-full pl-4 pr-12 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none focus:border-blue-400 transition-all"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                                        >
+                                            <Smile className="w-5 h-5" />
+                                        </button>
+                                        
+                                        {showEmojiPicker && (
+                                            <div className="absolute top-full mt-2 left-0 z-[100]">
+                                                <EmojiPicker 
+                                                    onSelect={(emoji) => {
+                                                        setForm({ ...form, title: form.title + emoji });
+                                                        setShowEmojiPicker(false);
+                                                    }}
+                                                    onClose={() => setShowEmojiPicker(false)}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div>
