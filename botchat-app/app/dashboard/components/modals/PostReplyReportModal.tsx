@@ -247,18 +247,22 @@ export function PostReplyReportModal({
                                                         </div>
                                                     )}
                                                     <div className="flex items-center gap-4 mt-3 flex-wrap">
-                                                        <div className="flex items-center gap-1.5 text-slate-400">
-                                                            <Calendar size={12} className="text-slate-300" />
-                                                            <span className="text-[10px] font-bold uppercase tracking-tight">
-                                                                {new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-4">
-                                                            <Clock size={12} className="text-slate-300" />
-                                                            <span className="text-[10px] font-bold uppercase tracking-tight">
-                                                                {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                            </span>
-                                                        </div>
+                                                        {item.created_at && (
+                                                            <>
+                                                                <div className="flex items-center gap-1.5 text-slate-400">
+                                                                    <Calendar size={12} className="text-slate-300" />
+                                                                    <span className="text-[10px] font-bold uppercase tracking-tight">
+                                                                        {new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5 text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-4">
+                                                                    <Clock size={12} className="text-slate-300" />
+                                                                    <span className="text-[10px] font-bold uppercase tracking-tight">
+                                                                        {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                    </span>
+                                                                </div>
+                                                            </>
+                                                        )}
                                                         {item.reply_type && (
                                                             <div className="flex items-center gap-1.5 text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-4">
                                                                 <span className="text-[10px] font-bold uppercase tracking-widest text-pink-500">{item.reply_type}</span>

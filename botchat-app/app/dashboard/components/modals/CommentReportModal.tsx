@@ -31,9 +31,9 @@ interface ReportSummary {
 interface ReportItem {
     id: number;
     post_id: string;
-    comment_text: string;
+    comment_message: string;
     comment_id: string;
-    comment_time: string;
+    commented_at: string;
     status: string;
     error_message?: string;
 }
@@ -200,21 +200,25 @@ export function CommentReportModal({
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-[13px] font-bold text-neutral-700 dark:text-neutral-300 line-clamp-2 leading-relaxed italic">
-                                                    "{item.comment_text}"
+                                                    "{item.comment_message ?? '-'}"
                                                 </p>
                                                 <div className="flex items-center gap-4 mt-3">
-                                                    <div className="flex items-center gap-1.5 text-neutral-400">
-                                                        <Calendar size={12} className="text-neutral-300" />
-                                                        <span className="text-[10px] font-black uppercase tracking-tight">
-                                                            {new Date(item.comment_time).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5 text-neutral-400 border-l border-neutral-200 dark:border-neutral-800 pl-4">
-                                                        <Clock size={12} className="text-neutral-300" />
-                                                        <span className="text-[10px] font-black uppercase tracking-tight">
-                                                            {new Date(item.comment_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
-                                                    </div>
+                                                    {item.commented_at && (
+                                                        <>
+                                                            <div className="flex items-center gap-1.5 text-neutral-400">
+                                                                <Calendar size={12} className="text-neutral-300" />
+                                                                <span className="text-[10px] font-black uppercase tracking-tight">
+                                                                    {new Date(item.commented_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-neutral-400 border-l border-neutral-200 dark:border-neutral-800 pl-4">
+                                                                <Clock size={12} className="text-neutral-300" />
+                                                                <span className="text-[10px] font-black uppercase tracking-tight">
+                                                                    {new Date(item.commented_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
