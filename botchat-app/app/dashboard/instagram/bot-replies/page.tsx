@@ -625,7 +625,7 @@ export default function InstagramBotRepliesPage() {
                         {activeMenu === 'ice_breakers' && (
                             <IceBreakersPanel
                                 pages={pages}
-                                selectedPageId={selectedPageId}
+                                selectedPageId={selectedAccountId}
                                 channelType="instagram"
                             />
                         )}
