@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
     Plus, Sparkles, Trash2, RefreshCw, Globe, Bot,
-    MessageSquare, UserCircle, GripVertical, Smile
+    MessageSquare, GripVertical, Smile
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -45,7 +45,6 @@ const TARGET_TYPES = [
     { value: 'bot_flow', label: 'Bot Flow', icon: MessageSquare, desc: 'Execute an existing bot flow' },
     { value: 'keyword', label: 'Keyword', icon: Bot, desc: 'Trigger an existing keyword automation' },
     { value: 'ai_agent', label: 'AI Agent', icon: Sparkles, desc: 'Let AI handle the response' },
-    { value: 'human', label: 'Assign Human', icon: UserCircle, desc: 'Assign conversation to a human agent' },
 ];
 
 interface Props {
@@ -190,16 +189,28 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
         }
     };
 
+    const [isSyncing, setIsSyncing] = useState(false);
+
     const handleSyncToMeta = async () => {
         if (!selectedPageIdScalar) return;
+        setIsSyncing(true);
         try {
-            await api.post("/ice-breakers/sync-to-meta", {
+            const response = await api.post("/ice-breakers/sync-to-meta", {
                 social_account_type: accountType,
                 social_account_id: selectedPageIdScalar,
                 meta_platform: channelType,
             });
-        } catch (error) {
-            console.error("Sync Error:", error);
+            if (response.data.is_success) {
+                showModal("success", "Sync Successful", response.data.message || "Ice breakers synced to Meta successfully.");
+                fetchIcebreakers();
+            } else {
+                showModal("error", "Sync Failed", response.data.message || "Failed to sync ice breakers to Meta.");
+            }
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || "Failed to sync ice breakers. Please try again.";
+            showModal("error", "Sync Error", errorMsg);
+        } finally {
+            setIsSyncing(false);
         }
     };
 
@@ -248,10 +259,11 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                 <div className="flex items-center gap-3">
                     <button
                         onClick={handleSyncToMeta}
-                        className="p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
+                        disabled={isSyncing}
+                        className="p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Sync to Meta"
                     >
-                        <Globe className="w-4 h-4" />
+                        <Globe className={cn("w-4 h-4", isSyncing && "animate-spin")} />
                     </button>
                     <button
                         onClick={() => { setEditIcebreaker(null); resetForm(); setShowCreateModal(true); }}
