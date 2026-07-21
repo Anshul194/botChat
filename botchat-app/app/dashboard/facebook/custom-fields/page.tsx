@@ -104,7 +104,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
                 value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Favorite Hub, Birth Month"
-                className="w-full px-4 py-3.5 sm:py-4 rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 focus:bg-[var(--card)] focus:border-[var(--primary)]/50 outline-none transition-all font-medium text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/60"
+                className="w-full px-4 py-3 sm:py-4 rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 focus:bg-[var(--card)] focus:border-[var(--primary)]/50 outline-none transition-all font-medium text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/60"
               />
               <Edit3 className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]/30 group-focus-within:text-[var(--primary)] transition-colors pointer-events-none" />
             </div>
@@ -154,20 +154,20 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
                   form.is_active ? "bg-emerald-500" : "bg-[var(--muted)]"
                 )}
               >
-                <div className={cn("absolute top-0.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white transition-all duration-300 shadow-md", form.is_active ? "left-[25px] sm:left-[26px]" : "left-0.5")} />
+                <div className={cn("absolute top-0.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[var(--card)] transition-all duration-300 shadow-md", form.is_active ? "left-[25px] sm:left-[26px]" : "left-0.5")} />
               </div>
             </div>
           </div>
         </div>
 
         <div className="px-5 py-4 sm:px-8 sm:py-5 border-t border-[var(--border)] bg-[var(--muted)]/10 flex gap-2.5 sm:gap-3">
-          <button onClick={onClose} className="flex-1 py-3.5 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-semibold text-[10px] sm:text-[11px] uppercase tracking-wider transition-all active:scale-95">
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-semibold text-[10px] sm:text-[11px] uppercase tracking-wider transition-all active:scale-95">
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-[1.5] py-3.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[10px] sm:text-[11px] uppercase tracking-wider shadow-lg shadow-[var(--primary)]/20 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-[1.5] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[10px] sm:text-[11px] uppercase tracking-wider shadow-lg shadow-[var(--primary)]/20 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-4 h-4" />}
             {mode === "create" ? "Initialize Variable" : "Apply Changes"}
@@ -213,7 +213,7 @@ export default function CustomFieldsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24">
-      <div className="bg-[var(--card)] border-b border-[var(--border)] sticky top-0 z-40">
+      <div className="bg-[var(--card)] border-b border-[var(--border)] sticky top-0 z-[50] shadow-sm">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-5 flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             <button onClick={() => router.back()} className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all active:scale-90 shrink-0">
@@ -228,7 +228,7 @@ export default function CustomFieldsPage() {
           </div>
           <button
             onClick={() => setModal({ open: true, mode: "create", initial: null })}
-            className="px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-lg sm:rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[10px] sm:text-[11px] uppercase tracking-wider shadow-lg shadow-[var(--primary)]/20 hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 shrink-0"
+            className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[10px] sm:text-[11px] uppercase tracking-wider shadow-lg shadow-[var(--primary)]/20 hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 shrink-0"
           >
             <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Initialize Property</span>
@@ -300,83 +300,83 @@ export default function CustomFieldsPage() {
               <div className="hidden sm:block relative">
                 <SwipeHint containerRef={tableScrollRef} storageKey="fb-custom-fields" align="right" className="absolute -top-6 right-2" />
                 <div ref={tableScrollRef} className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
-                  <thead>
-                    <tr className="border-b border-[var(--border)] bg-[var(--muted)]/30">
-                      <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Variable Property</th>
-                      <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Validator Type</th>
-                      <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Status</th>
-                      <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <AnimatePresence mode="popLayout">
-                      {filtered.map((f, idx) => (
-                        <motion.tr
-                          key={f.id}
-                          layout
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ delay: idx * 0.03 }}
-                          className="group border-b border-[var(--border)]/50 last:border-0 hover:bg-[var(--muted)]/30 transition-colors"
-                        >
-                          <td className="px-6 lg:px-8 py-5">
-                            <div className="flex items-center gap-4">
-                              <div className={cn(
-                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                                f.is_active
-                                  ? "bg-[var(--muted)] text-[var(--muted-foreground)] group-hover:bg-[var(--primary)]/10 group-hover:text-[var(--primary)]"
-                                  : "bg-[var(--muted)]/50 text-[var(--muted-foreground)]/50"
-                              )}>
-                                <Hash className="w-5 h-5" />
+                  <table className="w-full text-left border-collapse min-w-[500px]">
+                    <thead>
+                      <tr className="border-b border-[var(--border)] bg-[var(--muted)]/30">
+                        <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Variable Property</th>
+                        <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Validator Type</th>
+                        <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Status</th>
+                        <th className="px-6 lg:px-8 py-4 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <AnimatePresence mode="popLayout">
+                        {filtered.map((f, idx) => (
+                          <motion.tr
+                            key={f.id}
+                            layout
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ delay: idx * 0.03 }}
+                            className="group border-b border-[var(--border)]/50 last:border-0 hover:bg-[var(--muted)]/30 transition-colors"
+                          >
+                            <td className="px-6 lg:px-8 py-5">
+                              <div className="flex items-center gap-4">
+                                <div className={cn(
+                                  "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                                  f.is_active
+                                    ? "bg-[var(--muted)] text-[var(--muted-foreground)] group-hover:bg-[var(--primary)]/10 group-hover:text-[var(--primary)]"
+                                    : "bg-[var(--muted)]/50 text-[var(--muted-foreground)]/50"
+                                )}>
+                                  <Hash className="w-5 h-5" />
+                                </div>
+                                <span className="text-[15px] font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors truncate max-w-[200px]">
+                                  {f.name}
+                                </span>
                               </div>
-                              <span className="text-[15px] font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors truncate max-w-[200px]">
-                                {f.name}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 lg:px-8 py-5">
-                            <div className="flex items-center gap-2">
-                              {(() => {
-                                const Icon = fieldTypeIcon(f.type);
-                                return <Icon className="w-4 h-4 text-[var(--muted-foreground)]/60" />;
-                              })()}
-                              <span className="text-[11px] font-medium text-[var(--muted-foreground)] capitalize">{f.type}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 lg:px-8 py-5">
-                            <div className={cn(
-                              "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold transition-all",
-                              f.is_active
-                                ? "bg-emerald-500/10 text-emerald-500"
-                                : "bg-[var(--muted)] text-[var(--muted-foreground)]"
-                            )}>
-                              <div className={cn("w-1.5 h-1.5 rounded-full", f.is_active ? "bg-emerald-500 animate-pulse" : "bg-[var(--muted-foreground)]/40")} />
-                              {f.is_active ? "ACTIVE" : "INACTIVE"}
-                            </div>
-                          </td>
-                          <td className="px-6 lg:px-8 py-5 text-right">
-                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                              <button
-                                onClick={() => setModal({ open: true, mode: "edit", initial: f })}
-                                className="w-10 h-10 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5 flex items-center justify-center transition-all active:scale-90"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => setDeleteId(f.id)}
-                                className="w-10 h-10 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-rose-500 hover:border-rose-500/30 hover:bg-rose-500/5 flex items-center justify-center transition-all active:scale-90"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </motion.tr>
-                      ))}
-                    </AnimatePresence>
-                  </tbody>
-                </table>
+                            </td>
+                            <td className="px-6 lg:px-8 py-5">
+                              <div className="flex items-center gap-2">
+                                {(() => {
+                                  const Icon = fieldTypeIcon(f.type);
+                                  return <Icon className="w-4 h-4 text-[var(--muted-foreground)]/60" />;
+                                })()}
+                                <span className="text-[11px] font-medium text-[var(--muted-foreground)] capitalize">{f.type}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 lg:px-8 py-5">
+                              <div className={cn(
+                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold transition-all",
+                                f.is_active
+                                  ? "bg-emerald-500/10 text-emerald-500"
+                                  : "bg-[var(--muted)] text-[var(--muted-foreground)]"
+                              )}>
+                                <div className={cn("w-1.5 h-1.5 rounded-full", f.is_active ? "bg-emerald-500 animate-pulse" : "bg-[var(--muted-foreground)]/40")} />
+                                {f.is_active ? "ACTIVE" : "INACTIVE"}
+                              </div>
+                            </td>
+                            <td className="px-6 lg:px-8 py-5 text-right">
+                              <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                                <button
+                                  onClick={() => setModal({ open: true, mode: "edit", initial: f })}
+                                  className="w-10 h-10 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5 flex items-center justify-center transition-all active:scale-90"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => setDeleteId(f.id)}
+                                  className="w-10 h-10 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-rose-500 hover:border-rose-500/30 hover:bg-rose-500/5 flex items-center justify-center transition-all active:scale-90"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </AnimatePresence>
+                    </tbody>
+                  </table>
                 </div>
               </div>
 

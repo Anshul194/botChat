@@ -33,7 +33,6 @@ const PAGE_MAP: Record<string, string> = {
     "/dashboard/instagram": "Instagram",
     "/dashboard/facebook": "Facebook",
     "/dashboard/analytics": "Analytics",
-    "/dashboard/contacts": "Contacts",
     "/dashboard/campaigns": "Campaigns",
     "/dashboard/settings": "Settings",
     "/dashboard/billing": "Billing",

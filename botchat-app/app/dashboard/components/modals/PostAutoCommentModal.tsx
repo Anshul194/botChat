@@ -35,10 +35,10 @@ interface PostAutoCommentModalProps {
 function Field({ label, required, children, icon: Icon, desc }: { label: string; required?: boolean; children: React.ReactNode; icon?: any, desc?: string }) {
     return (
         <div className="space-y-1.5 flex-1 min-w-0">
-            <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
+            <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                {Icon && <Icon className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" />}
                 {label} {required && <span className="text-rose-400">*</span>}
-                {desc && <span className="text-[10px] text-slate-400 font-medium ml-auto">{desc}</span>}
+                {desc && <span className="text-[10px] text-[var(--muted-foreground)]/70 font-medium ml-auto">{desc}</span>}
             </label>
             {children}
         </div>
@@ -47,8 +47,8 @@ function Field({ label, required, children, icon: Icon, desc }: { label: string;
 
 function CapsuleSwitch({ active }: { active: boolean }) {
     return (
-        <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-pink-600" : "bg-slate-300 shadow-inner")}>
-            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all", active ? "left-6.5" : "left-0.5")} />
+        <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-[var(--primary)]" : "bg-[var(--muted)] shadow-inner")}>
+            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] transition-all", active ? "left-6.5" : "left-0.5")} />
         </div>
     );
 }
@@ -327,17 +327,17 @@ export function PostAutoCommentModal({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 24 }}
                     className={cn(
-                        "relative z-10 w-full bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] transition-all",
+                        "relative z-10 w-full bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] transition-all",
                         view === "choice" ? "max-w-lg" : "max-w-[900px]"
                     )}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">
+                    <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
                                 <Sparkles size={18} />
                             </div>
-                            <h2 className="text-[14px] font-semibold text-slate-800 uppercase tracking-tight">
+                            <h2 className="text-[14px] font-semibold text-[var(--foreground)] uppercase tracking-tight">
                                 {existingCampaignId ? "Manage Auto Comment" : "Enable Auto Comment"}
                             </h2>
                         </div>
@@ -352,37 +352,37 @@ export function PostAutoCommentModal({
                                     </button>
                                 </>
                             )}
-                            <button onClick={onClose} className="text-slate-300 hover:text-rose-500 transition-colors ml-4">
+                            <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors ml-4">
                                 <X size={22} />
                             </button>
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#FDFDFF] custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--card)] custom-scrollbar">
                         <AnimatePresence mode="wait">
                             {isFetchingConfig ? (
                                 <div className="h-[300px] flex flex-col items-center justify-center space-y-4">
-                                    <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
-                                    <p className="text-sm font-medium text-slate-400">Syncing configuration...</p>
+                                    <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
+                                    <p className="text-sm font-medium text-[var(--muted-foreground)]/70">Syncing configuration...</p>
                                 </div>
                             ) : view === "choice" ? (
                                 <motion.div key="choice" className="space-y-8 py-8">
                                     <div className="text-center space-y-2 mb-10">
-                                        <h3 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Campaign Activation</h3>
-                                        <p className="text-sm text-slate-500 font-medium">Configure your periodic comment engine</p>
+                                        <h3 className="text-xl font-bold text-[var(--foreground)] tracking-tight uppercase">Campaign Activation</h3>
+                                        <p className="text-sm text-[var(--muted-foreground)] font-medium">Configure your periodic comment engine</p>
                                     </div>
                                     <div className="grid grid-cols-1 gap-5 max-w-sm mx-auto">
-                                        <button onClick={() => setView("config")} className="group p-6 rounded-2xl border-2 border-slate-100 hover:border-pink-500 hover:bg-pink-50/30 transition-all text-left relative overflow-hidden">
+                                        <button onClick={() => setView("config")} className="group p-6 rounded-2xl border-2 border-[var(--border)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all text-left relative overflow-hidden">
                                             <div className="flex items-center gap-5 relative z-10">
-                                                <div className="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-600 group-hover:text-white transition-all">
+                                                <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center group-hover:bg-[var(--primary)] group-hover:text-white transition-all">
                                                     <Settings2 size={24} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[15px] font-bold text-slate-800 tracking-tight uppercase">Configure Flow</p>
-                                                    <p className="text-[12px] text-slate-400 font-medium lowercase">Set schedule and logic rules</p>
+                                                    <p className="text-[15px] font-bold text-[var(--foreground)] tracking-tight uppercase">Configure Flow</p>
+                                                    <p className="text-[12px] text-[var(--muted-foreground)]/70 font-medium lowercase">Set schedule and logic rules</p>
                                                 </div>
                                             </div>
-                                            <ArrowRight className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-200 group-hover:text-pink-600 transition-all group-hover:translate-x-1" />
+                                            <ArrowRight className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-200 group-hover:text-[var(--primary)] transition-all group-hover:translate-x-1" />
                                         </button>
                                     </div>
                                 </motion.div>
@@ -391,29 +391,29 @@ export function PostAutoCommentModal({
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <Field label="Campaign Name" required icon={Edit3}>
                                             <input type="text" value={form.campaign_name} onChange={e => setForm({ ...form, campaign_name: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                 placeholder="e.g. Daily Engagement Blast"
                                             />
                                         </Field>
                                         <Field label="Timezone" icon={Globe}>
                                             <div className="relative">
                                                 <select value={form.timezone} onChange={e => setForm({ ...form, timezone: e.target.value })}
-                                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer"
+                                                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none bg-[var(--card)] cursor-pointer"
                                                 >
                                                     <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
                                                     <option value="UTC">UTC (Universal)</option>
                                                     <option value="America/New_York">America/New_York (EST)</option>
                                                     <option value="Europe/London">Europe/London (GMT)</option>
                                                 </select>
-                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 pointer-events-none" />
                                             </div>
                                         </Field>
                                     </div>
 
-                                    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+                                    <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-sm space-y-6">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <MessageCircle className="w-4 h-4 text-pink-500" />
-                                            <h3 className="text-sm font-semibold text-slate-700">Content Logic</h3>
+                                            <MessageCircle className="w-4 h-4 text-[var(--primary)]" />
+                                            <h3 className="text-sm font-semibold text-[var(--foreground)]">Content Logic</h3>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <Field label="Choose Message Template" required icon={Layers}>
@@ -421,17 +421,17 @@ export function PostAutoCommentModal({
                                                     <select
                                                         value={form.template_id}
                                                         onChange={(e) => setForm({ ...form, template_id: e.target.value })}
-                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer"
+                                                        className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none bg-[var(--card)] cursor-pointer"
                                                     >
                                                         <option value="" disabled>{isLoadingTemplates ? "Fetching templates..." : "Select a template"}</option>
                                                         {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                     </select>
-                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 pointer-events-none" />
                                                 </div>
                                             </Field>
                                             <div className="space-y-4">
-                                                <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                    <LayoutGrid className="w-3.5 h-3.5 text-slate-400" />
+                                                <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                    <LayoutGrid className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" />
                                                     Selection Mode
                                                 </label>
                                                 <div className="flex gap-4">
@@ -440,7 +440,7 @@ export function PostAutoCommentModal({
                                                         { id: 'serial', label: 'Serial' }
                                                     ].map(opt => (
                                                         <button key={opt.id} onClick={() => setForm(f => ({ ...f, comment_type: opt.id as any }))}
-                                                            className={cn("flex-1 py-2.5 rounded-xl border-2 transition-all font-bold text-[12px] uppercase tracking-widest", form.comment_type === opt.id ? "border-pink-500 bg-pink-50 text-pink-600" : "border-slate-50 bg-white text-slate-400 hover:border-slate-200")}
+                                                            className={cn("flex-1 py-2.5 rounded-xl border-2 transition-all font-bold text-[12px] uppercase tracking-widest", form.comment_type === opt.id ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]" : "border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)]/70 hover:border-[var(--border)]")}
                                                         >
                                                             {opt.label}
                                                         </button>
@@ -450,19 +450,19 @@ export function PostAutoCommentModal({
                                         </div>
                                     </div>
 
-                                    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+                                    <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-sm space-y-6">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <Calendar className="w-4 h-4 text-pink-500" />
-                                            <h3 className="text-sm font-semibold text-slate-700">Schedule Engine</h3>
+                                            <Calendar className="w-4 h-4 text-[var(--primary)]" />
+                                            <h3 className="text-sm font-semibold text-[var(--foreground)]">Schedule Engine</h3>
                                         </div>
 
-                                        <div className="flex gap-2 p-1 bg-slate-50 rounded-xl mb-6">
+                                        <div className="flex gap-2 p-1 bg-[var(--muted)]/50 rounded-xl mb-6">
                                             {[
                                                 { id: 'periodic', label: 'Periodic Flow' },
                                                 { id: 'one_time', label: 'One Time Blast' }
                                             ].map(opt => (
                                                 <button key={opt.id} onClick={() => setForm(f => ({ ...f, schedule_type: opt.id as any }))}
-                                                    className={cn("flex-1 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all", form.schedule_type === opt.id ? "bg-white text-pink-600 shadow-sm" : "text-slate-400 hover:text-slate-600")}
+                                                    className={cn("flex-1 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all", form.schedule_type === opt.id ? "bg-[var(--card)] text-[var(--primary)] shadow-sm" : "text-[var(--muted-foreground)]/70 hover:text-[var(--muted-foreground)]")}
                                                 >
                                                     {opt.label}
                                                 </button>
@@ -474,7 +474,7 @@ export function PostAutoCommentModal({
                                                 <motion.div key="one_time" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="space-y-4">
                                                     <Field label="Target Time" required icon={Clock}>
                                                         <input type="datetime-local" value={fromBackendFormat(form.schedule_time)} onChange={e => setForm({ ...form, schedule_time: toBackendFormat(e.target.value) })}
-                                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                         />
                                                     </Field>
                                                 </motion.div>
@@ -483,24 +483,24 @@ export function PostAutoCommentModal({
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                         <Field label="Cycle Engagement Start" required icon={Clock}>
                                                             <input type="time" value={form.start_time.slice(0, 5)} onChange={e => setForm({ ...form, start_time: e.target.value })}
-                                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                             />
                                                         </Field>
                                                         <Field label="Cycle Engagement End" required icon={Clock}>
                                                             <input type="time" value={form.end_time.slice(0, 5)} onChange={e => setForm({ ...form, end_time: e.target.value })}
-                                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                             />
                                                         </Field>
                                                     </div>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-pink-50/30 rounded-2xl border border-pink-100/50">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 hover:bg-[var(--primary)]/10 rounded-2xl border border-pink-100/50">
                                                         <Field label="Comment Active From" desc="HH:MM" icon={Clock}>
                                                             <input type="time" value={form.comment_between_start.slice(0, 5)} onChange={e => setForm({ ...form, comment_between_start: e.target.value })}
-                                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                             />
                                                         </Field>
                                                         <Field label="Comment Active To" desc="HH:MM" icon={Clock}>
                                                             <input type="time" value={form.comment_between_end.slice(0, 5)} onChange={e => setForm({ ...form, comment_between_end: e.target.value })}
-                                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                             />
                                                         </Field>
                                                     </div>
@@ -514,9 +514,9 @@ export function PostAutoCommentModal({
                     </div>
 
                     {view !== "choice" && (
-                        <div className="p-8 bg-white border-t border-slate-50 flex gap-4 sticky bottom-0 z-20">
-                            <button onClick={() => setView("choice")} className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-500 font-bold text-[13px] hover:bg-slate-50 transition-all uppercase tracking-widest">Back</button>
-                            <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                        <div className="p-8 bg-[var(--card)] border-t border-[var(--border)] flex gap-4 sticky bottom-0 z-20">
+                            <button onClick={() => setView("choice")} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all uppercase tracking-widest">Back</button>
+                            <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
                                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save size={18} />}
                                 <span>{existingCampaignId ? "Update Protocol" : "Deploy Campaign"}</span>
                             </button>

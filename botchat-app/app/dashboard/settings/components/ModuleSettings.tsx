@@ -95,7 +95,7 @@ export default function ModuleSettings({ module, title, icon: Icon, color }: Mod
                                     <input type="checkbox" className="sr-only peer"
                                         checked={form.working_hours_enabled}
                                         onChange={(e) => setForm({ ...form, working_hours_enabled: e.target.checked })} />
-                                    <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"
+                                    <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-[var(--card)] after:rounded-full after:h-5 after:w-5 after:transition-all"
                                         style={{ background: form.working_hours_enabled ? color : "var(--glass-border)" }} />
                                 </label>
                             </div>
@@ -130,7 +130,7 @@ export default function ModuleSettings({ module, title, icon: Icon, color }: Mod
                                             <input type="checkbox" className="sr-only peer"
                                                 checked={form.notification_sound}
                                                 onChange={(e) => setForm({ ...form, notification_sound: e.target.checked })} />
-                                            <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"
+                                            <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-[var(--card)] after:rounded-full after:h-5 after:w-5 after:transition-all"
                                                 style={{ background: form.notification_sound ? color : "var(--glass-border)" }} />
                                         </label>
                                     </div>
@@ -208,7 +208,7 @@ export default function ModuleSettings({ module, title, icon: Icon, color }: Mod
                                     <input type="checkbox" className="sr-only peer"
                                         checked={form.watermark_enabled}
                                         onChange={(e) => setForm({ ...form, watermark_enabled: e.target.checked })} />
-                                    <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"
+                                    <div className="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-[var(--card)] after:rounded-full after:h-5 after:w-5 after:transition-all"
                                         style={{ background: form.watermark_enabled ? color : "var(--glass-border)" }} />
                                 </label>
                             </div>

@@ -54,7 +54,7 @@ export default function VerificationBanner() {
                     <div>
                         <h4 className="font-bold text-sm text-[#f8fafc] flex items-center gap-2">
                             Verify your email address
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--primary)]/100/20 text-[var(--primary)]/80 border border-[var(--primary)]/30">
                                 REQUIRED
                             </span>
                         </h4>
@@ -93,7 +93,7 @@ export default function VerificationBanner() {
 
                     <button 
                         onClick={() => setDismissed(true)}
-                        className="p-2 rounded-lg hover:bg-white/10 text-[#64748b] transition-colors"
+                        className="p-2 rounded-lg hover:bg-[var(--card)]/10 text-[#64748b] transition-colors"
                     >
                         <X className="w-4 h-4" />
                     </button>

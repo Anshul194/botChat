@@ -152,7 +152,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                                   </button>
                                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                                       {displayMedia.map((_, i) => (
-                                          <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === currentMediaIndex ? 'bg-primary' : 'bg-white/50'}`} />
+                                          <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === currentMediaIndex ? 'bg-primary' : 'bg-[var(--card)]/50'}`} />
                                       ))}
                                   </div>
                               </>
@@ -168,16 +168,16 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                           )}
                       </>
                     ) : type === 'cta' || type === 'link' ? (
-                      <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center border-y border-[var(--border)] overflow-hidden">
+                      <div className="w-full h-full bg-[var(--muted)]/50 flex flex-col items-center justify-center border-y border-[var(--border)] overflow-hidden">
                          {linkUrl ? (
-                            <div className="w-full h-full flex flex-col bg-white">
-                               <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                            <div className="w-full h-full flex flex-col bg-[var(--card)]">
+                               <div className="flex-1 bg-[var(--muted)]/70 flex flex-col items-center justify-center text-[var(--muted-foreground)]/70 p-6 text-center">
                                   <ExternalLink className="w-8 h-8 mb-2 opacity-50" />
                                   <span className="text-xs font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
                                </div>
-                               <div className="p-3 bg-slate-50 border-t border-[var(--border)]">
-                                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'Link Preview'}</p>
-                                  <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">{content || 'A summary of the linked content will appear here.'}</p>
+                               <div className="p-3 bg-[var(--muted)]/50 border-t border-[var(--border)]">
+                                  <p className="text-xs font-bold text-[var(--foreground)] line-clamp-1">{linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'Link Preview'}</p>
+                                  <p className="text-[10px] text-[var(--muted-foreground)] line-clamp-1 mt-0.5">{content || 'A summary of the linked content will appear here.'}</p>
                                </div>
                             </div>
                          ) : (
@@ -275,9 +275,9 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                                )}
                           </>
                       ) : type === 'cta' || type === 'link' ? (
-                          <div className="w-full h-full flex flex-col bg-slate-100">
+                          <div className="w-full h-full flex flex-col bg-[var(--muted)]/50">
                              {linkUrl ? (
-                                <div className="flex-1 bg-slate-200 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                                <div className="flex-1 bg-[var(--muted)]/70 flex flex-col items-center justify-center text-[var(--muted-foreground)]/70 p-6 text-center">
                                     <ExternalLink className="w-10 h-10 mb-3 opacity-50" />
                                     <span className="text-sm font-bold line-clamp-1 break-all w-full">{linkUrl}</span>
                                 </div>
@@ -298,7 +298,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                 )}
 
                 {(type === 'cta' || type === 'link') && (
-                    <div className="p-3 bg-[var(--card)] flex items-center justify-between border-b border-[var(--border)] cursor-pointer hover:bg-slate-50 transition-colors">
+                    <div className="p-3 bg-[var(--card)] flex items-center justify-between border-b border-[var(--border)] cursor-pointer hover:bg-[var(--muted)]/50 transition-colors">
                         <div className="flex-1 min-w-0 pr-4">
                             <p className="text-[10px] text-[var(--muted-foreground)] uppercase font-bold tracking-wider mb-0.5">
                                {linkUrl ? new URL(linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`).hostname : 'EXAMPLE.COM'}

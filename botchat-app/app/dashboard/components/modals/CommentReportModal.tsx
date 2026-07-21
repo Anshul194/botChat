@@ -106,7 +106,7 @@ export function CommentReportModal({
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[40px] w-full max-w-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
             >
                 {/* Header */}
                 <div className="p-8 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
@@ -130,7 +130,7 @@ export function CommentReportModal({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-white dark:bg-neutral-900">
+                <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900">
                     
                     {/* Summary Stats */}
                     {summary && (
@@ -192,10 +192,10 @@ export function CommentReportModal({
                             </div>
                         ) : reports.length > 0 ? (
                             reports.map((item) => (
-                                <div key={item.id} className="group p-5 rounded-[28px] bg-neutral-50/50 dark:bg-neutral-950/30 border border-neutral-100 dark:border-neutral-800 hover:border-emerald-500/30 transition-all hover:bg-white dark:hover:bg-neutral-900 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
+                                <div key={item.id} className="group p-5 rounded-2xl bg-neutral-50/50 dark:bg-neutral-950/30 border border-neutral-100 dark:border-neutral-800 hover:border-emerald-500/30 transition-all hover:bg-[var(--card)] dark:hover:bg-neutral-900 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5">
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex gap-4 min-w-0">
-                                            <div className="w-10 h-10 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-800 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                            <div className="w-10 h-10 rounded-xl bg-[var(--card)] dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-800 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                                 <MessageSquare className="w-5 h-5 text-emerald-500" />
                                             </div>
                                             <div className="min-w-0">
@@ -273,7 +273,7 @@ export function CommentReportModal({
                                 <button 
                                     disabled={page <= 1 || isLoading}
                                     onClick={() => fetchReport(page - 1)}
-                                    className="px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-primary transition-all disabled:opacity-30"
+                                    className="px-4 py-2 rounded-xl bg-[var(--card)] dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-primary transition-all disabled:opacity-30"
                                 >
                                     Back
                                 </button>
@@ -283,7 +283,7 @@ export function CommentReportModal({
                                 <button 
                                     disabled={page >= meta.last_page || isLoading}
                                     onClick={() => fetchReport(page + 1)}
-                                    className="px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-primary transition-all disabled:opacity-30"
+                                    className="px-4 py-2 rounded-xl bg-[var(--card)] dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-primary transition-all disabled:opacity-30"
                                 >
                                     Next
                                 </button>
@@ -292,7 +292,7 @@ export function CommentReportModal({
                     </div>
                     <button 
                         onClick={onClose}
-                        className="px-8 py-4 rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[11px] font-black uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-all active:scale-95 shadow-sm"
+                        className="px-8 py-4 rounded-2xl bg-[var(--card)] dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[11px] font-black uppercase tracking-widest text-neutral-500 hover:bg-neutral-50 transition-all active:scale-95 shadow-sm"
                     >
                         Close Analytics
                     </button>

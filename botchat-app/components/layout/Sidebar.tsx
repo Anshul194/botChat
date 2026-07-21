@@ -177,7 +177,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
             } catch (e) { }
         }, 6000);
         try {
-            router.push(href).finally(() => clearTimeout(fallback));
+            router.push(href);
+            clearTimeout(fallback);
         } catch (e) {
             clearTimeout(fallback);
         }
@@ -547,7 +548,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div variants={itemVariants} className="space-y-0.5">
                             {!collapsed && (
                                 <div className="px-3 pb-1.5">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] dark:text-[var(--foreground)]">
                                         Administration
                                     </span>
                                 </div>
@@ -739,7 +740,7 @@ function NavAccordion({
                     <div className={cn(
                         "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
                         isActive
-                            ? "bg-white dark:bg-neutral-900 shadow-sm"
+                            ? "bg-[var(--card)] dark:bg-neutral-900 shadow-sm"
                             : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
                     )}>
                         <Icon
@@ -828,7 +829,7 @@ function NavAccordion({
                         <TooltipContent
                             side="right"
                             sideOffset={10}
-                            className="p-2 min-w-[200px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden"
+                            className="p-2 min-w-[200px] bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden"
                         >
                             <div className="px-3 py-2 mb-1 border-b border-neutral-100 dark:border-neutral-800">
                                 <span className="text-xs font-black uppercase tracking-widest text-neutral-400">{label}</span>
@@ -923,7 +924,7 @@ function NavItem({
                 <div className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
                     isActive
-                        ? "bg-white dark:bg-neutral-900 shadow-sm"
+                        ? "bg-[var(--card)] dark:bg-neutral-900 shadow-sm"
                         : "bg-neutral-100 dark:bg-neutral-800/60 group-hover:bg-neutral-200/70 dark:group-hover:bg-neutral-700/60"
                 )}>
                     <item.icon

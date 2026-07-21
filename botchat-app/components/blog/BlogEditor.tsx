@@ -45,11 +45,11 @@ const MenuBar = ({ editor }: { editor: any }) => {
     };
 
     return (
-        <div className="flex flex-wrap gap-1 p-2 bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+        <div className="flex flex-wrap gap-1 p-2 bg-[var(--muted)]/50 border-b border-[var(--border)] sticky top-0 z-10">
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleBold().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('bold') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('bold') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Bold"
             >
                 <Bold className="w-4 h-4" />
@@ -57,7 +57,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleItalic().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('italic') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('italic') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Italic"
             >
                 <Italic className="w-4 h-4" />
@@ -65,16 +65,16 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('underline') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('underline') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Underline"
             >
                 <UnderlineIcon className="w-4 h-4" />
             </button>
-            <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
+            <div className="w-px h-6 bg-[var(--muted)]/80 mx-1 self-center" />
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('heading', { level: 1 }) ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('heading', { level: 1 }) ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Heading 1"
             >
                 <Heading1 className="w-4 h-4" />
@@ -82,16 +82,16 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('heading', { level: 2 }) ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('heading', { level: 2 }) ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Heading 2"
             >
                 <Heading2 className="w-4 h-4" />
             </button>
-            <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
+            <div className="w-px h-6 bg-[var(--muted)]/80 mx-1 self-center" />
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('bulletList') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('bulletList') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Bullet List"
             >
                 <List className="w-4 h-4" />
@@ -99,16 +99,16 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('orderedList') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('orderedList') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Ordered List"
             >
                 <ListOrdered className="w-4 h-4" />
             </button>
-            <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
+            <div className="w-px h-6 bg-[var(--muted)]/80 mx-1 self-center" />
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('blockquote') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('blockquote') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Quote"
             >
                 <Quote className="w-4 h-4" />
@@ -116,16 +116,16 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().toggleCode().run()}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('code') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('code') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Code"
             >
                 <Code className="w-4 h-4" />
             </button>
-            <div className="w-px h-6 bg-slate-200 mx-1 self-center" />
+            <div className="w-px h-6 bg-[var(--muted)]/80 mx-1 self-center" />
             <button
                 type="button"
                 onClick={addLink}
-                className={`p-2 rounded-lg hover:bg-slate-200 transition-colors ${editor.isActive('link') ? 'bg-slate-200 text-black' : 'text-slate-500'}`}
+                className={`p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors ${editor.isActive('link') ? 'bg-[var(--muted)]/80 text-black' : 'text-[var(--muted-foreground)]'}`}
                 title="Add Link"
             >
                 <LinkIcon className="w-4 h-4" />
@@ -133,7 +133,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 rounded-lg hover:bg-slate-200 transition-colors text-slate-500"
+                className="p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors text-[var(--muted-foreground)]"
                 title="Add Image"
             >
                 <ImageIcon className="w-4 h-4" />
@@ -149,7 +149,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().undo().run()}
-                className="p-2 rounded-lg hover:bg-slate-200 transition-colors text-slate-500"
+                className="p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors text-[var(--muted-foreground)]"
                 title="Undo"
             >
                 <Undo className="w-4 h-4" />
@@ -157,7 +157,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
             <button
                 type="button"
                 onClick={() => editor.chain().focus().redo().run()}
-                className="p-2 rounded-lg hover:bg-slate-200 transition-colors text-slate-500"
+                className="p-2 rounded-lg hover:bg-[var(--muted)]/80 transition-colors text-[var(--muted-foreground)]"
                 title="Redo"
             >
                 <Redo className="w-4 h-4" />
@@ -179,7 +179,7 @@ export default function BlogEditor({ content, onChange }: BlogEditorProps) {
             }),
             Image.configure({
                 HTMLAttributes: {
-                    class: 'rounded-2xl max-w-full h-auto my-8 border border-slate-100',
+                    class: 'rounded-2xl max-w-full h-auto my-8 border border-[var(--border)]',
                 },
             }),
             Placeholder.configure({
@@ -192,7 +192,7 @@ export default function BlogEditor({ content, onChange }: BlogEditorProps) {
         },
         editorProps: {
             attributes: {
-                class: 'prose prose-slate max-w-none focus:outline-none min-h-[500px] px-8 py-10 prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_li]:mb-2 [&_blockquote]:border-l-4 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-500',
+                class: 'prose prose-slate max-w-none focus:outline-none min-h-[500px] px-8 py-10 prose-headings:font-black prose-p:font-medium prose-p:text-[var(--muted-foreground)] [&_ul]:list-disc [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6 [&_li]:mb-2 [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--border)]/70 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--muted-foreground)]',
             },
             handlePaste: (view, event) => {
                 const items = Array.from(event.clipboardData?.items || []);
@@ -238,7 +238,7 @@ export default function BlogEditor({ content, onChange }: BlogEditorProps) {
     });
 
     return (
-        <div className="rounded-[32px] border border-slate-200 bg-white shadow-sm overflow-hidden focus-within:border-black transition-colors">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm overflow-hidden focus-within:border-black transition-colors">
             <MenuBar editor={editor} />
             <EditorContent editor={editor} />
         </div>

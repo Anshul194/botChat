@@ -310,7 +310,7 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                                                     { key: "whatsapp", label: "WhatsApp", icon: Smartphone, color: "text-green-600" },
                                                     { key: "telegram", label: "Telegram", icon: Send, color: "text-blue-500" },
                                                     { key: "facebook", label: "Facebook Messenger", icon: Facebook, color: "text-blue-600" },
-                                                    { key: "instagram", label: "Instagram DM", icon: Instagram, color: "text-pink-500" },
+                                                    { key: "instagram", label: "Instagram DM", icon: Instagram, color: "text-[var(--primary)]" },
                                                 ].map(ch => {
                                                     const active = formData.features[ch.key] === "1";
                                                     return (

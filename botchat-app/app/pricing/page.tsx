@@ -79,7 +79,7 @@ export default function PricingPage() {
             .then((d) => {
                 if (d.success) setPlans(d.data);
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setIsLoading(false));
     }, []);
 
@@ -191,11 +191,11 @@ export default function PricingPage() {
 
                                             <div className="space-y-4 mb-10 flex-1">
                                                 {plan.features && Object.entries(plan.features).filter(([, v]) => {
-                                                    const val = typeof v === 'object' ? v.value : v;
+                                                    const val = typeof v === 'object' && v !== null ? (v as any).value : v;
                                                     return val !== "0";
                                                 }).slice(0, 8).map(([key, val]) => {
                                                     const label = featureLabels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-                                                    const raw = typeof val === 'object' ? val.value : val;
+                                                    const raw = typeof val === 'object' && val !== null ? (val as any).value : val;
                                                     const display = raw === "1" ? "Unlimited" : raw;
                                                     return (
                                                         <div key={key} className="flex items-center gap-3">

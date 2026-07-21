@@ -50,43 +50,43 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect: (e: string) => v
   return (
     <motion.div ref={ref}
       initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
-      className="w-[320px] sm:w-[400px] bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700 rounded-[32px] shadow-[0_32px_96px_-12px_rgba(0,0,0,0.25)] overflow-hidden"
+      className="w-[320px] sm:w-[400px] bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl shadow-[0_32px_96px_-12px_rgba(0,0,0,0.25)] overflow-hidden"
       onClick={e => e.stopPropagation()}
     >
-      <div className="flex items-center px-4 pt-4 pb-2 gap-1 overflow-x-auto no-scrollbar border-b border-slate-50 dark:border-slate-800">
+      <div className="flex items-center px-4 pt-4 pb-2 gap-1 overflow-x-auto no-scrollbar border-b border-[var(--border)] dark:border-[var(--border)]">
         {EC.map(cat => (
           <button key={cat.id} onClick={() => scrollTo(cat.id)}
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-xl text-[18px] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-90"
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-xl text-[18px] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] transition-all active:scale-90"
           >
-            {cat.id === "recent" ? <Clock className="w-4 h-4 text-slate-400" /> : cat.icon}
+            {cat.id === "recent" ? <Clock className="w-4 h-4 text-[var(--muted-foreground)]/70" /> : cat.icon}
           </button>
         ))}
       </div>
       <div className="px-4 py-3">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70" />
           <input type="text" placeholder="Search emojis…" value={q} onChange={e => setQ(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-pink-500/10 placeholder:text-slate-400 text-slate-700 dark:text-slate-200"
+            className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-none outline-none focus:ring-2 focus:ring-[var(--primary)]/10 placeholder:text-[var(--muted-foreground)]/70 text-[var(--foreground)] dark:text-[var(--foreground)]"
           />
         </div>
       </div>
       <div ref={listRef} className="max-h-[320px] overflow-y-auto px-4 pb-4 custom-scrollbar scroll-smooth no-scrollbar">
         {allFiltered ? (
           <div className="pt-2">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Results</p>
+            <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-3">Results</p>
             <div className="grid grid-cols-7 sm:grid-cols-8 gap-1">
               {allFiltered.map((emoji, i) => (
-                <button key={i} onClick={() => { onSelect(emoji); setQ(""); }} className="text-[26px] h-11 w-11 flex items-center justify-center rounded-xl hover:bg-pink-50 dark:hover:bg-pink-500/20 transition-all">{emoji}</button>
+                <button key={i} onClick={() => { onSelect(emoji); setQ(""); }} className="text-[26px] h-11 w-11 flex items-center justify-center rounded-xl hover:bg-[var(--primary)]/10 dark:hover:bg-[var(--primary)]/100/20 transition-all">{emoji}</button>
               ))}
             </div>
           </div>
         ) : (
           EC.filter(c => c.id !== "recent").map(cat => (
             <div key={cat.id} id={`cat-${cat.id}`} className="mb-6">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-1">{cat.label}</p>
+              <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-3 px-1">{cat.label}</p>
               <div className="grid grid-cols-7 sm:grid-cols-8 gap-1">
                 {cat.emojis.map((emoji, i) => (
-                  <button key={i} onClick={() => onSelect(emoji)} className="text-[26px] h-11 w-11 flex items-center justify-center rounded-xl hover:bg-pink-50 dark:hover:bg-pink-500/20 transition-all">{emoji}</button>
+                  <button key={i} onClick={() => onSelect(emoji)} className="text-[26px] h-11 w-11 flex items-center justify-center rounded-xl hover:bg-[var(--primary)]/10 dark:hover:bg-[var(--primary)]/100/20 transition-all">{emoji}</button>
                 ))}
               </div>
             </div>
@@ -119,15 +119,15 @@ function MessageRow({ value, index, onChange, onRemove, showRemove, recent, addR
   return (
     <div className="relative">
       <div className={cn(
-        "rounded-[32px] border-2 bg-white transition-all overflow-hidden shadow-sm",
-        showEmoji ? "border-pink-500 shadow-xl shadow-pink-500/5 ring-4 ring-pink-500/5" : "border-slate-100 focus-within:border-pink-400/60"
+        "rounded-2xl border-2 bg-[var(--card)] transition-all overflow-hidden shadow-sm",
+        showEmoji ? "border-[var(--primary)] shadow-xl shadow-pink-500/5 ring-4 ring-[var(--primary)]/5" : "border-[var(--border)] focus-within:border-[var(--primary)]/60"
       )}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--muted)]/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center shadow-sm">
-              <span className="text-[12px] font-black text-pink-600">{index + 1}</span>
+            <div className="w-8 h-8 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-center justify-center shadow-sm">
+              <span className="text-[12px] font-black text-[var(--primary)]">{index + 1}</span>
             </div>
-            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Rotation Node</span>
+            <span className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest">Rotation Node</span>
           </div>
           {showRemove && (
             <button onClick={onRemove} className="p-2.5 rounded-xl text-slate-200 hover:text-rose-500 transition-all">
@@ -137,13 +137,13 @@ function MessageRow({ value, index, onChange, onRemove, showRemove, recent, addR
         </div>
         <textarea ref={textRef} rows={3} value={value} onChange={e => onChange(e.target.value)}
           placeholder={`Enter the automated response text here…`}
-          className="w-full px-8 py-5 text-[15px] font-bold resize-none outline-none bg-white text-slate-800 placeholder:text-slate-200 leading-relaxed min-h-[110px]"
+          className="w-full px-8 py-5 text-[15px] font-bold resize-none outline-none bg-[var(--card)] text-[var(--foreground)] placeholder:text-slate-200 leading-relaxed min-h-[110px]"
         />
         <div className="flex items-center justify-end px-6 pb-4">
           <button ref={buttonRef} type="button" onClick={() => setShowEmoji(!showEmoji)}
             className={cn(
               "flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[12px] font-black transition-all border uppercase tracking-widest",
-              showEmoji ? "bg-pink-100 border-pink-200 text-pink-600 shadow-inner" : "bg-white border-slate-100 text-slate-400 hover:text-pink-600"
+              showEmoji ? "bg-[var(--primary)]/20 border-pink-200 text-[var(--primary)] shadow-inner" : "bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)]/70 hover:text-[var(--primary)]"
             )}
           >
             <Smile className="w-4 h-4" />
@@ -206,43 +206,43 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 20 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[#fdfdff] dark:bg-slate-900 rounded-none sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center gap-5 px-10 py-7 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center gap-5 px-10 py-7 bg-[var(--card)] border-b border-[var(--border)] dark:border-[var(--border)]">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-200">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-[18px] font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none">
+            <h2 className="text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none">
               {mode === "create" ? "Initialize IG Template" : "Modify Asset"}
             </h2>
-            <p className="text-[11px] text-slate-400 font-bold mt-1.5 uppercase tracking-widest">
+            <p className="text-[11px] text-[var(--muted-foreground)]/70 font-bold mt-1.5 uppercase tracking-widest">
               {mode === "create" ? "Define randomized response rotation for Instagram." : `Editing Node: ${initial?.name}`}
             </p>
           </div>
-          <button onClick={onClose} className="p-3 rounded-[20px] text-slate-300 hover:text-rose-500 transition-all">
+          <button onClick={onClose} className="p-3 rounded-[20px] text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all">
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar uppercase tracking-[0.05em]">
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Template Asset Identity <span className="text-rose-500">*</span></label>
+            <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">Template Asset Identity <span className="text-rose-500">*</span></label>
             <input autoFocus type="text" placeholder='e.g. "Viral IG Response Set"' value={formName}
               onChange={e => setFormName(e.target.value)}
-              className="w-full px-8 py-5 rounded-[28px] bg-white dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 focus:border-pink-500 text-[15px] font-black text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-200"
+              className="w-full px-8 py-5 rounded-2xl bg-[var(--card)] dark:bg-slate-950 border-2 border-[var(--border)] dark:border-[var(--border)] focus:border-[var(--primary)] text-[15px] font-black text-[var(--foreground)] dark:text-white outline-none transition-all placeholder:text-slate-200"
             />
           </div>
 
           <div className="space-y-5">
             <div className="flex items-center justify-between px-2">
               <div>
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Resource Pool <span className="text-rose-500">*</span></label>
-                <p className="text-[10px] text-slate-400 font-medium tracking-tight mt-1 uppercase">Automated randomized rotation</p>
+                <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">Resource Pool <span className="text-rose-500">*</span></label>
+                <p className="text-[10px] text-[var(--muted-foreground)]/70 font-medium tracking-tight mt-1 uppercase">Automated randomized rotation</p>
               </div>
               <button type="button" onClick={addRow}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] text-[12px] font-black uppercase tracking-widest hover:bg-[var(--primary)]/20 transition-all border border-[var(--primary)]/20 shadow-sm"
@@ -263,13 +263,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             </div>
 
             {formMessages.filter(m => m.trim()).length > 0 && (
-              <div className="p-6 rounded-[32px] bg-[var(--primary)]/5 border border-[var(--primary)]/10">
+              <div className="p-6 rounded-2xl bg-[var(--primary)]/5 border border-[var(--primary)]/10">
                 <p className="text-[10px] font-black text-[var(--primary)] mb-3 flex items-center gap-2 uppercase tracking-widest">
                   <Tag className="w-4 h-4" /> Rotation Preview
                 </p>
                 <div className="flex flex-wrap gap-2.5">
                   {formMessages.filter(m => m.trim()).map((m, i) => (
-                    <span key={i} className="text-[13px] px-5 py-2.5 rounded-2xl bg-[var(--card)] border border-[var(--border)] text-slate-700 dark:text-slate-300 font-bold shadow-sm">
+                    <span key={i} className="text-[13px] px-5 py-2.5 rounded-2xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 font-bold shadow-sm">
                       {m}
                     </span>
                   ))}
@@ -280,9 +280,9 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         <div className="flex gap-4 px-10 py-8 bg-transparent border-t border-[var(--border)]">
-          <button onClick={onClose} className="flex-1 py-5 rounded-[22px] bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[13px] uppercase tracking-widest transition-all">Cancel</button>
+          <button onClick={onClose} className="flex-1 py-5 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[13px] uppercase tracking-widest transition-all">Cancel</button>
           <button onClick={handleSave} disabled={isSaving}
-            className="flex-[2.5] py-5 rounded-[22px] bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-black text-[14px] uppercase tracking-[0.2em] shadow-2xl shadow-[var(--primary)]/15 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+            className="flex-[2.5] py-5 rounded-xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-black text-[14px] uppercase tracking-[0.2em] shadow-2xl shadow-[var(--primary)]/15 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
           >
             {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" strokeWidth={3} />}
             {isSaving ? "Synchronizing Asset..." : (mode === "create" ? "Deploy Asset" : "Lock Changes")}
@@ -295,11 +295,11 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 function Stat({ color, label, value }: { color: "pink" | "emerald" | "slate"; label: string; value: number }) {
-  const dot = { pink: "bg-pink-500", emerald: "bg-emerald-500", slate: "bg-slate-400" };
+  const dot = { pink: "bg-[var(--primary)]/100", emerald: "bg-emerald-500", slate: "bg-slate-400" };
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-[22px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] shadow-sm">
       <div className={cn("w-2 h-2 rounded-full", dot[color])} />
-      <span className="text-[12px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest"><span className="text-slate-900 dark:text-white">{value}</span> {label}</span>
+      <span className="text-[12px] font-black text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 uppercase tracking-widest"><span className="text-[var(--foreground)] dark:text-white">{value}</span> {label}</span>
     </div>
   );
 }
@@ -352,24 +352,24 @@ export default function InstagramCommentTemplatesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] font-sans pb-20">
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center sticky top-0 z-40 shadow-xs">
+    <div className="bg-[var(--background)] pb-20">
+      <div className="bg-[var(--card)] border-b border-[var(--border)] sticky top-0 z-[50] shadow-sm">
         <div className="max-w-[1400px] w-full px-8 lg:px-10 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-5">
-            <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-center rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all active:scale-90">
+            <button onClick={() => router.back()} className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[#db2777] hover:border-[#db2777]/30 hover:bg-[#db2777]/5 transition-all active:scale-90">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Instagram · Automation Hub</p>
-              <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mt-1">Comment Inventory</h1>
+              <p className="text-[9px] sm:text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none truncate">Instagram · Automation Hub</p>
+              <h1 className="text-2xl font-black text-[var(--foreground)] uppercase tracking-tighter mt-1">Comment Inventory</h1>
             </div>
           </div>
           <div className="flex items-center gap-3 sm:ml-auto">
-            <button onClick={fetchTemplates} disabled={isLoading} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-slate-300 hover:text-pink-500 hover:bg-pink-50/50 transition-all disabled:opacity-40 active:scale-90">
+            <button onClick={fetchTemplates} disabled={isLoading} className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl sm:rounded-2xl border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[#db2777] hover:bg-[#db2777]/5 transition-all disabled:opacity-40 active:scale-90">
               <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
             </button>
             <button onClick={() => setFormModal({ open: true, mode: "create", template: null })}
-              className="flex items-center gap-3 px-8 py-3.5 rounded-[22px] bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-black text-[12px] uppercase tracking-widest shadow-xl shadow-[var(--primary)]/15 active:scale-95 transition-all transform hover:-translate-y-0.5"
+              className="flex items-center gap-3 px-8 py-3 rounded-xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-black text-[12px] uppercase tracking-widest shadow-xl shadow-[var(--primary)]/15 active:scale-95 transition-all transform hover:-translate-y-0.5"
             >
               <Plus className="w-5 h-5" />
               <span>INITIALIZE NEW</span>
@@ -385,27 +385,27 @@ export default function InstagramCommentTemplatesPage() {
             <Stat color="emerald" label="Distributed" value={templates.filter(t => t.is_active).length} />
           </div>
           <div className="relative flex-1 max-w-md group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-pink-500 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/50 group-focus-within:text-[#db2777] transition-colors" />
             <input type="text" placeholder="Lookup Templates…" value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-6 py-4 rounded-[22px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-[14px] font-bold outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-500/5 transition-all shadow-sm placeholder:text-slate-200"
+              className="w-full pl-12 pr-6 py-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-[14px] font-bold text-[var(--foreground)] outline-none focus:border-[#db2777]/40 focus:ring-4 focus:ring-[#db2777]/5 transition-all shadow-sm placeholder:text-[var(--muted-foreground)]/40"
             />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] shadow-sm overflow-hidden">
-          <div className="grid grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-8 px-10 py-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/20">
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+          <div className="grid grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-8 px-10 py-6 border-b border-[var(--border)] bg-[var(--muted)]/30">
             {["Asset Identity", "Resource Count", "Lifecycle", "Last Modified", "Actions"].map(c => (
-              <span key={c} className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{c}</span>
+              <span key={c} className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">{c}</span>
             ))}
           </div>
 
           {!isLoading && filtered.length === 0 && (
             <div className="flex flex-col items-center py-32 text-center">
-              <div className="w-20 h-20 rounded-[32px] bg-pink-50 dark:bg-pink-900/10 flex items-center justify-center mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-[var(--primary)]/10 dark:bg-pink-900/10 flex items-center justify-center mb-6">
                 <Instagram className="w-10 h-10 text-pink-300 dark:text-pink-700" />
               </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{search ? "No Search Results" : "Inventory Empty"}</h3>
-              <p className="text-sm text-slate-400 mt-2 max-w-xs font-medium uppercase tracking-wide italic leading-relaxed">{search ? "Try a different identification key." : "Initialize your first Instagram randomized response pool."}</p>
+              <h3 className="text-xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight">{search ? "No Search Results" : "Inventory Empty"}</h3>
+              <p className="text-sm text-[var(--muted-foreground)]/70 mt-2 max-w-xs font-medium uppercase tracking-wide italic leading-relaxed">{search ? "Try a different identification key." : "Initialize your first Instagram randomized response pool."}</p>
             </div>
           )}
 
@@ -413,40 +413,40 @@ export default function InstagramCommentTemplatesPage() {
             <div className="divide-y divide-slate-50 dark:divide-slate-800/80">
               {filtered.map((tpl, idx) => (
                 <motion.div key={tpl.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.04 }}
-                  className="grid grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-8 px-10 py-8 items-center group hover:bg-slate-50/20 dark:hover:bg-slate-800/20 transition-all border-b border-transparent last:border-0"
+                  className="grid grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-8 px-10 py-8 items-center group hover:bg-[var(--muted)]/50/20 dark:hover:bg-[var(--muted)]/20 transition-all border-b border-transparent last:border-0"
                 >
                   <div className="flex items-center gap-5 min-w-0">
-                    <div className="w-11 h-11 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center shadow-sm group-hover:bg-pink-600 transition-all group/icon">
-                      <MessageSquare className="w-5 h-5 text-pink-500 group-hover:text-white transition-colors" />
+                    <div className="w-11 h-11 rounded-2xl bg-[var(--primary)]/10 dark:bg-[var(--primary)]/100/10 flex items-center justify-center shadow-sm group-hover:bg-[var(--primary)] transition-all group/icon">
+                      <MessageSquare className="w-5 h-5 text-[var(--primary)] group-hover:text-white transition-colors" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[15px] font-black text-slate-900 dark:text-white truncate uppercase tracking-tight group-hover:text-pink-600 transition-colors">{tpl.name}</p>
-                      <div className="flex items-center gap-2 mt-1.5 px-2 py-0.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 w-fit">
-                        <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Node ID: {tpl.id}</span>
+                      <p className="text-[15px] font-black text-[var(--foreground)] dark:text-white truncate uppercase tracking-tight group-hover:text-[var(--primary)] transition-colors">{tpl.name}</p>
+                      <div className="flex items-center gap-2 mt-1.5 px-2 py-0.5 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 w-fit">
+                        <span className="text-[10px] font-black text-[var(--muted-foreground)]/50 uppercase tracking-widest">Node ID: {tpl.id}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-slate-400">
+                  <div className="flex items-center gap-1.5 text-[var(--muted-foreground)]/70">
                     <Hash className="w-4 h-4" strokeWidth={2.5} />
-                    <span className="text-[12px] font-black text-slate-700 dark:text-slate-300">{tpl.messages?.length ?? 0}<span className="font-bold text-[10px] ml-1 uppercase">Elements</span></span>
+                    <span className="text-[12px] font-black text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50">{tpl.messages?.length ?? 0}<span className="font-bold text-[10px] ml-1 uppercase">Elements</span></span>
                   </div>
                   <div>
                     {tpl.is_active
                       ? <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100/50"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live</span>
-                      : <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest border border-slate-200">Idle</span>
+                      : <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-[var(--muted)]/60 dark:bg-[var(--muted)] text-[var(--muted-foreground)]/70 text-[10px] font-black uppercase tracking-widest border border-[var(--border)]">Idle</span>
                     }
                   </div>
-                  <div className="flex items-center gap-2.5 text-slate-400">
+                  <div className="flex items-center gap-2.5 text-[var(--muted-foreground)]/70">
                     <Calendar className="w-4 h-4" strokeWidth={2.5} />
                     <span className="text-[12px] font-black uppercase tracking-widest leading-none">{fmtDate(tpl.created_at)}</span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <button onClick={() => openEdit(tpl)}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-pink-600 hover:border-pink-300 transition-all text-[11px] font-black uppercase tracking-widest">
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-pink-300 transition-all text-[11px] font-black uppercase tracking-widest">
                       <Edit2 className="w-3.5 h-3.5" /> Edit
                     </button>
                     <button onClick={() => setConfirmDeleteId(tpl.id)} disabled={deletingId === tpl.id}
-                      className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-300 hover:text-rose-600 hover:border-rose-300 transition-all disabled:opacity-30 active:scale-95">
+                      className="p-3 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] text-[var(--muted-foreground)]/50 hover:text-rose-600 hover:border-rose-300 transition-all disabled:opacity-30 active:scale-95">
                       {deletingId === tpl.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     </button>
                   </div>
@@ -469,19 +469,19 @@ export default function InstagramCommentTemplatesPage() {
       <AnimatePresence>
         {confirmDeleteId !== null && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setConfirmDeleteId(null)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={() => setConfirmDeleteId(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative z-10 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] p-10 w-full max-w-sm shadow-2xl text-center"
+              className="relative z-10 bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl p-10 w-full max-w-sm shadow-2xl text-center"
             >
               <div className="w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center mx-auto mb-6">
                 <AlertTriangle className="w-8 h-8 text-rose-500" />
               </div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
-              <p className="text-sm text-slate-400 mt-4 leading-relaxed font-bold uppercase tracking-wide mb-10">Permanently purge this item from the Instagram automation hub?</p>
+              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
+              <p className="text-sm text-[var(--muted-foreground)]/70 mt-4 leading-relaxed font-bold uppercase tracking-wide mb-10">Permanently purge this item from the Instagram automation hub?</p>
               <div className="flex gap-4">
-                <button onClick={() => setConfirmDeleteId(null)} className="flex-1 py-4.5 rounded-[22px] bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[13px] uppercase transition-all">Abort</button>
+                <button onClick={() => setConfirmDeleteId(null)} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[13px] uppercase transition-all">Abort</button>
                 <button onClick={() => handleDelete(confirmDeleteId)} disabled={deletingId !== null}
-                  className="flex-1 py-4.5 rounded-[22px] bg-rose-600 text-white font-black text-[14px] uppercase shadow-xl shadow-rose-600/20 active:scale-95 transition-all hover:bg-rose-700"
+                  className="flex-1 py-3 rounded-xl bg-rose-600 text-white font-black text-[14px] uppercase shadow-xl shadow-rose-600/20 active:scale-95 transition-all hover:bg-rose-700"
                 >
                   {deletingId !== null ? "Purging..." : "Purge Node"}
                 </button>

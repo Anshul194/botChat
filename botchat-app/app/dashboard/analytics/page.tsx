@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: "Total Messages", value: "48,291", change: "+18.2%", up: true, icon: MessageSquare, color: "#7c3aed", sub: "vs last period" },
                     { label: "Leads Generated", value: "3,847", change: "+24.1%", up: true, icon: Target, color: "#10b981", sub: "from DM flows" },

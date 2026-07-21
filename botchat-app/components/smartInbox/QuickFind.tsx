@@ -121,7 +121,7 @@ export default function QuickFind() {
                                             )}
                                             <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border border-card bg-background flex items-center justify-center">
                                                 {account.platform === "instagram" ? (
-                                                    <Instagram className="w-2 h-2 text-pink-500" />
+                                                    <Instagram className="w-2 h-2 text-[var(--primary)]" />
                                                 ) : (
                                                     <Facebook className="w-2 h-2 text-blue-600" />
                                                 )}

@@ -1067,7 +1067,7 @@ export default function SettingsPage() {
                                         <button type="button" onClick={() => setPaymentForm({ ...paymentForm, razorpaysetting: paymentForm.razorpaysetting === 'on' ? 'off' : 'on' })}
                                             className="relative w-12 h-7 rounded-full transition-all duration-300 flex-shrink-0 cursor-pointer"
                                             style={{ background: paymentForm.razorpaysetting === 'on' ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "var(--glass-border)" }}>
-                                            <span className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 flex items-center justify-center"
+                                            <span className="absolute top-0.5 w-6 h-6 rounded-full bg-[var(--card)] shadow-md transition-all duration-300 flex items-center justify-center"
                                                 style={{ left: paymentForm.razorpaysetting === 'on' ? "calc(100% - 26px)" : "2px" }}>
                                                 {paymentForm.razorpaysetting === 'on' && (
                                                     <svg className="w-3 h-3" fill="#6366f1" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>

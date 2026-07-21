@@ -124,7 +124,7 @@ export const UGCLayout = ({
                         {/* Avatar ring */}
                         <div className="relative">
                             <div className="p-[2px] rounded-[22px] shadow-xl" style={{ background: C.pricingHL }}>
-                                <div className="w-20 h-20 rounded-[20px] overflow-hidden bg-white">
+                                <div className="w-20 h-20 rounded-[20px] overflow-hidden bg-[var(--card)]">
                                     <img src={img || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400"} className="w-full h-full object-cover" />
                                 </div>
                             </div>
@@ -252,7 +252,7 @@ export const UGCLayout = ({
             {/* ══ FEATURED PRODUCT ═════════════════════════ */}
             {featProductB && (
                 <section className="px-4 py-6">
-                    <div className="bg-white rounded-[2rem] p-5 shadow-lg border border-fuchsia-50 overflow-hidden relative group">
+                    <div className="bg-[var(--card)] rounded-[2rem] p-5 shadow-lg border border-fuchsia-50 overflow-hidden relative group">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-fuchsia-100 to-transparent rounded-bl-full" />
                         <div className="flex gap-5 items-center relative z-10">
                             <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-md shrink-0">
@@ -280,7 +280,7 @@ export const UGCLayout = ({
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         {(productListB.settings?.items || []).map((item: any, i: number) => (
-                            <div key={i} className="bg-white rounded-[1.5rem] p-3 shadow-sm border border-fuchsia-50 space-y-3">
+                            <div key={i} className="bg-[var(--card)] rounded-[1.5rem] p-3 shadow-sm border border-fuchsia-50 space-y-3">
                                 <div className="aspect-square rounded-xl overflow-hidden bg-fuchsia-50">
                                     <img src={item.image || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400"} className="w-full h-full object-cover" />
                                 </div>
@@ -300,7 +300,7 @@ export const UGCLayout = ({
                 <section className="px-4 py-4 overflow-x-auto">
                     <div className="flex gap-3 pb-2">
                         {(badgesB.settings?.items || []).map((badge: any, i: number) => (
-                            <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-fuchsia-100 shadow-sm whitespace-nowrap shrink-0">
+                            <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--card)] border border-fuchsia-100 shadow-sm whitespace-nowrap shrink-0">
                                 <Sparkles size={11} className="text-fuchsia-400" />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-fuchsia-900/60">{badge.label}</span>
                             </div>
@@ -374,7 +374,7 @@ export const UGCLayout = ({
             </section>
 
             {/* ══ PRICING ═══════════════════════════════════ */}
-            <section className="px-3 py-4 bg-white border-t border-purple-50">
+            <section className="px-3 py-4 bg-[var(--card)] border-t border-purple-50">
                 <p className="text-[9px] font-black uppercase tracking-[0.28em] mb-0.5" style={{ color: C.accent3 }}>Partnerships</p>
                 <h2 className="text-[18px] font-black italic leading-tight mb-3" style={{ color: C.dark }}>
                     {priceB?.settings?.title || "Select Your Tier."}
@@ -478,15 +478,15 @@ export const UGCLayout = ({
                         <p className="text-[11px] opacity-60">Reach out for custom inquiries.</p>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
-                        <a href={`mailto:${contactB.settings?.email}`} className="flex flex-col items-center gap-2 p-4 rounded-[1.5rem] bg-white border border-fuchsia-50 shadow-sm">
+                        <a href={`mailto:${contactB.settings?.email}`} className="flex flex-col items-center gap-2 p-4 rounded-[1.5rem] bg-[var(--card)] border border-fuchsia-50 shadow-sm">
                             <div className="w-10 h-10 rounded-full bg-fuchsia-50 flex items-center justify-center text-fuchsia-600"><Mail size={18} /></div>
                             <span className="text-[9px] font-black uppercase tracking-widest">Email</span>
                         </a>
-                        <a href={`tel:${contactB.settings?.phone}`} className="flex flex-col items-center gap-2 p-4 rounded-[1.5rem] bg-white border border-fuchsia-50 shadow-sm">
+                        <a href={`tel:${contactB.settings?.phone}`} className="flex flex-col items-center gap-2 p-4 rounded-[1.5rem] bg-[var(--card)] border border-fuchsia-50 shadow-sm">
                             <div className="w-10 h-10 rounded-full bg-fuchsia-50 flex items-center justify-center text-fuchsia-600"><Sparkles size={18} /></div>
                             <span className="text-[9px] font-black uppercase tracking-widest">Call</span>
                         </a>
-                        <a href={`https://wa.me/${contactB.settings?.whatsapp}`} className="flex flex-col items-center gap-2 p-4 rounded-[1.5rem] bg-white border border-fuchsia-50 shadow-sm">
+                        <a href={`https://wa.me/${contactB.settings?.whatsapp}`} className="flex flex-col items-center gap-2 p-4 rounded-[1.5rem] bg-[var(--card)] border border-fuchsia-50 shadow-sm">
                             <div className="w-10 h-10 rounded-full bg-fuchsia-50 flex items-center justify-center text-fuchsia-600"><Share2 size={18} /></div>
                             <span className="text-[9px] font-black uppercase tracking-widest">Chat</span>
                         </a>

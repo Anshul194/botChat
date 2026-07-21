@@ -152,12 +152,12 @@ export default function BroadcastTemplatesPage() {
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <button onClick={() => toggleFavMutation.mutate({ id: t.id, is_favorite: !t.is_favorite })}
-                                        className="p-1.5 rounded-lg transition-colors hover:bg-white/10">
+                                        className="p-1.5 rounded-lg transition-colors hover:bg-[var(--card)]/10">
                                         <Star className={`w-4 h-4 ${t.is_favorite ? 'fill-yellow-400 text-yellow-400' : 'text-neutral-400'}`} />
                                     </button>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <button className="p-1.5 rounded-lg transition-colors hover:bg-white/10">
+                                            <button className="p-1.5 rounded-lg transition-colors hover:bg-[var(--card)]/10">
                                                 <MoreVertical className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
                                             </button>
                                         </DropdownMenuTrigger>

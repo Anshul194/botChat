@@ -3162,9 +3162,8 @@ function FlowBuilder() {
 
   return (
     <DSContext.Provider value={DS}>
-      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "'Inter', 'Sora', 'DM Sans', -apple-system, sans-serif" }} className="-m-4 md:-m-6">
+      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "var(--app-font-family, 'Inter', system-ui, sans-serif)" }} className="-m-4 md:-m-6">
         <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }

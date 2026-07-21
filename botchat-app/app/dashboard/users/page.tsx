@@ -459,7 +459,7 @@ export default function UserManagementPage() {
                                             <td className="px-6 py-4 text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10">
+                                                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-[var(--card)]/10">
                                                             <MoreVertical className="h-4 w-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>

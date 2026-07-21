@@ -184,7 +184,7 @@ function StepDots({
                             ? "w-5 h-2 bg-[var(--primary,#6C5CE7)]"
                             : i < current
                                 ? "w-2 h-2 bg-[var(--primary,#6C5CE7)] opacity-50"
-                                : "w-2 h-2 bg-white/20 hover:bg-white/40"
+                                : "w-2 h-2 bg-[var(--card)]/20 hover:bg-[var(--card)]/40"
                     )}
                 />
             ))}

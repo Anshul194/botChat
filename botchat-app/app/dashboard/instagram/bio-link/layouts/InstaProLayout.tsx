@@ -167,7 +167,7 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
                     <div className="flex items-center gap-3 relative z-10">
                         <div className={cn(
                             "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
-                            isFeatured ? "bg-white text-[#8b5cf6]" : "bg-white/5 text-white/20 group-hover:bg-[#8b5cf6] group-hover:text-white"
+                            isFeatured ? "bg-[var(--card)] text-[#8b5cf6]" : "bg-white/5 text-white/20 group-hover:bg-[#8b5cf6] group-hover:text-white"
                         )}>
                             <ArrowUpRight size={16} />
                         </div>
@@ -246,7 +246,7 @@ const renderInstaProSection = (block: any, accentColor: string, profile: any, op
                     <p className="text-[10px] text-white/70 mb-4 font-medium italic">{s.description || s.text || "Exclusive updates for the distinguished few."}</p>
                     <div className="relative">
                         <input type="email" placeholder={s.placeholder || "YOUR EMAIL"} className="w-full h-11 bg-black/20 border border-white/10 rounded-xl px-4 text-[11px] text-white placeholder:text-white/30 focus:outline-none uppercase tracking-wider font-black" />
-                        <button className="absolute right-1 top-1 h-9 px-4 rounded-lg bg-white text-[#8b5cf6] text-[9px] font-black uppercase tracking-widest">{s.button_text || "Join"}</button>
+                        <button className="absolute right-1 top-1 h-9 px-4 rounded-lg bg-[var(--card)] text-[#8b5cf6] text-[9px] font-black uppercase tracking-widest">{s.button_text || "Join"}</button>
                     </div>
                 </div>
             );

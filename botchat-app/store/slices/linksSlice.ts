@@ -50,7 +50,7 @@ export const fetchLinkStatistics = createAsyncThunk(
             if (type) params.append('type', type);
             if (start_date) params.append('start_date', start_date);
             if (end_date) params.append('end_date', end_date);
-            
+
             const response = await api.get(`/links/${linkId}/statistics?${params.toString()}`);
             if (response.data && response.data.success) {
                 // Return the inner data payload (not the full envelope) so the
@@ -194,7 +194,7 @@ const linksSlice = createSlice({
             .addCase(updateLink.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.currentLink = action.payload.data;
-                const index = state.links.findIndex(l => l.link_id === action.payload.data.link_id || l.id === action.payload.data.id);
+                const index = state.links.findIndex(l => l.link_id === action.payload.data.link_id || (l as any).id === action.payload.data.id);
                 if (index !== -1) {
                     state.links[index] = action.payload.data;
                 }

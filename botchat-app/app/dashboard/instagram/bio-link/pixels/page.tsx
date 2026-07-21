@@ -39,25 +39,25 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
         {open && (
             <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+                    className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 60 }}
                     transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-[var(--card)] dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
-                        <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
+                        <div className="w-10 h-1 rounded-full bg-[var(--muted)]/70 dark:bg-slate-700" />
                     </div>
-                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-[var(--border)] dark:border-[var(--border)]">
                         {icon && <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">{icon}</div>}
-                        <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
-                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors shrink-0">
+                        <h2 className="text-lg sm:text-xl font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight">{title}</h2>
+                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors shrink-0">
                             <X size={18} />
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-5 sm:p-8">{children}</div>
-                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
+                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]">{footer}</div>}
                 </motion.div>
             </div>
         )}
@@ -66,11 +66,11 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
 const InputField = ({ label, ...props }: any) => (
     <div className="space-y-1.5 sm:space-y-2">
-        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2 block">{label}</label>
+        <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2 block">{label}</label>
         <div className="relative group">
             <input
                 {...props}
-                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
+                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--muted-foreground)] shadow-inner"
             />
         </div>
     </div>
@@ -78,11 +78,11 @@ const InputField = ({ label, ...props }: any) => (
 
 const SelectField = ({ label, options, value, onChange }: any) => (
     <div className="space-y-1.5 sm:space-y-2">
-        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2 block">{label}</label>
+        <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2 block">{label}</label>
         <select 
             value={value} 
             onChange={(e) => onChange(e.target.value)}
-            className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+            className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all appearance-none cursor-pointer"
         >
             {options.map((opt: any) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -179,7 +179,7 @@ export default function PixelsPage() {
                             </div>
                         </div>
                         <div className="space-y-0.5 sm:space-y-1">
-                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-[var(--foreground)] dark:text-white">
                                 Google Analytics
                             </h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl text-xs sm:text-sm md:text-base">
@@ -242,8 +242,8 @@ export default function PixelsPage() {
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-primary">
                                 <Target size={32} />
                             </div>
-                            <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-1 sm:mb-2">No Integrations</h3>
-                            <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6 sm:mb-8">
+                            <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] dark:text-white mb-1 sm:mb-2">No Integrations</h3>
+                            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] max-w-md mx-auto mb-6 sm:mb-8">
                                 You haven't added any Google Analytics properties yet. Connect one to start gathering valuable conversion data.
                             </p>
                             <button onClick={() => handleOpenModal()} className="rounded-xl sm:rounded-2xl h-10 sm:h-12 px-6 sm:px-8 bg-primary text-white text-[11px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-2">
@@ -257,10 +257,10 @@ export default function PixelsPage() {
                                     <div className="hidden md:block overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
                                             <thead>
-                                                <tr className="border-b border-[var(--border)] bg-slate-50/50 dark:bg-slate-900/50">
-                                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Pixel Identity</th>
-                                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Integration Type</th>
-                                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Control Center</th>
+                                                <tr className="border-b border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]/80">
+                                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70">Pixel Identity</th>
+                                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 text-center">Integration Type</th>
+                                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 text-right">Control Center</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-[var(--border)]/50">
@@ -295,7 +295,7 @@ export default function PixelsPage() {
                 icon={<Target size={20} />}
                 footer={
                     <div className="flex gap-3 sm:gap-4">
-                        <button onClick={() => setIsModalOpen(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                        <button onClick={() => setIsModalOpen(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--card)]/5 transition-colors">Cancel</button>
                         <button
                             onClick={handleSave}
                             disabled={!formData.name || !formData.pixel_id_value}
@@ -348,21 +348,21 @@ function PixelRow({ p, onEdit, onDelete }: any) {
                          <Target size={24} />}
                     </div>
                     <div className="min-w-0">
-                        <p className="font-black text-lg text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors leading-tight">{p.name}</p>
-                        <p className="text-[11px] text-slate-400 font-bold flex items-center gap-2 mt-1 uppercase tracking-widest">
+                        <p className="font-black text-lg text-[var(--foreground)] dark:text-white truncate group-hover:text-primary transition-colors leading-tight">{p.name}</p>
+                        <p className="text-[11px] text-[var(--muted-foreground)]/70 font-bold flex items-center gap-2 mt-1 uppercase tracking-widest">
                             <Target size={12} className="text-primary/50" /> ID: {p.pixel_id_value}
                         </p>
                     </div>
                 </div>
             </td>
             <td className="px-8 py-6 text-center">
-                <span className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-slate-200 dark:border-slate-700">
+                <span className="inline-flex items-center px-4 py-2 bg-[var(--muted)]/50 dark:bg-[var(--muted)] text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 text-[10px] font-black uppercase tracking-widest rounded-xl border border-[var(--border)] dark:border-[var(--border)]">
                     {p.type.replace('_', ' ')}
                 </span>
             </td>
             <td className="px-8 py-6 text-right">
                 <div className="flex items-center justify-end gap-3" onClick={e => e.stopPropagation()}>
-                    <button onClick={onEdit} className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 border border-transparent hover:border-primary/20 flex items-center justify-center text-slate-400 hover:text-primary transition-all">
+                    <button onClick={onEdit} className="w-10 h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--card)]/5 border border-transparent hover:border-primary/20 flex items-center justify-center text-[var(--muted-foreground)]/70 hover:text-primary transition-all">
                         <Edit3 size={18} />
                     </button>
                     <ActionDropdown item={p} onEdit={onEdit} onDelete={onDelete} />
@@ -388,17 +388,17 @@ function PixelMobileCard({ p, onEdit, onDelete }: any) {
                          <Target size={18} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate leading-snug">{p.name}</h4>
+                        <h4 className="text-sm font-bold text-[var(--foreground)] dark:text-white truncate leading-snug">{p.name}</h4>
                         <p className="text-[10px] text-[var(--muted-foreground)] font-medium truncate flex items-center gap-1">
                             <Target size={9} className="text-primary shrink-0" /> {p.pixel_id_value}
                         </p>
                     </div>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 border bg-slate-50 dark:bg-slate-900 text-slate-500 border-slate-100 dark:border-slate-800">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 border bg-[var(--muted)]/50 dark:bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)] dark:border-[var(--border)]">
                         {p.type.replace('_', ' ')}
                     </span>
                 </div>
                 <div className="flex items-center justify-end">
-                    <span className="text-[9px] text-slate-400 font-medium shrink-0">Tap to manage →</span>
+                    <span className="text-[9px] text-[var(--muted-foreground)]/70 font-medium shrink-0">Tap to manage →</span>
                 </div>
             </button>
 
@@ -407,11 +407,11 @@ function PixelMobileCard({ p, onEdit, onDelete }: any) {
                     <Edit3 className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(p.pixel_id_value); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors group/btn">
+                <button onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(p.pixel_id_value); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-primary hover:bg-primary/5 transition-colors group/btn">
                     <Copy className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Copy</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
+                <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
                     <Trash2 className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Delete</span>
                 </button>
@@ -422,7 +422,7 @@ function PixelMobileCard({ p, onEdit, onDelete }: any) {
 
 function PixelCard({ p, onEdit, onDelete }: any) {
     return (
-        <div className="bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-3xl border border-transparent hover:border-primary/20 hover:bg-white dark:hover:bg-slate-900 hover:shadow-xl transition-all group relative overflow-hidden" onClick={onEdit}>
+        <div className="bg-[var(--muted)]/50 dark:bg-[var(--background)]/80 p-6 rounded-3xl border border-transparent hover:border-primary/20 hover:bg-[var(--card)] dark:hover:bg-[var(--background)] hover:shadow-xl transition-all group relative overflow-hidden" onClick={onEdit}>
             <div className="flex items-center justify-between mb-6">
                 <div className={cn(
                     "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-all duration-500 group-hover:scale-110",
@@ -437,15 +437,15 @@ function PixelCard({ p, onEdit, onDelete }: any) {
                 <ActionDropdown item={p} onEdit={onEdit} onDelete={onDelete} />
             </div>
             <div className="space-y-1 mb-6">
-                <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-tight truncate">{p.name}</h3>
+                <h3 className="text-xl font-black text-[var(--foreground)] dark:text-white group-hover:text-primary transition-colors leading-tight truncate">{p.name}</h3>
                 <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{p.type.replace('_', ' ')}</p>
             </div>
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-between shadow-inner">
+            <div className="p-4 rounded-2xl bg-[var(--card)] dark:bg-slate-950 border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-between shadow-inner">
                 <div className="min-w-0">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pixel Identification</p>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{p.pixel_id_value}</p>
+                    <p className="text-[9px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-1">Pixel Identification</p>
+                    <p className="text-xs font-bold text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 truncate">{p.pixel_id_value}</p>
                 </div>
-                <button className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+                <button className="w-8 h-8 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--background)] flex items-center justify-center text-[var(--muted-foreground)]/70 hover:text-primary transition-colors">
                     <Copy size={14} />
                 </button>
             </div>
@@ -457,21 +457,21 @@ function ActionDropdown({ item, onEdit, onDelete }: any) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="w-10 h-10 rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-400 hover:text-slate-600">
+                <button className="w-10 h-10 rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--card)]/10 transition-all text-[var(--muted-foreground)]/70 hover:text-[var(--muted-foreground)]">
                     <MoreVertical size={18} />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+            <DropdownMenuContent align="end" className="w-60 p-2 rounded-2xl border-[var(--border)] dark:border-white/10 bg-[var(--card)]/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
                 <DropdownMenuItem onClick={onEdit} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <Edit3 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Configure</span>
+                    <Edit3 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Configure</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <LineChart size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Activity Log</span>
+                    <LineChart size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Activity Log</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
+                    <BarChart2 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
                 <DropdownMenuItem onClick={onDelete} className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
                     <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Remove Pixel</span>
                 </DropdownMenuItem>

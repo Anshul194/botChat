@@ -84,7 +84,7 @@ function Toggle({ label, active, onClick }: { label: string; active: boolean; on
           "w-10 h-5 rounded-full relative transition-all duration-200 cursor-pointer",
           active ? "bg-[var(--primary)]" : "bg-[var(--muted)]"
         )}>
-          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-slate-100 shadow transition-all", active ? "left-5.5" : "left-0.5")} />
+          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60 shadow transition-all", active ? "left-5.5" : "left-0.5")} />
         </button>
         <span className="text-xs font-medium text-[var(--muted-foreground)] w-6">{active ? "On" : "Off"}</span>
       </div>
@@ -139,7 +139,7 @@ function UploadBox({ label, value, onChange, icon: Icon }: { label: string; valu
 function CapsuleSwitch({ active }: { active: boolean }) {
   return (
     <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-[var(--primary)]" : "bg-[var(--muted)] shadow-inner")}>
-      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-slate-100 transition-all", active ? "left-6.5" : "left-0.5")} />
+      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60 transition-all", active ? "left-6.5" : "left-0.5")} />
     </div>
   );
 }
@@ -432,7 +432,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
 
           {/* SECTION 4: LOGIC SELECTION */}
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-[18px] sm:rounded-[22px] p-4 sm:p-6 shadow-xs space-y-4 sm:space-y-5">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-[18px] sm:rounded-xl p-4 sm:p-6 shadow-xs space-y-4 sm:space-y-5">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "generic" })}>
               <CapsuleSwitch active={form.message_type === "generic"} />
               <span className={cn("text-sm font-medium transition-colors", form.message_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Generic message for all comments</span>
@@ -495,13 +495,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       <div className="flex items-center gap-4 sm:gap-6">
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
                           <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
-                            {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
+                            {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60" />}
                           </div>
                           <span className={cn("text-xs font-semibold transition-colors", rule.match_type === "exact" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Exact match</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "contains" } : r))}>
                           <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
-                            {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
+                            {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60" />}
                           </div>
                           <span className={cn("text-xs font-semibold transition-colors", rule.match_type === "contains" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Contains word</span>
                         </div>
@@ -620,8 +620,8 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         <div className="flex gap-3 sm:gap-4 p-4 sm:p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-3 sm:py-3.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all bg-transparent cursor-pointer">Cancel</button>
-          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 sm:py-3.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
+          <button onClick={onClose} className="flex-1 py-3 sm:py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all bg-transparent cursor-pointer">Cancel</button>
+          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 sm:py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 sm:w-5 sm:h-5" />}
             <span>SAVE CHANGES</span>
           </button>
@@ -682,9 +682,9 @@ export default function ReplyTemplatesPage() {
     .sort((a, b) => b.id - a.id);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] font-sans pb-20">
+    <div className="bg-[var(--background)] pb-20">
       {/* 1. Header Navigation */}
-      <div className="bg-[var(--card)] border-b border-[var(--border)] flex items-center justify-center sticky top-0 z-40 shadow-xs">
+      <div className="bg-[var(--card)] border-b border-[var(--border)] sticky top-0 z-[50] shadow-sm">
         <div className="max-w-[1400px] w-full px-4 sm:px-8 py-3 sm:py-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 sm:gap-5 min-w-0">
             <button onClick={() => router.back()} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl border border-[var(--border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all cursor-pointer shrink-0">
@@ -695,7 +695,7 @@ export default function ReplyTemplatesPage() {
               <h1 className="text-base sm:text-xl lg:text-2xl font-black text-[var(--foreground)] uppercase tracking-tighter mt-0.5 sm:mt-1 truncate">Reply Templates</h1>
             </div>
           </div>
-          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl sm:rounded-[22px] bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[10px] sm:text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-2 sm:gap-3 uppercase tracking-widest cursor-pointer whitespace-nowrap">
+          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl sm:rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[10px] sm:text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-2 sm:gap-3 uppercase tracking-widest cursor-pointer whitespace-nowrap">
             <Plus className="w-4 h-4 sm:w-5 sm:h-5" /> <span className="hidden xs:inline">NEW</span> TEMPLATE
           </button>
         </div>
@@ -711,7 +711,7 @@ export default function ReplyTemplatesPage() {
           <div className="relative flex-1 max-w-none sm:max-w-md group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/50 group-focus-within:text-[var(--primary)] transition-colors" />
             <input type="text" placeholder="Search templates…" value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-6 py-3 sm:py-3.5 rounded-xl sm:rounded-[22px] bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[13px] sm:text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
+              className="w-full pl-12 pr-6 py-3 sm:py-3 rounded-xl sm:rounded-xl bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[13px] sm:text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
             />
           </div>
         </div>
@@ -734,7 +734,7 @@ export default function ReplyTemplatesPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-12 sm:p-24 text-center flex flex-col items-center">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] sm:rounded-[32px] bg-[var(--muted)] flex items-center justify-center mb-4 sm:mb-6">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] sm:rounded-2xl bg-[var(--muted)] flex items-center justify-center mb-4 sm:mb-6">
                 <Settings className="w-8 h-8 sm:w-10 sm:h-10 text-[var(--muted-foreground)]/40" />
               </div>
               <h3 className="text-lg sm:text-xl font-black text-[var(--foreground)] uppercase tracking-tight">Empty Inventory</h3>
@@ -777,7 +777,7 @@ export default function ReplyTemplatesPage() {
                 {filtered.map(t => (
                   <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_100px] gap-8 px-10 py-6 items-center hover:bg-[var(--muted)]/10 transition-all group">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-[22px] bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
+                      <div className="w-12 h-12 rounded-xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
                         <LayoutGrid className="w-6 h-6" />
                       </div>
                       <span className="text-[15px] font-black text-[var(--foreground)] truncate max-w-[280px]">{t.name}</span>
@@ -832,8 +832,8 @@ export default function ReplyTemplatesPage() {
               <h3 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] leading-none">Scrub Item?</h3>
               <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-3 sm:mt-4 leading-relaxed font-medium">This command will permanently remove the template from the automation hub.</p>
               <div className="flex gap-3 sm:gap-4 mt-6 sm:mt-10">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all">ABORT</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-rose-600 text-white font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-rose-600/20 active:scale-[0.98] transition-all">CONFIRM</button>
+                <button onClick={() => setDeleteId(null)} className="flex-1 py-3 sm:py-4 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all">ABORT</button>
+                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3 sm:py-4 rounded-2xl bg-rose-600 text-white font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-rose-600/20 active:scale-[0.98] transition-all">CONFIRM</button>
               </div>
             </motion.div>
           </div>

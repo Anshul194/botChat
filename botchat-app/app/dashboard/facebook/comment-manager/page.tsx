@@ -336,7 +336,7 @@ export default function CommentManager() {
     }, [selectedPage]);
 
     return (
-        <div className="min-h-screen w-full overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 pb-32">
+        <div className="w-full overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 pb-32">
             {/* 1. STICKY UNIFIED HEADER */}
             <div className="sticky top-0 z-[100] bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -366,7 +366,7 @@ export default function CommentManager() {
                         <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Neural Live</span>
                     </div>
                     <button className="w-9 h-9 rounded-lg bg-[var(--muted)] hover:bg-[var(--muted)]/80 flex items-center justify-center text-[var(--muted-foreground)]"><Search className="w-4 h-4" /></button>
-                    <div className="w-9 h-9 rounded-full bg-slate-800 dark:bg-[var(--primary)] border-2 border-white dark:border-slate-700 shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
+                    <div className="w-9 h-9 rounded-full bg-[var(--muted)] dark:bg-[var(--primary)] border-2 border-white dark:border-[var(--border)] shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
                         <img src={user?.avatar || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
                     </div>
                 </div>
@@ -391,7 +391,7 @@ export default function CommentManager() {
                                         "px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap flex items-center gap-3",
                                         selectedPage?.id === p.id
                                             ? "text-white"
-                                            : "bg-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700"
+                                            : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
                                     )}
                                     style={selectedPage?.id === p.id ? { background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" } : undefined}
                                 >
@@ -411,7 +411,7 @@ export default function CommentManager() {
                     <div className="relative shrink-0 z-[60]">
                         <button
                             onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-6 py-3.5 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-[var(--primary)]/30 transition-colors text-[var(--foreground)] group"
+                            className="h-full px-6 py-3 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-[var(--primary)]/30 transition-colors text-[var(--foreground)] group"
                         >
                             <div className="flex items-center gap-2">
                                 <Search className="w-4 h-4 text-[var(--primary)] group-hover:scale-110 transition-transform" />
@@ -463,10 +463,10 @@ export default function CommentManager() {
                 </div>
 
                 {/* 3. MAIN GRID (1/3 LEFT, 2/3 RIGHT) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
                     {/* ── LEFT COLUMN (1/3): STRATEGY & ACTIONS ── */}
-                    <aside className="lg:col-span-4 space-y-4 sm:space-y-6">
+                    <aside className="lg:col-span-4 space-y-4 sm:space-y-6 order-2 lg:order-1">
                         <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3 sm:p-6 shadow-sm space-y-4 sm:space-y-6">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-sm sm:text-md font-bold text-[var(--foreground)] uppercase tracking-tight">Strategy Lab</h2>
@@ -533,7 +533,7 @@ export default function CommentManager() {
                                                                 setActiveTemplateView(opt.id as "custom");
                                                             }
                                                         }}
-                                                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--muted)]/50 transition-colors text-left group border-b border-[var(--border)] last:border-0"
+                                                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--muted)]/50 transition-colors text-left group border-b border-[var(--border)] last:border-0"
                                                     >
                                                         <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", opt.bg)}>
                                                             <opt.icon className={cn("w-4 h-4", opt.color)} />
@@ -542,7 +542,7 @@ export default function CommentManager() {
                                                             <p className="text-[13px] font-bold text-[var(--foreground)] truncate">{opt.label}</p>
                                                             <p className="text-[10px] text-[var(--muted-foreground)] font-medium">{opt.desc}</p>
                                                         </div>
-                                                        <ChevronRight className="w-3.5 h-3.5 text-slate-350 group-hover:text-slate-500 ml-auto flex-shrink-0" />
+                                                        <ChevronRight className="w-3.5 h-3.5 text-slate-350 group-hover:text-[var(--muted-foreground)] ml-auto flex-shrink-0" />
                                                     </button>
                                                 ))}
                                             </motion.div>
@@ -584,7 +584,7 @@ export default function CommentManager() {
                             <div className="relative" ref={reportDropdownRef}>
                                 <button
                                     onClick={() => setShowReportDropdown(!showReportDropdown)}
-                                    className="w-full py-3.5 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] border border-[var(--border)] font-bold text-[12px] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm uppercase tracking-wider"
+                                    className="w-full py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] border border-[var(--border)] font-bold text-[12px] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm uppercase tracking-wider"
                                 >
                                     <ClipboardList className="w-4 h-4" />
                                     See Campaign Reports
@@ -626,7 +626,7 @@ export default function CommentManager() {
                     </aside>
 
                     {/* ── RIGHT COLUMN (2/3): POST FEED ── */}
-                    <main className="lg:col-span-8 flex flex-col gap-6">
+                    <main className="lg:col-span-8 flex flex-col gap-6 order-1 lg:order-2">
                         <section className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm flex-1 flex flex-col">
                             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)]">
                                 <section>
@@ -660,12 +660,12 @@ export default function CommentManager() {
                                     ))
                                 ) : posts.length > 0 ? (
                                     posts.map((post, idx) => (
-                                        <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/20 border border-[var(--border)] rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:gap-4 gap-3 transition-all hover:border-[var(--primary)]/30 relative">
+                                        <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/20 border border-[var(--border)] rounded-2xl p-3 sm:p-4 flex gap-3 sm:gap-4 transition-all hover:border-[var(--primary)]/30 relative">
                                             <a
                                                 href={post.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="w-full sm:w-16 aspect-video sm:aspect-square h-auto sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-slate-200 dark:bg-slate-800 cursor-pointer block group/thumb relative"
+                                                className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 dark:bg-[var(--muted)] cursor-pointer block group/thumb relative"
                                                 title="View on Facebook"
                                             >
                                                 <img src={post.thumbnail} className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-500" />
@@ -676,15 +676,15 @@ export default function CommentManager() {
                                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                                 <div className="space-y-1">
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                                        <div className="min-w-0">
+                                                        <div className="min-w-0 flex-1">
                                                             <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[13px] sm:text-[14px] font-bold text-[var(--foreground)] truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
                                                                 {post.user}
-                                                                <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5" />
+                                                                <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5 flex-shrink-0" />
                                                             </a>
-                                                            <div className="flex flex-col xs:flex-row xs:items-center gap-1.5 mt-0.5 flex-wrap">
+                                                            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                                                                 <p className="text-[10px] text-[var(--muted-foreground)] font-semibold whitespace-nowrap">{post.time}</p>
-                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 max-w-full w-fit">
-                                                                    <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[120px] sm:max-w-none">ID: {post.id}</span>
+                                                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 max-w-full w-fit">
+                                                                    <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[100px] sm:max-w-[160px]">ID: {post.id}</span>
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(post.id); toast.success("Post ID Copied!"); }}
                                                                         className="hover:opacity-80 transition-colors active:scale-95 flex-shrink-0"
@@ -696,7 +696,7 @@ export default function CommentManager() {
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap flex-shrink-0 justify-end">
                                                             {/* Reply Status Tag */}
                                                             {post.status?.reply && (
                                                                 <span className={cn(
@@ -850,14 +850,14 @@ export default function CommentManager() {
                                                                                 onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors"
                                                                             >
-                                                                                <MessageSquare className="w-4 h-4 text-slate-400" />
+                                                                                <MessageSquare className="w-4 h-4 text-[var(--muted-foreground)]/70" />
                                                                                 <span className="text-[12px] font-bold text-[var(--foreground)]">Latest comments</span>
                                                                             </button>
                                                                             <button
                                                                                 onClick={() => { setSelectedPostForComment(post); setShowCommentNowModal(true); setActiveDropdown(null); }}
                                                                                 className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors"
                                                                             >
-                                                                                <Edit3 className="w-4 h-4 text-slate-400" />
+                                                                                <Edit3 className="w-4 h-4 text-[var(--muted-foreground)]/70" />
                                                                                 <span className="text-[12px] font-bold text-[var(--foreground)]">Leave a comment now</span>
                                                                             </button>
                                                                         </motion.div>
@@ -888,7 +888,7 @@ export default function CommentManager() {
                                             <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
                                             <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
                                             <div className="w-2 h-2 rounded-full bg-primary animate-bounce" />
-                                            <p className="text-[10px] font-medium text-slate-500 ml-2">Syncing History...</p>
+                                            <p className="text-[10px] font-medium text-[var(--muted-foreground)] ml-2">Syncing History...</p>
                                         </div>
                                     )}
                                 </div>
@@ -1146,7 +1146,7 @@ export default function CommentManager() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 40 }}
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                            className="bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                            className="bg-[var(--card)] dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
                         >
                             <div className="sm:hidden flex justify-center pt-3 pb-1">
                                 <div className="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
@@ -1169,7 +1169,7 @@ export default function CommentManager() {
                                 <div className="flex gap-3 pt-2 sm:pt-4">
                                     <button
                                         onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })}
-                                        className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        className="flex-1 py-3 sm:py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
                                     >
                                         No, Cancel
                                     </button>
@@ -1177,7 +1177,7 @@ export default function CommentManager() {
                                         onClick={handleToggleStatus}
                                         disabled={isUpdatingStatus}
                                         className={cn(
-                                            "flex-[2] py-3.5 sm:py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
+                                            "flex-[2] py-3 sm:py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl transition-all active:scale-95 disabled:opacity-50",
                                             statusConfirm.action === "paused" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"
                                         )}
                                     >
@@ -1200,7 +1200,7 @@ export default function CommentManager() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 40 }}
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                            className="bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                            className="bg-[var(--card)] dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
                         >
                             <div className="sm:hidden flex justify-center pt-3 pb-1">
                                 <div className="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
@@ -1220,14 +1220,14 @@ export default function CommentManager() {
                                 <div className="flex gap-3 pt-2 sm:pt-4">
                                     <button
                                         onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
-                                        className="flex-1 py-3.5 sm:py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
+                                        className="flex-1 py-3 sm:py-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 text-[11px] font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all active:scale-95"
                                     >
                                         No, Keep it
                                     </button>
                                     <button
                                         onClick={handleDeleteCampaign}
                                         disabled={isDeleting}
-                                        className="flex-[2] py-3.5 sm:py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-gradient-to-r from-rose-500 to-pink-600 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                        className="flex-[2] py-3 sm:py-4 rounded-2xl text-[11px] font-semibold uppercase tracking-widest text-white shadow-xl bg-gradient-to-r from-rose-500 to-pink-600 shadow-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
                                     >
                                         {isDeleting ? "Deleting..." : "Yes, Delete Lifecycle"}
                                     </button>
@@ -1302,7 +1302,7 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
                             <span className="text-[11px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] mr-1">{useSaved ? "YES" : "NO"}</span>
                             <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-[var(--primary)]" : "bg-[var(--border)]")}>
-                                <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
+                                <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
                             </div>
                         </div>
                     </div>
@@ -1389,7 +1389,7 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
                         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setUseSaved(!useSaved)}>
                             <span className="text-[11px] font-semibold uppercase tracking-widest text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] mr-1">{useSaved ? "YES" : "NO"}</span>
                             <div className={cn("w-11 h-5 rounded-full relative transition-all shadow-inner", useSaved ? "bg-[var(--primary)]" : "bg-[var(--border)]")}>
-                                <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
+                                <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] transition-all shadow-sm", useSaved ? "left-6.5" : "left-0.5")} />
                             </div>
                         </div>
                     </div>
@@ -1434,7 +1434,7 @@ function FPC_Toggle({ label, active, onClick }: { label: string; active: boolean
             {label && <span className="text-sm font-medium text-[var(--foreground)] group-hover:text-[var(--foreground)]/80 transition-colors">{label}</span>}
             <div className="flex items-center gap-2">
                 <div className={"w-10 h-5 rounded-full relative transition-all duration-200 " + (active ? "bg-[var(--primary)]" : "bg-[var(--border)]")}>
-                    <div className={"absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all " + (active ? "left-5.5" : "left-0.5")} />
+                    <div className={"absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] shadow transition-all " + (active ? "left-5.5" : "left-0.5")} />
                 </div>
                 <span className="text-xs font-medium text-[var(--muted-foreground)] w-6">{active ? "On" : "Off"}</span>
             </div>
@@ -1473,7 +1473,7 @@ function FPC_UploadBox({ label, value, onChange, icon: Icon }: { label: string; 
 function FPC_CapsuleSwitch({ active }: { active: boolean }) {
     return (
         <div className={"w-11 h-5 rounded-full relative transition-all " + (active ? "bg-[var(--primary)]" : "bg-[var(--border)] shadow-inner")}>
-            <div className={"absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all " + (active ? "left-6.5" : "left-0.5")} />
+            <div className={"absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] transition-all " + (active ? "left-6.5" : "left-0.5")} />
         </div>
     );
 }
@@ -1750,7 +1750,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                     </div>
                                 </div>
 
-                                <div className="bg-[var(--card)] border border-[var(--border)] rounded-[22px] p-6 shadow-xs space-y-5">
+                                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-xs space-y-5">
                                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, reply_type: "generic" })}>
                                         <FPC_CapsuleSwitch active={form.reply_type === "generic"} />
                                         <span className={cn("text-sm font-medium", form.reply_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Generic message for all comments</span>
@@ -1778,10 +1778,10 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                             </div>
                                             <div className="space-y-4">
                                                 <div className="flex items-center justify-between px-1">
-                                                    <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                        <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                                                    <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                        <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/50" /> Private reply template
                                                     </label>
-                                                    <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                    <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                         <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                             <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                         </button>
@@ -1789,32 +1789,32 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                 </div>
                                                 <div className="relative">
                                                     <select value={form.private_template_id ?? ""} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
-                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                                                        className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px] appearance-none cursor-pointer"
                                                     >
                                                         <option value="">Please select a message template</option>
                                                         {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                     </select>
-                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] pointer-events-none" />
                                                 </div>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="space-y-8 animate-in fade-in duration-300">
                                             {filterRules.map((rule, idx) => (
-                                                <div key={rule.id} className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-8 relative group">
+                                                <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-6">
                                                             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
-                                                                <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
-                                                                    {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)]")}>
+                                                                    {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)]" />}
                                                                 </div>
-                                                                <span className={cn("text-xs font-medium", rule.match_type === "exact" ? "text-slate-700" : "text-slate-400")}>Exact match</span>
+                                                                <span className={cn("text-xs font-medium", rule.match_type === "exact" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Exact match</span>
                                                             </div>
                                                             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "contains" } : r))}>
-                                                                <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
-                                                                    {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)]")}>
+                                                                    {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)]" />}
                                                                 </div>
-                                                                <span className={cn("text-xs font-medium", rule.match_type === "contains" ? "text-slate-700" : "text-slate-400")}>Contains word</span>
+                                                                <span className={cn("text-xs font-medium", rule.match_type === "contains" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Contains word</span>
                                                             </div>
                                                         </div>
                                                         {filterRules.length > 1 && (
@@ -1826,17 +1826,17 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
                                                     <FPC_Field label="Filter Word/Sentence" required>
                                                         <input type="text" value={rule.keyword} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, keyword: e.target.value } : r))}
-                                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px] placeholder:text-[var(--muted-foreground)]/50"
                                                             placeholder="Write your filter word here"
                                                         />
                                                     </FPC_Field>
 
                                                     <FPC_Field label="Message for Comment Reply" required icon={MessageCircle}>
-                                                        <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                                                        <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--muted)]/50">
                                                             <textarea rows={4} value={rule.message} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, message: e.target.value } : r))}
-                                                                className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
+                                                                className="w-full outline-none font-medium text-[14px] text-[var(--foreground)] bg-transparent resize-none h-[100px]" placeholder="Type your message here..."
                                                             />
-                                                            <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
+                                                            <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                                         </div>
                                                     </FPC_Field>
 
@@ -1847,10 +1847,10 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
                                                     <div className="space-y-4">
                                                         <div className="flex items-center justify-between px-1">
-                                                            <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                                <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                                                            <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                                <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/50" /> Private reply template
                                                             </label>
-                                                            <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                            <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                                 <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                                     <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                                 </button>
@@ -1858,35 +1858,35 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                         </div>
                                                         <div className="relative">
                                                             <select value={rule.private_template_id ?? ""} onChange={e => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, private_template_id: e.target.value } : r))}
-                                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px] appearance-none cursor-pointer"
                                                             >
                                                                 <option value="">Please select a message template</option>
                                                                 {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                             </select>
-                                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] pointer-events-none" />
                                                         </div>
                                                     </div>
                                                 </div>
                                             ))}
 
                                             <div className="flex justify-end">
-                                                <button onClick={handleAddRule} className="px-6 py-2.5 rounded-xl border-2 border-pink-600 text-pink-600 font-semibold text-[11px]  hover:bg-pink-50 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-pink-100/20">
+                                                <button onClick={handleAddRule} className="px-6 py-2.5 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-[11px] hover:bg-[var(--primary)]/5 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-[var(--primary)]/10">
                                                     <Plus className="w-4 h-4" /> Add another filter rule
                                                 </button>
                                             </div>
 
                                             {/* Fallback */}
-                                            <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-200 border-dashed space-y-8">
+                                            <div className="bg-[var(--muted)]/20 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
                                                 <div className="flex items-center gap-3">
-                                                    <Info className="w-4 h-4 text-slate-400" />
-                                                    <span className="text-sm font-medium text-slate-500">Fallback reply (when no filter matches)</span>
+                                                    <Info className="w-4 h-4 text-[var(--muted-foreground)]/50" />
+                                                    <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
                                                 </div>
                                                 <FPC_Field label="Message for Comment Reply" icon={MessageCircle}>
-                                                    <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                                                    <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--muted)]/50">
                                                         <textarea rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
-                                                            className="w-full outline-none font-medium text-[14px] text-slate-700 resize-none h-[100px]" placeholder="Type your message here..."
+                                                            className="w-[100%] outline-none font-medium text-[14px] text-[var(--foreground)] bg-transparent resize-none h-[100px]" placeholder="Type your message here..."
                                                         />
-                                                        <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-slate-300" />
+                                                        <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                                     </div>
                                                 </FPC_Field>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1895,10 +1895,10 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                 </div>
                                                 <div className="space-y-4">
                                                     <div className="flex items-center justify-between px-1">
-                                                        <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                            <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template (Fallback)
+                                                        <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                            <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/50" /> Private reply template (Fallback)
                                                         </label>
-                                                        <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                        <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                             <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                                 <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                             </button>
@@ -1906,12 +1906,12 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                     </div>
                                                     <div className="relative">
                                                         <select value={form.private_template_id ?? ""} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
-                                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                                                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none bg-[var(--muted)]/50 text-[var(--foreground)] transition-all font-medium text-[14px] appearance-none cursor-pointer"
                                                         >
                                                             <option value="">Please select a message template</option>
                                                             {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                         </select>
-                                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] pointer-events-none" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1923,11 +1923,11 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     )}
                 </div>
 
-                <div className="flex gap-4 p-8 bg-white border-t border-slate-100 flex-shrink-0">
-                    <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-500 font-bold text-[13px] hover:bg-slate-50 transition-all">
+                <div className="flex gap-4 p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0">
+                    <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all bg-[var(--card)]">
                         Cancel
                     </button>
-                    <button onClick={handleSave} disabled={isSaving || isLoadingData} className="flex-[2] py-3.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                    <button onClick={handleSave} disabled={isSaving || isLoadingData} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
                         <span>{campaignId ? "UPDATE CAMPAIGN" : "SAVE CHANGES"}</span>
                     </button>

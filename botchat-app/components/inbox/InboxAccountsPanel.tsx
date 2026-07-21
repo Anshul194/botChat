@@ -318,7 +318,7 @@ function AccountCard({
                                 </span>
                             ) : (
                                 <span
-                                    className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-300"
+                                    className="absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] shadow transition-all duration-300"
                                     style={{ left: account.inbox_enabled ? "calc(100% - 18px)" : "2px" }}
                                 />
                             )}

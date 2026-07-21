@@ -86,9 +86,9 @@ export function useSocialLogin() {
                 console.log(`[SOCIAL LOGIN] Popup closed by user`);
                 cleanup();
 
-                const result = dispatch(fetchMe());
-                if (typeof result === 'object' && 'then' in result) {
-                    (result as ReturnType<typeof dispatch>).then((action) => {
+                const result = dispatch(fetchMe()) as any;
+                if (result && typeof result.then === 'function') {
+                    result.then((action: any) => {
                         if (fetchMe.fulfilled.match(action)) {
                             console.log(`[SOCIAL LOGIN] fetchMe succeeded after popup close`);
                             toast.success(`Welcome back!`, {

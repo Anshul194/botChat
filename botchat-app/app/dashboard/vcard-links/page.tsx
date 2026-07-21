@@ -51,25 +51,25 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
         {open && (
             <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-6">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={onClose} />
+                    className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-md" onClick={onClose} />
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 60 }}
                     transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-[var(--card)] dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl", maxWidthClassName)}>
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
-                        <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
+                        <div className="w-10 h-1 rounded-full bg-[var(--muted)]/70 dark:bg-slate-700" />
                     </div>
-                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-[var(--border)] dark:border-[var(--border)]">
                         {icon && <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">{icon}</div>}
-                        <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
-                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shrink-0">
+                        <h2 className="text-lg sm:text-2xl font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight">{title}</h2>
+                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 dark:hover:bg-[var(--muted)]/80 transition-all shrink-0">
                             <X size={18} />
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-5 sm:p-8 custom-scroll">{children}</div>
-                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
+                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]">{footer}</div>}
                 </motion.div>
             </div>
         )}
@@ -78,11 +78,11 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
 const InputField = ({ label, ...props }: any) => (
     <div className="space-y-1.5 sm:space-y-2">
-        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">{label}</label>
+        <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-1">{label}</label>
         <div className="relative group">
             <input
                 {...props}
-                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-sm focus:shadow-inner"
+                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--muted-foreground)] shadow-sm focus:shadow-inner"
             />
         </div>
     </div>
@@ -219,7 +219,7 @@ export default function VcardLinksPage() {
                             </div>
                         </div>
                         <div className="space-y-0.5 sm:space-y-1">
-                            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black tracking-tighter text-slate-900 dark:text-white">Vcard Links</h1>
+                            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black tracking-tighter text-[var(--foreground)] dark:text-white">Vcard Links</h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-md lg:max-w-xl text-xs sm:text-sm md:text-base">
                                 Manage your professional digital business cards and track their performance.
                             </p>
@@ -248,7 +248,7 @@ export default function VcardLinksPage() {
                         <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
                         <input
                             placeholder="Search by name or slug..."
-                            className="w-full pl-10 sm:pl-12 pr-4 sm:pr-5 h-11 sm:h-11 bg-transparent text-xs sm:text-sm font-medium focus:outline-none rounded-xl sm:rounded-[22px]"
+                            className="w-full pl-10 sm:pl-12 pr-4 sm:pr-5 h-11 sm:h-11 bg-transparent text-xs sm:text-sm font-medium focus:outline-none rounded-xl sm:rounded-xl"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                         />
@@ -259,7 +259,7 @@ export default function VcardLinksPage() {
                             onClick={() => setView('row')}
                             className={cn(
                                 "flex-1 sm:flex-none px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2",
-                                view === 'row' ? "bg-primary text-primary-foreground shadow" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--muted-foreground)]"
+                                view === 'row' ? "bg-primary text-primary-foreground shadow" : "hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] text-[var(--muted-foreground)]"
                             )}
                         >
                             <Layout className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -269,7 +269,7 @@ export default function VcardLinksPage() {
                             onClick={() => setView('card')}
                             className={cn(
                                 "flex-1 sm:flex-none px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2",
-                                view === 'card' ? "bg-primary text-primary-foreground shadow" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--muted-foreground)]"
+                                view === 'card' ? "bg-primary text-primary-foreground shadow" : "hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] text-[var(--muted-foreground)]"
                             )}
                         >
                             <Grid className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -394,7 +394,7 @@ export default function VcardLinksPage() {
                 maxWidthClassName="max-w-lg"
                 footer={
                     <div className="flex gap-3">
-                        <button onClick={() => setShowCreateModal(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] font-semibold text-xs sm:text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <button onClick={() => setShowCreateModal(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] font-semibold text-xs sm:text-sm hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] transition-colors">
                             Cancel
                         </button>
                         <button
@@ -421,11 +421,11 @@ export default function VcardLinksPage() {
 
                     {domains.length > 0 && (
                         <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">CUSTOM DOMAIN (OPTIONAL)</label>
+                            <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-1">CUSTOM DOMAIN (OPTIONAL)</label>
                             <select
                                 value={draft.domain_id}
                                 onChange={(e: any) => setDraft((prev) => ({ ...prev, domain_id: parseInt(e.target.value) }))}
-                                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold outline-none transition-all appearance-none"
+                                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold outline-none transition-all appearance-none"
                             >
                                 <option value={0}>Use default domain</option>
                                 {domains.map((d: any) => (
@@ -437,7 +437,7 @@ export default function VcardLinksPage() {
 
                     <div className="bg-gradient-to-br from-indigo-50 to-sky-50 dark:from-indigo-950/40 dark:to-slate-900 border border-indigo-100 dark:border-indigo-900/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex gap-3 sm:gap-4">
                         <Info size={18} className="sm:size-[22px] text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0" />
-                        <div className="text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                        <div className="text-xs sm:text-sm leading-relaxed text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70">
                             Choose a memorable slug. This will be part of your public Vcard URL. You can edit everything later.
                         </div>
                     </div>
@@ -485,10 +485,10 @@ function VcardLinkCard({ item, onEdit, onCopy, copied, onToggle, onAction }: any
                         onClick={() => onToggle(item)}
                         className={cn(
                             "relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full border-2 border-transparent transition-all duration-200",
-                            item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"
+                            item.active ? "bg-primary" : "bg-[var(--muted)]/70 dark:bg-slate-700"
                         )}
                     >
-                        <span className={cn("block h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-white shadow transition-transform", item.active ? "translate-x-[18px] sm:translate-x-5" : "translate-x-0.5")} />
+                        <span className={cn("block h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-[var(--card)] shadow transition-transform", item.active ? "translate-x-[18px] sm:translate-x-5" : "translate-x-0.5")} />
                     </button>
                     <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] font-medium flex items-center gap-1">
                         <MousePointer2 size={12} className="sm:size-[13px]" /> {item.clicks}
@@ -498,7 +498,7 @@ function VcardLinkCard({ item, onEdit, onCopy, copied, onToggle, onAction }: any
                 <div className="flex items-center gap-1 sm:gap-1.5" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={(e) => { e.stopPropagation(); onCopy(publicUrl, item.slug); }}
-                        className={cn("h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all", copied ? "bg-emerald-500 text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800")}
+                        className={cn("h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all", copied ? "bg-emerald-500 text-white" : "hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]")}
                     >
                         {copied ? <CheckCircle2 size={15} className="sm:size-[17px]" /> : <Copy size={15} className="sm:size-[17px]" />}
                     </button>
@@ -545,15 +545,15 @@ function VcardLinkRow({ item, onEdit, onCopy, copied, onToggle, onAction }: any)
                         onClick={() => onToggle(item)}
                         className={cn(
                             "relative inline-flex h-5 w-9 sm:h-6 sm:w-11 items-center rounded-full border transition-all shrink-0",
-                            item.active ? "bg-primary border-primary" : "bg-slate-200 dark:bg-slate-700 border-slate-300"
+                            item.active ? "bg-primary border-primary" : "bg-[var(--muted)]/70 dark:bg-slate-700 border-[var(--border)]/70"
                         )}
                     >
-                        <span className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-white shadow-md transition-all", item.active ? "translate-x-[18px] sm:translate-x-[22px]" : "translate-x-0.5")} />
+                        <span className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-[var(--card)] shadow-md transition-all", item.active ? "translate-x-[18px] sm:translate-x-[22px]" : "translate-x-0.5")} />
                     </button>
 
                     <button
                         onClick={() => onCopy(publicUrl, item.slug)}
-                        className={cn("p-2 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-colors", copied ? "bg-emerald-100 text-emerald-600 border-emerald-200" : "hover:bg-slate-100 dark:hover:bg-slate-800")}
+                        className={cn("p-2 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-colors", copied ? "bg-emerald-100 text-emerald-600 border-emerald-200" : "hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]")}
                     >
                         {copied ? <CheckCircle2 size={15} className="sm:size-[18px]" /> : <Copy size={15} className="sm:size-[18px]" />}
                     </button>
@@ -579,7 +579,7 @@ function VcardMobileCard({ item, onEdit, onCopy, copied, onToggle, onAction }: a
                         <span className="text-sm font-black">{(item.name?.[0] || '?').toUpperCase()}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate leading-snug">{item.name || "Untitled Vcard"}</h4>
+                        <h4 className="text-sm font-bold text-[var(--foreground)] dark:text-white truncate leading-snug">{item.name || "Untitled Vcard"}</h4>
                         <p className="text-[10px] text-[var(--muted-foreground)] font-mono truncate flex items-center gap-1">
                             <Globe size={9} className="shrink-0" /> {publicUrl}
                         </p>
@@ -588,28 +588,28 @@ function VcardMobileCard({ item, onEdit, onCopy, copied, onToggle, onAction }: a
                         "inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider flex-shrink-0 border",
                         item.active
                             ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                            : "bg-slate-50 text-slate-500 border-slate-100"
+                            : "bg-[var(--muted)]/50 text-[var(--muted-foreground)] border-[var(--border)]"
                     )}>
                         <div className={cn("w-1.5 h-1.5 rounded-full", item.active ? "bg-emerald-500" : "bg-slate-400")} />
                         {item.active ? "Live" : "Off"}
                     </div>
                 </div>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-slate-400" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-1.5 text-[var(--muted-foreground)]/70" onClick={(e) => e.stopPropagation()}>
                         <button
                             onClick={() => onToggle(item)}
                             className={cn(
                                 "relative inline-flex h-4 w-8 shrink-0 items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                                item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                                item.active ? "bg-primary" : "bg-[var(--muted)]/70 dark:bg-[var(--muted)]"
                             )}
                         >
-                            <span className={cn("pointer-events-none block h-2.5 w-2.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-[14px]" : "translate-x-0.5")} />
+                            <span className={cn("pointer-events-none block h-2.5 w-2.5 rounded-full bg-[var(--card)] shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-[14px]" : "translate-x-0.5")} />
                         </button>
                         <span className="text-[8px] font-black uppercase tracking-wider flex items-center gap-1">
                             <MousePointer2 size={9} /> {item.clicks}
                         </span>
                     </div>
-                    <span className="text-[9px] text-slate-400 font-medium">Tap to edit →</span>
+                    <span className="text-[9px] text-[var(--muted-foreground)]/70 font-medium">Tap to edit →</span>
                 </div>
             </button>
 
@@ -618,32 +618,32 @@ function VcardMobileCard({ item, onEdit, onCopy, copied, onToggle, onAction }: a
                     <Pencil className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onCopy(publicUrl, item.slug); }} className={cn("py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn", copied ? "text-primary" : "text-slate-400 hover:text-primary hover:bg-primary/5")}>
+                <button onClick={(e) => { e.stopPropagation(); onCopy(publicUrl, item.slug); }} className={cn("py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn", copied ? "text-primary" : "text-[var(--muted-foreground)]/70 hover:text-primary hover:bg-primary/5")}>
                     {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">{copied ? "Copied" : "Copy"}</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onAction('analytics'); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors group/btn">
+                <button onClick={(e) => { e.stopPropagation(); onAction('analytics'); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-primary hover:bg-primary/5 transition-colors group/btn">
                     <BarChart3 className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Stats</span>
                 </button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
+                        <button className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
                             <MoreVertical className="w-3.5 h-3.5" />
                             <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">More</span>
                         </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+                    <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-[var(--border)] dark:border-white/10 bg-[var(--card)]/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
                         <DropdownMenuItem onClick={() => onAction('duplicate')} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <Copy size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
+                            <Copy size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <QrCode size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">QR Code</span>
+                            <QrCode size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">QR Code</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onAction('reset')} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <RefreshCcw size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Stats</span>
+                            <RefreshCcw size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Stats</span>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                        <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
                         <DropdownMenuItem onClick={() => onAction('delete')} className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
                             <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Delete Vcard</span>
                         </DropdownMenuItem>
@@ -658,11 +658,11 @@ function ActionDropdown({ item, onEdit, onAction }: any) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-foreground transition-all active:scale-95">
+                <button className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl border border-[var(--border)] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)]/70 hover:text-foreground transition-all active:scale-95">
                     <MoreVertical size={16} className="sm:size-[18px]" />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52 sm:w-56 rounded-2xl p-1.5 shadow-xl bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+            <DropdownMenuContent align="end" className="w-52 sm:w-56 rounded-2xl p-1.5 shadow-xl bg-[var(--card)] dark:bg-slate-950 border border-[var(--border)] dark:border-[var(--border)]">
                 <DropdownMenuItem onClick={() => onEdit(item)} className="cursor-pointer rounded-xl py-2.5 px-3 flex items-center gap-3 text-xs sm:text-sm">
                     <Pencil size={15} className="sm:size-4" /> Edit Vcard
                 </DropdownMenuItem>

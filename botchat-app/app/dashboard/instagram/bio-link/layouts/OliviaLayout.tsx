@@ -47,7 +47,7 @@ export const OliviaLayout = ({
 
                 {/* About Section */}
                 <div className="p-6 pt-16 flex gap-4 sm:gap-6 items-start">
-                    <div className="w-[35%] max-w-[120px] aspect-[4/5] bg-white rounded-lg overflow-hidden shadow-lg rotate-[-3deg] shrink-0">
+                    <div className="w-[35%] max-w-[120px] aspect-[4/5] bg-[var(--card)] rounded-lg overflow-hidden shadow-lg rotate-[-3deg] shrink-0">
                          <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=800&q=80" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 pt-1 min-w-0">

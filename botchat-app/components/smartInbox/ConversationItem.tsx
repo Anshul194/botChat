@@ -66,7 +66,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                     />
                 ) : (
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-xs ${
-                        isSelected ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
+                        isSelected ? "bg-[var(--card)]/20 text-white" : "bg-primary/10 text-primary"
                     }`}>
                         {(conversation.customer_name ?? '?')[0]?.toUpperCase()}
                     </div>

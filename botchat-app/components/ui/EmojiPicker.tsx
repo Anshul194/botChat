@@ -196,20 +196,20 @@ export function EmojiPicker({ onSelect, onClose, recent = [], style }: EmojiPick
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95, y: 8 }}
       transition={{ duration: 0.15 }}
-      className="w-[320px] sm:w-[350px] max-w-[calc(100vw-32px)] flex flex-col bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 rounded-[24px] shadow-[0_24px_80px_-8px_rgba(0,0,0,0.22)] overflow-hidden z-[9999]"
+      className="w-[320px] sm:w-[350px] max-w-[calc(100vw-32px)] flex flex-col bg-[var(--card)] border border-[var(--border)]/70 dark:border-[var(--border)] rounded-[24px] shadow-[0_24px_80px_-8px_rgba(0,0,0,0.22)] overflow-hidden z-[9999]"
       style={{ fontFamily: "system-ui, sans-serif", maxHeight: "calc(100vh - 40px)", ...style }}
     >
       {/* Category tabs */}
-      <div className="flex items-center px-3 pt-3 pb-2 gap-0.5 overflow-x-auto border-b border-slate-100 dark:border-slate-800 no-scrollbar">
+      <div className="flex items-center px-3 pt-3 pb-2 gap-0.5 overflow-x-auto border-b border-[var(--border)] dark:border-[var(--border)] no-scrollbar">
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => scrollToCategory(cat.id)}
-            className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-[17px] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-90"
+            className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-[17px] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] transition-all active:scale-90"
             title={cat.label}
           >
             {cat.id === "recent" ? (
-              <Clock className="w-4 h-4 text-slate-400" />
+              <Clock className="w-4 h-4 text-[var(--muted-foreground)]/70" />
             ) : (
               cat.icon
             )}
@@ -220,13 +220,13 @@ export function EmojiPicker({ onSelect, onClose, recent = [], style }: EmojiPick
       {/* Search */}
       <div className="px-3 py-2.5">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]/70" />
           <input
             type="text"
             placeholder="Search emojis…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-[13px] rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 outline-none placeholder:text-slate-400 text-slate-700 dark:text-slate-200 focus:border-pink-300 transition-colors"
+            className="w-full pl-9 pr-3 py-2 text-[13px] rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] outline-none placeholder:text-[var(--muted-foreground)]/70 text-[var(--foreground)] dark:text-[var(--foreground)] focus:border-pink-300 transition-colors"
           />
         </div>
       </div>
@@ -239,7 +239,7 @@ export function EmojiPicker({ onSelect, onClose, recent = [], style }: EmojiPick
       >
         {filtered ? (
           <div className="pt-1">
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+            <p className="text-[9px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-2 px-1">
               Results ({filtered.length})
             </p>
             <div className="grid grid-cols-8 gap-0.5">
@@ -247,7 +247,7 @@ export function EmojiPicker({ onSelect, onClose, recent = [], style }: EmojiPick
                 <button
                   key={i}
                   onClick={() => { onSelect(emoji); setQuery(""); }}
-                  className="text-[20px] h-9 w-9 flex items-center justify-center rounded-xl hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all active:scale-90"
+                  className="text-[20px] h-9 w-9 flex items-center justify-center rounded-xl hover:bg-[var(--primary)]/10 dark:hover:bg-pink-900/20 transition-all active:scale-90"
                 >
                   {emoji}
                 </button>
@@ -259,7 +259,7 @@ export function EmojiPicker({ onSelect, onClose, recent = [], style }: EmojiPick
             .filter((c) => c.id !== "recent" || recent.length > 0)
             .map((cat) => (
               <div key={cat.id} id={`emoji-cat-${cat.id}`} className="mb-4">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1 sticky top-0 bg-white dark:bg-slate-900 py-1">
+                <p className="text-[9px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-2 px-1 sticky top-0 bg-[var(--card)] py-1">
                   {cat.label}
                 </p>
                 <div className="grid grid-cols-8 gap-0.5">
@@ -267,7 +267,7 @@ export function EmojiPicker({ onSelect, onClose, recent = [], style }: EmojiPick
                     <button
                       key={i}
                       onClick={() => onSelect(emoji)}
-                      className="text-[20px] h-9 w-9 flex items-center justify-center rounded-xl hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all active:scale-90"
+                      className="text-[20px] h-9 w-9 flex items-center justify-center rounded-xl hover:bg-[var(--primary)]/10 dark:hover:bg-pink-900/20 transition-all active:scale-90"
                     >
                       {emoji}
                     </button>
@@ -382,7 +382,7 @@ export function TextareaWithEmoji({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "w-full outline-none font-medium text-[14px] text-slate-700 dark:text-slate-200 resize-none bg-transparent",
+          "w-full outline-none font-medium text-[14px] text-[var(--foreground)] dark:text-[var(--foreground)] resize-none bg-transparent",
           className
         )}
         style={{ minHeight }}
@@ -396,8 +396,8 @@ export function TextareaWithEmoji({
         className={cn(
           "absolute bottom-2 right-2 p-1.5 rounded-lg transition-all",
           showEmoji
-            ? "bg-pink-100 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400"
-            : "text-slate-300 hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20"
+            ? "bg-[var(--primary)]/20 text-[var(--primary)] dark:bg-pink-900/40 dark:text-[var(--primary)]/80"
+            : "text-[var(--muted-foreground)]/50 hover:text-[var(--primary)]/80 hover:bg-[var(--primary)]/10 dark:hover:bg-pink-900/20"
         )}
         title="Add emoji"
       >
@@ -496,8 +496,8 @@ export function InlineEmojiButton({
         className={cn(
           "p-1.5 rounded-lg transition-all flex-shrink-0",
           showEmoji
-            ? "bg-pink-100 text-pink-600"
-            : "text-slate-400 hover:text-pink-500 hover:bg-pink-50",
+            ? "bg-[var(--primary)]/20 text-[var(--primary)]"
+            : "text-[var(--muted-foreground)]/70 hover:text-[var(--primary)] hover:bg-[var(--primary)]/10",
           className
         )}
         title="Add emoji"

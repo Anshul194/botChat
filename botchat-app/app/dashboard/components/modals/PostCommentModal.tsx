@@ -160,7 +160,7 @@ export function PostCommentModal({
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[32px] w-full max-w-xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[600px] max-h-[90vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[600px] max-h-[90vh]"
             >
                 {/* Header */}
                 <div className="p-6 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
@@ -186,7 +186,7 @@ export function PostCommentModal({
                 {/* Comment List */}
                 <div 
                     ref={scrollRef}
-                    className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-white dark:bg-neutral-900 shadow-inner"
+                    className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900 shadow-inner"
                 >
                     {isLoading && comments.length === 0 ? (
                         [1, 2, 3].map(i => (
@@ -205,7 +205,7 @@ export function PostCommentModal({
                                     {c.user_picture ? (
                                         <img src={c.user_picture} className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full bg-slate-50 dark:bg-neutral-800 flex items-center justify-center">
+                                        <div className="w-full h-full bg-[var(--muted)]/50 dark:bg-neutral-800 flex items-center justify-center">
                                             <User className="w-5 h-5 text-neutral-300" />
                                         </div>
                                     )}
@@ -221,7 +221,7 @@ export function PostCommentModal({
                                         </div>
                                     </div>
                                     <div className="relative">
-                                        <div className="p-5 rounded-[28px] rounded-tl-none bg-slate-50/50 dark:bg-neutral-950/40 border-2 border-slate-50/50 dark:border-neutral-800/60 text-[14px] font-medium text-neutral-700 dark:text-neutral-300 leading-relaxed group-hover:bg-white dark:group-hover:bg-neutral-900 transition-all group-hover:border-primary/20 shadow-xs group-hover:shadow-lg group-hover:shadow-primary/5">
+                                        <div className="p-5 rounded-2xl rounded-tl-none bg-[var(--muted)]/50 dark:bg-neutral-950/40 border-2 border-[var(--border)]/50 dark:border-neutral-800/60 text-[14px] font-medium text-neutral-700 dark:text-neutral-300 leading-relaxed group-hover:bg-[var(--card)] dark:group-hover:bg-neutral-900 transition-all group-hover:border-primary/20 shadow-xs group-hover:shadow-lg group-hover:shadow-primary/5">
                                             {c.message}
                                         </div>
                                         <div className="flex items-center gap-5 mt-3 pl-1">
@@ -244,7 +244,7 @@ export function PostCommentModal({
                         ))
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-center py-10">
-                            <div className="w-20 h-20 rounded-[32px] bg-slate-50 dark:bg-neutral-800 flex items-center justify-center mb-6 shadow-inner rotate-12 group-hover:rotate-0 transition-transform">
+                            <div className="w-20 h-20 rounded-2xl bg-[var(--muted)]/50 dark:bg-neutral-800 flex items-center justify-center mb-6 shadow-inner rotate-12 group-hover:rotate-0 transition-transform">
                                 <MessageSquare className="w-8 h-8 text-neutral-300" />
                             </div>
                             <h3 className="text-[14px] font-black uppercase tracking-[0.2em] text-neutral-900 dark:text-white">Silence in the feed</h3>
@@ -254,7 +254,7 @@ export function PostCommentModal({
                 </div>
 
                 {/* Footer Input Area */}
-                <div className="p-8 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950/40 space-y-4">
+                <div className="p-8 border-t border-neutral-100 dark:border-neutral-800 bg-[var(--card)] dark:bg-neutral-950/40 space-y-4">
                     <AnimatePresence>
                         {isScheduling && (
                             <motion.div 
@@ -295,7 +295,7 @@ export function PostCommentModal({
                                         handleSend();
                                     }
                                 }}
-                                className="w-full pl-6 pr-14 py-4 rounded-[24px] bg-slate-50 dark:bg-neutral-900 border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none shadow-sm focus:shadow-xl focus:shadow-primary/5 transition-all text-[14px] font-bold resize-none min-h-[60px] placeholder:text-neutral-300 tracking-tight"
+                                className="w-full pl-6 pr-14 py-4 rounded-[24px] bg-[var(--muted)]/50 dark:bg-neutral-900 border-2 border-transparent focus:border-primary/20 focus:bg-[var(--card)] outline-none shadow-sm focus:shadow-xl focus:shadow-primary/5 transition-all text-[14px] font-bold resize-none min-h-[60px] placeholder:text-neutral-300 tracking-tight"
                             />
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                 <InlineEmojiButton
@@ -314,7 +314,7 @@ export function PostCommentModal({
                                     "w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-sm",
                                     isScheduling 
                                         ? "bg-primary text-white shadow-primary/20" 
-                                        : "bg-slate-50 dark:bg-neutral-800 text-neutral-400 hover:bg-slate-100"
+                                        : "bg-[var(--muted)]/50 dark:bg-neutral-800 text-neutral-400 hover:bg-[var(--muted)]/60"
                                 )}
                                 title="Schedule for later"
                             >

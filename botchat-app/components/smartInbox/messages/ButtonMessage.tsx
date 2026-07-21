@@ -20,7 +20,7 @@ export default function ButtonMessage({ text, buttons, isInbound }: ButtonMessag
 
     const buttonClass = isInbound
         ? "border-t border-border/50 text-primary hover:bg-muted-foreground/10 active:bg-muted-foreground/20"
-        : "border-t border-white/20 text-white hover:bg-white/10 active:bg-white/20";
+        : "border-t border-white/20 text-white hover:bg-[var(--card)]/10 active:bg-[var(--card)]/20";
 
     return (
         <div className={`min-w-[200px] max-w-[280px] rounded-2xl overflow-hidden flex flex-col ${bubbleClass}`}>

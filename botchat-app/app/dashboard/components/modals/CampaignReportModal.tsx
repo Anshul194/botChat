@@ -98,7 +98,7 @@ export function CampaignReportModal({
                 initial={{ opacity: 0, scale: 0.95, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 30 }}
-                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[40px] w-full max-w-4xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-4xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
             >
                 {/* Header */}
                 <div className="p-8 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
@@ -123,7 +123,7 @@ export function CampaignReportModal({
 
                 {/* Global Stats Summary */}
                 {stats && (
-                    <div className="px-8 py-6 bg-white dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 grid grid-cols-4 gap-6">
+                    <div className="px-8 py-6 bg-[var(--card)] dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 grid grid-cols-4 gap-6">
                         {[
                             { label: "Total Hits", value: stats.total, color: "text-primary" },
                             { label: "Successful", value: stats.sent, color: "text-primary" },
@@ -148,16 +148,16 @@ export function CampaignReportModal({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-white dark:bg-neutral-900 text-sm">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900 text-sm">
                     {isLoading && data.length === 0 ? (
                         [1, 2, 3, 4].map(i => (
-                            <div key={i} className="h-24 bg-primary/5 rounded-[32px] animate-pulse" />
+                            <div key={i} className="h-24 bg-primary/5 rounded-2xl animate-pulse" />
                         ))
                     ) : data.length > 0 ? (
                         data.map((item, idx) => (
                             <div key={idx} className="space-y-3">
                                 <div className={cn(
-                                    "grid grid-cols-12 gap-4 px-8 py-6 rounded-[32px] bg-white dark:bg-neutral-950 border transition-all items-center hover:shadow-xl hover:shadow-primary/5 cursor-pointer",
+                                    "grid grid-cols-12 gap-4 px-8 py-6 rounded-2xl bg-[var(--card)] dark:bg-neutral-950 border transition-all items-center hover:shadow-xl hover:shadow-primary/5 cursor-pointer",
                                     expandedItem === item.id ? "border-primary/30 ring-4 ring-primary/5" : "border-neutral-100 dark:border-neutral-800"
                                 )} onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}>
                                     <div className="col-span-1 flex justify-center text-[11px] font-black text-primary/20">
@@ -236,7 +236,7 @@ export function CampaignReportModal({
                                             exit={{ height: 0, opacity: 0 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="mx-8 p-8 rounded-[32px] bg-primary/[0.02] border border-primary/10 space-y-8">
+                                            <div className="mx-8 p-8 rounded-2xl bg-primary/[0.02] border border-primary/10 space-y-8">
                                                 {/* Per-campaign log stats */}
                                                 {(item.log_total !== undefined) && (
                                                     <div className="grid grid-cols-4 gap-4">
@@ -256,18 +256,18 @@ export function CampaignReportModal({
                                                 <div className="grid grid-cols-2 gap-10">
                                                     <div className="space-y-4">
                                                         <h5 className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] ml-2">Message Content</h5>
-                                                        <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-primary/10 text-[13px] text-neutral-600 dark:text-neutral-400 font-medium leading-relaxed italic shadow-sm">
+                                                        <div className="p-6 rounded-3xl bg-[var(--card)] dark:bg-neutral-900 border border-primary/10 text-[13px] text-neutral-600 dark:text-neutral-400 font-medium leading-relaxed italic shadow-sm">
                                                             {item.message ? `"${item.message}"` : "Dynamic filter-based content deployment"}
                                                         </div>
                                                     </div>
                                                     <div className="grid grid-cols-2 gap-4">
-                                                        <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-primary/10 shadow-sm flex flex-col justify-center">
+                                                        <div className="p-6 rounded-3xl bg-[var(--card)] dark:bg-neutral-900 border border-primary/10 shadow-sm flex flex-col justify-center">
                                                             <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest mb-2">Privacy Control</p>
                                                             <div className={cn("text-[11px] font-black", (item.hide_after_reply == 1 || item.hide_after_reply === "1") ? "text-primary" : "text-neutral-400")}>
                                                                 {(item.hide_after_reply == 1 || item.hide_after_reply === "1") ? "HIDE ENABLED" : "DISPLAY PUBLIC"}
                                                             </div>
                                                         </div>
-                                                        <div className="p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-primary/10 shadow-sm flex flex-col justify-center">
+                                                        <div className="p-6 rounded-3xl bg-[var(--card)] dark:bg-neutral-900 border border-primary/10 shadow-sm flex flex-col justify-center">
                                                             <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest mb-2">Source Type</p>
                                                             <div className={cn("text-[11px] font-black", (item.is_template == 1 || item.is_template === "1") ? "text-primary" : "text-neutral-400")}>
                                                                 {(item.is_template == 1 || item.is_template === "1") ? "SYSTEM TEMPLATE" : "CUSTOM CAMPAIGN"}
@@ -314,7 +314,7 @@ export function CampaignReportModal({
                 <div className="p-6 bg-neutral-50/50 dark:bg-neutral-950/20 border-t border-neutral-100 dark:border-neutral-800 flex justify-end">
                     <button 
                         onClick={onClose}
-                        className="px-8 py-3.5 rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[11px] font-black uppercase tracking-widest text-neutral-500 hover:text-primary hover:border-primary transition-all shadow-sm active:scale-95"
+                        className="px-8 py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[11px] font-black uppercase tracking-widest text-neutral-500 hover:text-primary hover:border-primary transition-all shadow-sm active:scale-95"
                     >
                         Dismiss Analysis
                     </button>

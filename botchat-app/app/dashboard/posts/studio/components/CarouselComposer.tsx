@@ -400,7 +400,7 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
               <div className="p-6 border-2 border-dashed border-[var(--border)] rounded-2xl bg-primary/5 flex flex-col gap-4">
                 {videoImages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center text-center gap-3 py-4">
-                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-[var(--card)] flex items-center justify-center shadow-sm">
                       <Layers className="w-6 h-6 text-primary" />
                     </div>
                     <div>
@@ -438,7 +438,7 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
                   />
                   <Button
                     variant="outline"
-                    className="rounded-xl h-10 px-8 bg-white font-bold border-[var(--border)] shadow-sm"
+                    className="rounded-xl h-10 px-8 bg-[var(--card)] font-bold border-[var(--border)] shadow-sm"
                     onClick={() => document.getElementById('video-images-upload')?.click()}
                     disabled={isVideoUploading}
                   >

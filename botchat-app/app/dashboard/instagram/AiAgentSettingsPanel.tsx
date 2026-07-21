@@ -53,7 +53,7 @@ function FormField({ label, children, hint, showInfo = true }: { label: string; 
 
 function ThemeToggle({ enabled, onToggle, label }: { enabled: boolean; onToggle: () => void; label: string }) {
     return (
-        <div className="flex items-center justify-between p-5 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-xl hover:border-primary/20 dark:hover:border-primary/20 transition-all group">
+        <div className="flex items-center justify-between p-5 bg-[var(--card)] dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-xl hover:border-primary/20 dark:hover:border-primary/20 transition-all group">
             <span className="text-[13px] font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">{label}</span>
             <button
                 onClick={onToggle}
@@ -65,7 +65,7 @@ function ThemeToggle({ enabled, onToggle, label }: { enabled: boolean; onToggle:
                 <motion.div
                     animate={{ x: enabled ? 20 : 0 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    className="w-4 h-4 rounded-full bg-white shadow-sm"
+                    className="w-4 h-4 rounded-full bg-[var(--card)] shadow-sm"
                 />
             </button>
         </div>
@@ -235,7 +235,7 @@ export function AiAgentSettingsPanel({
                         <p className="text-xs text-neutral-500 font-medium">Neural settings for @{accountName}</p>
                     </div>
                 </div>
-                <button className="h-10 px-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-bold text-neutral-600 dark:text-neutral-400 flex items-center gap-2 hover:bg-neutral-50 transition-all">
+                <button className="h-10 px-6 rounded-xl bg-[var(--card)] border border-neutral-200 dark:border-neutral-700 text-xs font-bold text-neutral-600 dark:text-neutral-400 flex items-center gap-2 hover:bg-neutral-50 transition-all">
                     More Options <ChevronDown size={16} />
                 </button>
             </div>
@@ -263,7 +263,7 @@ export function AiAgentSettingsPanel({
                                     settings.ai_enabled ? "bg-primary" : "bg-neutral-200 dark:bg-neutral-800"
                                 )}
                             >
-                                <motion.div animate={{ x: settings.ai_enabled ? 20 : 0 }} className="w-5 h-5 rounded-full bg-white shadow-sm" />
+                                <motion.div animate={{ x: settings.ai_enabled ? 20 : 0 }} className="w-5 h-5 rounded-full bg-[var(--card)] shadow-sm" />
                             </button>
                         </div>
                     </FormField>
@@ -278,7 +278,7 @@ export function AiAgentSettingsPanel({
                                         onClick={() => setSettings(s => ({ ...s, ai_agent_all_queries: !s.ai_agent_all_queries }))}
                                         className={cn("w-11 h-6 rounded-full relative px-1 flex items-center shadow-sm", settings.ai_agent_all_queries ? "bg-primary shadow-primary/20" : "bg-neutral-200 dark:bg-neutral-800")}
                                     >
-                                        <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.ai_agent_all_queries ? "translate-x-5" : "translate-x-0")} />
+                                        <div className={cn("w-4 h-4 rounded-full bg-[var(--card)] transition-all shadow-sm", settings.ai_agent_all_queries ? "translate-x-5" : "translate-x-0")} />
                                     </button>
                                     <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Reply to All Messages</span>
                                 </div>
@@ -286,7 +286,7 @@ export function AiAgentSettingsPanel({
                                 <ThemeToggle label="Remember Previous Chats" enabled={settings.enable_contextual_memory} onToggle={() => setSettings(s => ({ ...s, enable_contextual_memory: !s.enable_contextual_memory }))} />
 
                                 <FormField label="Topics to Avoid" hint="Add topics and press Enter to secure.">
-                                    <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-3 min-h-[56px] flex flex-wrap gap-2 shadow-sm focus-within:border-primary/30 transition-all">
+                                    <div className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-3 min-h-[56px] flex flex-wrap gap-2 shadow-sm focus-within:border-primary/30 transition-all">
                                         {topicList.map(topic => (
                                             <span key={topic} className="flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary text-[11px] font-black uppercase tracking-widest rounded-xl border border-primary/20">
                                                 {topic}
@@ -316,7 +316,7 @@ export function AiAgentSettingsPanel({
                                                     "h-12 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all border",
                                                     settings.ai_reasoning_level === l
                                                         ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
-                                                        : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-primary/30"
+                                                        : "bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 text-neutral-400 hover:border-primary/30"
                                                 )}
                                             >
                                                 {l}
@@ -387,7 +387,7 @@ export function AiAgentSettingsPanel({
                                         onClick={() => setSettings(s => ({ ...s, ai_as_fallback_only: !s.ai_as_fallback_only }))}
                                         className={cn("w-11 h-6 rounded-full relative px-1 flex items-center shadow-sm", settings.ai_as_fallback_only ? "bg-primary shadow-primary/20" : "bg-neutral-200 dark:bg-neutral-800")}
                                     >
-                                        <div className={cn("w-4 h-4 rounded-full bg-white transition-all shadow-sm", settings.ai_as_fallback_only ? "translate-x-5" : "translate-x-0")} />
+                                        <div className={cn("w-4 h-4 rounded-full bg-[var(--card)] transition-all shadow-sm", settings.ai_as_fallback_only ? "translate-x-5" : "translate-x-0")} />
                                     </button>
                                     <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-tight">Safe Reply Mode</span>
                                 </div>
@@ -398,13 +398,13 @@ export function AiAgentSettingsPanel({
                                     <textarea
                                         value={settings.restricted_response || ""}
                                         onChange={(e) => setSettings(s => ({ ...s, restricted_response: e.target.value }))}
-                                        className="w-full h-40 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-6 text-sm font-medium text-neutral-700 dark:text-neutral-300 outline-none focus:border-primary shadow-sm transition-all resize-none leading-relaxed"
+                                        className="w-full h-40 bg-[var(--card)] dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-6 text-sm font-medium text-neutral-700 dark:text-neutral-300 outline-none focus:border-primary shadow-sm transition-all resize-none leading-relaxed"
                                         placeholder="e.g. Protocol mismatch. Redirecting to human operator..."
                                     />
                                 </FormField>
 
                                 <FormField label="Reply Waiting Time" hint="Make Replies Feel Natural (Max 60s)">
-                                    <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl h-14 px-6 flex items-center shadow-sm">
+                                    <div className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl h-14 px-6 flex items-center shadow-sm">
                                         <input
                                             type="number"
                                             value={settings.ai_reply_delay}

@@ -34,12 +34,12 @@ export function StatusModal({
         case "info":
           return <Info className="w-16 h-16 text-blue-500" />;
         case "loading":
-          return <Loader2 className="w-16 h-16 text-pink-500 animate-spin" />;
+          return <Loader2 className="w-16 h-16 text-[var(--primary)] animate-spin" />;
         default:
           return <CheckCircle2 className="w-16 h-16 text-emerald-500" />;
       }
     } catch {
-      return <Info className="w-16 h-16 text-pink-500" />;
+      return <Info className="w-16 h-16 text-[var(--primary)]" />;
     }
   };
 
@@ -61,16 +61,16 @@ export function StatusModal({
         };
       case "loading":
         return {
-          bg: "bg-white dark:bg-[#1C1C24]",
-          text: "text-slate-800 dark:text-white font-bold",
-          border: "border-slate-100 dark:border-slate-800",
-          button: "bg-slate-200 dark:bg-slate-800 cursor-not-allowed opacity-50",
+          bg: "bg-[var(--card)] dark:bg-[#1C1C24]",
+          text: "text-[var(--foreground)] dark:text-white font-bold",
+          border: "border-[var(--border)] dark:border-[var(--border)]",
+          button: "bg-[var(--muted)]/80 dark:bg-[var(--muted)] cursor-not-allowed opacity-50",
         };
       default:
         return {
-          bg: "bg-white dark:bg-[#1C1C24]",
-          text: "text-slate-800 dark:text-white font-bold",
-          border: "border-slate-100 dark:border-slate-800",
+          bg: "bg-[var(--card)] dark:bg-[#1C1C24]",
+          text: "text-[var(--foreground)] dark:text-white font-bold",
+          border: "border-[var(--border)] dark:border-[var(--border)]",
           button: "bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
         };
     }
@@ -99,14 +99,14 @@ export function StatusModal({
             transition={{ type: "spring", damping: 25, stiffness: 350 }}
             className={cn(
                "relative w-full max-w-sm rounded-[24px] overflow-hidden shadow-2xl z-10",
-               "bg-white dark:bg-[#1C1C24] border border-slate-100 dark:border-slate-800"
+               "bg-[var(--card)] dark:bg-[#1C1C24] border border-[var(--border)] dark:border-[var(--border)]"
             )}
           >
             {/* Close button */}
             {type !== "loading" && (
               <button 
                 onClick={onClose}
-                className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors z-20"
+                className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] text-[var(--muted-foreground)]/70 transition-colors z-20"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -133,7 +133,7 @@ export function StatusModal({
                   transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                   className={cn("absolute inset-0 rounded-full blur-xl opacity-20", 
                     type === 'success' ? 'bg-emerald-500' : 
-                    type === 'error' ? 'bg-rose-500' : 'bg-pink-500'
+                    type === 'error' ? 'bg-rose-500' : 'bg-[var(--primary)]/100'
                   )}
                 />
                 <div className="relative">
@@ -145,7 +145,7 @@ export function StatusModal({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className={cn("text-2xl font-bold mb-2 tracking-tight", theme.text === 'font-bold' ? 'text-slate-900 dark:text-white' : theme.text)}
+                className={cn("text-2xl font-bold mb-2 tracking-tight", theme.text === 'font-bold' ? 'text-[var(--foreground)] dark:text-white' : theme.text)}
               >
                 {safeTitle}
               </motion.h3>
@@ -154,7 +154,7 @@ export function StatusModal({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed max-w-[240px]"
+                className="text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 text-sm font-medium leading-relaxed max-w-[240px]"
               >
                 {safeMessage}
               </motion.p>
@@ -182,7 +182,7 @@ export function StatusModal({
             {/* Subtle bottom accent */}
             <div className={cn("h-1 w-full", 
               type === 'success' ? 'bg-emerald-500' : 
-              type === 'error' ? 'bg-rose-500' : 'bg-pink-500'
+              type === 'error' ? 'bg-rose-500' : 'bg-[var(--primary)]/100'
             )} />
           </motion.div>
         </div>

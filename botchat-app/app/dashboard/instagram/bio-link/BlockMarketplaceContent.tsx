@@ -154,24 +154,24 @@ export default function BlockMarketplaceContent({
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-20 min-h-[400px]">
-                <Loader2 className="w-8 h-8 text-slate-400 animate-spin mb-4" />
-                <p className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">Loading Library...</p>
+                <Loader2 className="w-8 h-8 text-[var(--muted-foreground)]/70 animate-spin mb-4" />
+                <p className="text-[12px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">Loading Library...</p>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-[#020617]">
+        <div className="flex flex-col h-full bg-[var(--card)] dark:bg-[#020617]">
             {/* Professional Header & Search */}
-            <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#020617] sticky top-0 z-20">
+            <div className="px-4 pt-4 pb-3 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-[#020617] sticky top-0 z-20">
                 <div className="relative mb-3">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]/70" size={18} />
                     <input
                         type="text"
                         placeholder="Search for links, embeds, or tools..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full h-12 pl-12 pr-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-primary/50 text-[14px] font-medium text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-950"
+                        className="w-full h-12 pl-12 pr-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] focus:border-primary/50 text-[14px] font-medium text-[var(--foreground)] dark:text-white outline-none transition-all placeholder:text-[var(--muted-foreground)]/70 focus:bg-[var(--card)] dark:focus:bg-slate-950"
                     />
                 </div>
                 
@@ -183,8 +183,8 @@ export default function BlockMarketplaceContent({
                         className={cn(
                             "px-4 py-2 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap",
                             activeCategory === "all"
-                                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                                : "bg-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                ? "bg-[var(--background)] text-white dark:bg-[var(--card)] dark:text-[var(--foreground)]"
+                                : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]"
                         )}
                     >
                         All Modules <span className="opacity-50 ml-1">({allCount})</span>
@@ -197,8 +197,8 @@ export default function BlockMarketplaceContent({
                             className={cn(
                                 "px-4 py-2 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap capitalize",
                                 activeCategory === category
-                                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                                    : "bg-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    ? "bg-[var(--background)] text-white dark:bg-[var(--card)] dark:text-[var(--foreground)]"
+                                    : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]"
                             )}
                         >
                             {category} <span className="opacity-50 ml-1">({data.blocks.length})</span>
@@ -211,7 +211,7 @@ export default function BlockMarketplaceContent({
             <div className="p-4 space-y-6">
                 {filteredCategories.map(([category, data]) => (
                     <div key={category} className="space-y-4">
-                        <h3 className="text-[12px] font-black uppercase tracking-widest text-slate-400 pl-1">
+                        <h3 className="text-[12px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 pl-1">
                             {category}
                         </h3>
 
@@ -224,25 +224,25 @@ export default function BlockMarketplaceContent({
                                     <button
                                         key={item.id}
                                         onClick={() => onSelect(item.id, item.defaults)}
-                                        className="group flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#020617] hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all text-left w-full relative overflow-hidden active:scale-[0.98]"
+                                        className="group flex items-center gap-4 p-4 rounded-xl border border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-[#020617] hover:border-[var(--border)]/70 dark:hover:border-slate-600 hover:shadow-md transition-all text-left w-full relative overflow-hidden active:scale-[0.98]"
                                     >
-                                        <div className="absolute inset-0 bg-slate-50 dark:bg-slate-900 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                        <div className="absolute inset-0 bg-[var(--muted)]/50 dark:bg-[var(--background)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                         
-                                        <div className="relative z-10 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-slate-100 dark:bg-slate-800 transition-transform group-hover:scale-[1.05]"
+                                        <div className="relative z-10 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-[var(--muted)]/50 dark:bg-[var(--muted)] transition-transform group-hover:scale-[1.05]"
                                              style={{ color: itemColor }}>
                                             <Icon size={20} />
                                         </div>
 
                                         <div className="relative z-10 flex-1 min-w-0 pr-2">
-                                            <h4 className="text-[14px] font-bold text-slate-900 dark:text-white capitalize flex items-center gap-2 truncate">
+                                            <h4 className="text-[14px] font-bold text-[var(--foreground)] dark:text-white capitalize flex items-center gap-2 truncate">
                                                 {item.id.replace(/_/g, " ")}
                                             </h4>
-                                            <p className="text-[12px] font-medium text-slate-500 truncate mt-0.5">
+                                            <p className="text-[12px] font-medium text-[var(--muted-foreground)] truncate mt-0.5">
                                                 {item.desc || `Add a ${item.id.replace(/_/g, " ")} block`}
                                             </p>
                                         </div>
 
-                                        <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-slate-300 group-hover:bg-primary group-hover:text-white transition-all flex-shrink-0">
+                                        <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-[var(--muted-foreground)]/50 group-hover:bg-primary group-hover:text-white transition-all flex-shrink-0">
                                             <Plus size={16} />
                                         </div>
                                     </button>
@@ -254,11 +254,11 @@ export default function BlockMarketplaceContent({
 
                 {filteredCategories.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-24 text-center">
-                        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
-                            <Search className="w-6 h-6 text-slate-400" />
+                        <div className="w-16 h-16 rounded-full bg-[var(--muted)]/50 dark:bg-[var(--background)] flex items-center justify-center mb-4">
+                            <Search className="w-6 h-6 text-[var(--muted-foreground)]/70" />
                         </div>
-                        <h3 className="text-[16px] font-bold text-slate-900 dark:text-white mb-1">No Modules Found</h3>
-                        <p className="text-[13px] font-medium text-slate-500">We couldn't find any blocks matching "{search}"</p>
+                        <h3 className="text-[16px] font-bold text-[var(--foreground)] dark:text-white mb-1">No Modules Found</h3>
+                        <p className="text-[13px] font-medium text-[var(--muted-foreground)]">We couldn't find any blocks matching "{search}"</p>
                     </div>
                 )}
             </div>

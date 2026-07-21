@@ -189,10 +189,10 @@ export default function ContentLibraryPage() {
 
                                     {/* Hover Actions */}
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                        <button onClick={() => copyUrl(asset.url)} className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-sm transition-colors" title="Copy URL">
+                                        <button onClick={() => copyUrl(asset.url)} className="p-2 bg-[var(--card)]/20 hover:bg-[var(--card)]/40 rounded-full text-white backdrop-blur-sm transition-colors" title="Copy URL">
                                             <Copy className="w-4 h-4" />
                                         </button>
-                                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white backdrop-blur-sm transition-colors" title="Open">
+                                        <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-2 bg-[var(--card)]/20 hover:bg-[var(--card)]/40 rounded-full text-white backdrop-blur-sm transition-colors" title="Open">
                                             <ExternalLink className="w-4 h-4" />
                                         </a>
                                         <button onClick={() => { if (confirm('Delete this file?')) deleteMutation.mutate(asset.id); }} className="p-2 bg-red-500/80 hover:bg-red-500 rounded-full text-white backdrop-blur-sm transition-colors" title="Delete">

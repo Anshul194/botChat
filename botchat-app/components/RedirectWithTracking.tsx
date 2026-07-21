@@ -46,21 +46,21 @@ export default function RedirectWithTracking({
 
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen bg-[var(--muted)]/50 flex flex-col items-center justify-center p-4">
                 <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
                     <span className="text-red-500 text-2xl font-bold">!</span>
                 </div>
-                <p className="text-slate-600 font-medium mb-2">Unable to redirect</p>
-                <p className="text-slate-400 text-sm">{error}</p>
+                <p className="text-[var(--muted-foreground)] font-medium mb-2">Unable to redirect</p>
+                <p className="text-[var(--muted-foreground)]/70 text-sm">{error}</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="min-h-screen bg-[var(--muted)]/50 flex flex-col items-center justify-center p-4">
             <GA4Injector ga4Pixels={ga4Pixels} />
-            <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-blue-500 animate-spin mb-4" />
-            <p className="text-slate-600 font-medium">
+            <div className="w-12 h-12 rounded-full border-4 border-[var(--border)] border-t-blue-500 animate-spin mb-4" />
+            <p className="text-[var(--muted-foreground)] font-medium">
                 {redirecting ? "Redirecting..." : "Taking you there..."}
             </p>
         </div>

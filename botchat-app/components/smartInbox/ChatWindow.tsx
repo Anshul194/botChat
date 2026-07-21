@@ -38,7 +38,7 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
 
     // Helper to group messages by date
     const renderMessagesWithDividers = () => {
-        const groups: JSX.Element[] = [];
+        const groups: React.ReactNode[] = [];
         let lastDateStr = "";
 
         messages.forEach((msg, idx) => {
@@ -67,7 +67,7 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
         <div className="flex flex-col h-full bg-background overflow-hidden">
             {/* Active Customer Profile Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/60 bg-card">
-                <button 
+                <button
                     onClick={onProfileClick}
                     className="flex items-center gap-3 group hover:opacity-80 transition-all text-left"
                 >
@@ -117,36 +117,33 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
                     <div className="flex items-center bg-muted/30 p-1 rounded-lg border border-border">
                         <button
                             onClick={() => togglePinChat(selectedConversation.id, !selectedConversation.is_pinned)}
-                            className={`p-2 rounded-md transition-all ${
-                                selectedConversation.is_pinned
+                            className={`p-2 rounded-md transition-all ${selectedConversation.is_pinned
                                     ? "bg-primary/10 text-primary"
                                     : "text-muted-foreground hover:bg-background"
-                            }`}
+                                }`}
                         >
                             <Pin className="w-4 h-4 rotate-45" />
                         </button>
                         <button
                             onClick={() => toggleStarChat(selectedConversation.id, !selectedConversation.is_starred)}
-                            className={`p-2 rounded-md transition-all ${
-                                selectedConversation.is_starred
+                            className={`p-2 rounded-md transition-all ${selectedConversation.is_starred
                                     ? "bg-primary/10 text-primary"
                                     : "text-muted-foreground hover:bg-background"
-                            }`}
+                                }`}
                         >
                             <Star className={`w-4 h-4 ${selectedConversation.is_starred ? "fill-current" : ""}`} />
                         </button>
                         <button
                             onClick={() => toggleArchiveChat(selectedConversation.id, !selectedConversation.is_archived)}
-                            className={`p-2 rounded-md transition-all ${
-                                selectedConversation.is_archived
+                            className={`p-2 rounded-md transition-all ${selectedConversation.is_archived
                                     ? "bg-primary/10 text-primary"
                                     : "text-muted-foreground hover:bg-background"
-                            }`}
+                                }`}
                         >
                             <Archive className="w-4 h-4" />
                         </button>
                     </div>
-                    
+
                     <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
                         <MoreVertical className="w-5 h-5" />
                     </button>

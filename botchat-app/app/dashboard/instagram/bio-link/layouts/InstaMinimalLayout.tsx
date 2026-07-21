@@ -24,7 +24,7 @@ export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
     const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
 
     return (
-        <div className="w-full min-h-full bg-white text-zinc-900 font-sans px-4 sm:px-6 py-12 sm:py-20 flex flex-col items-center selection:bg-zinc-100 relative overflow-hidden">
+        <div className="w-full min-h-full bg-[var(--card)] text-zinc-900 font-sans px-4 sm:px-6 py-12 sm:py-20 flex flex-col items-center selection:bg-zinc-100 relative overflow-hidden">
             {/* Subtle Gradient Accent */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-zinc-50/50 to-transparent pointer-events-none" />
 
@@ -38,7 +38,7 @@ export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1.2, ease: "circOut" }}
-                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-none grayscale hover:grayscale-0 transition-all duration-1000 mb-12 border border-zinc-100 p-1.5 bg-white shadow-sm ring-1 ring-zinc-900/5"
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-none grayscale hover:grayscale-0 transition-all duration-1000 mb-12 border border-zinc-100 p-1.5 bg-[var(--card)] shadow-sm ring-1 ring-zinc-900/5"
                     >
                         <img
                             src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || profile?.image || "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400"}
@@ -155,7 +155,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                         const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                         return (
-                            <a key={i} href={item.url || "#"} className="flex flex-col gap-8 p-8 bg-white hover:bg-zinc-50 transition-colors group">
+                            <a key={i} href={item.url || "#"} className="flex flex-col gap-8 p-8 bg-[var(--card)] hover:bg-zinc-50 transition-colors group">
                                 {isImg ? (
                                     <div className="w-full aspect-video overflow-hidden grayscale group-hover:grayscale-0 transition-all">
                                         <img src={img} className="w-full h-full object-cover" />
@@ -183,7 +183,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                             const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                             return (
-                                <a key={i} href={item.url || "#"} className="min-w-[200px] p-10 bg-white hover:bg-zinc-50 transition-colors group flex flex-col gap-12 overflow-hidden">
+                                <a key={i} href={item.url || "#"} className="min-w-[200px] p-10 bg-[var(--card)] hover:bg-zinc-50 transition-colors group flex flex-col gap-12 overflow-hidden">
                                     {isImg ? (
                                         <div className="w-full h-32 overflow-hidden grayscale group-hover:grayscale-0 transition-all">
                                             <img src={img} className="w-full h-full object-cover" />
@@ -309,7 +309,7 @@ const renderMinimalSection = (block: any, profile: any) => {
         case 'faq_section':
         case 'faq_cards_section':
             return (
-                <div className="space-y-12 sm:space-y-20 py-20 px-10 border border-zinc-100 bg-white shadow-sm rounded-[2px]">
+                <div className="space-y-12 sm:space-y-20 py-20 px-10 border border-zinc-100 bg-[var(--card)] shadow-sm rounded-[2px]">
                     <div className="flex items-center gap-4">
                         <div className="w-8 h-[2px] bg-zinc-900" />
                         <h3 className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.5em] text-zinc-300">Information</h3>
@@ -338,7 +338,7 @@ const renderMinimalSection = (block: any, profile: any) => {
                     <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] sm:tracking-[0.6em] mb-12 text-zinc-300 relative z-10">{s.title || "Correspondence"}</span>
                     <h3 className="text-[22px] sm:text-[26px] font-light tracking-tighter mb-16 max-w-xs relative z-10 text-zinc-900 leading-tight">{s.description || "Join the inner circle for exclusive updates."}</h3>
                     <div className="w-full max-w-[320px] flex flex-col gap-4 relative z-10">
-                        <div className="h-14 border border-zinc-200 bg-white px-6 flex items-center group-focus-within:border-zinc-900 transition-all">
+                        <div className="h-14 border border-zinc-200 bg-[var(--card)] px-6 flex items-center group-focus-within:border-zinc-900 transition-all">
                             <input type="email" placeholder={s.placeholder || "private@studio.com"} className="flex-1 bg-transparent text-[13px] outline-none text-zinc-900 placeholder:text-zinc-200" />
                         </div>
                         <button className="h-14 bg-zinc-900 text-white text-[11px] font-black uppercase tracking-[0.3em] hover:bg-zinc-800 transition-all active:scale-95 shadow-xl shadow-zinc-900/5">

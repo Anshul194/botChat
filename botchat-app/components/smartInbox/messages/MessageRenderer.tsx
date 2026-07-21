@@ -82,7 +82,7 @@ export default function MessageRenderer({ message, onImageClick }: MessageRender
     const getCaption = (): string =>
         data?.caption ?? data?.filename ?? message.message ?? "";
 
-    switch (message.message_type) {
+    switch (message.message_type as string) {
         case "image":
             return (
                 <ImageMessage

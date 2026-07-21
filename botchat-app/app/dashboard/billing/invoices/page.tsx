@@ -31,7 +31,7 @@ export default function InvoicesPage() {
         win.document.write(`
             <html><head><title>Invoice</title>
             <style>
-                body { font-family: 'Inter', sans-serif; padding: 40px; color: #1e293b; }
+                body { font-family: var(--app-font-family, 'Inter', sans-serif); padding: 40px; color: #1e293b; }
                 .header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px; }
                 .invoice-title { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
                 .details { margin-bottom: 30px; }

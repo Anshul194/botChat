@@ -37,10 +37,10 @@ interface FullAccountReplyModalProps {
 function Field({ label, required, children, icon: Icon, desc }: { label: string; required?: boolean; children: React.ReactNode; icon?: any, desc?: string }) {
     return (
         <div className="space-y-1.5 flex-1 min-w-0">
-            <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
+            <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                {Icon && <Icon className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" />}
                 {label} {required && <span className="text-rose-400">*</span>}
-                {desc && <span className="text-[10px] text-slate-400 font-medium ml-auto">{desc}</span>}
+                {desc && <span className="text-[10px] text-[var(--muted-foreground)]/70 font-medium ml-auto">{desc}</span>}
             </label>
             {children}
         </div>
@@ -50,18 +50,18 @@ function Field({ label, required, children, icon: Icon, desc }: { label: string;
 function CustomToggle({ active, onClick, label }: { active: boolean; onClick: () => void; label?: string }) {
     return (
         <div className="flex items-center gap-3 group cursor-pointer" onClick={onClick}>
-            {label && <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">{label}</span>}
+            {label && <span className="text-sm font-medium text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors">{label}</span>}
             <div className="flex items-center gap-2">
                 <div className={cn(
                     "w-10 h-5 rounded-full relative transition-all duration-200",
-                    active ? "bg-pink-500" : "bg-slate-200"
+                    active ? "bg-[var(--primary)]" : "bg-[var(--muted)]/70"
                 )}>
                     <div className={cn(
-                        "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all",
+                        "absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] shadow transition-all",
                         active ? "left-5.5" : "left-0.5"
                     )} />
                 </div>
-                <span className="text-xs font-medium text-slate-400 w-6">{active ? "On" : "Off"}</span>
+                <span className="text-xs font-medium text-[var(--muted-foreground)]/70 w-6">{active ? "On" : "Off"}</span>
             </div>
         </div>
     );
@@ -69,8 +69,8 @@ function CustomToggle({ active, onClick, label }: { active: boolean; onClick: ()
 
 function CapsuleSwitch({ active }: { active: boolean }) {
     return (
-        <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-pink-600" : "bg-slate-300 shadow-inner")}>
-            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all", active ? "left-6.5" : "left-0.5")} />
+        <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-[var(--primary)]" : "bg-[var(--muted)] shadow-inner")}>
+            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] transition-all", active ? "left-6.5" : "left-0.5")} />
         </div>
     );
 }
@@ -280,51 +280,51 @@ export function FullAccountReplyModal({
                     initial={{ opacity: 0, scale: 0.96, y: 24 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 24 }}
-                    className="relative z-10 w-full max-w-[950px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+                    className="relative z-10 w-full max-w-[950px] bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
                 >
                     {/* Header: Simplified & Professional */}
-                    <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100 bg-white sticky top-0 z-20">
+                    <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
                                 <Settings size={18} />
                             </div>
-                            <h2 className="text-[14px] font-semibold text-slate-800">
+                            <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
                                 {existingConfigId ? 'Edit' : 'Create'} Full Account Reply Template (Instagram)
                             </h2>
                         </div>
-                        <button onClick={onClose} className="text-slate-300 hover:text-rose-500 transition-colors">
+                        <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors">
                             <X size={22} />
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[#FDFDFF] custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--card)] custom-scrollbar">
                         
                         {isLoading ? (
                             <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
-                                <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
-                                <p className="text-sm font-medium text-slate-400">Loading configuration...</p>
+                                <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
+                                <p className="text-sm font-medium text-[var(--muted-foreground)]/70">Loading configuration...</p>
                             </div>
                         ) : (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                                 
                                 {/* SECTION: BASICS */}
-                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs">
+                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
                                     <Field label="Auto Reply Campaign Name" required>
                                         <input
                                             type="text"
                                             value={name}
                                             onChange={e => setName(e.target.value)}
                                             placeholder="Write your auto reply campaign name here"
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                         />
                                     </Field>
                                 </div>
 
                                 {/* SECTION: OFFENSIVE SETTINGS */}
-                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6">
+                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
                                     <div className="flex items-center gap-2 mb-2">
                                         <ShieldAlert className="w-4 h-4 text-rose-400" />
-                                        <h3 className="text-sm font-semibold text-slate-700">Offensive Comments Settings</h3>
+                                        <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
                                     </div>
                                     <div className="flex gap-8">
                                         <CustomToggle active={hideOffensive} onClick={() => setHideOffensive(!hideOffensive)} label="Hide Comment" />
@@ -332,19 +332,19 @@ export function FullAccountReplyModal({
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-600">Offensive keywords <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                                            <label className="text-sm font-medium text-[var(--muted-foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)]/70 font-normal">(comma separated)</span></label>
                                             <div className="relative">
                                                 <textarea rows={4} value={offensiveKeywords} onChange={e => setOffensiveKeywords(e.target.value)}
-                                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] resize-none"
+                                                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] resize-none"
                                                     placeholder="keyword1, keyword2..."
                                                 />
-                                                <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-slate-300" />
+                                                <Edit3 className="absolute bottom-3 right-3 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                             </div>
                                         </div>
                                         <div className="space-y-5">
                                             <div className="flex items-center justify-between px-1">
-                                                <label className="text-sm font-medium text-slate-600">Private reply template</label>
-                                                <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                <label className="text-sm font-medium text-[var(--muted-foreground)]">Private reply template</label>
+                                                <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                     <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                         <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                     </button>
@@ -354,51 +354,51 @@ export function FullAccountReplyModal({
                                                 <select
                                                     value={offensiveTemplateId || ""}
                                                     onChange={e => setOffensiveTemplateId(e.target.value || null)}
-                                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-white"
+                                                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-[var(--card)]"
                                                 >
                                                     <option value="">Please select a message template</option>
                                                     {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                 </select>
-                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 pointer-events-none" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* SECTION: BEHAVIOR TOGGLES */}
-                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs grid grid-cols-1 gap-4">
+                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
                                     <div className="flex items-center justify-between py-1 px-1">
                                         <div className="flex items-center gap-3">
-                                            <RefreshCw className="w-4 h-4 text-slate-400" />
-                                            <span className="text-[13px] font-medium text-slate-600">Do you want to send reply message to a user multiple times?</span>
+                                            <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]/70" />
+                                            <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Do you want to send reply message to a user multiple times?</span>
                                         </div>
                                         <CustomToggle active={multipleReply} onClick={() => setMultipleReply(!multipleReply)} />
                                     </div>
-                                    <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+                                    <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
                                         <div className="flex items-center gap-3">
-                                            <MessageCircle className="w-4 h-4 text-slate-400" />
-                                            <span className="text-[13px] font-medium text-slate-600">Do you want to enable comment reply?</span>
+                                            <MessageCircle className="w-4 h-4 text-[var(--muted-foreground)]/70" />
+                                            <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Do you want to enable comment reply?</span>
                                         </div>
                                         <CustomToggle active={commentReplyEnabled} onClick={() => setCommentReplyEnabled(!commentReplyEnabled)} />
                                     </div>
-                                    <div className="flex items-center justify-between py-1 px-1 border-t border-slate-50">
+                                    <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
                                         <div className="flex items-center gap-3">
-                                            <EyeOff className="w-4 h-4 text-slate-400" />
-                                            <span className="text-[13px] font-medium text-slate-600">Do you want to hide comments after comment reply?</span>
+                                            <EyeOff className="w-4 h-4 text-[var(--muted-foreground)]/70" />
+                                            <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Do you want to hide comments after comment reply?</span>
                                         </div>
                                         <CustomToggle active={hideAfterReply} onClick={() => setHideAfterReply(!hideAfterReply)} />
                                     </div>
                                 </div>
 
                                 {/* SECTION: MODE SELECTION */}
-                                <div className="bg-white border border-slate-100 rounded-[22px] p-6 shadow-xs space-y-5">
+                                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-xs space-y-5">
                                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setReplyType("generic")}>
                                         <CapsuleSwitch active={replyType === "generic"} />
-                                        <span className={cn("text-sm font-medium", replyType === "generic" ? "text-pink-600" : "text-slate-400")}>Generic message for all comments</span>
+                                        <span className={cn("text-sm font-medium", replyType === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]/70")}>Generic message for all comments</span>
                                     </div>
                                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setReplyType("filter")}>
                                         <CapsuleSwitch active={replyType === "filter"} />
-                                        <span className={cn("text-sm font-medium", replyType === "filter" ? "text-pink-600" : "text-slate-400")}>Send different messages by keyword filter</span>
+                                        <span className={cn("text-sm font-medium", replyType === "filter" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]/70")}>Send different messages by keyword filter</span>
                                     </div>
                                 </div>
 
@@ -406,9 +406,9 @@ export function FullAccountReplyModal({
                                 <div className="space-y-8">
                                     <AnimatePresence mode="wait">
                                         {replyType === "generic" ? (
-                                            <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-white p-7 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+                                            <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8">
                                                 <Field label="Message for Comment Reply" required icon={MessageCircle}>
-                                                    <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                                                    <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                                                         <TextareaWithEmoji
                                                             value={fallbackMessage}
                                                             onChange={setFallbackMessage}
@@ -423,10 +423,10 @@ export function FullAccountReplyModal({
 
                                                 <div className="space-y-4">
                                                     <div className="flex items-center justify-between px-1">
-                                                        <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                            <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                                                        <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                            <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" /> Private reply template
                                                         </label>
-                                                        <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                        <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                             <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                                 <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                             </button>
@@ -436,38 +436,38 @@ export function FullAccountReplyModal({
                                                         <select
                                                             value={privateTemplateId || ""}
                                                             onChange={e => setPrivateTemplateId(e.target.value || null)}
-                                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer"
+                                                            className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none bg-[var(--card)] cursor-pointer"
                                                         >
                                                             <option value="">Please select a message template</option>
                                                             {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                         </select>
-                                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 pointer-events-none" />
                                                     </div>
                                                 </div>
                                             </motion.div>
                                         ) : (
                                             <motion.div key="filter" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                                                 {rules.map((rule, index) => (
-                                                    <div key={rule.id} className="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm space-y-8 relative group">
-                                                        <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                                                    <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
+                                                        <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[11px] font-bold text-slate-500">
+                                                                <div className="w-6 h-6 rounded-full bg-[var(--muted)]/50 flex items-center justify-center text-[11px] font-bold text-[var(--muted-foreground)]">
                                                                     {index + 1}
                                                                 </div>
-                                                                <h4 className="text-[13px] font-semibold text-slate-700">Filter Logic Rule</h4>
+                                                                <h4 className="text-[13px] font-semibold text-[var(--foreground)]">Filter Logic Rule</h4>
                                                             </div>
                                                             <div className="flex items-center gap-6 px-1">
                                                                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => updateRule(rule.id, { match_type: "contains" })}>
-                                                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
-                                                                        {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)]/70")}>
+                                                                        {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)]" />}
                                                                     </div>
-                                                                    <span className={cn("text-xs font-medium", rule.match_type === "contains" ? "text-slate-700" : "text-slate-400")}>Contains word</span>
+                                                                    <span className={cn("text-xs font-medium", rule.match_type === "contains" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]/70")}>Contains word</span>
                                                                 </div>
                                                                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => updateRule(rule.id, { match_type: "exact" })}>
-                                                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-pink-600 bg-pink-600" : "border-slate-300")}>
-                                                                        {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                    <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)]/70")}>
+                                                                        {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)]" />}
                                                                     </div>
-                                                                    <span className={cn("text-xs font-medium", rule.match_type === "exact" ? "text-slate-700" : "text-slate-400")}>Exact match</span>
+                                                                    <span className={cn("text-xs font-medium", rule.match_type === "exact" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]/70")}>Exact match</span>
                                                                 </div>
                                                             </div>
                                                             <button onClick={() => removeRule(rule.id)} className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-100 transition-colors">
@@ -482,11 +482,11 @@ export function FullAccountReplyModal({
                                                                     value={rule.keywords}
                                                                     onChange={e => updateRule(rule.id, { keywords: e.target.value })}
                                                                     placeholder="Write your filter word here"
-                                                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px]"
+                                                                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
                                                                 />
                                                             </Field>
                                                             <Field label="Message for Comment Reply" required icon={MessageCircle}>
-                                                                <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white">
+                                                                <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                                                                     <TextareaWithEmoji
                                                                         value={rule.message}
                                                                         onChange={v => updateRule(rule.id, { message: v })}
@@ -500,10 +500,10 @@ export function FullAccountReplyModal({
                                                             </Field>
                                                             <div className="space-y-4">
                                                                 <div className="flex items-center justify-between px-1">
-                                                                    <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                                        <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template
+                                                                    <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                                        <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" /> Private reply template
                                                                     </label>
-                                                                    <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                                    <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                                         <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                                             <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                                         </button>
@@ -513,12 +513,12 @@ export function FullAccountReplyModal({
                                                                     <select
                                                                         value={rule.template_id || ""}
                                                                         onChange={e => updateRule(rule.id, { template_id: e.target.value || null })}
-                                                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer"
+                                                                        className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none bg-[var(--card)] cursor-pointer"
                                                                     >
                                                                         <option value="">Please select a message template</option>
                                                                         {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                                     </select>
-                                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 pointer-events-none" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -526,19 +526,19 @@ export function FullAccountReplyModal({
                                                 ))}
 
                                                 <div className="flex justify-end">
-                                                    <button onClick={addRule} className="px-6 py-2.5 rounded-xl border-2 border-pink-600 text-pink-600 font-semibold text-[11px] hover:bg-pink-50 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-pink-100/20">
+                                                    <button onClick={addRule} className="px-6 py-2.5 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-[11px] hover:bg-[var(--primary)]/10 transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-[var(--primary)]/10/20">
                                                         <Plus className="w-4 h-4" /> Add another filter rule
                                                     </button>
                                                 </div>
 
                                                 {/* FALLBACK FOR FILTER */}
-                                                <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-200 border-dashed space-y-8">
+                                                <div className="bg-[var(--muted)]/50 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
                                                     <div className="flex items-center gap-3">
-                                                        <Info className="w-4 h-4 text-slate-400" />
-                                                        <span className="text-sm font-medium text-slate-500">Fallback reply (when no filter matches)</span>
+                                                        <Info className="w-4 h-4 text-[var(--muted-foreground)]/70" />
+                                                        <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
                                                     </div>
                                                     <Field label="Message for Comment Reply" icon={MessageCircle}>
-                                                        <div className="relative border border-slate-200 rounded-2xl p-4 focus-within:border-pink-400 transition-all bg-white shadow-sm">
+                                                        <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)] shadow-sm">
                                                             <TextareaWithEmoji
                                                                 value={fallbackMessage}
                                                                 onChange={setFallbackMessage}
@@ -552,10 +552,10 @@ export function FullAccountReplyModal({
                                                     </Field>
                                                     <div className="space-y-4">
                                                         <div className="flex items-center justify-between px-1">
-                                                            <label className="text-sm font-medium text-slate-600 flex items-center gap-1.5">
-                                                                <Settings className="w-3.5 h-3.5 text-slate-400" /> Private reply template (Fallback)
+                                                            <label className="text-sm font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                                                                <Settings className="w-3.5 h-3.5 text-[var(--muted-foreground)]/70" /> Private reply template (Fallback)
                                                             </label>
-                                                            <div className="flex gap-3 text-xs font-medium text-pink-500">
+                                                            <div className="flex gap-3 text-xs font-medium text-[var(--primary)]">
                                                                 <button onClick={() => fetchTemplates()} className="hover:underline flex items-center gap-1">
                                                                     <RefreshCw className={cn("w-2.5 h-2.5", isLoadingTemplates && "animate-spin")} /> Refresh List
                                                                 </button>
@@ -565,12 +565,12 @@ export function FullAccountReplyModal({
                                                             <select
                                                                 value={privateTemplateId || ""}
                                                                 onChange={e => setPrivateTemplateId(e.target.value || null)}
-                                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-pink-400 outline-none transition-all font-medium text-[14px] appearance-none bg-white cursor-pointer shadow-sm"
+                                                                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none bg-[var(--card)] cursor-pointer shadow-sm"
                                                             >
                                                                 <option value="">Please select a message template</option>
                                                                 {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                             </select>
-                                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 pointer-events-none" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -582,9 +582,9 @@ export function FullAccountReplyModal({
                         )}
                     </div>
 
-                    <div className="flex gap-4 p-8 bg-white border-t border-slate-100 flex-shrink-0 relative z-20">
-                        <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-500 font-bold text-[13px] hover:bg-slate-50 transition-all">Cancel</button>
-                        <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-500 text-white font-semibold text-[14px] shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                    <div className="flex gap-4 p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0 relative z-20">
+                        <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all">Cancel</button>
+                        <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
                             {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Check size={20} />}
                             <span>{existingConfigId ? 'UPDATE CHANGES' : 'ACTIVATE STRATEGY'}</span>
                         </button>

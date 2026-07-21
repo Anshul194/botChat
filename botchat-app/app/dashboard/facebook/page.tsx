@@ -214,7 +214,7 @@ export default function FacebookPage() {
     return (
         <div className="bg-gray-50/50 dark:bg-gray-950 min-h-screen pb-16">
             {/* Header */}
-            <header data-tour="page-heading" className="border-b bg-white dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-0 z-30">
+            <header data-tour="page-heading" className="border-b bg-[var(--card)] dark:bg-gray-900 dark:border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sticky top-0 z-30">
                 <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     {/* Back arrow — mobile only */}
                     <button
@@ -278,7 +278,7 @@ export default function FacebookPage() {
                         <div
                             key={stat.label}
                             className={cn(
-                                "rounded-2xl border bg-white dark:bg-neutral-900 p-4 sm:p-6 shadow-sm dark:border-neutral-800 transition duration-200",
+                                "rounded-2xl border bg-[var(--card)] dark:bg-neutral-900 p-4 sm:p-6 shadow-sm dark:border-neutral-800 transition duration-200",
                                 idx === 0 && "col-span-2 md:col-span-1"
                             )}
                         >
@@ -309,7 +309,7 @@ export default function FacebookPage() {
                 {isLoading ? (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         {[...Array(3)].map((_, i) => (
-                            <div key={i} className="animate-pulse h-48 rounded-2xl bg-white dark:bg-neutral-900 border dark:border-neutral-800" />
+                            <div key={i} className="animate-pulse h-48 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border dark:border-neutral-800" />
                         ))}
                     </div>
                 ) : accounts.length > 0 ? (
@@ -317,7 +317,7 @@ export default function FacebookPage() {
                         {accounts.map(account => (
                             <div key={account.id} className="space-y-3 sm:space-y-6">
                                 {/* Account row: compact card on mobile, side-by-side on desktop */}
-                                <div className="bg-white dark:bg-neutral-900 rounded-2xl border dark:border-neutral-800 shadow-sm overflow-hidden">
+                                <div className="bg-[var(--card)] dark:bg-neutral-900 rounded-2xl border dark:border-neutral-800 shadow-sm overflow-hidden">
                                     <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5">
                                         <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden border dark:border-neutral-700 bg-gray-100 flex items-center justify-center text-gray-500 text-lg font-bold flex-shrink-0">
                                             {account.avatar ? <img src={account.avatar} className="w-full h-full object-cover" /> : account.name[0]}
@@ -376,7 +376,7 @@ export default function FacebookPage() {
                                         return (
                                             <div
                                                 key={page.id}
-                                                className="group relative rounded-2xl border bg-white dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
+                                                className="group relative rounded-2xl border bg-[var(--card)] dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
                                             >
                                                 <div className="flex items-start gap-4 mb-5">
                                                     <div className="relative shrink-0">
@@ -471,7 +471,7 @@ export default function FacebookPage() {
                     </div>
                 ) : (
                     <div className="rounded-3xl border border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900 p-12 text-center max-w-2xl mx-auto mt-12">
-                        <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 mx-auto mb-6 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-2xl bg-[var(--card)] dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 mx-auto mb-6 flex items-center justify-center">
                             <Facebook className="h-8 w-8 text-blue-500" />
                         </div>
                         <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">No Facebook Pages Found</h3>
@@ -497,7 +497,7 @@ export default function FacebookPage() {
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="relative w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-xl border dark:border-gray-800 z-10"
+                            className="relative w-full max-w-md rounded-2xl bg-[var(--card)] dark:bg-gray-900 p-6 shadow-xl border dark:border-gray-800 z-10"
                         >
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                                 Confirm {confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}

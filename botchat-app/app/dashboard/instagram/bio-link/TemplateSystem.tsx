@@ -1000,7 +1000,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
             {/* ── Layout Style Selector ── */}
             <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Layout Structure</label>
+                    <label className="text-xs font-semibold text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 uppercase tracking-wider">Layout Structure</label>
                     <a
                         href={`/p/?u=${profile?.instagram_username || 'demo'}`}
                         target="_blank"
@@ -1014,11 +1014,11 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                     {[
                         { id: 'custom', name: 'Standard', desc: 'Classic bio-link', icon: <Layers size={18} className="text-blue-500" /> },
                         { id: 'portfolio', name: 'Portfolio', desc: 'Showcase work', icon: <Grid size={18} className="text-purple-500" /> },
-                        { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-pink-500" /> },
+                        { id: 'creator_store', name: 'UGC Creator', desc: 'Aesthetic layout', icon: <Camera size={18} className="text-[var(--primary)]" /> },
                         { id: 'influencer', name: 'Influencers', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
                         { id: 'insta_pro', name: 'Luxury Pro', desc: 'Premium luxury', icon: <Zap size={18} className="text-violet-500" /> },
                         { id: 'insta_trendy', name: 'Insta Trendy', desc: 'Vibrant Mesh', icon: <Sparkles size={18} className="text-fuchsia-500" /> },
-                        { id: 'insta_minimal', name: 'Studio Minimal', desc: 'Clean Grayscale', icon: <Grid size={18} className="text-slate-500" /> },
+                        { id: 'insta_minimal', name: 'Studio Minimal', desc: 'Clean Grayscale', icon: <Grid size={18} className="text-[var(--muted-foreground)]" /> },
                         { id: 'sunday_brunch', name: 'Sunday Brunch', desc: 'Warm Organic', icon: <Coffee size={18} className="text-orange-500" /> },
                         // { id: 'aesthetic_influencer', name: 'Aesthetic Influencer', desc: 'Image focused', icon: <ImageIcon size={18} className="text-emerald-500" /> },
 
@@ -1031,20 +1031,20 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                                 }
                             }}
                             className={cn(
-                                "text-left group relative p-3 rounded-xl border transition-all duration-200 flex flex-col items-start gap-2 h-full bg-white dark:bg-slate-900/40 backdrop-blur-sm",
+                                "text-left group relative p-3 rounded-xl border transition-all duration-200 flex flex-col items-start gap-2 h-full bg-[var(--card)] dark:bg-[var(--background)]/80 backdrop-blur-sm",
                                 (profile?.settings?.layoutStyle || 'standard') === layout.id
                                     ? "border-primary shadow-sm ring-1 ring-primary bg-primary/5 dark:bg-primary/10"
-                                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                                    : "border-[var(--border)] dark:border-[var(--border)] hover:border-[var(--border)]/70 dark:hover:border-[var(--border)] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)]/60"
                             )}
                         >
-                            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:scale-110 transition-transform">
+                            <div className="p-2 bg-[var(--muted)]/50 dark:bg-[var(--muted)] rounded-lg group-hover:scale-110 transition-transform">
                                 {layout.icon}
                             </div>
                             <div>
-                                <p className={cn("text-xs font-bold leading-tight", (profile?.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-slate-900 dark:text-white")}>
+                                <p className={cn("text-xs font-bold leading-tight", (profile?.settings?.layoutStyle || 'standard') === layout.id ? "text-primary" : "text-[var(--foreground)] dark:text-white")}>
                                     {layout.name}
                                 </p>
-                                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">{layout.desc}</p>
+                                <p className="text-[10px] text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 mt-0.5 leading-tight">{layout.desc}</p>
                             </div>
 
                             {(profile?.settings?.layoutStyle || 'standard') === layout.id && (
@@ -1060,7 +1060,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
             {(!profile?.settings?.layoutStyle || profile?.settings?.layoutStyle === 'standard') && (
                 <div className="space-y-4">
                     <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Theme Presets</label>
+                        <label className="text-xs font-semibold text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 uppercase tracking-wider">Theme Presets</label>
                     </div>
                     {/* ── Category Pills ── */}
                     <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
@@ -1069,8 +1069,8 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                                 className={cn(
                                     "flex-shrink-0 h-8 px-3.5 rounded-full flex items-center gap-1.5 text-[11px] font-medium transition-all",
                                     selectedNiche === cat.id
-                                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm"
-                                        : "bg-white dark:bg-slate-900 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                                        ? "bg-[var(--background)] dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] shadow-sm"
+                                        : "bg-[var(--card)] dark:bg-[var(--background)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)]"
                                 )}>
                                 {React.cloneElement(cat.icon as React.ReactElement, { size: 12 })}
                                 {cat.name}
@@ -1102,10 +1102,10 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                                     }}
                                     disabled={applyingThemeId !== null}
                                     className={cn(
-                                        "group relative aspect-[9/16] rounded-xl overflow-hidden border transition-all duration-300 outline-none cursor-pointer flex flex-col bg-white dark:bg-slate-900",
+                                        "group relative aspect-[9/16] rounded-xl overflow-hidden border transition-all duration-300 outline-none cursor-pointer flex flex-col bg-[var(--card)] dark:bg-[var(--background)]",
                                         isSelected
                                             ? "border-primary shadow-md ring-1 ring-primary"
-                                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700",
+                                            : "border-[var(--border)] dark:border-[var(--border)] hover:border-[var(--border)]/70 dark:hover:border-[var(--border)]",
                                         applyingThemeId === tpl.id && "opacity-80 scale-95"
                                     )}>
 
@@ -1182,17 +1182,17 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                                         )}
 
                                         {applyingThemeId === tpl.id && (
-                                            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center z-30">
+                                            <div className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-[2px] flex items-center justify-center z-30">
                                                 <Loader2 className="w-6 h-6 text-white animate-spin" />
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Footer Name Area */}
-                                    <div className="w-full p-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-0.5 relative z-10 bg-white dark:bg-slate-900">
-                                        <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate text-left">{tpl.name}</p>
+                                    <div className="w-full p-2 border-t border-[var(--border)] dark:border-[var(--border)] flex flex-col gap-0.5 relative z-10 bg-[var(--card)] dark:bg-[var(--background)]">
+                                        <p className="text-[10px] font-bold text-[var(--foreground)] dark:text-white truncate text-left">{tpl.name}</p>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[8px] text-slate-500 dark:text-slate-400 font-medium truncate text-left">{tpl.style}</span>
+                                            <span className="text-[8px] text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 font-medium truncate text-left">{tpl.style}</span>
                                             <div className="w-2.5 h-2.5 rounded-full flex items-center justify-center shrink-0 ml-1.5" style={{ backgroundColor: `${tCfg.accent}20` }}>
                                                 <div className="w-1 h-1 rounded-full" style={{ backgroundColor: tCfg.accent }} />
                                             </div>

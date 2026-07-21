@@ -403,7 +403,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                             )}
                         >
                             <div className={cn(
-                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm",
+                                "absolute top-1 w-4 h-4 rounded-full bg-[var(--card)] transition-all duration-300 shadow-sm",
                                 composerInputDisabled ? "left-7" : "left-1"
                             )} />
                         </button>
@@ -438,7 +438,7 @@ export default function PersistentMenu({ instagramId, pageId, actions }: Persist
                     {items.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                            className="py-12 border-2 border-dashed border-[var(--border)] rounded-[32px] text-center"
+                            className="py-12 border-2 border-dashed border-[var(--border)] rounded-2xl text-center"
                         >
                             <p className="text-xs text-[var(--muted-foreground)] font-medium italic">No menu items configured yet.</p>
                         </motion.div>

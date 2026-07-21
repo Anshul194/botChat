@@ -370,7 +370,7 @@ function BioLinksAnalyticsContent() {
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-2 w-48">
-                                                        <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                        <div className="flex-1 h-1.5 bg-[var(--muted)]/50 dark:bg-[var(--muted)] rounded-full overflow-hidden">
                                                             <div className={cn("h-full rounded-full transition-all duration-1000 group-hover:brightness-110", barColor)} style={{ width: `${pct}%` }} />
                                                         </div>
                                                     </div>
@@ -406,7 +406,7 @@ function BioLinksAnalyticsContent() {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white">Traffic Overview</h1>
+                            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-[var(--foreground)] dark:text-white">Traffic Overview</h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl">
                                 Detailed breakdown of views, visitors, and engagement for your bio link.
                             </p>

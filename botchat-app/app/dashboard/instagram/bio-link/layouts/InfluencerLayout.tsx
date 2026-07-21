@@ -304,7 +304,7 @@ const renderSection = (section: any, accentColor: string) => {
                                     </div>
                                     <h3 className="text-lg font-bold leading-tight text-white mb-2">{o.name || o.title || 'Offer'}</h3>
                                     <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-8">{o.description || 'Limited time offer.'}</p>
-                                    <button className="w-full py-4 bg-white text-black rounded-2xl font-bold text-[11px] tracking-[2px] hover:bg-blue-500 hover:text-white transition-all uppercase active:scale-95 shadow-xl">
+                                    <button className="w-full py-4 bg-[var(--card)] text-black rounded-2xl font-bold text-[11px] tracking-[2px] hover:bg-blue-500 hover:text-white transition-all uppercase active:scale-95 shadow-xl">
                                         {o.cta_text || 'Get Access'}
                                     </button>
                                 </motion.div>
@@ -405,7 +405,7 @@ const renderSection = (section: any, accentColor: string) => {
                             )}
                         </div>
 
-                        <button className="mt-8 w-full py-3.5 bg-white text-black rounded-xl font-black text-[11px] tracking-[2px] hover:bg-emerald-400 hover:text-white transition-all uppercase shadow-xl">
+                        <button className="mt-8 w-full py-3.5 bg-[var(--card)] text-black rounded-xl font-black text-[11px] tracking-[2px] hover:bg-emerald-400 hover:text-white transition-all uppercase shadow-xl">
                             {s.button_text || "Send Message"}
                         </button>
                     </div>

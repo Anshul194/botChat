@@ -85,7 +85,7 @@ function Toggle({ label, active, onClick }: { label: string; active: boolean; on
           "w-10 h-5 rounded-full relative transition-all duration-200 cursor-pointer",
           active ? "bg-[var(--primary)]" : "bg-[var(--muted)]"
         )}>
-          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-slate-100 shadow transition-all", active ? "left-5.5" : "left-0.5")} />
+          <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60 shadow transition-all", active ? "left-5.5" : "left-0.5")} />
         </button>
         <span className="text-xs font-medium text-[var(--muted-foreground)] w-6">{active ? "On" : "Off"}</span>
       </div>
@@ -140,7 +140,7 @@ function UploadBox({ label, value, onChange, icon: Icon }: { label: string; valu
 function CapsuleSwitch({ active }: { active: boolean }) {
   return (
     <div className={cn("w-11 h-5 rounded-full relative transition-all", active ? "bg-[var(--primary)]" : "bg-[var(--muted)] shadow-inner")}>
-      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-slate-100 transition-all", active ? "left-6.5" : "left-0.5")} />
+      <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60 transition-all", active ? "left-6.5" : "left-0.5")} />
     </div>
   );
 }
@@ -303,7 +303,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+        className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
@@ -410,7 +410,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             </div>
           </div>
 
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-[22px] p-6 shadow-xs space-y-5">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-xs space-y-5">
             <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "generic" })}>
               <CapsuleSwitch active={form.message_type === "generic"} />
               <span className={cn("text-sm font-medium transition-colors", form.message_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")}>Generic message for all comments</span>
@@ -472,13 +472,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       <div className="flex items-center gap-6">
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
                           <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "exact" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
-                            {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
+                            {rule.match_type === "exact" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60" />}
                           </div>
                           <span className={cn("text-xs font-semibold transition-colors", rule.match_type === "exact" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Exact match</span>
                         </div>
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "contains" } : r))}>
                           <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)] bg-transparent")}>
-                            {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-100" />}
+                            {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)] dark:bg-[var(--muted)]/60" />}
                           </div>
                           <span className={cn("text-xs font-semibold transition-colors", rule.match_type === "contains" ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]")}>Contains word</span>
                         </div>
@@ -596,8 +596,8 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         <div className="flex gap-4 p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-3.5 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all uppercase bg-transparent cursor-pointer">Cancel</button>
-          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all uppercase bg-transparent cursor-pointer">Cancel</button>
+          <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
             <span>DEPLOY TEMPLATE</span>
           </button>
@@ -657,8 +657,8 @@ export default function InstagramReplyTemplatesPage() {
     .sort((a, b) => b.id - a.id);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] font-sans pb-20">
-      <div className="bg-[var(--card)] border-b border-[var(--border)] flex items-center justify-center sticky top-0 z-40 shadow-xs">
+    <div className="bg-[var(--background)] pb-20">
+      <div className="bg-[var(--card)] border-b border-[var(--border)] sticky top-0 z-[50] shadow-sm">
         <div className="max-w-[1400px] w-full px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-5">
             <button onClick={() => router.back()} className="w-10 h-10 rounded-2xl border border-[var(--border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all cursor-pointer">
@@ -669,7 +669,7 @@ export default function InstagramReplyTemplatesPage() {
               <h1 className="text-2xl font-black text-[var(--foreground)] uppercase tracking-tighter mt-1">Reply Templates</h1>
             </div>
           </div>
-          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-8 py-3.5 rounded-[22px] bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-3 uppercase tracking-widest cursor-pointer">
+          <button onClick={() => setFormModal({ open: true, mode: "create", template: null })} className="px-8 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] shadow-xl shadow-[var(--primary)]/10 active:scale-95 transition-all flex items-center gap-3 uppercase tracking-widest cursor-pointer">
             <Plus className="w-5 h-5" /> NEW TEMPLATE
           </button>
         </div>
@@ -684,12 +684,12 @@ export default function InstagramReplyTemplatesPage() {
           <div className="relative flex-1 max-w-md group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/50 group-focus-within:text-[var(--primary)] transition-colors" />
             <input type="text" placeholder="Lookup Templates..." value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-14 pr-6 py-4 rounded-[22px] bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
+              className="w-full pl-14 pr-6 py-4 rounded-xl bg-[var(--card)] border border-[var(--border)] focus:border-[var(--primary)] outline-none shadow-sm font-bold text-[14px] text-[var(--foreground)] transition-all placeholder:text-[var(--muted-foreground)]/55"
             />
           </div>
         </div>
 
-        <div className="bg-[var(--card)] rounded-[32px] border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden">
           <div className="grid grid-cols-[2fr_1fr_1.5fr_120px] gap-8 px-10 py-6 bg-[var(--muted)]/20 border-b border-[var(--border)]">
             {["Asset Identity", "Logic Mapping", "Lifecycle Sync", "Terminal"].map(h => (
               <span key={h} className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">{h}</span>
@@ -705,7 +705,7 @@ export default function InstagramReplyTemplatesPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-32 text-center flex flex-col items-center">
-              <div className="w-20 h-20 rounded-[32px] bg-[var(--muted)] flex items-center justify-center mb-8">
+              <div className="w-20 h-20 rounded-2xl bg-[var(--muted)] flex items-center justify-center mb-8">
                 <Settings className="w-10 h-10 text-[var(--muted-foreground)]/40" />
               </div>
               <h3 className="text-xl font-black text-[var(--foreground)] uppercase tracking-tight">Empty Inventory</h3>
@@ -768,14 +768,14 @@ export default function InstagramReplyTemplatesPage() {
       <AnimatePresence>
         {deleteId && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-[1000]" onClick={() => setDeleteId(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-slate-900 rounded-[32px] p-10 max-w-sm w-full text-center shadow-2xl relative z-[1001] border border-slate-100 dark:border-slate-800">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm z-[1000]" onClick={() => setDeleteId(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] dark:bg-[var(--background)] rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl relative z-[1001] border border-[var(--border)] dark:border-[var(--border)]">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
-              <p className="text-sm text-slate-400 mt-4 leading-relaxed font-bold uppercase tracking-wide">Permanently purge this item from the Instagram automation hub?</p>
+              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
+              <p className="text-sm text-[var(--muted-foreground)]/70 mt-4 leading-relaxed font-bold uppercase tracking-wide">Permanently purge this item from the Instagram automation hub?</p>
               <div className="flex gap-4 mt-10">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-4.5 rounded-[22px] bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[12px] uppercase transition-all">Abort</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-4.5 rounded-[22px] bg-rose-600 text-white font-black text-[12px] uppercase shadow-xl shadow-rose-600/20 active:scale-95 transition-all hover:bg-rose-700">Confirm</button>
+                <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[12px] uppercase transition-all">Abort</button>
+                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3 rounded-xl bg-rose-600 text-white font-black text-[12px] uppercase shadow-xl shadow-rose-600/20 active:scale-95 transition-all hover:bg-rose-700">Confirm</button>
               </div>
             </motion.div>
           </div>

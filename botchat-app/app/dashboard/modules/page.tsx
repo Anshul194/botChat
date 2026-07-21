@@ -470,7 +470,7 @@ export default function ModulesPage() {
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: idx * 0.03, duration: 0.2 }}
-                                            className="grid grid-cols-[2fr_3fr_1fr_auto] items-center gap-4 px-5 py-3.5 group hover:bg-primary/[0.03] transition-colors duration-150">
+                                            className="grid grid-cols-[2fr_3fr_1fr_auto] items-center gap-4 px-5 py-3 group hover:bg-primary/[0.03] transition-colors duration-150">
 
                                             {/* Module name + ID */}
                                             <div className="flex items-center gap-3 min-w-0">

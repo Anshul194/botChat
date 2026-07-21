@@ -56,7 +56,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
     const feedBlocks = otherBlocks.filter(b => !specialIds.includes(b.id));
 
     return (
-        <div className="flex flex-col bg-white min-h-full w-full overflow-x-hidden font-sans selection:bg-black selection:text-white">
+        <div className="flex flex-col bg-[var(--card)] min-h-full w-full overflow-x-hidden font-sans selection:bg-black selection:text-white">
             
             {/* ── HERO PRODUCT SECTION ── */}
             {heroBlock && (
@@ -89,7 +89,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
                                 </div>
                                 <a 
                                     href={heroBlock.settings?.cta_link || "#"}
-                                    className="flex-1 bg-white text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-center shadow-2xl no-underline"
+                                    className="flex-1 bg-[var(--card)] text-black py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-center shadow-2xl no-underline"
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     {heroBlock.settings?.cta_text || "Get Now"}
@@ -104,7 +104,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
             {trustBadgesBlock && (
                 <section 
                     onClick={(e) => handleEdit(e, trustBadgesBlock)}
-                    className="px-4 py-6 border-b border-gray-100 group cursor-pointer relative bg-white"
+                    className="px-4 py-6 border-b border-gray-100 group cursor-pointer relative bg-[var(--card)]"
                 >
                     <EditOverlay />
                     <div className="flex justify-around items-center gap-2">
@@ -126,7 +126,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
             {featuredBlock && (
                 <section 
                     onClick={(e) => handleEdit(e, featuredBlock)}
-                    className="p-5 group cursor-pointer relative bg-white"
+                    className="p-5 group cursor-pointer relative bg-[var(--card)]"
                 >
                     <EditOverlay />
                     <div className="rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-100">
@@ -168,7 +168,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
             {productListBlock && (
                 <section 
                     onClick={(e) => handleEdit(e, productListBlock)}
-                    className="p-5 space-y-5 group cursor-pointer relative bg-white"
+                    className="p-5 space-y-5 group cursor-pointer relative bg-[var(--card)]"
                 >
                     <EditOverlay />
                     <div className="text-center">
@@ -191,7 +191,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
                                     <h4 className="font-bold text-gray-900 text-[12px] truncate">{p.name}</h4>
                                     <p className="text-[10px] text-gray-400 font-medium truncate">{p.price || "Free"}</p>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-300 shadow-sm shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-[var(--card)] flex items-center justify-center text-gray-300 shadow-sm shrink-0">
                                     <ArrowRight size={14} />
                                 </div>
                             </a>
@@ -221,7 +221,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
                         </div>
                         <a 
                             href={urgencyBlock.settings?.button_link || "#"}
-                            className="inline-block w-full bg-white text-orange-500 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest no-underline shadow-lg"
+                            className="inline-block w-full bg-[var(--card)] text-orange-500 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest no-underline shadow-lg"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {urgencyBlock.settings?.button_text || "Claim Now"}
@@ -234,7 +234,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
             {testimonialsBlock && (
                 <section 
                     onClick={(e) => handleEdit(e, testimonialsBlock)}
-                    className="p-5 group cursor-pointer relative bg-white"
+                    className="p-5 group cursor-pointer relative bg-[var(--card)]"
                 >
                     <EditOverlay />
                     <div className="space-y-4">
@@ -308,7 +308,7 @@ export const CreatorStoreLayout: React.FC<CreatorStoreLayoutProps> = ({
             {contactBlock && (
                 <section 
                     onClick={(e) => handleEdit(e, contactBlock)}
-                    className="p-8 text-center space-y-6 border-t border-gray-100 bg-white"
+                    className="p-8 text-center space-y-6 border-t border-gray-100 bg-[var(--card)]"
                 >
                     <EditOverlay />
                     <div className="space-y-1.5">

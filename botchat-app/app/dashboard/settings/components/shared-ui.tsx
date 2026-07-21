@@ -110,7 +110,7 @@ export function Toggle({
                 style={{ background: on ? "var(--primary)" : "var(--glass-border)" }}
             >
                 <span
-                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                    className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
                     style={{ left: on ? "calc(100% - 22px)" : "2px" }}
                 />
             </button>
@@ -130,7 +130,7 @@ export function Toggle({
                 style={{ background: on ? "var(--primary)" : "var(--glass-border)" }}
             >
                 <span
-                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                    className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
                     style={{ left: on ? "calc(100% - 22px)" : "2px" }}
                 />
             </button>

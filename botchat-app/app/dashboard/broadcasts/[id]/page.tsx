@@ -65,7 +65,7 @@ function MultiSelect({
                                 key={opt.id}
                                 type="button"
                                 onClick={() => { toggle(opt.id); setOpen(false); }}
-                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm transition-all hover:bg-white/5 text-left"
+                                className="w-full flex items-center justify-between px-4 py-2.5 text-sm transition-all hover:bg-[var(--card)]/5 text-left"
                                 style={{ color: selected.includes(opt.id) ? "var(--brand-purple)" : "var(--foreground)" }}
                             >
                                 {opt.name}
@@ -276,7 +276,7 @@ export default function BroadcastAudiencePage() {
                         <h2 className="font-semibold text-sm mb-4 flex items-center gap-2" style={{ color: "var(--foreground)" }}>
                             {channelType === "facebook"
                                 ? <><Facebook className="w-4 h-4 text-blue-500" /> Facebook Pages</>
-                                : <><Instagram className="w-4 h-4 text-pink-500" /> Instagram Accounts</>}
+                                : <><Instagram className="w-4 h-4 text-[var(--primary)]" /> Instagram Accounts</>}
                         </h2>
                         {channelType === "facebook" ? (
                             <MultiSelect
@@ -415,7 +415,7 @@ export default function BroadcastAudiencePage() {
                         type="button"
                         onClick={() => saveMutation.mutate()}
                         disabled={saveMutation.isPending || (channelType === "facebook" && facebookPageIds.length === 0) || (channelType === "instagram" && instagramAccountIds.length === 0)}
-                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-40"
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-40"
                         style={{ background: "var(--brand-gradient)", boxShadow: "0 4px 15px rgba(124,58,237,0.3)" }}
                     >
                         {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}

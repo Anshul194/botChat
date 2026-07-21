@@ -60,7 +60,7 @@ export function AccountSelector({ accounts, isLoading, onSelectionChange }: Acco
           <TabsTrigger value="facebook" className="flex-1 text-xs data-[state=active]:bg-blue-500 data-[state=active]:text-white gap-1">
             <Facebook className="w-3 h-3" /> ({fbCount})
           </TabsTrigger>
-          <TabsTrigger value="instagram" className="flex-1 text-xs data-[state=active]:bg-pink-500 data-[state=active]:text-white gap-1">
+          <TabsTrigger value="instagram" className="flex-1 text-xs data-[state=active]:bg-[var(--primary)]/100 data-[state=active]:text-white gap-1">
             <Instagram className="w-3 h-3" /> ({igCount})
           </TabsTrigger>
         </TabsList>

@@ -93,14 +93,14 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         transition={{ delay: i * 0.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="flex-shrink-0 w-[180px] snap-center bg-white/10 backdrop-blur-md rounded-[24px] overflow-hidden shadow-xl border border-white/20 flex flex-col group transition-all"
+                        className="flex-shrink-0 w-[180px] snap-center bg-[var(--card)]/10 backdrop-blur-md rounded-[24px] overflow-hidden shadow-xl border border-white/20 flex flex-col group transition-all"
                     >
-                        <div className="w-full h-[100px] bg-white/5 relative overflow-hidden">
+                        <div className="w-full h-[100px] bg-[var(--card)]/5 relative overflow-hidden">
                             {item.image_url || item.image ? <img src={item.image_url || item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> : <div className="absolute inset-0 flex items-center justify-center"><ImageIcon size={20} className="text-white/20" /></div>}
                         </div>
                         <div className="p-3.5 flex flex-col flex-1">
                             <h4 className="font-black text-[12px] text-white leading-tight mb-1 truncate">{item.title || "Link"}</h4>
-                            <span className="text-pink-500 text-[9px] font-black uppercase tracking-widest flex items-center gap-1 mt-auto">
+                            <span className="text-[var(--primary)] text-[9px] font-black uppercase tracking-widest flex items-center gap-1 mt-auto">
                                 View <ArrowUpRight size={10} />
                             </span>
                         </div>
@@ -112,12 +112,12 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
     const HeroBlockView = ({ item }: any) => (
         <a href={item.url || item.location_url || item.link || "#"} target="_blank" rel="noopener noreferrer"
-            className="w-full bg-slate-900 rounded-[28px] overflow-hidden shadow-xl border border-white/10 relative h-[180px] mb-4 block group active:scale-[0.98] transition-transform">
+            className="w-full bg-[var(--background)] rounded-2xl overflow-hidden shadow-xl border border-white/10 relative h-[180px] mb-4 block group active:scale-[0.98] transition-transform">
             {item.image_url || item.image || item.background_image ? <img src={item.image_url || item.image || item.background_image} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-700" /> : <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-purple-700" />}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
             <div className="absolute inset-0 p-5 flex flex-col justify-end">
                 <h4 className="font-black text-[18px] text-white leading-tight mb-3">{item.title || item.headline || "Featured"}</h4>
-                <div className="flex"><span className="bg-white text-black rounded-full text-[10px] font-black uppercase tracking-widest px-4 py-2 flex items-center gap-2">Explore <ArrowUpRight size={12} /></span></div>
+                <div className="flex"><span className="bg-[var(--card)] text-black rounded-full text-[10px] font-black uppercase tracking-widest px-4 py-2 flex items-center gap-2">Explore <ArrowUpRight size={12} /></span></div>
             </div>
         </a>
     );
@@ -128,7 +128,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
             <div className="grid grid-cols-6 grid-rows-2 gap-2 h-[280px]">
                 {items.slice(0, 4).map((item: any, i: number) => (
                     <div key={i} className={cn("relative rounded-[24px] overflow-hidden border border-white/10 shadow-xl", i === 0 ? "col-span-4 row-span-2" : "col-span-2 row-span-1")}>
-                        {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-white/5" />}
+                        {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[var(--card)]/5" />}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
                             <p className="text-white font-black text-[11px] leading-tight">{item.title}</p>
                         </div>
@@ -139,11 +139,11 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
     );
 
     const TransformationStoryView = ({ title, before_image, after_image, description }: any) => (
-        <div className="w-full bg-white/5 backdrop-blur-xl rounded-[32px] border border-white/10 p-5 space-y-4 my-4">
+        <div className="w-full bg-[var(--card)]/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5 space-y-4 my-4">
             {title && <h3 className="text-sm font-black text-white text-center">{title}</h3>}
             <div className="grid grid-cols-2 gap-3">
                 <div className="aspect-[3/4] rounded-[18px] overflow-hidden border border-white/5 relative"><img src={before_image} className="w-full h-full object-cover" /></div>
-                <div className="aspect-[3/4] rounded-[18px] overflow-hidden border border-pink-500/30 relative"><img src={after_image} className="w-full h-full object-cover" /></div>
+                <div className="aspect-[3/4] rounded-[18px] overflow-hidden border border-[var(--primary)]/30 relative"><img src={after_image} className="w-full h-full object-cover" /></div>
             </div>
         </div>
     );
@@ -154,8 +154,8 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
             <div className="space-y-0 relative ml-3 border-l-2 border-white/10 pl-6">
                 {steps.map((step: any, i: number) => (
                     <div key={i} className="relative pb-6 last:pb-0">
-                        <div className="absolute -left-[31px] top-0 w-3 h-3 rounded-full bg-pink-500 border-2 border-black z-10" />
-                        <div className="bg-white/5 rounded-[18px] p-4 border border-white/10">
+                        <div className="absolute -left-[31px] top-0 w-3 h-3 rounded-full bg-[var(--primary)] border-2 border-black z-10" />
+                        <div className="bg-[var(--card)]/5 rounded-[18px] p-4 border border-white/10">
                             <h4 className="text-white font-black text-[14px] mb-1">{step.title}</h4>
                             <p className="text-white/50 text-[11px] leading-tight">{step.description}</p>
                         </div>
@@ -174,7 +174,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
         const effectiveTextColor = themeBgIsLight ? '#000000' : theme.textColor;
         const baseStyle: any = { ...(theme.btnStyle || {}) };
 
-        const secBg = themeBgIsLight ? 'bg-black/[0.03] border-black/10' : 'bg-white/5 border-white/10';
+        const secBg = themeBgIsLight ? 'bg-black/[0.03] border-black/10' : 'bg-[var(--card)]/5 border-white/10';
         const secBorder = themeBgIsLight ? 'border-black/10' : 'border-white/10';
         const secDivide = themeBgIsLight ? 'divide-black/10' : 'divide-white/10';
 
@@ -214,8 +214,8 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="grid grid-cols-2 gap-3 w-full">
                                     {items.map((item: any, i: number) => (
-                                        <div key={i} className="bg-white/5 backdrop-blur-lg rounded-[20px] overflow-hidden shadow-lg border border-white/10 flex flex-col h-[140px]">
-                                            <div className="w-full h-2/3 bg-white/5 relative overflow-hidden">
+                                        <div key={i} className="bg-[var(--card)]/5 backdrop-blur-lg rounded-[20px] overflow-hidden shadow-lg border border-white/10 flex flex-col h-[140px]">
+                                            <div className="w-full h-2/3 bg-[var(--card)]/5 relative overflow-hidden">
                                                 {item.image_url || item.image ? <img src={item.image_url || item.image} className="w-full h-full object-cover" /> : <div className="absolute inset-0 flex items-center justify-center"><Grid size={18} className="text-white/20" /></div>}
                                             </div>
                                             <div className="p-2 text-center mt-auto">
@@ -230,13 +230,13 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                                     {(type === 'add_products' ? items : (settings.products || [])).map((item: any, i: number) => (
-                                        <div key={i} className="flex-shrink-0 w-[140px] bg-white/5 backdrop-blur-md rounded-[20px] overflow-hidden border border-white/10 flex flex-col">
-                                            <div className="w-full h-[120px] bg-white/5 relative p-3 overflow-hidden">
+                                        <div key={i} className="flex-shrink-0 w-[140px] bg-[var(--card)]/5 backdrop-blur-md rounded-[20px] overflow-hidden border border-white/10 flex flex-col">
+                                            <div className="w-full h-[120px] bg-[var(--card)]/5 relative p-3 overflow-hidden">
                                                 {item.image_url || item.image ? <img src={item.image_url || item.image} className="w-full h-full object-contain" /> : <div className="absolute inset-0 flex items-center justify-center"><ShoppingBag size={24} className="text-white/20" /></div>}
                                             </div>
-                                            <div className="p-3 text-center bg-white/5">
+                                            <div className="p-3 text-center bg-[var(--card)]/5">
                                                 <h4 className="font-black text-[12px] text-white line-clamp-1">{item.title || "Product"}</h4>
-                                                <p className="text-[10px] font-black text-pink-400 mt-1">{item.price || "FREE"}</p>
+                                                <p className="text-[10px] font-black text-[var(--primary)]/80 mt-1">{item.price || "FREE"}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -246,14 +246,14 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="space-y-2 w-full">
                                     {items.map((item: any, i: number) => (
-                                        <div key={i} className="w-full bg-white/5 backdrop-blur-md rounded-[20px] p-3 border border-white/10 flex items-center gap-3">
-                                            <div className="w-[48px] h-[48px] rounded-[14px] bg-white/10 overflow-hidden shrink-0">
+                                        <div key={i} className="w-full bg-[var(--card)]/5 backdrop-blur-md rounded-[20px] p-3 border border-white/10 flex items-center gap-3">
+                                            <div className="w-[48px] h-[48px] rounded-[14px] bg-[var(--card)]/10 overflow-hidden shrink-0">
                                                 {item.image_url || item.image ? <img src={item.image_url || item.image} className="w-full h-full object-cover" /> : <SmartphoneNfc size={20} className="text-white/20" />}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-black text-[13px] text-white truncate">{item.title || "App"}</h4>
                                             </div>
-                                            <span className="flex-shrink-0 bg-pink-500 text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase">GET</span>
+                                            <span className="flex-shrink-0 bg-[var(--primary)] text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase">GET</span>
                                         </div>
                                     ))}
                                 </div>
@@ -292,7 +292,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="grid grid-cols-2 gap-3 w-full py-2">
                                     {(settings.items || []).map((item: any, i: number) => (
-                                        <div key={i} className="bg-white/5 p-4 rounded-[24px] border border-white/10 flex flex-col items-center text-center">
+                                        <div key={i} className="bg-[var(--card)]/5 p-4 rounded-[24px] border border-white/10 flex flex-col items-center text-center">
                                             <span className="text-[24px] font-black text-white">{item.value}</span>
                                             <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{item.label}</span>
                                         </div>
@@ -301,10 +301,10 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             );
                         case "video_showcase_section":
                             return (
-                                <div className="w-full bg-black rounded-[32px] overflow-hidden border border-white/10 shadow-xl">
+                                <div className="w-full bg-black rounded-2xl overflow-hidden border border-white/10 shadow-xl">
                                     <div className="aspect-video relative overflow-hidden">
                                         <img src={settings.thumbnail} className="w-full h-full object-cover opacity-60" />
-                                        <div className="absolute inset-0 flex items-center justify-center"><div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center"><Play size={20} className="text-white fill-white ml-1" /></div></div>
+                                        <div className="absolute inset-0 flex items-center justify-center"><div className="w-12 h-12 rounded-full bg-[var(--card)]/20 backdrop-blur-md border border-white/40 flex items-center justify-center"><Play size={20} className="text-white fill-white ml-1" /></div></div>
                                     </div>
                                     <div className="p-5 space-y-1">
                                         <h3 className="text-sm font-black text-white">{settings.title}</h3>
@@ -331,7 +331,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                     <h2 className="text-[32px] font-black tracking-tighter leading-none" style={{ color: effectiveTextColor }}>
                                         {displayLabel || "Untitled Section"}
                                     </h2>
-                                    <div className="w-12 h-1 bg-pink-500 mt-4 rounded-full inline-block" />
+                                    <div className="w-12 h-1 bg-[var(--primary)] mt-4 rounded-full inline-block" />
                                 </div>
                             );
 
@@ -393,7 +393,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="flex flex-col items-center py-8 group">
                                     <div className="relative">
-                                        <div className="absolute -inset-4 bg-pink-500/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute -inset-4 bg-[var(--primary)]/100/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                                         <div className="relative overflow-hidden border-[4px] shadow-2xl border-white/20 transition-transform duration-700" style={{ borderRadius: buttonStyle.borderRadius === '9999px' ? '9999px' : '40px', width: settings.size || 140, height: settings.size || 140 }}>
                                             <img src={settings.image || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"} className="w-full h-full object-cover" />
                                         </div>
@@ -409,14 +409,14 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         case "contact_collector":
                         case "contact_form":
                             return (
-                                <div className="w-full p-8 rounded-[32px] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl space-y-5">
+                                <div className="w-full p-8 rounded-2xl bg-[var(--card)]/5 backdrop-blur-2xl border border-white/10 shadow-2xl space-y-5">
                                     <div className="text-center space-y-1">
                                         <h3 className="text-xl font-black text-white tracking-tight">{settings.title || "Get in Touch"}</h3>
                                         {settings.description && <p className="text-[12px] text-white/50 font-medium">{settings.description}</p>}
                                     </div>
                                     <div className="space-y-3">
-                                        <div className="w-full h-12 rounded-xl bg-white/5 border border-white/10" />
-                                        <button className="w-full h-12 rounded-xl bg-white text-black font-black text-[10px] uppercase tracking-widest">{settings.button_text || "Submit"}</button>
+                                        <div className="w-full h-12 rounded-xl bg-[var(--card)]/5 border border-white/10" />
+                                        <button className="w-full h-12 rounded-xl bg-[var(--card)] text-black font-black text-[10px] uppercase tracking-widest">{settings.button_text || "Submit"}</button>
                                     </div>
                                 </div>
                             );
@@ -432,7 +432,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                                     <div className="relative z-10 p-8 w-full text-center flex flex-col items-center">
                                         {settings.brand_name && (
-                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 mb-4 drop-shadow-md">{settings.brand_name}</p>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)] mb-4 drop-shadow-md">{settings.brand_name}</p>
                                         )}
                                         <h2 className="text-[36px] font-black leading-[0.95] tracking-tighter text-white mb-2 drop-shadow-2xl">
                                             {settings.title || settings.headline || "Elevate Your Vision"}
@@ -444,7 +444,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             <p className="text-[13px] text-white/70 font-medium mb-6 drop-shadow-md max-w-[90%] leading-relaxed">{settings.description}</p>
                                         )}
                                         {settings.cta_text && (
-                                            <button className="px-10 py-4 rounded-full bg-white text-black text-[11px] font-black uppercase tracking-widest shadow-2xl transition-all mt-2 max-w-[80%] mx-auto truncate">
+                                            <button className="px-10 py-4 rounded-full bg-[var(--card)] text-black text-[11px] font-black uppercase tracking-widest shadow-2xl transition-all mt-2 max-w-[80%] mx-auto truncate">
                                                 {settings.cta_text}
                                             </button>
                                         )}
@@ -591,7 +591,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             if (!servTitle && !servDesc && !servPrice) return null;
 
                                             return (
-                                                <div key={i} className={`group relative p-5 rounded-[28px] shadow-sm backdrop-blur-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] ${secBg}`}>
+                                                <div key={i} className={`group relative p-5 rounded-2xl shadow-sm backdrop-blur-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] ${secBg}`}>
                                                     <div className="relative z-10 flex gap-4">
                                                         <div className={`w-14 h-14 rounded-[20px] shrink-0 shadow-inner flex items-center justify-center overflow-hidden border ${secBorder}`} style={{ backgroundColor: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)' }}>
                                                             {s.image ? <img src={s.image} className="w-full h-full object-cover" /> : <Sparkles size={20} style={{ color: effectiveTextColor, opacity: 0.4 }} />}
@@ -625,7 +625,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             const rating = t.rating !== undefined ? Number(t.rating) : 5;
 
                                             return (
-                                                <div key={i} className={`shrink-0 w-[280px] p-6 rounded-[32px] snap-center flex flex-col shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 ${secBg}`}>
+                                                <div key={i} className={`shrink-0 w-[280px] p-6 rounded-2xl snap-center flex flex-col shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 ${secBg}`}>
                                                     <div className="flex justify-between items-start mb-4">
                                                         <div className="flex gap-1">
                                                             {Array.from({ length: 5 }).map((_, rIdx) => (
@@ -750,10 +750,10 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                     {/* Big bold gradient driven by theme */}
                                     <div className="absolute inset-0" style={{ background: themeBgIsLight ? 'linear-gradient(135deg, #4f46e5 0%, #db2777 100%)' : 'linear-gradient(135deg, #818cf8 0%, #f472b6 100%)' }} />
                                     {/* Abstract blurry shapes */}
-                                    <div className="absolute top-0 right-0 w-48 h-48 bg-white/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3" />
+                                    <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--card)]/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3" />
                                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/20 blur-2xl rounded-full -translate-x-1/2 translate-y-1/2" />
 
-                                    <div className="relative z-10 w-full text-center flex flex-col items-center gap-6 p-8 rounded-[36px] bg-white/10 backdrop-blur-xl border border-white/30 shadow-2xl">
+                                    <div className="relative z-10 w-full text-center flex flex-col items-center gap-6 p-8 rounded-[36px] bg-[var(--card)]/10 backdrop-blur-xl border border-white/30 shadow-2xl">
                                         <div className="space-y-2">
                                             <h3 className="text-[28px] font-black leading-[1.1] tracking-tighter text-white drop-shadow-lg">
                                                 {settings.title || "Ready to dive in?"}
@@ -790,14 +790,14 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             const features = rawFeatures.map((f: any) => typeof f === 'string' ? f.trim() : typeof f === 'object' && f.name ? f.name : String(f)).filter(Boolean);
 
                                             return (
-                                                <div key={i} className="w-[260px] shrink-0 snap-center p-7 rounded-[32px] border flex flex-col shadow-xl transition-all hover:scale-[1.02] backdrop-blur-xl relative overflow-hidden group" style={{ background: cardBg, borderColor: isPopular ? 'transparent' : secBorder }}>
+                                                <div key={i} className="w-[260px] shrink-0 snap-center p-7 rounded-2xl border flex flex-col shadow-xl transition-all hover:scale-[1.02] backdrop-blur-xl relative overflow-hidden group" style={{ background: cardBg, borderColor: isPopular ? 'transparent' : secBorder }}>
                                                     {isPopular && (
                                                         <div className="absolute -top-4 -right-4 w-32 h-32 rounded-full opacity-20 blur-3xl pointer-events-none" style={{ background: 'linear-gradient(45deg, #a855f7, #ec4899)' }} />
                                                     )}
                                                     {isPopular && (
                                                         <div className="self-start px-3 py-1 mb-4 rounded-full text-[8px] font-black uppercase tracking-widest relative z-10" style={{ background: themeBgIsLight ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)', color: cardText }}>Most Popular</div>
                                                     )}
-                                                    <span className={`text-[12px] font-black uppercase tracking-[0.2em] mb-2 relative z-10 ${!isPopular ? 'text-pink-500' : ''}`} style={!isPopular ? {} : { color: cardText }}>{typeof plan.name === 'string' ? plan.name : 'PLAN'}</span>
+                                                    <span className={`text-[12px] font-black uppercase tracking-[0.2em] mb-2 relative z-10 ${!isPopular ? 'text-[var(--primary)]' : ''}`} style={!isPopular ? {} : { color: cardText }}>{typeof plan.name === 'string' ? plan.name : 'PLAN'}</span>
                                                     <div className="flex flex-col gap-1 mb-6 relative z-10">
                                                         <span className="text-[40px] font-black tracking-tighter leading-none" style={{ color: cardText }}>{typeof plan.price === 'string' || typeof plan.price === 'number' ? plan.price : 'Free'}</span>
                                                         {(plan.billing_cycle || plan.interval) && <span className="text-[10px] font-bold opacity-60 uppercase tracking-widest" style={{ color: cardText }}>/{plan.billing_cycle || plan.interval}</span>}
@@ -826,7 +826,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         })}
                                     </div>
                                     {(settings.plans || []).length === 0 && (
-                                        <div className="w-full h-40 rounded-[32px] border border-dashed flex items-center justify-center" style={{ borderColor: secBorder }}><span className="text-[10px] font-bold uppercase tracking-widest opacity-30" style={{ color: effectiveTextColor }}>No plans yet</span></div>
+                                        <div className="w-full h-40 rounded-2xl border border-dashed flex items-center justify-center" style={{ borderColor: secBorder }}><span className="text-[10px] font-bold uppercase tracking-widest opacity-30" style={{ color: effectiveTextColor }}>No plans yet</span></div>
                                     )}
                                 </div>
                             );
@@ -835,13 +835,13 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="w-full grid grid-cols-1 gap-2 my-4">
                                     {settings.email && (
-                                        <div className="flex items-center gap-4 p-4 rounded-[20px] bg-white/5 border border-white/10">
-                                            <div className="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center shrink-0 border border-pink-500/20"><Mail size={18} className="text-pink-500" /></div>
+                                        <div className="flex items-center gap-4 p-4 rounded-[20px] bg-[var(--card)]/5 border border-white/10">
+                                            <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/100/20 flex items-center justify-center shrink-0 border border-[var(--primary)]/20"><Mail size={18} className="text-[var(--primary)]" /></div>
                                             <div className="flex-1 min-w-0"><p className="text-[13px] font-black text-white truncate">{settings.email}</p></div>
                                         </div>
                                     )}
                                     {settings.phone && (
-                                        <div className="flex items-center gap-4 p-4 rounded-[20px] bg-white/5 border border-white/10">
+                                        <div className="flex items-center gap-4 p-4 rounded-[20px] bg-[var(--card)]/5 border border-white/10">
                                             <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-500/20"><Phone size={18} className="text-indigo-400" /></div>
                                             <div className="flex-1 min-w-0"><p className="text-[13px] font-black text-white truncate">{settings.phone}</p></div>
                                         </div>
@@ -851,22 +851,22 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                         case "vcard":
                             return (
-                                <div className="w-full p-5 rounded-[24px] border border-white/10 shadow-2xl flex items-center gap-4 bg-white/5">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10"><User size={20} className="opacity-40" /></div>
+                                <div className="w-full p-5 rounded-[24px] border border-white/10 shadow-2xl flex items-center gap-4 bg-[var(--card)]/5">
+                                    <div className="w-12 h-12 rounded-xl bg-[var(--card)]/10 flex items-center justify-center shrink-0 border border-white/10"><User size={20} className="opacity-40" /></div>
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-black text-[14px] truncate text-white">{settings.first_name} {settings.last_name}</h3>
                                         <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest truncate">{settings.organization || "Contact"}</p>
                                     </div>
-                                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/10"><ArrowUpRight size={16} className="text-white/40" /></div>
+                                    <div className="w-8 h-8 rounded-lg bg-[var(--card)]/10 flex items-center justify-center border border-white/10"><ArrowUpRight size={16} className="text-white/40" /></div>
                                 </div>
                             );
 
                         case "divider":
-                            return <div className="w-full py-4 flex items-center justify-center"><div className="w-full h-px bg-white/10" /></div>;
+                            return <div className="w-full py-4 flex items-center justify-center"><div className="w-full h-px bg-[var(--card)]/10" /></div>;
 
                         case "business_hours":
                             return (
-                                <div className="p-6 my-2 border border-white/5 bg-white/[0.02] rounded-[24px]">
+                                <div className="p-6 my-2 border border-white/5 bg-[var(--card)]/[0.02] rounded-[24px]">
                                     <div className="flex items-center gap-2 mb-4 justify-center opacity-40">
                                         <Clock size={16} /><span className="font-black uppercase tracking-widest text-[9px]">Business Hours</span>
                                     </div>
@@ -885,7 +885,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                             return (
                                 <div className="w-full space-y-2 mt-4">
                                     {(settings.items || []).slice(0, 2).map((item: any, idx: number) => (
-                                        <div key={idx} className="block p-3 rounded-xl bg-white/5 border border-white/10">
+                                        <div key={idx} className="block p-3 rounded-xl bg-[var(--card)]/5 border border-white/10">
                                             <p className="text-[12px] font-bold truncate text-white">{item.title}</p>
                                             <p className="text-[9px] opacity-40 mt-1">{new Date(item.pubDate).toLocaleDateString()}</p>
                                         </div>
@@ -902,7 +902,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         const url = item.url || "#";
 
                                         return (
-                                            <a key={i} href={url} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 px-5 py-3.5 rounded-full border shadow-sm backdrop-blur-xl transition-all hover:scale-105 active:scale-95 ${secBg}`}>
+                                            <a key={i} href={url} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 px-5 py-3 rounded-full border shadow-sm backdrop-blur-xl transition-all hover:scale-105 active:scale-95 ${secBg}`}>
                                                 <div className="shrink-0 w-6 h-6 flex items-center justify-center filter drop-shadow-sm">
                                                     <BrandIcon name={platform} size={22} colored={true} />
                                                 </div>
@@ -923,7 +923,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                     {(settings.items || []).map((item: any, i: number) => {
                                         const iconClass = item.icon || item.icon_class;
                                         return (
-                                            <a key={i} href={item.url || "#"} target="_blank" rel="noopener noreferrer" className={`group relative flex items-center p-4 rounded-[28px] border shadow-sm backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] overflow-hidden ${secBg}`}>
+                                            <a key={i} href={item.url || "#"} target="_blank" rel="noopener noreferrer" className={`group relative flex items-center p-4 rounded-2xl border shadow-sm backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] overflow-hidden ${secBg}`}>
                                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-300" style={{ backgroundColor: effectiveTextColor }} />
 
                                                 <div className="w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 border mr-4 transition-transform duration-300 group-hover:rotate-6 shadow-inner" style={{ backgroundColor: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
@@ -956,12 +956,12 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                     {/* Noise texture overlay */}
                                     <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")' }} />
                                     {/* Soft glow circles */}
-                                    <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full opacity-20 blur-2xl bg-white" />
+                                    <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full opacity-20 blur-2xl bg-[var(--card)]" />
                                     <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full opacity-15 blur-xl bg-yellow-300" />
 
                                     <div className="relative z-10 px-8 py-7 text-center space-y-4">
                                         {/* Badge */}
-                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30">
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--card)]/20 backdrop-blur-md border border-white/30">
                                             <Clock size={10} className="animate-pulse text-white" />
                                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Limited Time Offer</span>
                                         </div>
@@ -984,7 +984,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         )}
                                         {/* CTA Button */}
                                         {settings.button_text && (
-                                            <a href={settings.button_link || '#'} className="inline-block px-8 py-3.5 rounded-2xl bg-white font-black text-[11px] uppercase tracking-widest shadow-2xl no-underline transition-transform" style={{ color: '#f7323f' }}>
+                                            <a href={settings.button_link || '#'} className="inline-block px-8 py-3 rounded-2xl bg-[var(--card)] font-black text-[11px] uppercase tracking-widest shadow-2xl no-underline transition-transform" style={{ color: '#f7323f' }}>
                                                 {settings.button_text}
                                             </a>
                                         )}
@@ -994,13 +994,13 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                         case "impact_section":
                             return (
-                                <div className="w-full mt-4 mb-6 relative rounded-[32px] overflow-hidden p-1">
+                                <div className="w-full mt-4 mb-6 relative rounded-2xl overflow-hidden p-1">
                                     {/* Glassy, neon-bordered container */}
                                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 backdrop-blur-2xl" />
-                                    <div className="absolute inset-0 rounded-[32px] border border-white/10" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)' }} />
+                                    <div className="absolute inset-0 rounded-2xl border border-white/10" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.02)' }} />
                                     <div className="relative z-10 p-7 space-y-6">
                                         <div className="text-center space-y-2">
-                                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-2">
+                                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--card)]/5 border border-white/10 mb-2">
                                                 <Sparkles size={12} className="text-indigo-400" />
                                                 <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: effectiveTextColor }}>The Outcome</span>
                                             </div>
@@ -1016,7 +1016,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                                 const ptTitle = typeof pt === 'string' ? pt : (pt.title || pt.label || '');
                                                 const ptDesc = typeof pt === 'object' && pt !== null ? pt.description : '';
                                                 return (
-                                                    <div key={i} className="group flex items-start gap-4 p-4 rounded-[20px] bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-300">
+                                                    <div key={i} className="group flex items-start gap-4 p-4 rounded-[20px] bg-[var(--card)]/5 border border-white/5 hover:bg-[var(--card)]/10 transition-all duration-300">
                                                         <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2))' }}>
                                                             <div className="w-3 h-3 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
                                                         </div>
@@ -1090,7 +1090,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         case "floating_cta_banner_section":
                         case "footer_social_section":
                             return (
-                                <div className={`w-full my-6 p-6 rounded-[32px] shadow-lg backdrop-blur-xl border flex flex-col items-center text-center ${secBg}`}>
+                                <div className={`w-full my-6 p-6 rounded-2xl shadow-lg backdrop-blur-xl border flex flex-col items-center text-center ${secBg}`}>
                                     <Sparkles size={24} style={{ color: effectiveTextColor, opacity: 0.5 }} className="mb-4" />
                                     <h3 className="text-[16px] font-black tracking-tight uppercase" style={{ color: effectiveTextColor }}>{settings.title || type.replace(/_/g, " ")}</h3>
                                     <p className="text-[11px] opacity-50 mt-1 uppercase tracking-widest font-bold" style={{ color: effectiveTextColor }}>Configured in Editor</p>
@@ -1188,11 +1188,11 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             )}
                                         </div>
                                         {/* Divider */}
-                                        <div className="h-px w-full bg-white/10" />
+                                        <div className="h-px w-full bg-[var(--card)]/10" />
                                         {/* CTA button full-width */}
                                         <a
                                             href={settings.cta_link || '#'}
-                                            className="w-full py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest text-center shadow-2xl no-underline"
+                                            className="w-full py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest text-center shadow-2xl no-underline"
                                             style={{ background: 'linear-gradient(135deg, #ffffff, #f0f0f0)', color: '#000' }}
                                             onClick={(e) => e.stopPropagation()}
                                         >
@@ -1205,7 +1205,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                         case "featured_product_section":
                         case "product_section":
                             return (
-                                <div className={`p-4 rounded-[28px] overflow-hidden border shadow-lg backdrop-blur-xl ${secBg}`}>
+                                <div className={`p-4 rounded-2xl overflow-hidden border shadow-lg backdrop-blur-xl ${secBg}`}>
                                     {(settings.image) && (
                                         <div className="relative w-full aspect-video rounded-[20px] overflow-hidden mb-4">
                                             <img src={settings.image} className="w-full h-full object-cover" alt="Product" />
@@ -1251,7 +1251,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         </h3>
                                     )}
                                     {prodItems.map((p: any, i: number) => (
-                                        <a key={i} href={p.link || '#'} className={`group flex gap-3 p-3 rounded-[22px] border backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] no-underline ${secBg}`} onClick={(e) => e.stopPropagation()}>
+                                        <a key={i} href={p.link || '#'} className={`group flex gap-3 p-3 rounded-xl border backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] no-underline ${secBg}`} onClick={(e) => e.stopPropagation()}>
                                             {/* Product image */}
                                             <div className="w-16 h-16 rounded-[16px] overflow-hidden shrink-0 border shadow-sm" style={{ borderColor: secBorder }}>
                                                 {p.image ? (
@@ -1282,7 +1282,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         </a>
                                     ))}
                                     {prodItems.length === 0 && (
-                                        <div className="text-center py-6 rounded-[22px] border border-dashed" style={{ borderColor: secBorder }}>
+                                        <div className="text-center py-6 rounded-xl border border-dashed" style={{ borderColor: secBorder }}>
                                             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: effectiveTextColor, opacity: 0.3 }}>No products yet</span>
                                         </div>
                                     )}
@@ -1369,7 +1369,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                             const url = item.url || item.link || "#";
                                             return (
                                                 <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="shrink-0 w-[160px] snap-center rounded-[20px] p-4 flex flex-col justify-end min-h-[140px] relative overflow-hidden group shadow-md hover:-translate-y-1 transition-all no-underline" style={{ background: themeBgIsLight ? 'linear-gradient(180deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.05) 100%)' : 'linear-gradient(180deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.05) 100%)', border: `1px solid ${secBorder}` }}>
-                                                    <div className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity bg-black/5 dark:bg-white/10">
+                                                    <div className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity bg-black/5 dark:bg-[var(--card)]/10">
                                                         <ArrowUpRight size={14} style={{ color: effectiveTextColor }} />
                                                     </div>
                                                     <p className="font-bold text-[13px] leading-tight" style={{ color: effectiveTextColor }}>{displayLabel}</p>
@@ -1382,9 +1382,9 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                         case "newsletter":
                             return (
-                                <div className="w-full my-6 p-6 rounded-[32px] overflow-hidden relative group" style={{ background: themeBgIsLight ? 'linear-gradient(145deg, #1f2937, #111827)' : 'linear-gradient(145deg, #f3f4f6, #ffffff)' }}>
+                                <div className="w-full my-6 p-6 rounded-2xl overflow-hidden relative group" style={{ background: themeBgIsLight ? 'linear-gradient(145deg, #1f2937, #111827)' : 'linear-gradient(145deg, #f3f4f6, #ffffff)' }}>
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-                                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-pink-500/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+                                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-[var(--primary)]/100/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
                                     <div className="relative z-10 flex flex-col items-center text-center">
                                         <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border shadow-inner" style={{ background: themeBgIsLight ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', borderColor: themeBgIsLight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
@@ -1409,7 +1409,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
 
                         case "music_section":
                             return (
-                                <a href={settings.url || settings.spotify_url || settings.soundcloud_url || "#"} target="_blank" rel="noopener noreferrer" className="w-full my-4 p-4 rounded-[28px] flex items-center gap-4 relative overflow-hidden group shadow-lg transition-transform hover:scale-[1.02] border no-underline" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
+                                <a href={settings.url || settings.spotify_url || settings.soundcloud_url || "#"} target="_blank" rel="noopener noreferrer" className="w-full my-4 p-4 rounded-2xl flex items-center gap-4 relative overflow-hidden group shadow-lg transition-transform hover:scale-[1.02] border no-underline" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
                                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', transform: 'skewX(-20deg) translateX(-150%)' }} />
 
                                     <div className="w-14 h-14 rounded-[18px] shrink-0 flex items-center justify-center relative overflow-hidden shadow-inner border" style={{ background: themeBgIsLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)', borderColor: secBorder }}>
@@ -1421,16 +1421,16 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                                         <p className="text-[14px] font-black tracking-tight truncate leading-tight" style={{ color: effectiveTextColor }}>{settings.title || settings.music_title || "Listen Now"}</p>
                                         <div className="flex items-center gap-1.5 mt-1.5">
                                             <div className="flex items-center gap-0.5 h-3">
-                                                <div className="w-0.5 h-full bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                <div className="w-0.5 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                <div className="w-0.5 h-2.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                                                <div className="w-0.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '450ms' }} />
+                                                <div className="w-0.5 h-full bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <div className="w-0.5 h-2 bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <div className="w-0.5 h-2.5 bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                <div className="w-0.5 h-1.5 bg-[var(--primary)] rounded-full animate-bounce" style={{ animationDelay: '450ms' }} />
                                             </div>
                                             <span className="text-[9px] uppercase tracking-widest font-bold opacity-50" style={{ color: effectiveTextColor }}>Playing</span>
                                         </div>
                                     </div>
 
-                                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border transition-colors group-hover:bg-black/5 dark:group-hover:bg-white/10" style={{ backgroundColor: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
+                                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border transition-colors group-hover:bg-black/5 dark:group-hover:bg-[var(--card)]/10" style={{ backgroundColor: themeBgIsLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', borderColor: secBorder }}>
                                         <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-b-[5px] border-b-transparent translate-x-[2px]" style={{ borderLeftColor: effectiveTextColor }} />
                                     </div>
                                 </a>
@@ -1454,7 +1454,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                 ].includes(type) && (
                         <a href={block.location_url || "#"} className="relative w-full group overflow-hidden transition-all duration-300 active:scale-[0.97] hover:brightness-110 flex items-center justify-center min-h-[64px] py-4 px-8 mt-3 mb-3 rounded-full shadow-sm border border-black/5 dark:border-white/5" style={{ ...buttonStyle, background: buttonStyle.background ? buttonStyle.background : 'rgba(0,0,0,0.05)' }}>
 
-                            <div className="absolute left-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center opacity-80 group-hover:scale-110 transition-all duration-300">
+                            <div className="absolute left-6 w-10 h-10 rounded-full bg-black/5 dark:bg-[var(--card)]/5 flex items-center justify-center opacity-80 group-hover:scale-110 transition-all duration-300">
                                 {BLOCK_ICONS[type] || <LinkIcon size={16} />}
                             </div>
 
@@ -1550,7 +1550,7 @@ export const PhonePreview = ({ profile, tabs, selectedTabId, setSelectedTabId, i
                     </div>
                 </div>
                 {/* Bottom Indicator */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/20 dark:bg-white/10 rounded-full z-[100]" />
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/20 dark:bg-[var(--card)]/10 rounded-full z-[100]" />
             </div>
         </div>
     );

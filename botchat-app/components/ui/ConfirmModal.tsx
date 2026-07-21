@@ -45,7 +45,7 @@ export function ConfirmModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-sm bg-white dark:bg-[#1C1C24] rounded-[32px] overflow-hidden shadow-2xl z-10 border border-neutral-100 dark:border-neutral-800"
+            className="relative w-full max-w-sm bg-[var(--card)] dark:bg-[#1C1C24] rounded-2xl overflow-hidden shadow-2xl z-10 border border-neutral-100 dark:border-neutral-800"
           >
             {/* Close button */}
             <button 

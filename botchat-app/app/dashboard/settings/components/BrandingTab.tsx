@@ -223,7 +223,7 @@ export default function BrandingTab() {
               <button type="button" onClick={() => setGeneralForm({ ...generalForm, landingPageEnabled: !generalForm.landingPageEnabled })}
                 className="relative w-11 h-6 rounded-full transition-all duration-300"
                 style={{ background: generalForm.landingPageEnabled ? "var(--brand-purple)" : "var(--glass-border)" }}>
-                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
                   style={{ left: generalForm.landingPageEnabled ? "calc(100% - 22px)" : "2px" }} />
               </button>
             </div>
@@ -235,7 +235,7 @@ export default function BrandingTab() {
               <button type="button" onClick={() => setGeneralForm({ ...generalForm, emailVerification: !generalForm.emailVerification })}
                 className="relative w-11 h-6 rounded-full transition-all duration-300"
                 style={{ background: generalForm.emailVerification ? "var(--brand-purple)" : "var(--glass-border)" }}>
-                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300"
+                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
                   style={{ left: generalForm.emailVerification ? "calc(100% - 22px)" : "2px" }} />
               </button>
             </div>
@@ -306,7 +306,7 @@ export default function BrandingTab() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
-                <Sparkles className="w-4 h-4 text-pink-500" /> Favicon
+                <Sparkles className="w-4 h-4 text-[var(--primary)]" /> Favicon
               </label>
               <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md" style={{ background: "rgba(236,72,153,0.1)", color: "#ec4899" }}>ICO/PNG</span>
             </div>
@@ -334,7 +334,7 @@ export default function BrandingTab() {
                 <img src={faviconPreview} alt="Favicon Preview" className="w-12 h-12 object-contain mb-2 shadow-lg" />
               ) : (
                 <div className="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center transition-all duration-500 group-hover:-rotate-6 shadow-sm" style={{ background: "rgba(236,72,153,0.15)" }}>
-                  <UploadCloud className="w-6 h-6 text-pink-500" />
+                  <UploadCloud className="w-6 h-6 text-[var(--primary)]" />
                 </div>
               )}
               <input type="file" ref={faviconInputRef} className="hidden" accept="image/x-icon,image/png"

@@ -34,7 +34,7 @@ export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
                     <motion.div 
                         initial={{ scale: 0.9, opacity: 0, rotate: -5 }}
                         animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                        className="w-28 h-28 rounded-[3rem] bg-white p-2 mb-8 shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9]"
+                        className="w-28 h-28 rounded-[3rem] bg-[var(--card)] p-2 mb-8 shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9]"
                     >
                         <img 
                             src={heroBlock?.settings?.avatar || heroBlock?.settings?.image || heroBlock?.settings?.image_url || profile?.image || profile?.avatar || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
@@ -121,8 +121,8 @@ const renderBrunchSection = (block: any, profile: any) => {
                     className={cn(
                         "group relative block transition-all duration-300",
                         isFeatured 
-                            ? "p-6 sm:p-7 bg-white border-2 border-[#2d241e] rounded-[2rem] shadow-[8px_8px_0px_#2d241e] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_#2d241e] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_#2d241e]" 
-                            : "p-5 bg-white border border-[#2d241e] rounded-[1.5rem] shadow-[4px_4px_0px_#2d241e] hover:shadow-[6px_6px_0px_#2d241e] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_#2d241e]"
+                            ? "p-6 sm:p-7 bg-[var(--card)] border-2 border-[#2d241e] rounded-[2rem] shadow-[8px_8px_0px_#2d241e] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_#2d241e] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_#2d241e]" 
+                            : "p-5 bg-[var(--card)] border border-[#2d241e] rounded-[1.5rem] shadow-[4px_4px_0px_#2d241e] hover:shadow-[6px_6px_0px_#2d241e] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_#2d241e]"
                     )}
                 >
                     <div className="flex items-center gap-4 sm:gap-5 justify-center">
@@ -179,7 +179,7 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'hero_aesthetic_section':
             return (
                 <div className="w-full space-y-8 mb-12">
-                    <div className="w-full aspect-video rounded-[3rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9] group">
+                    <div className="w-full aspect-video rounded-[3rem] overflow-hidden bg-[var(--card)] shadow-[0_20px_50px_rgba(74,64,58,0.1)] border-4 border-[#f8f1e9] group">
                         <img 
                             src={s.image || s.url || s.image_url || blockItems?.[0]?.image || blockItems?.[0]?.url || "https://images.unsplash.com/photo-1512485694743-9c9538b4e6e0?w=400"} 
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -212,7 +212,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                         const isImg = img && (img.startsWith('http') || img.startsWith('/'));
 
                             return (
-                                <a key={i} href={item.url || "#"} className="min-w-[220px] snap-center p-8 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                                <a key={i} href={item.url || "#"} className="min-w-[220px] snap-center p-8 rounded-[3rem] bg-[var(--card)] border border-[#f3eee8] shadow-sm hover:shadow-md transition-all group overflow-hidden">
                                     {isImg ? (
                                         <div className="w-full h-24 mb-4 rounded-2xl overflow-hidden border border-[#f3eee8]">
                                             <img src={img} className="w-full h-full object-cover" />
@@ -260,7 +260,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                     {blockItems.slice(0, 4).map((item: any, i: number) => (
                         <div key={i} className={cn(
                             "p-8 rounded-[3rem] flex flex-col items-center text-center",
-                            i % 2 === 0 ? "bg-[#f8f1e9] shadow-sm" : "bg-white border border-[#f3eee8]"
+                            i % 2 === 0 ? "bg-[#f8f1e9] shadow-sm" : "bg-[var(--card)] border border-[#f3eee8]"
                         )}>
                             <span className="text-2xl font-serif font-black text-[#2d241e] mb-1 italic">{item.value || item.n || item.title}</span>
                             <span className="text-[9px] font-black text-[#8c7e74] uppercase tracking-[0.2em]">{item.label || item.d || item.subtitle}</span>
@@ -281,7 +281,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                             const brandColor = getBrandColor(iconKey);
                             return (
                                 <a key={i} href={item.url || item.link || '#'} target="_blank" rel="noopener noreferrer"
-                                   className="w-12 h-12 rounded-[2rem] flex items-center justify-center border-2 border-[#2d241e] shadow-[3px_3px_0px_#2d241e] hover:shadow-[5px_5px_0px_#2d241e] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all bg-white"
+                                   className="w-12 h-12 rounded-[2rem] flex items-center justify-center border-2 border-[#2d241e] shadow-[3px_3px_0px_#2d241e] hover:shadow-[5px_5px_0px_#2d241e] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all bg-[var(--card)]"
                                    style={{ borderColor: brandColor, boxShadow: `3px 3px 0px ${brandColor}` }}>
                                     <span style={{ color: brandColor }}>
                                         <BrandIcon name={iconKey} size={20} colored />
@@ -311,7 +311,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                             <motion.div 
                                 key={i} 
                                 whileHover={{ scale: 0.98 }}
-                                className="rounded-[2rem] overflow-hidden border-2 border-[#2d241e] shadow-[4px_4px_0px_#2d241e] bg-white group relative aspect-[4/5]"
+                                className="rounded-[2rem] overflow-hidden border-2 border-[#2d241e] shadow-[4px_4px_0px_#2d241e] bg-[var(--card)] group relative aspect-[4/5]"
                             >
                                 <img src={item.image || item.url || item.image_url || item.thumbnail} className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700" />
                                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -326,7 +326,7 @@ const renderBrunchSection = (block: any, profile: any) => {
             return (
                 <div className="p-8 sm:p-10 rounded-[2.5rem] bg-[#2d241e] text-white flex flex-col items-center text-center shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                        <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white rounded-full blur-3xl" />
+                        <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-[var(--card)] rounded-full blur-3xl" />
                     </div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8 text-white/50 italic">{s.title || "Limited Time Offer"}</h3>
                     <div className="flex justify-center gap-6 mb-8">
@@ -357,7 +357,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                             { t: 'Consultation', d: 'One-on-one session', p: '$150' },
                             { t: 'Creative Audit', d: 'Visual strategy review', p: '$450' }
                         ]).map((item, i) => (
-                            <div key={i} className="p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-white border border-[#f3eee8] flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+                            <div key={i} className="p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-[var(--card)] border border-[#f3eee8] flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
                                 <div className="min-w-0 pr-4">
                                     <h4 className="text-[14px] sm:text-[15px] font-bold text-[#2d241e] truncate">{item.t}</h4>
                                     <p className="text-[10px] sm:text-[11px] text-[#8c7e74] font-medium italic truncate">{item.d}</p>
@@ -398,7 +398,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                     </div>
                     <div className="grid gap-6">
                         {blockItems.map((item: any, i: number) => (
-                            <div key={i} className="p-10 rounded-[3rem] bg-white border border-[#f3eee8] shadow-sm relative text-center">
+                            <div key={i} className="p-10 rounded-[3rem] bg-[var(--card)] border border-[#f3eee8] shadow-sm relative text-center">
                                 <Star className="text-[#e8dccb] mx-auto mb-6" size={24} fill="currentColor" />
                                 <p className="text-[15px] text-[#4a403a] italic leading-relaxed mb-8 px-2 font-medium">
                                     "{item.t || item.text || item.description || item.quote}"
@@ -457,13 +457,13 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'email_collector':
             return (
                 <div className="p-10 rounded-[3.5rem] bg-[#f8f1e9] border-4 border-white shadow-2xl shadow-orange-100/40 flex flex-col items-center text-center">
-                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-[#2d241e] mb-8 shadow-sm">
+                    <div className="w-16 h-16 rounded-full bg-[var(--card)] flex items-center justify-center text-[#2d241e] mb-8 shadow-sm">
                         <Mail size={24} strokeWidth={1.5} />
                     </div>
                     <h3 className="text-xl font-serif font-black italic text-[#2d241e] mb-3">Sunday Letters</h3>
                     <p className="text-xs text-[#8c7e74] font-medium mb-10 leading-relaxed italic px-4">{s.description || "Thoughtful updates and quiet inspiration for your week ahead."}</p>
                     <div className="w-full space-y-4">
-                        <input type="email" placeholder="YOUR EMAIL ADDRESS" className="w-full h-14 bg-white border border-transparent rounded-3xl px-6 text-[13px] focus:outline-none focus:border-[#e8dccb] transition-all text-center tracking-tight" />
+                        <input type="email" placeholder="YOUR EMAIL ADDRESS" className="w-full h-14 bg-[var(--card)] border border-transparent rounded-3xl px-6 text-[13px] focus:outline-none focus:border-[#e8dccb] transition-all text-center tracking-tight" />
                         <button className="w-full h-14 bg-[#4a403a] text-white rounded-3xl text-xs font-black uppercase tracking-widest hover:bg-[#2d241e] transition-all shadow-lg shadow-orange-900/10">Subscribe</button>
                     </div>
                 </div>
@@ -477,7 +477,7 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'contact_form':
         case 'contact_collector':
             return (
-                <div className="p-8 sm:p-10 rounded-[3rem] bg-white border-2 border-[#2d241e] shadow-[10px_10px_0px_#2d241e] flex flex-col items-center text-center">
+                <div className="p-8 sm:p-10 rounded-[3rem] bg-[var(--card)] border-2 border-[#2d241e] shadow-[10px_10px_0px_#2d241e] flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-full bg-[#fdfaf5] border border-[#2d241e] flex items-center justify-center text-[#2d241e] mb-8">
                         <Mail size={24} />
                     </div>
@@ -504,7 +504,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                     </div>
                     <div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar snap-x px-2">
                         {blockItems.map((item: any, i: number) => (
-                            <div key={i} className="min-w-[280px] snap-center p-8 rounded-[2.5rem] bg-white border-2 border-[#2d241e] shadow-[6px_6px_0px_#2d241e] flex flex-col">
+                            <div key={i} className="min-w-[280px] snap-center p-8 rounded-[2.5rem] bg-[var(--card)] border-2 border-[#2d241e] shadow-[6px_6px_0px_#2d241e] flex flex-col">
                                 <span className="text-[10px] font-black text-[#e8dccb] uppercase tracking-widest mb-2 italic">Offer {i + 1}</span>
                                 <h4 className="text-[18px] font-black text-[#2d241e] mb-1 italic leading-tight">{item.title || item.t || item.name}</h4>
                                 <p className="text-[12px] text-[#8c7e74] font-medium italic mb-8">{item.description || item.d || item.subtitle}</p>
@@ -524,7 +524,7 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'youtube':
         case 'tiktok_video':
             return (
-                <div className="p-2 bg-white border border-[#f3eee8] rounded-[3rem] shadow-sm overflow-hidden group aspect-video relative">
+                <div className="p-2 bg-[var(--card)] border border-[#f3eee8] rounded-[3rem] shadow-sm overflow-hidden group aspect-video relative">
                     <img src={s.thumbnail || "https://images.unsplash.com/photo-1516483642785-0cda1fb59ce2?w=800"} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000" />
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#2d241e] shadow-xl group-hover:bg-[#2d241e] group-hover:text-white transition-all">
@@ -538,7 +538,7 @@ const renderBrunchSection = (block: any, profile: any) => {
         case 'music_section':
             return (
                 <div className="p-8 rounded-[3.5rem] bg-[#fdfaf5] border border-[#f3eee8] flex items-center gap-6 group">
-                    <div className="w-20 h-20 rounded-[2.5rem] bg-white border border-[#f3eee8] flex items-center justify-center text-[#e8dccb] group-hover:rotate-12 transition-transform">
+                    <div className="w-20 h-20 rounded-[2.5rem] bg-[var(--card)] border border-[#f3eee8] flex items-center justify-center text-[#e8dccb] group-hover:rotate-12 transition-transform">
                         <BrandIcon name="spotify" size={32} />
                     </div>
                     <div className="flex-1">
@@ -560,14 +560,14 @@ const renderBrunchSection = (block: any, profile: any) => {
                     </div>
                     <h3 className="text-xl font-serif font-black italic mb-2">The Gathering</h3>
                     <p className="text-[12px] text-white/50 font-medium italic mb-8 max-w-[200px]">{s.description || "Join our quiet corner for thoughtful discussion."}</p>
-                    <button className="px-8 py-3 bg-white text-[#2d241e] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">Join Discord</button>
+                    <button className="px-8 py-3 bg-[var(--card)] text-[#2d241e] rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all">Join Discord</button>
                 </div>
             );
 
         case 'donation_section':
         case 'support':
             return (
-                <div className="p-12 text-center bg-white border border-[#f3eee8] rounded-[4rem] shadow-sm">
+                <div className="p-12 text-center bg-[var(--card)] border border-[#f3eee8] rounded-[4rem] shadow-sm">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-50 text-orange-200 mb-8">
                         <Heart size={32} fill="currentColor" />
                     </div>

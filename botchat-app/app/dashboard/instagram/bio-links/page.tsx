@@ -25,25 +25,25 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
         {open && (
             <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+                    className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 60 }}
                     transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-[var(--card)] dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
-                        <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
+                        <div className="w-10 h-1 rounded-full bg-[var(--muted)]/70 dark:bg-slate-700" />
                     </div>
-                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-[var(--border)] dark:border-[var(--border)]">
                         {icon && <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">{icon}</div>}
-                        <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
-                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors shrink-0">
+                        <h2 className="text-lg sm:text-xl font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight">{title}</h2>
+                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors shrink-0">
                             <X size={18} />
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-5 sm:p-8">{children}</div>
-                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
+                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]">{footer}</div>}
                 </motion.div>
             </div>
         )}
@@ -52,11 +52,11 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
 const InputField = ({ label, ...props }: any) => (
     <div className="space-y-1.5 sm:space-y-2">
-        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">{label}</label>
+        <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">{label}</label>
         <div className="relative group">
             <input
                 {...props}
-                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600"
+                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--muted-foreground)]"
             />
         </div>
     </div>
@@ -226,7 +226,7 @@ export default function InstagramBioLinksPage() {
                             </div>
                         </div>
                         <div className="space-y-0.5 sm:space-y-1">
-                            <h1 data-tour="page-heading" className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                            <h1 data-tour="page-heading" className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-[var(--foreground)] dark:text-white">
                                 Bio Link Manager
                             </h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl text-xs sm:text-sm md:text-base">
@@ -375,7 +375,7 @@ export default function InstagramBioLinksPage() {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border border-[var(--border)] bg-primary/5 dark:bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6"
+                        className="p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border border-[var(--border)] bg-primary/5 dark:bg-[var(--card)]/5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6"
                     >
                         <div className="flex items-center gap-3 sm:gap-4">
                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
@@ -394,7 +394,7 @@ export default function InstagramBioLinksPage() {
                                         setNewBio({ ...newBio, url: acc.username || "", name: acc.name || acc.username || "" });
                                         setShowAddModal(true);
                                     }}
-                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold border border-primary/20 text-primary bg-white dark:bg-slate-900 flex items-center gap-1.5 sm:gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
+                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold border border-primary/20 text-primary bg-[var(--card)] dark:bg-[var(--background)] flex items-center gap-1.5 sm:gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
                                 >
                                     <Plus size={12} className="sm:size-3.5" /> @{acc.username || acc.name}
                                 </button>
@@ -412,7 +412,7 @@ export default function InstagramBioLinksPage() {
                 icon={<Globe size={20} />}
                 footer={
                     <div className="flex gap-3 sm:gap-4">
-                        <button onClick={() => setShowAddModal(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                        <button onClick={() => setShowAddModal(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--card)]/5 transition-colors">Cancel</button>
                         <button
                             onClick={handleCreate}
                             disabled={isCreating}
@@ -438,22 +438,22 @@ export default function InstagramBioLinksPage() {
                         placeholder="e.g. John Doe - Designer"
                     />
                     <div className="space-y-1.5 sm:space-y-2">
-                        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Bio Description</label>
+                        <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">Bio Description</label>
                         <textarea
                             value={newBio.description}
                             onChange={(e: any) => setNewBio({ ...newBio, description: e.target.value })}
                             rows={3}
-                            className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/50 text-sm font-semibold text-slate-900 dark:text-white outline-none resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
+                            className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-primary/50 text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none resize-none transition-all placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--muted-foreground)] shadow-inner"
                             placeholder="A professional intro for your bio..."
                         />
                     </div>
                     {domains.length > 0 && (
                         <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Custom Domain</label>
+                            <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">Custom Domain</label>
                             <select
                                 value={newBio.domain_id}
                                 onChange={(e: any) => setNewBio({ ...newBio, domain_id: parseInt(e.target.value) })}
-                                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all"
                             >
                                 <option value={0}>Default domain</option>
                                 {domains.map((d: any) => (
@@ -526,16 +526,16 @@ function BioLinkCard({ row, onEdit, onCopy, onAction, copied }: any) {
                         onClick={() => onAction('toggle')}
                         className={cn(
                             "relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                            row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                            row.is_enabled ? "bg-primary" : "bg-[var(--muted)]/70 dark:bg-[var(--muted)]"
                         )}
                     >
-                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-5" : "translate-x-0.5")} />
+                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-[var(--card)] shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-5" : "translate-x-0.5")} />
                     </button>
-                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] text-slate-400">Status</span>
+                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] text-[var(--muted-foreground)]/70">Status</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 sm:gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onCopy(row)} title="Copy link" className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all border", copied ? "bg-primary text-white border-primary" : "bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 text-slate-500")}>
+                    <button onClick={() => onCopy(row)} title="Copy link" className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all border", copied ? "bg-primary text-white border-primary" : "bg-[var(--muted)]/50 dark:bg-[var(--card)]/5 border-transparent hover:border-[var(--border)] text-[var(--muted-foreground)]")}>
                         {copied ? <CheckCircle2 size={14} className="sm:size-4" /> : <Copy size={14} className="sm:size-4" />}
                     </button>
                     <a
@@ -544,7 +544,7 @@ function BioLinkCard({ row, onEdit, onCopy, onAction, copied }: any) {
                         rel="noopener noreferrer"
                         title="View live page"
                         onClick={(e) => e.stopPropagation()}
-                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all border border-transparent hover:border-violet-200 dark:hover:border-violet-800 text-slate-400 hover:text-violet-600 bg-slate-50 dark:bg-white/5"
+                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all border border-transparent hover:border-violet-200 dark:hover:border-violet-800 text-[var(--muted-foreground)]/70 hover:text-violet-600 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5"
                     >
                         <ExternalLink size={14} className="sm:size-4" />
                     </a>
@@ -586,7 +586,7 @@ function BioLinkTableRow({ row, onEdit, onCopy, onAction, copied }: any) {
             </td>
             <td className="px-6 py-5 text-right">
                 <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onCopy(row)} title="Copy link" className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-white dark:bg-white/5 border-[var(--border)] text-slate-500 hover:text-primary hover:border-primary/30")}>
+                    <button onClick={() => onCopy(row)} title="Copy link" className={cn("w-9 h-9 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-[var(--card)] dark:bg-[var(--card)]/5 border-[var(--border)] text-[var(--muted-foreground)] hover:text-primary hover:border-primary/30")}>
                         {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
                     </button>
                     <a
@@ -595,7 +595,7 @@ function BioLinkTableRow({ row, onEdit, onCopy, onAction, copied }: any) {
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         title="View live page"
-                        className="w-9 h-9 rounded-xl flex items-center justify-center transition-all border shadow-sm bg-white dark:bg-white/5 border-[var(--border)] text-slate-500 hover:text-violet-600 hover:border-violet-300 dark:hover:border-violet-700"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center transition-all border shadow-sm bg-[var(--card)] dark:bg-[var(--card)]/5 border-[var(--border)] text-[var(--muted-foreground)] hover:text-violet-600 hover:border-violet-300 dark:hover:border-violet-700"
                     >
                         <ExternalLink size={15} />
                     </a>
@@ -623,7 +623,7 @@ function BioLinkMobileCard({ row, onEdit, onCopy, onAction, copied }: any) {
                         <span className="text-sm font-black">{(row.username?.[0] || "B").toUpperCase()}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate leading-snug">{row.title || `@${row.username}`}</h4>
+                        <h4 className="text-sm font-bold text-[var(--foreground)] dark:text-white truncate leading-snug">{row.title || `@${row.username}`}</h4>
                         <p className="text-[10px] text-[var(--muted-foreground)] font-medium truncate flex items-center gap-1">
                             <Globe size={9} className="shrink-0" /> {publicUrl}
                         </p>
@@ -632,26 +632,26 @@ function BioLinkMobileCard({ row, onEdit, onCopy, onAction, copied }: any) {
                         "inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 border",
                         row.is_enabled
                             ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                            : "bg-slate-50 text-slate-500 border-slate-100"
+                            : "bg-[var(--muted)]/50 text-[var(--muted-foreground)] border-[var(--border)]"
                     )}>
                         <span className={cn("w-1.5 h-1.5 rounded-full", row.is_enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-400")} />
                         {row.is_enabled ? "Live" : "Draft"}
                     </div>
                 </div>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-slate-400" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-1.5 text-[var(--muted-foreground)]/70" onClick={(e) => e.stopPropagation()}>
                         <button
                             onClick={() => onAction('toggle')}
                             className={cn(
                                 "relative inline-flex h-4 w-8 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                                row.is_enabled ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                                row.is_enabled ? "bg-primary" : "bg-[var(--muted)]/70 dark:bg-[var(--muted)]"
                             )}
                         >
-                            <span className={cn("pointer-events-none block h-2.5 w-2.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-[14px]" : "translate-x-0.5")} />
+                            <span className={cn("pointer-events-none block h-2.5 w-2.5 rounded-full bg-[var(--card)] shadow-lg ring-0 transition-transform duration-300", row.is_enabled ? "translate-x-[14px]" : "translate-x-0.5")} />
                         </button>
                         <span className="text-[8px] font-black uppercase tracking-wider">Status</span>
                     </div>
-                    <span className="text-[9px] text-slate-400 font-medium">Tap to manage →</span>
+                    <span className="text-[9px] text-[var(--muted-foreground)]/70 font-medium">Tap to manage →</span>
                 </div>
             </button>
 
@@ -660,29 +660,29 @@ function BioLinkMobileCard({ row, onEdit, onCopy, onAction, copied }: any) {
                     <Edit3 className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onCopy(row); }} className={cn("py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn", copied ? "text-primary" : "text-slate-400 hover:text-primary hover:bg-primary/5")}>
+                <button onClick={(e) => { e.stopPropagation(); onCopy(row); }} className={cn("py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn", copied ? "text-primary" : "text-[var(--muted-foreground)]/70 hover:text-primary hover:bg-primary/5")}>
                     {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">{copied ? "Copied" : "Copy"}</span>
                 </button>
-                <a onClick={(e) => e.stopPropagation()} href={publicUrl} target="_blank" rel="noopener noreferrer" className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/20 transition-colors group/btn">
+                <a onClick={(e) => e.stopPropagation()} href={publicUrl} target="_blank" rel="noopener noreferrer" className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/20 transition-colors group/btn">
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">View</span>
                 </a>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
+                        <button className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
                             <MoreVertical className="w-3.5 h-3.5" />
                             <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">More</span>
                         </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+                    <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-[var(--border)] dark:border-white/10 bg-[var(--card)]/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
                         <DropdownMenuItem onClick={() => onAction('duplicate')} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <Copy size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
+                            <Copy size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onAction('reset')} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <RefreshCw size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Base</span>
+                            <RefreshCw size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Base</span>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                        <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
                         <DropdownMenuItem onClick={() => onAction('delete')} className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
                             <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Destroy Page</span>
                         </DropdownMenuItem>
@@ -699,24 +699,24 @@ function ActionDropdown({ row, onAction, onEdit }: any) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-400 hover:text-slate-600">
+                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--card)]/10 transition-all text-[var(--muted-foreground)]/70 hover:text-[var(--muted-foreground)]">
                     <MoreVertical size={16} className="sm:size-[18px]" />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 sm:w-60 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+            <DropdownMenuContent align="end" className="w-56 sm:w-60 p-2 rounded-2xl border-[var(--border)] dark:border-white/10 bg-[var(--card)]/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
                 <DropdownMenuItem onClick={() => onEdit(row)} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <Edit3 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Edit Studio</span>
+                    <Edit3 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Edit Studio</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${row.pageId}`)}>
-                    <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Analytics</span>
+                    <BarChart2 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Analytics</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => onAction('duplicate')}>
-                    <Copy size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
+                    <Copy size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Duplicate</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => onAction('reset')}>
-                    <RefreshCw size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Base</span>
+                    <RefreshCw size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Reset Base</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
                 <DropdownMenuItem onClick={() => onAction('delete')} className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
                     <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Destroy Page</span>
                 </DropdownMenuItem>

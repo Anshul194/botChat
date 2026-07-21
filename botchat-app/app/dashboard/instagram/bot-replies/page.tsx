@@ -326,7 +326,7 @@ export default function InstagramBotRepliesPage() {
     const IG_PINK = "#db2777";
 
     return (
-        <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
+        <div className="bg-transparent w-full min-w-0">
 
             {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
             <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col -mx-4 -mt-4 md:-mx-6 md:-mt-6"
@@ -434,7 +434,7 @@ export default function InstagramBotRepliesPage() {
                                             placeholder="Search replies..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 focus:border-[#db2777]/50 focus:ring-2 focus:ring-[#db2777]/10 text-sm outline-none transition-all placeholder:text-neutral-400 shadow-sm"
+                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--foreground)] focus:border-[#db2777]/50 focus:ring-2 focus:ring-[#db2777]/10 text-sm outline-none transition-all placeholder:text-neutral-400/50 shadow-sm"
                                         />
                                     </div>
                                     <button
@@ -465,7 +465,7 @@ export default function InstagramBotRepliesPage() {
                                         {filteredReplies.map((reply) => (
                                             <div
                                                 key={reply.id}
-                                                className="group relative bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 md:border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#db2777]/30 transition-all"
+                                                className="group relative bg-[var(--card)] dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 md:border-neutral-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#db2777]/30 transition-all"
                                             >
                                                 {/* Left accent bar */}
                                                 <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-l-full transition-colors", reply.status === 'published' ? 'bg-[#db2777]' : 'bg-neutral-200 dark:bg-neutral-700')} />
@@ -519,7 +519,7 @@ export default function InstagramBotRepliesPage() {
                                                     <div className="border-t border-neutral-100 dark:border-neutral-800 grid grid-cols-4 divide-x divide-neutral-100 dark:divide-neutral-800">
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setEditReply(reply); }}
-                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-[#db2777] hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors group/btn"
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-[#db2777] hover:bg-[var(--primary)]/10 dark:hover:bg-pink-900/20 transition-colors group/btn"
                                                         >
                                                             <Settings2 className="w-4 h-4" />
                                                             <span className="text-[9px] font-semibold tracking-wide">Edit</span>
@@ -537,7 +537,7 @@ export default function InstagramBotRepliesPage() {
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
-                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors group/btn"
+                                                            className="py-3 flex flex-col items-center justify-center gap-0.5 text-neutral-400 hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 dark:hover:bg-pink-900/20 transition-colors group/btn"
                                                         >
                                                             <Copy className="w-4 h-4" />
                                                             <span className="text-[9px] font-semibold tracking-wide">Copy</span>
@@ -596,7 +596,7 @@ export default function InstagramBotRepliesPage() {
                                                             <button onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }} className={cn("p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 transition-all active:scale-95", reply.status === 'published' ? "hover:bg-amber-50 text-neutral-400 hover:text-amber-500" : "hover:bg-emerald-50 text-neutral-400 hover:text-emerald-500")} title={reply.status === 'published' ? "Pause" : "Go Live"}>
                                                                 {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                                                             </button>
-                                                            <button onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-neutral-400 hover:text-pink-500 transition-all active:scale-95" title="Duplicate"><Copy className="w-4 h-4" /></button>
+                                                            <button onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-[var(--primary)]/10 dark:hover:bg-[var(--primary)]/100/10 text-neutral-400 hover:text-[var(--primary)] transition-all active:scale-95" title="Duplicate"><Copy className="w-4 h-4" /></button>
                                                             <button onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }} className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-neutral-400 hover:text-red-500 transition-all active:scale-95" title="Delete"><Trash2 className="w-4 h-4" /></button>
                                                         </div>
                                                     </div>
@@ -606,14 +606,14 @@ export default function InstagramBotRepliesPage() {
                                     </div>
                                 ) : (
                                     <div className="py-16 text-center flex flex-col items-center">
-                                        <div className="w-16 h-16 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center mb-4">
-                                            <MessageSquare className="w-8 h-8 text-pink-400" />
+                                        <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 dark:bg-[var(--primary)]/100/10 flex items-center justify-center mb-4">
+                                            <MessageSquare className="w-8 h-8 text-[var(--primary)]/80" />
                                         </div>
                                         <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">No Automations Found</h3>
                                         <p className="text-sm text-neutral-500 max-w-xs mt-1 mb-6 font-medium">Create automated responses for your Instagram messages.</p>
                                         <button
                                             onClick={() => setShowCreateModal(true)}
-                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
+                                            className="bg-neutral-900 dark:bg-[var(--card)] text-white dark:text-neutral-900 px-6 py-2.5 rounded-xl font-medium text-sm shadow-md hover:scale-105 transition-transform"
                                         >
                                             Build First Reply
                                         </button>
@@ -640,7 +640,7 @@ export default function InstagramBotRepliesPage() {
                                     <div className="flex items-center gap-3">
                                         <button
                                             onClick={() => fetchActions()}
-                                            className="p-3 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
+                                            className="p-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
                                         >
                                             <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
                                         </button>
@@ -673,13 +673,13 @@ export default function InstagramBotRepliesPage() {
                                                             handleConfigureAction(action.type);
                                                         }
                                                     }}
-                                                    className="group bg-neutral-50/50 dark:bg-neutral-950/20 shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-[32px] p-6 hover:border-pink-500/30 transition-all flex flex-col justify-between cursor-pointer"
+                                                    className="group bg-neutral-50/50 dark:bg-neutral-950/20 shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl p-6 hover:border-[var(--primary)]/30 transition-all flex flex-col justify-between cursor-pointer"
                                                 >
                                                     <div>
                                                         <div className="flex items-center justify-between mb-4">
                                                             <div className={cn(
                                                                 "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm",
-                                                                action.automation_id ? "bg-pink-100 text-[#db2777] dark:bg-pink-900/40" : "bg-white dark:bg-neutral-900 text-neutral-400 dark:border-neutral-800"
+                                                                action.automation_id ? "bg-[var(--primary)]/20 text-[#db2777] dark:bg-pink-900/40" : "bg-[var(--card)] dark:bg-neutral-900 text-neutral-400 dark:border-neutral-800"
                                                             )}>
                                                                 {action.type === 'action_get_started' ? <Play className="w-6 h-6 fill-current" /> : <RefreshCw className="w-6 h-6" />}
                                                             </div>
@@ -723,14 +723,14 @@ export default function InstagramBotRepliesPage() {
                                                         {action.automation_id ? (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); goToFlow(action.automation_id!); }}
-                                                                className="w-full py-3.5 rounded-2xl bg-white dark:bg-neutral-900 border-2 border-pink-100 dark:border-pink-900/10 text-[#db2777] dark:text-pink-400 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-pink-50/50 dark:hover:bg-pink-900/20 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border-2 border-pink-100 dark:border-pink-900/10 text-[#db2777] dark:text-[var(--primary)]/80 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-[var(--primary)]/10/50 dark:hover:bg-pink-900/20 transition-all flex items-center justify-center gap-2"
                                                             >
                                                                 <Box size={14} /> Open Flow Logic
                                                             </button>
                                                         ) : (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); handleActionCreate(action.type); }}
-                                                                className="w-full py-3.5 rounded-2xl text-white text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3 rounded-2xl text-white text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                                                 style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
                                                             >
                                                                 <Plus size={14} strokeWidth={2.5} /> Create Custom Layer
@@ -742,15 +742,15 @@ export default function InstagramBotRepliesPage() {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="py-20 text-center flex flex-col items-center border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-[40px]">
-                                        <div className="w-20 h-20 rounded-3xl bg-pink-50 dark:bg-pink-500/5 flex items-center justify-center mb-6">
-                                            <MousePointerClick className="w-10 h-10 text-pink-400" />
+                                    <div className="py-20 text-center flex flex-col items-center border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-2xl">
+                                        <div className="w-20 h-20 rounded-3xl bg-[var(--primary)]/10 dark:bg-[var(--primary)]/100/5 flex items-center justify-center mb-6">
+                                            <MousePointerClick className="w-10 h-10 text-[var(--primary)]/80" />
                                         </div>
                                         <h3 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight leading-none">No custom shortcuts</h3>
                                         <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] max-w-xs mt-2 mb-8 mx-auto leading-relaxed">Map IG system events to neural automation layers to handle complex edge cases.</p>
                                         <button
                                             onClick={() => setShowActionModal(true)}
-                                            className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-8 py-3 rounded-2xl font-medium text-[11px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
+                                            className="bg-neutral-900 dark:bg-[var(--card)] text-white dark:text-neutral-900 px-8 py-3 rounded-2xl font-medium text-[11px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
                                         >
                                             Build custom layer
                                         </button>
@@ -786,13 +786,13 @@ export default function InstagramBotRepliesPage() {
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="w-full max-w-md p-10 bg-pink-50 dark:bg-pink-500/10 rounded-[40px] border border-pink-100 dark:border-pink-500/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
+                                        className="w-full max-w-md p-10 bg-[var(--primary)]/10 dark:bg-[var(--primary)]/100/10 rounded-2xl border border-pink-100 dark:border-[var(--primary)]/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
                                     >
-                                        <div className="w-16 h-16 rounded-3xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-2">
-                                            <Bot className="w-8 h-8 text-pink-600" />
+                                        <div className="w-16 h-16 rounded-3xl bg-[var(--primary)]/20 dark:bg-pink-900/30 flex items-center justify-center mb-2">
+                                            <Bot className="w-8 h-8 text-[var(--primary)]" />
                                         </div>
-                                        <h4 className="text-lg font-black text-pink-900 dark:text-pink-400 uppercase tracking-tight leading-tight">Environment Required</h4>
-                                        <p className="text-xs font-bold text-pink-700 dark:text-pink-500/80 uppercase tracking-widest leading-relaxed">Please select a specific Instagram account from the header to enable neural agent configuration.</p>
+                                        <h4 className="text-lg font-black text-pink-900 dark:text-[var(--primary)]/80 uppercase tracking-tight leading-tight">Environment Required</h4>
+                                        <p className="text-xs font-bold text-pink-700 dark:text-[var(--primary)]/80 uppercase tracking-widest leading-relaxed">Please select a specific Instagram account from the header to enable neural agent configuration.</p>
                                     </motion.div>
                                 )}
                             </motion.div>
@@ -814,7 +814,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 60 }}
                                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-[28px] sm:rounded-3xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-[28px] sm:rounded-3xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
                             >
                                 {/* Drag handle */}
                                 <div className="sm:hidden flex justify-center pt-3.5 pb-1">
@@ -826,7 +826,7 @@ export default function InstagramBotRepliesPage() {
                                     <div className="absolute top-3 right-4">
                                         <button
                                             onClick={() => setEditReply(null)}
-                                            className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                            className="p-1.5 rounded-full bg-[var(--card)]/10 hover:bg-[var(--card)]/20 transition-colors"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
@@ -874,7 +874,7 @@ export default function InstagramBotRepliesPage() {
                                     {/* CTA — Open Flow Builder */}
                                     <button
                                         onClick={() => { setEditReply(null); goToFlow(editReply.id); }}
-                                        className="w-full py-3.5 rounded-xl text-white font-semibold text-[14px] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
+                                        className="w-full py-3 rounded-xl text-white font-semibold text-[14px] flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
                                         style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
                                     >
                                         <Box className="w-4 h-4" /> Open Flow Builder
@@ -931,7 +931,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-3xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-3xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
                             >
                                 {/* Modal drag handle (mobile) */}
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -961,7 +961,7 @@ export default function InstagramBotRepliesPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setIsCreateAccountDropdownOpen(!isCreateAccountDropdownOpen)}
-                                                        className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-pink-500 transition-all cursor-pointer flex items-center justify-between"
+                                                        className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus-visible:border-[var(--primary)] transition-all cursor-pointer flex items-center justify-between"
                                                     >
                                                         <span className={cn(
                                                             "truncate",
@@ -976,7 +976,7 @@ export default function InstagramBotRepliesPage() {
                                                         {isCreateAccountDropdownOpen && (
                                                             <motion.div
                                                                 initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-                                                                className="absolute z-50 w-full mt-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
+                                                                className="absolute z-50 w-full mt-2 bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-xl overflow-hidden"
                                                             >
                                                                 <div className="p-2 border-b border-neutral-100 dark:border-neutral-800">
                                                                     <div className="relative">
@@ -986,7 +986,7 @@ export default function InstagramBotRepliesPage() {
                                                                             placeholder="Search accounts..."
                                                                             value={createAccountSearchQuery}
                                                                             onChange={(e) => setCreateAccountSearchQuery(e.target.value)}
-                                                                            className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-pink-500/30 text-sm outline-none transition-all"
+                                                                            className="w-full pl-9 pr-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-transparent focus:border-[var(--primary)]/30 text-sm outline-none transition-all"
                                                                             autoFocus
                                                                         />
                                                                     </div>
@@ -1003,7 +1003,7 @@ export default function InstagramBotRepliesPage() {
                                                                             className={cn(
                                                                                 "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
                                                                                 (newReply.instagram_id || creationAccountFallback?.instagram_id) === p.instagram_id
-                                                                                    ? "bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 font-semibold"
+                                                                                    ? "bg-[var(--primary)]/10 dark:bg-[var(--primary)]/100/10 text-[var(--primary)] dark:text-[var(--primary)]/80 font-semibold"
                                                                                     : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                                                             )}
                                                                         >
@@ -1031,7 +1031,7 @@ export default function InstagramBotRepliesPage() {
                                                 placeholder="e.g. Support Bot (IG)"
                                                 value={newReply.name}
                                                 onChange={(e) => setNewReply({ ...newReply, name: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 transition-all"
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/10 transition-all"
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -1039,7 +1039,7 @@ export default function InstagramBotRepliesPage() {
                                             <select
                                                 value={newReply.trigger_type}
                                                 onChange={(e) => setNewReply({ ...newReply, trigger_type: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 appearance-none transition-all cursor-pointer"
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-[var(--primary)] appearance-none transition-all cursor-pointer"
                                             >
                                                 <option value="exact">Exact Match</option>
                                                 <option value="contains">Contains Word</option>
@@ -1056,7 +1056,7 @@ export default function InstagramBotRepliesPage() {
                                                 placeholder={['welcome', 'fallback'].includes(newReply.trigger_type) ? "Disabled for this trigger" : "help, support"}
                                                 value={newReply.trigger_value}
                                                 onChange={(e) => setNewReply({ ...newReply, trigger_value: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-pink-500 transition-all disabled:opacity-50"
+                                                className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm outline-none focus:border-[var(--primary)] transition-all disabled:opacity-50"
                                                 disabled={['welcome', 'fallback'].includes(newReply.trigger_type)}
                                             />
                                         </div>
@@ -1083,7 +1083,7 @@ export default function InstagramBotRepliesPage() {
                                                 <button
                                                     onClick={handleCreate}
                                                     disabled={isCreating}
-                                                    className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                                    className="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-[var(--card)] dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 font-semibold text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                                 >
                                                     {isCreating ? 'Creating...' : 'Save as Draft'}
                                                 </button>
@@ -1106,7 +1106,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-[32px] w-full max-w-md max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-2xl w-full max-w-md max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
                             >
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
@@ -1131,11 +1131,11 @@ export default function InstagramBotRepliesPage() {
                                                         "w-full p-4 rounded-3xl border text-left flex items-center justify-between group transition-all",
                                                         exists
                                                             ? "bg-neutral-50/50 border-neutral-100 dark:bg-neutral-900/50 dark:border-neutral-800 opacity-50 cursor-not-allowed"
-                                                            : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 hover:border-pink-500/50 hover:bg-pink-50/20"
+                                                            : "bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800 hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/10/20"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-4">
-                                                        <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-neutral-100 text-neutral-400" : "bg-pink-50 text-pink-500 group-hover:bg-pink-100")}>
+                                                        <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center transition-all", exists ? "bg-neutral-100 text-neutral-400" : "bg-[var(--primary)]/10 text-[var(--primary)] group-hover:bg-[var(--primary)]/20")}>
                                                             {opt.icon}
                                                         </div>
                                                         <div>
@@ -1143,7 +1143,7 @@ export default function InstagramBotRepliesPage() {
                                                             {exists && <span className="text-[10px] font-black uppercase text-amber-500 tracking-widest mt-1 block">Already Configured</span>}
                                                         </div>
                                                     </div>
-                                                    {!exists && <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-pink-500" />}
+                                                    {!exists && <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-[var(--primary)]" />}
                                                 </button>
                                             );
                                         })}

@@ -111,7 +111,7 @@ export default function AITrainingPage() {
                             placeholder="Search campaigns..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full h-9 pl-9 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                            className="w-full h-9 pl-9 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-[var(--card)] dark:bg-neutral-900 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                         />
                     </div>
 
@@ -157,7 +157,7 @@ export default function AITrainingPage() {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, x: -20 }}
                                                 transition={{ duration: 0.2 }}
-                                                className="flex items-center gap-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3.5"
+                                                className="flex items-center gap-3 bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3"
                                             >
                                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm flex-shrink-0">
                                                     <Bot className="w-4 h-4 text-white" />
@@ -197,17 +197,17 @@ export default function AITrainingPage() {
                             </div>
 
                             {/* ── Desktop table ── */}
-                            <div className="hidden sm:block bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
+                            <div className="hidden sm:block bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
                                         <thead>
                                             <tr className="border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60">
-                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Name</th>
-                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Description</th>
-                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden lg:table-cell">System Prompt</th>
-                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Status</th>
-                                                <th className="text-left px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden md:table-cell">Created</th>
-                                                <th className="text-right px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Actions</th>
+                                                <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Name</th>
+                                                <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Description</th>
+                                                <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden lg:table-cell">System Prompt</th>
+                                                <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Status</th>
+                                                <th className="text-left px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap hidden md:table-cell">Created</th>
+                                                <th className="text-right px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 whitespace-nowrap">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">

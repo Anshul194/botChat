@@ -84,7 +84,7 @@ export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
                                             <motion.div 
                                                 animate={{ y: [0, -4, 0] }}
                                                 transition={{ duration: 2, repeat: Infinity }}
-                                                className="absolute -bottom-2 -right-2 px-3 py-1 bg-white text-black text-[10px] font-black rounded-full shadow-xl uppercase tracking-tighter"
+                                                className="absolute -bottom-2 -right-2 px-3 py-1 bg-[var(--card)] text-black text-[10px] font-black rounded-full shadow-xl uppercase tracking-tighter"
                                             >
                                                 Live ✨
                                             </motion.div>
@@ -207,7 +207,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
                             </div>
                             <div className={cn(
                                 "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all",
-                                isFeatured ? "bg-white text-black" : "bg-white/5 text-white/20 group-hover:bg-[#ff0080] group-hover:text-white"
+                                isFeatured ? "bg-[var(--card)] text-black" : "bg-white/5 text-white/20 group-hover:bg-[#ff0080] group-hover:text-white"
                             )}>
                                 <ArrowUpRight size={18} className="sm:size-20" />
                             </div>

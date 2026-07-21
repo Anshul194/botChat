@@ -80,7 +80,7 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect: (e: string) => v
       <div ref={listRef} className="max-h-[320px] overflow-y-auto px-4 pb-4 custom-scrollbar scroll-smooth">
         {allFiltered ? (
           <div className="pt-2">
-            <p className="text-[10px] font-medium text-slate-500 mb-3">Search Results</p>
+            <p className="text-[10px] font-medium text-[var(--muted-foreground)] mb-3">Search Results</p>
             <div className="grid grid-cols-7 sm:grid-cols-8 gap-1">
               {allFiltered.map((emoji, i) => (
                 <button key={i} onClick={() => { onSelect(emoji); setQ(""); }}
@@ -94,7 +94,7 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect: (e: string) => v
             {/* Recent */}
             {recent.length > 0 && (
               <div id="cat-recent" className="pt-2 mb-4">
-                <p className="text-[10px] font-medium text-slate-500 mb-2 flex items-center gap-1.5"><Clock className="w-3 h-3" /> Recent</p>
+                <p className="text-[10px] font-medium text-[var(--muted-foreground)] mb-2 flex items-center gap-1.5"><Clock className="w-3 h-3" /> Recent</p>
                 <div className="grid grid-cols-7 sm:grid-cols-8 gap-1">
                   {recent.map((emoji, i) => (
                     <button key={i} onClick={() => onSelect(emoji)}
@@ -108,7 +108,7 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect: (e: string) => v
             {/* All Categories in one list */}
             {EC.filter(c => c.id !== "recent").map(cat => (
               <div key={cat.id} id={`cat-${cat.id}`} className="mb-6">
-                <p className="text-[10px] font-medium text-slate-500 mb-3 px-1">{cat.label}</p>
+                <p className="text-[10px] font-medium text-[var(--muted-foreground)] mb-3 px-1">{cat.label}</p>
                 <div className="grid grid-cols-7 sm:grid-cols-8 gap-1">
                   {cat.emojis.map((emoji, i) => (
                     <button key={i} onClick={() => onSelect(emoji)}
@@ -294,7 +294,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             </label>
             <input autoFocus type="text" placeholder='e.g. "Positive Comments 🔥"' value={formName}
               onChange={e => setFormName(e.target.value)}
-              className="w-full px-5 py-3 sm:py-4 rounded-2xl bg-[var(--muted)] border border-[var(--border)] text-[14.5px] font-semibold text-[var(--foreground)] outline-none transition-all placeholder:text-[var(--muted-foreground)] focus:border-pink-500/50"
+              className="w-full px-5 py-3 sm:py-4 rounded-2xl bg-[var(--muted)] border border-[var(--border)] text-[14.5px] font-semibold text-[var(--foreground)] outline-none transition-all placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)]/50"
             />
           </div>
 
@@ -345,11 +345,11 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
         {/* Footer */}
         <div className="flex gap-3 px-6 sm:px-8 py-5 border-t border-[var(--border)]">
-          <button onClick={onClose} className="flex-1 py-3.5 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[14px] transition-all">
+          <button onClick={onClose} className="flex-1 py-3 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[14px] transition-all">
             Cancel
           </button>
           <button onClick={handleSave} disabled={isSaving}
-            className="flex-[2] py-3.5 rounded-2xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-bold text-[14px] shadow-lg shadow-[var(--primary)]/20 active:scale-95 transition-all disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
+            className="flex-[2] py-3 rounded-2xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-bold text-[14px] shadow-lg shadow-[var(--primary)]/20 active:scale-95 transition-all disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
           >
             {isSaving ? <><Loader2 className="w-4 h-4 animate-spin" />Saving…</> : <><Check className="w-4 h-4" />{mode === "create" ? "Create Template" : "Save Changes"}</>}
           </button>
@@ -417,7 +417,7 @@ export default function CommentTemplatesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-transparent font-sans w-full min-w-0">
+    <div className="bg-transparent w-full min-w-0">
       {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
       <div className="sticky top-[-16px] md:top-[-24px] z-[50] flex flex-col -mx-4 -mt-4 md:-mx-6 md:-mt-6" style={{
         background: "var(--card)",
@@ -474,7 +474,7 @@ export default function CommentTemplatesPage() {
 
         {/* Table */}
         <div className="bg-transparent md:bg-[var(--card)] border border-transparent md:border-[var(--border)] rounded-2xl md:shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden">
-          <div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-4 px-6 py-3.5 border-b border-[var(--border)] bg-[var(--muted)]/50">
+          <div className="hidden md:grid grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-4 px-6 py-3 border-b border-[var(--border)] bg-[var(--muted)]/50">
             {["Template Name", "Messages", "Status", "Created", "Actions"].map(c => (
               <span key={c} className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider">{c}</span>
             ))}
@@ -513,8 +513,8 @@ export default function CommentTemplatesPage() {
                   className="flex flex-col md:grid md:grid-cols-[2fr_1fr_1fr_1.2fr_140px] gap-3 md:gap-4 px-5 py-5 md:px-6 md:py-4 items-start md:items-center bg-[var(--card)] border border-[var(--border)] md:border-none rounded-2xl md:rounded-none my-3 md:my-0 hover:bg-[var(--muted)]/30 group transition-all"
                 >
                   <div className="flex items-center gap-3 min-w-0 w-full md:w-auto">
-                    <div className="w-9 h-9 rounded-xl bg-pink-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-pink-500/20 transition-colors">
-                      <MessageSquare className="w-4.5 h-4.5 text-pink-500" />
+                    <div className="w-9 h-9 rounded-xl bg-[var(--primary)]/100/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--primary)]/100/20 transition-colors">
+                      <MessageSquare className="w-4.5 h-4.5 text-[var(--primary)]" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[13.5px] font-bold text-[var(--foreground)] truncate group-hover:text-[#0866FF] transition-colors">{tpl.name}</p>
@@ -572,7 +572,7 @@ export default function CommentTemplatesPage() {
           )}
 
           {!isLoading && filtered.length > 0 && (
-            <div className="px-6 py-3.5 border-t border-[var(--border)] bg-[var(--muted)]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="px-6 py-3 border-t border-[var(--border)] bg-[var(--muted)]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <p className="text-[11px] font-bold text-[var(--muted-foreground)]">Showing <span className="text-[var(--foreground)]">{filtered.length}</span> of <span className="text-[var(--foreground)]">{templates.length}</span> templates</p>
               {meta && <p className="text-[11px] text-[var(--muted-foreground)] font-semibold">{meta.total} total · {meta.per_page} per page</p>}
             </div>

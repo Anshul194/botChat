@@ -144,12 +144,12 @@ export default function AppearanceTab({ showModal }: { showModal: (type: string,
                         <button
                             type="button"
                             onClick={() => setAppearance({ ...appearance, darkMode: false })}
-                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", !appearance.darkMode ? "bg-white dark:bg-slate-800 shadow-lg scale-[1.02] text-amber-500" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
+                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", !appearance.darkMode ? "bg-[var(--card)] dark:bg-slate-800 shadow-lg scale-[1.02] text-amber-500" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
                         ><Sun className="w-4 h-4" /> Light</button>
                         <button
                             type="button"
                             onClick={() => setAppearance({ ...appearance, darkMode: true })}
-                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", appearance.darkMode ? "bg-white dark:bg-slate-800 shadow-lg scale-[1.02] text-indigo-400" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
+                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", appearance.darkMode ? "bg-[var(--card)] dark:bg-slate-800 shadow-lg scale-[1.02] text-indigo-400" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
                         ><Moon className="w-4 h-4" /> Dark</button>
                     </div>
                 </div>

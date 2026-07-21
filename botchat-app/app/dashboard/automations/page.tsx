@@ -73,7 +73,7 @@ export default function AutomationsPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: "Total Automations", value: "12", color: "#7c3aed" },
                     { label: "Active", value: "9", color: "#10b981" },

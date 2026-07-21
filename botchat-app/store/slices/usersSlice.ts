@@ -158,7 +158,7 @@ const usersSlice = createSlice({
                     user.plan_id = action.payload.plan_id;
                     user.plan_expired_date = action.payload.plan_expired_date;
                 }
-                if (state.selectedUser?.id === action.payload.id) {
+                if (state.selectedUser && state.selectedUser.id === action.payload.id) {
                     state.selectedUser.plan_id = action.payload.plan_id;
                     state.selectedUser.plan_expired_date = action.payload.plan_expired_date;
                 }
@@ -168,7 +168,7 @@ const usersSlice = createSlice({
                 if (user) {
                     user.active_status = !user.active_status;
                 }
-                if (state.selectedUser?.id === action.payload.id) {
+                if (state.selectedUser && state.selectedUser.id === action.payload.id) {
                     state.selectedUser.active_status = !state.selectedUser.active_status;
                 }
             });

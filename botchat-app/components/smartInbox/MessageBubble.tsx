@@ -45,11 +45,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     const renderDeliveryStatus = () => {
         if (isInbound || !message.status) return null;
         const status = message.status;
-        
+
         return (
             <div className="flex items-center gap-1">
-                {status === 'seen' || status === 'read' ? (
-                    <CheckCheck className="w-3 h-3 text-primary" />
+                {status === 'seen' || (status as string) === 'read' ? (
+                    <CheckCheck className="w-3 h-3 text-primary animate-pulse" />
                 ) : (
                     <Check className="w-3 h-3 text-muted-foreground/40" />
                 )}
@@ -79,18 +79,16 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
     // ── Bubble styling by direction + type ───────────────────────────────────
     const isMediaOnly = ["image", "video", "audio", "voice", "sticker", "carousel", "generic_template", "template", "button", "quick_reply", "flow_step"].includes(message.message_type);
-    const bubbleClasses = `relative transition-all duration-200 max-w-[75%] ${
-        isMediaOnly ? "" : "px-3.5 py-2 rounded-xl"
-    } ${
-        isMediaOnly ? "" : (isInbound ? "bg-muted/80 text-foreground border border-border/50" : "bg-primary text-white shadow-sm")
-    }`;
+    const bubbleClasses = `relative transition-all duration-200 max-w-[75%] ${isMediaOnly ? "" : "px-3.5 py-2 rounded-xl"
+        } ${isMediaOnly ? "" : (isInbound ? "bg-muted/80 text-foreground border border-border/50" : "bg-primary text-white shadow-sm")
+        }`;
 
     return (
-        <div 
+        <div
             className={`flex flex-col group ${isInbound ? "items-start" : "items-end"} w-full py-0.5`}
         >
             <div className={`flex items-end gap-1.5 ${isInbound ? "flex-row" : "flex-row-reverse"}`}>
-                
+
                 <div className={bubbleClasses}>
                     <MessageRenderer
                         message={message}
@@ -108,7 +106,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
                     {/* Display Reactions */}
                     {reactionsList.length > 0 && (
-                        <button 
+                        <button
                             onClick={() => setShowReactionsList(true)}
                             className={`absolute -bottom-3 ${isInbound ? "-right-2" : "-left-2"} flex items-center bg-background border border-border rounded-full px-1.5 py-0.5 shadow-sm z-10 scale-[0.90] origin-bottom hover:bg-muted transition-colors cursor-pointer`}
                         >
@@ -156,11 +154,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                     onCloseModal={() => setPreviewUrl(null)}
                 />
             )}
-            
-            <ReactionsListModal 
-                isOpen={showReactionsList} 
-                onClose={() => setShowReactionsList(false)} 
-                reactions={reactionsList} 
+
+            <ReactionsListModal
+                isOpen={showReactionsList}
+                onClose={() => setShowReactionsList(false)}
+                reactions={reactionsList}
             />
         </div>
     );

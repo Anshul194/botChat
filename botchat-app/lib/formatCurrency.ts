@@ -24,7 +24,7 @@ function getCurrencyCode(): string {
                 if (code) {
                     cachedCurrency = code;
                     cachedLocale = CURRENCY_MAP[code] || 'en-US';
-                    return cachedCurrency;
+                    return code;
                 }
             }
         } catch {

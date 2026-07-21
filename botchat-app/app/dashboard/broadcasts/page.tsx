@@ -174,7 +174,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
                     </span>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <button className="p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/10">
+                            <button className="p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--card)]/10">
                                 <MoreVertical className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
                             </button>
                         </DropdownMenuTrigger>
@@ -337,7 +337,7 @@ export default function BroadcastsPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: "Total Campaigns", value: stats.total, color: "#7c3aed", icon: Radio },
                     { label: "Drafts", value: stats.draft, color: "#94a3b8", icon: Edit3 },

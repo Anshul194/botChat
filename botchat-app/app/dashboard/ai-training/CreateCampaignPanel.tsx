@@ -129,7 +129,7 @@ export function StatusRadio({
                                 ? opt === "active"
                                     ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
                                     : "border-neutral-300 dark:border-neutral-600 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300"
-                                : "border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-600"
+                                : "border-neutral-200 dark:border-neutral-700 bg-[var(--card)] dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-600"
                         )}
                     >
                         {isSelected
@@ -204,7 +204,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: "100%", opacity: 0 }}
                         transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                        className="fixed inset-0 sm:inset-auto sm:right-0 sm:top-0 sm:bottom-0 z-[100] w-full sm:max-w-[520px] bg-white dark:bg-neutral-950 shadow-2xl flex flex-col"
+                        className="fixed inset-0 sm:inset-auto sm:right-0 sm:top-0 sm:bottom-0 z-[100] w-full sm:max-w-[520px] bg-[var(--card)] dark:bg-neutral-950 shadow-2xl flex flex-col"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-4 sm:px-6 py-5 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">

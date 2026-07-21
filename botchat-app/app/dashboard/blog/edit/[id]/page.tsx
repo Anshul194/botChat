@@ -151,15 +151,15 @@ export default function EditBlogPage() {
         }
     };
 
-    const lbl = "block text-xs font-semibold text-slate-500 mb-1.5";
-    const inp = "w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-black/10 transition placeholder:text-slate-300";
+    const lbl = "block text-xs font-semibold text-[var(--muted-foreground)] mb-1.5";
+    const inp = "w-full border border-[var(--border)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--foreground)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-black/10 transition placeholder:text-[var(--muted-foreground)]/50";
 
     const Toggle = ({ on, onToggle, label }: { on: boolean; onToggle: () => void; label: string }) => (
-        <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
-            <span className="text-sm font-medium text-slate-700">{label}</span>
+        <div className="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
+            <span className="text-sm font-medium text-[var(--foreground)]">{label}</span>
             <button type="button" onClick={onToggle}
-                className={`w-10 h-5 rounded-full relative transition-colors ${on ? "bg-slate-900" : "bg-slate-200"}`}>
-                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${on ? "left-5" : "left-0.5"}`} />
+                className={`w-10 h-5 rounded-full relative transition-colors ${on ? "bg-[var(--background)]" : "bg-[var(--muted)]/70"}`}>
+                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] shadow transition-all ${on ? "left-5" : "left-0.5"}`} />
             </button>
         </div>
     );
@@ -171,7 +171,7 @@ export default function EditBlogPage() {
         return (
             <div>
                 <span className={lbl}>{label}</span>
-                <label className={`${aspect} w-full rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center cursor-pointer hover:bg-slate-100 transition overflow-hidden relative`}>
+                <label className={`${aspect} w-full rounded-lg border-2 border-dashed border-[var(--border)] bg-[var(--muted)]/50 flex items-center justify-center cursor-pointer hover:bg-[var(--muted)]/60 transition overflow-hidden relative`}>
                     {display ? (
                         <>
                             <img src={display} className="absolute inset-0 w-full h-full object-cover" alt="" />
@@ -180,7 +180,7 @@ export default function EditBlogPage() {
                             </div>
                         </>
                     ) : (
-                        <div className="flex flex-col items-center gap-1 text-slate-400">
+                        <div className="flex flex-col items-center gap-1 text-[var(--muted-foreground)]/70">
                             <Plus className="w-5 h-5" />
                             <span className="text-xs font-medium">Click to upload</span>
                         </div>
@@ -196,7 +196,7 @@ export default function EditBlogPage() {
     if (fetching) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="flex items-center gap-3 text-slate-400">
+                <div className="flex items-center gap-3 text-[var(--muted-foreground)]/70">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span className="text-sm font-medium">Loading blog...</span>
                 </div>
@@ -210,16 +210,16 @@ export default function EditBlogPage() {
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <Link href="/dashboard/blog"
-                        className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition">
-                        <ChevronLeft className="w-4 h-4 text-slate-500" />
+                        className="p-2 rounded-lg border border-[var(--border)] hover:bg-[var(--muted)]/50 transition">
+                        <ChevronLeft className="w-4 h-4 text-[var(--muted-foreground)]" />
                     </Link>
                     <div>
-                        <h1 className="text-lg font-bold text-slate-900">Edit Blog Post</h1>
-                        <p className="text-xs text-slate-400">Update the content and settings below</p>
+                        <h1 className="text-lg font-bold text-[var(--foreground)]">Edit Blog Post</h1>
+                        <p className="text-xs text-[var(--muted-foreground)]/70">Update the content and settings below</p>
                     </div>
                 </div>
                 <button onClick={handleSubmit} disabled={loading}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition disabled:opacity-50">
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[var(--background)] text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition disabled:opacity-50">
                     {loading
                         ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         : <Send className="w-4 h-4" />}
@@ -283,8 +283,8 @@ export default function EditBlogPage() {
                     </div>
 
                     {/* SEO */}
-                    <div className="border border-slate-200 rounded-xl p-5 space-y-4">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">SEO & Meta (Optional)</p>
+                    <div className="border border-[var(--border)] rounded-xl p-5 space-y-4">
+                        <p className="text-xs font-bold text-[var(--muted-foreground)]/70 uppercase tracking-widest">SEO & Meta (Optional)</p>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className={lbl}>Meta Title</label>
@@ -317,8 +317,8 @@ export default function EditBlogPage() {
                 {/* ── RIGHT: Settings Panel ── */}
                 <div className="space-y-5">
 
-                    <div className="border border-slate-200 rounded-xl p-5 space-y-4">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Publish Settings</p>
+                    <div className="border border-[var(--border)] rounded-xl p-5 space-y-4">
+                        <p className="text-xs font-bold text-[var(--muted-foreground)]/70 uppercase tracking-widest">Publish Settings</p>
 
                         <div>
                             <label className={lbl}>Status</label>
@@ -356,14 +356,14 @@ export default function EditBlogPage() {
                         </div>
                     </div>
 
-                    <div className="border border-slate-200 rounded-xl p-5">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Options</p>
+                    <div className="border border-[var(--border)] rounded-xl p-5">
+                        <p className="text-xs font-bold text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-3">Options</p>
                         <Toggle on={featured} onToggle={() => setFeatured(!featured)} label="Featured Post" />
                         <Toggle on={allowComments} onToggle={() => setAllowComments(!allowComments)} label="Allow Comments" />
                     </div>
 
                     <button type="submit" disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 py-3 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition disabled:opacity-50">
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--background)] text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition disabled:opacity-50">
                         {loading
                             ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             : <Send className="w-4 h-4" />}

@@ -149,7 +149,7 @@ const CarouselPreview = ({ items }: { items: any[] }) => (
     <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
         {items.map((item, i) => (
             <a key={i} href={item.url || "#"} target="_blank"
-                className="flex-shrink-0 w-[160px] bg-white dark:bg-neutral-800 rounded-xl overflow-hidden border border-neutral-100 dark:border-neutral-700 group">
+                className="flex-shrink-0 w-[160px] bg-[var(--card)] dark:bg-neutral-800 rounded-xl overflow-hidden border border-neutral-100 dark:border-neutral-700 group">
                 <div className="h-24 bg-neutral-100 dark:bg-neutral-700 relative overflow-hidden">
                     {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> :
                         <div className="absolute inset-0 flex items-center justify-center text-neutral-300"><ImageIcon size={20} /></div>}
@@ -172,33 +172,33 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                     <motion.div
                         initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className={cn("relative z-10 w-full h-full bg-white dark:bg-slate-950 flex flex-col shadow-2xl", maxWidthClassName)}>
-                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 sticky top-0 z-20">
-                            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                        className={cn("relative z-10 w-full h-full bg-[var(--card)] dark:bg-slate-950 flex flex-col shadow-2xl", maxWidthClassName)}>
+                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 sticky top-0 z-20">
+                            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors">
                                 <ChevronLeft size={20} />
                             </button>
-                            <h2 className="text-lg font-black text-slate-900 dark:text-white flex-1 tracking-tight truncate">{title}</h2>
+                            <h2 className="text-lg font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight truncate">{title}</h2>
                         </div>
                         <div className="flex-1 overflow-y-auto p-6 no-scrollbar pb-48">{children}</div>
-                        {footer && <div className="p-6 pb-12 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 fixed bottom-0 left-0 right-0 z-[10001] shadow-[0_-16px_32px_rgba(0,0,0,0.1)]">{footer}</div>}
+                        {footer && <div className="p-6 pb-12 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 fixed bottom-0 left-0 right-0 z-[10001] shadow-[0_-16px_32px_rgba(0,0,0,0.1)]">{footer}</div>}
                     </motion.div>
                 </div>
 
                 {/* ── DESKTOP SIDEBAR (INSPECTOR) ── */}
-                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[700px] flex-col bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
+                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[700px] flex-col bg-[var(--card)] dark:bg-slate-950 border-l border-[var(--border)] dark:border-[var(--border)] shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
                     <motion.div
                         initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 20, opacity: 0 }}
                         className="flex flex-col h-full"
                     >
-                        <div className="flex items-center gap-4 px-6 py-5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                        <div className="flex items-center gap-4 px-6 py-5 border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
                             <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                                 {icon || <Edit3 size={18} />}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest truncate">{title}</h3>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Bio Studio Editor</p>
+                                <h3 className="text-sm font-black text-[var(--foreground)] dark:text-white uppercase tracking-widest truncate">{title}</h3>
+                                <p className="text-[10px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-tight">Bio Studio Editor</p>
                             </div>
-                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors">
+                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors">
                                 <X size={16} />
                             </button>
                         </div>
@@ -208,7 +208,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                         </div>
 
                         {footer && (
-                            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shrink-0">
+                            <div className="p-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)] shrink-0">
                                 {footer}
                             </div>
                         )}
@@ -221,18 +221,18 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
 const InputField = ({ label, icon, textarea, ...props }: any) => (
     <div className="space-y-2">
-        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
+        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
             {icon} {label}
         </label>
         {textarea ? (
             <textarea
                 {...props}
-                className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner min-h-[120px] resize-none"
+                className="w-full px-5 py-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-slate-600 text-[14px] font-bold text-[var(--foreground)] dark:text-white outline-none transition-all shadow-inner min-h-[120px] resize-none"
             />
         ) : (
             <input
                 {...props}
-                className="w-full h-12 px-5 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-[14px] font-bold text-slate-900 dark:text-white outline-none transition-all shadow-inner"
+                className="w-full h-12 px-5 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-slate-600 text-[14px] font-bold text-[var(--foreground)] dark:text-white outline-none transition-all shadow-inner"
             />
         )}
     </div>
@@ -246,12 +246,12 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
         className={cn(
             "relative inline-flex h-7 w-12 items-center rounded-full transition-all",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-            checked ? "bg-primary shadow-lg shadow-primary/25" : "bg-slate-200 dark:bg-slate-800"
+            checked ? "bg-primary shadow-lg shadow-primary/25" : "bg-[var(--muted)]/70 dark:bg-[var(--muted)]"
         )}
     >
         <span
             className={cn(
-                "inline-block h-5 w-5 transform rounded-full bg-white transition-all shadow-md",
+                "inline-block h-5 w-5 transform rounded-full bg-[var(--card)] transition-all shadow-md",
                 checked ? "translate-x-6" : "translate-x-1"
             )}
         />
@@ -259,16 +259,16 @@ const ToggleSwitch = ({ checked, onChange, disabled = false }: { checked: boolea
 );
 
 const ToggleField = ({ label, desc, icon: Icon, checked, onChange, colorClass }: any) => (
-    <div className="group flex items-center justify-between p-5 rounded-[24px] bg-slate-50/50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 hover:border-slate-200 dark:hover:border-white/10 transition-all">
+    <div className="group flex items-center justify-between p-5 rounded-[24px] bg-[var(--muted)]/50 dark:bg-[var(--card)]/[0.03] border border-[var(--border)] dark:border-white/5 hover:border-[var(--border)] dark:hover:border-white/10 transition-all">
         <div className="flex items-center gap-4">
             {Icon && (
-                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-slate-900")}>
+                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-[var(--background)]")}>
                     <Icon size={18} />
                 </div>
             )}
             <div className="flex-1 min-w-0 pr-4">
-                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">{label}</p>
-                <p className="text-[11px] text-slate-500 font-bold mt-1 leading-relaxed opacity-70">{desc}</p>
+                <p className="text-sm font-black text-[var(--foreground)] dark:text-white leading-tight">{label}</p>
+                <p className="text-[11px] text-[var(--muted-foreground)] font-bold mt-1 leading-relaxed opacity-70">{desc}</p>
             </div>
         </div>
         <ToggleSwitch checked={checked} onChange={onChange} />
@@ -1219,10 +1219,10 @@ function BioLinkBuilderContent() {
 
     if (!selectedPageId && !requestedPageId) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-6">
+            <div className="min-h-screen flex items-center justify-center bg-[var(--muted)]/50 dark:bg-slate-950 p-6">
                 <div className="text-center space-y-4">
                     <Loader2 size={32} className="mx-auto text-primary animate-spin" />
-                    <p className="text-slate-500 font-medium">Initializing Builder...</p>
+                    <p className="text-[var(--muted-foreground)] font-medium">Initializing Builder...</p>
                 </div>
             </div>
         );
@@ -1234,11 +1234,11 @@ function BioLinkBuilderContent() {
 
             {/* ── STABLE TOP BAR ── */}
             {(!showAddBlock && !showCarouselEditor) && (
-                <header className="relative z-50 h-14 xl:h-16 flex items-center justify-between px-4 xl:px-8 bg-white/95 dark:bg-black/80 backdrop-blur-3xl border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
+                <header className="relative z-50 h-14 xl:h-16 flex items-center justify-between px-4 xl:px-8 bg-[var(--card)]/95 dark:bg-black/80 backdrop-blur-3xl border-b border-[var(--border)] dark:border-[var(--border)] shadow-sm shrink-0">
                     <div className="flex items-center gap-2 xl:gap-4 min-w-0">
                         <button
                             onClick={() => window.location.href = '/dashboard/instagram/bio-links'}
-                            className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm"
+                            className="w-9 h-9 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 hover:bg-primary hover:text-white transition-all shadow-sm"
                         >
                             <ChevronLeft size={20} />
                         </button>
@@ -1247,19 +1247,19 @@ function BioLinkBuilderContent() {
                                 <Sparkles size={16} />
                             </div>
                             <div className="min-w-0">
-                                <span className="block text-xs xl:text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight truncate">Studio</span>
-                                <span className="hidden xl:block text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">Bio link builder</span>
+                                <span className="block text-xs xl:text-sm font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight truncate">Studio</span>
+                                <span className="hidden xl:block text-[10px] font-bold text-[var(--muted-foreground)]/70 uppercase tracking-widest truncate">Bio link builder</span>
                             </div>
                         </div>
                     </div>
 
                     {/* ── CENTRAL FLOATING PHASE DOCK (DESKTOP) ── */}
                     <div className="hidden xl:block absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100]">
-                        <div className="bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-slate-200 dark:border-slate-700 shadow-xl">
+                        <div className="bg-[var(--muted)]/60/90 dark:bg-[var(--muted)]/90 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-[var(--border)] dark:border-[var(--border)] shadow-xl">
                             {PHASES.map((p, idx) => (
                                 <button key={p.id} onClick={() => setView(p.id)} className={cn(
                                     "h-9 px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
-                                    view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm z-10" : "text-slate-500 hover:text-slate-900 hover:bg-white/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5"
+                                    view === p.id ? "bg-[var(--card)] dark:bg-slate-700 text-[var(--foreground)] dark:text-white shadow-sm z-10" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)]/50 dark:text-[var(--muted-foreground)]/70 dark:hover:text-white dark:hover:bg-[var(--card)]/5"
                                 )}>
                                     <p.Icon size={14} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100")} />
                                     <span className="inline text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
@@ -1269,7 +1269,7 @@ function BioLinkBuilderContent() {
                     </div>
 
                     <div className="flex items-center gap-2 xl:gap-3 relative z-[110]">
-                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-300">
+                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--muted)]/50 dark:bg-[var(--card)]/5 border border-[var(--border)] dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/50">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             {instagramUsername}
                         </div>
@@ -1277,7 +1277,7 @@ function BioLinkBuilderContent() {
                         {/* Analytics Button */}
                         <button
                             onClick={() => router.push(`/dashboard/instagram/bio-links/analytics?page=${selectedPageId}`)}
-                            className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
+                            className="w-9 h-9 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 hover:bg-blue-500 hover:text-white transition-all shadow-sm"
                             title="View Analytics"
                         >
                             <BarChart2 size={18} />
@@ -1294,7 +1294,7 @@ function BioLinkBuilderContent() {
                             href={publicUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="h-9 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
+                            className="h-9 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
                         >
                             <ExternalLink size={14} />
                             <span className="hidden sm:inline">VIEW LIVE</span>
@@ -1305,12 +1305,12 @@ function BioLinkBuilderContent() {
 
             {/* ── MOBILE PHASE DOCK (SCROLLABLE BAR) ── */}
             {(!showAddBlock && !showCarouselEditor) && (
-                <div className="xl:hidden bg-white/80 dark:bg-black/40 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 overflow-x-auto no-scrollbar shrink-0">
+                <div className="xl:hidden bg-[var(--card)]/80 dark:bg-black/40 backdrop-blur-xl border-b border-[var(--border)] dark:border-[var(--border)] overflow-x-auto no-scrollbar shrink-0">
                     <div className="flex items-center gap-1 p-2 min-w-max">
                         {PHASES.map((p) => (
                             <button key={p.id} onClick={() => setView(p.id)} className={cn(
                                 "h-10 px-4 rounded-full flex items-center justify-center gap-2 transition-all",
-                                view === p.id ? "bg-primary text-white shadow-lg" : "text-slate-500 dark:text-slate-400"
+                                view === p.id ? "bg-primary text-white shadow-lg" : "text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70"
                             )}>
                                 <p.Icon size={16} />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
@@ -1324,18 +1324,18 @@ function BioLinkBuilderContent() {
             <div className="relative flex-1 flex overflow-hidden">
                 {/* LEFT PANEL: TOOLS & PHASES */}
                 <aside className={cn(
-                    "bg-white dark:bg-slate-950 flex flex-col h-full z-20 transition-all duration-700 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl shrink-0",
+                    "bg-[var(--card)] dark:bg-slate-950 flex flex-col h-full z-20 transition-all duration-700 ease-in-out border-r border-[var(--border)] dark:border-white/5 shadow-2xl shrink-0",
                     (activePanel === "preview") ? "hidden" : "flex w-full xl:flex-1",
                 )}>
                     <div className="flex-1 overflow-y-auto no-scrollbar px-4 sm:px-6 pt-6 sm:pt-8 pb-32">
 
-                        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 px-4 py-3 shadow-sm">
+                        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--border)] dark:border-white/5 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5 px-4 py-3 shadow-sm">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Phase {currentPhaseNumber} of {PHASES.length}</p>
-                                <p className="text-[13px] font-bold text-slate-900 dark:text-white mt-1">{currentPhase.desc}</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--muted-foreground)]/70">Phase {currentPhaseNumber} of {PHASES.length}</p>
+                                <p className="text-[13px] font-bold text-[var(--foreground)] dark:text-white mt-1">{currentPhase.desc}</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="text-xs font-black text-slate-900 dark:text-white">{completionPercent}%</span>
+                                <span className="text-xs font-black text-[var(--foreground)] dark:text-white">{completionPercent}%</span>
                                 {nextPhase && (
                                     <button onClick={() => setView(nextPhase.id)} className="h-8 px-4 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-sm">
                                         Next
@@ -1349,48 +1349,48 @@ function BioLinkBuilderContent() {
                             <motion.div key={view} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}>
 
                                 <div className="mb-8">
-                                    <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-white tracking-normal mb-2 capitalize">
+                                    <h2 className="text-2xl sm:text-3xl font-semibold text-[var(--foreground)] dark:text-white tracking-normal mb-2 capitalize">
                                         {view === 'identity' ? "Setup your Profile" : view === 'blocks' ? "Build your Content" : view === 'visuals' ? 'Style your Page' : 'Launch Preparation'}
                                     </h2>
-                                    <p className="text-sm text-slate-500 font-normal max-w-2xl leading-relaxed">Each section is designed to guide you from setup to launch without needing to guess what happens next.</p>
+                                    <p className="text-sm text-[var(--muted-foreground)] font-normal max-w-2xl leading-relaxed">Each section is designed to guide you from setup to launch without needing to guess what happens next.</p>
                                 </div>
 
                                 {view === "identity" && (
                                     <div className="space-y-6">
-                                        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
-                                            <div className="flex items-center gap-8 mb-10 pb-10 border-b border-slate-100 dark:border-slate-800">
+                                        <div className="bg-[var(--card)] dark:bg-[var(--background)] rounded-3xl border border-[var(--border)] dark:border-[var(--border)] p-8 shadow-sm">
+                                            <div className="flex items-center gap-8 mb-10 pb-10 border-b border-[var(--border)] dark:border-[var(--border)]">
                                                 <label className="relative cursor-pointer shrink-0">
-                                                    <div className="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 overflow-hidden ring-4 ring-slate-100 dark:ring-slate-700 shadow-inner border-2 border-slate-100 dark:border-slate-700 relative">
+                                                    <div className="w-24 h-24 rounded-full bg-[var(--muted)]/50 dark:bg-[var(--muted)] overflow-hidden ring-4 ring-slate-100 dark:ring-slate-700 shadow-inner border-2 border-[var(--border)] dark:border-[var(--border)] relative">
                                                         {isUploadingImage ? (
-                                                            <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800 animate-pulse">
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-[var(--muted)]/50 dark:bg-[var(--muted)] animate-pulse">
                                                                 <Loader2 className="animate-spin text-primary" size={24} />
                                                             </div>
                                                         ) : profile?.avatar ? (
                                                             <img src={profile.avatar} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                            <div className="w-full h-full flex items-center justify-center text-[var(--muted-foreground)]/50">
                                                                 <User size={32} />
                                                             </div>
                                                         )}
-                                                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 hover:opacity-100 flex items-center justify-center transition-all">
+                                                        <div className="absolute inset-0 bg-[var(--background)]/80 opacity-0 hover:opacity-100 flex items-center justify-center transition-all">
                                                             <Upload size={20} className="text-white" />
                                                         </div>
                                                     </div>
                                                     <input type="file" className="hidden" disabled={isUploadingImage} onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) handleUpdateProfile({ avatar: url }); } }} />
                                                 </label>
                                                 <div>
-                                                    <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1">Your Profile Photo</h3>
-                                                    <p className="text-[12px] text-slate-400 font-medium">Click the circle to upload your logo or face shot.</p>
+                                                    <h3 className="text-[13px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight mb-1">Your Profile Photo</h3>
+                                                    <p className="text-[12px] text-[var(--muted-foreground)]/70 font-medium">Click the circle to upload your logo or face shot.</p>
                                                 </div>
                                             </div>
                                             <div className="grid gap-6">
                                                 <InputField label="Name or Brand Title" value={profile?.title || ""} onChange={(e: any) => setProfile({ ...profile!, title: e.target.value })}
                                                     onBlur={(e: any) => handleUpdateProfile({ title: e.target.value })} placeholder="e.g. My Awesome Studio" />
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Short Biography</label>
+                                                    <label className="text-[10px] font-black uppercase text-[var(--muted-foreground)]/70 ml-1">Short Biography</label>
                                                     <textarea value={profile?.bio || ""} onChange={e => setProfile({ ...profile!, bio: e.target.value })}
                                                         onBlur={e => handleUpdateProfile({ bio: e.target.value })} rows={3}
-                                                        className="w-full px-5 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-600 text-sm font-medium text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                        className="w-full px-5 py-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-slate-600 text-sm font-medium text-[var(--foreground)] dark:text-white outline-none resize-none transition-all"
                                                         placeholder="Write a few lines about what you do..." />
                                                 </div>
                                                 <div className="flex justify-end pt-4">
@@ -1409,33 +1409,33 @@ function BioLinkBuilderContent() {
                                         {/* ── Shopify-style current layout badge ── */}
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                                                <div className="w-8 h-8 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)]">
                                                     <Layers size={16} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Content</p>
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white capitalize">{profile?.settings?.layoutStyle || 'Standard'} Layout</p>
+                                                    <p className="text-[11px] font-bold text-[var(--muted-foreground)]/70 uppercase tracking-widest">Content</p>
+                                                    <p className="text-sm font-bold text-[var(--foreground)] dark:text-white capitalize">{profile?.settings?.layoutStyle || 'Standard'} Layout</p>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => setView('visuals')}
-                                                className="h-8 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 flex items-center gap-1.5 transition-all"
+                                                className="h-8 px-3 rounded-lg border border-[var(--border)] dark:border-[var(--border)] text-[10px] font-bold text-[var(--muted-foreground)] hover:text-[var(--foreground)] dark:hover:text-white hover:border-slate-400 flex items-center gap-1.5 transition-all"
                                             >
                                                 <Palette size={12} /> Change Style
                                             </button>
                                         </div>
 
                                         {/* ── Shopify-style block list ── */}
-                                        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+                                        <div className="rounded-2xl border border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-[var(--background)] overflow-hidden shadow-sm">
 
                                             {/* Section Header */}
-                                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80">
+                                            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]/80">
                                                 <div className="flex items-center gap-2.5">
-                                                    <div className="w-5 h-5 rounded flex items-center justify-center bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                                                    <div className="w-5 h-5 rounded flex items-center justify-center bg-[var(--muted)]/70 dark:bg-slate-700 text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/50">
                                                         <Grid size={12} />
                                                     </div>
-                                                    <span className="text-[12px] font-semibold text-slate-700 dark:text-slate-200">Blocks</span>
-                                                    <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{visibleBlocks.length}</span>
+                                                    <span className="text-[12px] font-semibold text-[var(--foreground)] dark:text-[var(--foreground)]">Blocks</span>
+                                                    <span className="text-[10px] font-medium text-[var(--muted-foreground)]/70 bg-[var(--muted)]/50 dark:bg-[var(--muted)] px-2 py-0.5 rounded-full">{visibleBlocks.length}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <button
@@ -1443,7 +1443,7 @@ function BioLinkBuilderContent() {
                                                         className={cn("h-7 px-2.5 rounded-md text-[10px] font-semibold transition-all flex items-center gap-1",
                                                             isArranging
                                                                 ? "bg-primary/10 text-primary"
-                                                                : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                                                                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] dark:hover:text-white hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]"
                                                         )}
                                                     >
                                                         <GripVertical size={12} />
@@ -1455,11 +1455,11 @@ function BioLinkBuilderContent() {
                                             {/* Block Rows */}
                                             {(!currentTab || visibleBlocks.length === 0) ? (
                                                 <div className="py-16 text-center flex flex-col items-center gap-3">
-                                                    <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300">
+                                                    <div className="w-12 h-12 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)]/50">
                                                         <Plus size={24} />
                                                     </div>
-                                                    <p className="text-sm font-semibold text-slate-400">No blocks yet</p>
-                                                    <p className="text-[11px] text-slate-400 max-w-[200px]">Add a block to start building your bio link page</p>
+                                                    <p className="text-sm font-semibold text-[var(--muted-foreground)]/70">No blocks yet</p>
+                                                    <p className="text-[11px] text-[var(--muted-foreground)]/70 max-w-[200px]">Add a block to start building your bio link page</p>
                                                 </div>
                                             ) : (
                                                 <div className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -1477,7 +1477,7 @@ function BioLinkBuilderContent() {
                                                                 initial={{ opacity: 0 }}
                                                                 animate={{ opacity: 1 }}
                                                                 className={cn(
-                                                                    "group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 relative",
+                                                                    "group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)]/40 relative",
                                                                     isInactive && "opacity-50"
                                                                 )}
                                                                 onClick={(e) => {
@@ -1487,7 +1487,7 @@ function BioLinkBuilderContent() {
                                                                 }}
                                                             >
                                                                 {/* Drag Handle */}
-                                                                <div className="w-10 h-10 -ml-2 flex items-center justify-center text-slate-300 dark:text-slate-600 shrink-0 cursor-grab active:cursor-grabbing group-hover:text-slate-400 transition-colors">
+                                                                <div className="w-10 h-10 -ml-2 flex items-center justify-center text-[var(--muted-foreground)]/50 dark:text-[var(--muted-foreground)] shrink-0 cursor-grab active:cursor-grabbing group-hover:text-[var(--muted-foreground)]/70 transition-colors">
                                                                     <GripVertical size={18} />
                                                                 </div>
 
@@ -1501,10 +1501,10 @@ function BioLinkBuilderContent() {
 
                                                                 {/* Label & type */}
                                                                 <div className="flex-1 min-w-0">
-                                                                    <p className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 truncate capitalize">
+                                                                    <p className="text-[13px] font-semibold text-[var(--foreground)] dark:text-slate-100 truncate capitalize">
                                                                         {label}
                                                                     </p>
-                                                                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">
+                                                                    <p className="text-[10px] font-medium text-[var(--muted-foreground)]/70 uppercase tracking-wider mt-0.5">
                                                                         {uiType.replace(/_/g, " ")}
                                                                     </p>
                                                                 </div>
@@ -1553,7 +1553,7 @@ function BioLinkBuilderContent() {
                                                                             "w-7 h-7 rounded-md flex items-center justify-center transition-all",
                                                                             isInactive
                                                                                 ? "text-amber-400 dark:text-amber-500 hover:text-amber-600"
-                                                                                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100"
+                                                                                : "text-[var(--muted-foreground)]/70 hover:text-[var(--muted-foreground)] dark:hover:text-[var(--muted-foreground)]/50 opacity-0 group-hover:opacity-100"
                                                                         )}
                                                                     >
                                                                         {isInactive ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -1564,13 +1564,13 @@ function BioLinkBuilderContent() {
                                                                         data-no-click
                                                                         onClick={e => { e.stopPropagation(); handleDeleteBlock(block.id); }}
                                                                         title="Delete block"
-                                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all opacity-0 group-hover:opacity-100"
+                                                                        className="w-7 h-7 rounded-md flex items-center justify-center text-[var(--muted-foreground)]/50 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all opacity-0 group-hover:opacity-100"
                                                                     >
                                                                         <Trash2 size={13} />
                                                                     </button>
 
                                                                     {/* Chevron */}
-                                                                    <ChevronRight size={14} className="text-slate-300 dark:text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                                                    <ChevronRight size={14} className="text-[var(--muted-foreground)]/50 dark:text-[var(--muted-foreground)] group-hover:text-[var(--muted-foreground)]/70 transition-colors shrink-0" />
                                                                 </div>
                                                             </motion.div>
                                                         );
@@ -1579,12 +1579,12 @@ function BioLinkBuilderContent() {
                                             )}
 
                                             {/* Add block row — Shopify style */}
-                                            <div className="border-t border-slate-100 dark:border-slate-800">
+                                            <div className="border-t border-[var(--border)] dark:border-[var(--border)]">
                                                 <button
                                                     onClick={() => openBlockMarketplace()}
-                                                    className="w-full flex items-center gap-3 px-4 py-3.5 text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group"
+                                                    className="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-semibold text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 hover:text-[var(--foreground)] dark:hover:text-white hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)]/40 transition-all group"
                                                 >
-                                                    <div className="w-6 h-6 rounded-md border border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center group-hover:border-primary group-hover:text-primary group-hover:bg-primary/5 transition-all">
+                                                    <div className="w-6 h-6 rounded-md border border-dashed border-[var(--border)]/70 dark:border-slate-600 flex items-center justify-center group-hover:border-primary group-hover:text-primary group-hover:bg-primary/5 transition-all">
                                                         <Plus size={12} />
                                                     </div>
                                                     Add block
@@ -1612,7 +1612,7 @@ function BioLinkBuilderContent() {
                                         { id: "utm", label: "UTM", icon: Grid, color: "amber", bg: "bg-amber-500", ring: "ring-amber-200 dark:ring-amber-800", text: "text-amber-600 dark:text-amber-400", light: "bg-amber-50 dark:bg-amber-950/30" },
                                         { id: "protection", label: "Protection", icon: ShieldAlert, color: "red", bg: "bg-red-500", ring: "ring-red-200 dark:ring-red-800", text: "text-red-600 dark:text-red-400", light: "bg-red-50 dark:bg-red-950/30" },
                                         { id: "popup", label: "Popup", icon: SmartphoneNfc, color: "fuchsia", bg: "bg-fuchsia-500", ring: "ring-fuchsia-200 dark:ring-fuchsia-800", text: "text-fuchsia-600 dark:text-fuchsia-400", light: "bg-fuchsia-50 dark:bg-fuchsia-950/30" },
-                                        { id: "more", label: "Advanced", icon: Orbit, color: "slate", bg: "bg-slate-500", ring: "ring-slate-200 dark:ring-slate-700", text: "text-slate-600 dark:text-slate-400", light: "bg-slate-50 dark:bg-slate-800/30" },
+                                        { id: "more", label: "Advanced", icon: Orbit, color: "slate", bg: "bg-[var(--muted)]/500", ring: "ring-slate-200 dark:ring-slate-700", text: "text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70", light: "bg-[var(--muted)]/50 dark:bg-[var(--muted)]/30" },
                                     ];
                                     const activeGT = GROWTH_TABS.find(t => t.id === growthTab) || GROWTH_TABS[0];
                                     const GtIcon = activeGT.icon;
@@ -1623,7 +1623,7 @@ function BioLinkBuilderContent() {
                                             <div className="xl:w-56 shrink-0">
                                                 <div className="xl:sticky xl:top-0 space-y-1">
                                                     <div className="hidden xl:block px-3 mb-4">
-                                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Workstation</h3>
+                                                        <h3 className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em]">Workstation</h3>
                                                     </div>
 
                                                     {/* Mobile Horizontal Scroll */}
@@ -1634,10 +1634,10 @@ function BioLinkBuilderContent() {
                                                                     "flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all whitespace-nowrap",
                                                                     growthTab === tab.id
                                                                         ? `${tab.light} border-transparent ring-2 ${tab.ring}`
-                                                                        : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800"
+                                                                        : "bg-[var(--card)] dark:bg-[var(--background)] border-[var(--border)] dark:border-[var(--border)]"
                                                                 )}>
-                                                                <tab.icon size={14} className={cn(growthTab === tab.id ? tab.text : "text-slate-400")} />
-                                                                <span className={cn("text-[10px] font-black uppercase tracking-widest", growthTab === tab.id ? tab.text : "text-slate-500")}>{tab.label}</span>
+                                                                <tab.icon size={14} className={cn(growthTab === tab.id ? tab.text : "text-[var(--muted-foreground)]/70")} />
+                                                                <span className={cn("text-[10px] font-black uppercase tracking-widest", growthTab === tab.id ? tab.text : "text-[var(--muted-foreground)]")}>{tab.label}</span>
                                                             </button>
                                                         ))}
                                                     </div>
@@ -1650,18 +1650,18 @@ function BioLinkBuilderContent() {
                                                                     "group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-left relative overflow-hidden",
                                                                     growthTab === tab.id
                                                                         ? `${tab.light} shadow-sm`
-                                                                        : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                                                        : "hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--card)]/5"
                                                                 )}>
                                                                 {growthTab === tab.id && (
                                                                     <motion.div layoutId="growthActive" className={cn("absolute left-0 top-3 bottom-3 w-1 rounded-r-full", tab.bg)} />
                                                                 )}
                                                                 <div className={cn(
                                                                     "w-8 h-8 rounded-xl flex items-center justify-center transition-all",
-                                                                    growthTab === tab.id ? tab.bg + " text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-slate-200"
+                                                                    growthTab === tab.id ? tab.bg + " text-white" : "bg-[var(--muted)]/50 dark:bg-[var(--muted)] text-[var(--muted-foreground)]/70 group-hover:bg-[var(--muted)]/80"
                                                                 )}>
                                                                     <tab.icon size={14} />
                                                                 </div>
-                                                                <span className={cn("text-[11px] font-black uppercase tracking-widest", growthTab === tab.id ? "text-slate-900 dark:text-white" : "text-slate-500")}>
+                                                                <span className={cn("text-[11px] font-black uppercase tracking-widest", growthTab === tab.id ? "text-[var(--foreground)] dark:text-white" : "text-[var(--muted-foreground)]")}>
                                                                     {tab.label}
                                                                 </span>
                                                             </button>
@@ -1674,21 +1674,21 @@ function BioLinkBuilderContent() {
                                             <div className="flex-1 min-w-0">
                                                 <AnimatePresence mode="wait">
                                                     <motion.div key={growthTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }}
-                                                        className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                                                        className="bg-[var(--card)] dark:bg-[var(--background)] rounded-3xl border border-[var(--border)] dark:border-[var(--border)] overflow-hidden shadow-sm">
 
                                                         {/* Panel header */}
-                                                        <div className={cn("px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between", activeGT.light)}>
+                                                        <div className={cn("px-6 py-5 border-b border-[var(--border)] dark:border-[var(--border)] flex items-center justify-between", activeGT.light)}>
                                                             <div className="flex items-center gap-4">
                                                                 <div className={cn("w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg", activeGT.bg)}>
                                                                     <GtIcon size={20} />
                                                                 </div>
                                                                 <div>
                                                                     <p className={cn("text-[10px] font-black uppercase tracking-[0.2em] opacity-70", activeGT.text)}>{activeGT.label} Settings</p>
-                                                                    <h3 className="text-lg font-black text-slate-900 dark:text-white">Configure {activeGT.label}</h3>
+                                                                    <h3 className="text-lg font-black text-[var(--foreground)] dark:text-white">Configure {activeGT.label}</h3>
                                                                 </div>
                                                             </div>
                                                             <div className="hidden sm:block">
-                                                                <div className="px-3 py-1 rounded-full bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/5 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                                                <div className="px-3 py-1 rounded-full bg-[var(--card)]/50 dark:bg-black/20 border border-[var(--border)] dark:border-white/5 text-[9px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">
                                                                     {view.toUpperCase()} STATION
                                                                 </div>
                                                             </div>
@@ -1705,7 +1705,7 @@ function BioLinkBuilderContent() {
                                                                     icon={Search}
                                                                     checked={advancedSettings.seoBlock}
                                                                     onChange={(v) => setAdvancedSettings({ ...advancedSettings, seoBlock: v })}
-                                                                    colorClass="bg-slate-900"
+                                                                    colorClass="bg-[var(--background)]"
                                                                 />
 
                                                                 <InputField
@@ -1732,10 +1732,10 @@ function BioLinkBuilderContent() {
                                                                     placeholder="bio, links, creator..."
                                                                 />
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                                                                         <ImageIcon size={12} /> Open graph image
                                                                     </label>
-                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent transition-all">
+                                                                    <div className="flex items-center gap-4 p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent transition-all">
                                                                         <div className="flex-1">
                                                                             <input
                                                                                 type="file"
@@ -1751,16 +1751,16 @@ function BioLinkBuilderContent() {
                                                                             />
                                                                             <label htmlFor="og-image-upload" className={cn(
                                                                                 "cursor-pointer inline-flex h-9 items-center justify-center rounded-lg px-4 text-xs font-semibold shadow-sm transition-colors",
-                                                                                isUploadingImage ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-white dark:bg-slate-700 text-slate-900 border border-slate-200 dark:border-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600"
+                                                                                isUploadingImage ? "bg-[var(--muted)]/50 text-[var(--muted-foreground)]/70 cursor-not-allowed" : "bg-[var(--card)] dark:bg-slate-700 text-[var(--foreground)] border border-[var(--border)] dark:border-slate-600 dark:text-white hover:bg-[var(--muted)]/50 dark:hover:bg-slate-600"
                                                                             )}>
                                                                                 {isUploadingImage ? <><Loader2 size={12} className="animate-spin mr-2" /> Uploading...</> : "Choose File"}
                                                                             </label>
-                                                                            <span className="ml-3 text-xs text-slate-500 font-medium truncate max-w-[200px] inline-block align-middle">
+                                                                            <span className="ml-3 text-xs text-[var(--muted-foreground)] font-medium truncate max-w-[200px] inline-block align-middle">
                                                                                 {isUploadingImage ? "Syncing..." : (advancedSettings.seoOpenGraphImage ? advancedSettings.seoOpenGraphImage.split('/').pop() : 'No file chosen')}
                                                                             </span>
                                                                         </div>
                                                                         {advancedSettings.seoOpenGraphImage && (
-                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white">
+                                                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)]">
                                                                                 <img src={advancedSettings.seoOpenGraphImage} alt="OG Preview" className="w-full h-full object-cover" />
                                                                                 <button onClick={() => setAdvancedSettings({ ...advancedSettings, seoOpenGraphImage: "" })} className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white rounded-bl flex items-center justify-center">
                                                                                     <X size={10} />
@@ -1768,14 +1768,14 @@ function BioLinkBuilderContent() {
                                                                             </div>
                                                                         )}
                                                                     </div>
-                                                                    <p className="text-[11px] text-slate-400 ml-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB maximum.</p>
+                                                                    <p className="text-[11px] text-[var(--muted-foreground)]/70 ml-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB maximum.</p>
                                                                 </div>
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                                                                         <Globe size={12} /> Language
                                                                     </label>
                                                                     <select value={advancedSettings.seoLanguage} onChange={(e) => setAdvancedSettings({ ...advancedSettings, seoLanguage: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                                        className="w-full h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent focus:border-emerald-300 dark:focus:border-emerald-700 text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all appearance-none cursor-pointer"
                                                                     >
                                                                         <option value="en">English</option>
                                                                         <option value="es">Spanish</option>
@@ -1789,7 +1789,7 @@ function BioLinkBuilderContent() {
                                                                         <option value="ko">Korean</option>
                                                                         <option value="zh">Chinese</option>
                                                                     </select>
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Set the meta language of your page to help browsers and search engines identify its language.</p>
+                                                                    <p className="text-[11px] text-[var(--muted-foreground)]/70 ml-1">Set the meta language of your page to help browsers and search engines identify its language.</p>
                                                                 </div>
                                                             </div>)}
 
@@ -1805,26 +1805,26 @@ function BioLinkBuilderContent() {
                                                                     colorClass="bg-violet-600"
                                                                 />
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Name</label>
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1">Branding Name</label>
                                                                     <input value={advancedSettings.brandingName} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingName: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        className="w-full h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all"
                                                                         placeholder="Your brand name" />
-                                                                    <p className="text-[11px] text-slate-400 ml-1">Leave empty to use the default site branding.</p>
+                                                                    <p className="text-[11px] text-[var(--muted-foreground)]/70 ml-1">Leave empty to use the default site branding.</p>
                                                                 </div>
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding URL</label>
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1">Branding URL</label>
                                                                     <input value={advancedSettings.brandingUrl} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingUrl: e.target.value })}
-                                                                        className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                                        className="w-full h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all"
                                                                         placeholder="https://yourbrand.com" />
                                                                 </div>
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Branding Text Color</label>
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1">Branding Text Color</label>
                                                                     <div className="flex gap-3">
                                                                         <input type="color" value={advancedSettings.brandingTextColor || "#ffffff"}
                                                                             onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
-                                                                            className="h-12 w-16 rounded-xl cursor-pointer border-2 border-slate-200 dark:border-slate-700 bg-transparent" />
+                                                                            className="h-12 w-16 rounded-xl cursor-pointer border-2 border-[var(--border)] dark:border-[var(--border)] bg-transparent" />
                                                                         <input value={advancedSettings.brandingTextColor} onChange={(e) => setAdvancedSettings({ ...advancedSettings, brandingTextColor: e.target.value })}
-                                                                            className="flex-1 h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all font-mono"
+                                                                            className="flex-1 h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent focus:border-violet-300 dark:focus:border-violet-700 text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all font-mono"
                                                                             placeholder="#1f2937" />
                                                                     </div>
                                                                 </div>
@@ -1832,12 +1832,12 @@ function BioLinkBuilderContent() {
 
                                                             {/* PIXELS */}
                                                             {growthTab === "pixels" && (<div className="space-y-4">
-                                                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2">Google Analytics Integrations</p>
+                                                                <p className="text-[11px] font-bold text-[var(--muted-foreground)]/70 uppercase tracking-widest ml-1 mb-2">Google Analytics Integrations</p>
                                                                 {(() => {
                                                                     const gaPixels = pixels.filter((p: any) => p.type === "google_analytics");
                                                                     return gaPixels.length === 0 ? (
-                                                                        <div className="p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 text-center">
-                                                                            <p className="text-sm text-slate-500">No GA4 integrations found. Create one first in the Google Analytics section.</p>
+                                                                        <div className="p-6 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)]/30 border border-[var(--border)] dark:border-[var(--border)] text-center">
+                                                                            <p className="text-sm text-[var(--muted-foreground)]">No GA4 integrations found. Create one first in the Google Analytics section.</p>
                                                                         </div>
                                                                     ) : (
                                                                         <div className="space-y-3">
@@ -1845,10 +1845,10 @@ function BioLinkBuilderContent() {
                                                                                 const pid = Number(pixel.id || pixel.pixel_id);
                                                                                 const isSelected = advancedSettings.pixelsEnabled.includes(pid);
                                                                                 return (
-                                                                                    <div key={pid} className="p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                                                                    <div key={pid} className="p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)]/30 border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-between">
                                                                                         <div>
-                                                                                            <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{pixel.name}</div>
-                                                                                            <p className="text-[11px] text-slate-500 mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                                                            <div className="text-sm font-bold text-[var(--foreground)] dark:text-[var(--foreground)]">{pixel.name}</div>
+                                                                                            <p className="text-[11px] text-[var(--muted-foreground)] mt-1">{pixel.type} — {pixel.pixel_id_value}</p>
                                                                                         </div>
                                                                                         <button
                                                                                             onClick={() => {
@@ -1859,9 +1859,9 @@ function BioLinkBuilderContent() {
                                                                                                         : [...advancedSettings.pixelsEnabled, pid]
                                                                                                 });
                                                                                             }}
-                                                                                            className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-[#1877F2]" : "bg-slate-300 dark:bg-slate-600")}
+                                                                                            className={cn("w-9 h-5 rounded-full relative transition-colors", isSelected ? "bg-[#1877F2]" : "bg-[var(--muted)] dark:bg-slate-600")}
                                                                                         >
-                                                                                            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
+                                                                                            <div className={cn("absolute top-0.5 w-4 h-4 rounded-full bg-[var(--card)] transition-all shadow-sm", isSelected ? "left-[18px]" : "left-[2px]")} />
                                                                                         </button>
                                                                                     </div>
                                                                                 );
@@ -1887,8 +1887,8 @@ function BioLinkBuilderContent() {
                                                                     onChange={(e) => setAdvancedSettings({ ...advancedSettings, utmMedium: e.target.value })}
                                                                     placeholder="e.g. social, banner"
                                                                 />
-                                                                <div className="pt-4 space-y-3 border-t border-slate-100 dark:border-slate-800">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                <div className="pt-4 space-y-3 border-t border-[var(--border)] dark:border-[var(--border)]">
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                                                                         <Eye size={12} /> UTM Link Preview
                                                                     </label>
                                                                     <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
@@ -1896,7 +1896,7 @@ function BioLinkBuilderContent() {
                                                                             {`?utm_source=${advancedSettings.utmSource || "source"}&utm_medium=${advancedSettings.utmMedium || "medium"}&utm_campaign={link_name}`}
                                                                         </p>
                                                                     </div>
-                                                                    <p className="text-[11px] text-slate-500 font-medium ml-1">This query will be appended to your destination links.</p>
+                                                                    <p className="text-[11px] text-[var(--muted-foreground)] font-medium ml-1">This query will be appended to your destination links.</p>
                                                                 </div>
                                                             </div>)}
 
@@ -1932,12 +1932,12 @@ function BioLinkBuilderContent() {
                                                                 />
 
                                                                 {advancedSettings.brandedButtonEnabled && (
-                                                                    <div className="space-y-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                                                    <div className="space-y-6 pt-4 border-t border-[var(--border)] dark:border-[var(--border)]">
                                                                         <div className="space-y-3">
-                                                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                                                                            <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                                                                                 <ImageIcon size={12} /> Button Icon
                                                                             </label>
-                                                                            <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                                                            <div className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)]">
                                                                                 <div className="flex-1">
                                                                                     <input type="file" id="branded-icon-upload" className="hidden" accept="image/*"
                                                                                         onChange={async (e) => {
@@ -1947,12 +1947,12 @@ function BioLinkBuilderContent() {
                                                                                             }
                                                                                         }}
                                                                                     />
-                                                                                    <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-10 items-center justify-center rounded-xl bg-white dark:bg-slate-800 px-4 text-xs font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 transition-all">
+                                                                                    <label htmlFor="branded-icon-upload" className="cursor-pointer inline-flex h-10 items-center justify-center rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] px-4 text-xs font-bold text-[var(--foreground)] dark:text-white border border-[var(--border)] dark:border-[var(--border)] shadow-sm hover:bg-[var(--muted)]/50 transition-all">
                                                                                         Upload Icon
                                                                                     </label>
                                                                                 </div>
                                                                                 {advancedSettings.brandedIconUrl && (
-                                                                                    <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                                                                                    <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[var(--border)] dark:border-[var(--border)]">
                                                                                         <img src={advancedSettings.brandedIconUrl} className="w-full h-full object-cover" alt="icon" />
                                                                                         <button onClick={() => setAdvancedSettings({ ...advancedSettings, brandedIconUrl: "" })} className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                                                                                             <X size={14} />
@@ -2076,7 +2076,7 @@ function BioLinkBuilderContent() {
                 <main
                     ref={canvasRef}
                     className={cn(
-                        "bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-white/5 relative flex items-center justify-center p-2 sm:p-4 z-10 h-full overflow-hidden shrink-0",
+                        "bg-[var(--card)] dark:bg-slate-950 border-l border-[var(--border)] dark:border-white/5 relative flex items-center justify-center p-2 sm:p-4 z-10 h-full overflow-hidden shrink-0",
                         "xl:w-[450px]",
                         activePanel === "preview" ? "flex w-full" : "hidden xl:flex"
                     )}>
@@ -2109,14 +2109,14 @@ function BioLinkBuilderContent() {
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: "-100%", opacity: 0 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="absolute inset-y-0 left-0 z-50 w-full xl:w-[calc(100%-450px)] bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl overflow-hidden"
+                            className="absolute inset-y-0 left-0 z-50 w-full xl:w-[calc(100%-450px)] bg-[var(--card)] dark:bg-slate-950 border-r border-[var(--border)] dark:border-[var(--border)] flex flex-col shadow-2xl overflow-hidden"
                         >
-                            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center justify-between p-6 border-b border-[var(--border)] dark:border-[var(--border)]">
                                 <div>
-                                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Create Block</h3>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Bio Studio Editor</p>
+                                    <h3 className="text-sm font-black text-[var(--foreground)] dark:text-white uppercase tracking-widest">Create Block</h3>
+                                    <p className="text-[10px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-tight">Bio Studio Editor</p>
                                 </div>
-                                <button onClick={() => setShowAddBlock(false)} className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-red-500 transition-colors"><X size={16} /></button>
+                                <button onClick={() => setShowAddBlock(false)} className="w-8 h-8 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-red-500 transition-colors"><X size={16} /></button>
                             </div>
                             <div className="flex-1 overflow-y-auto no-scrollbar">
                                 <BlockMarketplaceContent onSelect={handleSelectBlockType} />
@@ -2152,25 +2152,25 @@ function BioLinkBuilderContent() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: "-100%", opacity: 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60] w-full xl:w-[calc(100%-450px)] bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden"
+                        className="absolute inset-0 z-[60] w-full xl:w-[calc(100%-450px)] bg-[var(--muted)]/50 dark:bg-slate-950 border-r border-[var(--border)] dark:border-[var(--border)] flex flex-col overflow-hidden"
                     >
-                        <div className="flex items-center gap-4 px-4 sm:px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0">
-                            <button onClick={() => setShowCarouselEditor(false)} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all group">
+                        <div className="flex items-center gap-4 px-4 sm:px-6 py-5 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 shrink-0">
+                            <button onClick={() => setShowCarouselEditor(false)} className="w-9 h-9 rounded-xl border border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 hover:bg-[var(--muted)]/60 dark:bg-[var(--muted)]/40 dark:hover:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] dark:hover:text-white transition-all group">
                                 <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                             </button>
                             <div>
-                                <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                <h3 className="text-[13px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-widest flex items-center gap-2">
                                     {BLOCK_ICONS[getUiTypeFromBlock(editingBlock)] || <LayoutTemplate size={16} />}
                                     Edit {getUiTypeFromBlock(editingBlock).replace(/_/g, " ") || "Block"}
                                 </h3>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">Bio Studio Editor</p>
+                                <p className="text-[10px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-tight mt-0.5">Bio Studio Editor</p>
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-8 no-scrollbar relative min-h-0 bg-slate-50 dark:bg-slate-950">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-8 no-scrollbar relative min-h-0 bg-[var(--muted)]/50 dark:bg-slate-950">
                             <div className="space-y-6 w-full pb-8">
                                 {/* BLOCK VISIBILITY TOGGLE (IN-FORM) */}
-                                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div className="flex items-center justify-between p-4 bg-[var(--muted)]/50 dark:bg-[var(--background)] rounded-2xl border border-[var(--border)] dark:border-[var(--border)]">
                                     <div className="flex items-center gap-3">
                                         <div className={cn(
                                             "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
@@ -2179,10 +2179,10 @@ function BioLinkBuilderContent() {
                                             {(editingBlock.is_enabled == 0) ? <EyeOff size={14} /> : <Eye size={14} />}
                                         </div>
                                         <div>
-                                            <h4 className="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white">
+                                            <h4 className="text-[11px] font-black uppercase tracking-widest text-[var(--foreground)] dark:text-white">
                                                 {(editingBlock.is_enabled == 0) ? "Block is Hidden" : "Block is Visible"}
                                             </h4>
-                                            <p className="text-[10px] text-slate-500 font-bold tracking-tight">Toggle visibility on your public page</p>
+                                            <p className="text-[10px] text-[var(--muted-foreground)] font-bold tracking-tight">Toggle visibility on your public page</p>
                                         </div>
                                     </div>
                                     <label className="relative inline-flex items-center cursor-pointer">
@@ -2236,7 +2236,7 @@ function BioLinkBuilderContent() {
                                                 }
                                             }}
                                         />
-                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                                        <div className="w-9 h-5 bg-[var(--muted)]/70 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--card)] after:border-[var(--border)]/70 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
                                     </label>
                                 </div>
 
@@ -2257,20 +2257,20 @@ function BioLinkBuilderContent() {
                                             {uiType === "image" && (
                                                 <>
                                                     <div className="space-y-2">
-                                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                            <ImageIcon size={14} className="text-slate-400" /> Image
+                                                        <label className="text-sm font-bold text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 flex items-center gap-2">
+                                                            <ImageIcon size={14} className="text-[var(--muted-foreground)]/70" /> Image
                                                         </label>
-                                                        <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
+                                                        <div className="p-6 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex flex-col items-center justify-center gap-3">
                                                             {item.image && (
-                                                                <div className="w-full h-32 rounded-2xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-700 shadow-md mb-2">
+                                                                <div className="w-full h-32 rounded-2xl bg-[var(--muted)]/70 dark:bg-[var(--muted)] flex items-center justify-center overflow-hidden border-2 border-white dark:border-[var(--border)] shadow-md mb-2">
                                                                     <img src={item.image} className="w-full h-full object-cover" />
                                                                 </div>
                                                             )}
-                                                            <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
+                                                            <label className="px-4 py-2 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border-2 border-[var(--border)] dark:border-[var(--border)] text-xs font-bold text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/50 cursor-pointer hover:border-primary transition-all shadow-sm">
                                                                 {uploadingField === 'image' ? <Loader2 size={14} className="animate-spin" /> : "Choose File"}
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) updateItem(idx, 'image', url); } }} />
                                                             </label>
-                                                            <p className="text-[10px] text-slate-400 text-center font-bold uppercase tracking-tight">.jpg, .png, .webp, .svg, .gif allowed. 2 MB maximum.</p>
+                                                            <p className="text-[10px] text-[var(--muted-foreground)]/70 text-center font-bold uppercase tracking-tight">.jpg, .png, .webp, .svg, .gif allowed. 2 MB maximum.</p>
                                                         </div>
                                                     </div>
                                                     <InputField
@@ -2311,11 +2311,11 @@ function BioLinkBuilderContent() {
                                                         icon={<Globe size={14} />}
                                                     />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Button Image (Optional)</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Button Image (Optional)</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {item.image && <img src={item.image} className="w-12 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                     {uploadingField === 'link_image' ? <Loader2 size={14} className="animate-spin" /> : "Upload Image"}
                                                                 </div>
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'link_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('link_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) updateItem(idx, 'image', url); } }} />
@@ -2335,11 +2335,11 @@ function BioLinkBuilderContent() {
                                                         placeholder="e.g. About Me"
                                                     />
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Size</label>
+                                                        <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Size</label>
                                                         <select
                                                             value={item.heading_type || "h1"}
                                                             onChange={(e) => updateItem(idx, 'heading_type', e.target.value)}
-                                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                                            className="w-full h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all"
                                                         >
                                                             <option value="h1">H1 — Large</option>
                                                             <option value="h2">H2 — Medium</option>
@@ -2443,11 +2443,11 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Subtitle" value={item.subtitle || ""} onChange={(e: any) => updateItem(idx, 'subtitle', e.target.value)} placeholder="Global Branding Expert" />
                                                     <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Transforming ideas into visual identities" textarea />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Hero Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Hero Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {(item.image || item.url) && <img src={item.image || item.url} className="w-12 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                     {uploadingField === 'hero_image' ? <Loader2 size={14} className="animate-spin" /> : (item.image ? "Change Image" : "Upload Image")}
                                                                 </div>
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'hero_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('hero_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) updateItem(idx, 'image', url); } }} />
@@ -2464,9 +2464,9 @@ function BioLinkBuilderContent() {
                                             {/* Stats Section */}
                                             {uiType === "stats_section" && (
                                                 <div className="space-y-5">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Stats Items</p>
                                                     {(item.items || []).map((stat: any, sIdx: number) => (
-                                                        <div key={sIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                        <div key={sIdx} className="p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] space-y-4 relative group">
                                                             <button
                                                                 onClick={() => {
                                                                     const newItems = [...item.items];
@@ -2496,7 +2496,7 @@ function BioLinkBuilderContent() {
                                                             const newItems = [...(item.items || []), { label: "", value: "" }];
                                                             updateItem(idx, 'items', newItems);
                                                         }}
-                                                        className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-bold text-xs"
+                                                        className="w-full h-12 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center gap-2 text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary transition-all font-bold text-xs"
                                                     >
                                                         <Plus size={14} /> Add Stat Item
                                                     </button>
@@ -2517,10 +2517,10 @@ function BioLinkBuilderContent() {
                                             {/* Brands / Logos Section */}
                                             {uiType === "brands_section" && (
                                                 <div className="space-y-5">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Brand Logos</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Brand Logos</p>
                                                     <div className="grid grid-cols-3 gap-4">
                                                         {(item.logos || []).map((logo: any, lIdx: number) => (
-                                                            <div key={lIdx} className="relative group aspect-square rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 overflow-hidden">
+                                                            <div key={lIdx} className="relative group aspect-square rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] overflow-hidden">
                                                                 <img src={logo.image} className="w-full h-full object-contain p-2" />
                                                                 <button
                                                                     onClick={() => {
@@ -2534,7 +2534,7 @@ function BioLinkBuilderContent() {
                                                                 </button>
                                                             </div>
                                                         ))}
-                                                        <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary cursor-pointer transition-all">
+                                                        <label className="aspect-square rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]/50 hover:text-primary hover:border-primary cursor-pointer transition-all">
                                                             <Plus size={20} />
                                                             <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'logos', [...(item.logos || []), { image: url }]); } }} />
                                                         </label>
@@ -2548,11 +2548,11 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Title" value={item.title || ""} onChange={(e: any) => updateItem(idx, 'title', e.target.value)} placeholder="Launch Your Digital Product" />
                                                     <InputField label="Subtitle" value={item.subtitle || ""} onChange={(e: any) => updateItem(idx, 'subtitle', e.target.value)} placeholder="Sell smarter with your bio page" />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Product Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {item.product_image && <img src={item.product_image} className="w-12 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold">
                                                                     {item.product_image ? "Change Image" : "Upload Product"}
                                                                 </div>
                                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'product_image', url); } }} />
@@ -2573,11 +2573,11 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Product Name" value={item.name || ""} onChange={(e: any) => updateItem(idx, 'name', e.target.value)} placeholder="Premium Course" />
                                                     <InputField label="Description" value={item.description || ""} onChange={(e: any) => updateItem(idx, 'description', e.target.value)} placeholder="Product details..." textarea />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Featured Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Featured Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {item.image && <img src={item.image} className="w-12 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold">
                                                                     {item.image ? "Change Image" : "Upload Image"}
                                                                 </div>
                                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
@@ -2594,16 +2594,16 @@ function BioLinkBuilderContent() {
                                             {/* Creator Store: Product List Section */}
                                             {uiType === "product_list_section" && (
                                                 <div className="space-y-5">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Product Items</p>
                                                     {(item.items || []).map((pItem: any, piIdx: number) => (
-                                                        <div key={piIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                        <div key={piIdx} className="p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] space-y-4 relative group">
                                                             <button onClick={() => { const newItems = [...item.items]; newItems.splice(piIdx, 1); updateItem(idx, 'items', newItems); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"><X size={12} /></button>
                                                             <div className="flex gap-4">
-                                                                <div className="w-16 h-16 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden border border-slate-100 dark:border-slate-700">
-                                                                    {pItem.image ? <img src={pItem.image} className="w-full h-full object-cover" /> : <ShoppingBag size={20} className="text-slate-300" />}
+                                                                <div className="w-16 h-16 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] flex items-center justify-center shrink-0 overflow-hidden border border-[var(--border)] dark:border-[var(--border)]">
+                                                                    {pItem.image ? <img src={pItem.image} className="w-full h-full object-cover" /> : <ShoppingBag size={20} className="text-[var(--muted-foreground)]/50" />}
                                                                 </div>
                                                                 <div className="flex-1 space-y-2">
-                                                                    <label className="cursor-pointer inline-block px-3 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase">
+                                                                    <label className="cursor-pointer inline-block px-3 py-1 rounded bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase">
                                                                         Upload
                                                                         <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) { const newItems = [...item.items]; newItems[piIdx] = { ...pItem, image: url }; updateItem(idx, 'items', newItems); } } }} />
                                                                     </label>
@@ -2617,22 +2617,22 @@ function BioLinkBuilderContent() {
                                                             </div>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => { const newItems = [...(item.items || []), { name: "", description: "", image: "", price: "", link: "" }]; updateItem(idx, 'items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Product</button>
+                                                    <button onClick={() => { const newItems = [...(item.items || []), { name: "", description: "", image: "", price: "", link: "" }]; updateItem(idx, 'items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center gap-2 text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Product</button>
                                                 </div>
                                             )}
 
                                             {/* Creator Store: Trust Badges Section */}
                                             {uiType === "trust_badges_section" && (
                                                 <div className="space-y-5">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Trust Badges</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Trust Badges</p>
                                                     {(item.items || []).map((badge: any, bIdx: number) => (
-                                                        <div key={bIdx} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center gap-4 relative group">
+                                                        <div key={bIdx} className="p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4 relative group">
                                                             <button onClick={() => { const newItems = [...item.items]; newItems.splice(bIdx, 1); updateItem(idx, 'items', newItems); }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"><X size={12} /></button>
                                                             <InputField label="Label" value={badge.label || ""} onChange={(e: any) => { const newItems = [...item.items]; newItems[bIdx] = { ...badge, label: e.target.value }; updateItem(idx, 'items', newItems); }} />
                                                             <InputField label="Icon (lucide)" value={badge.icon || "ShieldCheck"} onChange={(e: any) => { const newItems = [...item.items]; newItems[bIdx] = { ...badge, icon: e.target.value }; updateItem(idx, 'items', newItems); }} />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => { const newItems = [...(item.items || []), { label: "", icon: "ShieldCheck" }]; updateItem(idx, 'items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Badge</button>
+                                                    <button onClick={() => { const newItems = [...(item.items || []), { label: "", icon: "ShieldCheck" }]; updateItem(idx, 'items', newItems); }} className="w-full h-12 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center gap-2 text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary transition-all font-black uppercase tracking-widest text-[10px]"><Plus size={14} /> Add Badge</button>
                                                 </div>
                                             )}
 
@@ -2660,9 +2660,9 @@ function BioLinkBuilderContent() {
                                             {/* Portfolio / Services / Testimonials / FAQ Sections */}
                                             {["portfolio_section", "services_section", "testimonials_section", "faq_section", "link_grid_section", "link_carousel_section"].includes(uiType) && (
                                                 <div className="space-y-5">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Section Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Section Items</p>
                                                     {(item.items || []).map((sItem: any, siIdx: number) => (
-                                                        <div key={siIdx} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4 relative group">
+                                                        <div key={siIdx} className="p-5 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] space-y-4 relative group">
                                                             <button
                                                                 onClick={() => {
                                                                     const newItems = [...item.items];
@@ -2690,11 +2690,11 @@ function BioLinkBuilderContent() {
                                                             ) : (
                                                                 <>
                                                                     <div className="flex gap-4">
-                                                                        <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
-                                                                            {(sItem.image || sItem.url) ? <img src={sItem.image || sItem.url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-slate-300" />}
+                                                                        <div className="w-16 h-16 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center shrink-0 overflow-hidden">
+                                                                            {(sItem.image || sItem.url) ? <img src={sItem.image || sItem.url} className="w-full h-full object-cover" /> : <ImageIcon size={20} className="text-[var(--muted-foreground)]/50" />}
                                                                         </div>
                                                                         <div className="flex-1 space-y-2">
-                                                                            <label className="cursor-pointer inline-block px-3 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold">
+                                                                            <label className="cursor-pointer inline-block px-3 py-1 rounded bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] text-[10px] font-bold">
                                                                                 Upload Image
                                                                                 <input type="file" className="hidden" onChange={async e => {
                                                                                     if (e.target.files?.[0]) {
@@ -2740,7 +2740,7 @@ function BioLinkBuilderContent() {
                                                             const newItems = [...(item.items || []), newItem];
                                                             updateItem(idx, 'items', newItems);
                                                         }}
-                                                        className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary transition-all font-bold text-xs"
+                                                        className="w-full h-12 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center gap-2 text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary transition-all font-bold text-xs"
                                                     >
                                                         <Plus size={14} /> Add {uiType.split('_')[0]} Item
                                                     </button>
@@ -2755,16 +2755,16 @@ function BioLinkBuilderContent() {
                                             {uiType === "avatar" && (
                                                 <div className="space-y-6">
                                                     <div className="space-y-2">
-                                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                            <User size={14} className="text-slate-400" /> Avatar Image
+                                                        <label className="text-sm font-bold text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 flex items-center gap-2">
+                                                            <User size={14} className="text-[var(--muted-foreground)]/70" /> Avatar Image
                                                         </label>
-                                                        <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-3">
+                                                        <div className="p-6 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex flex-col items-center justify-center gap-3">
                                                             {(item.image || item.url) && (
-                                                                <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-700 shadow-md mb-2">
+                                                                <div className="w-24 h-24 rounded-full bg-[var(--muted)]/70 dark:bg-[var(--muted)] flex items-center justify-center overflow-hidden border-4 border-white dark:border-[var(--border)] shadow-md mb-2">
                                                                     <img src={item.image || item.url} className="w-full h-full object-cover" />
                                                                 </div>
                                                             )}
-                                                            <label className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:border-primary transition-all shadow-sm">
+                                                            <label className="px-4 py-2 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border-2 border-[var(--border)] dark:border-[var(--border)] text-xs font-bold text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/50 cursor-pointer hover:border-primary transition-all shadow-sm">
                                                                 Choose Avatar
                                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) updateItem(idx, 'image', url); } }} />
                                                             </label>
@@ -2772,11 +2772,11 @@ function BioLinkBuilderContent() {
                                                     </div>
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-2">
-                                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Size</label>
+                                                            <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Size</label>
                                                             <select
                                                                 value={item.size || 140}
                                                                 onChange={(e) => updateItem(idx, 'size', parseInt(e.target.value))}
-                                                                className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 text-sm font-bold outline-none"
+                                                                className="w-full h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 text-sm font-bold outline-none"
                                                             >
                                                                 <option value={80}>Small (80px)</option>
                                                                 <option value={140}>Medium (140px)</option>
@@ -2784,11 +2784,11 @@ function BioLinkBuilderContent() {
                                                             </select>
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Shape</label>
+                                                            <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Shape</label>
                                                             <select
                                                                 value={item.border_radius || "round"}
                                                                 onChange={(e) => updateItem(idx, 'border_radius', e.target.value)}
-                                                                className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 text-sm font-bold outline-none"
+                                                                className="w-full h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 text-sm font-bold outline-none"
                                                             >
                                                                 <option value="round">Circle</option>
                                                                 <option value="rounded">Rounded Square</option>
@@ -2825,7 +2825,7 @@ function BioLinkBuilderContent() {
 
                                             {/* Divider Type */}
                                             {uiType === "divider" && (
-                                                <div className="py-10 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center gap-3 text-slate-400">
+                                                <div className="py-10 border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] rounded-3xl flex flex-col items-center justify-center gap-3 text-[var(--muted-foreground)]/70">
                                                     <MoreHorizontal size={24} />
                                                     <p className="text-[11px] font-black uppercase tracking-widest">Horizontal Divider</p>
                                                 </div>
@@ -2848,12 +2848,12 @@ function BioLinkBuilderContent() {
                                                         { key: 'telegram', label: 'Telegram', prefix: 't.me/', icon: <Globe size={14} />, placeholder: 'telegram-username' },
                                                     ].map((platform) => (
                                                         <div key={platform.key} className="space-y-2">
-                                                            <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                            <label className="text-xs font-black text-[var(--muted-foreground)] uppercase tracking-widest flex items-center gap-2">
                                                                 {platform.icon} {platform.label}
                                                             </label>
-                                                            <div className="flex rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm transition-all focus-within:border-primary/30">
+                                                            <div className="flex rounded-2xl border-2 border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-[var(--background)] overflow-hidden shadow-sm transition-all focus-within:border-primary/30">
                                                                 {platform.prefix && (
-                                                                    <div className="px-4 flex items-center bg-slate-50 dark:bg-slate-800 border-r border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-400">
+                                                                    <div className="px-4 flex items-center bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-r border-[var(--border)] dark:border-[var(--border)] text-xs font-bold text-[var(--muted-foreground)]/70">
                                                                         {platform.prefix}
                                                                     </div>
                                                                 )}
@@ -2864,7 +2864,7 @@ function BioLinkBuilderContent() {
                                                                         updateItem(idx, 'socials', newSocials);
                                                                     }}
                                                                     placeholder={platform.placeholder}
-                                                                    className="flex-1 h-12 px-4 bg-transparent text-sm font-bold text-slate-900 dark:text-white outline-none"
+                                                                    className="flex-1 h-12 px-4 bg-transparent text-sm font-bold text-[var(--foreground)] dark:text-white outline-none"
                                                                 />
                                                             </div>
                                                         </div>
@@ -2877,19 +2877,19 @@ function BioLinkBuilderContent() {
                                             {/* Business Hours Type */}
                                             {uiType === "business_hours" && (
                                                 <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                                                    <div className="flex flex-col gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                                    <div className="flex flex-col gap-4 p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)]">
                                                         <div className="flex items-center justify-between">
                                                             <div>
-                                                                <p className="text-sm font-bold text-slate-900 dark:text-white">Open 24/7</p>
-                                                                <p className="text-[10px] text-slate-500 font-medium">Mark as always open.</p>
+                                                                <p className="text-sm font-bold text-[var(--foreground)] dark:text-white">Open 24/7</p>
+                                                                <p className="text-[10px] text-[var(--muted-foreground)] font-medium">Mark as always open.</p>
                                                             </div>
                                                             <ToggleSwitch checked={item.open_24_7 || false} onChange={v => updateItem(idx, 'open_24_7', v)} />
                                                         </div>
-                                                        <div className="h-px bg-slate-200 dark:bg-slate-800" />
+                                                        <div className="h-px bg-[var(--muted)]/70 dark:bg-[var(--muted)]" />
                                                         <div className="flex items-center justify-between">
                                                             <div>
-                                                                <p className="text-sm font-bold text-slate-900 dark:text-white">Temporarily closed</p>
-                                                                <p className="text-[10px] text-slate-500 font-medium">Mark as temporarily closed.</p>
+                                                                <p className="text-sm font-bold text-[var(--foreground)] dark:text-white">Temporarily closed</p>
+                                                                <p className="text-[10px] text-[var(--muted-foreground)] font-medium">Mark as temporarily closed.</p>
                                                             </div>
                                                             <ToggleSwitch checked={item.temporarily_closed || false} onChange={v => updateItem(idx, 'temporarily_closed', v)} />
                                                         </div>
@@ -2897,34 +2897,34 @@ function BioLinkBuilderContent() {
 
                                                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, dIdx) => (
                                                         <div key={day} className="space-y-2">
-                                                            <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest pl-2">
+                                                            <div className="flex items-center gap-2 text-xs font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">
                                                                 <Clock size={12} /> {day}
                                                             </div>
                                                             <div className="flex gap-2">
                                                                 <input
                                                                     value={day}
                                                                     readOnly
-                                                                    className="w-1/3 h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 text-sm font-bold text-slate-400 outline-none"
+                                                                    className="w-1/3 h-12 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 border-2 border-[var(--border)] dark:border-[var(--border)] text-sm font-bold text-[var(--muted-foreground)]/70 outline-none"
                                                                 />
                                                                 <input
                                                                     value={item[`day_${dIdx + 1}`] || ""}
                                                                     onChange={(e) => updateItem(idx, `day_${dIdx + 1}`, e.target.value)}
                                                                     placeholder="10:00 - 18:00, Closed or 24 H"
-                                                                    className="flex-1 h-12 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all"
+                                                                    className="flex-1 h-12 px-5 rounded-xl bg-[var(--card)] dark:bg-[var(--background)] border-2 border-[var(--border)] dark:border-[var(--border)] focus:border-primary/30 text-sm font-bold text-[var(--foreground)] dark:text-white outline-none transition-all"
                                                                 />
                                                             </div>
                                                         </div>
                                                     ))}
 
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 pl-2">
+                                                        <label className="text-xs font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest flex items-center gap-2 pl-2">
                                                             <Edit3 size={12} /> Additional notice
                                                         </label>
                                                         <textarea
                                                             value={item.additional_notice || ""}
                                                             onChange={(e: any) => updateItem(idx, 'additional_notice', e.target.value)}
                                                             rows={3}
-                                                            className="w-full px-5 py-4 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none resize-none transition-all"
+                                                            className="w-full px-5 py-4 rounded-xl bg-[var(--card)] dark:bg-[var(--background)] border-2 border-[var(--border)] dark:border-[var(--border)] focus:border-primary/30 text-sm font-bold text-[var(--foreground)] dark:text-white outline-none resize-none transition-all"
                                                             placeholder="Holiday notices, etc..."
                                                         />
                                                     </div>
@@ -2935,13 +2935,13 @@ function BioLinkBuilderContent() {
                                             {uiType === "paypal" && (
                                                 <div className="space-y-5">
                                                     <div className="space-y-2">
-                                                        <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                            <MonitorPlay size={14} className="text-slate-400" /> Type
+                                                        <label className="text-sm font-bold text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 flex items-center gap-2">
+                                                            <MonitorPlay size={14} className="text-[var(--muted-foreground)]/70" /> Type
                                                         </label>
                                                         <select
                                                             value={item.type || "buy_now"}
                                                             onChange={(e) => updateItem(idx, 'type', e.target.value)}
-                                                            className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary/30 text-sm font-bold text-slate-900 dark:text-white outline-none transition-all appearance-none cursor-pointer"
+                                                            className="w-full h-14 px-5 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-primary/30 text-sm font-bold text-[var(--foreground)] dark:text-white outline-none transition-all appearance-none cursor-pointer"
                                                         >
                                                             <option value="buy_now">Buy now</option>
                                                             <option value="add_to_cart">Add to cart</option>
@@ -3065,7 +3065,7 @@ function BioLinkBuilderContent() {
                                             {uiType === "image" && (
                                                 <div className="space-y-6">
                                                     {(s.items || editingBlock.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="space-y-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="space-y-4 p-4 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => {
                                                                 const it = [...(s.items || editingBlock.items || [])];
                                                                 it.splice(i, 1);
@@ -3073,14 +3073,14 @@ function BioLinkBuilderContent() {
                                                             }} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">×</button>
 
                                                             <div className="space-y-2">
-                                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Image</label>
-                                                                <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-3">
+                                                                <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-1">Image</label>
+                                                                <div className="p-4 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex flex-col items-center justify-center gap-3">
                                                                     {(item.image || item.url) && (
-                                                                        <div className="w-full aspect-video rounded-lg overflow-hidden border border-slate-100">
+                                                                        <div className="w-full aspect-video rounded-lg overflow-hidden border border-[var(--border)]">
                                                                             <img src={item.image || item.url} className="w-full h-full object-cover" />
                                                                         </div>
                                                                     )}
-                                                                    <label className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-primary hover:text-white transition-all">
+                                                                    <label className="px-4 py-2 rounded-lg bg-[var(--muted)]/50 dark:bg-slate-700 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-primary hover:text-white transition-all">
                                                                         {uploadingField === `image_${i}` ? <Loader2 size={12} className="animate-spin" /> : "Choose Image"}
                                                                         <input type="file" className="hidden" onChange={async e => {
                                                                             if (e.target.files?.[0]) {
@@ -3107,7 +3107,7 @@ function BioLinkBuilderContent() {
                                                     <button onClick={() => {
                                                         const it = [...(s.items || editingBlock.items || []), { image: "", url: "" }];
                                                         if (s.items) upd('items', it); else setEditingBlock({ ...editingBlock, items: it });
-                                                    }} className="w-full h-12 rounded-xl border-2 border-dashed border-slate-200 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
+                                                    }} className="w-full h-12 rounded-xl border-2 border-dashed border-[var(--border)] text-[10px] font-black uppercase tracking-[0.2em] text-[var(--muted-foreground)]/70 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
                                                         <Plus size={14} /> Add Image
                                                     </button>
                                                 </div>
@@ -3121,20 +3121,20 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Subheadline" value={s.subheadline || ""} onChange={(e: any) => upd('subheadline', e.target.value)} placeholder="Build your presence." />
                                                     <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} placeholder="Helping creators grow..." textarea />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Profile Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Profile Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {s.profile_image && <img src={s.profile_image} className="w-12 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                     {uploadingField === 'hero_profile_image' ? <Loader2 size={14} className="animate-spin" /> : (s.profile_image ? "Change" : "Upload Image")}
                                                                 </div>
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'hero_profile_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('hero_profile_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('profile_image', url); } }} />
                                                             </label>
                                                         </div>
                                                     </div>
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">CTA Buttons</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">CTA Buttons</p>
                                                     {(s.buttons || []).map((btn: any, bIdx: number) => (
-                                                        <div key={bIdx} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                                        <div key={bIdx} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)]">
                                                             <InputField label="Text" value={btn.text || ""} onChange={(e: any) => { const b = [...(s.buttons || [])]; b[bIdx] = { ...btn, text: e.target.value }; upd('buttons', b); }} />
                                                             <InputField label="Link" value={btn.link || ""} onChange={(e: any) => { const b = [...(s.buttons || [])]; b[bIdx] = { ...btn, link: e.target.value }; upd('buttons', b); }} />
                                                         </div>
@@ -3148,15 +3148,15 @@ function BioLinkBuilderContent() {
                                                 <div className="space-y-4">
                                                     <InputField label="Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Impact Over Impressions" />
                                                     <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} placeholder="We focus on real results." textarea />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Points</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Points</p>
                                                     {(s.points || []).map((pt: any, i: number) => (
-                                                        <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-3 relative group">
+                                                        <div key={i} className="p-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] space-y-3 relative group">
                                                             <button onClick={() => { const pts = [...(s.points || [])]; pts.splice(i, 1); upd('points', pts); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
                                                             <InputField label="Title" value={pt.title || ""} onChange={(e: any) => { const pts = [...(s.points || [])]; pts[i] = { ...pt, title: e.target.value }; upd('points', pts); }} />
                                                             <InputField label="Description" value={pt.description || ""} onChange={(e: any) => { const pts = [...(s.points || [])]; pts[i] = { ...pt, description: e.target.value }; upd('points', pts); }} textarea />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('points', [...(s.points || []), { title: "", description: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Point</button>
+                                                    <button onClick={() => upd('points', [...(s.points || []), { title: "", description: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Point</button>
                                                 </div>
                                             )}
 
@@ -3168,10 +3168,10 @@ function BioLinkBuilderContent() {
                                                         <InputField label="Author Name" value={s.author_name || ""} onChange={(e: any) => upd('author_name', e.target.value)} placeholder="Sarah Chen" />
                                                         <InputField label="Author Role" value={s.author_role || ""} onChange={(e: any) => upd('author_role', e.target.value)} placeholder="Founder & CEO" />
                                                     </div>
-                                                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                    <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                         {s.author_image && <img src={s.author_image} className="w-10 h-10 rounded-full object-cover" />}
                                                         <label className="flex-1 cursor-pointer">
-                                                            <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                            <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                 {uploadingField === 'author_image' ? <Loader2 size={14} className="animate-spin" /> : (s.author_image ? "Change Photo" : "Upload Photo")}
                                                             </div>
                                                             <input type="file" className="hidden" disabled={uploadingField === 'author_image'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('author_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('author_image', url); } }} />
@@ -3189,11 +3189,11 @@ function BioLinkBuilderContent() {
                                                     </div>
                                                     <InputField label="Bio" value={s.bio || s.description || ""} onChange={(e: any) => upd('bio', e.target.value)} placeholder="Tell your story..." textarea />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Profile Avatar</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Profile Avatar</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {s.avatar && <img src={s.avatar} className="w-12 h-12 rounded-full object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                     {uploadingField === 'header_avatar' ? <Loader2 size={14} className="animate-spin" /> : (s.avatar ? "Change Avatar" : "Upload Avatar")}
                                                                 </div>
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'header_avatar'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('header_avatar'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('avatar', url); } }} />
@@ -3201,11 +3201,11 @@ function BioLinkBuilderContent() {
                                                         </div>
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Cover Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Cover Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {s.cover_image && <img src={s.cover_image} className="w-20 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                     {uploadingField === 'header_cover' ? <Loader2 size={14} className="animate-spin" /> : (s.cover_image ? "Change Cover" : "Upload Cover")}
                                                                 </div>
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'header_cover'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('header_cover'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('cover_image', url); } }} />
@@ -3218,15 +3218,15 @@ function BioLinkBuilderContent() {
                                             {/* Link Grid Section */}
                                             {uiType === "link_grid_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Grid Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Grid Items</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Label" value={item.name || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, name: e.target.value }; upd('items', it); }} />
                                                             <InputField label="URL" value={item.url || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, url: e.target.value }; upd('items', it); }} />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", url: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Grid Item</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", url: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Grid Item</button>
                                                 </div>
                                             )}
 
@@ -3234,41 +3234,41 @@ function BioLinkBuilderContent() {
                                             {uiType === "link_carousel_section" && (
                                                 <div className="space-y-4">
                                                     <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="e.g. Look Gallery" />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Carousel Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Carousel Items</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Title" value={item.name || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, name: e.target.value }; upd('items', it); }} />
                                                             <InputField label="Subtitle" value={item.description || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, description: e.target.value }; upd('items', it); }} />
                                                             <InputField label="URL" value={item.url || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, url: e.target.value }; upd('items', it); }} />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", description: "", url: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Slide</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", description: "", url: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Slide</button>
                                                 </div>
                                             )}
 
                                             {/* Services Section */}
                                             {uiType === "services_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Services</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Services</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Service Name" value={item.t || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, t: e.target.value }; upd('items', it); }} />
                                                             <InputField label="Description" value={item.d || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, d: e.target.value }; upd('items', it); }} textarea />
                                                             <InputField label="Price/Tag" value={item.p || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, p: e.target.value }; upd('items', it); }} />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { t: "", d: "", p: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Service</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { t: "", d: "", p: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Service</button>
                                                 </div>
                                             )}
 
                                             {/* Trust Badges */}
                                             {uiType === "trust_badges_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Badges</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Badges</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="flex gap-2 items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="flex gap-2 items-center p-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <div className="flex-1 grid grid-cols-2 gap-2">
                                                                 <InputField label="Icon (Lucide)" value={item.icon || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, icon: e.target.value }; upd('items', it); }} placeholder="Shield, Lock, etc." />
                                                                 <InputField label="Label" value={item.label || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, label: e.target.value }; upd('items', it); }} placeholder="SECURE" />
@@ -3276,22 +3276,22 @@ function BioLinkBuilderContent() {
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">×</button>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { label: "", icon: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Badge</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { label: "", icon: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Badge</button>
                                                 </div>
                                             )}
 
                                             {/* Statistics */}
                                             {(uiType === "floating_stats_section" || uiType === "stats_section" || uiType === "stats_minimal_section") && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Stats & Metrics</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Stats & Metrics</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Value" value={item.value || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, value: e.target.value }; upd('items', it); }} />
                                                             <InputField label="Label" value={item.label || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, label: e.target.value }; upd('items', it); }} />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { value: "", label: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Stat</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { value: "", label: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Stat</button>
                                                 </div>
                                             )}
 
@@ -3302,11 +3302,11 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} textarea />
                                                     <InputField label="Video URL" value={s.url || ""} onChange={(e: any) => upd('url', e.target.value)} />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Thumbnail</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Thumbnail</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center gap-4">
                                                             {s.thumbnail && <img src={s.thumbnail} className="w-20 h-12 rounded-lg object-cover" />}
                                                             <label className="flex-1 cursor-pointer">
-                                                                <div className="h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold gap-2">
+                                                                <div className="h-10 px-4 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-xs font-bold gap-2">
                                                                     {uploadingField === 'video_thumbnail' ? <Loader2 size={14} className="animate-spin" /> : (s.thumbnail ? "Change" : "Upload")}
                                                                 </div>
                                                                 <input type="file" className="hidden" disabled={uploadingField === 'video_thumbnail'} onChange={async e => { if (e.target.files?.[0]) { setUploadingField('video_thumbnail'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('thumbnail', url); } }} />
@@ -3323,15 +3323,15 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Description" value={s.description || ""} onChange={(e: any) => upd('description', e.target.value)} textarea />
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-2">
-                                                            <label className="text-[10px] font-black text-slate-400 uppercase">Before</label>
-                                                            <div className="h-24 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center relative overflow-hidden">
+                                                            <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">Before</label>
+                                                            <div className="h-24 rounded-xl bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center relative overflow-hidden">
                                                                 {s.before_image && <img src={s.before_image} className="absolute inset-0 w-full h-full object-cover" />}
                                                                 <label className="cursor-pointer z-10"><Plus size={16} /><input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('before_image', url); } }} /></label>
                                                             </div>
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <label className="text-[10px] font-black text-slate-400 uppercase">After</label>
-                                                            <div className="h-24 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center relative overflow-hidden">
+                                                            <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">After</label>
+                                                            <div className="h-24 rounded-xl bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center relative overflow-hidden">
                                                                 {s.after_image && <img src={s.after_image} className="absolute inset-0 w-full h-full object-cover" />}
                                                                 <label className="cursor-pointer z-10"><Plus size={16} /><input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('after_image', url); } }} /></label>
                                                             </div>
@@ -3344,15 +3344,15 @@ function BioLinkBuilderContent() {
                                             {uiType === "services_timeline_section" && (
                                                 <div className="space-y-4">
                                                     <InputField label="Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Steps</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Steps</p>
                                                     {(s.steps || []).map((step: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const st = [...(s.steps || [])]; st.splice(i, 1); upd('steps', st); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Step Title" value={step.title || ""} onChange={(e: any) => { const st = [...(s.steps || [])]; st[i] = { ...step, title: e.target.value }; upd('steps', st); }} />
                                                             <InputField label="Step Description" value={step.description || ""} onChange={(e: any) => { const st = [...(s.steps || [])]; st[i] = { ...step, description: e.target.value }; upd('steps', st); }} textarea />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('steps', [...(s.steps || []), { title: "", description: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Step</button>
+                                                    <button onClick={() => upd('steps', [...(s.steps || []), { title: "", description: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Step</button>
                                                 </div>
                                             )}
 
@@ -3360,14 +3360,14 @@ function BioLinkBuilderContent() {
                                             {uiType === "portfolio_section" && (
                                                 <div className="space-y-4">
                                                     <InputField label="Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Portfolio Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Portfolio Items</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Title" value={item.title || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, title: e.target.value }; upd('items', it); }} />
                                                             <div className="space-y-2">
-                                                                <label className="text-[10px] font-black text-slate-400 uppercase">Image</label>
-                                                                <div className="h-20 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                                <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">Image</label>
+                                                                <div className="h-20 rounded-lg bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex items-center justify-center relative overflow-hidden">
                                                                     {(item.image || item.url) && <img src={item.image || item.url} className="absolute inset-0 w-full h-full object-cover" />}
                                                                     <label className="cursor-pointer z-10">
                                                                         {uploadingField === `portfolio_${i}` ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
@@ -3377,7 +3377,7 @@ function BioLinkBuilderContent() {
                                                             </div>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { title: "", image: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Work</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { title: "", image: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Work</button>
                                                 </div>
                                             )}
 
@@ -3401,9 +3401,9 @@ function BioLinkBuilderContent() {
                                             {/* Offers Section */}
                                             {uiType === "offers_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Active Offers</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Active Offers</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Offer Name" value={item.name || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, name: e.target.value }; upd('items', it); }} placeholder="1-on-1 Coaching Call" />
                                                             <div className="grid grid-cols-2 gap-3">
@@ -3416,8 +3416,8 @@ function BioLinkBuilderContent() {
                                                                 <InputField label="CTA Link" value={item.cta_link || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, cta_link: e.target.value }; upd('items', it); }} placeholder="https://..." />
                                                             </div>
                                                             <div className="space-y-2">
-                                                                <label className="text-[10px] font-black text-slate-400 uppercase">Product Image</label>
-                                                                <div className="h-20 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                                <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">Product Image</label>
+                                                                <div className="h-20 rounded-lg bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex items-center justify-center relative overflow-hidden">
                                                                     {item.image && <img src={item.image} className="absolute inset-0 w-full h-full object-cover" />}
                                                                     <label className="cursor-pointer z-10">
                                                                         {uploadingField === `offer_img_${i}` ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
@@ -3427,7 +3427,7 @@ function BioLinkBuilderContent() {
                                                             </div>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", price: "", currency: "USD", description: "", cta_text: "", cta_link: "", image: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Offer</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", price: "", currency: "USD", description: "", cta_text: "", cta_link: "", image: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Offer</button>
                                                 </div>
                                             )}
 
@@ -3458,10 +3458,10 @@ function BioLinkBuilderContent() {
                                             {(uiType === "brands_section" || uiType === "brands") && (
                                                 <div className="space-y-4">
                                                     <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Global Partners" />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Logos</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Logos</p>
                                                     <div className="grid grid-cols-3 gap-3">
                                                         {(s.items || s.logos || []).map((logo: any, i: number) => (
-                                                            <div key={i} className="relative group aspect-square rounded-xl bg-slate-50 border border-slate-100 overflow-hidden">
+                                                            <div key={i} className="relative group aspect-square rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] overflow-hidden">
                                                                 <img src={logo.image || logo.url || logo} className="w-full h-full object-contain p-2" />
                                                                 <button onClick={() => {
                                                                     const key = s.items ? 'items' : 'logos';
@@ -3471,7 +3471,7 @@ function BioLinkBuilderContent() {
                                                                 }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px]">×</button>
                                                             </div>
                                                         ))}
-                                                        <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary cursor-pointer transition-all">
+                                                        <label className="aspect-square rounded-xl border-2 border-dashed border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]/50 hover:text-primary hover:border-primary cursor-pointer transition-all">
                                                             <Plus size={20} />
                                                             <input type="file" className="hidden" onChange={async e => {
                                                                 if (e.target.files?.[0]) {
@@ -3490,9 +3490,9 @@ function BioLinkBuilderContent() {
                                             {/* Social Proof (platform stats) */}
                                             {uiType === "social_proof_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Platform Stats</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Platform Stats</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <div className="grid grid-cols-2 gap-3">
                                                                 <InputField label="Platform" value={item.platform || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, platform: e.target.value }; upd('items', it); }} placeholder="Instagram" />
@@ -3501,16 +3501,16 @@ function BioLinkBuilderContent() {
                                                             <InputField label="Profile URL" value={item.url || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, url: e.target.value }; upd('items', it); }} placeholder="https://instagram.com/..." />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { platform: "", followers: "", url: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Platform</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { platform: "", followers: "", url: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Platform</button>
                                                 </div>
                                             )}
 
                                             {/* Featured Links Section */}
                                             {uiType === "featured_links_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Featured Links</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Featured Links</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Label" value={item.label || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, label: e.target.value }; upd('items', it); }} placeholder="My Latest Video" />
                                                             <InputField label="URL" value={item.url || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, url: e.target.value }; upd('items', it); }} placeholder="https://..." />
@@ -3520,22 +3520,22 @@ function BioLinkBuilderContent() {
                                                             </div>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { label: "", url: "", icon: "", description: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Link</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { label: "", url: "", icon: "", description: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Link</button>
                                                 </div>
                                             )}
 
                                             {/* Content Grid Section */}
                                             {uiType === "content_grid_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Content Grid</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Content Grid</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Caption" value={item.caption || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, caption: e.target.value }; upd('items', it); }} placeholder="Behind the scenes" />
                                                             <InputField label="Link URL" value={item.url || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, url: e.target.value }; upd('items', it); }} placeholder="https://youtube.com/..." />
                                                             <div className="space-y-2">
-                                                                <label className="text-[10px] font-black text-slate-400 uppercase">Thumbnail</label>
-                                                                <div className="h-20 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                                <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">Thumbnail</label>
+                                                                <div className="h-20 rounded-lg bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex items-center justify-center relative overflow-hidden">
                                                                     {item.thumbnail && <img src={item.thumbnail} className="absolute inset-0 w-full h-full object-cover" />}
                                                                     <label className="cursor-pointer z-10">
                                                                         {uploadingField === `grid_thumb_${i}` ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
@@ -3545,7 +3545,7 @@ function BioLinkBuilderContent() {
                                                             </div>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { caption: "", url: "", thumbnail: "", type: "video" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Item</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { caption: "", url: "", thumbnail: "", type: "video" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Item</button>
                                                 </div>
                                             )}
 
@@ -3553,9 +3553,9 @@ function BioLinkBuilderContent() {
                                             {uiType === "testimonials_section" && (
                                                 <div className="space-y-4">
                                                     <InputField label="Section Title (Optional)" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="What Clients Say" />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Testimonials</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Testimonials</p>
                                                     {(s.items || []).map((t: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <div className="grid grid-cols-2 gap-3">
                                                                 <InputField label="Name" value={t.name || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...t, name: e.target.value }; upd('items', it); }} />
@@ -3564,8 +3564,8 @@ function BioLinkBuilderContent() {
                                                             <InputField label="Quote" value={t.quote || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...t, quote: e.target.value }; upd('items', it); }} textarea placeholder="This changed my business..." />
                                                             <div className="grid grid-cols-2 gap-3 items-end">
                                                                 <div className="space-y-2">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase">Avatar</label>
-                                                                    <div className="h-14 rounded-lg bg-slate-100 border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden">
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">Avatar</label>
+                                                                    <div className="h-14 rounded-lg bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex items-center justify-center relative overflow-hidden">
                                                                         {t.avatar && <img src={t.avatar} className="absolute inset-0 w-full h-full object-cover rounded-lg" />}
                                                                         <label className="cursor-pointer z-10">
                                                                             {uploadingField === `testimonial_avatar_${i}` ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
@@ -3574,30 +3574,30 @@ function BioLinkBuilderContent() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="space-y-2">
-                                                                    <label className="text-[10px] font-black text-slate-400 uppercase">Rating (1-5)</label>
-                                                                    <select value={t.rating ?? 5} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...t, rating: Number(e.target.value) }; upd('items', it); }} className="w-full h-12 px-3 rounded-xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 text-[14px] font-bold outline-none">
+                                                                    <label className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase">Rating (1-5)</label>
+                                                                    <select value={t.rating ?? 5} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...t, rating: Number(e.target.value) }; upd('items', it); }} className="w-full h-12 px-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 text-[14px] font-bold outline-none">
                                                                         {[5, 4, 3, 2, 1].map(r => <option key={r} value={r}>{r} ★</option>)}
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", role: "", quote: "", avatar: "", rating: 5 }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Testimonial</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", role: "", quote: "", avatar: "", rating: 5 }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Testimonial</button>
                                                 </div>
                                             )}
 
                                             {/* FAQ */}
                                             {uiType === "faq_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">FAQ Items</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">FAQ Items</p>
                                                     {(s.items || []).map((faq: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <InputField label="Question" value={faq.question || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...faq, question: e.target.value }; upd('items', it); }} />
                                                             <InputField label="Answer" value={faq.answer || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...faq, answer: e.target.value }; upd('items', it); }} textarea />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { question: "", answer: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add FAQ</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { question: "", answer: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add FAQ</button>
                                                 </div>
                                             )}
 
@@ -3614,9 +3614,9 @@ function BioLinkBuilderContent() {
                                             {uiType === "pricing_cards_section" && (
                                                 <div className="space-y-4">
                                                     <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Select Your Tier" />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Plans</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Plans</p>
                                                     {(s.plans || []).map((plan: any, i: number) => (
-                                                        <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-3 relative group">
+                                                        <div key={i} className="p-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] space-y-3 relative group">
                                                             <button onClick={() => { const pl = [...(s.plans || [])]; pl.splice(i, 1); upd('plans', pl); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
                                                             <div className="grid grid-cols-2 gap-3">
                                                                 <InputField label="Name" value={plan.name || ""} onChange={(e: any) => { const pl = [...(s.plans || [])]; pl[i] = { ...plan, name: e.target.value }; upd('plans', pl); }} placeholder="Pro" />
@@ -3627,7 +3627,7 @@ function BioLinkBuilderContent() {
                                                             <InputField label="Features (one per line)" value={(plan.features || []).join('\n')} onChange={(e: any) => { const pl = [...(s.plans || [])]; pl[i] = { ...plan, features: e.target.value.split('\n') }; upd('plans', pl); }} textarea />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('plans', [...(s.plans || []), { name: "", price: "", features: [], button: { text: "Get Started", link: "#" }, highlight: false }])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Plan</button>
+                                                    <button onClick={() => upd('plans', [...(s.plans || []), { name: "", price: "", features: [], button: { text: "Get Started", link: "#" }, highlight: false }])} className="w-full h-10 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add Plan</button>
                                                 </div>
                                             )}
 
@@ -3635,15 +3635,15 @@ function BioLinkBuilderContent() {
                                             {uiType === "portfolio_minimal_section" && (
                                                 <div className="space-y-4">
                                                     <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Style Showcase" />
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Images</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Images</p>
                                                     <div className="grid grid-cols-3 gap-2">
                                                         {(s.items || []).map((img: any, i: number) => (
-                                                            <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800">
+                                                            <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-[var(--border)] dark:border-[var(--border)]">
                                                                 <img src={img.image || img} className="w-full h-full object-cover" />
                                                                 <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
                                                             </div>
                                                         ))}
-                                                        <label className="aspect-square rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary cursor-pointer transition-all">
+                                                        <label className="aspect-square rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)]/50 hover:text-primary hover:border-primary cursor-pointer transition-all">
                                                             <Plus size={18} />
                                                             <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { const url = await handleUploadImage(e.target.files[0]); if (url) upd('items', [...(s.items || []), { image: url }]); } }} />
                                                         </label>
@@ -3660,10 +3660,10 @@ function BioLinkBuilderContent() {
                                                     <InputField label="CTA Text" value={s.cta_text || ""} onChange={(e: any) => upd('cta_text', e.target.value)} />
                                                     <InputField label="CTA Link" value={s.cta_link || ""} onChange={(e: any) => upd('cta_link', e.target.value)} />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center gap-3">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Product Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex flex-col items-center gap-3">
                                                             {s.product_image && <img src={s.product_image} className="w-24 h-24 rounded-lg object-cover" />}
-                                                            <label className="px-4 py-2 rounded-lg bg-white border text-xs font-bold cursor-pointer">
+                                                            <label className="px-4 py-2 rounded-lg bg-[var(--card)] border text-xs font-bold cursor-pointer">
                                                                 {uploadingField === 'hero_product_image' ? "Uploading..." : "Choose Image"}
                                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { setUploadingField('hero_product_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('product_image', url); } }} />
                                                             </label>
@@ -3680,10 +3680,10 @@ function BioLinkBuilderContent() {
                                                     <InputField label="Price" value={s.price || ""} onChange={(e: any) => upd('price', e.target.value)} />
                                                     <InputField label="Link" value={s.link || s.url || ""} onChange={(e: any) => upd('link', e.target.value)} />
                                                     <div className="space-y-2">
-                                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2">Product Image</label>
-                                                        <div className="p-4 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center gap-3">
+                                                        <label className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Product Image</label>
+                                                        <div className="p-4 rounded-xl bg-[var(--muted)]/50 border-2 border-dashed border-[var(--border)] flex flex-col items-center gap-3">
                                                             {s.image && <img src={s.image} className="w-24 h-24 rounded-lg object-cover" />}
-                                                            <label className="px-4 py-2 rounded-lg bg-white border text-xs font-bold cursor-pointer">
+                                                            <label className="px-4 py-2 rounded-lg bg-[var(--card)] border text-xs font-bold cursor-pointer">
                                                                 {uploadingField === 'featured_product_image' ? "Uploading..." : "Choose Image"}
                                                                 <input type="file" className="hidden" onChange={async e => { if (e.target.files?.[0]) { setUploadingField('featured_product_image'); const url = await handleUploadImage(e.target.files[0]); setUploadingField(null); if (url) upd('image', url); } }} />
                                                             </label>
@@ -3695,9 +3695,9 @@ function BioLinkBuilderContent() {
                                             {/* Product List Section */}
                                             {uiType === "product_list_section" && (
                                                 <div className="space-y-4">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Products</p>
+                                                    <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-2">Products</p>
                                                     {(s.items || []).map((item: any, i: number) => (
-                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-slate-50 border border-slate-100 relative group">
+                                                        <div key={i} className="p-4 space-y-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                                                             <div className="grid grid-cols-2 gap-3">
                                                                 <InputField label="Name" value={item.name || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, name: e.target.value }; upd('items', it); }} />
@@ -3707,7 +3707,7 @@ function BioLinkBuilderContent() {
                                                             <InputField label="Link" value={item.link || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...item, link: e.target.value }; upd('items', it); }} />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", price: "", description: "", link: "", image: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Product</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { name: "", price: "", description: "", link: "", image: "" }])} className="w-full h-11 rounded-xl border-2 border-dashed border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-2 transition-all"><Plus size={14} /> Add Product</button>
                                                 </div>
                                             )}
 
@@ -3720,7 +3720,7 @@ function BioLinkBuilderContent() {
 
                                                         {/* Quick-add Platform Picker Grid */}
                                                         <div>
-                                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 mb-3">Quick Add Platform</p>
+                                                            <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-1 mb-3">Quick Add Platform</p>
                                                             <div className="grid grid-cols-5 gap-2">
                                                                 {SOCIAL_PLATFORMS.map((platform) => {
                                                                     const alreadyAdded = socialItems.some((si: any) => (si.icon || si.type || si.name || '').toLowerCase() === platform.key);
@@ -3735,13 +3735,13 @@ function BioLinkBuilderContent() {
                                                                             }}
                                                                             className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-all ${alreadyAdded
                                                                                 ? 'border-primary/30 bg-primary/5 opacity-50 cursor-not-allowed'
-                                                                                : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-primary/5 cursor-pointer'
+                                                                                : 'border-[var(--border)] dark:border-[var(--border)] hover:border-primary/50 hover:bg-primary/5 cursor-pointer'
                                                                                 }`}
                                                                         >
                                                                             <span style={{ color: platform.color }}>
                                                                                 <BrandIcon name={platform.key} size={18} colored />
                                                                             </span>
-                                                                            <span className="text-[8px] font-black uppercase tracking-wider text-slate-500 truncate w-full text-center">{platform.label}</span>
+                                                                            <span className="text-[8px] font-black uppercase tracking-wider text-[var(--muted-foreground)] truncate w-full text-center">{platform.label}</span>
                                                                         </button>
                                                                     );
                                                                 })}
@@ -3751,14 +3751,14 @@ function BioLinkBuilderContent() {
                                                         {/* Current Social Links */}
                                                         {socialItems.length > 0 && (
                                                             <div>
-                                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 mb-3">Your Social Links</p>
+                                                                <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest pl-1 mb-3">Your Social Links</p>
                                                                 <div className="space-y-2">
                                                                     {socialItems.map((sItem: any, siIdx: number) => {
                                                                         const platformKey = (sItem.icon || sItem.type || sItem.name || '').toLowerCase();
                                                                         const brandColor = getBrandColor(platformKey);
                                                                         const platformMeta = SOCIAL_PLATFORMS.find(p => p.key === platformKey);
                                                                         return (
-                                                                            <div key={siIdx} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 group relative">
+                                                                            <div key={siIdx} className="flex items-center gap-3 p-3 rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] group relative">
                                                                                 {/* Brand Icon */}
                                                                                 <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border" style={{ borderColor: brandColor + '30', background: brandColor + '15' }}>
                                                                                     <span style={{ color: brandColor }}>
@@ -3767,7 +3767,7 @@ function BioLinkBuilderContent() {
                                                                                 </div>
                                                                                 {/* URL Input */}
                                                                                 <div className="flex-1 min-w-0">
-                                                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{platformMeta?.label || sItem.name || 'Link'}</p>
+                                                                                    <p className="text-[9px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-1">{platformMeta?.label || sItem.name || 'Link'}</p>
                                                                                     <input
                                                                                         type="text"
                                                                                         value={sItem.link || sItem.url || ''}
@@ -3777,12 +3777,12 @@ function BioLinkBuilderContent() {
                                                                                             upd('items', newItems);
                                                                                         }}
                                                                                         placeholder={platformMeta?.prefix || 'https://'}
-                                                                                        className="w-full text-xs font-medium outline-none bg-transparent text-slate-700 dark:text-slate-200 placeholder:text-slate-300 border-b border-slate-200 dark:border-slate-700 focus:border-primary pb-1 transition-colors"
+                                                                                        className="w-full text-xs font-medium outline-none bg-transparent text-[var(--foreground)] dark:text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/50 border-b border-[var(--border)] dark:border-[var(--border)] focus:border-primary pb-1 transition-colors"
                                                                                     />
                                                                                 </div>
                                                                                 {/* Remove */}
                                                                                 {['tel', 'email', 'whatsapp', 'instagram'].includes(platformKey) ? (
-                                                                                    <div className="w-8 h-8 rounded-xl bg-slate-100/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 shrink-0 cursor-not-allowed" title="Mandatory platform">
+                                                                                    <div className="w-8 h-8 rounded-xl bg-[var(--muted)]/60/50 dark:bg-[var(--muted)]/40 flex items-center justify-center text-[var(--muted-foreground)]/70 shrink-0 cursor-not-allowed" title="Mandatory platform">
                                                                                         <ShieldCheck size={14} />
                                                                                     </div>
                                                                                 ) : (
@@ -3808,13 +3808,13 @@ function BioLinkBuilderContent() {
                                                 <div className="space-y-4">
                                                     <InputField label="Section Title" value={s.title || ""} onChange={(e: any) => upd('title', e.target.value)} placeholder="Your Questions, Answered" />
                                                     {(s.items || []).map((faq: any, i: number) => (
-                                                        <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-3 relative group">
+                                                        <div key={i} className="p-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] space-y-3 relative group">
                                                             <button onClick={() => { const it = [...(s.items || [])]; it.splice(i, 1); upd('items', it); }} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">×</button>
                                                             <InputField label="Question" value={faq.question || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...faq, question: e.target.value }; upd('items', it); }} />
                                                             <InputField label="Answer" value={faq.answer || ""} onChange={(e: any) => { const it = [...(s.items || [])]; it[i] = { ...faq, answer: e.target.value }; upd('items', it); }} textarea />
                                                         </div>
                                                     ))}
-                                                    <button onClick={() => upd('items', [...(s.items || []), { question: "", answer: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add FAQ</button>
+                                                    <button onClick={() => upd('items', [...(s.items || []), { question: "", answer: "" }])} className="w-full h-10 rounded-xl border-2 border-dashed border-[var(--border)] dark:border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]/70 hover:text-primary hover:border-primary flex items-center justify-center gap-1 transition-all"><Plus size={12} /> Add FAQ</button>
                                                 </div>
                                             )}
 
@@ -3837,7 +3837,7 @@ function BioLinkBuilderContent() {
                         </div>
 
                         {/* Editor Footer / Actions */}
-                        <div className="p-4 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shrink-0 z-10 relative">
+                        <div className="p-4 sm:p-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 shrink-0 z-10 relative">
                             <div className="flex flex-row gap-3 w-full">
                                 {!editingBlock?._isNew && (
                                     <button
@@ -3845,7 +3845,7 @@ function BioLinkBuilderContent() {
                                             if (!editingBlock?.id) return;
                                             setActionModal({ isOpen: true, type: 'delete', row: { id: editingBlock.id } as any });
                                         }}
-                                        className="flex-1 h-12 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-[10px] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 h-12 rounded-2xl border border-[var(--border)] dark:border-[var(--border)] text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 font-bold uppercase tracking-widest text-[10px] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
                                     >
                                         <Trash2 size={14} /> Delete
                                     </button>
@@ -3855,7 +3855,7 @@ function BioLinkBuilderContent() {
                                     disabled={isSavingBlock}
                                     className={cn(
                                         "flex-[2] h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg transition-all flex items-center justify-center gap-2",
-                                        isSavingBlock ? "bg-slate-100 text-slate-400" : "bg-primary text-white hover:opacity-90 active:scale-[0.98] shadow-primary/25"
+                                        isSavingBlock ? "bg-[var(--muted)]/50 text-[var(--muted-foreground)]/70" : "bg-primary text-white hover:opacity-90 active:scale-[0.98] shadow-primary/25"
                                     )}
                                 >
                                     {isSavingBlock ? (

@@ -162,26 +162,26 @@ export default function BroadcastMonitorPage() {
                         style={{ width: `${percent}%` }}
                     >
                         {isActive && (
-                            <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                            <div className="absolute inset-0 bg-[var(--card)]/20 animate-pulse"></div>
                         )}
                     </div>
                 </div>
 
                 {/* Stat Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="p-4 rounded-xl border bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
+                    <div className="p-4 rounded-xl border bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
                         <p className="text-xs font-semibold text-neutral-500 uppercase flex items-center gap-2"><Send className="w-3.5 h-3.5" /> Sent</p>
                         <p className="text-2xl font-bold text-emerald-600 mt-2">{sent.toLocaleString()}</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
+                    <div className="p-4 rounded-xl border bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
                         <p className="text-xs font-semibold text-neutral-500 uppercase flex items-center gap-2"><Clock className="w-3.5 h-3.5" /> Queued</p>
                         <p className="text-2xl font-bold text-blue-600 mt-2">{queued.toLocaleString()}</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
+                    <div className="p-4 rounded-xl border bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
                         <p className="text-xs font-semibold text-neutral-500 uppercase flex items-center gap-2"><AlertCircle className="w-3.5 h-3.5" /> Failed</p>
                         <p className="text-2xl font-bold text-red-600 mt-2">{failed.toLocaleString()}</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
+                    <div className="p-4 rounded-xl border bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800">
                         <p className="text-xs font-semibold text-neutral-500 uppercase flex items-center gap-2"><XCircle className="w-3.5 h-3.5" /> Skipped</p>
                         <p className="text-2xl font-bold text-orange-600 mt-2">{skipped.toLocaleString()}</p>
                     </div>

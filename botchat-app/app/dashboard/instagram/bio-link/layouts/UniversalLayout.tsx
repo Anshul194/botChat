@@ -240,7 +240,7 @@ export const UniversalLayout = ({
                             <p className="text-[12px] text-white/50 mb-8 max-w-[200px] mx-auto">Get the latest insights and trendy updates directly.</p>
                             <div className="flex flex-col gap-3">
                                 <input type="email" placeholder="Your Email" className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-[12px] outline-none focus:bg-white/10 transition-all text-center" />
-                                <button className="w-full h-14 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">Subscribe Now</button>
+                                <button className="w-full h-14 bg-[var(--card)] text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">Subscribe Now</button>
                             </div>
                         </div>
                     </div>
@@ -297,10 +297,10 @@ export const UniversalLayout = ({
                     <div>
                         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 text-center mb-8">Trusted by Global Brands</p>
                         <div className="grid grid-cols-4 gap-8 opacity-20 grayscale brightness-200 px-4">
-                            <div className="aspect-square bg-white rounded-xl"></div>
-                            <div className="aspect-square bg-white rounded-xl"></div>
-                            <div className="aspect-square bg-white rounded-xl"></div>
-                            <div className="aspect-square bg-white rounded-xl"></div>
+                            <div className="aspect-square bg-[var(--card)] rounded-xl"></div>
+                            <div className="aspect-square bg-[var(--card)] rounded-xl"></div>
+                            <div className="aspect-square bg-[var(--card)] rounded-xl"></div>
+                            <div className="aspect-square bg-[var(--card)] rounded-xl"></div>
                         </div>
                     </div>
 
@@ -326,7 +326,7 @@ export const UniversalLayout = ({
 
                 {/* Floating Contact CTA */}
                 <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-[min(300px,calc(100%-3rem))]">
-                    <button type="button" className="w-full h-14 bg-white text-[#0f172a] rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-white/10 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+                    <button type="button" className="w-full h-14 bg-[var(--card)] text-[#0f172a] rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-white/10 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
                         Get In Touch <ExternalLink size={14} />
                     </button>
                 </div>

@@ -528,16 +528,16 @@ export default function PostStudioPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-[var(--border)] bg-[var(--background)]/40">
-                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Campaign</th>
-                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Type</th>
-                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Schedule</th>
-                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Status</th>
-                    <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] text-right">Actions</th>
+                    <th className="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Campaign</th>
+                    <th className="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Type</th>
+                    <th className="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Schedule</th>
+                    <th className="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Status</th>
+                    <th className="px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCampaigns.map((camp: any, idx: number) => (
-                    <tr key={camp.id || idx} className={cn("transition-colors", idx % 2 === 0 ? "bg-white/30 dark:bg-white/[0.02]" : "bg-transparent", "hover:bg-primary/[0.04]")}>
+                    <tr key={camp.id || idx} className={cn("transition-colors", idx % 2 === 0 ? "bg-[var(--card)]/30 dark:bg-[var(--card)]/[0.02]" : "bg-transparent", "hover:bg-primary/[0.04]")}>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3.5">
                           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 relative ring-1 ring-inset ring-primary/20">
@@ -755,7 +755,7 @@ export default function PostStudioPage() {
         {/* Mobile Preview Button */}
         <button
           onClick={() => setShowMobilePreview(true)}
-          className="lg:hidden fixed bottom-6 right-4 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center active:scale-90 transition-transform"
+          className="lg:hidden fixed bottom-6 right-4 z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-[var(--primary)]/30 flex items-center justify-center active:scale-90 transition-transform"
         >
           <Smartphone className="w-5 h-5" />
         </button>

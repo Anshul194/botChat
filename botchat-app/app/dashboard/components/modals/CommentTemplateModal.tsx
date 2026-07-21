@@ -55,29 +55,29 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect:(e:string)=>void;
   return (
     <motion.div ref={ref}
       initial={{opacity:0,scale:0.95,y:10}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.95,y:10}}
-      className="w-[320px] sm:w-[380px] bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700 rounded-[32px] shadow-[0_32px_96px_-12px_rgba(0,0,0,0.25)] overflow-hidden"
+      className="w-[320px] sm:w-[380px] bg-[var(--card)] dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl shadow-[0_32px_96px_-12px_rgba(0,0,0,0.25)] overflow-hidden"
     >
-      <div className="flex items-center px-4 pt-4 pb-2 gap-1 overflow-x-auto no-scrollbar border-b border-slate-50 dark:border-slate-800">
+      <div className="flex items-center px-4 pt-4 pb-2 gap-1 overflow-x-auto no-scrollbar border-b border-[var(--border)] dark:border-[var(--border)]">
         {EC.map(cat => (
           <button key={cat.id} onClick={()=>scrollTo(cat.id)}
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-xl text-[18px] hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-90"
+            className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-xl text-[18px] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] transition-all active:scale-90"
           >
-            {cat.id==="recent" ? <Clock className="w-4 h-4 text-slate-400"/> : cat.icon}
+            {cat.id==="recent" ? <Clock className="w-4 h-4 text-[var(--muted-foreground)]/70"/> : cat.icon}
           </button>
         ))}
       </div>
       <div className="px-4 py-3">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/>
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70"/>
           <input type="text" placeholder="Search emojis…" value={q} onChange={e=>setQ(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl bg-slate-50 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-slate-400 text-slate-700 dark:text-slate-200"
+            className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-none outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[var(--muted-foreground)]/70 text-[var(--foreground)] dark:text-[var(--foreground)]"
           />
         </div>
       </div>
       <div ref={listRef} className="max-h-[300px] overflow-y-auto px-4 pb-4 custom-scrollbar scroll-smooth no-scrollbar">
         {allFiltered ? (
           <div className="pt-2">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Results</p>
+            <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-3">Results</p>
             <div className="grid grid-cols-7 gap-1">
               {allFiltered.map((emoji,i) => (
                 <button key={i} onClick={()=>{onSelect(emoji); setQ("");}} className="text-[24px] h-10 w-10 flex items-center justify-center rounded-xl hover:bg-primary/10 transition-all">{emoji}</button>
@@ -87,7 +87,7 @@ function EmojiPicker({ onSelect, onClose, recent }: { onSelect:(e:string)=>void;
         ) : (
           EC.filter(c=>c.id!=="recent").map(cat => (
             <div key={cat.id} id={`cat-${cat.id}`} className="mb-6">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-1">{cat.label}</p>
+              <p className="text-[10px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest mb-3 px-1">{cat.label}</p>
               <div className="grid grid-cols-7 gap-1">
                 {cat.emojis.map((emoji,i) => (
                   <button key={i} onClick={()=>onSelect(emoji)} className="text-[24px] h-10 w-10 flex items-center justify-center rounded-xl hover:bg-primary/10 transition-all">{emoji}</button>
@@ -123,31 +123,31 @@ function MessageRow({ value, index, onChange, onRemove, showRemove, recent, addR
   return (
     <div className="relative">
       <div className={cn(
-        "rounded-[28px] border-2 bg-white dark:bg-slate-900 transition-all overflow-hidden shadow-sm",
-        showEmoji ? "border-primary shadow-xl shadow-primary/5 ring-4 ring-primary/5" : "border-slate-100 dark:border-slate-800 focus-within:border-primary/60"
+        "rounded-2xl border-2 bg-[var(--card)] dark:bg-[var(--background)] transition-all overflow-hidden shadow-sm",
+        showEmoji ? "border-primary shadow-xl shadow-[var(--primary)]/10 ring-4 ring-primary/5" : "border-[var(--border)] dark:border-[var(--border)] focus-within:border-primary/60"
       )}>
-        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--muted)]/20">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center shadow-sm">
+            <div className="w-7 h-7 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-center shadow-sm">
               <span className="text-[11px] font-black text-primary">{index+1}</span>
             </div>
-            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Random Payload</span>
+            <span className="text-[11px] font-black text-[var(--muted-foreground)]/70 uppercase tracking-widest">Random Payload</span>
           </div>
           {showRemove && (
-            <button onClick={onRemove} className="p-2 rounded-xl text-slate-300 hover:text-rose-500 transition-all">
+            <button onClick={onRemove} className="p-2 rounded-xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all">
               <Trash2 className="w-4 h-4"/>
             </button>
           )}
         </div>
         <textarea ref={textRef} rows={3} value={value} onChange={e=>onChange(e.target.value)}
           placeholder={`Enter the automated response text here…`}
-          className="w-full px-6 py-4 text-[15px] font-medium resize-none outline-none bg-transparent text-slate-800 dark:text-slate-200 placeholder:text-slate-300 leading-relaxed min-h-[90px]"
+          className="w-full px-6 py-4 text-[15px] font-medium resize-none outline-none bg-transparent text-[var(--foreground)] dark:text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]/50 leading-relaxed min-h-[90px]"
         />
         <div className="flex items-center justify-end px-5 pb-3">
           <button ref={buttonRef} type="button" onClick={()=>setShowEmoji(!showEmoji)}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-2xl text-[12px] font-bold transition-all border",
-              showEmoji ? "bg-primary/10 border-primary/20 text-primary" : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-500 hover:text-primary"
+              showEmoji ? "bg-primary/10 border-primary/20 text-primary" : "bg-[var(--card)] dark:bg-[var(--muted)] border-[var(--border)] dark:border-[var(--border)] text-[var(--muted-foreground)] hover:text-primary"
             )}
           >
             <Smile className="w-4 h-4"/>
@@ -223,38 +223,38 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
         <AnimatePresence>
             {isOpen && (
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }} 
-                        className="bg-[#fdfdff] dark:bg-slate-900 rounded-[40px] shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col max-h-[94vh] relative z-10"
+                        className="bg-[var(--card)] dark:bg-[var(--background)] rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col max-h-[94vh] relative z-10"
                         onClick={e=>e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="flex items-center gap-4 px-10 py-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center gap-4 px-10 py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)]">
                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20">
                                 <Sparkles className="w-6 h-6 text-white"/>
                              </div>
                              <div className="flex-1">
-                                <h2 className="text-[18px] font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
-                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1.5">{platform} Automation Node</p>
+                                <h2 className="text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
+                                <p className="text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1.5">{platform} Automation Node</p>
                              </div>
-                             <button onClick={onClose} className="p-3 rounded-2xl text-slate-300 hover:text-rose-500 transition-all"><X className="w-6 h-6"/></button>
+                             <button onClick={onClose} className="p-3 rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all"><X className="w-6 h-6"/></button>
                         </div>
 
                         {/* Body */}
                         <div className="flex-1 overflow-y-auto p-10 space-y-8 no-scrollbar">
                             <div className="space-y-3">
-                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Template Asset Identity <span className="text-rose-500">*</span></label>
+                                <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest ml-1">Template Asset Identity <span className="text-rose-500">*</span></label>
                                 <input autoFocus type="text" placeholder='e.g. "Viral Engagement Set"' value={name} onChange={e=>setName(e.target.value)}
-                                    className="w-full px-6 py-4.5 rounded-[24px] bg-white dark:bg-slate-950 border-2 border-slate-100 dark:border-slate-800 focus:border-primary text-[15px] font-bold outline-none transition-all placeholder:text-slate-200"
+                                    className="w-full px-6 py-3 rounded-[24px] bg-[var(--card)] dark:bg-slate-950 border-2 border-[var(--border)] dark:border-[var(--border)] focus:border-primary text-[15px] font-bold outline-none transition-all placeholder:text-slate-200"
                                 />
                             </div>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between px-1">
                                     <div>
-                                        <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest leading-none">Payload Inventory <span className="text-rose-500">*</span></label>
-                                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-tight mt-1">Randomized response rotation</p>
+                                        <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none">Payload Inventory <span className="text-rose-500">*</span></label>
+                                        <p className="text-[10px] text-[var(--muted-foreground)]/70 font-medium uppercase tracking-tight mt-1">Randomized response rotation</p>
                                     </div>
                                     <button onClick={addRow} className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary/10 text-primary text-[12px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20">
                                         <Plus className="w-4 h-4" strokeWidth={3}/> Add Resource
@@ -278,14 +278,14 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
                                 </div>
 
                                 {messages.some(m=>m.trim()) && (
-                                    <div className="p-5 rounded-[32px] bg-gradient-to-br from-indigo-50/50 to-pink-50/50 dark:from-slate-800/50 border border-primary/20">
+                                    <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-50/50 to-pink-50/50 dark:from-slate-800/50 border border-primary/20">
                                         <div className="flex items-center gap-2 mb-3">
                                             <Tag className="w-4 h-4 text-primary" />
                                             <span className="text-[10px] font-black text-primary uppercase tracking-widest">Rotation Preview</span>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
                                             {messages.filter(m=>m.trim()).map((m,i)=>(
-                                                <span key={i} className="text-[12px] px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-primary/10 text-slate-700 dark:text-slate-300 font-bold shadow-sm">{m}</span>
+                                                <span key={i} className="text-[12px] px-4 py-2 rounded-2xl bg-[var(--card)] dark:bg-[var(--background)] border border-primary/10 text-[var(--foreground)] dark:text-[var(--muted-foreground)]/50 font-bold shadow-sm">{m}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -294,9 +294,9 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
                         </div>
 
                         {/* Footer */}
-                        <div className="flex gap-4 px-10 py-7 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                             <button onClick={onClose} className="flex-1 py-4.5 rounded-[22px] bg-slate-100 dark:bg-slate-800 text-slate-500 font-black text-[13px] uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95">Cancel</button>
-                             <button onClick={handleSave} disabled={isSaving} className="flex-[2.5] py-4.5 rounded-[22px] bg-gradient-to-r from-pink-600 to-rose-500 text-white font-black text-[14px] uppercase tracking-widest shadow-2xl shadow-primary/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                        <div className="flex gap-4 px-10 py-7 bg-[var(--card)] dark:bg-[var(--background)] border-t border-[var(--border)] dark:border-[var(--border)]">
+                             <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] text-[var(--muted-foreground)] font-black text-[13px] uppercase tracking-widest hover:bg-[var(--muted)]/80 transition-all active:scale-95">Cancel</button>
+                             <button onClick={handleSave} disabled={isSaving} className="flex-[2.5] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[14px] uppercase tracking-widest shadow-2xl shadow-[var(--primary)]/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                                 {isSaving ? "Synchronizing Asset..." : (editingTemplate ? "Finalize Changes" : "Register Node")}
                              </button>

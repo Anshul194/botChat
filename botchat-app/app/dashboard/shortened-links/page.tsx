@@ -48,25 +48,25 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
         {open && (
             <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+                    className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 60 }}
                     transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                    className={cn("relative z-10 w-full bg-white dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-[var(--card)] dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-[0_32px_128px_rgba(0,0,0,0.3)]", maxWidthClassName)}>
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
-                        <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700" />
+                        <div className="w-10 h-1 rounded-full bg-[var(--muted)]/70 dark:bg-slate-700" />
                     </div>
-                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-[var(--border)] dark:border-[var(--border)]">
                         {icon && <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">{icon}</div>}
-                        <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex-1 tracking-tight">{title}</h2>
-                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors shrink-0">
+                        <h2 className="text-lg sm:text-xl font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight">{title}</h2>
+                        <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors shrink-0">
                             <X size={18} />
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-5 sm:p-8">{children}</div>
-                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">{footer}</div>}
+                    {footer && <div className="px-5 sm:px-8 py-4 sm:py-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]">{footer}</div>}
                 </motion.div>
             </div>
         )}
@@ -75,11 +75,11 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
 
 const InputField = ({ label, ...props }: any) => (
     <div className="space-y-1.5 sm:space-y-2">
-        <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">{label}</label>
+        <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">{label}</label>
         <div className="relative group">
             <input
                 {...props}
-                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
+                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--muted-foreground)] shadow-inner"
             />
         </div>
     </div>
@@ -204,7 +204,7 @@ export default function ShortenedLinksPage() {
                             </div>
                         </div>
                         <div className="space-y-0.5 sm:space-y-1">
-                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-[var(--foreground)] dark:text-white">
                                 Shortened Links
                             </h1>
                             <p className="text-[var(--muted-foreground)] font-medium max-w-xl text-xs sm:text-sm md:text-base">
@@ -356,7 +356,7 @@ export default function ShortenedLinksPage() {
                 icon={<Link2 size={20} />}
                 footer={
                     <div className="flex gap-3 sm:gap-4">
-                        <button onClick={() => setShowCreateModal(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                        <button onClick={() => setShowCreateModal(false)} className="flex-1 h-12 sm:h-14 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--muted-foreground)] font-black uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--card)]/5 transition-colors">Cancel</button>
                         <button
                             onClick={onCreate}
                             disabled={isCreating}
@@ -383,11 +383,11 @@ export default function ShortenedLinksPage() {
                     />
                     {domains.length > 0 && (
                         <div className="space-y-1.5 sm:space-y-2">
-                            <label className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Custom Domain</label>
+                            <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">Custom Domain</label>
                             <select
                                 value={draft.domain_id}
                                 onChange={(e: any) => setDraft((prev) => ({ ...prev, domain_id: parseInt(e.target.value) }))}
-                                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-transparent focus:border-slate-300 dark:focus:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none transition-all"
+                                className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all"
                             >
                                 <option value={0}>Default domain</option>
                                 {domains.map((d: any) => (
@@ -442,16 +442,16 @@ function ShortLinkCard({ item, onEdit, onCopy, copied }: any) {
                     <div
                         className={cn(
                             "relative inline-flex h-5 w-10 shrink-0 items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                            item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                            item.active ? "bg-primary" : "bg-[var(--muted)]/70 dark:bg-[var(--muted)]"
                         )}
                     >
-                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-5" : "translate-x-0.5")} />
+                        <span className={cn("pointer-events-none block h-3.5 w-3.5 rounded-full bg-[var(--card)] shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-5" : "translate-x-0.5")} />
                     </div>
-                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] text-slate-400">Tracking</span>
+                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] text-[var(--muted-foreground)]/70">Tracking</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 sm:gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onCopy(item.full_url, item.slug)} className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all border", copied ? "bg-primary text-white border-primary" : "bg-slate-50 dark:bg-white/5 border-transparent hover:border-slate-200 text-slate-500")}>
+                    <button onClick={() => onCopy(item.full_url, item.slug)} className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all border", copied ? "bg-primary text-white border-primary" : "bg-[var(--muted)]/50 dark:bg-[var(--card)]/5 border-transparent hover:border-[var(--border)] text-[var(--muted-foreground)]")}>
                         {copied ? <CheckCircle2 size={14} className="sm:size-4" /> : <Copy size={14} className="sm:size-4" />}
                     </button>
                     <ActionDropdown item={item} onEdit={onEdit} />
@@ -488,7 +488,7 @@ function ShortLinkTableRow({ item, onEdit, onCopy, copied }: any) {
             </td>
             <td className="px-8 py-5 text-right">
                 <div className="flex items-center justify-end gap-3" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onCopy(item.full_url, item.slug)} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-white dark:bg-white/5 border-[var(--border)] text-slate-500 hover:text-primary hover:border-primary/30")}>
+                    <button onClick={() => onCopy(item.full_url, item.slug)} className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all border shadow-sm", copied ? "bg-primary text-white border-primary" : "bg-[var(--card)] dark:bg-[var(--card)]/5 border-[var(--border)] text-[var(--muted-foreground)] hover:text-primary hover:border-primary/30")}>
                         {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
                     </button>
                     <ActionDropdown item={item} onEdit={onEdit} />
@@ -511,29 +511,29 @@ function ShortLinkMobileCard({ item, onEdit, onCopy, copied }: any) {
                         <Zap size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate leading-snug">/{item.slug}</h4>
+                        <h4 className="text-sm font-bold text-[var(--foreground)] dark:text-white truncate leading-snug">/{item.slug}</h4>
                         <p className="text-[10px] text-[var(--muted-foreground)] font-medium truncate flex items-center gap-1">
                             <ArrowRight size={9} className="text-primary shrink-0" /> {item.location_url}
                         </p>
                     </div>
-                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 border bg-slate-50 dark:bg-slate-900 text-slate-500 border-slate-100">
+                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 border bg-[var(--muted)]/50 dark:bg-[var(--background)] text-[var(--muted-foreground)] border-[var(--border)]">
                         <MousePointer2 size={10} className="text-primary" />
                         {item.clicks}
                     </div>
                 </div>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-slate-400">
+                    <div className="flex items-center gap-1.5 text-[var(--muted-foreground)]/70">
                         <div
                             className={cn(
                                 "relative inline-flex h-4 w-8 shrink-0 items-center rounded-full border-2 border-transparent transition-colors duration-300",
-                                item.active ? "bg-primary" : "bg-slate-200 dark:bg-slate-800"
+                                item.active ? "bg-primary" : "bg-[var(--muted)]/70 dark:bg-[var(--muted)]"
                             )}
                         >
-                            <span className={cn("pointer-events-none block h-2.5 w-2.5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-[14px]" : "translate-x-0.5")} />
+                            <span className={cn("pointer-events-none block h-2.5 w-2.5 rounded-full bg-[var(--card)] shadow-lg ring-0 transition-transform duration-300", item.active ? "translate-x-[14px]" : "translate-x-0.5")} />
                         </div>
                         <span className="text-[8px] font-black uppercase tracking-wider">Tracking</span>
                     </div>
-                    <span className="text-[9px] text-slate-400 font-medium">Tap to manage →</span>
+                    <span className="text-[9px] text-[var(--muted-foreground)]/70 font-medium">Tap to manage →</span>
                 </div>
             </button>
 
@@ -542,29 +542,29 @@ function ShortLinkMobileCard({ item, onEdit, onCopy, copied }: any) {
                     <Pencil className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Edit</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onCopy(item.full_url, item.slug); }} className={cn("py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn", copied ? "text-primary" : "text-slate-400 hover:text-primary hover:bg-primary/5")}>
+                <button onClick={(e) => { e.stopPropagation(); onCopy(item.full_url, item.slug); }} className={cn("py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors group/btn", copied ? "text-primary" : "text-[var(--muted-foreground)]/70 hover:text-primary hover:bg-primary/5")}>
                     {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">{copied ? "Copied" : "Copy"}</span>
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); window.open(item.full_url, '_blank'); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors group/btn">
+                <button onClick={(e) => { e.stopPropagation(); window.open(item.full_url, '_blank'); }} className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-primary hover:bg-primary/5 transition-colors group/btn">
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">Visit</span>
                 </button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
+                        <button className="py-2.5 flex flex-col items-center justify-center gap-0.5 text-[var(--muted-foreground)]/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group/btn">
                             <MoreVertical className="w-3.5 h-3.5" />
                             <span className="text-[8px] font-bold uppercase tracking-wide opacity-70 group-hover/btn:opacity-100">More</span>
                         </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+                    <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl border-[var(--border)] dark:border-white/10 bg-[var(--card)]/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
                         <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/shortened-links/analytics?page=${item.id}`)}>
-                            <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
+                            <BarChart2 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <History size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Change Logs</span>
+                            <History size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Change Logs</span>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                        <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
                         <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
                             <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Purge Link</span>
                         </DropdownMenuItem>
@@ -582,24 +582,24 @@ function ActionDropdown({ item, onEdit }: any) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-400 hover:text-slate-600">
+                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border border-[var(--border)] flex items-center justify-center hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--card)]/10 transition-all text-[var(--muted-foreground)]/70 hover:text-[var(--muted-foreground)]">
                     <MoreVertical size={16} className="sm:size-[18px]" />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 sm:w-60 p-2 rounded-2xl border-slate-100 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
+            <DropdownMenuContent align="end" className="w-56 sm:w-60 p-2 rounded-2xl border-[var(--border)] dark:border-white/10 bg-[var(--card)]/95 dark:bg-slate-950/95 backdrop-blur-xl shadow-2xl">
                 <DropdownMenuItem onClick={() => onEdit(item)} className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <Pencil size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Modify Link</span>
+                    <Pencil size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Modify Link</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => window.open(item.full_url, '_blank')}>
-                    <ExternalLink size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Visit Live</span>
+                    <ExternalLink size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Visit Live</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/shortened-links/analytics?page=${item.id}`)}>
-                    <BarChart2 size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
+                    <BarChart2 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <History size={16} className="text-slate-500" /> <span className="font-bold text-xs uppercase tracking-wider">Change Logs</span>
+                    <History size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Change Logs</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-white/5" />
+                <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
                     <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Purge Link</span>
                 </DropdownMenuItem>

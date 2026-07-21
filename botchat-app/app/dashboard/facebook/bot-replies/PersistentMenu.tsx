@@ -42,7 +42,7 @@ interface MenuItemFormProps {
 function MenuItemForm({ item, index, subIndex, actions, onUpdate, onRemove, onAddSub }: MenuItemFormProps) {
     return (
         <div className={cn(
-            "p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-white dark:bg-neutral-900 shadow-sm",
+            "p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-[var(--card)] dark:bg-neutral-900 shadow-sm",
             subIndex !== undefined ? "ml-6 mt-3" : "mt-4"
         )}>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -331,7 +331,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
         <div className="w-full space-y-6 pb-12 animate-in fade-in duration-500">
 
             {/* Header Controls */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-sm">
                 <div>
                     <h2 className="text-xl font-semibold text-neutral-900 dark:text-white uppercase tracking-tight">Persistent Menu</h2>
                     <p className="text-[11px] text-neutral-400 font-medium uppercase tracking-widest mt-1">Configure the permanent menu visible in Messenger</p>
@@ -348,7 +348,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="px-5 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#0866FF] hover:bg-[#0866FF]/5 transition-all text-[11px] font-medium uppercase tracking-widest flex items-center gap-2"
+                        className="px-5 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-[var(--card)] dark:bg-neutral-900 text-[#0866FF] hover:bg-[#0866FF]/5 transition-all text-[11px] font-medium uppercase tracking-widest flex items-center gap-2"
                     >
                         {isSaving ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                         Save Local
@@ -371,7 +371,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                     "w-full max-w-sm p-5 rounded-2xl border transition-all flex flex-col gap-4 shadow-sm",
                     composerInputDisabled
                         ? "bg-blue-50/50 border-blue-200 dark:bg-blue-950/10 dark:border-blue-900/40"
-                        : "bg-white dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800"
+                        : "bg-[var(--card)] dark:bg-neutral-900 border-neutral-100 dark:border-neutral-800"
                 )}>
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
@@ -392,7 +392,7 @@ export default function PersistentMenu({ pageId, actions }: PersistentMenuProps)
                             )}
                         >
                             <div className={cn(
-                                "absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm",
+                                "absolute top-1 w-4 h-4 rounded-full bg-[var(--card)] transition-all duration-300 shadow-sm",
                                 composerInputDisabled ? "left-7" : "left-1"
                             )} />
                         </button>

@@ -69,7 +69,7 @@ export const PortfolioLayout = ({
             {activePortfolioTab === "profile" ? (
                 /* Profile Tab - White Card Overlay */
                 <div className="p-4 py-6 w-full h-full flex-1">
-                    <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 flex flex-col items-center">
+                    <div className="bg-[var(--card)] rounded-[2rem] p-6 shadow-sm border border-gray-100 flex flex-col items-center">
                         {heroBlock && (
                             <>
                                 <img
@@ -115,7 +115,7 @@ export const PortfolioLayout = ({
                 </div>
             ) : (
                 /* Portfolio Tab - Full Continuous Template */
-                <div className="flex-1 w-full flex flex-col bg-white">
+                <div className="flex-1 w-full flex flex-col bg-[var(--card)]">
                     {portfolioSubView === "main" ? (
                         <>
                             {/* Hero Banner Section */}
@@ -138,7 +138,7 @@ export const PortfolioLayout = ({
                                         <div className="flex items-center gap-3">
                                             <a
                                                 href={heroBlock?.settings?.cta_link || "#contact"}
-                                                className="flex-1 bg-white text-black rounded-full py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition font-bold text-[12px] shadow-lg no-underline"
+                                                className="flex-1 bg-[var(--card)] text-black rounded-full py-3 px-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition font-bold text-[12px] shadow-lg no-underline"
                                             >
                                                 <Mail size={14} /> {heroBlock?.settings?.cta_text || "Contact Me"}
                                             </a>
@@ -249,20 +249,20 @@ export const PortfolioLayout = ({
                                             if (type === "link") {
                                                 return (
                                                     <a key={block.id} href={block.location_url} className="group bg-gray-50 hover:bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 flex items-center p-4 gap-4 transition-all no-underline">
-                                                        <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 border border-gray-100">
+                                                        <div className="w-12 h-12 bg-[var(--card)] rounded-xl shadow-sm flex items-center justify-center shrink-0 border border-gray-100">
                                                             {settings.icon ? <i className={`${settings.icon} text-xl text-gray-600`}></i> : <Globe size={20} className="text-gray-600" />}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <h4 className="font-bold text-gray-900 text-[15px] truncate">{displayLabel}</h4>
                                                             <p className="text-[12px] text-gray-500 truncate mt-0.5">{block.location_url}</p>
                                                         </div>
-                                                        <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center">
+                                                        <div className="w-8 h-8 rounded-full bg-[var(--card)] shadow-sm border border-gray-100 flex items-center justify-center">
                                                             <ArrowUpRight size={14} className="text-gray-600" />
                                                         </div>
                                                     </a>
                                                 );
                                             }
-                                            return <div key={block.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">{renderBlockUI(block, false, idx)}</div>;
+                                            return <div key={block.id} className="bg-[var(--card)] rounded-2xl border border-gray-200 overflow-hidden shadow-sm">{renderBlockUI(block, false, idx)}</div>;
                                         })}
                                     </div>
 
@@ -333,7 +333,7 @@ export const PortfolioLayout = ({
 
                                     <div className="flex flex-col gap-6">
                                         {(testimonialsBlock.settings?.items || []).map((item: any, i: number) => (
-                                            <div key={`test-${i}`} className="p-8 rounded-[40px] bg-white border border-gray-100 shadow-sm">
+                                            <div key={`test-${i}`} className="p-8 rounded-[40px] bg-[var(--card)] border border-gray-100 shadow-sm">
                                                 <div className="flex items-center gap-1 mb-6 text-yellow-400">
                                                     {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
                                                 </div>

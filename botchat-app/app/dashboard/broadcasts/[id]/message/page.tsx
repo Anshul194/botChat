@@ -503,7 +503,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
 
     const Bubble = ({ children }: { children: React.ReactNode }) => (
         <div className="flex justify-start mb-3">
-            <div className="bg-white dark:bg-[#3E4042] rounded-2xl rounded-tl-sm p-3 shadow-sm max-w-[85%] text-sm text-neutral-900 dark:text-neutral-100">
+            <div className="bg-[var(--card)] dark:bg-[#3E4042] rounded-2xl rounded-tl-sm p-3 shadow-sm max-w-[85%] text-sm text-neutral-900 dark:text-neutral-100">
                 {children}
             </div>
         </div>
@@ -538,7 +538,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
                         <p className="whitespace-pre-wrap">{preview?.text || <span className="text-neutral-400 italic">Button message text…</span>}</p>
                     </Bubble>
                     {(preview?.buttons || []).map((btn: ButtonItem, i: number) => (
-                        <div key={i} className="bg-white dark:bg-[#3E4042] border border-blue-200 dark:border-blue-700 rounded-xl px-4 py-2 text-center text-blue-600 dark:text-blue-400 text-sm font-semibold shadow-sm cursor-default">
+                        <div key={i} className="bg-[var(--card)] dark:bg-[#3E4042] border border-blue-200 dark:border-blue-700 rounded-xl px-4 py-2 text-center text-blue-600 dark:text-blue-400 text-sm font-semibold shadow-sm cursor-default">
                             {btn.title || `Button ${i + 1}`}
                         </div>
                     ))}
@@ -551,7 +551,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
                         const cards = preview?.elements || [];
                         const card = cards[carouselIdx];
                         return (
-                            <div className="bg-white dark:bg-[#3E4042] rounded-2xl overflow-hidden shadow-md max-w-[220px]">
+                            <div className="bg-[var(--card)] dark:bg-[#3E4042] rounded-2xl overflow-hidden shadow-md max-w-[220px]">
                                 {card?.image_url && <img src={card.image_url} alt={card.title} className="w-full h-28 object-cover" />}
                                 <div className="p-3">
                                     <p className="font-bold text-sm text-neutral-900 dark:text-neutral-100">{card?.title || "Card Title"}</p>
@@ -586,7 +586,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
                     </Bubble>
                     <div className="flex flex-wrap gap-1.5">
                         {(preview?.quick_replies || []).map((qr: QuickReply, i: number) => (
-                            <div key={i} className="bg-white dark:bg-[#3E4042] border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full px-3 py-1 shadow-sm cursor-default">
+                            <div key={i} className="bg-[var(--card)] dark:bg-[#3E4042] border border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full px-3 py-1 shadow-sm cursor-default">
                                 {qr.title || `Reply ${i + 1}`}
                             </div>
                         ))}
@@ -645,7 +645,7 @@ function TemplatePickerModal({ open, onClose, onSelect }: { open: boolean; onClo
                                 <div key={t.id} onClick={() => {
                                     onSelect(t.payload_json, t.message_type as MessageType);
                                     onClose();
-                                }} className="p-4 rounded-xl cursor-pointer transition-colors border border-neutral-800 hover:border-brand-purple hover:bg-white/5">
+                                }} className="p-4 rounded-xl cursor-pointer transition-colors border border-neutral-800 hover:border-brand-purple hover:bg-[var(--card)]/5">
                                     <h4 className="font-bold text-sm mb-1">{t.name}</h4>
                                     <p className="text-xs text-brand-purple mb-2">{t.category} • {t.message_type}</p>
                                     <p className="text-xs text-neutral-400 line-clamp-2">{t.description || "No description"}</p>
@@ -830,7 +830,7 @@ export default function MessageBuilderPage() {
         <div className="max-w-7xl mx-auto space-y-6">
 
             {/* Wizard Progress Bar */}
-            <div className="flex flex-col gap-3 bg-white dark:bg-neutral-900 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 bg-[var(--card)] dark:bg-neutral-900 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 sm:flex-row sm:items-center sm:justify-between">
                 <div className="-mx-4 flex items-center gap-3 overflow-x-auto px-4 text-sm font-medium text-neutral-500 no-scrollbar sm:mx-0 sm:px-0">
                     <span className="flex shrink-0 items-center gap-1.5 text-emerald-600"><CheckCircle2 className="w-4 h-4" /> Campaign</span>
                     <ChevronRight className="w-3 h-3 shrink-0 text-neutral-300" />
@@ -928,7 +928,7 @@ export default function MessageBuilderPage() {
                 <div className="lg:col-span-1">
                     <div className="sticky top-6">
                         <Card className="border-0 shadow-xl overflow-hidden bg-[#F0F2F5] dark:bg-[#18191A]">
-                            <CardHeader className="bg-white dark:bg-[#242526] border-b border-neutral-200 dark:border-neutral-700 py-3 px-4">
+                            <CardHeader className="bg-[var(--card)] dark:bg-[#242526] border-b border-neutral-200 dark:border-neutral-700 py-3 px-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -945,7 +945,7 @@ export default function MessageBuilderPage() {
                             <CardContent className="p-0">
                                 <MessengerPreview messageType={messageType} preview={preview} />
                             </CardContent>
-                            <div className="bg-white dark:bg-[#242526] border-t border-neutral-200 dark:border-neutral-700 px-4 py-2.5">
+                            <div className="bg-[var(--card)] dark:bg-[#242526] border-t border-neutral-200 dark:border-neutral-700 px-4 py-2.5">
                                 <div className="flex items-center gap-2 bg-neutral-100 dark:bg-[#3E4042] rounded-full px-4 py-2 text-xs text-neutral-400">
                                     <span className="flex-1">Preview only — not clickable</span>
                                     <span className="text-xs">Aa</span>
