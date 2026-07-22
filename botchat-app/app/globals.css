@@ -83,17 +83,17 @@ video,
 
   /* Core palette - Dark by default */
   --background: #09090b;
-  --foreground: #fdf2f8;
+  --foreground: #f8fafc; /* Improved contrast: off-white to pure bright white */
   --card: #110a14;
-  --card-foreground: #fdf2f8;
+  --card-foreground: #f8fafc;
   --popover: #110a14;
-  --popover-foreground: #fdf2f8;
+  --popover-foreground: #f8fafc;
   --primary: #FF2D78;
   --primary-foreground: #ffffff;
   --secondary: #1a0e1e;
   --secondary-foreground: #ff80ab;
   --muted: #13101a;
-  --muted-foreground: #9a7da0;
+  --muted-foreground: #cbd5e1; /* Improved contrast: slate-300 instead of dark purple */
   --accent: #ff80ab;
   --accent-foreground: #ffffff;
   --destructive: #f04343;
@@ -187,17 +187,17 @@ html.light,
 html.light :root,
 .light {
   --background: #ffffff;
-  --foreground: #1a1235;
+  --foreground: #111827; /* Dark black per user request */
   --card: #ffffff;
-  --card-foreground: #1a1235;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #1a1235;
+  --popover-foreground: #111827;
   --primary: #e8175d;
   --primary-foreground: #ffffff;
   --secondary: #fff5f8;
   --secondary-foreground: #e8175d;
-  --muted: #fdf2f8;
-  --muted-foreground: #7c6589;
+  --muted: #f3f4f6; /* Lighter muted bg for contrast */
+  --muted-foreground: #374151; /* High contrast dark gray-700 instead of light purple */
   --accent: #FF2D78;
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
