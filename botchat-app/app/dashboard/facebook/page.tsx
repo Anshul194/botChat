@@ -334,13 +334,13 @@ export default function FacebookPage() {
                                             variant="ghost"
                                             onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
                                             className={cn(
-                                                "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
+                                                "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
                                                 account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
                                             )}
                                             disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
                                         >
                                             <Trash2 className="w-4 h-4" />
-                                            Delete Account
+                                            Disconnect Account
                                         </Button>
                                     </div>
                                     {/* Mobile: full-width disconnect at bottom */}
@@ -349,8 +349,8 @@ export default function FacebookPage() {
                                             onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
                                             disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
                                             className={cn(
-                                                "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
-                                                account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-40 pointer-events-none"
+                                                "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
+                                                account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 grayscale pointer-events-none"
                                             )}
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />

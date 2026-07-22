@@ -383,13 +383,13 @@ export default function InstagramPage() {
                                                 variant="ghost"
                                                 onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: group.id, pageName: group.name })}
                                                 className={cn(
-                                                    "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
+                                                    "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
                                                     group.instagrams.some((p: any) => p.is_active) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
                                                 )}
                                                 disabled={group.instagrams.some((p: any) => p.is_active)}
                                             >
                                                 <Trash2 className="w-4 h-4" />
-                                                Delete Account
+                                                Disconnect Account
                                             </Button>
                                         )}
                                     </div>
@@ -400,8 +400,8 @@ export default function InstagramPage() {
                                                 onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: group.id, pageName: group.name })}
                                                 disabled={group.instagrams.some((p: any) => p.is_active)}
                                                 className={cn(
-                                                    "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
-                                                    group.instagrams.some((p: any) => p.is_active) && "opacity-40 pointer-events-none"
+                                                    "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
+                                                    group.instagrams.some((p: any) => p.is_active) && "opacity-50 grayscale pointer-events-none"
                                                 )}
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
@@ -490,7 +490,7 @@ export default function InstagramPage() {
                                                     <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "clean", pageId: acc.id, pageName: acc.username })} title="Clean Data" className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors">
                                                         <Eraser className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: acc.id, pageName: acc.username })} title="Disconnect Account" className="rounded-xl bg-gray-50 text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
+                                                    <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: acc.id, pageName: acc.username })} title="Disconnect Account" className="rounded-xl bg-gray-50 dark:bg-neutral-800/50 text-gray-500 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
