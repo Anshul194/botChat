@@ -145,7 +145,7 @@ export function StatusModal({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className={cn("text-2xl font-bold mb-2 tracking-tight", theme.text === 'font-bold' ? 'text-[var(--foreground)] dark:text-white' : theme.text)}
+              className={cn("text-2xl font-bold mb-2 tracking-tight text-[var(--foreground)]", theme.text)}
               >
                 {safeTitle}
               </motion.h3>

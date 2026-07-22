@@ -57,7 +57,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 60 }}
                     transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                    className={cn("relative z-10 w-full bg-[var(--card)] dark:bg-slate-950 rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-[var(--card)] rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl", maxWidthClassName)}>
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
                         <div className="w-10 h-1 rounded-full bg-[var(--muted)]/70 dark:bg-slate-700" />
                     </div>

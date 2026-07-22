@@ -491,26 +491,26 @@ export default function FacebookPage() {
             <AnimatePresence>
                 {confirmModal?.show && (
                     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-                        <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
+                    <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
 
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="relative w-full max-w-md rounded-2xl bg-[var(--card)] dark:bg-gray-900 p-6 shadow-xl border dark:border-gray-800 z-10"
+                            className="relative w-full max-w-md rounded-2xl bg-[var(--card)] border border-[var(--border)] p-6 shadow-xl z-10"
                         >
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">
                                 Confirm {confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
                             </h3>
 
-                            <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                                Are you sure you want to {confirmModal.type.replace("-", " ")} <strong className="font-medium text-gray-900 dark:text-white">{confirmModal.pageName}</strong>? This action will modify your automation state for this entity.
+                            <p className="text-[var(--muted-foreground)] mb-6 text-sm leading-relaxed">
+                                Are you sure you want to {confirmModal.type.replace("-", " ")} <strong className="font-medium text-[var(--foreground)]">{confirmModal.pageName}</strong>? This action will modify your automation state for this entity.
                             </p>
 
                             <div className="flex gap-3 justify-end">
                                 <button
                                     onClick={() => setConfirmModal(null)}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors"
                                 >
                                     Cancel
                                 </button>

@@ -76,7 +76,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
             initial={{ opacity: 0, scale: 0.98, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 20 }}
-            className="relative z-10 w-full max-w-none sm:max-w-[650px] min-h-screen sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-white dark:border-[var(--border)] max-h-[90vh] my-8"
+            className="relative z-10 w-full max-w-none sm:max-w-[650px] min-h-screen sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-[var(--border)] max-h-[90vh] my-8"
          >
             {/* Header */}
             <div className="px-10 py-8 border-b border-[var(--border)] dark:border-[var(--border)]/50 flex items-center justify-between bg-[var(--card)] dark:bg-slate-950/20 backdrop-blur-md sticky top-0 z-10">
@@ -105,7 +105,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
                         value={form.name}
                         onChange={e => setForm({ ...form, name: e.target.value })}
                         placeholder="e.g. Lead Color, User Interest"
-                        className="w-full px-7 py-5 rounded-2xl border-2 border-[var(--border)] dark:border-[var(--border)]/50 bg-[var(--muted)]/30 dark:bg-slate-950/30 focus:bg-[var(--card)] dark:focus:bg-[var(--background)] focus:border-[var(--primary)]/50 outline-none transition-all font-bold text-[15px] dark:text-white placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--foreground)] shadow-inner"
+                        className="w-full px-7 py-5 rounded-2xl border-2 border-[var(--border)] bg-[var(--muted)]/30 dark:bg-slate-950/30 focus:bg-[var(--card)] dark:focus:bg-[var(--background)] focus:border-[var(--primary)]/50 outline-none transition-all font-bold text-[15px] text-[var(--foreground)] dark:text-white placeholder:text-[var(--muted-foreground)]/50 dark:placeholder:text-[var(--muted-foreground)]/60 shadow-inner"
                      />
                      <Edit3 className="absolute right-7 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-200 dark:text-[var(--foreground)] group-focus-within:text-[var(--primary)]/80 transition-colors" />
                   </div>

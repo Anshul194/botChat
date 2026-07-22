@@ -53,7 +53,7 @@ export default function RenewalPopup() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-                        style={{ background: "var(--card-bg)", border: "1px solid var(--glass-border)" }}
+                        style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                     >
                         {/* Header */}
                         <div className="relative px-6 pt-6 pb-4">

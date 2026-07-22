@@ -29,7 +29,7 @@ export default function SuspendDialog({ open, onClose, userId, userName, isSuspe
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}>
+        <div className="fixed inset-0 z-[300] flex items-center justify-center" style={{ background: "var(--background-overlay, rgba(0,0,0,0.50))", backdropFilter: "blur(6px)" }}>
             <div className="w-full max-w-md rounded-3xl border p-6 shadow-2xl" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
                 <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ export default function SuspendDialog({ open, onClose, userId, userName, isSuspe
                             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{userName}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "var(--glass-border)" }}>×</button>
+                    <button onClick={onClose} className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors hover:opacity-80" style={{ background: "var(--muted)", color: "var(--foreground)" }}>×</button>
                 </div>
 
                 {success ? (

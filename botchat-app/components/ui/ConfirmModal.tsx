@@ -91,7 +91,7 @@ export function ConfirmModal({
               <div className="flex gap-4">
                 <button
                   onClick={onClose}
-                  className="flex-1 py-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-bold text-xs uppercase tracking-widest hover:bg-neutral-200 dark:hover:bg-neutral-750 transition-all active:scale-95"
+                  className="flex-1 py-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-bold text-xs uppercase tracking-widest hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all active:scale-95"
                 >
                   {cancelText}
                 </button>

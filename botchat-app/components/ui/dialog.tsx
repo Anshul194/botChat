@@ -61,7 +61,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-[0.98] fixed inset-0 sm:inset-auto sm:top-[50%] sm:left-[50%] z-[100] grid w-full max-w-none sm:max-w-lg translate-x-0 translate-y-0 sm:translate-x-[-50%] sm:translate-y-[-50%] gap-4 rounded-2xl border border-white/10 bg-background/80 p-6 shadow-[0_8px_40px_rgba(0,0,0,0.4)] backdrop-blur-2xl duration-300 outline-none dark:shadow-[0_8px_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)]",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-[0.98] fixed inset-0 sm:inset-auto sm:top-[50%] sm:left-[50%] z-[100] grid w-full max-w-none sm:max-w-lg translate-x-0 translate-y-0 sm:translate-x-[-50%] sm:translate-y-[-50%] gap-4 rounded-2xl border border-[var(--border)] bg-background/80 p-6 shadow-[0_8px_40px_rgba(0,0,0,0.4)] backdrop-blur-2xl duration-300 outline-none dark:shadow-[0_8px_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)]",
           "after:absolute after:inset-0 after:-z-10 after:rounded-2xl after:bg-gradient-to-b after:from-white/5 after:to-transparent",
           className
         )}
