@@ -954,7 +954,7 @@ export default function CommentManager() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 40 }}
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                            className="bg-[var(--card)] border border-[var(--border)] rounded-t-[28px] sm:rounded-2xl w-full max-w-none sm:max-w-lg mt-auto sm:mt-0 sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
+                            className="bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-lg h-full max-h-full sm:h-auto sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
                         >
                             {/* Mobile drag handle */}
                             <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -1178,14 +1178,14 @@ export default function CommentManager() {
             {/* Status Toggle Modal */}
             <AnimatePresence>
                 {statusConfirm.isOpen && (
-                    <div key="status-confirm-modal" className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div key="status-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-0 sm:p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
                         <motion.div
                             initial={{ opacity: 0, y: 40 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 40 }}
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                            className="bg-[var(--card)] dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                            className="bg-[var(--card)] dark:bg-neutral-900 rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
                         >
                             <div className="sm:hidden flex justify-center pt-3 pb-1">
                                 <div className="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
@@ -1232,14 +1232,14 @@ export default function CommentManager() {
             {/* Deletion Confirmation Modal */}
             <AnimatePresence>
                 {deleteConfirm.isOpen && (
-                    <div key="delete-confirm-modal" className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div key="delete-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-0 sm:p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
                         <motion.div
                             initial={{ opacity: 0, y: 40 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 40 }}
                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                            className="bg-[var(--card)] dark:bg-neutral-900 rounded-t-[28px] sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                            className="bg-[var(--card)] dark:bg-neutral-900 rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800"
                         >
                             <div className="sm:hidden flex justify-center pt-3 pb-1">
                                 <div className="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />

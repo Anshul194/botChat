@@ -814,7 +814,7 @@ export default function FacebookBotRepliesPage() {
                 {/* EDIT REPLY MODAL */}
                 <AnimatePresence>
                     {editReply && (
-                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
@@ -825,7 +825,7 @@ export default function FacebookBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 60 }}
                                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                                className="w-full max-w-md rounded-t-[28px] sm:rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+                                className="w-full max-w-none sm:max-w-md rounded-none sm:rounded-3xl shadow-2xl relative z-10 overflow-hidden"
                                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                             >
                                 <div className="sm:hidden flex justify-center pt-3.5 pb-1">
@@ -916,7 +916,7 @@ export default function FacebookBotRepliesPage() {
                 {/* CREATE MODAL */}
                 <AnimatePresence>
                     {showCreateModal && (
-                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
@@ -927,7 +927,7 @@ export default function FacebookBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="w-full max-w-md max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl shadow-2xl relative z-10"
+                                className="w-full max-w-none sm:max-w-md max-h-full h-full sm:h-auto sm:max-h-[92vh] overflow-y-auto rounded-none sm:rounded-3xl shadow-2xl relative z-10"
                                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                             >
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -1063,7 +1063,7 @@ export default function FacebookBotRepliesPage() {
                 {/* ACTION CONFIGURATION MODAL */}
                 <AnimatePresence>
                     {showActionModal && (
-                        <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                 className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
                                 onClick={() => setShowActionModal(false)} />
@@ -1072,7 +1072,7 @@ export default function FacebookBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl shadow-2xl relative z-10"
+                                className="w-full max-w-none sm:max-w-md max-h-full h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto rounded-none sm:rounded-2xl shadow-2xl relative z-10"
                                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full" style={{ background: "var(--glass-border)" }} />

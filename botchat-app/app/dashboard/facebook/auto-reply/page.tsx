@@ -226,7 +226,7 @@ export default function AutoReplyPage() {
          {/* Delete modal */}
          <AnimatePresence>
             {deleteId && (
-               <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+               <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                   <motion.div
                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                      className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -235,7 +235,7 @@ export default function AutoReplyPage() {
                   <motion.div
                      initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 40 }}
                      transition={{ type: "spring", damping: 28, stiffness: 320 }}
-                     className="relative z-10 bg-[var(--card)] border border-[var(--border)] rounded-t-[32px] sm:rounded-2xl p-8 sm:p-10 w-full max-w-sm text-center shadow-2xl"
+                     className="relative z-10 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl p-8 sm:p-10 w-full max-w-none sm:max-w-sm text-center shadow-2xl"
                   >
                      <div className="w-16 h-16 rounded-[24px] bg-rose-500/10 flex items-center justify-center mx-auto mb-5">
                         <Trash2 className="w-8 h-8 text-rose-500" />

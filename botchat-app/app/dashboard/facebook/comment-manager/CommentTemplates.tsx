@@ -142,7 +142,7 @@ export default function CommentTemplates({ onClose, defaultView = "list", select
         setFormComments(prev => prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev);
 
     return (
-        <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-0 sm:p-4">
             {/* Backdrop */}
             <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -157,13 +157,7 @@ export default function CommentTemplates({ onClose, defaultView = "list", select
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 40 }}
                 transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                className="relative z-10 w-full max-w-none sm:max-w-xl rounded-t-[28px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
-                style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    maxHeight: "90vh",
-                    minHeight: "60vh",
-                }}
+                className="relative z-10 w-full max-w-none sm:max-w-xl rounded-none sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col h-full max-h-full sm:h-auto sm:max-h-[90vh] sm:min-h-[60vh] bg-[var(--card)] border border-[var(--border)]"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Mobile drag handle */}
