@@ -107,9 +107,15 @@ function KpiCard({ widget }: { widget: any }) {
     const color = getColor(widget.module || widget.module_group);
     const es = widget.empty_state;
     const hasChange = widget.meta?.change;
+    const router = useRouter();
 
     return (
-        <Card className="group relative overflow-hidden border-none bg-card/50 shadow-premium transition-all hover:translate-y-[-3px] hover:shadow-hover">
+        <Card className={cn(
+            "group relative overflow-hidden border-none bg-card/50 shadow-premium transition-all hover:translate-y-[-3px] hover:shadow-hover",
+            widget.action && "cursor-pointer"
+        )}
+            onClick={() => widget.action && router.push(widget.action.link)}
+        >
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 style={{ background: `radial-gradient(circle at top right, ${color}10, transparent 70%)` }} />
             <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6 pt-4 sm:pt-6">
@@ -140,11 +146,10 @@ function KpiCard({ widget }: { widget: any }) {
                     <Progress value={widget.meta.percent} className="h-1.5 mt-2" style={{ background: `${color}20` }} />
                 )}
                 {widget.action && (
-                    <button onClick={(e) => { e.preventDefault(); window.location.href = widget.action.link; }}
-                        className="mt-3 text-[10px] sm:text-xs font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    <div className="mt-3 text-[10px] sm:text-xs font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                         style={{ color }}>
                         {widget.action.label} <ChevronRight className="w-3 h-3" />
-                    </button>
+                    </div>
                 )}
             </CardContent>
         </Card>
