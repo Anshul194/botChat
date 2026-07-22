@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { 
     X, BarChart3, RefreshCw, Megaphone, 
     MessageSquare, Layers, Calendar, 
-    AlertCircle, CheckCircle2, MoreHorizontal
+    AlertCircle, CheckCircle2, MoreHorizontal,
+    ChevronLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -85,7 +86,7 @@ export function CampaignReportModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
             <motion.div 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
@@ -98,7 +99,7 @@ export function CampaignReportModal({
                 initial={{ opacity: 0, scale: 0.95, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 30 }}
-                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-4xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-4xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-full max-h-full sm:max-h-[90vh]"
             >
                 {/* Header */}
                 <div className="p-8 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
@@ -123,14 +124,14 @@ export function CampaignReportModal({
 
                 {/* Global Stats Summary */}
                 {stats && (
-                    <div className="px-8 py-6 bg-[var(--card)] dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 grid grid-cols-4 gap-6">
+                    <div className="px-6 py-4 sm:px-8 sm:py-6 bg-[var(--card)] dark:bg-neutral-900 border-b border-neutral-100 dark:border-neutral-800 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
                         {[
                             { label: "Total Hits", value: stats.total, color: "text-primary" },
                             { label: "Successful", value: stats.sent, color: "text-primary" },
                             { label: "Failed", value: stats.failed, color: "text-primary/60" },
                             ...(stats.hidden !== undefined ? [{ label: "Hidden", value: stats.hidden, color: "text-primary/40" }] : [])
                         ].map((stat, i) => (
-                            <div key={i} className="p-4 rounded-3xl bg-primary/5 border border-primary/10">
+                            <div key={i} className="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-primary/5 border border-primary/10">
                                 <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1">{stat.label}</p>
                                 <h4 className={cn("text-2xl font-black tracking-tighter", stat.color)}>{stat.value}</h4>
                             </div>
@@ -139,7 +140,7 @@ export function CampaignReportModal({
                 )}
 
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-4 px-10 py-4 bg-neutral-50/50 dark:bg-neutral-950/20 border-b border-neutral-100 dark:border-neutral-800 text-[10px] font-black text-neutral-400 uppercase tracking-widest items-center">
+                <div className="hidden sm:grid grid-cols-12 gap-4 px-10 py-4 bg-neutral-50/50 dark:bg-neutral-950/20 border-b border-neutral-100 dark:border-neutral-800 text-[10px] font-black text-neutral-400 uppercase tracking-widest items-center">
                     <div className="col-span-1 flex justify-center">#</div>
                     <div className="col-span-4">Campaign context</div>
                     <div className="col-span-3">Configuration Logic</div>
@@ -157,14 +158,14 @@ export function CampaignReportModal({
                         data.map((item, idx) => (
                             <div key={idx} className="space-y-3">
                                 <div className={cn(
-                                    "grid grid-cols-12 gap-4 px-8 py-6 rounded-2xl bg-[var(--card)] dark:bg-neutral-950 border transition-all items-center hover:shadow-xl hover:shadow-primary/5 cursor-pointer",
+                                    "grid grid-cols-12 gap-x-4 gap-y-5 px-5 py-5 sm:px-8 sm:py-6 rounded-2xl bg-[var(--card)] dark:bg-neutral-950 border transition-all items-center hover:shadow-xl hover:shadow-primary/5 cursor-pointer",
                                     expandedItem === item.id ? "border-primary/30 ring-4 ring-primary/5" : "border-neutral-100 dark:border-neutral-800"
                                 )} onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}>
-                                    <div className="col-span-1 flex justify-center text-[11px] font-black text-primary/20">
+                                    <div className="col-span-1 sm:col-span-1 flex justify-center text-[11px] font-black text-primary/20">
                                         {idx + 1}
                                     </div>
-                                    <div className="col-span-4 flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                    <div className="col-span-11 sm:col-span-4 flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform flex-shrink-0">
                                             <BarChart3 size={20} />
                                         </div>
                                         <div className="min-w-0">
@@ -178,8 +179,9 @@ export function CampaignReportModal({
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="col-span-3">
+ 
+                                    <div className="col-span-6 sm:col-span-3 flex flex-col justify-center">
+                                        <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-1 block sm:hidden">Configuration Logic</span>
                                         <div className="flex items-center gap-2">
                                             <span className="px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/20 bg-primary/5 text-primary">
                                                 {item.reply_type || "Generic"} Logic
@@ -201,8 +203,9 @@ export function CampaignReportModal({
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="col-span-3 flex flex-col justify-center">
+ 
+                                    <div className="col-span-5 sm:col-span-3 flex flex-col justify-center">
+                                        <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-1 block sm:hidden">Status Tracking</span>
                                         <div className={cn(
                                             "px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 w-fit",
                                             (item.is_active == 1 || item.is_active === "1" || item.status === 'active')
@@ -210,7 +213,7 @@ export function CampaignReportModal({
                                                 : "bg-neutral-100 dark:bg-neutral-800 text-neutral-400 border border-neutral-200 dark:border-neutral-700"
                                         )}>
                                             {(item.is_active == 1 || item.is_active === "1" || item.status === 'active') ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
-                                            {(item.is_active == 1 || item.is_active === "1" || item.status === 'active') ? "Active Flow" : "Paused Flow"}
+                                            {(item.is_active == 1 || item.is_active === "1" || item.status === 'active') ? "Active" : "Paused"}
                                         </div>
                                         <div className="flex items-center gap-2 mt-2 ml-1 text-neutral-400 text-[10px] font-bold uppercase tracking-widest">
                                             <Calendar size={12} className="text-primary/40" />
@@ -219,8 +222,8 @@ export function CampaignReportModal({
                                             </span>
                                         </div>
                                     </div>
-
-                                    <div className="col-span-1 text-right">
+ 
+                                    <div className="col-span-1 sm:col-span-1 text-right flex sm:block items-center justify-end">
                                         <div className={cn("inline-flex p-3 rounded-2xl transition-all", expandedItem === item.id ? "bg-primary text-white" : "bg-primary/5 text-primary shadow-sm")}>
                                             <MoreHorizontal className="w-5 h-5" />
                                         </div>
@@ -311,12 +314,13 @@ export function CampaignReportModal({
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 bg-neutral-50/50 dark:bg-neutral-950/20 border-t border-neutral-100 dark:border-neutral-800 flex justify-end">
+                <div className="p-6 bg-neutral-50/50 dark:bg-neutral-950/20 border-t border-neutral-100 dark:border-neutral-800 flex justify-start">
                     <button 
                         onClick={onClose}
-                        className="px-8 py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-[11px] font-black uppercase tracking-widest text-neutral-500 hover:text-primary hover:border-primary transition-all shadow-sm active:scale-95"
+                        className="px-8 py-3 rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-[var(--card)]"
                     >
-                        Dismiss Analysis
+                        <ChevronLeft className="w-4 h-4" />
+                        <span>Back</span>
                     </button>
                 </div>
             </motion.div>

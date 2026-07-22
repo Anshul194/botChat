@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { 
     X, BarChart3, Clock, RefreshCw, 
     MessageSquare, User, Calendar, 
-    ExternalLink, CheckCircle2, AlertCircle
+    ExternalLink, CheckCircle2, AlertCircle,
+    ChevronLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -93,7 +94,7 @@ export function CommentReportModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
             <motion.div 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
@@ -106,7 +107,7 @@ export function CommentReportModal({
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-full max-h-full sm:max-h-[85vh]"
             >
                 {/* Header */}
                 <div className="p-8 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
@@ -134,16 +135,16 @@ export function CommentReportModal({
                     
                     {/* Summary Stats */}
                     {summary && (
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="p-5 rounded-3xl bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                            <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10">
                                 <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Total Hits</p>
                                 <h4 className="text-2xl font-black text-indigo-600 tracking-tight">{summary.total}</h4>
                             </div>
-                            <div className="p-5 rounded-3xl bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10">
+                            <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10">
                                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Successful</p>
                                 <h4 className="text-2xl font-black text-emerald-600 tracking-tight">{summary.success}</h4>
                             </div>
-                            <div className="p-5 rounded-3xl bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10">
+                            <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-rose-50/50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10 col-span-2 sm:col-span-1">
                                 <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-1">Failed</p>
                                 <h4 className="text-2xl font-black text-rose-600 tracking-tight">{summary.failed}</h4>
                             </div>

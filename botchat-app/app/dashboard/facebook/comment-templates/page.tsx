@@ -258,13 +258,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-neutral-950/60 backdrop-blur-xs" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
         transition={{ type: "spring", stiffness: 380, damping: 32 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full h-full sm:max-h-[94vh]"
         onClick={e => e.stopPropagation()}
 
       >
@@ -346,8 +346,9 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
         {/* Footer */}
         <div className="flex gap-3 px-6 sm:px-8 py-5 border-t border-[var(--border)]">
-          <button onClick={onClose} className="flex-1 py-3 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[14px] transition-all">
-            Cancel
+          <button onClick={onClose} className="flex-1 py-3 rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[14px] transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-[var(--card)]">
+            <ChevronLeft className="w-4 h-4" />
+            <span>Back</span>
           </button>
           <button onClick={handleSave} disabled={isSaving}
             className="flex-[2] py-3 rounded-2xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-bold text-[14px] shadow-lg shadow-[var(--primary)]/20 active:scale-95 transition-all disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
