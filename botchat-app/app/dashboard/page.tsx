@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { fetchPlans, fetchMyPlan } from "@/store/slices/plansSlice";
+import api from "@/lib/api";
 import dynamic from "next/dynamic";
 import {
     MessageSquare,
@@ -122,17 +123,38 @@ export default function DashboardPage() {
     const dispatch = useDispatch<AppDispatch>();
     const throughputRef = useRef<HTMLDivElement>(null);
 
+    const { user } = useSelector((state: RootState) => state.auth);
+    const [stats, setStats] = useState<any[]>([]);
+    
     useEffect(() => {
         dispatch(fetchMyPlan());
         dispatch(fetchPlans());
-    }, [dispatch]);
 
-    const stats = [
-        { label: "Total Messages", value: "48,291", change: "+18.2%", up: true, icon: MessageSquare, color: "var(--primary)" },
-        { label: "Automated Replies", value: "44,180", change: "+22.4%", up: true, icon: Zap, color: "#a855f7" },
-        { label: "Conversion Rate", value: "8.4%", change: "-0.3%", up: false, icon: TrendingUp, color: "#f59e0b" },
-        { label: "New Leads", value: "3,847", change: "+31.0%", up: true, icon: Users, color: "#10b981" },
-    ];
+        const fetchWidgets = async () => {
+            try {
+                if (!user) return;
+                const endpoint = user.role === 'ADMIN' ? '/dashboard/tenant-admin' : '/dashboard/tenant-user';
+                const response = await api.get(endpoint);
+                if (response.data.success) {
+                    const widgets = response.data.data.widgets.filter((w: any) => w.type === 'kpi').map((w: any, idx: number) => {
+                        const icons = [MessageSquare, Zap, TrendingUp, Users, Bot, Send, Target, BarChart3];
+                        return {
+                            label: w.title,
+                            value: w.value,
+                            change: w.meta?.change || '',
+                            up: w.meta?.up ?? true,
+                            icon: icons[idx % icons.length],
+                            color: "var(--primary)"
+                        };
+                    });
+                    setStats(widgets);
+                }
+            } catch (error) {
+                console.error("Failed to fetch dashboard widgets", error);
+            }
+        };
+        fetchWidgets();
+    }, [dispatch, user]);
 
     const FlowChart = dynamic(() => import("./components/FlowChartClient"), {
         ssr: false,
