@@ -4,21 +4,21 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPixels, createPixel, updatePixel, deletePixel } from "@/store/slices/pixelsSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    Zap, 
-    Plus, 
-    Trash2, 
-    Edit3, 
-    Save, 
-    Loader2, 
-    Link as LinkIcon, 
-    CheckCircle2, 
-    X, 
-    MoreVertical, 
-    Search, 
-    Copy, 
-    RefreshCw, 
-    BarChart2, 
+import {
+    Zap,
+    Plus,
+    Trash2,
+    Edit3,
+    Save,
+    Loader2,
+    Link as LinkIcon,
+    CheckCircle2,
+    X,
+    MoreVertical,
+    Search,
+    Copy,
+    RefreshCw,
+    BarChart2,
     Target,
     Facebook,
     Chrome,
@@ -79,8 +79,8 @@ const InputField = ({ label, ...props }: any) => (
 const SelectField = ({ label, options, value, onChange }: any) => (
     <div className="space-y-1.5 sm:space-y-2">
         <label className="text-[10px] sm:text-[11px] font-black text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2 block">{label}</label>
-        <select 
-            value={value} 
+        <select
+            value={value}
             onChange={(e) => onChange(e.target.value)}
             className="w-full h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--background)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-[var(--border)] text-sm font-semibold text-[var(--foreground)] dark:text-white outline-none transition-all appearance-none cursor-pointer"
         >
@@ -153,8 +153,8 @@ export default function PixelsPage() {
         }
     };
 
-    const filtered = pixels.filter((p: any) => 
-        p.name?.toLowerCase().includes(search.toLowerCase()) || 
+    const filtered = pixels.filter((p: any) =>
+        p.name?.toLowerCase().includes(search.toLowerCase()) ||
         p.pixel_id_value?.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -164,9 +164,9 @@ export default function PixelsPage() {
             <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
             <div className="max-w-full space-y-6 sm:space-y-8 relative z-10 p-4 sm:p-6">
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6"
                 >
                     <div className="space-y-3 sm:space-y-4">
@@ -205,11 +205,11 @@ export default function PixelsPage() {
                     <div className="flex items-center gap-3 w-full sm:flex-1">
                         <div className="relative w-full max-w-md group">
                             <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
-                            <input 
-                                placeholder="Search integrations..." 
-                                className="w-full pl-9 sm:pl-10 h-9 sm:h-10 bg-transparent text-xs sm:text-sm font-medium focus:outline-none" 
-                                value={search} 
-                                onChange={(e) => setSearch(e.target.value)} 
+                            <input
+                                placeholder="Search integrations..."
+                                className="w-full pl-9 sm:pl-10 h-9 sm:h-10 bg-transparent text-xs sm:text-sm font-medium focus:outline-none"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                     </div>
@@ -234,7 +234,7 @@ export default function PixelsPage() {
                             <p className="text-xs sm:text-sm font-bold uppercase tracking-widest">Syncing Pixels...</p>
                         </div>
                     ) : pixels.length === 0 ? (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="h-[300px] sm:h-[400px] flex flex-col items-center justify-center text-center p-6 sm:p-8 rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-[var(--border)]"
@@ -288,9 +288,9 @@ export default function PixelsPage() {
                 </div>
             </div>
 
-            <ModalShell 
-                open={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+            <ModalShell
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 title={editingPixel ? "Edit Integration" : "Add Google Analytics"}
                 icon={<Target size={20} />}
                 footer={
@@ -339,13 +339,13 @@ function PixelRow({ p, onEdit, onDelete }: any) {
                 <div className="flex items-center gap-5">
                     <div className={cn(
                         "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 shadow-sm",
-                        p.type === 'facebook' ? "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white" : 
-                        p.type.includes('google') ? "bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white" : 
-                        "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                        p.type === 'facebook' ? "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white" :
+                            p.type.includes('google') ? "bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white" :
+                                "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                     )}>
-                        {p.type === 'facebook' ? <Facebook size={24} /> : 
-                         p.type.includes('google') ? <Chrome size={24} /> : 
-                         <Target size={24} />}
+                        {p.type === 'facebook' ? <Facebook size={24} /> :
+                            p.type.includes('google') ? <Chrome size={24} /> :
+                                <Target size={24} />}
                     </div>
                     <div className="min-w-0">
                         <p className="font-black text-lg text-[var(--foreground)] dark:text-white truncate group-hover:text-primary transition-colors leading-tight">{p.name}</p>
@@ -384,8 +384,8 @@ function PixelMobileCard({ p, onEdit, onDelete }: any) {
                 <div className="flex items-center gap-3 mb-2.5">
                     <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", iconClass)}>
                         {p.type === 'facebook' ? <Facebook size={18} /> :
-                         p.type.includes('google') ? <Chrome size={18} /> :
-                         <Target size={18} />}
+                            p.type.includes('google') ? <Chrome size={18} /> :
+                                <Target size={18} />}
                     </div>
                     <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-bold text-[var(--foreground)] dark:text-white truncate leading-snug">{p.name}</h4>
@@ -426,13 +426,13 @@ function PixelCard({ p, onEdit, onDelete }: any) {
             <div className="flex items-center justify-between mb-6">
                 <div className={cn(
                     "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-all duration-500 group-hover:scale-110",
-                    p.type === 'facebook' ? "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white" : 
-                    p.type.includes('google') ? "bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white" : 
-                    "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
+                    p.type === 'facebook' ? "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white" :
+                        p.type.includes('google') ? "bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white" :
+                            "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                 )}>
-                    {p.type === 'facebook' ? <Facebook size={26} /> : 
-                     p.type.includes('google') ? <Chrome size={26} /> : 
-                     <Target size={26} />}
+                    {p.type === 'facebook' ? <Facebook size={26} /> :
+                        p.type.includes('google') ? <Chrome size={26} /> :
+                            <Target size={26} />}
                 </div>
                 <ActionDropdown item={p} onEdit={onEdit} onDelete={onDelete} />
             </div>
