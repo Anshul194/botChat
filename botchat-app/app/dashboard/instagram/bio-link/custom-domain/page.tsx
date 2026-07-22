@@ -4,24 +4,24 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchDomains, createDomain, updateDomain, deleteDomain, Domain } from "@/store/slices/domainsSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    Globe, 
-    Plus, 
-    Trash2, 
-    Edit3, 
-    Save, 
-    Loader2, 
-    Link as LinkIcon, 
-    CheckCircle2, 
-    X, 
-    Zap, 
-    MoreVertical, 
-    Search, 
-    Copy, 
-    ExternalLink, 
-    BarChart2, 
-    LineChart, 
-    Grid 
+import {
+    Globe,
+    Plus,
+    Trash2,
+    Edit3,
+    Save,
+    Loader2,
+    Link as LinkIcon,
+    CheckCircle2,
+    X,
+    Zap,
+    MoreVertical,
+    Search,
+    Copy,
+    ExternalLink,
+    BarChart2,
+    LineChart,
+    Grid
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -157,7 +157,7 @@ export default function CustomDomainPage() {
         }
     };
 
-    const filtered = domains.filter((d: any) => 
+    const filtered = domains.filter((d: any) =>
         d.domain?.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -167,9 +167,9 @@ export default function CustomDomainPage() {
             <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
             <div className="max-w-full space-y-6 sm:space-y-8 relative z-10 p-4 sm:p-6 md:p-12">
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6"
                 >
                     <div className="space-y-3 sm:space-y-4">
@@ -208,11 +208,11 @@ export default function CustomDomainPage() {
                     <div className="flex items-center gap-3 w-full sm:flex-1">
                         <div className="relative w-full max-w-md group">
                             <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--muted-foreground)] group-focus-within:text-primary transition-colors" />
-                            <input 
-                                placeholder="Search your domains..." 
-                                className="w-full pl-9 sm:pl-10 h-9 sm:h-10 bg-transparent text-xs sm:text-sm font-medium focus:outline-none" 
-                                value={search} 
-                                onChange={(e) => setSearch(e.target.value)} 
+                            <input
+                                placeholder="Search your domains..."
+                                className="w-full pl-9 sm:pl-10 h-9 sm:h-10 bg-transparent text-xs sm:text-sm font-medium focus:outline-none"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                     </div>
@@ -237,7 +237,7 @@ export default function CustomDomainPage() {
                             <p className="text-xs sm:text-sm font-bold uppercase tracking-widest">Syncing Domains...</p>
                         </div>
                     ) : domains.length === 0 ? (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             className="min-h-[300px] sm:min-h-[400px] flex flex-col items-center justify-center text-center p-4 sm:p-8 rounded-2xl sm:rounded-[3rem] border-2 border-dashed border-[var(--border)]"
@@ -291,9 +291,9 @@ export default function CustomDomainPage() {
                 </div>
             </div>
 
-            <ModalShell 
-                open={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+            <ModalShell
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 title={editingDomain ? "Edit Domain" : "Add Domain"}
                 icon={<Globe size={20} />}
                 footer={
