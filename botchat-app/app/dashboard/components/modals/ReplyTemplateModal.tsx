@@ -374,26 +374,26 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
-            className="relative z-10 w-full max-w-[980px] bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+            className="relative z-10 w-full max-w-[980px] bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full h-full sm:h-auto sm:max-h-[94vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+            <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
               <h2 className="text-[13px] font-semibold text-[var(--foreground)]">{editingTemplate ? 'Edit' : 'Create'} Auto Reply Template ({platform === 'instagram' ? 'Instagram' : 'Facebook'})</h2>
               <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--card)]">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--card)]">
 
               {/* SECTION 1: BASICS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs">
                 <Field label="Auto Reply Campaign Name" required>
                   <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
@@ -418,16 +418,16 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
               </div>
 
               {/* SECTION 2: OFFENSIVE */}
-              <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
+              <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs space-y-4 sm:space-y-6">
                 <div className="flex items-center gap-2 mb-2">
                   <ShieldAlert className="w-4 h-4 text-rose-400" />
                   <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
                 </div>
-                <div className="flex gap-8">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                   <Toggle label="Hide Comment" active={form.hide_comment!!} onClick={() => setForm({ ...form, hide_comment: !form.hide_comment })} />
                   <Toggle label="Delete Comment" active={form.delete_comment!!} onClick={() => setForm({ ...form, delete_comment: !form.delete_comment })} />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[var(--muted-foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)]/70 font-normal">(comma separated)</span></label>
                     <div className="relative">
@@ -464,7 +464,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
               </div>
 
               {/* SECTION 3: REPLAY TOGGLES */}
-              <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
+              <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
                 <div className="flex items-center justify-between py-1 px-1">
                   <div className="flex items-center gap-3">
                     <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]/70" />
@@ -489,7 +489,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
               </div>
 
               {/* SECTION 4: LOGIC SELECTION */}
-              <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-xs space-y-5">
+              <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 sm:p-6 shadow-xs space-y-5">
                 <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setForm({ ...form, message_type: "generic" })}>
                   <CapsuleSwitch active={form.message_type === "generic"} />
                   <span className={cn("text-sm font-medium", form.message_type === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]/70")}>Generic message for all comments</span>
@@ -503,7 +503,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
               {/* SECTION 5: EDITOR */}
               <div className="space-y-8">
                 {form.message_type === "generic" ? (
-                  <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 animate-in fade-in duration-300">
+                  <div className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8 animate-in fade-in duration-300">
                     <Field label="Message for Comment Reply" required icon={MessageCircle}>
                       <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                         <TextareaWithEmoji
@@ -517,7 +517,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                         />
                       </div>
                     </Field>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                       <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
                       <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
                     </div>
@@ -547,7 +547,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                 ) : (
                   <div className="space-y-8 animate-in fade-in duration-300">
                     {filterRules.map((rule, idx) => (
-                      <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
+                      <div key={rule.id} className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8 relative group">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-6">
                             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
@@ -591,7 +591,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                           </div>
                         </Field>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                           <UploadBox label="Image for Comment Reply" value={rule.image} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, image: v } : r))} icon={ImageIcon} />
                           <UploadBox label="Video for Comment Reply" value={rule.video} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, video: v } : r))} icon={Video} />
                         </div>
@@ -628,7 +628,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                     </div>
 
                     {/* Fallback */}
-                    <div className="bg-[var(--muted)]/50 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
+                    <div className="bg-[var(--muted)]/50 p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-[var(--border)] border-dashed space-y-6 sm:space-y-8">
                       <div className="flex items-center gap-3">
                         <Info className="w-4 h-4 text-[var(--muted-foreground)]/70" />
                         <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
@@ -646,7 +646,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                           />
                         </div>
                       </Field>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                         <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
                         <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
                       </div>
@@ -678,8 +678,11 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
               </div>
             </div>
 
-            <div className="flex gap-4 p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0">
-              <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all">Cancel</button>
+            <div className="flex gap-4 p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0">
+              <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] font-bold text-[13px] hover:bg-[var(--muted)] transition-all bg-[var(--card)] flex items-center justify-center gap-2 active:scale-95">
+                <ChevronLeft className="w-4 h-4" />
+                <span>Back</span>
+              </button>
               <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
                 <span>{editingTemplate ? 'UPDATE' : 'SAVE'} CHANGES</span>

@@ -1042,9 +1042,10 @@ export default function FacebookBotRepliesPage() {
                                             </button>
                                             <div className="flex gap-3">
                                                 <button onClick={() => setShowCreateModal(false)}
-                                                    className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all"
-                                                    style={{ background: "var(--glass-bg)", color: "var(--muted-foreground)", border: "1px solid var(--glass-border)" }}>
-                                                    Cancel
+                                                    className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                                                    style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+                                                    <ChevronLeft className="w-4 h-4" />
+                                                    <span>Back</span>
                                                 </button>
                                                 <button onClick={handleCreate} disabled={isCreating}
                                                     className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
@@ -1110,8 +1111,11 @@ export default function FacebookBotRepliesPage() {
                                     </div>
 
                                     <button onClick={() => setShowActionModal(false)}
-                                        className="w-full mt-5 py-3 rounded-2xl font-medium text-sm transition-all"
-                                        style={{ color: "var(--muted-foreground)" }}>Cancel</button>
+                                        className="w-full mt-5 py-3 rounded-2xl border border-[var(--border)] text-[var(--foreground)] bg-[var(--card)] hover:bg-[var(--muted)] flex items-center justify-center gap-1.5 font-bold text-sm transition-all active:scale-95 cursor-pointer"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                        <span>Back</span>
+                                    </button>
                                 </div>
                             </motion.div>
                         </div>

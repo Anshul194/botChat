@@ -309,7 +309,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
@@ -318,7 +318,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
         transition={{ type: "spring", stiffness: 350, damping: 30 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[980px] mt-auto sm:mt-0 min-h-[60vh] sm:min-h-0 bg-[var(--card)] rounded-t-[28px] sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[980px] mt-auto sm:mt-0 min-h-[60vh] sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full max-h-full sm:max-h-[96vh]"
       >
         {/* Mobile drag handle */}
         <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -620,7 +620,10 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         <div className="flex gap-3 sm:gap-4 p-4 sm:p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-3 sm:py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all bg-transparent cursor-pointer">Cancel</button>
+          <button onClick={onClose} className="flex-1 py-3 sm:py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all bg-[var(--card)] flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+            <ChevronLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
           <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 sm:py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 sm:w-5 sm:h-5" />}
             <span>SAVE CHANGES</span>
@@ -817,13 +820,13 @@ export default function ReplyTemplatesPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[var(--background-overlay)] backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4 bg-[var(--background-overlay)] backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 40 }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
-              className="bg-[var(--card)] rounded-t-[28px] sm:rounded-2xl p-6 sm:p-10 max-w-sm w-full text-center shadow-2xl border border-[var(--border)]"
+              className="bg-[var(--card)] rounded-none sm:rounded-2xl p-6 sm:p-10 max-w-none sm:max-w-sm w-full text-center shadow-2xl border border-[var(--border)]"
             >
               <div className="sm:hidden flex justify-center pb-2">
                 <div className="w-10 h-1 rounded-full bg-[var(--border)]" />

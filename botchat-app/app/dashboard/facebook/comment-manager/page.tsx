@@ -338,7 +338,7 @@ export default function CommentManager() {
     return (
         <div className="w-full overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 pb-32">
             {/* 1. STICKY UNIFIED HEADER */}
-            <div className="sticky top-0 z-[100] bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
+            <div className="sticky top-0 z-[40] bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
@@ -347,8 +347,8 @@ export default function CommentManager() {
                         <Menu className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => router.push('/dashboard')}
-                        className="hidden md:flex w-9 h-9 rounded-full bg-[var(--muted)] hover:bg-[var(--muted)]/80 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all shadow-sm"
+                        onClick={() => router.push('/dashboard/facebook')}
+                        className="flex w-9 h-9 rounded-full bg-[var(--muted)] hover:bg-[var(--muted)]/80 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all shadow-sm"
                     >
                         <ChevronLeft className="w-4 h-4" strokeWidth={3} />
                     </button>
@@ -388,14 +388,14 @@ export default function CommentManager() {
                                     key={p.id}
                                     onClick={() => setSelectedPage(p)}
                                     className={cn(
-                                        "px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all whitespace-nowrap flex items-center gap-3",
+                                        "px-4 py-1.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap flex items-center gap-2",
                                         selectedPage?.id === p.id
                                             ? "text-white"
                                             : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
                                     )}
-                                    style={selectedPage?.id === p.id ? { background: "var(--brand-gradient)", boxShadow: "var(--shadow-pink)" } : undefined}
+                                    style={selectedPage?.id === p.id ? { background: "var(--brand-gradient)", boxShadow: "0 4px 12px rgba(255, 45, 120, 0.15)" } : undefined}
                                 >
-                                    <div className={cn("w-6 h-6 rounded-lg overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
+                                    <div className={cn("w-5 h-5 rounded-md overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
                                         <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
                                     </div>
                                     {p.page_name}
@@ -569,14 +569,14 @@ export default function CommentManager() {
                                     <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-xs sm:text-sm font-bold text-[var(--foreground)] uppercase">Full Page Campaign</h3>
-                                    <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]">Configure global override logic for entire page activity</p>
+                                    <h3 className="text-sm font-bold text-[var(--foreground)] uppercase">Bot Reply Setup</h3>
+                                    <p className="text-[11px] font-medium text-[var(--foreground)] opacity-90">Configure automated bot replies for all incoming comments</p>
                                 </div>
                                 <button
                                     onClick={() => setIsCampaignModalOpen(true)}
-                                    className="w-full py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[12px] shadow-lg shadow-[var(--primary)]/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                    className="w-full py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[13px] shadow-lg shadow-[var(--primary)]/20 hover:scale-[1.02] active:scale-95 transition-all"
                                 >
-                                    {pageStats.has_full_page_reply ? "Edit Global Reply" : "Enable Full Page Reply"}
+                                    {pageStats.has_full_page_reply ? "Edit Bot Reply Rules" : "Enable Bot Reply"}
                                 </button>
                             </div>
 
@@ -895,9 +895,48 @@ export default function CommentManager() {
                             </div>
                         </section>
                     </main>
-
                 </div>
             </div>
+
+            {/* ── MOBILE BOTTOM NAV (Matches bot-replies) ── */}
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[60]"
+                style={{
+                    background: "var(--card)",
+                    borderTop: "1px solid var(--border)",
+                    boxShadow: "0 -8px 32px rgba(0,0,0,0.10)",
+                    paddingBottom: "env(safe-area-inset-bottom, 0px)"
+                }}>
+                <div className="flex items-stretch px-1 pt-1.5 pb-1">
+                    <button onClick={() => router.push("/dashboard/facebook/comment-templates")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--muted-foreground)" }}>
+                        <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
+                            <MessageSquare className="w-[17px] h-[17px]" strokeWidth={1.8} />
+                        </div>
+                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>Comment<br />Templates</span>
+                    </button>
+
+                    <button onClick={() => router.push("/dashboard/facebook/reply-templates")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--muted-foreground)" }}>
+                        <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
+                            <FileText className="w-[17px] h-[17px]" strokeWidth={1.8} />
+                        </div>
+                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>Reply<br />Templates</span>
+                    </button>
+
+                    <button onClick={() => router.push("/dashboard/facebook/custom-fields")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--muted-foreground)" }}>
+                        <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
+                            <SlidersHorizontal className="w-[17px] h-[17px]" strokeWidth={1.8} />
+                        </div>
+                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>Custom<br />Fields</span>
+                    </button>
+
+                    <button onClick={() => setIsCampaignModalOpen(true)} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "#0866FF" }}>
+                        <span className="absolute top-0 left-3 right-3 h-[2.5px] rounded-full bg-[#0866FF]" />
+                        <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200" style={{ background: "rgba(8,102,255,0.09)" }}>
+                            <Sparkles className="w-[17px] h-[17px]" strokeWidth={2.5} />
+                        </div>
+                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 1 }}>Bot Reply<br />Setup</span>
+                    </button>
+                </div>
+            </nav>
 
             {/* ── ID Modal ── */}
             <AnimatePresence>
@@ -1644,11 +1683,11 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
             <motion.div
                 initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
                 className={cn(
-                    "relative z-10 w-full bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[96vh] transition-all min-h-screen sm:min-h-0",
+                    "relative z-10 w-full bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-full h-full sm:h-auto sm:max-h-[94vh] transition-all sm:min-h-0",
                     "max-w-none sm:max-w-[980px]"
                 )}
             >
-                <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+                <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
                     <div className="flex items-center gap-3">
                         <div>
                             <h2 className="text-[13px] font-bold text-[var(--foreground)]">
@@ -1664,7 +1703,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--muted)]/10">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--muted)]/10">
                     {isLoadingData ? (
                         <div className="flex items-center justify-center p-12">
                             <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
@@ -1682,16 +1721,16 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                     </FPC_Field>
                                 </div>
 
-                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
+                                <div className="bg-[var(--card)] p-4 sm:p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
                                     <div className="flex items-center gap-2 mb-2">
                                         <ShieldAlert className="w-4 h-4 text-rose-400" />
                                         <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
                                     </div>
-                                    <div className="flex gap-8">
+                                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                                         <FPC_Toggle label="Hide Comment" active={form.offensive.hide_comment} onClick={() => setForm({ ...form, offensive: { ...form.offensive, hide_comment: !form.offensive.hide_comment } })} />
                                         <FPC_Toggle label="Delete Comment" active={form.offensive.delete_comment} onClick={() => setForm({ ...form, offensive: { ...form.offensive, delete_comment: !form.offensive.delete_comment } })} />
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-[var(--foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)] font-normal">(comma separated)</span></label>
                                             <div className="relative">
@@ -1763,7 +1802,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
 
                                 <div className="space-y-8">
                                     {form.reply_type === "generic" ? (
-                                        <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 animate-in fade-in duration-300">
+                                        <div className="bg-[var(--card)] p-4 sm:p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8 animate-in fade-in duration-300">
                                             <FPC_Field label="Message for Comment Reply" required icon={MessageCircle}>
                                                 <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--muted)]/50">
                                                     <textarea rows={5} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
@@ -1772,7 +1811,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                     <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                                 </div>
                                             </FPC_Field>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                                                 <FPC_UploadBox label="Image for Comment Reply" value={form.image} onChange={v => setForm({ ...form, image: v || "" })} icon={ImageIcon} />
                                                 <FPC_UploadBox label="Video for Comment Reply" value={form.video} onChange={v => setForm({ ...form, video: v || "" })} icon={Video} />
                                             </div>
@@ -1801,7 +1840,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                     ) : (
                                         <div className="space-y-8 animate-in fade-in duration-300">
                                             {filterRules.map((rule, idx) => (
-                                                <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
+                                                <div key={rule.id} className="bg-[var(--card)] p-4 sm:p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8 relative group">
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-6">
                                                             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, match_type: "exact" } : r))}>
@@ -1840,7 +1879,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                         </div>
                                                     </FPC_Field>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                                                         <FPC_UploadBox label="Image for Comment Reply" value={rule.image} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, image: v } : r))} icon={ImageIcon} />
                                                         <FPC_UploadBox label="Video for Comment Reply" value={rule.video} onChange={v => setFilterRules(filterRules.map(r => r.id === rule.id ? { ...r, video: v } : r))} icon={Video} />
                                                     </div>
@@ -1876,7 +1915,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                             </div>
 
                                             {/* Fallback */}
-                                            <div className="bg-[var(--muted)]/20 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
+                                            <div className="bg-[var(--muted)]/20 p-4 sm:p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-6 sm:space-y-8">
                                                 <div className="flex items-center gap-3">
                                                     <Info className="w-4 h-4 text-[var(--muted-foreground)]/50" />
                                                     <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
@@ -1889,7 +1928,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                                                         <Edit3 className="absolute bottom-4 right-4 w-4 h-4 text-[var(--muted-foreground)]/50" />
                                                     </div>
                                                 </FPC_Field>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                                                     <FPC_UploadBox label="Image for Comment Reply" value={form.image} onChange={v => setForm({ ...form, image: v || "" })} icon={ImageIcon} />
                                                     <FPC_UploadBox label="Video for Comment Reply" value={form.video} onChange={v => setForm({ ...form, video: v || "" })} icon={Video} />
                                                 </div>
@@ -1923,7 +1962,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
                     )}
                 </div>
 
-                <div className="flex gap-4 p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0">
+                <div className="flex gap-4 p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0">
                     <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all bg-[var(--card)]">
                         Cancel
                     </button>
@@ -1936,4 +1975,3 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
         </div>
     );
 }
-

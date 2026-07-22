@@ -64,7 +64,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -78,7 +78,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
         transition={{ type: "spring", damping: 28, stiffness: 320 }}
-        className="relative z-10 w-full sm:max-w-[520px] bg-[var(--card)] sm:border border-[var(--border)] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] sm:mx-4"
+        className="relative z-10 w-full sm:max-w-[520px] bg-[var(--card)] sm:border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl flex flex-col max-h-full h-full sm:h-auto sm:max-h-[85vh]"
       >
         <div className="flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6 border-b border-[var(--border)] sticky top-0 z-10 bg-[var(--card)]">
           <div className="min-w-0">
@@ -161,8 +161,9 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         <div className="px-5 py-4 sm:px-8 sm:py-5 border-t border-[var(--border)] bg-[var(--muted)]/10 flex gap-2.5 sm:gap-3">
-          <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-semibold text-[10px] sm:text-[11px] uppercase tracking-wider transition-all active:scale-95">
-            Cancel
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)] transition-all bg-[var(--card)] flex items-center justify-center gap-1.5 font-bold text-[10px] sm:text-[11px] uppercase tracking-wider transition-all active:scale-95">
+            <ChevronLeft className="w-3.5 h-3.5" />
+            <span>Back</span>
           </button>
           <button
             onClick={handleSave}

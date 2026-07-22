@@ -245,9 +245,10 @@ export default function AutoReplyPage() {
                      <div className="flex gap-3 mt-8">
                         <button
                            onClick={() => setDeleteId(null)}
-                           className="flex-1 py-3 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] uppercase tracking-widest transition-all"
+                           className="flex-1 py-3 rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)] transition-all bg-[var(--card)] flex items-center justify-center gap-1.5 font-bold text-[12px] uppercase tracking-widest active:scale-95 cursor-pointer"
                         >
-                           Cancel
+                           <ChevronLeft className="w-4 h-4" />
+                           <span>Back</span>
                         </button>
                         <button
                            onClick={() => handleDelete(deleteId!)}
