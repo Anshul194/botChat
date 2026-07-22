@@ -266,6 +266,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         transition={{ type: "spring", stiffness: 380, damping: 32 }}
         className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         onClick={e => e.stopPropagation()}
+
       >
         {/* Header */}
         <div className="flex items-center gap-4 px-6 sm:px-8 py-5 border-b border-[var(--border)] bg-[var(--muted)]/20">
