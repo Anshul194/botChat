@@ -226,23 +226,23 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }}
-            className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col h-full max-h-full sm:max-h-[94vh] relative z-10"
+            className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[94vh] relative z-10"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center gap-4 px-4 sm:px-10 py-4 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)]">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-10 pt-[max(1rem,env(safe-area-inset-top))] pb-4 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                 <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div className="flex-1">
-                <h2 className="text-[15px] sm:text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
-                <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1.5">{platform} Automation Node</p>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-[15px] sm:text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
+                <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1.5 truncate">{platform} Automation Node</p>
               </div>
-              <button onClick={onClose} className="p-2 sm:p-3 rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all"><X className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+              <button onClick={onClose} className="p-2 sm:p-3 rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all shrink-0"><X className="w-5 h-5 sm:w-6 sm:h-6" /></button>
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-10 space-y-6 sm:space-y-8 no-scrollbar">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-10 space-y-6 sm:space-y-8 no-scrollbar">
               <div className="space-y-3">
                 <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest ml-1">Template Asset Identity <span className="text-rose-500">*</span></label>
                 <input autoFocus type="text" placeholder='e.g. "Viral Engagement Set"' value={name} onChange={e => setName(e.target.value)}
@@ -294,11 +294,11 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 sm:gap-4 px-4 sm:px-10 py-4 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-t border-[var(--border)] dark:border-[var(--border)]">
+            <div className="flex gap-3 sm:gap-4 px-4 sm:px-10 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-t border-[var(--border)] dark:border-[var(--border)] shrink-0">
               <button onClick={onClose} className="flex-1 py-2.5 sm:py-3 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] text-[var(--muted-foreground)] font-black text-[12px] sm:text-[13px] uppercase tracking-widest hover:bg-[var(--muted)]/80 transition-all active:scale-95">Cancel</button>
               <button onClick={handleSave} disabled={isSaving} className="flex-[2.5] py-2.5 sm:py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[12px] sm:text-[14px] uppercase tracking-widest shadow-xl shadow-[var(--primary)]/30 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-4 h-4 sm:w-5 sm:h-5" />}
-                {isSaving ? "Synchronizing Asset..." : (editingTemplate ? "Finalize Changes" : "Register Node")}
+                <span className="truncate">{isSaving ? "Synchronizing Asset..." : (editingTemplate ? "Finalize Changes" : "Register Node")}</span>
               </button>
             </div>
           </motion.div>
