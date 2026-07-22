@@ -1073,7 +1073,7 @@ export default function InstagramCommentManagerPage() {
                 {/* Status Toggle Modal */}
                 <AnimatePresence>
                     {statusConfirm.isOpen && (
-                        <div key="status-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
+                        <div key="status-confirm-modal" className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setStatusConfirm({ ...statusConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
                             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-[var(--card)] dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
                                 <div className="p-8 text-center space-y-6">
@@ -1118,7 +1118,7 @@ export default function InstagramCommentManagerPage() {
                 {/* Deletion Confirmation Modal */}
                 <AnimatePresence>
                     {deleteConfirm.isOpen && (
-                        <div key="delete-confirm-modal" className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
+                        <div key="delete-confirm-modal" className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-neutral-950/60 backdrop-blur-sm" />
                             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-[var(--card)] dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800">
                                 <div className="p-8 text-center space-y-6">
@@ -1157,7 +1157,7 @@ export default function InstagramCommentManagerPage() {
                 {/* Pause All Others Modal (Success Follow-up) */}
                 <AnimatePresence>
                     {showPauseAllOthersModal && (
-                        <div key="pause-others-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+                        <div key="pause-others-modal" className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPauseAllOthersModal(false)} className="absolute inset-0 bg-neutral-950/40 backdrop-blur-sm" />
                             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="bg-[var(--card)] dark:bg-neutral-900 rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden border border-neutral-100 dark:border-neutral-800">
                                 <div className="p-10 text-center space-y-7">

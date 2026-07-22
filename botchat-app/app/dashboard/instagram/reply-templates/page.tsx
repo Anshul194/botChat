@@ -301,7 +301,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
 
@@ -767,9 +767,9 @@ export default function InstagramReplyTemplatesPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm z-[1000]" onClick={() => setDeleteId(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] dark:bg-[var(--background)] rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl relative z-[1001] border border-[var(--border)] dark:border-[var(--border)]">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm z-[100]" onClick={() => setDeleteId(null)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] dark:bg-[var(--background)] rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl relative z-[101] border border-[var(--border)] dark:border-[var(--border)]">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
               <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
               <p className="text-sm text-[var(--muted-foreground)]/70 mt-4 leading-relaxed font-bold uppercase tracking-wide">Permanently purge this item from the Instagram automation hub?</p>

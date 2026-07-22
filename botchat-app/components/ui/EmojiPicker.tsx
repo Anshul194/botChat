@@ -407,7 +407,7 @@ export function TextareaWithEmoji({
       {/* Picker portal */}
       <AnimatePresence>
         {showEmoji && (
-          <div className="fixed inset-0 z-[9990] pointer-events-none">
+          <div className="fixed inset-0 z-[300] pointer-events-none">
             <div
               className="absolute inset-0 pointer-events-auto"
               onClick={() => setShowEmoji(false)}
@@ -507,7 +507,7 @@ export function InlineEmojiButton({
 
       <AnimatePresence>
         {showEmoji && (
-          <div className="fixed inset-0 z-[9990] pointer-events-none">
+          <div className="fixed inset-0 z-[300] pointer-events-none">
             <div
               className="absolute inset-0 pointer-events-auto"
               onClick={() => setShowEmoji(false)}

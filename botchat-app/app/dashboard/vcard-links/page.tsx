@@ -49,7 +49,7 @@ import {
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
         {open && (
-            <div className="fixed inset-0 z-[500] flex items-end sm:items-center justify-center p-0 sm:p-6">
+            <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-md" onClick={onClose} />
                 <motion.div

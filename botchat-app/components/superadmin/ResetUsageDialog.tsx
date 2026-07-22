@@ -30,7 +30,7 @@ export default function ResetUsageDialog({ open, onClose, userId, userName }: {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center" style={{ background: "var(--background-overlay, rgba(0,0,0,0.50))", backdropFilter: "blur(6px)" }}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ background: "var(--background-overlay, rgba(0,0,0,0.50))", backdropFilter: "blur(6px)" }}>
             <div className="w-full max-w-md rounded-3xl border p-6 shadow-2xl" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
                 <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">

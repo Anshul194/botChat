@@ -40,7 +40,7 @@ export default function MediaPreview({
 
     if (isModal) {
         return (
-            <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--background-overlay)] backdrop-blur-sm p-4">
                 <button
                     onClick={onCloseModal}
                     className="absolute top-4 right-4 p-2 bg-neutral-900/80 hover:bg-neutral-800 text-white rounded-full transition-all"

@@ -94,7 +94,7 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
             {/* Mobile overlay backdrop */}
             {mobileSidebarOpen && (
                 <div
-                    className="fixed inset-0 z-[190] md:hidden"
+                    className="fixed inset-0 z-[40] md:hidden"
                     style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
                     onClick={() => setMobileSidebarOpen(false)}
                 />
@@ -103,7 +103,7 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
             {/* Sidebar: desktop always visible, mobile as drawer */}
             <div
                 className={[
-                    "fixed inset-y-0 left-0 z-[200] md:relative md:flex md:z-auto",
+                    "fixed inset-y-0 left-0 z-[50] md:relative md:flex md:z-auto",
                     "transition-transform duration-300 ease-in-out",
                     mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
                 ].join(" ")}

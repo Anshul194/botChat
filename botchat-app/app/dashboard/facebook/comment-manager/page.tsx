@@ -902,7 +902,7 @@ export default function CommentManager() {
             {/* ── ID Modal ── */}
             <AnimatePresence>
                 {isIdModalOpen && (
-                    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -1284,7 +1284,7 @@ function ReplyCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => vo
     }
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-0 sm:p-4 bg-[var(--background-overlay)] backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-[var(--border)]">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] bg-[var(--card)]">
                     <div className="flex items-center gap-3 text-[var(--primary)]">
@@ -1371,7 +1371,7 @@ function CommentCampaignAssignWrapper({ onClose, fetchPosts }: { onClose: () => 
     }
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-0 sm:p-4 bg-[var(--background-overlay)] backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-none sm:max-w-2xl min-h-screen sm:min-h-0 overflow-hidden border border-[var(--border)]">
                 <div className="flex items-center justify-between px-6 py-4 bg-[var(--card)] border-b border-[var(--border)]">
                     <div className="flex items-center gap-3 text-[var(--primary)]">
@@ -1638,7 +1638,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
     if (!page) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-0 sm:p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
             <motion.div

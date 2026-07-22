@@ -223,7 +223,7 @@ export default function SmartInboxPage() {
             {/* ── Settings Modal ── */}
             <AnimatePresence>
                 {showSettings && (
-                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}>
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ background: "var(--background-overlay)", backdropFilter: "blur(4px)" }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}

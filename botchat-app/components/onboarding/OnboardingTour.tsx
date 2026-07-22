@@ -106,7 +106,7 @@ function SpotlightMask({ rect }: { rect: Rect | null }) {
 
     if (!rect) {
         return (
-            <div className="fixed inset-0 z-[9990] pointer-events-none"
+            <div className="fixed inset-0 z-[300] pointer-events-none"
                 style={{ background: "rgba(0,0,0,0.65)" }} />
         );
     }
@@ -119,7 +119,7 @@ function SpotlightMask({ rect }: { rect: Rect | null }) {
 
     return (
         <svg
-            className="fixed inset-0 z-[9990] pointer-events-none"
+            className="fixed inset-0 z-[300] pointer-events-none"
             width={vw}
             height={vh}
             viewBox={`0 0 ${vw} ${vh}`}
