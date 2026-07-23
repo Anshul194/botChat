@@ -13,11 +13,10 @@ import {
     Trash2, Pause, Play, FileJson, Megaphone,
     ArrowRight, X, AlertCircle, ChevronDown, Tag, SlidersHorizontal, Menu,
     ShieldAlert, EyeOff, Scissors, Edit3, Image as ImageIcon, Video, Upload,
-    Save, Ban, Copy, Check, Loader2, ClipboardList, Send
+    Save, Ban, Copy, Check, Loader2, ClipboardList, Send, ArrowLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { SwipeHint } from "@/components/ui/swipe-hint";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -337,123 +336,61 @@ export default function CommentManager() {
 
     return (
         <div className="w-full overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 pb-32">
-            {/* 1. STICKY UNIFIED HEADER */}
-            <div className="sticky top-0 z-20 bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => router.push('/dashboard/facebook')}
-                        className="flex w-9 h-9 rounded-full bg-[var(--muted)] hover:bg-[var(--muted)]/80 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all shadow-sm"
-                    >
-                        <ChevronLeft className="w-4 h-4" strokeWidth={3} />
-                    </button>
-                    <div className="flex flex-col">
-                        <span className="text-[9px] sm:text-[10px] font-bold text-[var(--primary)] uppercase tracking-[0.2em] leading-none">Intelligence Hub</span>
-                        <h1 className="text-sm sm:text-base lg:text-lg font-bold text-[var(--foreground)] uppercase mt-0.5 tracking-tight flex items-center gap-2">
-                            <Facebook className="w-4 h-4 text-[#0866FF] fill-[#0866FF] hidden sm:block" />
-                            Comment Manager
-                        </h1>
+            {/* ── UNIFIED PAGE HEADER ─────────────────────────────────────────── */}
+            <div className="sticky top-0 z-[50] flex flex-col bg-[var(--card)] border-b border-[var(--border)] shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
+                <div className="flex items-center justify-between px-4 md:px-8 pt-3 pb-3 md:pt-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => router.push('/dashboard/facebook')}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all active:scale-90 bg-[var(--muted)] text-[var(--muted-foreground)]"
+                        >
+                            <ArrowLeft className="w-[15px] h-[15px]" strokeWidth={2.5} />
+                        </button>
+                        {/* Brand dot + text */}
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center bg-[#0866FF]">
+                                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                                <span className="text-[9px] font-medium tracking-widest uppercase leading-none text-[#0866FF]">Facebook</span>
+                                <h1 className="text-[14px] md:text-[16px] font-semibold leading-tight truncate text-[var(--foreground)]">
+                                    Comment Manager
+                                </h1>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[var(--muted)]/55 rounded-full border border-[var(--border)]">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Neural Live</span>
-                    </div>
-                    <button className="w-9 h-9 rounded-lg bg-[var(--muted)] hover:bg-[var(--muted)]/80 flex items-center justify-center text-[var(--muted-foreground)]"><Search className="w-4 h-4" /></button>
-                    <div className="w-9 h-9 rounded-full bg-[var(--muted)] dark:bg-[var(--primary)] border-2 border-white dark:border-[var(--border)] shadow-sm overflow-hidden ring-4 ring-slate-100 dark:ring-slate-800/50">
-                        <img src={user?.avatar || "https://github.com/shadcn.png"} className="w-full h-full object-cover" />
+                    <div className="flex items-center gap-3">
+                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[var(--muted)]/55 rounded-full border border-[var(--border)]">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Neural Live</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className={cn("max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8")}>
+            <div className={cn("max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 space-y-4 md:space-y-6")}>
 
                 {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
-                <div className="flex flex-col lg:flex-row gap-4 w-full min-w-0">
-                    <div className="flex-1 min-w-0 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-1.5 shadow-sm flex items-center relative group/slider">
-                        <SwipeHint containerRef={scrollRef} storageKey="fb-comment-manager-pages" align="right" className="absolute -top-5 right-4 z-10" />
-                        <button onClick={() => scroll('left')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors z-10 bg-[var(--card)] shadow-[10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-l-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-
-                        <div ref={scrollRef} className="flex-1 min-w-0 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth px-2 items-center">
-                            {pages.map(p => (
-                                <button
-                                    key={p.id}
-                                    onClick={() => setSelectedPage(p)}
-                                    className={cn(
-                                        "px-4 py-1.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap flex items-center gap-2",
-                                        selectedPage?.id === p.id
-                                            ? "text-white"
-                                            : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-                                    )}
-                                    style={selectedPage?.id === p.id ? { background: "var(--brand-gradient)", boxShadow: "0 4px 12px rgba(255, 45, 120, 0.15)" } : undefined}
-                                >
-                                    <div className={cn("w-5 h-5 rounded-md overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
-                                        <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
-                                    </div>
-                                    {p.page_name}
-                                </button>
-                            ))}
-                        </div>
-
-                        <button onClick={() => scroll('right')} className="p-2 flex-shrink-0 text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors z-10 bg-[var(--card)] shadow-[-10px_0_10px_-5px_rgba(0,0,0,0.05)] rounded-r-xl opacity-0 group-hover/slider:opacity-100 transition-opacity">
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <div className="relative shrink-0 z-[60]">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                    {pages.map(p => (
                         <button
-                            onClick={() => setShowPageDropdown(!showPageDropdown)}
-                            className="h-full px-6 py-3 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm flex items-center justify-between gap-4 text-sm font-bold hover:border-[var(--primary)]/30 transition-colors text-[var(--foreground)] group"
-                        >
-                            <div className="flex items-center gap-2">
-                                <Search className="w-4 h-4 text-[var(--primary)] group-hover:scale-110 transition-transform" />
-                                Quick Find
-                            </div>
-                            <ChevronDown className={cn("w-4 h-4 text-[var(--muted-foreground)] transition-transform", showPageDropdown && "rotate-180")} />
-                        </button>
-
-                        <AnimatePresence>
-                            {showPageDropdown && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 top-[calc(100%+8px)] w-72 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden"
-                                >
-                                    <div className="p-3 border-b border-[var(--border)] bg-[var(--muted)]/20">
-                                        <div className="relative border border-[var(--border)] rounded-xl bg-[var(--card)] overflow-hidden focus-within:border-[var(--primary)] transition-all">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
-                                            <input
-                                                type="text"
-                                                placeholder="Search pages..."
-                                                value={quickFindSearch}
-                                                onChange={(e) => setQuickFindSearch(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-2 text-[13px] font-semibold outline-none bg-transparent text-[var(--foreground)]"
-                                                autoFocus
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="max-h-[300px] overflow-y-auto no-scrollbar p-2 space-y-1">
-                                        {pages.filter(p => (p.page_name || "").toLowerCase().includes(quickFindSearch.toLowerCase())).map(p => (
-                                            <button
-                                                key={p.id}
-                                                onClick={() => { setSelectedPage(p); setShowPageDropdown(false); }}
-                                                className={cn(
-                                                    "w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center gap-3",
-                                                    selectedPage?.id === p.id ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50"
-                                                )}
-                                            >
-                                                <div className="w-8 h-8 rounded-lg overflow-hidden border-2 border-white shadow-sm">
-                                                    <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
-                                                </div>
-                                                {p.page_name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </motion.div>
+                            key={p.id}
+                            onClick={() => setSelectedPage(p)}
+                            className={cn(
+                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all shrink-0 border flex items-center gap-1.5",
+                                selectedPage?.id === p.id
+                                    ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm"
+                                    : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] bg-[var(--card)]"
                             )}
-                        </AnimatePresence>
-                    </div>
+                        >
+                            <div className={cn("w-4 h-4 rounded-[4px] overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
+                                <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+                            </div>
+                            {p.page_name}
+                        </button>
+                    ))}
                 </div>
 
                 {/* 3. MAIN GRID (1/3 LEFT, 2/3 RIGHT) */}
@@ -655,26 +592,18 @@ export default function CommentManager() {
                                 ) : posts.length > 0 ? (
                                     posts.map((post, idx) => (
                                         <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/20 border border-[var(--border)] rounded-2xl p-3 sm:p-4 flex gap-3 sm:gap-4 transition-all hover:border-[var(--primary)]/30 relative">
-                                            <a
-                                                href={post.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 dark:bg-[var(--muted)] cursor-pointer block group/thumb relative"
-                                                title="View on Facebook"
+                                            <div
+                                                className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 dark:bg-[var(--muted)] block group/thumb relative"
                                             >
-                                                <img src={post.thumbnail} className="w-full h-full object-cover group-hover/thumb:scale-110 transition-transform duration-500" />
-                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <ArrowUpRight className="w-6 h-6 text-white" />
-                                                </div>
-                                            </a>
+                                                <img src={post.thumbnail} className="w-full h-full object-cover" />
+                                            </div>
                                             <div className="flex-1 min-w-0 flex flex-col justify-between">
                                                 <div className="space-y-1">
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                                         <div className="min-w-0 flex-1">
-                                                            <a href={post.url} target="_blank" rel="noopener noreferrer" className="text-[13px] sm:text-[14px] font-bold text-[var(--foreground)] truncate hover:text-[#0866FF] transition-colors flex items-center gap-2 group/title">
+                                                            <div className="text-[13px] sm:text-[14px] font-bold text-[var(--foreground)] truncate transition-colors flex items-center gap-2 group/title">
                                                                 {post.user}
-                                                                <ArrowUpRight size={14} className="opacity-0 group-hover/title:opacity-100 transition-opacity translate-y-0.5 flex-shrink-0" />
-                                                            </a>
+                                                            </div>
                                                             <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                                                                 <p className="text-[10px] text-[var(--muted-foreground)] font-semibold whitespace-nowrap">{post.time}</p>
                                                                 <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 max-w-full w-fit">
@@ -853,6 +782,13 @@ export default function CommentManager() {
                                                                             >
                                                                                 <Edit3 className="w-4 h-4 text-[var(--muted-foreground)]/70" />
                                                                                 <span className="text-[12px] font-bold text-[var(--foreground)]">Leave a comment now</span>
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => { window.open(post.url, "_blank"); setActiveDropdown(null); }}
+                                                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[var(--muted)]/50 text-left transition-colors border-t border-[var(--border)] mt-1"
+                                                                            >
+                                                                                <ArrowUpRight className="w-4 h-4 text-[#0866FF]" />
+                                                                                <span className="text-[12px] font-bold text-[var(--foreground)]">View Post on Facebook</span>
                                                                             </button>
                                                                         </motion.div>
                                                                     )}
