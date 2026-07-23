@@ -171,7 +171,7 @@ function WidgetSection({ title, widgets, hidden, onToggle }: {
                     {hidden ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground/40" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground/40" />}
                 </button>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {visible.map((w: any) => w.empty_state && !hasData ? (
                     <EmptyStateCard key={w.key} widget={w} />
                 ) : w.empty_state && hasData ? null : (
@@ -273,7 +273,7 @@ export default function DashboardPage() {
         return (
             <div className="mx-auto max-w-[1400px] p-3 sm:p-6 space-y-4 sm:space-y-6">
                 <div className="h-8 w-48 rounded-lg bg-muted/20 animate-pulse" />
-                <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                     {[1, 2, 3, 4].map(i => <div key={i} className="h-28 rounded-2xl bg-muted/10 animate-pulse" />)}
                 </div>
                 <div className="h-[280px] rounded-2xl bg-muted/10 animate-pulse" />
@@ -381,7 +381,7 @@ export default function DashboardPage() {
             {availableShortcuts.length > 0 && (
                 <div className="space-y-3">
                     <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground/60">Modules</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3">
                         {availableShortcuts.map(m => (
                             <ModuleShortcut key={m} module={m} onClick={() => {
                                 const info = MODULE_MAP[m];

@@ -85,28 +85,30 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
             <button
                 onClick={onMenuToggle}
-                className="md:hidden w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
+                className="md:hidden w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
                 style={{
                     background: "var(--topbar-item-bg)",
                     border: "1px solid var(--topbar-item-border)",
                     color: "var(--muted-foreground)",
                 }}
                 title="Toggle menu"
+                aria-label="Toggle sidebar navigation"
             >
                 {mobileSidebarOpen
-                    ? <X className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px]" />
-                    : <Menu className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px]" />}
+                    ? <X className="w-4 h-4" />
+                    : <Menu className="w-4 h-4" />}
             </button>
 
             <button
                 onClick={onToggleSidebar}
-                className="hidden md:flex w-8 h-8 sm:w-9 sm:h-9 items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
+                className="hidden md:flex w-10 h-10 items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-105"
                 style={{
                     background: "var(--topbar-item-bg)",
                     border: "1px solid var(--topbar-item-border)",
                     color: "var(--muted-foreground)",
                 }}
                 title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
                 {collapsed
                     ? <PanelLeftOpen className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px]" />

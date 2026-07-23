@@ -193,13 +193,14 @@ function VideoStage() {
     <div className="w-full h-full relative">
       {videoError ? (
         /* ── graceful fallback when video fails ── */
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4"
+        <div className="w-full aspect-video flex flex-col items-center justify-center gap-4"
           style={{ background: "linear-gradient(135deg,#0a0411 0%,#1a0828 100%)" }}>
           <div className="w-16 h-16 rounded-full bg-pink-500/20 border border-pink-500/30 flex items-center justify-center">
             <Play className="w-7 h-7 text-pink-400 fill-pink-400" />
           </div>
           <p className="text-pink-300/80 text-xs font-semibold tracking-widest uppercase">Demo Video</p>
         </div>
+
       ) : (
         <video
           autoPlay

@@ -668,8 +668,8 @@ function SectionLabel({ label }: { label: string }) {
             className="px-3 pb-1.5"
         >
             <span
-                className="text-xs font-semibold uppercase tracking-wider"
-                style={{ color: "var(--sidebar-foreground)", opacity: 0.65 }}
+                className="text-xs font-semibold uppercase tracking-wider opacity-80"
+                style={{ color: "var(--sidebar-foreground)" }}
             >
                 {label}
             </span>

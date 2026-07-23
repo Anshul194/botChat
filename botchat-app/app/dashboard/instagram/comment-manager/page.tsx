@@ -526,7 +526,7 @@ export default function InstagramCommentManagerPage() {
                                                     <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
                                                         {post.status?.reply && (
                                                             <span className={cn(
-                                                                "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
+                                                                "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase",
                                                                 post.status.reply === "active" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
                                                             )}>
                                                                 Reply {post.status.reply}
@@ -535,8 +535,8 @@ export default function InstagramCommentManagerPage() {
 
                                                         {post.status?.comment && (
                                                             <span className={cn(
-                                                                "px-2 py-0.5 rounded-md text-[9px] font-bold uppercase",
-                                                                post.status.comment === "active" ? "bg-[var(--primary)]/100/10 text-[var(--primary)]" : "bg-[var(--muted)]/60 text-[var(--muted-foreground)]/70"
+                                                                "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase",
+                                                                post.status.comment === "active" ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-[var(--muted)]/60 text-[var(--muted-foreground)]/70"
                                                             )}>
                                                                 Comment {post.status.comment}
                                                             </span>

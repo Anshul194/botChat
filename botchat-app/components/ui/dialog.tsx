@@ -39,7 +39,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[100] bg-[var(--background-overlay)] backdrop-blur-md transition-all duration-300",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[110] bg-[var(--background-overlay)] backdrop-blur-md transition-all duration-300",
         className
       )}
       {...props}
@@ -61,7 +61,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-[0.98] fixed inset-4 sm:inset-auto sm:top-[50%] sm:left-[50%] z-[100] grid w-[calc(100%-2rem)] sm:w-full max-w-none sm:max-w-lg translate-x-0 translate-y-0 sm:translate-x-[-50%] sm:translate-y-[-50%] gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-2xl backdrop-blur-2xl duration-300 outline-none",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-[0.98] fixed inset-4 sm:inset-auto sm:top-[50%] sm:left-[50%] z-[110] grid w-[calc(100%-2rem)] sm:w-full max-w-none sm:max-w-lg translate-x-0 translate-y-0 sm:translate-x-[-50%] sm:translate-y-[-50%] gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-2xl backdrop-blur-2xl duration-300 outline-none",
           "after:absolute after:inset-0 after:-z-10 after:rounded-2xl after:bg-gradient-to-b after:from-white/5 after:to-transparent",
           className
         )}
@@ -71,7 +71,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
             <span className="sr-only">Close</span>
