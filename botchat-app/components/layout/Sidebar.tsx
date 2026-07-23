@@ -420,7 +420,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 items={[
                                     { label: "Connect Account", href: "/dashboard/facebook", icon: PlugZap, ariaLabel: "Connect Facebook account" },
                                     { label: "Bot Replies", href: "/dashboard/facebook/bot-replies", icon: Cpu, ariaLabel: "Manage Facebook bot replies" },
-                                    { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Facebook comments" },
+                                    { label: "Comment Manager", href: "/dashboard/facebook/comment-manager", icon: MessagesSquare, ariaLabel: "Manage Facebook comments" },
                                 ]}
                                 pathname={currentPath}
                                 navigate={navigate}
@@ -439,7 +439,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 items={[
                                     { label: "Connect Account", href: "/dashboard/instagram", icon: PlugZap, ariaLabel: "Connect Instagram account" },
                                     { label: "Bot Replies", href: "/dashboard/instagram/bot-replies", icon: Cpu, ariaLabel: "Manage Instagram bot replies" },
-                                    { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", icon: MessagesSquare, badge: "Live", ariaLabel: "Manage Instagram comments" },
+                                    { label: "Comment Manager", href: "/dashboard/instagram/comment-manager", icon: MessagesSquare, ariaLabel: "Manage Instagram comments" },
                                 ]}
                                 pathname={currentPath}
                                 navigate={navigate}

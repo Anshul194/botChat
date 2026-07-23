@@ -338,14 +338,8 @@ export default function CommentManager() {
     return (
         <div className="w-full overflow-x-hidden bg-[var(--background)] text-[var(--foreground)] transition-all duration-300 pb-32">
             {/* 1. STICKY UNIFIED HEADER */}
-            <div className="sticky top-0 z-[40] bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
+            <div className="sticky top-0 z-20 bg-[var(--card)]/80 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
-                        className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all bg-[var(--muted)]/50 rounded-lg shadow-sm"
-                    >
-                        <Menu className="w-5 h-5" />
-                    </button>
                     <button
                         onClick={() => router.push('/dashboard/facebook')}
                         className="flex w-9 h-9 rounded-full bg-[var(--muted)] hover:bg-[var(--muted)]/80 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all shadow-sm"

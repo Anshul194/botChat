@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useMemo } from "react";
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
     CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -8,7 +9,7 @@ type Props = { data: Array<Record<string, any>>; chartType?: string };
 
 const COLORS = ["#6C5CE7", "#ec4899", "#10b981", "#f59e0b", "#06b6d4", "#8b5cf6", "#ef4444", "#14b8a6"];
 
-export default function FlowChartClient({ data, chartType: forcedType }: Props) {
+export default function FlowChartComponent({ data, chartType: forcedType }: Props) {
     const { chartType, keys, hasMultiple } = useMemo(() => {
         if (!data || data.length === 0) return { chartType: 'bar', keys: [], hasMultiple: false };
         const allKeys = Object.keys(data[0]).filter(k => k !== 'name' && k !== 'date' && k !== 'period' && k !== 'time' && k !== 'hour');

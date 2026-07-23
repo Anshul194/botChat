@@ -24,7 +24,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-const FlowChart = dynamic(() => import("./components/FlowChartClient"), {
+const FlowChart = dynamic(() => import("./components/FlowChartComponent"), {
     ssr: false,
     loading: () => <div className="h-[280px] sm:h-[380px] w-full flex items-center justify-center text-xs text-muted-foreground">Loading chart...</div>,
 });
