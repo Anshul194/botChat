@@ -205,31 +205,31 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 20 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[94vh]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center gap-5 px-10 py-7 bg-[var(--card)] border-b border-[var(--border)] dark:border-[var(--border)]">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-200">
+        <div className="flex items-center gap-5 px-4 sm:px-10 py-4 sm:py-7 bg-[var(--card)] border-b border-[var(--border)] dark:border-[var(--border)]">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-200 shrink-0">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <div className="flex-1">
-            <h2 className="text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">
               {mode === "create" ? "Initialize IG Template" : "Modify Asset"}
             </h2>
-            <p className="text-[11px] text-[var(--muted-foreground)]/70 font-bold mt-1.5 uppercase tracking-widest">
+            <p className="text-[11px] text-[var(--muted-foreground)]/70 font-bold mt-1.5 uppercase tracking-widest truncate">
               {mode === "create" ? "Define randomized response rotation for Instagram." : `Editing Node: ${initial?.name}`}
             </p>
           </div>
-          <button onClick={onClose} className="p-3 rounded-[20px] text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all">
+          <button onClick={onClose} className="p-3 rounded-[20px] text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all shrink-0">
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-10 space-y-10 no-scrollbar uppercase tracking-[0.05em]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-10 space-y-10 no-scrollbar uppercase tracking-[0.05em]">
           <div className="space-y-3">
             <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-[0.2em] ml-2">Template Asset Identity <span className="text-rose-500">*</span></label>
             <input autoFocus type="text" placeholder='e.g. "Viral IG Response Set"' value={formName}
@@ -279,7 +279,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
         </div>
 
-        <div className="flex gap-4 px-10 py-8 bg-transparent border-t border-[var(--border)]">
+        <div className="flex gap-4 px-4 sm:px-10 py-4 sm:py-8 bg-transparent border-t border-[var(--border)]">
           <button onClick={onClose} className="flex-1 py-5 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[13px] uppercase tracking-widest transition-all">Cancel</button>
           <button onClick={handleSave} disabled={isSaving}
             className="flex-[2.5] py-5 rounded-xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-black text-[14px] uppercase tracking-[0.2em] shadow-2xl shadow-[var(--primary)]/15 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
@@ -468,15 +468,15 @@ export default function InstagramCommentTemplatesPage() {
 
       <AnimatePresence>
         {confirmDeleteId !== null && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={() => setConfirmDeleteId(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="relative z-10 bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl p-10 w-full max-w-sm shadow-2xl text-center"
+              className="relative z-10 bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-none sm:rounded-2xl p-10 w-full max-w-sm shadow-2xl text-center"
             >
               <div className="w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center mx-auto mb-6">
                 <AlertTriangle className="w-8 h-8 text-rose-500" />
               </div>
-              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
+              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight truncate">Scrub Asset?</h3>
               <p className="text-sm text-[var(--muted-foreground)]/70 mt-4 leading-relaxed font-bold uppercase tracking-wide mb-10">Permanently purge this item from the Instagram automation hub?</p>
               <div className="flex gap-4">
                 <button onClick={() => setConfirmDeleteId(null)} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[13px] uppercase transition-all">Abort</button>

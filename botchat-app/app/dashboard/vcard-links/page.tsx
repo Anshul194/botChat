@@ -49,7 +49,7 @@ import {
 const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClassName = "sm:max-w-xl" }: any) => (
     <AnimatePresence>
         {open && (
-            <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6">
+            <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-md" onClick={onClose} />
                 <motion.div
@@ -57,13 +57,13 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 60 }}
                     transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                    className={cn("relative z-10 w-full bg-[var(--card)] rounded-t-3xl sm:rounded-3xl sm:min-h-0 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl", maxWidthClassName)}>
+                    className={cn("relative z-10 w-full bg-[var(--card)] rounded-none sm:rounded-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh] shadow-2xl", maxWidthClassName)}>
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
                         <div className="w-10 h-1 rounded-full bg-[var(--muted)]/70 dark:bg-slate-700" />
                     </div>
-                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-[var(--border)] dark:border-[var(--border)]">
+                    <div className="flex items-center gap-4 px-5 sm:px-8 pt-4 sm:pt-8 pb-4 sm:pb-6 border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
                         {icon && <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">{icon}</div>}
-                        <h2 className="text-lg sm:text-2xl font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight">{title}</h2>
+                        <h2 className="text-lg sm:text-2xl font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight truncate">{title}</h2>
                         <button onClick={onClose} className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 dark:hover:bg-[var(--muted)]/80 transition-all shrink-0">
                             <X size={18} />
                         </button>

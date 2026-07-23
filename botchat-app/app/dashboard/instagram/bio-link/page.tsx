@@ -173,8 +173,8 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                         initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
                         className={cn("relative z-10 w-full h-full bg-[var(--card)] dark:bg-slate-950 flex flex-col shadow-2xl", maxWidthClassName)}>
-                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 sticky top-0 z-20">
-                            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors">
+                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 sticky top-0 z-20 shrink-0">
+                            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors shrink-0">
                                 <ChevronLeft size={20} />
                             </button>
                             <h2 className="text-lg font-black text-[var(--foreground)] dark:text-white flex-1 tracking-tight truncate">{title}</h2>
@@ -198,7 +198,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                                 <h3 className="text-sm font-black text-[var(--foreground)] dark:text-white uppercase tracking-widest truncate">{title}</h3>
                                 <p className="text-[10px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-tight">Bio Studio Editor</p>
                             </div>
-                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors">
+                            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors shrink-0">
                                 <X size={16} />
                             </button>
                         </div>

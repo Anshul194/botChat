@@ -230,15 +230,15 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-10 pt-[max(1rem,env(safe-area-inset-top))] pb-4 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-10 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+                <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-[15px] sm:text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
-                <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1.5 truncate">{platform} Automation Node</p>
+                <h2 className="text-[13px] sm:text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
+                <p className="text-[9px] sm:text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1 truncate">{platform} Automation Node</p>
               </div>
-              <button onClick={onClose} className="p-2 sm:p-3 rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all shrink-0"><X className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+              <button onClick={onClose} className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all shrink-0"><X className="w-4 h-4 sm:w-6 sm:h-6" /></button>
             </div>
 
             {/* Body */}

@@ -3903,10 +3903,10 @@ function FlowBuilder() {
               transition={{ type: "spring", damping: 25, stiffness: 380 }}
               style={{
                 background: "#fff",
-                borderRadius: 24,
+                borderRadius: isMobile ? 0 : 24,
                 width: "100%",
                 maxWidth: 390,
-                maxHeight: "92vh",
+                maxHeight: isMobile ? "100dvh" : "92vh",
                 overflow: "hidden",
                 position: "relative",
                 display: "flex",
@@ -3945,6 +3945,7 @@ function FlowBuilder() {
                     fontSize: 12,
                     fontWeight: "bold",
                     transition: "background 0.2s",
+                    flexShrink: 0,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = "#E2E8F0"; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F9"; }}

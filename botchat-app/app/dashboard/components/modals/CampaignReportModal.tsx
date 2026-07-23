@@ -99,17 +99,17 @@ export function CampaignReportModal({
                 initial={{ opacity: 0, scale: 0.95, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 30 }}
-                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-4xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-full max-h-full sm:max-h-[90vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-4xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
             >
                 {/* Header */}
-                <div className="p-8 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
-                    <div className="flex items-center gap-5">
-                        <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg", config.bg, config.color)}>
-                            <config.icon className="w-7 h-7" />
+                <div className="p-4 sm:p-8 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
+                    <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+                        <div className={cn("w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shrink-0", config.bg, config.color)}>
+                            <config.icon className="w-5 h-5 sm:w-7 sm:h-7" />
                         </div>
-                        <div>
-                            <h2 className="text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight leading-none">{config.title}</h2>
-                            <p className="text-[10px] text-primary font-bold uppercase tracking-[0.2em] mt-2 border-l-2 border-primary pl-3">Global Campaign Analytics</p>
+                        <div className="min-w-0">
+                            <h2 className="text-base sm:text-xl font-black text-neutral-900 dark:text-white uppercase tracking-tight leading-none truncate">{config.title}</h2>
+                            <p className="text-[10px] text-primary font-bold uppercase tracking-[0.2em] mt-1 sm:mt-2 border-l-2 border-primary pl-3">Global Campaign Analytics</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -149,7 +149,7 @@ export function CampaignReportModal({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900 text-sm">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900 text-sm">
                     {isLoading && data.length === 0 ? (
                         [1, 2, 3, 4].map(i => (
                             <div key={i} className="h-24 bg-primary/5 rounded-2xl animate-pulse" />
@@ -239,24 +239,24 @@ export function CampaignReportModal({
                                             exit={{ height: 0, opacity: 0 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="mx-8 p-8 rounded-2xl bg-primary/[0.02] border border-primary/10 space-y-8">
+                                            <div className="mx-0 sm:mx-8 p-4 sm:p-8 rounded-2xl bg-primary/[0.02] border border-primary/10 space-y-4 sm:space-y-8">
                                                 {/* Per-campaign log stats */}
                                                 {(item.log_total !== undefined) && (
-                                                    <div className="grid grid-cols-4 gap-4">
+                                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                                                         {[
                                                             { label: 'Total', value: item.log_total },
                                                             { label: 'Sent', value: item.log_sent },
                                                             { label: 'Failed', value: item.log_failed },
                                                             { label: 'Hidden', value: item.log_hidden },
                                                         ].map((s, i) => (
-                                                            <div key={i} className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-center">
+                                                            <div key={i} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-primary/5 border border-primary/10 text-center">
                                                                 <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest mb-1">{s.label}</p>
-                                                                <h5 className="text-xl font-black text-primary tracking-tighter">{s.value ?? 0}</h5>
+                                                                <h5 className="text-lg sm:text-xl font-black text-primary tracking-tighter">{s.value ?? 0}</h5>
                                                             </div>
                                                         ))}
                                                     </div>
                                                 )}
-                                                <div className="grid grid-cols-2 gap-10">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10">
                                                     <div className="space-y-4">
                                                         <h5 className="text-[10px] font-black text-primary/40 uppercase tracking-[0.2em] ml-2">Message Content</h5>
                                                         <div className="p-6 rounded-3xl bg-[var(--card)] dark:bg-neutral-900 border border-primary/10 text-[13px] text-neutral-600 dark:text-neutral-400 font-medium leading-relaxed italic shadow-sm">
@@ -314,10 +314,10 @@ export function CampaignReportModal({
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 bg-neutral-50/50 dark:bg-neutral-950/20 border-t border-neutral-100 dark:border-neutral-800 flex justify-start">
+                <div className="p-4 sm:p-6 bg-neutral-50/50 dark:bg-neutral-950/20 border-t border-neutral-100 dark:border-neutral-800 flex justify-start">
                     <button 
                         onClick={onClose}
-                        className="px-8 py-3 rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-[var(--card)]"
+                        className="px-6 sm:px-8 py-3 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-[var(--card)]"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         <span>Back</span>

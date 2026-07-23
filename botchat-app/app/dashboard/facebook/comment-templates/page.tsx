@@ -264,7 +264,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
         transition={{ type: "spring", stiffness: 380, damping: 32 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full h-full sm:max-h-[94vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[94vh]"
         onClick={e => e.stopPropagation()}
 
       >
@@ -274,14 +274,14 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <h2 className="text-[15px] font-bold text-[var(--foreground)] uppercase tracking-tight">
+            <h2 className="text-[15px] font-bold text-[var(--foreground)] uppercase tracking-tight truncate">
               {mode === "create" ? "Create Comment Template" : "Edit Template"}
             </h2>
             <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
               {mode === "create" ? "Define a reusable pool of auto comment phrases." : `Updating: ${initial?.name}`}
             </p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all">
+          <button onClick={onClose} className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -595,19 +595,19 @@ export default function CommentTemplatesPage() {
       {/* Delete confirm */}
       <AnimatePresence>
         {confirmDeleteId !== null && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-neutral-950/60 backdrop-blur-xs" onClick={() => setConfirmDeleteId(null)} />
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 8 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="relative z-10 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              className="relative z-10 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl p-6 w-full max-w-sm shadow-2xl"
             >
               <div className="flex items-start gap-4 mb-5">
                 <div className="w-11 h-11 rounded-xl bg-rose-500/10 flex items-center justify-center flex-shrink-0">
                   <AlertTriangle className="w-5 h-5 text-rose-500" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[var(--foreground)] uppercase">Delete Template?</h3>
+                  <h3 className="text-base font-bold text-[var(--foreground)] uppercase truncate">Delete Template?</h3>
                   <p className="text-[13px] text-[var(--muted-foreground)] mt-1">This action cannot be undone.</p>
                 </div>
               </div>

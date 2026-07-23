@@ -273,31 +273,31 @@ export function MentionReplyModal({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
                 <motion.div
                     initial={{ opacity: 0, scale: 0.96, y: 24 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 24 }}
-                    className="relative z-10 w-full max-w-[950px] bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+                    className="relative z-10 w-full max-w-[950px] bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[96vh]"
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
+                    <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0">
                                 <AtSign size={18} />
                             </div>
-                            <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
+                            <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--foreground)] truncate">
                                 {existingConfigId ? 'Edit' : 'Create'} Mention Reply Strategy (Instagram)
                             </h2>
                         </div>
-                        <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors">
+                        <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors shrink-0">
                             <X size={22} />
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--card)] custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--card)] custom-scrollbar">
                         
                         {isLoading ? (
                             <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
@@ -308,7 +308,7 @@ export function MentionReplyModal({
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                                 
                                 {/* SECTION: BASICS */}
-                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
+                                <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs">
                                     <Field label="Mention Reply Campaign Name" required>
                                         <input
                                             type="text"
@@ -321,16 +321,16 @@ export function MentionReplyModal({
                                 </div>
 
                                 {/* SECTION: OFFENSIVE SETTINGS */}
-                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
+                                <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs space-y-4 sm:space-y-6">
                                     <div className="flex items-center gap-2 mb-2">
                                         <ShieldAlert className="w-4 h-4 text-rose-400" />
                                         <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
                                     </div>
-                                    <div className="flex gap-8">
+                                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                                         <CustomToggle active={hideOffensive} onClick={() => setHideOffensive(!hideOffensive)} label="Hide Comment" />
                                         <CustomToggle active={deleteOffensive} onClick={() => setDeleteOffensive(!deleteOffensive)} label="Delete Comment" />
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                                         <div className="space-y-2">
                                             <label className="text-sm font-medium text-[var(--muted-foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)]/70 font-normal">(comma separated)</span></label>
                                             <div className="relative">
@@ -366,7 +366,7 @@ export function MentionReplyModal({
                                 </div>
 
                                 {/* SECTION: BEHAVIOR TOGGLES */}
-                                <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
+                                <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
                                     <div className="flex items-center justify-between py-1 px-1">
                                         <div className="flex items-center gap-3">
                                             <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]/70" />
@@ -391,7 +391,7 @@ export function MentionReplyModal({
                                 </div>
 
                                 {/* SECTION: MODE SELECTION */}
-                                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow-xs space-y-5">
+                                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 sm:p-6 shadow-xs space-y-5">
                                     <div className="flex items-center gap-4 cursor-pointer group" onClick={() => setReplyType("generic")}>
                                         <CapsuleSwitch active={replyType === "generic"} />
                                         <span className={cn("text-sm font-medium", replyType === "generic" ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]/70")}>Generic message for all mentions</span>
@@ -406,7 +406,7 @@ export function MentionReplyModal({
                                 <div className="space-y-8">
                                     <AnimatePresence mode="wait">
                                         {replyType === "generic" ? (
-                                            <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8">
+                                            <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8">
                                                 <Field label="Message for Comment Reply" required icon={MessageCircle}>
                                                     <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                                                         <TextareaWithEmoji
@@ -448,15 +448,15 @@ export function MentionReplyModal({
                                         ) : (
                                             <motion.div key="filter" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                                                 {rules.map((rule, index) => (
-                                                    <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
-                                                        <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+                                                    <div key={rule.id} className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8 relative group">
+                                                        <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 flex-wrap gap-2">
                                                             <div className="flex items-center gap-3">
                                                                 <div className="w-6 h-6 rounded-full bg-[var(--muted)]/50 flex items-center justify-center text-[11px] font-bold text-[var(--muted-foreground)]">
                                                                     {index + 1}
                                                                 </div>
                                                                 <h4 className="text-[13px] font-semibold text-[var(--foreground)]">Filter Logic Rule</h4>
                                                             </div>
-                                                            <div className="flex items-center gap-6 px-1">
+                                                            <div className="flex items-center gap-3 sm:gap-6 px-1">
                                                                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => updateRule(rule.id, { match_type: "contains" })}>
                                                                     <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)]/70")}>
                                                                         {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)]" />}
@@ -475,7 +475,7 @@ export function MentionReplyModal({
                                                             </button>
                                                         </div>
 
-                                                        <div className="grid grid-cols-1 gap-8">
+                                                        <div className="grid grid-cols-1 gap-6 sm:gap-8">
                                                             <Field label="Filter Word/Sentence" required>
                                                                 <input
                                                                     type="text"
@@ -532,7 +532,7 @@ export function MentionReplyModal({
                                                 </div>
 
                                                 {/* FALLBACK FOR FILTER */}
-                                                <div className="bg-[var(--muted)]/50 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8">
+                                                <div className="bg-[var(--muted)]/50 p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-[var(--border)] border-dashed space-y-6 sm:space-y-8">
                                                     <div className="flex items-center gap-3">
                                                         <Info className="w-4 h-4 text-[var(--muted-foreground)]/70" />
                                                         <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
@@ -582,11 +582,11 @@ export function MentionReplyModal({
                         )}
                     </div>
 
-                    <div className="flex gap-4 p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0 relative z-20">
-                        <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all">Cancel</button>
-                        <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0 relative z-20">
+                        <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[12px] sm:text-[13px] hover:bg-[var(--muted)]/50 transition-all">Cancel</button>
+                        <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50">
                             {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Check size={20} />}
-                            <span>{existingConfigId ? 'UPDATE CHANGES' : 'ACTIVATE STRATEGY'}</span>
+                            <span className="truncate">{existingConfigId ? 'UPDATE CHANGES' : 'ACTIVATE STRATEGY'}</span>
                         </button>
                     </div>
                 </motion.div>

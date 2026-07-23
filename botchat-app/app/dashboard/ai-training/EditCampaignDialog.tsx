@@ -238,15 +238,15 @@ function AddSourceModal({
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 8 }}
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        className="w-full max-w-none sm:max-w-[700px] bg-[var(--card)] dark:bg-neutral-950 rounded-none sm:rounded-2xl shadow-2xl border-0 sm:border sm:border-neutral-200 dark:border-neutral-800 overflow-hidden flex flex-col min-h-screen sm:min-h-0 max-h-screen sm:max-h-[calc(100vh-2rem)]"
+                        className="w-full max-w-none sm:max-w-[700px] bg-[var(--card)] dark:bg-neutral-950 rounded-none sm:rounded-2xl shadow-2xl border-0 sm:border sm:border-neutral-200 dark:border-neutral-800 overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Modal Header */}
                         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
-                            <h3 className="text-base font-bold text-neutral-900 dark:text-white">
+                            <h3 className="text-base font-bold text-neutral-900 dark:text-white truncate">
                                 {type === "manual" ? "Add Manual Content/FAQ" : `Add ${cfg.label}`}
                             </h3>
-                            <button onClick={handleClose} className="w-7 h-7 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-neutral-400 transition-colors">
+                            <button onClick={handleClose} className="w-7 h-7 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-neutral-400 transition-colors shrink-0">
                                 <X className="w-4 h-4" />
                             </button>
                         </div>

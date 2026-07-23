@@ -319,7 +319,7 @@ export function PostAutoCommentModal({
 
     return (
         <AnimatePresence>
-            <div key="post-auto-comment-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+            <div key="post-auto-comment-modal" className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
                 <motion.div
@@ -327,21 +327,21 @@ export function PostAutoCommentModal({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 24 }}
                     className={cn(
-                        "relative z-10 w-full bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] transition-all",
+                        "relative z-10 w-full bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[96vh] transition-all",
                         view === "choice" ? "max-w-lg" : "max-w-[900px]"
                     )}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
+                    <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0">
                                 <Sparkles size={18} />
                             </div>
-                            <h2 className="text-[14px] font-semibold text-[var(--foreground)] uppercase tracking-tight">
+                            <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--foreground)] uppercase tracking-tight truncate">
                                 {existingCampaignId ? "Manage Auto Comment" : "Enable Auto Comment"}
                             </h2>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                             {existingCampaignId && view !== "choice" && (
                                 <>
                                     <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", form.status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
@@ -358,7 +358,7 @@ export function PostAutoCommentModal({
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--card)] custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--card)] custom-scrollbar">
                         <AnimatePresence mode="wait">
                             {isFetchingConfig ? (
                                 <div className="h-[300px] flex flex-col items-center justify-center space-y-4">
@@ -366,7 +366,7 @@ export function PostAutoCommentModal({
                                     <p className="text-sm font-medium text-[var(--muted-foreground)]/70">Syncing configuration...</p>
                                 </div>
                             ) : view === "choice" ? (
-                                <motion.div key="choice" className="space-y-8 py-8">
+                                <motion.div key="choice" className="space-y-6 sm:space-y-8 py-4 sm:py-8">
                                     <div className="text-center space-y-2 mb-10">
                                         <h3 className="text-xl font-bold text-[var(--foreground)] tracking-tight uppercase">Campaign Activation</h3>
                                         <p className="text-sm text-[var(--muted-foreground)] font-medium">Configure your periodic comment engine</p>
@@ -388,7 +388,7 @@ export function PostAutoCommentModal({
                                 </motion.div>
                             ) : (
                                 <motion.div key="config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                                         <Field label="Campaign Name" required icon={Edit3}>
                                             <input type="text" value={form.campaign_name} onChange={e => setForm({ ...form, campaign_name: e.target.value })}
                                                 className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
@@ -410,12 +410,12 @@ export function PostAutoCommentModal({
                                         </Field>
                                     </div>
 
-                                    <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-sm space-y-6">
+                                    <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-4 sm:space-y-6">
                                         <div className="flex items-center gap-2 mb-2">
                                             <MessageCircle className="w-4 h-4 text-[var(--primary)]" />
                                             <h3 className="text-sm font-semibold text-[var(--foreground)]">Content Logic</h3>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                                             <Field label="Choose Message Template" required icon={Layers}>
                                                 <div className="relative">
                                                     <select
@@ -450,7 +450,7 @@ export function PostAutoCommentModal({
                                         </div>
                                     </div>
 
-                                    <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-sm space-y-6">
+                                    <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-4 sm:space-y-6">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Calendar className="w-4 h-4 text-[var(--primary)]" />
                                             <h3 className="text-sm font-semibold text-[var(--foreground)]">Schedule Engine</h3>
@@ -480,7 +480,7 @@ export function PostAutoCommentModal({
                                                 </motion.div>
                                             ) : (
                                                 <motion.div key="periodic" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="space-y-8">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                                         <Field label="Cycle Engagement Start" required icon={Clock}>
                                                             <input type="time" value={form.start_time.slice(0, 5)} onChange={e => setForm({ ...form, start_time: e.target.value })}
                                                                 className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
@@ -492,7 +492,7 @@ export function PostAutoCommentModal({
                                                             />
                                                         </Field>
                                                     </div>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 hover:bg-[var(--primary)]/10 rounded-2xl border border-pink-100/50">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-5 hover:bg-[var(--primary)]/10 rounded-xl sm:rounded-2xl border border-pink-100/50">
                                                         <Field label="Comment Active From" desc="HH:MM" icon={Clock}>
                                                             <input type="time" value={form.comment_between_start.slice(0, 5)} onChange={e => setForm({ ...form, comment_between_start: e.target.value })}
                                                                 className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
@@ -514,11 +514,11 @@ export function PostAutoCommentModal({
                     </div>
 
                     {view !== "choice" && (
-                        <div className="p-8 bg-[var(--card)] border-t border-[var(--border)] flex gap-4 sticky bottom-0 z-20">
-                            <button onClick={() => setView("choice")} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all uppercase tracking-widest">Back</button>
-                            <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
-                                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save size={18} />}
-                                <span>{existingCampaignId ? "Update Protocol" : "Deploy Campaign"}</span>
+                        <div className="p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex gap-3 sm:gap-4 sticky bottom-0 z-20">
+                            <button onClick={() => setView("choice")} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[12px] sm:text-[13px] hover:bg-[var(--muted)]/50 transition-all uppercase tracking-widest">Back</button>
+                            <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50">
+                                {isSaving ? <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : <Save size={18} />}
+                                <span className="truncate">{existingCampaignId ? "Update Protocol" : "Deploy Campaign"}</span>
                             </button>
                         </div>
                     )}

@@ -350,7 +350,7 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4"
                         onClick={() => { setShowCreateModal(false); setEditIcebreaker(null); }}
                     >
                         <motion.div
@@ -358,14 +358,14 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
                             onClick={e => e.stopPropagation()}
-                            className="bg-white dark:bg-neutral-900 rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                            className="bg-white dark:bg-neutral-900 rounded-none sm:rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
                         >
-                            <div className="p-6 border-b border-neutral-100 dark:border-neutral-800">
-                                <h3 className="text-lg font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                            <div className="p-4 sm:p-6 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
+                                <h3 className="text-lg font-black text-neutral-900 dark:text-white uppercase tracking-tight truncate">
                                     {editIcebreaker ? 'Edit Ice Breaker' : 'New Ice Breaker'}
                                 </h3>
                             </div>
-                            <div className="p-6 space-y-5">
+                            <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Title *</label>
                                     <div className="relative">
@@ -467,17 +467,17 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                 </div>
                             </div>
 
-                            <div className="p-6 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3">
+                            <div className="p-4 sm:p-6 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3 flex-shrink-0">
                                 <button
                                     onClick={() => { setShowCreateModal(false); setEditIcebreaker(null); }}
-                                    className="px-6 py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all"
+                                    className="px-6 py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all shrink-0"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={isSaving || !form.title.trim()}
-                                    className="px-6 py-3 rounded-2xl bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-3 rounded-2xl bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                                 >
                                     {isSaving ? 'Saving...' : editIcebreaker ? 'Update' : 'Create'}
                                 </button>

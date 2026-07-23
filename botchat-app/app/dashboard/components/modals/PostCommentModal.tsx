@@ -147,7 +147,7 @@ export function PostCommentModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
             <motion.div 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
@@ -160,24 +160,24 @@ export function PostCommentModal({
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl w-full max-w-xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[600px] max-h-[90vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-inner">
+                <div className="p-4 sm:p-6 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-inner shrink-0">
                             <MessageSquare className="w-5 h-5" />
                         </div>
-                        <div>
-                            <h2 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-tight">Post Interactions</h2>
-                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5">Real-time engagement module</p>
+                        <div className="min-w-0">
+                            <h2 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-tight truncate">Post Interactions</h2>
+                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5 truncate">Real-time engagement module</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <button onClick={fetchComments} className="p-2.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-400">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <button onClick={fetchComments} className="p-2 sm:p-2.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-400">
                             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
                         </button>
-                        <button onClick={onClose} className="p-2.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all text-neutral-400 hover:text-rose-500">
+                        <button onClick={onClose} className="p-2 sm:p-2.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all text-neutral-400 hover:text-rose-500">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -186,7 +186,7 @@ export function PostCommentModal({
                 {/* Comment List */}
                 <div 
                     ref={scrollRef}
-                    className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900 shadow-inner"
+                    className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 custom-scrollbar bg-[var(--card)] dark:bg-neutral-900 shadow-inner"
                 >
                     {isLoading && comments.length === 0 ? (
                         [1, 2, 3].map(i => (
@@ -254,7 +254,7 @@ export function PostCommentModal({
                 </div>
 
                 {/* Footer Input Area */}
-                <div className="p-8 border-t border-neutral-100 dark:border-neutral-800 bg-[var(--card)] dark:bg-neutral-950/40 space-y-4">
+                <div className="p-4 sm:p-8 border-t border-neutral-100 dark:border-neutral-800 bg-[var(--card)] dark:bg-neutral-950/40 space-y-4">
                     <AnimatePresence>
                         {isScheduling && (
                             <motion.div 

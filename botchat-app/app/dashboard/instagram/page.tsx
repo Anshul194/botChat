@@ -543,16 +543,16 @@ export default function InstagramPage() {
             {/* Confirmation Dialog */}
             <AnimatePresence>
                 {confirmModal?.show && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
                         <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
 
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="relative w-full max-w-md rounded-2xl bg-[var(--card)] border border-[var(--border)] p-6 shadow-xl z-10"
+                            className="relative w-full max-w-md rounded-none sm:rounded-2xl bg-[var(--card)] border border-[var(--border)] p-4 sm:p-6 shadow-xl z-10"
                         >
-                            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">
+                            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2 truncate">
                                 Confirm {confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
                             </h3>
 
@@ -563,13 +563,13 @@ export default function InstagramPage() {
                             <div className="flex gap-3 justify-end">
                                 <button
                                     onClick={() => setConfirmModal(null)}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors"
+                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors shrink-0"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleConfirmAction}
-                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90"
+                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90 shrink-0"
                                     style={{
                                         background: confirmModal.type.includes("disconnect")
                                             ? "rgb(225 29 72)"
