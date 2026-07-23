@@ -370,10 +370,10 @@ export default function CommentManager() {
                 </div>
             </div>
 
-            <div className={cn("max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 space-y-4 md:space-y-6")}>
+            <div className={cn("max-w-[1400px] mx-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-6 lg:py-8 space-y-0 sm:space-y-4 md:space-y-6")}>
 
                 {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 sm:px-0 py-3 sm:py-0 border-b border-[var(--border)] sm:border-none">
                     {pages.map(p => (
                         <button
                             key={p.id}
@@ -394,10 +394,10 @@ export default function CommentManager() {
                 </div>
 
                 {/* 3. MAIN GRID (1/3 LEFT, 2/3 RIGHT) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 sm:gap-6 items-start">
 
                     {/* ── LEFT COLUMN (1/3): STRATEGY & ACTIONS ── */}
-                    <aside className="lg:col-span-4 space-y-4 sm:space-y-6 order-2 lg:order-1">
+                    <aside className="lg:col-span-4 space-y-4 sm:space-y-6 order-2 lg:order-1 px-4 sm:px-0 pt-4 sm:pt-0">
                         <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3 sm:p-6 shadow-sm space-y-4 sm:space-y-6">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-sm sm:text-md font-bold text-[var(--foreground)] uppercase tracking-tight">Strategy Lab</h2>
@@ -558,7 +558,7 @@ export default function CommentManager() {
 
                     {/* ── RIGHT COLUMN (2/3): POST FEED ── */}
                     <main className="lg:col-span-8 flex flex-col gap-6 order-1 lg:order-2">
-                        <section className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm flex-1 flex flex-col">
+                        <section className="bg-[var(--card)] border-0 border-t border-b sm:border border-[var(--border)] rounded-none sm:rounded-2xl p-4 sm:p-6 shadow-none sm:shadow-sm flex-1 flex flex-col">
                             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)]">
                                 <section>
                                     <h2 className="text-sm sm:text-base lg:text-lg font-bold text-[var(--foreground)] flex items-center gap-2 uppercase tracking-tight">

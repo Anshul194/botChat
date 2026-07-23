@@ -256,7 +256,7 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
                     <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none">Payload Inventory <span className="text-rose-500">*</span></label>
                     <p className="text-[10px] text-[var(--muted-foreground)]/70 font-medium uppercase tracking-tight mt-1">Randomized response rotation</p>
                   </div>
-                  <button onClick={addRow} className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl bg-primary/10 text-primary text-[11px] sm:text-[12px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20">
+                  <button onClick={addRow} className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl bg-primary/20 text-primary text-[11px] sm:text-[12px] font-black uppercase tracking-widest hover:bg-primary/30 transition-all border border-primary/20">
                     <Plus className="w-4 h-4" strokeWidth={3} /> Add Resource
                   </button>
                 </div>

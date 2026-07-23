@@ -172,8 +172,8 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                     <motion.div
                         initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className={cn("relative z-10 w-full h-full bg-[var(--card)] dark:bg-slate-950 flex flex-col shadow-2xl", maxWidthClassName)}>
-                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 sticky top-0 z-20 shrink-0">
+                        className={cn("relative z-10 w-full h-full bg-white dark:bg-slate-950 flex flex-col shadow-2xl", maxWidthClassName)}>
+                        <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[var(--border)] dark:border-[var(--border)] bg-white dark:bg-slate-950 sticky top-0 z-20 shrink-0">
                             <button onClick={onClose} className="w-10 h-10 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:bg-[var(--muted)]/80 transition-colors shrink-0">
                                 <ChevronLeft size={20} />
                             </button>
@@ -185,7 +185,7 @@ const ModalShell = ({ open, onClose, title, icon, children, footer, maxWidthClas
                 </div>
 
                 {/* ── DESKTOP SIDEBAR (INSPECTOR) ── */}
-                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[700px] flex-col bg-[var(--card)] dark:bg-slate-950 border-l border-[var(--border)] dark:border-[var(--border)] shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
+                <aside className="hidden xl:flex pointer-events-auto absolute right-0 top-14 bottom-0 w-[700px] flex-col bg-white dark:bg-slate-950 border-l border-[var(--border)] dark:border-[var(--border)] shadow-2xl overflow-hidden h-[calc(100vh-56px)] z-50">
                     <motion.div
                         initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 20, opacity: 0 }}
                         className="flex flex-col h-full"
@@ -2109,7 +2109,7 @@ function BioLinkBuilderContent() {
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: "-100%", opacity: 0 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="absolute inset-y-0 left-0 z-50 w-full xl:w-[calc(100%-450px)] bg-[var(--card)] dark:bg-slate-950 border-r border-[var(--border)] dark:border-[var(--border)] flex flex-col shadow-2xl overflow-hidden"
+                            className="absolute inset-y-0 left-0 z-50 w-full xl:w-[calc(100%-450px)] bg-white dark:bg-slate-950 border-r border-[var(--border)] dark:border-[var(--border)] flex flex-col shadow-2xl overflow-hidden"
                         >
                             <div className="flex items-center justify-between p-6 border-b border-[var(--border)] dark:border-[var(--border)]">
                                 <div>
@@ -2152,9 +2152,9 @@ function BioLinkBuilderContent() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: "-100%", opacity: 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60] w-full xl:w-[calc(100%-450px)] bg-[var(--muted)]/50 dark:bg-slate-950 border-r border-[var(--border)] dark:border-[var(--border)] flex flex-col overflow-hidden"
+                        className="absolute inset-0 z-[60] w-full xl:w-[calc(100%-450px)] bg-white dark:bg-slate-950 border-r border-[var(--border)] dark:border-[var(--border)] flex flex-col overflow-hidden"
                     >
-                        <div className="flex items-center gap-4 px-4 sm:px-6 py-5 border-b border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-slate-950 shrink-0">
+                        <div className="flex items-center gap-4 px-4 sm:px-6 py-5 border-b border-[var(--border)] dark:border-[var(--border)] bg-white dark:bg-slate-950 shrink-0">
                             <button onClick={() => setShowCarouselEditor(false)} className="w-9 h-9 rounded-xl border border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 hover:bg-[var(--muted)]/60 dark:bg-[var(--muted)]/40 dark:hover:bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] dark:hover:text-white transition-all group">
                                 <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                             </button>
@@ -2167,10 +2167,10 @@ function BioLinkBuilderContent() {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-8 no-scrollbar relative min-h-0 bg-[var(--muted)]/50 dark:bg-slate-950">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-8 no-scrollbar relative min-h-0 bg-neutral-50/50 dark:bg-slate-950">
                             <div className="space-y-6 w-full pb-8">
                                 {/* BLOCK VISIBILITY TOGGLE (IN-FORM) */}
-                                <div className="flex items-center justify-between p-4 bg-[var(--muted)]/50 dark:bg-[var(--background)] rounded-2xl border border-[var(--border)] dark:border-[var(--border)]">
+                                <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-[var(--background)] rounded-2xl border border-[var(--border)] dark:border-[var(--border)]">
                                     <div className="flex items-center gap-3">
                                         <div className={cn(
                                             "w-8 h-8 rounded-full flex items-center justify-center transition-colors",

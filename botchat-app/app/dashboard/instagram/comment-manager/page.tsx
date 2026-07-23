@@ -383,11 +383,11 @@ export default function InstagramCommentManagerPage() {
 
     // ── MAIN DASHBOARD VIEW ──────────────────────────────────────────────────
     const DashboardView = () => (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 sm:gap-6 items-start">
 
             {/* ── SIDEBAR COLUMN (1/3): STRATEGY LAB ── */}
-            <aside className="lg:col-span-4 space-y-6 order-2 lg:order-1">
-                <div className="bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-6">
+            <aside className="lg:col-span-4 space-y-6 order-2 lg:order-1 px-4 sm:px-0 pt-4 sm:pt-0">
+                <div className="bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-md font-bold text-[var(--foreground)] dark:text-white uppercase tracking-tight">Strategy Lab</h2>
 
@@ -477,7 +477,7 @@ export default function InstagramCommentManagerPage() {
 
             {/* ── MAIN FEED (2/3): LATEST INTERACTIONS ── */}
             <main className="lg:col-span-8 flex flex-col gap-6 order-1 lg:order-2">
-                <section className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-6 shadow-sm flex-1 flex flex-col">
+                <section className="bg-[var(--card)] border-0 border-t border-b sm:border border-[var(--border)] rounded-none sm:rounded-2xl p-4 sm:p-6 shadow-none sm:shadow-sm flex-1 flex flex-col">
                     <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-5 border-b border-[var(--border)]">
                         <h2 className="text-base font-bold text-[var(--foreground)] flex items-center gap-2 uppercase tracking-tight">
                             Latest Interactions
@@ -942,10 +942,10 @@ export default function InstagramCommentManagerPage() {
                 </div>
             </div>
 
-            <div className="max-w-[1500px] mx-auto p-4 lg:p-10 space-y-4 lg:space-y-6">
+            <div className="max-w-[1500px] mx-auto px-0 sm:px-6 lg:px-10 py-0 sm:py-6 lg:py-8 space-y-0 sm:space-y-4 lg:space-y-6">
 
                 {/* ── TOP SECTION: ACCOUNT SELECTION (Pill Style) ── */}
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 sm:px-0 py-3 sm:py-0 border-b border-[var(--border)] sm:border-none">
                     {accounts.map(acc => (
                         <button
                             key={acc.id}
