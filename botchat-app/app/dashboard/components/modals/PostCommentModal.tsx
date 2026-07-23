@@ -160,24 +160,24 @@ export function PostCommentModal({
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
+                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-full max-h-[100dvh] sm:h-auto sm:max-h-[90vh]"
             >
                 {/* Header */}
-                <div className="p-4 sm:p-6 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20">
+                <div className="px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-4 sm:p-6 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-950/20 shrink-0">
                     <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                         <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-inner shrink-0">
                             <MessageSquare className="w-5 h-5" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <h2 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-tight truncate">Post Interactions</h2>
                             <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5 truncate">Real-time engagement module</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                        <button onClick={fetchComments} className="p-2 sm:p-2.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-400">
+                    <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-2">
+                        <button onClick={fetchComments} className="p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-400">
                             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
                         </button>
-                        <button onClick={onClose} className="p-2 sm:p-2.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all text-neutral-400 hover:text-rose-500">
+                        <button onClick={onClose} className="p-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all text-neutral-400 hover:text-rose-500">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -191,7 +191,7 @@ export function PostCommentModal({
                     {isLoading && comments.length === 0 ? (
                         [1, 2, 3].map(i => (
                             <div key={i} className="flex gap-4 animate-pulse opacity-50">
-                                <div className="w-10 h-10 rounded-[18px] bg-neutral-100 dark:bg-neutral-800" />
+                                <div className="w-10 h-10 rounded-[18px] bg-neutral-100 dark:bg-neutral-800 shrink-0" />
                                 <div className="flex-1 space-y-3">
                                     <div className="h-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-full w-1/4" />
                                     <div className="h-12 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl rounded-tl-none" />
@@ -200,31 +200,31 @@ export function PostCommentModal({
                         ))
                     ) : comments.length > 0 ? (
                         comments.map((c) => (
-                            <div key={c.id} className="flex gap-5 group items-start">
-                                <div className="w-11 h-11 rounded-[20px] overflow-hidden border-2 border-white dark:border-neutral-800 shadow-md flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <div key={c.id} className="flex gap-3 sm:gap-5 group items-start">
+                                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full sm:rounded-[20px] overflow-hidden border-2 border-white dark:border-neutral-800 shadow-md flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                                     {c.user_picture ? (
                                         <img src={c.user_picture} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full bg-[var(--muted)]/50 dark:bg-neutral-800 flex items-center justify-center">
-                                            <User className="w-5 h-5 text-neutral-300" />
+                                            <User className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-300" />
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex-1 space-y-2 min-w-0">
+                                <div className="flex-1 space-y-1.5 sm:space-y-2 min-w-0">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <p className="text-[13px] font-black text-neutral-900 dark:text-white uppercase tracking-tight truncate max-w-[150px]">{c.user_name || 'User'}</p>
+                                            <p className="text-[12px] sm:text-[13px] font-black text-neutral-900 dark:text-white uppercase tracking-tight truncate max-w-[120px] sm:max-w-[150px]">{c.user_name || 'User'}</p>
                                             <span className="w-1 h-1 rounded-full bg-neutral-200" />
-                                            <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-widest whitespace-nowrap">
+                                            <p className="text-[8px] sm:text-[9px] text-neutral-400 font-bold uppercase tracking-widest whitespace-nowrap">
                                                 {c.created_time ? new Date(c.created_time).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently'}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="relative">
-                                        <div className="p-5 rounded-2xl rounded-tl-none bg-[var(--muted)]/50 dark:bg-neutral-950/40 border-2 border-[var(--border)]/50 dark:border-neutral-800/60 text-[14px] font-medium text-neutral-700 dark:text-neutral-300 leading-relaxed group-hover:bg-[var(--card)] dark:group-hover:bg-neutral-900 transition-all group-hover:border-primary/20 shadow-xs group-hover:shadow-lg group-hover:shadow-primary/5">
-                                            {c.message}
+                                        <div className="p-3 sm:p-5 rounded-2xl rounded-tl-none bg-[var(--muted)]/50 dark:bg-neutral-950/40 border-2 border-[var(--border)]/50 dark:border-neutral-800/60 text-[13px] sm:text-[14px] font-medium text-neutral-700 dark:text-neutral-300 leading-relaxed group-hover:bg-[var(--card)] dark:group-hover:bg-neutral-900 transition-all group-hover:border-primary/20 shadow-xs group-hover:shadow-lg group-hover:shadow-primary/5 break-words">
+                                            {c.message || <span className="italic text-neutral-400">Empty message</span>}
                                         </div>
-                                        <div className="flex items-center gap-5 mt-3 pl-1">
+                                        <div className="flex items-center gap-4 sm:gap-5 mt-2 sm:mt-3 pl-1">
                                             {c.like_count !== undefined && (
                                                 <button className="flex items-center gap-1.5 text-neutral-400 hover:text-rose-500 transition-all active:scale-90 group/like">
                                                     <Heart size={14} className={cn("transition-all", c.like_count > 0 && "fill-rose-500 text-rose-500")} />
@@ -244,17 +244,17 @@ export function PostCommentModal({
                         ))
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-center py-10">
-                            <div className="w-20 h-20 rounded-2xl bg-[var(--muted)]/50 dark:bg-neutral-800 flex items-center justify-center mb-6 shadow-inner rotate-12 group-hover:rotate-0 transition-transform">
-                                <MessageSquare className="w-8 h-8 text-neutral-300" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[var(--muted)]/50 dark:bg-neutral-800 flex items-center justify-center mb-6 shadow-inner rotate-12 group-hover:rotate-0 transition-transform">
+                                <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-neutral-300" />
                             </div>
-                            <h3 className="text-[14px] font-black uppercase tracking-[0.2em] text-neutral-900 dark:text-white">Silence in the feed</h3>
-                            <p className="text-[11px] font-bold mt-2 text-neutral-400 max-w-[200px] leading-relaxed">The post is waiting for its first spark of engagement.</p>
+                            <h3 className="text-[13px] sm:text-[14px] font-black uppercase tracking-[0.2em] text-neutral-900 dark:text-white">Silence in the feed</h3>
+                            <p className="text-[10px] sm:text-[11px] font-bold mt-2 text-neutral-400 max-w-[200px] leading-relaxed">The post is waiting for its first spark of engagement.</p>
                         </div>
                     )}
                 </div>
 
                 {/* Footer Input Area */}
-                <div className="p-4 sm:p-8 border-t border-neutral-100 dark:border-neutral-800 bg-[var(--card)] dark:bg-neutral-950/40 space-y-4">
+                <div className="px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-8 sm:pb-8 border-t border-neutral-100 dark:border-neutral-800 bg-[var(--card)] dark:bg-neutral-950/40 space-y-3 sm:space-y-4 shrink-0">
                     <AnimatePresence>
                         {isScheduling && (
                             <motion.div 
@@ -263,26 +263,28 @@ export function PostCommentModal({
                                 exit={{ opacity: 0, height: 0 }}
                                 className="overflow-hidden"
                             >
-                                <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-inner group-focus-within:bg-primary group-focus-within:text-white transition-all">
-                                            <Clock size={16} />
+                                <div className="p-3 sm:p-4 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-between group">
+                                    <div className="flex items-center gap-2 sm:gap-3">
+                                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-inner group-focus-within:bg-primary group-focus-within:text-white transition-all">
+                                            <Clock size={14} className="sm:w-4 sm:h-4" />
                                         </div>
-                                        <span className="text-[11px] font-black uppercase tracking-widest text-primary/70">Exact Time to Comment</span>
+                                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-primary/70">Exact Time to Comment</span>
                                     </div>
-                                    <input 
-                                        type="time" 
-                                        value={scheduleTime} 
-                                        onChange={(e) => setScheduleTime(e.target.value)} 
-                                        className="bg-transparent border-none outline-none text-sm font-black text-primary p-1 cursor-pointer"
-                                    />
-                                    <button onClick={() => setIsScheduling(false)} className="text-primary/50 hover:text-primary transition-colors"><X size={14} /></button>
+                                    <div className="flex items-center gap-2">
+                                        <input 
+                                            type="time" 
+                                            value={scheduleTime} 
+                                            onChange={(e) => setScheduleTime(e.target.value)} 
+                                            className="bg-transparent border-none outline-none text-sm font-black text-primary p-1 cursor-pointer"
+                                        />
+                                        <button onClick={() => setIsScheduling(false)} className="text-primary/50 hover:text-primary transition-colors p-1"><X size={14} /></button>
+                                    </div>
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
-                    <div className="relative flex items-center gap-3">
+                    <div className="relative flex flex-row items-end sm:items-center gap-2 sm:gap-3">
                         <div className="flex-1 relative group">
                             <textarea
                                 rows={1}
@@ -295,9 +297,9 @@ export function PostCommentModal({
                                         handleSend();
                                     }
                                 }}
-                                className="w-full pl-6 pr-14 py-4 rounded-[24px] bg-[var(--muted)]/50 dark:bg-neutral-900 border-2 border-transparent focus:border-primary/20 focus:bg-[var(--card)] outline-none shadow-sm focus:shadow-xl focus:shadow-primary/5 transition-all text-[14px] font-bold resize-none min-h-[60px] placeholder:text-neutral-300 tracking-tight"
+                                className="w-full pl-4 pr-12 py-3 sm:pl-6 sm:pr-14 sm:py-4 rounded-[20px] sm:rounded-[24px] bg-[var(--muted)]/50 dark:bg-neutral-900 border-2 border-transparent focus:border-primary/20 focus:bg-[var(--card)] outline-none shadow-sm focus:shadow-xl focus:shadow-primary/5 transition-all text-[13px] sm:text-[14px] font-bold resize-none min-h-[50px] sm:min-h-[60px] max-h-[120px] custom-scrollbar placeholder:text-neutral-300 tracking-tight"
                             />
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                 <InlineEmojiButton
                                     value={message}
                                     onChange={setMessage}
@@ -307,35 +309,35 @@ export function PostCommentModal({
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-row sm:flex-col gap-2 shrink-0 h-full pb-1 sm:pb-0">
                             <button 
                                 onClick={() => setIsScheduling(!isScheduling)}
                                 className={cn(
-                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-sm",
+                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-sm shrink-0",
                                     isScheduling 
                                         ? "bg-primary text-white shadow-primary/20" 
                                         : "bg-[var(--muted)]/50 dark:bg-neutral-800 text-neutral-400 hover:bg-[var(--muted)]/60"
                                 )}
                                 title="Schedule for later"
                             >
-                                <Clock className="w-5 h-5" />
+                                <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                             <button 
                                 onClick={handleSend}
                                 disabled={isSending || !message.trim()}
                                 className={cn(
-                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-90",
+                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all active:scale-90 shrink-0",
                                     message.trim() 
                                         ? "bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105" 
                                         : "bg-neutral-100 dark:bg-neutral-800 text-neutral-300 cursor-not-allowed"
                                 )}
                             >
-                                {isSending ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5 translate-x-0.5 -translate-y-0.5" />}
+                                {isSending ? <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" /> : <Send className="w-4 h-4 sm:w-5 sm:h-5 translate-x-0.5 -translate-y-0.5" />}
                             </button>
                         </div>
                     </div>
                     
-                    <p className="text-[9px] text-center text-neutral-400 font-bold uppercase tracking-widest pt-2">
+                    <p className="hidden sm:block text-[9px] text-center text-neutral-400 font-bold uppercase tracking-widest pt-2">
                         Press <span className="text-primary italic">Enter</span> to {isScheduling ? 'Schedule' : 'Send'} Interaction
                     </p>
                 </div>

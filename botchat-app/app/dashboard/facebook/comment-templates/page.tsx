@@ -264,20 +264,20 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
         transition={{ type: "spring", stiffness: 380, damping: 32 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[1050px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[94vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[1050px] bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full max-h-[100dvh] sm:h-auto sm:max-h-[94vh]"
         onClick={e => e.stopPropagation()}
 
       >
         {/* Header */}
-        <div className="flex items-center gap-4 px-6 sm:px-8 py-5 border-b border-[var(--border)] bg-[var(--muted)]/20">
-          <div className="w-11 h-11 rounded-2xl bg-[var(--primary)] flex items-center justify-center shadow-lg shadow-[var(--primary)]/20 flex-shrink-0">
-            <Sparkles className="w-5 h-5 text-white" />
+        <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-8 pt-[max(1rem,env(safe-area-inset-top))] pb-4 sm:py-5 border-b border-[var(--border)] bg-[var(--muted)]/20 shrink-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[var(--primary)] flex items-center justify-center shadow-lg shadow-[var(--primary)]/20 flex-shrink-0">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <div className="flex-1">
-            <h2 className="text-[15px] font-bold text-[var(--foreground)] uppercase tracking-tight truncate">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-[14px] sm:text-[15px] font-bold text-[var(--foreground)] uppercase tracking-tight truncate">
               {mode === "create" ? "Create Comment Template" : "Edit Template"}
             </h2>
-            <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
+            <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5 truncate">
               {mode === "create" ? "Define a reusable pool of auto comment phrases." : `Updating: ${initial?.name}`}
             </p>
           </div>
@@ -287,7 +287,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
           {/* Name */}
           <div className="space-y-2">
             <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider ml-0.5">
@@ -295,13 +295,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
             </label>
             <input autoFocus type="text" placeholder='e.g. "Positive Comments 🔥"' value={formName}
               onChange={e => setFormName(e.target.value)}
-              className="w-full px-5 py-3 sm:py-4 rounded-2xl bg-[var(--muted)] border border-[var(--border)] text-[14.5px] font-semibold text-[var(--foreground)] outline-none transition-all placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)]/50"
+              className="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-[var(--muted)] border border-[var(--border)] text-[14px] sm:text-[14.5px] font-semibold text-[var(--foreground)] outline-none transition-all placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)]/50"
             />
           </div>
 
           {/* Messages */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <label className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider ml-0.5">
                   Auto Messages <span className="text-rose-500">*</span>
@@ -309,7 +309,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                 <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5">One phrase will be picked randomly when auto-commenting.</p>
               </div>
               <button type="button" onClick={addRow}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] text-[12px] font-bold hover:bg-[var(--primary)]/20 transition-all border border-[var(--primary)]/20"
+                className="flex items-center justify-center gap-1.5 px-4 py-2 sm:py-2 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] text-[12px] font-bold hover:bg-[var(--primary)]/20 transition-all border border-[var(--primary)]/20"
               >
                 <Plus className="w-3.5 h-3.5" strokeWidth={3} /> Add More
               </button>
@@ -328,13 +328,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
             {/* Preview */}
             {formMessages.filter(m => m.trim()).length > 0 && (
-              <div className="p-4 rounded-2xl bg-[var(--primary)]/5 border border-[var(--primary)]/10">
+              <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[var(--primary)]/5 border border-[var(--primary)]/10 mt-2">
                 <p className="text-[10px] font-bold text-[var(--primary)] mb-2 flex items-center gap-1.5 uppercase tracking-wide">
                   <Tag className="w-3 h-3" /> Preview · Rotates randomly
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {formMessages.filter(m => m.trim()).map((m, i) => (
-                    <span key={i} className="text-[12.5px] px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] font-medium shadow-sm break-words">
+                    <span key={i} className="text-[11px] sm:text-[12.5px] px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] font-medium shadow-sm break-words">
                       {m}
                     </span>
                   ))}
@@ -345,13 +345,13 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 px-6 sm:px-8 py-5 border-t border-[var(--border)]">
-          <button onClick={onClose} className="flex-1 py-3 rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[14px] transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-[var(--card)]">
+        <div className="flex gap-2 sm:gap-3 px-4 sm:px-8 pt-3 sm:pt-5 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-[var(--border)] shrink-0 bg-[var(--card)]">
+          <button onClick={onClose} className="flex-1 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] sm:text-[14px] transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 bg-[var(--card)]">
             <ChevronLeft className="w-4 h-4" />
             <span>Back</span>
           </button>
           <button onClick={handleSave} disabled={isSaving}
-            className="flex-[2] py-3 rounded-2xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-bold text-[14px] shadow-lg shadow-[var(--primary)]/20 active:scale-95 transition-all disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
+            className="flex-[2] py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-bold text-[13px] sm:text-[14px] shadow-lg shadow-[var(--primary)]/20 active:scale-95 transition-all disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-1.5 sm:gap-2"
           >
             {isSaving ? <><Loader2 className="w-4 h-4 animate-spin" />Saving…</> : <><Check className="w-4 h-4" />{mode === "create" ? "Create Template" : "Save Changes"}</>}
           </button>

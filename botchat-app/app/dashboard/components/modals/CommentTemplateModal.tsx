@@ -226,7 +226,7 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }}
-            className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[94vh] relative z-10"
+            className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col h-full max-h-[100dvh] sm:h-auto sm:max-h-[94vh] relative z-10"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
