@@ -2261,13 +2261,13 @@ function AddActionPicker({ onAdd, isCreating }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
                 className="action-modal"
-                style={{
-                  width: "100%", maxWidth: 640, pointerEvents: "auto",
-                  background: "rgba(255, 255, 255, 0.98)", backdropFilter: "blur(20px)",
-                  border: `1.5px solid ${DS.border}`, borderRadius: 40, padding: "32px",
-                  boxShadow: "0 40px 100px -20px rgba(0,0,0,0.3), 0 20px 50px -25px rgba(0,0,0,0.2)",
-                  display: "flex", flexDirection: "column", gap: 24,
-                }}
+style={{
+                   width: "100%", maxWidth: 640, pointerEvents: "auto",
+                   background: isDark ? "var(--card)" : "rgba(255, 255, 255, 0.98)", backdropFilter: "blur(20px)",
+                   border: `1.5px solid ${DS.border}`, borderRadius: 40, padding: "32px",
+                   boxShadow: "0 40px 100px -20px rgba(0,0,0,0.3), 0 20px 50px -25px rgba(0,0,0,0.2)",
+                   display: "flex", flexDirection: "column", gap: 24,
+                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -2317,13 +2317,52 @@ function AddActionPicker({ onAdd, isCreating }) {
   );
 }
 
-// buildPreviewMsgs already updated
-
 /* ============================================================
-   PHONE PREVIEW
+   PHONE PREVIEW — helpers
    ============================================================ */
+
+// Mock users for the user side of the conversation
+const MOCK_USERS = [
+  { name: "Sofia Martinez", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sofia&backgroundColor=b6e3f4" },
+  { name: "James Okafor", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=James&backgroundColor=c0aede" },
+  { name: "Priya Sharma", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya&backgroundColor=ffd5dc" },
+  { name: "Ethan Nguyen", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ethan&backgroundColor=d1f4cc" },
+  { name: "Layla Ahmed", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Layla&backgroundColor=ffdfbf" },
+];
+const MOCK_USER = MOCK_USERS[0];
+
+// Realistic mock user replies for user_input steps
+const MOCK_USER_REPLIES = [
+  "Sure, sounds great! 👍",
+  "Yes please, I'd love that!",
+  "Can you tell me more?",
+  "That's exactly what I was looking for 🙌",
+  "Perfect, thanks!",
+  "How long does shipping take?",
+  "Do you offer discounts?",
+  "I'm interested in the premium plan.",
+  "What's included in the package?",
+];
+
+// Realistic mock conversations shown when the flow has no steps yet
+const MOCK_CONVO_IG = [
+  { type: "user", text: "Hey! I saw your post about the giveaway 👀" },
+  { type: "bot", text: "Hey! Thanks for reaching out 🎉 To enter, just reply with the keyword below 👇" },
+  { type: "bot", text: "Reply ENTER to join the giveaway!", buttons: [{ title: "ENTER" }] },
+  { type: "user", text: "ENTER" },
+  { type: "bot", text: "You're in! 🥳 We'll DM the winner on Friday. Good luck! 🍀" },
+];
+const MOCK_CONVO_FB = [
+  { type: "user", text: "Hi there! Quick question about your product 😊" },
+  { type: "bot", text: "Hello! Happy to help. What would you like to know?" },
+  { type: "bot", text: "Here are some popular topics:", buttons: [{ title: "Pricing 💰" }, { title: "Shipping 📦" }, { title: "Returns 🔄" }] },
+  { type: "user", text: "Shipping 📦" },
+  { type: "bot", text: "We ship worldwide! 🌍 Standard delivery is 3–5 business days. Express (1–2 days) is also available at checkout." },
+];
+
 function buildPreviewMsgs(steps) {
   const out = [];
+  let replyIdx = 0;
   steps.forEach(s => {
     const c = s.config || {};
     if (s.type === "message") {
@@ -2337,11 +2376,11 @@ function buildPreviewMsgs(steps) {
     } else if (s.type === "file") {
       out.push({ type: "bot", text: "📁 Document Attachment", file: c.url });
     } else if (s.type === "carousel") {
-      // Handle both local "carousel" array and potentially API returned items if mapped differently
       out.push({ type: "bot", carousel: c.carousel || c.carousel_items || [] });
     } else if (s.type === "user_input") {
       out.push({ type: "bot", text: c.question || "Tell me more?" });
-      out.push({ type: "user", text: "[User Response]" });
+      out.push({ type: "user", text: MOCK_USER_REPLIES[replyIdx % MOCK_USER_REPLIES.length] });
+      replyIdx++;
     } else if (s.type === "condition") {
       const rs = c.rules || [];
       const ruleText = rs.map(r => `${r.field_name} ${r.operator} ${r.value}`).join(c.match_type === 'all' ? ' AND ' : ' OR ');
@@ -2362,13 +2401,34 @@ function buildPreviewMsgs(steps) {
   return out;
 }
 
-// PreviewBubble removed
+// Clean helper to extract letters/numbers for initials, especially for special names/emails
+function getAvatarInitial(name) {
+  if (!name) return "🤖";
+  // Trim spaces and special prefix characters
+  let clean = name.replace(/^[^a-zA-Z0-9]+/, "").trim();
+  if (!clean) clean = name;
+  if (clean.includes("@")) {
+    clean = clean.split("@")[0];
+  }
+  const firstChar = clean.charAt(0).toUpperCase();
+  return firstChar || "🤖";
+}
 
-function PhonePreview({ steps, platform }) {
+function PhonePreview({ steps, platform, pageName, pageProfilePic, isMobile }) {
   const isFB = platform === "facebook";
   const DS = useDS();
   const msgs = buildPreviewMsgs(steps);
   const scrollRef = useRef(null);
+
+  // Detect dark mode via document class
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -2378,215 +2438,621 @@ function PhonePreview({ steps, platform }) {
 
   const botMsgs = msgs.filter(m => m.type === "bot").length;
 
+  // ── Theme-aware chat colors ──────────────────────────────────────
+  // Light: mimics real Messenger/Instagram. Dark: dark-mode equivalents.
+  const chatBg = isDark ? "#1a1a2e" : "#FFFFFF";
+  const headerBg = isDark ? "#16213e" : "#FFFFFF";
+  const headerBorder = isDark ? "rgba(255,255,255,0.08)" : (isFB ? "#E2E8F0" : "#DBDBDB");
+  const botBubbleBg = isDark ? "#2a2a3e" : (isFB ? "#F0F2F5" : "#EFEFEF");
+  const botBubbleColor = isDark ? "#E8E8F0" : "#050505";
+  const userBubbleBg = isFB ? "#0084FF" : (isDark ? "#833AB4" : "linear-gradient(135deg,#833AB4,#FD1D1D,#FCAF45)");
+  const userBubbleColor = "#FFFFFF";
+  const inputBarBg = isDark ? "#16213e" : "#FFFFFF";
+  const inputBarBorder = isDark ? "rgba(255,255,255,0.08)" : (isFB ? "#E4E6EB" : "#DBDBDB");
+  const inputFieldBg = isDark ? "#2a2a3e" : (isFB ? "#F0F2F5" : "transparent");
+  const inputFieldBorder = isDark ? "rgba(255,255,255,0.12)" : "#DBDBDB";
+  const inputTextColor = isDark ? "#888" : "#8E8E8E";
+  const headerNameColor = isDark ? "#E8E8F0" : "#050505";
+  const headerSubColor = isDark ? "#888" : "#65676B";
+  const accentColor = isFB ? "#0084FF" : (isDark ? "#C77DFF" : "#833AB4");
+  const sysTextColor = isDark ? "#666" : "#8E9196";
+  const buttonBg = isDark ? "#1e1e35" : "#FFFFFF";
+  const buttonBorder = isDark ? "rgba(255,255,255,0.12)" : (isDark ? "#333" : "#DBDBDB");
+  const carouselCardBg = isDark ? "#1e1e35" : "#FFFFFF";
+  const carouselBorder = isDark ? "rgba(255,255,255,0.1)" : "#E8E8E8";
+  const botAvatarBg = isDark ? "#2a2a3e" : "#F0F2F5";
+
+  // Page display name & avatar
+  const displayName = pageName || (isFB ? "Messenger Bot" : "bot_assistant");
+  const hasProfilePic = !!pageProfilePic;
+
+
+
   const Icons = {
-    IG_CAM: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>,
-    IG_VIDEO: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>,
+    IG_CAM: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>,
+    IG_VIDEO: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>,
     IG_MIC: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" /></svg>,
     IG_IMG: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>,
     IG_HEART: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>,
     FB_PLUS: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>,
     FB_THUMB: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" /></svg>,
     FB_PHONE: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.149 15.149 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" /></svg>,
-    ARROW_LEFT: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>,
+    ARROW_LEFT: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>,
+    VERIFIED: () => <svg width="11" height="11" viewBox="0 0 24 24" fill={accentColor}><path d="M12 2L14.4 9.6H22L15.8 14.2L18.2 21.8L12 17.2L5.8 21.8L8.2 14.2L2 9.6H9.6L12 2Z" /></svg>,
+    VIDEO_CALL: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg>,
+    PHONE_CALL: () => <svg width="20" height="20" viewBox="0 0 24 24" fill={accentColor}><path d="M6.62 10.79a15.149 15.149 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" /></svg>,
   };
 
-  return (
-    <div className="phone-preview-wrapper" style={{ width: 340, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
-      {/* Label */}
-      <div style={{ fontSize: 11, fontWeight: 800, color: DS.ink3, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: DS.green, boxShadow: `0 0 8px ${DS.green}` }} />
-        {isFB ? 'Messenger' : 'Instagram'} Preview
-      </div>
-
-      {/* Phone */}
+  // Bot avatar (page profile pic or IG gradient ring + initial)
+  const BotAvatar = ({ size = 34 }) => {
+    if (hasProfilePic) {
+      return (
+        <div style={{
+          width: size, height: size, borderRadius: "50%", flexShrink: 0,
+          border: isFB ? `2px solid #0084FF` : "none",
+          background: isFB
+            ? "transparent"
+            : "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
+          padding: isFB ? 0 : 1.5,
+          overflow: "hidden",
+        }}>
+          <img
+            src={pageProfilePic}
+            style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }}
+            alt={displayName}
+            onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        </div>
+      );
+    }
+    // Fallback: colourful initial avatar
+    const initial = getAvatarInitial(displayName);
+    const gradBg = isFB
+      ? "linear-gradient(135deg,#0084FF,#00B2FF)"
+      : "linear-gradient(135deg,#833AB4,#FD1D1D,#FCAF45)";
+    return (
       <div style={{
-        width: 310, height: 630, borderRadius: 54, background: "#000",
-        padding: "8px",
-        boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.15)",
-        position: "relative",
-        border: "1.5px solid #3F3F46",
+        width: size, height: size, borderRadius: "50%", flexShrink: 0,
+        background: gradBg,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        color: "#fff", fontWeight: 800, fontSize: size * 0.38,
+        border: isDark ? "2px solid rgba(255,255,255,0.15)" : "none",
       }}>
-        {/* Buttons on Side */}
-        <div style={{ position: "absolute", left: -2, top: 120, width: 3, height: 60, background: "#27272A", borderRadius: "2px 0 0 2px" }} />
-        <div style={{ position: "absolute", right: -2, top: 180, width: 3, height: 100, background: "#27272A", borderRadius: "0 2px 2px 0" }} />
+        {initial}
+      </div>
+    );
+  };
 
+  // User avatar (initials based clean avatar)
+  const UserAvatar = ({ size = 24 }) => (
+    <div style={{
+      width: size,
+      height: size,
+      borderRadius: "50%",
+      background: isDark ? "#2a2a3e" : "#E2E8F0",
+      color: isDark ? "#A0AEC0" : "#4A5568",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: size * 0.42,
+      fontWeight: 700,
+      flexShrink: 0,
+    }}>
+      SM
+    </div>
+  );
+
+  // Small bot bubble avatar
+  const SmallBotAvatar = () => {
+    if (hasProfilePic) {
+      return (
+        <img
+          src={pageProfilePic}
+          style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `1px solid ${headerBorder}` }}
+          alt={displayName}
+          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+        />
+      );
+    }
+    const initial = getAvatarInitial(displayName);
+    const gradBg = isFB ? "linear-gradient(135deg,#0084FF,#00B2FF)" : "linear-gradient(135deg,#833AB4,#FD1D1D,#FCAF45)";
+    return (
+      <div style={{
+        width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
+        background: gradBg,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        color: "#fff", fontWeight: 800, fontSize: 10,
+      }}>
+        {initial}
+      </div>
+    );
+  };
+
+  const isEmpty = steps.length === 0;
+  const displayMsgs = msgs;
+
+  // Render direct canvas preview styled as bezel-less modern iPhone screen
+  if (isMobile) {
+    return (
+      <div style={{
+        width: "100%",
+        height: "100%",
+        minHeight: 560,
+        background: chatBg,
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        borderRadius: 40,
+        overflow: "hidden",
+        border: isDark ? "6px solid #2a2a3e" : "6px solid #111",
+        boxShadow: "0 15px 40px rgba(0,0,0,0.25)",
+      }}>
         {/* Dynamic Island */}
-        <div style={{ display: "flex", justifyContent: "center", position: "absolute", top: 18, left: 0, right: 0, zIndex: 50 }}>
+        <div style={{ display: "flex", justifyContent: "center", position: "absolute", top: 12, left: 0, right: 0, zIndex: 100 }}>
           <div style={{
-            width: 80, height: 24, borderRadius: 20, background: "#000",
-            display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 8px",
+            width: 76, height: 20, borderRadius: 10, background: "#000",
+            display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 6px"
           }}>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#111", border: "2px solid #222" }} />
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#111", border: "1.5px solid #222" }} />
           </div>
         </div>
 
-        {/* Screen */}
-        <div style={{ borderRadius: 48, overflow: "hidden", background: DS.bg, height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+        {/* Header - Sized with top padding to slide under the Dynamic Island */}
+        <div style={{
+          background: headerBg,
+          padding: "36px 14px 10px",
+          borderBottom: `0.5px solid ${headerBorder}`,
+          display: "flex", alignItems: "center", gap: 8, zIndex: 40,
+        }}>
+          {/* Back arrow */}
+          <div style={{ cursor: "pointer", flexShrink: 0 }}>
+            <Icons.ARROW_LEFT />
+          </div>
 
-          {/* Header */}
-          <div style={{
-            background: isFB ? DS.bg : DS.card,
-            backdropFilter: isFB ? "none" : "blur(20px)",
-            padding: "42px 14px 10px",
-            borderBottom: `0.5px solid ${isFB ? "#E2E8F0" : "#DBDBDB"}`,
-            display: "flex", alignItems: "center", gap: 10, zIndex: 40
-          }}>
-            {/* Back Arrow */}
-            <div style={{ color: isFB ? "#0084FF" : "#000", cursor: "pointer" }}>
-              <Icons.ARROW_LEFT />
-            </div>
-
+          {/* Page avatar */}
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <BotAvatar size={34} />
             <div style={{
-              width: 34, height: 34, borderRadius: "50%",
-              background: isFB ? "#0084FF" : "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
-              padding: isFB ? 0 : 1.5, flexShrink: 0
-            }}>
-              <div style={{
-                width: "100%", height: "100%", borderRadius: "50%", background: isFB ? "transparent" : "#fff",
-                display: "flex", alignItems: "center", justifyContent: "center"
-              }}>
-                <span style={{ fontSize: 16 }}>🤖</span>
-              </div>
+              position: "absolute", bottom: 0, right: 0,
+              width: 9, height: 9, borderRadius: "50%",
+              background: "#31A24C",
+              border: `1.5px solid ${headerBg}`,
+            }} />
+          </div>
+
+          {/* Name & status */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+              <span style={{
+                fontSize: 13, fontWeight: 700, color: headerNameColor,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                maxWidth: 160,
+              }}>{displayName}</span>
+              {!isFB && <Icons.VERIFIED />}
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {isFB ? "Messenger Bot" : "bot_assistant"}
-                {!isFB && <svg width="12" height="12" viewBox="0 0 24 24" fill={DS.accent} style={{ marginLeft: 3 }}><path d="M12 2L14.4 9.6H22L15.8 14.2L18.2 21.8L12 17.2L5.8 21.8L8.2 14.2L2 9.6H9.6L12 2Z" /></svg>}
-              </div>
-              <div style={{ fontSize: 10.5, color: "#65676B", marginTop: -1 }}>{isFB ? "Active Now" : "Active 5m ago"}</div>
-            </div>
-            <div style={{ display: "flex", gap: 18, alignItems: "center", color: isFB ? "#0084FF" : "#262626" }}>
-              {isFB ? <Icons.FB_PHONE /> : <Icons.IG_CAM />}
-              <Icons.IG_VIDEO />
-              {isFB && <div style={{ width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: "2px solid #0084FF", fontWeight: 900, fontSize: 10 }}>i</div>}
+            <div style={{ fontSize: 10, color: headerSubColor, marginTop: 0.5 }}>
+              {isFB ? "Active now" : "Active 3m ago"}
             </div>
           </div>
 
-          {/* Chat Messages */}
-          <div ref={scrollRef} style={{ padding: "12px", flex: 1, overflowY: "auto", background: DS.bg }}>
-            {msgs.length === 0
-              ? (
-                <div style={{ textAlign: "center", paddingTop: 120 }}>
-                  <div style={{ width: 80, height: 80, borderRadius: "50%", border: `1.5px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, opacity: 0.5 }}>🤖</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#262626" }}>No messages yet</div>
-                  <div style={{ fontSize: 11, color: "#8E8E8E", marginTop: 4 }}>Add steps to start testing your bot!</div>
-                </div>
-              )
-              : msgs.map((m, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: m.type === "user" ? "flex-end" : "flex-start", marginBottom: 6, gap: 8, alignItems: "flex-end" }}>
-                  {m.type === "bot" && (
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", border: "0.5px solid #DBDBDB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, marginBottom: 2, background: isFB ? DS.bg : DS.card }}>
-                      🤖
+          {/* Action icons */}
+          <div style={{ display: "flex", gap: 14, alignItems: "center", color: accentColor, flexShrink: 0 }}>
+            {isFB ? <Icons.PHONE_CALL /> : null}
+            <Icons.VIDEO_CALL />
+            {isFB && (
+              <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${accentColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 10, color: accentColor }}>i</div>
+            )}
+          </div>
+        </div>
+
+        {/* Date badge */}
+        <div style={{ textAlign: "center", padding: "8px 0 2px", fontSize: 10, color: sysTextColor, fontWeight: 500 }}>
+          Today {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        </div>
+
+        {/* Messages */}
+        <div ref={scrollRef} style={{ padding: "8px 10px 4px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4, scrollbarWidth: "none" }}>
+          {isEmpty ? (
+            <div style={{ textAlign: "center", paddingTop: 100, paddingLeft: 20, paddingRight: 20 }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)", margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, opacity: 0.7 }}>🤖</div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: headerNameColor }}>No messages yet</div>
+              <div style={{ fontSize: 11, color: headerSubColor, marginTop: 6, lineHeight: 1.4 }}>Add message steps in the flow editor to see your automated replies here.</div>
+            </div>
+          ) : (
+            displayMsgs.map((m, i) => {
+              const isUser = m.type === "user";
+              const isSys = m.type === "sys";
+              const isLastInGroup = i === displayMsgs.length - 1 || displayMsgs[i + 1]?.type !== m.type;
+              if (isSys) {
+                return (
+                  <div key={i} style={{ textAlign: "center", margin: "10px 0" }}>
+                    <span style={{ fontSize: 9.5, fontWeight: 700, color: sysTextColor, letterSpacing: "0.05em", textTransform: "uppercase", background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)", borderRadius: 10, padding: "3px 8px" }}>{m.text}</span>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} style={{ display: "flex", flexDirection: isUser ? "row-reverse" : "row", alignItems: "flex-end", gap: 6, marginBottom: isLastInGroup ? 6 : 2 }}>
+                  {!isUser && (
+                    <div style={{ width: 24, flexShrink: 0, alignSelf: "flex-end" }}>
+                      {isLastInGroup ? <SmallBotAvatar /> : null}
                     </div>
                   )}
-                  {m.carousel ? (
-                    <div style={{ display: "flex", overflowX: "auto", gap: 8, paddingBottom: 8, width: "100%", scrollSnapType: "x mandatory" }}>
-                      {m.carousel.map((card, ci) => (
-                        <div key={ci} style={{ minWidth: 200, maxWidth: 220, background: DS.bg, border: `1px solid ${DS.border}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
-                          {card.image_url && <div style={{ height: 100, background: DS.bg, backgroundImage: `url(${ensureUrl(card.image_url)})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
-                          <div style={{ padding: 10 }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: "#000" }}>{card.title || "Card Title"}</div>
-                            <div style={{ fontSize: 11, color: "#65676B", marginTop: 2 }}>{card.subtitle || "Card description"}</div>
-                          </div>
-                          {(card.buttons || []).slice(0, 3).map((b, bi) => (
-                            <div key={bi} style={{ borderTop: `1px solid ${isFB ? "#F0F2F5" : "#DBDBDB"}`, padding: "10px", textAlign: "center", color: isFB ? "#0084FF" : DS.accent, fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-                              {b.title || b.label}
+                  {isUser && isLastInGroup && (
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", overflow: "hidden", flexShrink: 0, alignSelf: "flex-end" }}>
+                      <UserAvatar size={24} />
+                    </div>
+                  )}
+                  {isUser && !isLastInGroup && <div style={{ width: 24 }} />}
+
+                  <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column", gap: 4, alignItems: isUser ? "flex-end" : "flex-start" }}>
+                    {m.carousel ? (
+                      <div style={{ display: "flex", overflowX: "auto", gap: 6, paddingBottom: 4, scrollSnapType: "x mandatory", maxWidth: 210, scrollbarWidth: "none" }}>
+                        {m.carousel.map((card, ci) => (
+                          <div key={ci} style={{ minWidth: 150, maxWidth: 160, background: carouselCardBg, border: `1px solid ${carouselBorder}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
+                            {card.image_url && <div style={{ height: 80, backgroundImage: `url(${ensureUrl(card.image_url)})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
+                            <div style={{ padding: "6px 8px" }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: headerNameColor }}>{card.title || "Card Title"}</div>
+                              <div style={{ fontSize: 9.5, color: headerSubColor, marginTop: 1 }}>{card.subtitle || "Description"}</div>
                             </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  ) : m.type === "sys" ? (
-                    <div style={{ textAlign: "center", width: "100%", margin: "14px 0" }}>
-                      <span style={{ fontSize: 10, fontWeight: 800, color: "#8E9196", letterSpacing: "0.05em", textTransform: "uppercase" }}>{m.text}</span>
-                    </div>
-                  ) : (
-                    <div style={{ maxWidth: "78%" }}>
+                            {(card.buttons || []).slice(0, 2).map((b, bi) => (
+                              <div key={bi} style={{ borderTop: `1px solid ${carouselBorder}`, padding: "7px 8px", textAlign: "center", color: accentColor, fontSize: 10.5, fontWeight: 700 }}>{b.title || b.label}</div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
                       <div style={{
-                        background: m.type === "user" ? (isFB ? "#0084FF" : DS.gradient) : (isFB ? "#F0F2F5" : "#EFEFEF"),
-                        color: m.type === "user" ? "#fff" : "#000",
-                        borderRadius: m.type === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-                        padding: m.isMedia ? "4px" : "10px 14px", fontSize: 13.5, lineHeight: 1.4,
-                        overflow: "hidden"
+                        background: isUser ? userBubbleBg : botBubbleBg,
+                        color: isUser ? userBubbleColor : botBubbleColor,
+                        borderRadius: isUser ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
+                        padding: m.isMedia ? "3px" : "9px 12px",
+                        fontSize: 12.5,
+                        lineHeight: 1.45,
+                        overflow: "hidden",
+                        wordBreak: "break-word",
+                        whiteSpace: "pre-wrap",
+                        boxShadow: isDark ? "none" : "0 1px 2px rgba(0,0,0,0.08)",
                       }}>
-                        {m.image && <img src={ensureUrl(m.image)} style={{ width: "100%", borderRadius: 14, display: "block" }} alt="" />}
+                        {m.image && <img src={ensureUrl(m.image)} style={{ width: "100%", borderRadius: 12, display: "block" }} alt="" />}
                         {m.video && (
                           (m.video.includes("youtube.com") || m.video.includes("youtu.be")) ? (
                             <iframe
                               src={`https://www.youtube.com/embed/${m.video.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)?.[1] || ''}`}
-                              style={{ width: "100%", borderRadius: 14, display: "block", aspectRatio: "16/9", border: "none", background: "#000" }}
+                              style={{ width: "100%", borderRadius: 12, display: "block", aspectRatio: "16/9", border: "none", background: "#000" }}
                               allowFullScreen
                             />
                           ) : (
-                            <video src={ensureUrl(m.video)} controls style={{ width: "100%", borderRadius: 14, display: "block", background: "#000", aspectRatio: "16/9" }} />
+                            <video src={ensureUrl(m.video)} controls style={{ width: "100%", borderRadius: 12, display: "block", background: "#000", aspectRatio: "16/9" }} />
                           )
                         )}
                         {m.audio && (
-                          <div style={{ padding: "4px 8px" }}>
-                            <div style={{ fontSize: 11, marginBottom: 4, fontWeight: 600, color: m.type === "user" ? "#fff" : "#65676B" }}>Audio Message</div>
-                            <audio src={ensureUrl(m.audio)} controls style={{ width: "100%", height: 40, display: "block", outline: "none" }} />
+                          <div style={{ padding: "3px 6px" }}>
+                            <div style={{ fontSize: 10, marginBottom: 3, fontWeight: 600, color: isUser ? "rgba(255,255,255,0.8)" : headerSubColor }}>Audio Message</div>
+                            <audio src={ensureUrl(m.audio)} controls style={{ width: "100%", height: 32, display: "block" }} />
                           </div>
                         )}
                         {m.file && (
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: DS.bg, borderRadius: 12, border: `1px solid ${DS.border}` }}>
-                            <File size={20} color={DS.accent} />
-                            <div style={{ display: "flex", flexDirection: "column" }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: "#000" }}>Document File</span>
-                              <span style={{ fontSize: 9, color: DS.ink3 }}>Click to download</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 8px", background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.04)", borderRadius: 8, border: `1px solid ${carouselBorder}` }}>
+                            <File size={16} color={accentColor} />
+                            <div>
+                              <div style={{ fontSize: 10.5, fontWeight: 700, color: headerNameColor }}>Document File</div>
+                              <div style={{ fontSize: 8.5, color: headerSubColor }}>Tap to download</div>
                             </div>
                           </div>
                         )}
                         {!m.isMedia && m.text}
                       </div>
+                    )}
 
-                      {/* Message Buttons */}
-                      {(m.buttons || []).map((b, bi) => (
-                        <div key={bi} style={{
-                          marginTop: 8, background: DS.bg, border: `1px solid ${DS.border}`,
-                          borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
-                          color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
-                        }}>
-                          {b.title || b.label}
-                        </div>
-                      ))}
+                    {/* Quick-reply / action buttons */}
+                    {!isUser && (m.buttons || []).length > 0 && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%" }}>
+                        {(m.buttons || []).map((b, bi) => (
+                          <div key={bi} style={{
+                            background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.1)" : "#FFFFFF"),
+                            border: `1.5px solid ${isFB ? "transparent" : (isDark ? "rgba(255,255,255,0.15)" : "#E2E8F0")}`,
+                            borderRadius: 18,
+                            padding: "7px 14px",
+                            textAlign: "center",
+                            color: isFB ? "#0084FF" : (isDark ? "#FFF" : "#000"),
+                            fontWeight: 600,
+                            fontSize: 12,
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}>{b.title || b.label}</div>
+                        ))}
+                      </div>
+                    )}
 
-                      {m.link && (
-                        <div style={{
-                          marginTop: 8, background: DS.bg, border: `1px solid ${DS.border}`,
-                          borderRadius: 20, padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center",
-                          color: isFB ? "#0084FF" : DS.accent, fontWeight: 700, fontSize: 13, cursor: "pointer"
-                        }}>
-                          {m.link.title || m.link.btnTitle || m.link.label || m.link.btnLabel}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    {!isUser && m.link && (
+                      <div style={{
+                        background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.1)" : "#FFFFFF"),
+                        border: `1.5px solid ${isFB ? "transparent" : (isDark ? "rgba(255,255,255,0.15)" : "#E2E8F0")}`,
+                        borderRadius: 18, padding: "7px 14px", textAlign: "center",
+                        color: isFB ? "#0084FF" : (isDark ? "#FFF" : "#000"), fontWeight: 600, fontSize: 12, cursor: "pointer",
+                      }}>{m.link.title || m.link.btnTitle || m.link.label || m.link.btnLabel}</div>
+                    )}
+                  </div>
                 </div>
-              ))
-            }
+              );
+            })
+          )}
+        </div>
+
+        {/* Input Bar */}
+        <div style={{
+          background: inputBarBg,
+          padding: "8px 10px 12px",
+          borderTop: `0.5px solid ${inputBarBorder}`,
+          display: "flex", gap: 10, alignItems: "center",
+        }}>
+          {isFB ? (
+            <>
+              <div style={{ color: accentColor }}><Icons.FB_PLUS /></div>
+              <div style={{ color: accentColor }}><Icons.IG_CAM /></div>
+              <div style={{ color: accentColor }}><Icons.IG_IMG /></div>
+              <div style={{ color: accentColor }}><Icons.IG_MIC /></div>
+              <div style={{ flex: 1, background: inputFieldBg, borderRadius: 20, height: 34, display: "flex", alignItems: "center", paddingLeft: 12, fontSize: 14, color: inputTextColor }}>Aa</div>
+              <div style={{ color: accentColor }}><Icons.FB_THUMB /></div>
+            </>
+          ) : (
+            <>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#833AB4,#FD1D1D,#FCAF45)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", flexShrink: 0 }}>
+                <Icons.IG_CAM />
+              </div>
+              <div style={{ flex: 1, border: `1px solid ${inputFieldBorder}`, borderRadius: 20, height: 34, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 13, color: inputTextColor, background: inputFieldBg }}>Message...</div>
+              <div style={{ color: headerNameColor }}><Icons.IG_MIC /></div>
+              <div style={{ color: headerNameColor }}><Icons.IG_IMG /></div>
+              <div style={{ color: "#ED4956" }}><Icons.IG_HEART /></div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="phone-preview-wrapper" style={{ width: 310, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {/* Label */}
+      <div style={{ fontSize: 11, fontWeight: 800, color: DS.ink3, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: DS.green, boxShadow: `0 0 8px ${DS.green}` }} />
+        {isEmpty ? "Sample Preview" : (isFB ? "Messenger" : "Instagram") + " Preview"}
+      </div>
+
+      {/* Phone Frame */}
+      <div style={{
+        width: 310, height: 630, borderRadius: 54, background: "#000",
+        padding: "8px",
+        boxShadow: isDark
+          ? "0 40px 80px -20px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.12)"
+          : "0 50px 100px -20px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.15)",
+        position: "relative",
+        border: isDark ? "1.5px solid #555" : "1.5px solid #3F3F46",
+      }}>
+        {/* Side Buttons */}
+        <div style={{ position: "absolute", left: -2, top: 120, width: 3, height: 60, background: "#27272A", borderRadius: "2px 0 0 2px" }} />
+        <div style={{ position: "absolute", right: -2, top: 180, width: 3, height: 100, background: "#27272A", borderRadius: "0 2px 2px 0" }} />
+
+        {/* Dynamic Island */}
+        <div style={{ display: "flex", justifyContent: "center", position: "absolute", top: 18, left: 0, right: 0, zIndex: 50 }}>
+          <div style={{ width: 80, height: 24, borderRadius: 20, background: "#000", display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 8px" }}>
+            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#111", border: "2px solid #222" }} />
+          </div>
+        </div>
+
+        {/* Screen */}
+        <div style={{ borderRadius: 48, overflow: "hidden", background: chatBg, height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+
+          {/* ── Chat Header ── */}
+          <div style={{
+            background: headerBg,
+            padding: "40px 12px 10px",
+            borderBottom: `0.5px solid ${headerBorder}`,
+            display: "flex", alignItems: "center", gap: 8, zIndex: 40,
+            backdropFilter: isFB ? "none" : "blur(12px)",
+          }}>
+            {/* Back arrow */}
+            <div style={{ cursor: "pointer", flexShrink: 0 }}>
+              <Icons.ARROW_LEFT />
+            </div>
+
+            {/* Page avatar */}
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <BotAvatar size={34} />
+              {/* Online indicator */}
+              <div style={{
+                position: "absolute", bottom: 0, right: 0,
+                width: 9, height: 9, borderRadius: "50%",
+                background: "#31A24C",
+                border: `1.5px solid ${headerBg}`,
+              }} />
+            </div>
+
+            {/* Name & status */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                <span style={{
+                  fontSize: 13, fontWeight: 700, color: headerNameColor,
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                  maxWidth: 110,
+                }}>{displayName}</span>
+                {!isFB && <Icons.VERIFIED />}
+              </div>
+              <div style={{ fontSize: 10, color: headerSubColor, marginTop: 0.5 }}>
+                {isFB ? "Active now" : "Active 3m ago"}
+              </div>
+            </div>
+
+            {/* Action icons */}
+            <div style={{ display: "flex", gap: 14, alignItems: "center", color: accentColor, flexShrink: 0 }}>
+              {isFB ? <Icons.PHONE_CALL /> : null}
+              <Icons.VIDEO_CALL />
+              {isFB && (
+                <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${accentColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 10, color: accentColor }}>i</div>
+              )}
+            </div>
           </div>
 
-          {/* PLATFORM SPECIFIC INPUT BAR */}
+          {/* ── Date badge ── */}
+          <div style={{ textAlign: "center", padding: "8px 0 2px", fontSize: 10, color: headerSubColor, fontWeight: 500 }}>
+            Today {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </div>
+
+          {/* ── Messages ── */}
+          <div ref={scrollRef} style={{ padding: "8px 10px 4px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4, scrollbarWidth: "none" }}>
+            {isEmpty ? (
+              <div style={{ textAlign: "center", paddingTop: 100, paddingLeft: 20, paddingRight: 20 }}>
+                <div style={{ width: 72, height: 72, borderRadius: "50%", background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)", margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, opacity: 0.7 }}>💬</div>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: headerNameColor }}>No messages yet</div>
+                <div style={{ fontSize: 11, color: headerSubColor, marginTop: 6, lineHeight: 1.4 }}>Add message steps in the flow editor to see your automated replies here.</div>
+              </div>
+            ) : (
+              displayMsgs.map((m, i) => {
+                const isUser = m.type === "user";
+                const isSys = m.type === "sys";
+                const isLastInGroup = i === displayMsgs.length - 1 || displayMsgs[i + 1]?.type !== m.type;
+                if (isSys) {
+                  return (
+                    <div key={i} style={{ textAlign: "center", margin: "10px 0" }}>
+                      <span style={{ fontSize: 9.5, fontWeight: 700, color: sysTextColor, letterSpacing: "0.05em", textTransform: "uppercase", background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)", borderRadius: 10, padding: "3px 8px" }}>{m.text}</span>
+                    </div>
+                  );
+                }
+                return (
+                  <div key={i} style={{ display: "flex", flexDirection: isUser ? "row-reverse" : "row", alignItems: "flex-end", gap: 6, marginBottom: isLastInGroup ? 6 : 2 }}>
+                    {/* Avatar — only on last msg in a group */}
+                    {!isUser && (
+                      <div style={{ width: 24, flexShrink: 0, alignSelf: "flex-end" }}>
+                        {isLastInGroup ? <SmallBotAvatar /> : null}
+                      </div>
+                    )}
+                    {isUser && isLastInGroup && (
+                      <div style={{ width: 24, height: 24, borderRadius: "50%", overflow: "hidden", flexShrink: 0, alignSelf: "flex-end" }}>
+                        <UserAvatar size={24} />
+                      </div>
+                    )}
+                    {isUser && !isLastInGroup && <div style={{ width: 24 }} />}
+
+                    {/* Bubble + buttons */}
+                    <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column", gap: 4, alignItems: isUser ? "flex-end" : "flex-start" }}>
+                      {m.carousel ? (
+                        <div style={{ display: "flex", overflowX: "auto", gap: 6, paddingBottom: 4, scrollSnapType: "x mandatory", maxWidth: 210, scrollbarWidth: "none" }}>
+                          {m.carousel.map((card, ci) => (
+                            <div key={ci} style={{ minWidth: 150, maxWidth: 160, background: carouselCardBg, border: `1px solid ${carouselBorder}`, borderRadius: 12, overflow: "hidden", flexShrink: 0, scrollSnapAlign: "start" }}>
+                              {card.image_url && <div style={{ height: 80, backgroundImage: `url(${ensureUrl(card.image_url)})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
+                              <div style={{ padding: "6px 8px" }}>
+                                <div style={{ fontSize: 11, fontWeight: 700, color: headerNameColor }}>{card.title || "Card Title"}</div>
+                                <div style={{ fontSize: 9.5, color: headerSubColor, marginTop: 1 }}>{card.subtitle || "Description"}</div>
+                              </div>
+                              {(card.buttons || []).slice(0, 2).map((b, bi) => (
+                                <div key={bi} style={{ borderTop: `1px solid ${carouselBorder}`, padding: "7px 8px", textAlign: "center", color: accentColor, fontSize: 10.5, fontWeight: 700 }}>{b.title || b.label}</div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{
+                          background: isUser ? userBubbleBg : botBubbleBg,
+                          color: isUser ? userBubbleColor : botBubbleColor,
+                          borderRadius: isUser ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
+                          padding: m.isMedia ? "3px" : "9px 12px",
+                          fontSize: 12.5,
+                          lineHeight: 1.45,
+                          overflow: "hidden",
+                          wordBreak: "break-word",
+                          whiteSpace: "pre-wrap",
+                          boxShadow: isDark ? "none" : "0 1px 2px rgba(0,0,0,0.08)",
+                        }}>
+                          {m.image && <img src={ensureUrl(m.image)} style={{ width: "100%", borderRadius: 12, display: "block" }} alt="" />}
+                          {m.video && (
+                            (m.video.includes("youtube.com") || m.video.includes("youtu.be")) ? (
+                              <iframe
+                                src={`https://www.youtube.com/embed/${m.video.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/)?.[1] || ''}`}
+                                style={{ width: "100%", borderRadius: 12, display: "block", aspectRatio: "16/9", border: "none", background: "#000" }}
+                                allowFullScreen
+                              />
+                            ) : (
+                              <video src={ensureUrl(m.video)} controls style={{ width: "100%", borderRadius: 12, display: "block", background: "#000", aspectRatio: "16/9" }} />
+                            )
+                          )}
+                          {m.audio && (
+                            <div style={{ padding: "3px 6px" }}>
+                              <div style={{ fontSize: 10, marginBottom: 3, fontWeight: 600, color: isUser ? "rgba(255,255,255,0.8)" : headerSubColor }}>Audio Message</div>
+                              <audio src={ensureUrl(m.audio)} controls style={{ width: "100%", height: 32, display: "block" }} />
+                            </div>
+                          )}
+                          {m.file && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 8px", background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.04)", borderRadius: 8, border: `1px solid ${carouselBorder}` }}>
+                              <File size={16} color={accentColor} />
+                              <div>
+                                <div style={{ fontSize: 10.5, fontWeight: 700, color: headerNameColor }}>Document File</div>
+                                <div style={{ fontSize: 8.5, color: headerSubColor }}>Tap to download</div>
+                              </div>
+                            </div>
+                          )}
+                          {!m.isMedia && m.text}
+                        </div>
+                      )}
+
+                      {/* Quick-reply / action buttons */}
+                      {!isUser && (m.buttons || []).length > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%" }}>
+                          {(m.buttons || []).map((b, bi) => (
+                            <div key={bi} style={{
+                              background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.1)" : "#FFFFFF"),
+                              border: `1.5px solid ${isFB ? "transparent" : (isDark ? "rgba(255,255,255,0.15)" : "#E2E8F0")}`,
+                              borderRadius: 18,
+                              padding: "7px 14px",
+                              textAlign: "center",
+                              color: isFB ? "#0084FF" : (isDark ? "#FFF" : "#000"),
+                              fontWeight: 600,
+                              fontSize: 12,
+                              cursor: "pointer",
+                              transition: "all 0.15s",
+                            }}>{b.title || b.label}</div>
+                          ))}
+                        </div>
+                      )}
+
+                      {!isUser && m.link && (
+                        <div style={{
+                          background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.1)" : "#FFFFFF"),
+                          border: `1.5px solid ${isFB ? "transparent" : (isDark ? "rgba(255,255,255,0.15)" : "#E2E8F0")}`,
+                          borderRadius: 18, padding: "7px 14px", textAlign: "center",
+                          color: isFB ? "#0084FF" : (isDark ? "#FFF" : "#000"), fontWeight: 600, fontSize: 12, cursor: "pointer",
+                        }}>{m.link.title || m.link.btnTitle || m.link.label || m.link.btnLabel}</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* ── Input Bar ── */}
           <div style={{
-            background: DS.bg, padding: "8px 12px 34px",
-            borderTop: `0.5px solid ${isFB ? "#E4E6EB" : "#DBDBDB"}`,
-            display: "flex", gap: 14, alignItems: "center"
+            background: inputBarBg,
+            padding: "8px 10px 32px",
+            borderTop: `0.5px solid ${inputBarBorder}`,
+            display: "flex", gap: 10, alignItems: "center",
           }}>
             {isFB ? (
               <>
-                <div style={{ color: "#0084FF" }}><Icons.FB_PLUS /></div>
-                <div style={{ color: "#0084FF" }}><Icons.IG_CAM /></div>
-                <div style={{ color: "#0084FF" }}><Icons.IG_IMG /></div>
-                <div style={{ color: "#0084FF" }}><Icons.IG_MIC /></div>
-                <div style={{ flex: 1, background: DS.bg, borderRadius: 20, height: 36, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 15, color: "#8E9196" }}>Aa</div>
-                <div style={{ color: "#0084FF" }}><Icons.FB_THUMB /></div>
+                <div style={{ color: accentColor }}><Icons.FB_PLUS /></div>
+                <div style={{ color: accentColor }}><Icons.IG_CAM /></div>
+                <div style={{ color: accentColor }}><Icons.IG_IMG /></div>
+                <div style={{ color: accentColor }}><Icons.IG_MIC /></div>
+                <div style={{ flex: 1, background: inputFieldBg, borderRadius: 20, height: 34, display: "flex", alignItems: "center", paddingLeft: 12, fontSize: 14, color: inputTextColor }}>Aa</div>
+                <div style={{ color: accentColor }}><Icons.FB_THUMB /></div>
               </>
             ) : (
               <>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", background: DS.gradient, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}><Icons.IG_CAM /></div>
-                <div style={{ flex: 1, border: `1px solid ${DS.border}`, borderRadius: 22, height: 38, display: "flex", alignItems: "center", paddingLeft: 16, fontSize: 14, color: "#8E8E8E" }}>Message...</div>
-                <div style={{ color: "#262626" }}><Icons.IG_MIC /></div>
-                <div style={{ color: "#262626" }}><Icons.IG_IMG /></div>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#833AB4,#FD1D1D,#FCAF45)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", flexShrink: 0 }}>
+                  <Icons.IG_CAM />
+                </div>
+                <div style={{ flex: 1, border: `1px solid ${inputFieldBorder}`, borderRadius: 20, height: 34, display: "flex", alignItems: "center", paddingLeft: 14, fontSize: 13, color: inputTextColor, background: inputFieldBg }}>Message...</div>
+                <div style={{ color: headerNameColor }}><Icons.IG_MIC /></div>
+                <div style={{ color: headerNameColor }}><Icons.IG_IMG /></div>
                 <div style={{ color: "#ED4956" }}><Icons.IG_HEART /></div>
               </>
             )}
@@ -2595,25 +3061,32 @@ function PhonePreview({ steps, platform }) {
 
         {/* Home Indicator */}
         <div style={{ display: "flex", justifyContent: "center", position: "absolute", bottom: 10, left: 0, right: 0, zIndex: 100 }}>
-          <div style={{ width: 120, height: 5, borderRadius: 10, background: "#000", opacity: 0.9 }} />
+          <div style={{ width: 110, height: 4, borderRadius: 10, background: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.7)", opacity: 0.85 }} />
         </div>
       </div>
 
-      {/* Modern Stats Grid */}
-      <div style={{ marginTop: 24, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      {/* Stats Grid */}
+      <div style={{ marginTop: 20, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {[
           { label: "Steps", val: steps.length, icon: "🌳" },
           { label: "Messages", val: botMsgs, icon: "📩" },
         ].map(s => (
-          <div key={s.label} style={{ background: DS.card, borderRadius: 16, padding: "12px", border: `1.5px solid ${DS.border}`, display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{s.icon}</div>
+          <div key={s.label} style={{ background: DS.card, borderRadius: 14, padding: "10px 12px", border: `1.5px solid ${DS.border}`, display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 30, height: 30, borderRadius: 9, background: DS.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>{s.icon}</div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 900, color: DS.ink }}>{s.val}</div>
-              <div style={{ fontSize: 10, color: DS.ink3, fontWeight: 700, textTransform: "uppercase" }}>{s.label}</div>
+              <div style={{ fontSize: 9.5, color: DS.ink3, fontWeight: 700, textTransform: "uppercase" }}>{s.label}</div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Sample preview note */}
+      {isEmpty && (
+        <div style={{ marginTop: 12, fontSize: 10, color: DS.ink3, textAlign: "center", fontStyle: "italic", letterSpacing: "0.02em" }}>
+          ↑ Sample preview — add steps to see your real flow
+        </div>
+      )}
     </div>
   );
 }
@@ -3239,7 +3712,7 @@ function FlowBuilder() {
           .step-actions-desktop { display: none !important; }
           .step-actions-mobile  { display: flex !important; }
 
-          /* Flatten left column — sticky-fab hidden, flow-column fills width */
+          /* Flatten left column */
           .instdm-left {
             flex-direction: column !important;
             gap: 0 !important;
@@ -3251,9 +3724,10 @@ function FlowBuilder() {
             padding: 0 !important;
           }
           .sticky-fab { display: none !important; }
+          .phone-preview-wrapper { display: none !important; }
 
           .instdm-body {
-            padding: 20px 16px 90px !important;
+            padding: 20px 16px 24px !important;
             flex-direction: column;
           }
            .instdm-preview { display: none !important; }
@@ -3280,14 +3754,7 @@ function FlowBuilder() {
           }
 
           /* Header */
-          .flow-hdr {
-            padding: 0 12px !important;
-            min-height: 56px !important;
-            height: 56px !important;
-            flex-wrap: nowrap !important;
-            gap: 8px !important;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
-          }
+          .flow-hdr { display: none !important; }
           .flow-hdr-breadcrumb { display: none !important; }
           .flow-hdr-center { display: none !important; }
 
@@ -3420,8 +3887,8 @@ function FlowBuilder() {
           height: 48px;
           padding: 0 20px;
           border-radius: 24px;
-          background: linear-gradient(135deg, ${DS.accent} 0%, #1D4ED8 100%);
-          box-shadow: 0 8px 24px rgba(29,78,216,0.3);
+          background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+          box-shadow: 0 8px 24px rgba(16,185,129,0.3);
           display: none;
           align-items: center;
           justify-content: center;
@@ -3431,7 +3898,7 @@ function FlowBuilder() {
           transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @media (max-width: 1100px) { .phone-fab { display: flex; } }
-        .phone-fab:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 12px 28px rgba(29,78,216,0.4); }
+        .phone-fab:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 12px 28px rgba(16,185,129,0.4); }
         .phone-fab:active { transform: scale(0.96); }
         .fab-text { color: #fff; font-weight: 700; font-size: 13.5px; }
         .fab-icon { color: #fff; display: flex; align-items: center; }
@@ -3864,7 +4331,13 @@ function FlowBuilder() {
 
             {/* ── RIGHT: PHONE PREVIEW ─── */}
             <div className="instdm-preview" style={{ width: previewWidth }}>
-              <PhonePreview steps={steps} platform={platform} />
+              <PhonePreview
+                steps={steps}
+                platform={platform}
+                isMobile={false}
+                pageName={replyData?.page?.page_name || replyData?.instagram_account?.name || replyData?.name || undefined}
+                pageProfilePic={replyData?.page?.profile_picture_url || replyData?.instagram_account?.profile_picture_url || replyData?.profile_picture_url || undefined}
+              />
             </div>
           </div>
         </div>
@@ -3915,49 +4388,100 @@ function FlowBuilder() {
               }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Header */}
-              <div style={{
-                padding: "16px 20px",
-                borderBottom: "1.5px solid #F1F5F9",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                background: "#fff",
-                zIndex: 10,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Eye size={18} color="#2563EB" />
-                  <span style={{ fontWeight: 800, fontSize: 15, color: "#1E293B", letterSpacing: "-0.01em" }}>Interactive Preview</span>
+              {/* Header — hidden on mobile */}
+              {!isMobile && (
+                <div style={{
+                  padding: "16px 20px",
+                  borderBottom: "1.5px solid #F1F5F9",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: "#fff",
+                  zIndex: 10,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Eye size={18} color="#2563EB" />
+                    <span style={{ fontWeight: 800, fontSize: 15, color: "#1E293B", letterSpacing: "-0.01em" }}>Interactive Preview</span>
+                  </div>
+                  <button
+                    onClick={() => setShowMobilePreview(false)}
+                    style={{
+                      border: "none",
+                      background: "#F1F5F9",
+                      color: "#64748B",
+                      borderRadius: "50%",
+                      width: 28,
+                      height: 28,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      transition: "background 0.2s",
+                      flexShrink: 0,
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#E2E8F0"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F9"; }}
+                  >
+                    ✕
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowMobilePreview(false)}
-                  style={{
-                    border: "none",
-                    background: "#F1F5F9",
-                    color: "#64748B",
-                    borderRadius: "50%",
-                    width: 28,
-                    height: 28,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    fontSize: 12,
-                    fontWeight: "bold",
-                    transition: "background 0.2s",
-                    flexShrink: 0,
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#E2E8F0"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F9"; }}
-                >
-                  ✕
-                </button>
-              </div>
+              )}
 
-              {/* Body wrapper */}
-              <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 24px", display: "flex", justifyContent: "center" }} className="mobile-preview-scroll-container">
-                <div style={{ width: "100%", maxWidth: 340, display: "flex", justifyContent: "center" }}>
-                  <PhonePreview steps={steps} platform={platform} />
+              {isMobile && (
+                <div style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  zIndex: 100,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  padding: "8px 12px 0",
+                  pointerEvents: "none",
+                }}>
+                  <button
+                    onClick={() => setShowMobilePreview(false)}
+                    aria-label="Close preview"
+                    style={{
+                      border: "none",
+                      background: "rgba(255,255,255,0.2)",
+                      backdropFilter: "blur(8px)",
+                      color: "#fff",
+                      borderRadius: "50%",
+                      width: 36,
+                      height: 36,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      fontSize: 16,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+
+              <div style={{
+                flex: 1,
+                overflowY: "auto",
+                padding: 0,
+                display: "flex",
+                justifyContent: "center",
+                background: isMobile ? "var(--card)" : "transparent"
+              }} className="mobile-preview-scroll-container">
+                <div style={{ width: "100%", maxWidth: isMobile ? "100%" : 340, height: isMobile ? "100%" : "auto", display: "flex", justifyContent: "center", padding: isMobile ? 0 : "16px 8px 24px" }}>
+                  <PhonePreview
+                    steps={steps}
+                    platform={platform}
+                    isMobile={isMobile}
+                    pageName={replyData?.page?.page_name || replyData?.instagram_account?.name || replyData?.name || undefined}
+                    pageProfilePic={replyData?.page?.profile_picture_url || replyData?.instagram_account?.profile_picture_url || replyData?.profile_picture_url || undefined}
+                  />
                 </div>
               </div>
             </motion.div>
