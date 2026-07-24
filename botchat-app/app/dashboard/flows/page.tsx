@@ -2585,7 +2585,6 @@ function PhonePreview({ steps, platform, pageName, pageProfilePic, isMobile }) {
         borderRadius: 40,
         overflow: "hidden",
         border: isDark ? "6px solid #2a2a3e" : "6px solid #111",
-        boxShadow: "0 15px 40px rgba(0,0,0,0.25)",
       }}>
         {/* Dynamic Island */}
         <div style={{ display: "flex", justifyContent: "center", position: "absolute", top: 12, left: 0, right: 0, zIndex: 100 }}>
@@ -4155,7 +4154,7 @@ function FlowBuilder() {
                               background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
                               color: "#fff",
                               borderRadius: 14,
-                              border: "none",
+border: isDark ? "6px solid #2a2a3e" : "6px solid #111",
                               fontWeight: 700,
                               fontSize: 14.5,
                               boxShadow: "0 6px 20px rgba(29, 78, 216, 0.25)",
@@ -4384,7 +4383,7 @@ function FlowBuilder() {
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
+                boxShadow: isMobile ? "none" : "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
               }}
               onClick={e => e.stopPropagation()}
             >
@@ -4430,41 +4429,42 @@ function FlowBuilder() {
               )}
 
               {isMobile && (
-                <div style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  zIndex: 100,
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  padding: "8px 12px 0",
-                  pointerEvents: "none",
-                }}>
-                  <button
-                    onClick={() => setShowMobilePreview(false)}
-                    aria-label="Close preview"
-                    style={{
-                      border: "none",
-                      background: "rgba(255,255,255,0.2)",
-                      backdropFilter: "blur(8px)",
-                      color: "#fff",
-                      borderRadius: "50%",
-                      width: 36,
-                      height: 36,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      fontSize: 16,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                      transition: "all 0.15s",
-                    }}
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
+                  <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 100,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    padding: "8px 12px 0",
+                    pointerEvents: "none",
+                  }}>
+                    <button
+                      onClick={() => setShowMobilePreview(false)}
+                      aria-label="Close preview"
+style={{
+                        background: "rgba(0,0,0,0.35)",
+                        backdropFilter: "blur(6px)",
+                        WebkitBackdropFilter: "blur(6px)",
+                        color: "#fff",
+                        borderRadius: "50%",
+                        width: 36,
+                        height: 36,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        fontSize: 16,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+                        transition: "all 0.15s",
+                        pointerEvents: "auto",
+                      }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
 
               <div style={{
                 flex: 1,
