@@ -450,7 +450,7 @@ export default function FacebookPage() {
                                                         )}
                                                     >
                                                         {page.is_enabled ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
-                                                        {page.is_enabled ? "Pause Bot" : "Find Out"}
+                                                        {page.is_enabled ? "Pause Bot" : "Enable Bot"}
                                                     </button>
                                                     <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer" className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors border-r dark:border-neutral-800">
                                                         <ExternalLink className="w-4 h-4" />
@@ -491,7 +491,7 @@ export default function FacebookPage() {
             <AnimatePresence>
                 {confirmModal?.show && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
-                    <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
+                        <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
 
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}

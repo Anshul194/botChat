@@ -504,7 +504,7 @@ export default function InstagramPage() {
                                                         )}
                                                     >
                                                         {isActive ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
-                                                        {isActive ? "Pause Bot" : "Find Out"}
+                                                        {isActive ? "Pause Bot" : "Enable Bot"}
                                                     </button>
                                                     <a href={`https://instagram.com/${acc.username}`} target="_blank" rel="noopener noreferrer" className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-primary transition-colors border-r dark:border-neutral-800">
                                                         <ExternalLink className="w-4 h-4" />
