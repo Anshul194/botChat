@@ -461,7 +461,7 @@ function MessageFields({ step, update, allSteps, onSaveStep, onAddStep, pageId, 
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff",
           fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
           transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           opacity: saving ? 0.7 : 1
@@ -737,7 +737,7 @@ function ConditionFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff",
           fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
           transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           opacity: saving ? 0.7 : 1
@@ -896,7 +896,7 @@ function FollowerGateFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff",
           fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
           transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           opacity: saving ? 0.7 : 1
@@ -1087,7 +1087,7 @@ function CarouselFields({ step, update, allSteps, onSaveStep, onAddStep, pageId,
       <button onClick={addItem} style={{ width: "100%", padding: "14px", borderRadius: 18, border: `2px dashed ${DS.border}`, background: DS.bg, color: DS.ink3, fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={e => e.currentTarget.style.borderColor = DS.accent} onMouseLeave={e => e.currentTarget.style.borderColor = DS.border}>+ ADD ANOTHER CARD</button>
 
       <button onClick={onUpdateSave} disabled={saving} style={{
-        width: "100%", padding: "12px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff", fontSize: 13.5, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer",
+        width: "100%", padding: "12px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff", fontSize: 13.5, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer",
         display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: saving ? 0.7 : 1, transition: "all 0.2s"
       }} onMouseEnter={e => { if (!saving) e.currentTarget.style.opacity = 0.9 }} onMouseLeave={e => { if (!saving) e.currentTarget.style.opacity = 1 }}>
         {saving ? "Updating..." : <><Save size={15} /> Update Carousel Step</>}
@@ -1284,7 +1284,7 @@ function UserInputFields({ step, update, allSteps, onSaveStep, onAddStep, pageId
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff",
           fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
           transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           opacity: saving ? 0.7 : 1
@@ -1696,7 +1696,7 @@ function MediaFields({ step, update, onSaveStep }) {
         onClick={onLocalSave}
         disabled={saving}
         style={{
-          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff",
           fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
           transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           opacity: saving ? 0.7 : 1
@@ -1798,7 +1798,7 @@ function TriggerActionFields({ step, update, onSaveStep, pageId, platform, actio
         onClick={onUpdateSave}
         disabled={saving}
         style={{
-          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: DS.ink, color: "#fff",
+          width: "100%", padding: "11px", borderRadius: DS.radiusSm, background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)", color: "#fff",
           fontSize: 13, fontWeight: 700, border: "none", cursor: saving ? "default" : "pointer", marginTop: 4,
           transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           opacity: saving ? 0.7 : 1
