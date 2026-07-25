@@ -8,7 +8,7 @@ import {
     Edit3, Save, Copy, Check, Loader2, Megaphone, Activity,
     Eye, Settings, Tag, MessageCircle, Image as ImageIcon,
     FileText, PieChart, Info, AlertCircle, Box, Heart, Bell, User,
-    ShieldCheck, Settings2, BarChart3, ClipboardList, Menu, ArrowLeft
+    ShieldCheck, Settings2, BarChart3, ClipboardList, Menu, ArrowLeft, ArrowUpRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
