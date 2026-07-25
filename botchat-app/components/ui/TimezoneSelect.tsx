@@ -84,24 +84,25 @@ export function TimezoneSelect({ value, onChange, className = '', placeholder = 
           <div
             className="absolute z-50 w-full mt-2 rounded-xl shadow-2xl flex flex-col overflow-hidden"
             style={{
-              borderColor: 'var(--glass-border)',
-              background: 'var(--card-bg, #121827)',
-              border: '1px solid var(--glass-border)',
+              borderColor: 'var(--border)',
+              background: 'var(--card)',
+              color: 'var(--card-foreground)',
+              border: '1px solid var(--border)',
               maxHeight: '360px',
               top: '100%',
               left: 0,
             }}
           >
-            <div className="p-2 flex-shrink-0 border-b border-[var(--glass-border)]">
+            <div className="p-2 flex-shrink-0 border-b border-[var(--border)]" style={{ background: 'var(--card)' }}>
               <div className="relative flex items-center">
                 <Search className="w-4 h-4 absolute left-3 text-muted-foreground opacity-60" />
                 <input
                   type="text"
-                  className="w-full pl-9 pr-3 py-2 text-sm outline-none rounded-lg"
+                  className="w-full pl-9 pr-3 py-2 text-sm outline-none rounded-lg font-medium"
                   style={{
-                    background: 'var(--glass-bg)',
-                    color: 'var(--foreground)',
-                    border: '1px solid var(--glass-border)',
+                    background: 'var(--glass-bg, rgba(0,0,0,0.04))',
+                    color: 'var(--card-foreground)',
+                    border: '1px solid var(--border)',
                   }}
                   placeholder={placeholder}
                   value={search}
@@ -112,13 +113,13 @@ export function TimezoneSelect({ value, onChange, className = '', placeholder = 
               </div>
             </div>
 
-            <div className="overflow-y-auto p-1.5 space-y-3 max-h-[300px]">
+            <div className="overflow-y-auto p-1.5 space-y-3 max-h-[300px]" style={{ background: 'var(--card)' }}>
               {Object.keys(groupedFiltered).length === 0 ? (
                 <div className="px-3 py-4 text-sm text-center text-muted-foreground">No timezones found</div>
               ) : (
                 Object.entries(groupedFiltered).map(([region, items]) => (
                   <div key={region} className="space-y-1">
-                    <div className="px-2 pt-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground opacity-60">
+                    <div className="px-2 pt-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground opacity-70">
                       {region}
                     </div>
                     {items.map((opt) => {
@@ -126,9 +127,9 @@ export function TimezoneSelect({ value, onChange, className = '', placeholder = 
                       return (
                         <div
                           key={opt.value}
-                          className="px-3 py-2 text-xs rounded-lg cursor-pointer flex items-center justify-between transition-colors"
+                          className="px-3 py-2 text-xs rounded-lg cursor-pointer flex items-center justify-between transition-colors font-medium"
                           style={{
-                            color: isSelected ? 'var(--brand-purple, #10b981)' : 'var(--foreground)',
+                            color: isSelected ? 'var(--primary, #10b981)' : 'var(--card-foreground)',
                             background: isSelected ? 'rgba(16,185,129,0.12)' : 'transparent',
                           }}
                           onClick={() => {
@@ -137,7 +138,7 @@ export function TimezoneSelect({ value, onChange, className = '', placeholder = 
                             setSearch('')
                           }}
                           onMouseEnter={(e) => {
-                            if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--glass-bg)'
+                            if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'rgba(128,128,128,0.12)'
                           }}
                           onMouseLeave={(e) => {
                             if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'transparent'
@@ -147,7 +148,7 @@ export function TimezoneSelect({ value, onChange, className = '', placeholder = 
                             <span className="font-semibold truncate">{opt.value}</span>
                           </div>
                           <div className="flex items-center gap-2 shrink-0 ml-2">
-                            <span className="text-[11px] font-mono opacity-60">{opt.offset}</span>
+                            <span className="text-[11px] font-mono opacity-70">{opt.offset}</span>
                             {isSelected && <Check className="w-3.5 h-3.5 text-emerald-500" />}
                           </div>
                         </div>
