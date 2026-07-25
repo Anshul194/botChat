@@ -494,7 +494,7 @@ export default function InstagramCommentManagerPage() {
                         </div>
                     </header>
 
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-48">
                         {isPostsLoading ? (
                             [1, 2, 3].map(i => <div key={i} className="h-28 bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl animate-pulse" />)
                         ) : posts.length > 0 ? (

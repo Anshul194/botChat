@@ -584,7 +584,7 @@ export default function CommentManager() {
                                 </div>
                             </header>
 
-                            <div className="space-y-4">
+                            <div className="space-y-4 pb-48">
                                 {isPostsLoading ? (
                                     [1, 2, 3].map(i => (
                                         <div key={i} className="h-24 bg-[var(--muted)]/30 border border-[var(--border)] rounded-2xl animate-pulse" />
