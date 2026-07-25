@@ -24,11 +24,14 @@ export function useAppSettings() {
   }, [isAuthenticated, general, dispatch])
 
   // Effective settings resolution (User / Workspace / Fallback)
+  // Note: general.landingPageEnabled and general.emailVerification are already
+  // normalized to booleans by normalizeGeneralSettings() in settingsSlice.ts
   const timezone = general?.timezone || general?.defaultTimezone || 'UTC'
   const dateFormat = general?.dateFormat || 'MMM DD, YYYY'
   const timeFormat = general?.timeFormat || 'hh:mm A'
   const locale = general?.locale || general?.defaultLanguage || 'en'
-  const landingPageEnabled = general?.landingPageEnabled !== false
+  const landingPageEnabled = general?.landingPageEnabled ?? true
+  const emailVerification = general?.emailVerification ?? false
 
   // Sync date config whenever Redux state updates
   useEffect(() => {
@@ -74,6 +77,7 @@ export function useAppSettings() {
     locale,
     gmtOffset,
     landingPageEnabled,
+    emailVerification,
     isLoadingGeneral,
     formatDate,
     formatTime,

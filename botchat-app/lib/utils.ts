@@ -55,17 +55,30 @@ const themeFieldMap: Record<string, string> = {
 }
 
 export function mapSettingsToApi(payload: Record<string, any>): Record<string, any> {
+  // All settings that Laravel stores/reads as '1' or '0' strings
+  const booleanApiKeys = new Set([
+    'landing_page_status',
+    'email_verification',
+    'sms_verification',
+    'two_factor_auth',
+    'rtl_setting',
+    'register_setting',
+    'database_permission',
+    'transparent_layout',
+    'dark_mode',
+  ])
+
   const result: Record<string, any> = {}
 
   for (const [key, value] of Object.entries(payload)) {
     if (key === 'theme' && typeof value === 'object' && value !== null) {
       for (const [tk, tv] of Object.entries(value)) {
         const mapped = themeFieldMap[tk] || tk
-        result[mapped] = tv
+        result[mapped] = booleanApiKeys.has(mapped) ? (tv ? '1' : '0') : tv
       }
     } else {
       const mapped = settingsFieldMap[key] || key
-      result[mapped] = value
+      result[mapped] = booleanApiKeys.has(mapped) ? (value ? '1' : '0') : value
     }
   }
 

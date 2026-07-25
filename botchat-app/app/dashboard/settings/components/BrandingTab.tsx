@@ -112,6 +112,8 @@ export default function BrandingTab() {
     if (general) {
       setGeneralForm({
         ...general,
+        landingPageEnabled: general.landingPageEnabled ?? true,
+        emailVerification: general.emailVerification ?? false,
         theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
       });
       if (general.logo) setLogoPreview(general.logo.startsWith('http') ? general.logo : `${process.env.NEXT_PUBLIC_BASE_URL?.replace('/api/v1', '')}/uploads/${general.logo}`);
