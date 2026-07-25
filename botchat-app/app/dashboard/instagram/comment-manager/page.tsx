@@ -110,7 +110,6 @@ export default function InstagramCommentManagerPage() {
 
     // Interaction Dropdown
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [showPageDropdown, setShowPageDropdown] = useState(false);
@@ -162,7 +161,8 @@ export default function InstagramCommentManagerPage() {
     // Outside click for dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.post-dropdown-container')) {
                 setActiveDropdown(null);
             }
         };
@@ -499,7 +499,7 @@ export default function InstagramCommentManagerPage() {
                             [1, 2, 3].map(i => <div key={i} className="h-28 bg-[var(--muted)]/50 dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl animate-pulse" />)
                         ) : posts.length > 0 ? (
                             posts.map((post, idx) => (
-                                <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/50 border border-[var(--border)] rounded-2xl overflow-hidden transition-all hover:border-primary/30 shadow-sm flex flex-col">
+                                <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/50 border border-[var(--border)] rounded-2xl transition-all hover:border-primary/30 shadow-sm flex flex-col relative">
                                     <div className="flex gap-3 sm:gap-4 p-3 sm:p-4">
                                         <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 border border-[var(--border)]">
                                             <img src={post.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -542,7 +542,7 @@ export default function InstagramCommentManagerPage() {
                                                             </span>
                                                         )}
 
-                                                        <div className="relative hidden sm:flex" ref={dropdownRef}>
+                                                        <div className="relative hidden sm:flex post-dropdown-container">
                                                             <button
                                                                 onClick={() => setActiveDropdown(activeDropdown === post.id ? null : post.id)}
                                                                 className="p-1.5 rounded-lg text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] hover:text-primary transition-all border border-transparent hover:border-pink-100 group/btn"
@@ -557,7 +557,7 @@ export default function InstagramCommentManagerPage() {
                                                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                                                         exit={{ opacity: 0, scale: 0.95, y: -4 }}
                                                                         transition={{ duration: 0.15 }}
-                                                                        className="absolute right-0 top-full mt-2 w-[240px] bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl shadow-xl z-[60] py-2 overflow-hidden flex flex-col"
+                                                                        className="absolute right-0 top-full mt-2 w-[240px] bg-[var(--card)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl shadow-xl z-[200] py-2 flex flex-col"
                                                                     >
                                                                         {post.status?.reply ? (
                                                                             <>
