@@ -3267,6 +3267,14 @@ function FlowBuilder() {
     window.addEventListener("resize", checkIsMobile);
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
   const [settings, setSettings] = useState({ dmLimit: 30, slowMode: true, humanize: true });
   const bottomRef = useRef(null);
   const [pageId, setPageId] = useState(null);
@@ -4135,7 +4143,7 @@ function FlowBuilder() {
                             step={editingStep}
                             update={data => updateStep(editingStep.id, data)}
                             allSteps={steps}
-                            onSaveStep={handleStepSave}
+                            onSaveStep={async (step) => { await handleStepSave(step); setExpandedId(null); }}
                             onAddStep={addStep}
                             pageId={pageId}
                             platform={platform}
@@ -4144,27 +4152,6 @@ function FlowBuilder() {
                           />
                         </div>
 
-                        {/* Actions row */}
-                        <div style={{ display: "flex", gap: 12 }}>
-                          <button
-                            onClick={() => setExpandedId(null)}
-                            style={{
-                              flex: 1,
-                              padding: "14px 20px",
-                              background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
-                              color: "#fff",
-                              borderRadius: 14,
-border: isDark ? "6px solid #2a2a3e" : "6px solid #111",
-                              fontWeight: 700,
-                              fontSize: 14.5,
-                              boxShadow: "0 6px 20px rgba(29, 78, 216, 0.25)",
-                              cursor: "pointer",
-                              textAlign: "center",
-                            }}
-                          >
-                            Done Editing
-                          </button>
-                        </div>
                       </div>
                     );
                   })()
