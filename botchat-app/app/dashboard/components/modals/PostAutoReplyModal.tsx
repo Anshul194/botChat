@@ -8,7 +8,7 @@ import {
     Plus, Trash2, Layers, Megaphone,
     Search, Check, Sparkles, Smile, Settings, Clock, Globe, Loader2,
     RefreshCw, MessageCircle, EyeOff, LayoutGrid, Image as ImageIcon, Video,
-    Edit3, ChevronLeft, BarChart2, AtSign
+    Edit3, ChevronLeft, BarChart2, AtSign, ArrowUpRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
