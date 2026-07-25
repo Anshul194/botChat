@@ -134,18 +134,20 @@ export function convertTimezone(
   return d.tz(toTz).format(format || 'YYYY-MM-DD HH:mm:ss')
 }
 
-export function toUTC(date: Date | string | number | dayjs.Dayjs, fromTz: string): string {
-  const d = dayjs.tz(ensureDayjs(date).format('YYYY-MM-DD HH:mm:ss'), fromTz)
+export function toUTC(date: Date | string | number | dayjs.Dayjs, fromTz?: string): string {
+  const tz = fromTz || currentConfig.timezone
+  const d = dayjs.tz(ensureDayjs(date).format('YYYY-MM-DD HH:mm:ss'), tz)
   return d.utc().format('YYYY-MM-DD HH:mm:ss')
 }
 
 export function fromUTC(
   date: Date | string | number | dayjs.Dayjs,
-  toTz: string,
+  toTz?: string,
   format?: string,
 ): string {
+  const tz = toTz || currentConfig.timezone
   const d = ensureDayjs(date)
-  return d.tz(toTz).format(format || 'YYYY-MM-DD HH:mm:ss')
+  return d.tz(tz).format(format || 'YYYY-MM-DD HH:mm:ss')
 }
 
 export function now(tz?: string): dayjs.Dayjs {

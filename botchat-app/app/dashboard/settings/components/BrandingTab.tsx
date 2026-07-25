@@ -13,6 +13,7 @@ import {
   selectIsTenant as isTenantSelector,
 } from "../../../../store/slices/authSlice";
 import { useModal } from "@/components/providers/ModalProvider";
+import { TimezoneSelect } from "@/components/ui/TimezoneSelect";
 import {
   Save, Globe, Palette, UploadCloud, Link2, Sparkles, AlertCircle, Copy,
 } from "lucide-react";
@@ -175,18 +176,12 @@ export default function BrandingTab() {
 
         <Section title="Localization" desc="Configure default language, timezones and data formats">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 md:col-span-2">
               <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>System Timezone</label>
-              <select className="w-full px-3.5 py-2.5 rounded-xl text-sm outline-none transition-all duration-300"
-                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
-                value={generalForm.timezone} onChange={(e) => setGeneralForm({ ...generalForm, timezone: e.target.value })}
-              >
-                <option value="UTC">UTC (Universal)</option>
-                <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                <option value="America/New_York">America/New_York (EST)</option>
-                <option value="Europe/London">Europe/London (GMT)</option>
-                <option value="Asia/Dubai">Asia/Dubai (GST)</option>
-              </select>
+              <TimezoneSelect
+                value={generalForm.timezone}
+                onChange={(tz) => setGeneralForm({ ...generalForm, timezone: tz })}
+              />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Date Format</label>

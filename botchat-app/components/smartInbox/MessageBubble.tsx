@@ -28,7 +28,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     // ── Format timestamp ──────────────────────────────────────────────────────
     const formatMsgTime = (isoString: string | null | undefined) => {
         if (!isoString) return "";
-        try { return formatTime(new Date(isoString), 'h:mm A'); } catch { return ""; }
+        try { return formatTime(isoString); } catch { return ""; }
     };
 
     // ── Reaction list parsing ─────────────────────────────────────────────────

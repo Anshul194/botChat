@@ -5,6 +5,7 @@ import { Receipt, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPaymentHistory, PaymentRecord } from "@/store/slices/paymentSlice";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
     success: { bg: "rgba(16,185,129,0.1)", color: "#10b981" },
@@ -28,7 +29,7 @@ function PaymentMobileCard({ item }: { item: PaymentRecord }) {
                         {item.plan_name ? `${item.plan_name} Plan` : item.payment_id || `Payment #${item.id}`}
                     </p>
                     <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-                        {item.created_at ? new Date(item.created_at).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" }) : ""}
+                        {item.created_at ? formatDate(item.created_at) : ""}
                     </p>
                 </div>
                 <span className="text-xs font-bold px-2.5 py-1 rounded-full capitalize shrink-0" style={{ background: style.bg, color: style.color }}>
@@ -107,7 +108,7 @@ export default function PaymentHistoryTable() {
                                     {item.plan_name ? `${item.plan_name} Plan` : item.payment_id || `Payment #${item.id}`}
                                 </p>
                                 <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-                                    {item.created_at ? new Date(item.created_at).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" }) : ""}
+                                    {item.created_at ? formatDate(item.created_at) : ""}
                                 </p>
                             </div>
                             <span className={cn(

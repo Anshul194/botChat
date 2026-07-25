@@ -22,6 +22,7 @@ import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Toaster } from "sonner";
 import NavigationOverlay from "@/components/NavigationOverlay";
 import { TenantSettingsProvider } from "@/providers/TenantSettingsProvider";
+import { DateTimeProvider } from "@/providers/DateTimeProvider";
 import SubscriptionProvider from "@/providers/SubscriptionProvider";
 import DynamicBranding from "@/components/DynamicBranding";
 
@@ -143,11 +144,13 @@ export default function RootLayout({
               <TenantSettingsProvider>
                 <SubscriptionProvider>
                   <ThemeProvider>
-                    <ModalProvider>
-                      {children}
-                      <NavigationOverlay />
-                      <Toaster richColors position="top-right" />
-                    </ModalProvider>
+                    <DateTimeProvider>
+                      <ModalProvider>
+                        {children}
+                        <NavigationOverlay />
+                        <Toaster richColors position="top-right" />
+                      </ModalProvider>
+                    </DateTimeProvider>
                   </ThemeProvider>
                 </SubscriptionProvider>
               </TenantSettingsProvider>

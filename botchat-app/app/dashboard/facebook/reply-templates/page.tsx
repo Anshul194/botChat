@@ -577,8 +577,8 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                   <Field label="Message for Comment Reply" icon={MessageCircle}>
                     <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                       <TextareaWithEmoji
-                        value={form.fallback_message ?? ""}
-                        onChange={v => setForm({ ...form, fallback_message: v })}
+                        value={form.message ?? ""}
+                        onChange={v => setForm({ ...form, message: v })}
                         placeholder="Type fallback message here..."
                         rows={4}
                         minHeight="100px"
@@ -588,8 +588,8 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                     </div>
                   </Field>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
-                    <UploadBox label="Image for Comment Reply" value={form.fallback_image ?? ""} onChange={v => setForm({ ...form, fallback_image: v })} icon={ImageIcon} />
-                    <UploadBox label="Video for Comment Reply" value={form.fallback_video ?? ""} onChange={v => setForm({ ...form, fallback_video: v })} icon={Video} />
+                    <UploadBox label="Image for Comment Reply" value={form.image ?? ""} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
+                    <UploadBox label="Video for Comment Reply" value={form.video ?? ""} onChange={v => setForm({ ...form, video: v })} icon={Video} />
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
@@ -604,7 +604,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                       </div>
                     </div>
                     <div className="relative">
-                      <select value={form.fallback_template_id} onChange={e => setForm({ ...form, fallback_template_id: e.target.value })}
+                      <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                       >
                         <option value="" className="bg-[var(--card)]">Please select a message template</option>
