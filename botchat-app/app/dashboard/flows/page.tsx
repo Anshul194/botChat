@@ -4361,10 +4361,10 @@ function FlowBuilder() {
               exit={{ scale: 0.92, y: 15 }}
               transition={{ type: "spring", damping: 25, stiffness: 380 }}
               style={{
-                background: "#fff",
+                background: isMobile ? "transparent" : "#fff",
                 borderRadius: isMobile ? 0 : 24,
                 width: "100%",
-                maxWidth: 390,
+                maxWidth: isMobile ? "100%" : 390,
                 maxHeight: isMobile ? "100dvh" : "92vh",
                 overflow: "hidden",
                 position: "relative",
@@ -4459,7 +4459,7 @@ style={{
                 padding: 0,
                 display: "flex",
                 justifyContent: "center",
-                background: isMobile ? "var(--card)" : "transparent"
+                background: "transparent"
               }} className="mobile-preview-scroll-container">
                 <div style={{ width: "100%", maxWidth: isMobile ? "100%" : 340, height: isMobile ? "100%" : "auto", display: "flex", justifyContent: "center", padding: isMobile ? 0 : "16px 8px 24px" }}>
                   <PhonePreview
