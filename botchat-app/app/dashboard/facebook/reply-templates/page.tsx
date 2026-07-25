@@ -318,7 +318,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
         transition={{ type: "spring", stiffness: 350, damping: 30 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[980px] mt-auto sm:mt-0 min-h-[60vh] sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full max-h-full sm:max-h-[96vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[980px] mt-auto sm:mt-0 min-h-[60vh] sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[96vh]"
       >
         {/* Mobile drag handle */}
         <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -327,8 +327,8 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-8 py-3 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-          <h2 className="text-[12px] sm:text-[13px] font-semibold text-[var(--foreground)]">Create / Edit Auto Reply Template</h2>
-          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer p-1">
+          <h2 className="text-[12px] sm:text-[13px] font-semibold text-[var(--foreground)] truncate">Create / Edit Auto Reply Template</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer p-1 shrink-0">
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
@@ -832,7 +832,7 @@ export default function ReplyTemplatesPage() {
                 <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
               </div>
               <Trash2 className="w-10 h-10 sm:w-12 sm:h-12 text-rose-500 mx-auto mb-4 sm:mb-6" />
-              <h3 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] leading-none">Scrub Item?</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)] leading-none truncate">Scrub Item?</h3>
               <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-3 sm:mt-4 leading-relaxed font-medium">This command will permanently remove the template from the automation hub.</p>
               <div className="flex gap-3 sm:gap-4 mt-6 sm:mt-10">
                 <button onClick={() => setDeleteId(null)} className="flex-1 py-3 sm:py-4 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] sm:text-[13px] transition-all">ABORT</button>

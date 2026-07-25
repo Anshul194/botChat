@@ -459,7 +459,7 @@ export default function CustomFieldsPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[2000] flex items-end sm:items-center justify-center">
+          <div className="fixed inset-0 z-[2000] flex items-end sm:items-center justify-center p-0 sm:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -473,12 +473,12 @@ export default function CustomFieldsPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 40 }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="relative z-10 w-full sm:max-w-[400px] bg-[var(--card)] sm:border border-[var(--border)] rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 text-center shadow-2xl sm:mx-4"
+              className="relative z-10 w-full sm:max-w-[400px] bg-[var(--card)] sm:border border-[var(--border)] rounded-none sm:rounded-2xl p-6 sm:p-8 text-center shadow-2xl sm:mx-4"
             >
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-5 bg-rose-500/10">
                 <Trash2 className="w-6 h-6 sm:w-7 sm:h-7 text-rose-500" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)]">Are you sure?</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--foreground)] truncate">Are you sure?</h3>
               <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-2 leading-relaxed">
                 This will permanently delete this property.
               </p>

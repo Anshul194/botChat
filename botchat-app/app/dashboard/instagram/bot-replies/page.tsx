@@ -814,7 +814,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 60 }}
                                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-[28px] sm:rounded-3xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
                             >
                                 {/* Drag handle */}
                                 <div className="sm:hidden flex justify-center pt-3.5 pb-1">
@@ -822,7 +822,7 @@ export default function InstagramBotRepliesPage() {
                                 </div>
 
                                 {/* Pink accent header */}
-                                <div className="relative px-6 pt-5 pb-5 text-white" style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)` }}>
+                                <div className="relative px-4 sm:px-6 pt-5 pb-5 text-white" style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)` }}>
                                     <div className="absolute top-3 right-4">
                                         <button
                                             onClick={() => setEditReply(null)}
@@ -848,7 +848,7 @@ export default function InstagramBotRepliesPage() {
                                 </div>
 
                                 {/* Body */}
-                                <div className="px-6 py-5 space-y-3">
+                                <div className="px-4 sm:px-6 py-5 space-y-3">
                                     {/* Info rows */}
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-3.5">
@@ -931,18 +931,18 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-3xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
                             >
                                 {/* Modal drag handle (mobile) */}
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
                                 </div>
-                                <div className="px-6 pt-4 pb-7 sm:p-8">
+                                <div className="px-4 pt-4 pb-7 sm:p-8">
                                     {/* Modal header */}
                                     <div className="flex items-start justify-between mb-6">
                                         <div>
                                             <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: IG_PINK }}>Instagram Automation</p>
-                                            <h3 className="text-[18px] font-bold text-neutral-900 dark:text-white leading-tight">
+                                            <h3 className="text-[18px] font-bold text-neutral-900 dark:text-white leading-tight truncate">
                                                 New IG Flow {selectedAccountId !== "all" ? `— ${selectedAccountObj?.username}` : ""}
                                             </h3>
                                         </div>
@@ -1106,13 +1106,13 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-t-3xl sm:rounded-2xl w-full max-w-md max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
                             >
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
                                 </div>
-                                <div className="px-6 pt-5 pb-8 sm:p-10">
-                                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-1 tracking-tight">Map IG Shortcut</h3>
+                                <div className="px-4 pt-5 pb-8 sm:p-10">
+                                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-1 tracking-tight truncate">Map IG Shortcut</h3>
                                     <p className="text-sm text-neutral-500 mb-6 font-medium">Select a system event to automate with a new flow.</p>
 
                                     <div className="space-y-3">

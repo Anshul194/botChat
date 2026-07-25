@@ -76,23 +76,23 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
             initial={{ opacity: 0, scale: 0.98, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 20 }}
-            className="relative z-10 w-full max-w-none sm:max-w-[650px] min-h-screen sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-[var(--border)] max-h-[90vh] my-8"
+            className="relative z-10 w-full max-w-none sm:max-w-[650px] min-h-screen sm:min-h-0 bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-[var(--border)] h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:my-8"
          >
             {/* Header */}
-            <div className="px-10 py-8 border-b border-[var(--border)] dark:border-[var(--border)]/50 flex items-center justify-between bg-[var(--card)] dark:bg-slate-950/20 backdrop-blur-md sticky top-0 z-10">
-               <div>
-                  <h2 className="text-xl font-bold text-[var(--foreground)] dark:text-white uppercase tracking-tight">
+            <div className="px-4 sm:px-10 py-4 sm:py-8 border-b border-[var(--border)] dark:border-[var(--border)]/50 flex items-center justify-between bg-[var(--card)] dark:bg-slate-950/20 backdrop-blur-md sticky top-0 z-10">
+               <div className="min-w-0">
+                  <h2 className="text-xl font-bold text-[var(--foreground)] dark:text-white uppercase tracking-tight truncate">
                      {mode === "create" ? "Initialize IG Field" : "Update Attribute"}
                   </h2>
-                  <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest mt-1">Instagram Core Mapping</p>
+                  <p className="text-[10px] font-bold text-[var(--primary)] uppercase tracking-widest mt-1 truncate">Instagram Core Mapping</p>
                </div>
-               <button onClick={onClose} className="w-10 h-10 rounded-2xl flex items-center justify-center text-[var(--muted-foreground)]/50 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all active:scale-95">
+               <button onClick={onClose} className="w-10 h-10 rounded-2xl flex items-center justify-center text-[var(--muted-foreground)]/50 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all active:scale-95 shrink-0">
                   <X className="w-5 h-5" />
                </button>
             </div>
 
             {/* Form Body */}
-            <div className="p-10 space-y-10 overflow-y-auto max-h-[70vh] no-scrollbar">
+            <div className="p-4 sm:p-10 space-y-10 overflow-y-auto max-h-[70vh] no-scrollbar">
                {/* Display Name Section */}
                <div className="space-y-4">
                   <div className="flex items-center gap-2 mb-1">
@@ -164,7 +164,7 @@ function CustomFieldModal({ mode, initial, onClose, onSaved }: {
             </div>
 
             {/* Footer Actions */}
-            <div className="px-10 py-8 bg-transparent border-t border-[var(--border)] flex gap-4">
+            <div className="px-4 sm:px-10 py-4 sm:py-8 bg-transparent border-t border-[var(--border)] flex gap-4">
                <button onClick={onClose} className="flex-1 py-5 rounded-2xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[12px] uppercase tracking-widest transition-all active:scale-95">Cancel</button>
                <button
                   onClick={handleSave}
@@ -338,7 +338,7 @@ export default function InstagramCustomFieldsPage() {
 
          <AnimatePresence>
             {deleteId && (
-               <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+               <div className="fixed inset-0 z-[2000] flex items-center justify-center p-0 sm:p-4">
                   <motion.div
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
@@ -350,12 +350,12 @@ export default function InstagramCustomFieldsPage() {
                      initial={{ opacity: 0, scale: 0.95, y: 20 }}
                      animate={{ opacity: 1, scale: 1, y: 0 }}
                      exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                     className="bg-[var(--card)] rounded-2xl p-12 max-w-[550px] w-full text-center shadow-3xl relative z-10 border border-white/50 dark:border-[var(--border)] max-h-[90vh] my-8"
+                     className="bg-[var(--card)] rounded-none sm:rounded-2xl p-12 max-w-[550px] w-full text-center shadow-3xl relative z-10 border border-white/50 dark:border-[var(--border)] max-h-[90vh] my-8"
                   >
                      <div className="w-24 h-24 bg-rose-50 dark:bg-rose-900/10 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner transform -rotate-6 transition-transform hover:rotate-0">
                         <Trash2 className="w-10 h-10 text-rose-500" />
                      </div>
-                     <h3 className="text-[28px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tighter leading-tight">Are you sure?</h3>
+                     <h3 className="text-[28px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tighter leading-tight truncate">Are you sure?</h3>
                      <p className="text-[14px] text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] mt-6 leading-relaxed font-bold uppercase tracking-[0.1em] px-8">
                         Are you absolutely certain you want to <span className="text-rose-500 underline underline-offset-4 decoration-rose-200">Permanently Delete</span> this property?
                      </p>

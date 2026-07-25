@@ -1,10 +1,14 @@
-import React from 'react';
+"use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function InboxPage() {
-  return (
-    <div>
-      <h1>Inbox</h1>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/social/smart-inbox");
+  }, [router]);
+
+  return null;
 }

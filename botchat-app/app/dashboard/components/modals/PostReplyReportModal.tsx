@@ -126,7 +126,7 @@ export function PostReplyReportModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -139,23 +139,23 @@ export function PostReplyReportModal({
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                className="bg-[var(--card)] dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
+                className="bg-[var(--card)] dark:bg-[var(--background)] border border-[var(--border)] dark:border-[var(--border)] rounded-none sm:rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[85vh]"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-[var(--border)] dark:border-[var(--border)] flex items-center justify-between bg-[var(--muted)]/50 dark:bg-[var(--background)]/80">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/100/10 text-[var(--primary)] flex items-center justify-center">
+                <div className="p-4 sm:p-6 border-b border-[var(--border)] dark:border-[var(--border)] flex items-center justify-between bg-[var(--muted)]/50 dark:bg-[var(--background)]/80">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/100/10 text-[var(--primary)] flex items-center justify-center shrink-0">
                             <BarChart3 className="w-5 h-5" />
                         </div>
-                        <div>
-                            <h2 className="text-md font-bold text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none">Auto Reply Report</h2>
-                            <p className="text-[10px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-1.5">
+                        <div className="min-w-0">
+                            <h2 className="text-sm sm:text-md font-bold text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">Auto Reply Report</h2>
+                            <p className="text-[10px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-1.5 truncate">
                                 {platform === 'instagram' ? <Instagram size={10} /> : <Facebook size={10} />}
                                 {platform} Campaign Lifecycle
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                         <button onClick={() => fetchReport()} className="p-2 rounded-xl hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)] transition-all text-[var(--muted-foreground)]/70">
                             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
                         </button>
@@ -166,7 +166,7 @@ export function PostReplyReportModal({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-[var(--card)] dark:bg-[var(--background)]">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar bg-[var(--card)] dark:bg-[var(--background)]">
 
                     {/* Summary Stats */}
                     {summary && (
@@ -310,10 +310,10 @@ export function PostReplyReportModal({
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]/80 flex justify-end">
+                <div className="p-4 sm:p-6 border-t border-[var(--border)] dark:border-[var(--border)] bg-[var(--muted)]/50 dark:bg-[var(--background)]/80 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-8 py-3 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-all active:scale-95 shadow-sm"
+                        className="px-6 sm:px-8 py-3 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)] text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-all active:scale-95 shadow-sm"
                     >
                         Close Analytics
                     </button>

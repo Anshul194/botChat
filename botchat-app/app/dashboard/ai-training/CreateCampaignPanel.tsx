@@ -213,7 +213,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                                     <Sparkles className="w-4 h-4 text-primary" />
                                 </div>
                                 <div>
-                                    <h2 className="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h2 className="text-base font-bold text-neutral-900 dark:text-white truncate">
                                         New Campaign
                                     </h2>
                                     <p className="text-xs text-neutral-400 dark:text-neutral-500">
@@ -223,7 +223,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-8 h-8 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                                className="w-8 h-8 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors shrink-0"
                             >
                                 <X className="w-4 h-4" />
                             </button>

@@ -240,7 +240,7 @@ export default function AutoReplyPage() {
                      <div className="w-16 h-16 rounded-[24px] bg-rose-500/10 flex items-center justify-center mx-auto mb-5">
                         <Trash2 className="w-8 h-8 text-rose-500" />
                      </div>
-                     <h3 className="text-xl font-black text-[var(--foreground)] uppercase tracking-tight leading-none">Delete Campaign?</h3>
+                     <h3 className="text-xl font-black text-[var(--foreground)] uppercase tracking-tight leading-none truncate">Delete Campaign?</h3>
                      <p className="text-[13px] text-[var(--muted-foreground)] mt-4 leading-relaxed font-medium">Deleting this campaign will immediately stop all automated interactions.</p>
                      <div className="flex gap-3 mt-8">
                         <button

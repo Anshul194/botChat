@@ -431,7 +431,7 @@ export function PostAutoReplyModal({
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center p-0 sm:p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
                 <motion.div
@@ -439,21 +439,21 @@ export function PostAutoReplyModal({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96, y: 24 }}
                     className={cn(
-                        "relative z-10 w-full bg-[var(--card)] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] transition-all",
+                        "relative z-10 w-full bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[96vh] transition-all",
                         view === "choice" ? "max-w-lg" : "max-w-[950px]"
                     )}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
+                    <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0">
                                 <Zap size={18} />
                             </div>
-                            <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
+                            <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--foreground)] truncate">
                                 {view === "choice" ? "Post Automation Hub" : (existingCampaignId ? 'Edit' : 'Configure') + ' Post Auto Reply'}
                             </h2>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                             {existingCampaignId && view !== "choice" && (
                                 <>
                                     <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
@@ -470,7 +470,7 @@ export function PostAutoReplyModal({
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--card)] custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--card)] custom-scrollbar">
                         <AnimatePresence mode="wait">
                             {isFetchingConfig ? (
                                 <div className="h-[300px] flex flex-col items-center justify-center space-y-4">
@@ -478,7 +478,7 @@ export function PostAutoReplyModal({
                                     <p className="text-sm font-medium text-[var(--muted-foreground)]/70">Syncing configuration...</p>
                                 </div>
                             ) : view === "choice" ? (
-                                <motion.div key="choice" className="space-y-8 py-8">
+                                <motion.div key="choice" className="space-y-8 py-4 sm:py-8">
                                     <div className="text-center space-y-2 mb-10">
                                         <h3 className="text-xl font-bold text-[var(--foreground)] tracking-tight">Automation Choice</h3>
                                         <p className="text-sm text-[var(--muted-foreground)] font-medium">How would you like to build this automation?</p>
@@ -553,7 +553,7 @@ export function PostAutoReplyModal({
                                 <motion.div key="custom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
 
                                     {/* SECTION: BASICS */}
-                                    <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-xs">
+                                    <div className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs">
                                         <Field label="Auto Reply Campaign Name" required icon={Edit3}>
                                             <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                                                 className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
@@ -563,16 +563,16 @@ export function PostAutoReplyModal({
                                     </div>
 
                                     {/* SECTION: OFFENSIVE SETTINGS */}
-                                    <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-xs space-y-6">
+                                    <div className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs space-y-4 sm:space-y-6">
                                         <div className="flex items-center gap-2 mb-2">
                                             <ShieldAlert className="w-4 h-4 text-rose-400" />
                                             <h3 className="text-sm font-semibold text-[var(--foreground)]">Offensive Comments Settings</h3>
                                         </div>
-                                        <div className="flex gap-8">
+                                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                                             <CustomToggle active={form.offensive.hide_comment} onClick={() => setForm({ ...form, offensive: { ...form.offensive, hide_comment: !form.offensive.hide_comment } })} label="Hide Comment" />
                                             <CustomToggle active={form.offensive.delete_comment} onClick={() => setForm({ ...form, offensive: { ...form.offensive, delete_comment: !form.offensive.delete_comment } })} label="Delete Comment" />
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                                             <div className="space-y-2">
                                                 <label className="text-sm font-medium text-[var(--muted-foreground)]">Offensive keywords <span className="text-[var(--muted-foreground)]/70 font-normal">(comma separated)</span></label>
                                                 <div className="relative">
@@ -606,7 +606,7 @@ export function PostAutoReplyModal({
                                     </div>
 
                                     {/* SECTION: BEHAVIOR TOGGLES */}
-                                    <div className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
+                                    <div className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs grid grid-cols-1 gap-4">
                                         <div className="flex items-center justify-between py-1 px-1">
                                             <div className="flex items-center gap-3">
                                                 <RefreshCw className="w-4 h-4 text-[var(--muted-foreground)]/70" />
@@ -646,7 +646,7 @@ export function PostAutoReplyModal({
                                     <div className="space-y-8">
                                         <AnimatePresence mode="wait">
                                             {form.reply_type === "generic" ? (
-                                                <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8">
+                                                <motion.div key="generic" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8">
                                                     <Field label="Message for Comment Reply" required icon={MessageCircle}>
                                                         <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] bg-[var(--card)]">
                                                             <TextareaWithEmoji
@@ -681,13 +681,13 @@ export function PostAutoReplyModal({
                                             ) : (
                                                 <motion.div key="filter" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
                                                     {filterRules.map((rule, idx) => (
-                                                        <div key={rule.id} className="bg-[var(--card)] p-7 rounded-2xl border border-[var(--border)] shadow-sm space-y-8 relative group">
-                                                            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
+                                                        <div key={rule.id} className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-sm space-y-6 sm:space-y-8 relative group">
+                                                            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 flex-wrap gap-2">
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="w-6 h-6 rounded-full bg-[var(--muted)]/50 flex items-center justify-center text-[11px] font-bold text-[var(--muted-foreground)]">{idx + 1}</div>
                                                                     <h4 className="text-[13px] font-semibold text-[var(--foreground)]">Filter Logic Rule</h4>
                                                                 </div>
-                                                                <div className="flex items-center gap-6 px-1">
+                                                                <div className="flex items-center gap-3 sm:gap-6 px-1">
                                                                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => updateRule(rule.id!!, { match_type: "contains" })}>
                                                                         <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all", rule.match_type === "contains" ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--border)]/70")}>
                                                                             {rule.match_type === "contains" && <div className="w-1.5 h-1.5 rounded-full bg-[var(--card)]" />}
@@ -705,7 +705,7 @@ export function PostAutoReplyModal({
                                                                     <Trash2 size={15} />
                                                                 </button>
                                                             </div>
-                                                            <div className="grid grid-cols-1 gap-8">
+                                                            <div className="grid grid-cols-1 gap-6 sm:gap-8">
                                                                 <Field label="Filter Word/Sentence" required icon={Search}>
                                                                     <input type="text" value={rule.keyword} onChange={e => updateRule(rule.id!!, { keyword: e.target.value })}
                                                                         className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px]"
@@ -750,7 +750,7 @@ export function PostAutoReplyModal({
                                                             <Plus className="w-4 h-4" /> Add another filter rule
                                                         </button>
                                                     </div>
-                                                    <div className="bg-[var(--muted)]/50 p-8 rounded-2xl border border-[var(--border)] border-dashed space-y-8 mt-10">
+                                                    <div className="bg-[var(--muted)]/50 p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-[var(--border)] border-dashed space-y-6 sm:space-y-8 mt-10">
                                                         <div className="flex items-center gap-3">
                                                             <Info className="w-4 h-4 text-[var(--muted-foreground)]/70" />
                                                             <span className="text-sm font-medium text-[var(--muted-foreground)]">Fallback reply (when no filter matches)</span>
@@ -798,14 +798,14 @@ export function PostAutoReplyModal({
                         </AnimatePresence>
                     </div>
 
-                    <div className="flex gap-4 p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0 relative z-20">
-                        <button onClick={view === "choice" ? onClose : () => setView("choice")} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all">
+                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0 relative z-20">
+                        <button onClick={view === "choice" ? onClose : () => setView("choice")} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[12px] sm:text-[13px] hover:bg-[var(--muted)]/50 transition-all">
                             {view === "choice" ? "Cancel" : "Back to Choice"}
                         </button>
                         {view !== "choice" && (
-                            <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+                            <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50">
                                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Check size={20} />}
-                                <span>{existingCampaignId ? 'UPDATE CHANGES' : 'ACTIVATE STRATEGY'}</span>
+                                <span className="truncate">{existingCampaignId ? 'UPDATE CHANGES' : 'ACTIVATE STRATEGY'}</span>
                             </button>
                         )}
                     </div>

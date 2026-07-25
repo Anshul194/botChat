@@ -226,19 +226,19 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, scale: 0.98, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 20 }}
-            className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[94vh] relative z-10"
+            className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl shadow-2xl w-full max-w-[1050px] overflow-hidden flex flex-col h-full max-h-[100dvh] sm:h-auto sm:max-h-[94vh] relative z-10"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center gap-3 sm:gap-4 px-4 sm:px-10 pt-[max(1rem,env(safe-area-inset-top))] pb-4 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-10 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 sm:py-6 bg-[var(--card)] dark:bg-[var(--background)] border-b border-[var(--border)] dark:border-[var(--border)] shrink-0">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+                <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-[15px] sm:text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
-                <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1.5 truncate">{platform} Automation Node</p>
+                <h2 className="text-[13px] sm:text-[18px] font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight leading-none truncate">{editingTemplate ? 'Edit Template' : 'Initialize Template'}</h2>
+                <p className="text-[9px] sm:text-[11px] text-[var(--muted-foreground)]/70 font-bold uppercase tracking-[0.2em] mt-1 truncate">{platform} Automation Node</p>
               </div>
-              <button onClick={onClose} className="p-2 sm:p-3 rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all shrink-0"><X className="w-5 h-5 sm:w-6 sm:h-6" /></button>
+              <button onClick={onClose} className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-all shrink-0"><X className="w-4 h-4 sm:w-6 sm:h-6" /></button>
             </div>
 
             {/* Body */}
@@ -256,7 +256,7 @@ export function CommentTemplateModal({ isOpen, onClose, onSaved, editingTemplate
                     <label className="text-[11px] font-black text-[var(--muted-foreground)] uppercase tracking-widest leading-none">Payload Inventory <span className="text-rose-500">*</span></label>
                     <p className="text-[10px] text-[var(--muted-foreground)]/70 font-medium uppercase tracking-tight mt-1">Randomized response rotation</p>
                   </div>
-                  <button onClick={addRow} className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl bg-primary/10 text-primary text-[11px] sm:text-[12px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all border border-primary/20">
+                  <button onClick={addRow} className="flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl bg-primary/20 text-primary text-[11px] sm:text-[12px] font-black uppercase tracking-widest hover:bg-primary/30 transition-all border border-primary/20">
                     <Plus className="w-4 h-4" strokeWidth={3} /> Add Resource
                   </button>
                 </div>

@@ -383,9 +383,9 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
             className="relative z-10 w-full max-w-[980px] bg-[var(--card)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full h-full sm:h-auto sm:max-h-[94vh]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-              <h2 className="text-[13px] font-semibold text-[var(--foreground)]">{editingTemplate ? 'Edit' : 'Create'} Auto Reply Template ({platform === 'instagram' ? 'Instagram' : 'Facebook'})</h2>
-              <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors">
+            <div className="flex items-center justify-between gap-2 px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+              <h2 className="text-[12px] sm:text-[13px] font-semibold text-[var(--foreground)] truncate">{editingTemplate ? 'Edit' : 'Create'} Auto Reply Template ({platform === 'instagram' ? 'Instagram' : 'Facebook'})</h2>
+              <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors shrink-0">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -685,7 +685,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
               </button>
               <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
-                <span>{editingTemplate ? 'UPDATE' : 'SAVE'} CHANGES</span>
+                <span className="truncate">{editingTemplate ? 'UPDATE' : 'SAVE'} CHANGES</span>
               </button>
             </div>
           </motion.div>

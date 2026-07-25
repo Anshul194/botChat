@@ -1,42 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { fetchMyPlan } from "@/store/slices/plansSlice";
 import api from "@/lib/api";
 import dynamic from "next/dynamic";
 import {
-    MessageSquare, Zap, Users, TrendingUp, ArrowUpRight, ArrowDownRight,
-    Bot, Instagram, Facebook, Send, Clock, MoreVertical, Activity, Target,
-    Shield, Globe, Cpu, CheckCircle2, Wifi, HardDrive, BarChart3, Layers,
-    Workflow, Sparkles, Bell, UserPlus, CreditCard, Settings, RefreshCw,
-    ChevronRight, ChevronDown, Eye, EyeOff, GripVertical, Layout,
-    List, Plus, FileText, Play, Pause, Trash2, Copy, BookOpen,
-    Image, Database, HelpCircle, X, PanelLeftClose, PanelLeftOpen, Tags,
+    MessageSquare, Users, TrendingUp, ArrowUpRight, ArrowDownRight,
+    Bot, Instagram, Facebook, Send, Activity, BarChart3,
+    Sparkles, CreditCard, Settings, RefreshCw,
+    ChevronRight, EyeOff, BookOpen,
+    Database, HelpCircle, Shield, Cpu,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
-const FlowChart = dynamic(() => import("./components/FlowChartClient"), {
+const FlowChart = dynamic(() => import("./components/FlowChartComponent"), {
     ssr: false,
-    loading: () => <div className="h-[280px] sm:h-[380px] w-full flex items-center justify-center text-xs text-muted-foreground">Loading chart...</div>,
+    loading: () => <div className="h-[280px] sm:h-[380px] w-full flex items-center justify-center text-xs text-foreground/50">Loading chart...</div>,
 });
 
 const MODULE_MAP: Record<string, { label: string; icon: typeof MessageSquare; href: string; color: string }> = {
-    smart_inbox: { label: "Smart Inbox", icon: MessageSquare, href: "/dashboard/inbox", color: "#6C5CE7" },
-    broadcast: { label: "Broadcast", icon: Send, href: "/dashboard/broadcasts", color: "#06b6d4" },
-    automation: { label: "Automation", icon: Bot, href: "/dashboard/automations", color: "#10b981" },
-    ai: { label: "AI Agent", icon: Sparkles, href: "/dashboard/ai-training", color: "#f59e0b" },
-    ai_knowledge: { label: "Knowledge Base", icon: BookOpen, href: "/dashboard/ai-training", color: "#8b5cf6" },
-    social_posting: { label: "Social Posting", icon: Instagram, href: "/dashboard/posts/studio", color: "#db2777" },
-    subscribers: { label: "Subscribers", icon: Users, href: "/dashboard/content-library", color: "#0ea5e9" },
+    smart_inbox: { label: "Smart Inbox", icon: MessageSquare, href: "/social/smart-inbox", color: "#6C5CE7" },
+    broadcast: { label: "Broadcast", icon: Send, href: "/broadcasts", color: "#06b6d4" },
+    automation: { label: "Automation", icon: Bot, href: "/automations", color: "#10b981" },
+    ai: { label: "AI Agent", icon: Sparkles, href: "/ai-training", color: "#f59e0b" },
+    ai_knowledge: { label: "Knowledge Base", icon: BookOpen, href: "/ai-training", color: "#8b5cf6" },
+    social_posting: { label: "Social Posting", icon: Instagram, href: "/posts/studio", color: "#db2777" },
+    subscribers: { label: "Subscribers", icon: Users, href: "/dashboard/users", color: "#0ea5e9" },
     analytics: { label: "Analytics", icon: BarChart3, href: "/dashboard/analytics", color: "#14b8a6" },
     storage: { label: "Storage", icon: Database, href: "/dashboard/settings", color: "#64748b" },
     billing: { label: "Billing", icon: CreditCard, href: "/dashboard/billing", color: "#f59e0b" },
@@ -88,71 +82,84 @@ function EmptyStateCard({ widget }: { widget: any }) {
     const es = widget.empty_state;
     if (!es) return null;
     const Icon = KPI_ICONS[widget.module] || HelpCircle;
+    const color = getColor(widget.module);
     return (
-        <Card className="border-dashed border-2 border-muted bg-muted/5 flex flex-col items-center justify-center p-6 sm:p-8 text-center min-h-[160px] hover:border-primary/40 transition-colors cursor-pointer group"
-            onClick={() => router.push(es.link)}
+        <div onClick={() => router.push(es.link)}
+            className="group relative flex flex-col items-center justify-center p-6 sm:p-8 text-center min-h-[160px] cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
+            style={{ borderColor: `${color}20`, background: `linear-gradient(135deg, ${color}05, transparent)` }}
         >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center mb-3"
-                style={{ background: `${getColor(widget.module)}12` }}>
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: getColor(widget.module) }} />
+            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: `radial-gradient(circle at 50% 0%, ${color}15, transparent 70%)` }} />
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center mb-3"
+                style={{ background: `${color}15` }}>
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color }} />
             </div>
-            <p className="text-xs sm:text-sm font-bold mb-1">{es.action}</p>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Get started with {widget.module?.replace('_', ' ')}</p>
-        </Card>
+            <p className="relative text-xs sm:text-sm font-bold mb-1">{es.action}</p>
+            <p className="relative text-[10px] sm:text-xs text-foreground/50">Get started with {widget.module?.replace('_', ' ')}</p>
+        </div>
     );
 }
 
 function KpiCard({ widget }: { widget: any }) {
     const Icon = getIcon(widget.module || widget.module_group);
     const color = getColor(widget.module || widget.module_group);
-    const es = widget.empty_state;
     const hasChange = widget.meta?.change;
     const router = useRouter();
 
     return (
-        <Card className={cn(
-            "group relative overflow-hidden border-none bg-card/50 shadow-premium transition-all hover:translate-y-[-3px] hover:shadow-hover",
+        <div className={cn(
+            "group relative overflow-hidden rounded-2xl border border-white/5 bg-card/50 backdrop-blur-xl shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
             widget.action && "cursor-pointer"
         )}
             onClick={() => widget.action && router.push(widget.action.link)}
         >
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: `radial-gradient(circle at top right, ${color}10, transparent 70%)` }} />
-            <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6 pt-4 sm:pt-6">
-                <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground">
-                    {widget.title}
-                </CardTitle>
-                <div className="rounded-xl p-1.5 sm:p-2" style={{ background: `${color}15` }}>
-                    <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color }} />
+                style={{ background: `radial-gradient(circle at top right, ${color}15, transparent 70%)` }} />
+            <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: `linear-gradient(90deg, transparent, ${color}40, transparent)` }} />
+            <div className="relative p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] text-foreground/60">
+                        {widget.title}
+                    </span>
+                    <div className="rounded-xl p-1.5 sm:p-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-6deg]"
+                        style={{ background: `${color}15` }}>
+                        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color }} />
+                    </div>
                 </div>
-            </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                <div className="text-xl sm:text-3xl font-black tracking-tighter">{widget.value}</div>
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">{widget.value}</span>
+                </div>
                 {hasChange && (
-                    <div className="mt-1.5 sm:mt-2 flex items-center gap-1.5">
-                        <Badge variant={widget.meta.up !== false ? "default" : "destructive"} className={cn(
-                            "px-1.5 py-0 text-[9px] sm:text-[10px] font-bold",
-                            widget.meta.up !== false && "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
+                    <div className="mt-3 flex items-center gap-2">
+                        <span className={cn(
+                            "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-bold",
+                            widget.meta.up !== false
+                                ? "bg-emerald-500/10 text-emerald-400"
+                                : "bg-red-500/10 text-red-400"
                         )}>
                             {widget.meta.up !== false
-                                ? <ArrowUpRight className="mr-0.5 h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                : <ArrowDownRight className="mr-0.5 h-2.5 w-2.5 sm:h-3 sm:w-3" />}
+                                ? <ArrowUpRight className="w-3 h-3" />
+                                : <ArrowDownRight className="w-3 h-3" />}
                             {widget.meta.change}
-                        </Badge>
-                        <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground italic">vs last period</span>
+                        </span>
+                        <span className="text-[10px] text-foreground/50 font-medium">vs last period</span>
                     </div>
                 )}
                 {widget.meta?.percent !== undefined && (
-                    <Progress value={widget.meta.percent} className="h-1.5 mt-2" style={{ background: `${color}20` }} />
+                    <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: `${color}15` }}>
+                        <div className="h-full rounded-full transition-all duration-700"
+                            style={{ width: `${Math.min(widget.meta.percent, 100)}%`, background: `linear-gradient(90deg, ${color}, ${color}80)` }} />
+                    </div>
                 )}
                 {widget.action && (
-                    <div className="mt-3 text-[10px] sm:text-xs font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    <div className="mt-3 text-[11px] sm:text-xs font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         style={{ color }}>
                         {widget.action.label} <ChevronRight className="w-3 h-3" />
                     </div>
                 )}
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }
 
@@ -165,13 +172,15 @@ function WidgetSection({ title, widgets, hidden, onToggle }: {
     const hasData = visible.some(w => w.value !== 0 && w.value !== '0' && w.value !== 'N/A');
     return (
         <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center justify-between">
-                <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground/60">{title}</h3>
-                <button onClick={onToggle} className="p-1 rounded-lg hover:bg-muted/20 transition-colors">
-                    {hidden ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground/40" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground/40" />}
+            <div className="flex items-center gap-3">
+                <div className="h-3 w-0.5 rounded-full bg-primary/40" />
+                <h3 className="text-[11px] sm:text-xs font-black uppercase tracking-[0.15em] text-foreground/70">{title}</h3>
+                <div className="flex-1 h-px bg-border/30" />
+                <button onClick={onToggle} className="p-1 rounded-lg hover:bg-muted/20 transition-colors shrink-0">
+                    <EyeOff className="w-3 h-3 text-foreground/40" />
                 </button>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {visible.map((w: any) => w.empty_state && !hasData ? (
                     <EmptyStateCard key={w.key} widget={w} />
                 ) : w.empty_state && hasData ? null : (
@@ -191,16 +200,18 @@ function ModuleShortcut({ module, onClick }: { module: string; onClick: () => vo
     const Icon = info.icon;
     return (
         <button onClick={onClick}
-            className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border border-border/5 bg-muted/10 transition-all hover:bg-muted/20 hover:border-border/20 text-left min-w-0"
+            className="group relative flex items-center gap-3 p-3 sm:p-4 rounded-2xl border border-white/5 bg-card/30 backdrop-blur-sm transition-all duration-200 hover:bg-card/60 hover:border-white/10 hover:shadow-lg text-left min-w-0 overflow-hidden"
         >
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{ background: `radial-gradient(circle at 30% 50%, ${info.color}08, transparent 70%)` }} />
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110"
                 style={{ background: `${info.color}15` }}>
                 <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: info.color }} />
             </div>
-            <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm font-black truncate">{info.label}</p>
+            <div className="relative flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-bold truncate text-foreground/80 group-hover:text-foreground transition-colors">{info.label}</p>
             </div>
-            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100" />
+            <ChevronRight className="relative w-3.5 h-3.5 text-foreground/30 shrink-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-foreground/60" />
         </button>
     );
 }
@@ -210,12 +221,12 @@ function QuickAction({ action }: { action: any }) {
     const color = getColor(action.icon || '');
     const Icon = KPI_ICONS[action.icon] || Activity;
     return (
-        <Button variant="outline" onClick={() => router.push(action.link)}
-            className="rounded-xl text-[10px] sm:text-xs font-bold flex items-center gap-2 h-auto py-2.5 px-3 sm:px-4 justify-start w-full"
+        <button onClick={() => router.push(action.link)}
+            className="group flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/5 bg-card/40 backdrop-blur-sm text-xs font-bold whitespace-nowrap transition-all duration-200 hover:bg-card/70 hover:border-white/10 hover:shadow-md shrink-0"
         >
-            <Icon className="w-3.5 h-3.5" style={{ color }} />
+            <Icon className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110" style={{ color }} />
             {action.label}
-        </Button>
+        </button>
     );
 }
 
@@ -244,10 +255,20 @@ export default function DashboardPage() {
             const role = user.role === 'ADMIN' || user.type === 'TENANT' || user.type === 'ADMIN' ? 'tenant-admin' : 'tenant-user';
             const response = await api.get(`/dashboard/${role}`);
             const d = response.data.data;
-            setWidgets(d.widgets || []);
+            const redirectItem = (item: any) => {
+                const text = (item.label || item.link || '').toLowerCase();
+                if (text.includes('smart') && text.includes('inbox')) return { ...item, link: '/social/smart-inbox' };
+                if (text.includes('inbox')) return { ...item, link: '/social/smart-inbox' };
+                if ((text.includes('upgrade') && text.includes('plan')) || text === 'upgrade plan') return { ...item, link: '/dashboard/billing' };
+                return item;
+            };
+            setWidgets((d.widgets || []).map((w: any) => ({
+                ...w,
+                action: w.action ? redirectItem(w.action) : w.action,
+            })));
             setCharts(d.charts || []);
             setNotifications(d.notifications || []);
-            setQuickActions(d.quick_actions || []);
+            setQuickActions((d.quick_actions || []).map(redirectItem));
             setEnabledModules(d.modules || []);
         } catch (e) {
             console.error("Dashboard load failed", e);
@@ -269,36 +290,60 @@ export default function DashboardPage() {
     const moduleKeys = Object.keys(MODULE_MAP);
     const availableShortcuts = enabledModules.filter(m => moduleKeys.includes(m));
 
+    const getGreeting = () => {
+        const h = new Date().getHours();
+        if (h < 12) return "Good morning";
+        if (h < 17) return "Good afternoon";
+        return "Good evening";
+    };
+
     if (isLoading) {
         return (
-            <div className="mx-auto max-w-[1400px] p-3 sm:p-6 space-y-4 sm:space-y-6">
-                <div className="h-8 w-48 rounded-lg bg-muted/20 animate-pulse" />
-                <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-28 rounded-2xl bg-muted/10 animate-pulse" />)}
+            <div className="mx-auto max-w-[1400px] p-3 sm:p-6 space-y-5 sm:space-y-7">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-muted/10 animate-pulse" />
+                    <div className="space-y-2">
+                        <div className="h-5 w-40 rounded-lg bg-muted/20 animate-pulse" />
+                        <div className="h-3 w-24 rounded-lg bg-muted/10 animate-pulse" />
+                    </div>
                 </div>
-                <div className="h-[280px] rounded-2xl bg-muted/10 animate-pulse" />
+                <div className="grid grid-cols-1 gap-3 sm:gap-4 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-32 rounded-2xl bg-muted/10 animate-pulse relative overflow-hidden">
+                        <div className="absolute inset-0 shimmer" />
+                    </div>)}
+                </div>
+                <div className="h-[200px] sm:h-[280px] rounded-2xl bg-muted/10 animate-pulse relative overflow-hidden">
+                    <div className="absolute inset-0 shimmer" />
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-4 sm:gap-6 p-3 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-5 sm:gap-7 p-3 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                    <h1 className="text-xl sm:text-2xl md:text-4xl font-black tracking-tighter">
-                        Overview<span className="text-primary">.</span>
-                    </h1>
-                    <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">Your business at a glance</p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="relative shrink-0">
+                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
+                            <AvatarImage src={user?.profile_picture_url} />
+                            <AvatarFallback className="bg-gradient-to-br from-primary/80 to-primary text-primary-foreground font-bold text-sm sm:text-base">
+                                {(user?.name || user?.email || 'U')[0].toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-background" />
+                    </div>
+                    <div className="min-w-0">
+                        <h1 className="text-lg sm:text-2xl md:text-3xl font-black tracking-tight truncate">
+                            {getGreeting()}, <span className="gradient-text">{user?.name?.split(' ')[0] || 'there'}</span>
+                        </h1>
+                        <p className="text-xs sm:text-sm text-foreground/60 mt-0.5">Here&apos;s what&apos;s happening with your business</p>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="relative">
-                        <Bell className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    </div>
-                    <Button variant="outline" size="sm" className="rounded-xl text-[10px] sm:text-xs font-bold"
+                    <Button variant="outline" size="sm" className="rounded-xl text-[11px] font-bold h-9 px-3 sm:px-4 border-white/5 bg-card/40 backdrop-blur-sm hover:bg-card/70"
                         onClick={() => router.push('/dashboard/settings')}>
-                        <RefreshCw className="w-3 h-3 mr-1" /> Customize
+                        <RefreshCw className="w-3 h-3 mr-1.5" /> Customize
                     </Button>
                 </div>
             </div>
@@ -306,26 +351,28 @@ export default function DashboardPage() {
             {/* Notifications bar */}
             {notifications.length > 0 && (
                 <div className="flex flex-col gap-2">
-                    {notifications.slice(0, 3).map((n: any) => (
+                    {notifications.slice(0, 3).map((n: any, idx: number) => (
                         <div key={n.id}
-                            className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border cursor-pointer transition-all hover:translate-x-1"
+                            className="group relative flex items-center gap-3 p-3 sm:p-4 rounded-2xl border cursor-pointer transition-all duration-200 hover:translate-x-1 overflow-hidden"
                             style={{
-                                borderColor: n.severity === 'error' ? '#ef444430' : n.severity === 'warning' ? '#f59e0b30' : '#10b98130',
-                                background: n.severity === 'error' ? '#ef444405' : n.severity === 'warning' ? '#f59e0b05' : '#10b98105'
+                                borderColor: n.severity === 'error' ? 'rgba(239,68,68,0.15)' : n.severity === 'warning' ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)',
+                                background: n.severity === 'error' ? 'linear-gradient(135deg, rgba(239,68,68,0.04), transparent)' : n.severity === 'warning' ? 'linear-gradient(135deg, rgba(245,158,11,0.04), transparent)' : 'linear-gradient(135deg, rgba(16,185,129,0.04), transparent)'
                             }}
                             onClick={() => n.link && router.push(n.link)}
                         >
-                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                                style={{ background: n.severity === 'error' ? '#ef444415' : '#f59e0b15' }}>
+                            <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-full opacity-60"
+                                style={{ background: n.severity === 'error' ? '#ef4444' : n.severity === 'warning' ? '#f59e0b' : '#10b981' }} />
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110"
+                                style={{ background: n.severity === 'error' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)' }}>
                                 {n.severity === 'error'
-                                    ? <AlertTriangle className="w-4 h-4 text-red-500" />
-                                    : <AlertTriangle className="w-4 h-4 text-amber-500" />}
+                                    ? <AlertTriangle className="w-4 h-4 text-red-400" />
+                                    : <AlertTriangle className="w-4 h-4 text-amber-400" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold truncate">{n.title}</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{n.message}</p>
+                                <p className="text-xs font-bold truncate text-foreground/90">{n.title}</p>
+                                <p className="text-[11px] text-foreground/60 line-clamp-1">{n.message}</p>
                             </div>
-                            <span className="text-[10px] font-semibold text-muted-foreground shrink-0">{timeAgo(n.created_at)}</span>
+                            <span className="text-[10px] font-semibold text-foreground/40 shrink-0">{timeAgo(n.created_at)}</span>
                         </div>
                     ))}
                 </div>
@@ -333,7 +380,9 @@ export default function DashboardPage() {
 
             {/* Quick Actions */}
             {quickActions.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mr-1 shrink-0">Jump to</span>
+                    <div className="h-4 w-px bg-border/20 shrink-0" />
                     {quickActions.map((a: any) => (
                         <QuickAction key={a.label} action={a} />
                     ))}
@@ -355,23 +404,30 @@ export default function DashboardPage() {
 
             {/* Charts */}
             {charts.length > 0 && (
-                <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground/60">Charts & Trends</h3>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-3 w-0.5 rounded-full bg-primary/40" />
+                        <h3 className="text-[11px] sm:text-xs font-black uppercase tracking-[0.15em] text-foreground/70">Charts & Trends</h3>
+                        <div className="flex-1 h-px bg-border/30" />
+                    </div>
                     <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
                         {charts.map((chart: any) => (
-                            <Card key={chart.key} className="border-none bg-card/30 shadow-premium">
-                                <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
-                                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-black tracking-tight">
-                                        <BarChart3 className="w-4 h-4" style={{ color: getColor(chart.module) }} />
-                                        {chart.title}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                                    <div className="h-[200px] sm:h-[250px] w-full flex items-center justify-center">
+                            <div key={chart.key} className="group relative overflow-hidden rounded-2xl border border-white/5 bg-card/30 backdrop-blur-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5">
+                                <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                    style={{ background: `linear-gradient(90deg, transparent, ${getColor(chart.module)}40, transparent)` }} />
+                                <div className="p-4 sm:p-6">
+                                    <div className="flex items-center gap-2.5 mb-4">
+                                        <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                                            style={{ background: `${getColor(chart.module)}12` }}>
+                                            <BarChart3 className="w-4 h-4" style={{ color: getColor(chart.module) }} />
+                                        </div>
+                                        <h4 className="text-sm sm:text-base font-bold tracking-tight">{chart.title}</h4>
+                                    </div>
+                                    <div className="h-[200px] sm:h-[250px] w-full">
                                         <FlowChart data={(chart.data || []).map((d: any) => ({ ...d, name: d.date || d.name || d.period }))} />
                                     </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -379,9 +435,13 @@ export default function DashboardPage() {
 
             {/* Module Shortcuts */}
             {availableShortcuts.length > 0 && (
-                <div className="space-y-3">
-                    <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground/60">Modules</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-3 w-0.5 rounded-full bg-primary/40" />
+                        <h3 className="text-[11px] sm:text-xs font-black uppercase tracking-[0.15em] text-foreground/70">All Modules</h3>
+                        <div className="flex-1 h-px bg-border/30" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
                         {availableShortcuts.map(m => (
                             <ModuleShortcut key={m} module={m} onClick={() => {
                                 const info = MODULE_MAP[m];

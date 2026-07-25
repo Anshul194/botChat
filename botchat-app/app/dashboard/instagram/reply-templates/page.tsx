@@ -301,22 +301,22 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm" onClick={onClose} />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 24 }}
-        className="relative z-10 w-full max-w-none sm:max-w-[980px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
+        className="relative z-10 w-full max-w-none sm:max-w-[980px] min-h-screen sm:min-h-0 bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[100dvh] sm:h-auto sm:max-h-[96vh]"
       >
-        <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-          <h2 className="text-[13px] font-bold uppercase tracking-widest text-[var(--foreground)]">Instagram Auto Reply Template</h2>
-          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-3 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
+          <h2 className="text-[13px] font-bold uppercase tracking-widest text-[var(--foreground)] truncate">Instagram Auto Reply Template</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-rose-500 transition-colors cursor-pointer shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-[var(--muted)]/20">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-8 bg-[var(--muted)]/20">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
             <Field label="Auto Reply Campaign Name" required>
               <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
@@ -595,7 +595,7 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
           </div>
         </div>
 
-        <div className="flex gap-4 p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
+        <div className="flex gap-4 p-4 sm:p-8 bg-transparent border-t border-[var(--border)] flex-shrink-0">
           <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-bold text-[13px] transition-all uppercase bg-transparent cursor-pointer">Cancel</button>
           <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-black text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 tracking-widest uppercase cursor-pointer">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
@@ -767,11 +767,11 @@ export default function InstagramReplyTemplatesPage() {
 
       <AnimatePresence>
         {deleteId && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm z-[100]" onClick={() => setDeleteId(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] dark:bg-[var(--background)] rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl relative z-[101] border border-[var(--border)] dark:border-[var(--border)]">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl relative z-[101] border border-[var(--border)] dark:border-[var(--border)]">
               <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight">Scrub Asset?</h3>
+              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight truncate">Scrub Asset?</h3>
               <p className="text-sm text-[var(--muted-foreground)]/70 mt-4 leading-relaxed font-bold uppercase tracking-wide">Permanently purge this item from the Instagram automation hub?</p>
               <div className="flex gap-4 mt-10">
                 <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[12px] uppercase transition-all">Abort</button>

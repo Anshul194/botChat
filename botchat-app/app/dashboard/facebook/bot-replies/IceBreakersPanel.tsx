@@ -267,7 +267,12 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                     </button>
                     <button
                         onClick={() => { setEditIcebreaker(null); resetForm(); setShowCreateModal(true); }}
-                        className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm active:scale-95"
+                        className="flex items-center gap-2 px-5 py-3 rounded-2xl text-white text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm active:scale-95 hover:opacity-90"
+                        style={{
+                            background: channelType === "instagram"
+                                ? "linear-gradient(to right, #ec4899, #a855f7)"
+                                : "#0866FF"
+                        }}
                     >
                         <Plus className="w-4 h-4" />
                         Add Ice Breaker
@@ -292,7 +297,10 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                     {filteredIcebreakers.sort((a, b) => a.sort_order - b.sort_order).map((ib) => (
                         <div
                             key={ib.id}
-                            className="group flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 hover:border-blue-200 dark:hover:border-blue-800 transition-all shadow-sm"
+                            className={cn(
+                                "group flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 transition-all shadow-sm",
+                                channelType === "instagram" ? "hover:border-pink-200 dark:hover:border-pink-850" : "hover:border-blue-200 dark:hover:border-blue-800"
+                            )}
                         >
                             <GripVertical className="w-4 h-4 text-neutral-300 cursor-grab shrink-0" />
                             <div className="flex-1 min-w-0">
@@ -303,7 +311,12 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                     )}>
                                         {ib.title}
                                     </span>
-                                    <span className="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                                    <span className={cn(
+                                        "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                                        channelType === "instagram"
+                                            ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400"
+                                            : "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                    )}>
                                         {targetTypeLabel(ib.target_type)}
                                     </span>
                                     {ib.meta_synced && (
@@ -350,7 +363,7 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                        className="fixed inset-0 z-[150] flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
                         onClick={() => { setShowCreateModal(false); setEditIcebreaker(null); }}
                     >
                         <motion.div
@@ -358,14 +371,14 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
                             onClick={e => e.stopPropagation()}
-                            className="bg-white dark:bg-neutral-900 rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                            className="bg-white dark:bg-neutral-900 rounded-none sm:rounded-[32px] shadow-2xl w-full max-w-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
                         >
-                            <div className="p-6 border-b border-neutral-100 dark:border-neutral-800">
-                                <h3 className="text-lg font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                            <div className="p-4 sm:p-6 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
+                                <h3 className="text-lg font-black text-neutral-900 dark:text-white uppercase tracking-tight truncate">
                                     {editIcebreaker ? 'Edit Ice Breaker' : 'New Ice Breaker'}
                                 </h3>
                             </div>
-                            <div className="p-6 space-y-5">
+                            <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Title *</label>
                                     <div className="relative">
@@ -374,7 +387,7 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                             value={form.title}
                                             onChange={e => setForm({ ...form, title: e.target.value })}
                                             placeholder="e.g. Track Order"
-                                            className="w-full pl-4 pr-12 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none focus:border-blue-400 transition-all"
+                                            className="w-full pl-4 pr-12 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none transition-all focus:border-neutral-400"
                                         />
                                         <button
                                             type="button"
@@ -405,7 +418,7 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                         value={form.payload}
                                         onChange={e => setForm({ ...form, payload: e.target.value })}
                                         placeholder="TRACK_ORDER_PAYLOAD — auto-generated if empty"
-                                        className="w-full px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none focus:border-blue-400 transition-all"
+                                        className="w-full px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none transition-all focus:border-neutral-400"
                                     />
                                 </div>
 
@@ -419,9 +432,13 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                                 className={cn(
                                                     "p-4 rounded-2xl border-2 text-left transition-all",
                                                     form.target_type === tt.value
-                                                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                                                        : "border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-950/50 hover:border-neutral-200"
+                                                        ? ""
+                                                        : "border-neutral-200 dark:border-neutral-850 bg-neutral-50/50 dark:bg-neutral-950/50 hover:border-neutral-300"
                                                 )}
+                                                style={form.target_type === tt.value ? {
+                                                    borderColor: channelType === "instagram" ? "#db2777" : "#0866FF",
+                                                    backgroundColor: channelType === "instagram" ? "rgba(219, 39, 119, 0.08)" : "rgba(8, 102, 255, 0.08)"
+                                                } : undefined}
                                             >
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <tt.icon className="w-4 h-4 text-neutral-500" />
@@ -443,7 +460,7 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                         <select
                                             value={form.target_id ?? ''}
                                             onChange={e => setForm({ ...form, target_id: e.target.value ? Number(e.target.value) : null })}
-                                            className="w-full px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none focus:border-blue-400 transition-all"
+                                            className="w-full px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none transition-all focus:border-neutral-400"
                                         >
                                             <option value="">-- Select --</option>
                                             {targetOptions.map(opt => (
@@ -462,22 +479,27 @@ export default function IceBreakersPanel({ pages, selectedPageId, channelType }:
                                         min="0"
                                         value={form.sort_order}
                                         onChange={e => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-                                        className="w-24 px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none focus:border-blue-400 transition-all"
+                                        className="w-24 px-4 py-3 rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-sm font-medium outline-none transition-all focus:border-neutral-400"
                                     />
                                 </div>
                             </div>
 
-                            <div className="p-6 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3">
+                            <div className="p-4 sm:p-6 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-end gap-3 flex-shrink-0">
                                 <button
                                     onClick={() => { setShowCreateModal(false); setEditIcebreaker(null); }}
-                                    className="px-6 py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all"
+                                    className="px-6 py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-200 transition-all shrink-0"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={isSaving || !form.title.trim()}
-                                    className="px-6 py-3 rounded-2xl bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-6 py-3 rounded-2xl text-white text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 hover:opacity-90"
+                                    style={{
+                                        background: channelType === "instagram"
+                                            ? "linear-gradient(to right, #ec4899, #a855f7)"
+                                            : "#0866FF"
+                                    }}
                                 >
                                     {isSaving ? 'Saving...' : editIcebreaker ? 'Update' : 'Create'}
                                 </button>

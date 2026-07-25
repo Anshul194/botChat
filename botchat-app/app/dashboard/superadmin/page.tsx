@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-const FlowChart = dynamic(() => import("../components/FlowChartClient"), {
+const FlowChart = dynamic(() => import("../components/FlowChartComponent"), {
     ssr: false,
     loading: () => <div className="h-[300px] flex items-center justify-center text-xs text-muted-foreground">Loading chart...</div>,
 });

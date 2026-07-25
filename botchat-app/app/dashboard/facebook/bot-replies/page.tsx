@@ -825,14 +825,14 @@ export default function FacebookBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 60 }}
                                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                                className="w-full max-w-none sm:max-w-md rounded-none sm:rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+                                className="w-full max-w-none sm:max-w-md h-[100dvh] sm:h-auto rounded-none sm:rounded-2xl shadow-2xl relative z-10 overflow-hidden"
                                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                             >
                                 <div className="sm:hidden flex justify-center pt-3.5 pb-1">
                                     <div className="w-10 h-1 rounded-full" style={{ background: "var(--glass-border)" }} />
                                 </div>
 
-                                <div className="p-6">
+                                <div className="p-4 sm:p-6">
                                     <div className="flex items-center justify-between mb-5">
                                         <div>
                                             <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: "#0866FF" }}>Bot Reply</p>
@@ -849,7 +849,7 @@ export default function FacebookBotRepliesPage() {
                                                 </span>
                                             )}
                                             <button onClick={() => setEditReply(null)}
-                                                className="p-1.5 rounded-lg transition-colors" style={{ color: "var(--muted-foreground)" }}>
+                                                className="shrink-0 p-1.5 rounded-lg transition-colors" style={{ color: "var(--muted-foreground)" }}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                             </button>
                                         </div>
@@ -927,17 +927,17 @@ export default function FacebookBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="w-full max-w-none sm:max-w-md max-h-full h-full sm:h-auto sm:max-h-[92vh] overflow-y-auto rounded-none sm:rounded-3xl shadow-2xl relative z-10"
+                                className="w-full max-w-none sm:max-w-md h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-y-auto rounded-none sm:rounded-2xl shadow-2xl relative z-10"
                                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}
                             >
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full" style={{ background: "var(--glass-border)" }} />
                                 </div>
-                                <div className="px-6 pt-4 pb-7 sm:p-8">
+                                <div className="p-4 sm:p-8">
                                     <div className="flex items-start justify-between mb-6">
                                         <div>
                                             <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#0866FF" }}>Facebook Automation</p>
-                                            <h3 className="text-[18px] font-bold leading-tight" style={{ color: "var(--foreground)" }}>
+                                            <h3 className="text-[18px] font-bold leading-tight truncate" style={{ color: "var(--foreground)" }}>
                                                 New FB Flow {selectedPageId !== "all" ? `— ${selectedPageObj?.page_name}` : ""}
                                             </h3>
                                         </div>
@@ -1072,13 +1072,13 @@ export default function FacebookBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="w-full max-w-none sm:max-w-md max-h-full h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto rounded-none sm:rounded-2xl shadow-2xl relative z-10"
+                                className="w-full max-w-none sm:max-w-md h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-y-auto rounded-none sm:rounded-2xl shadow-2xl relative z-10"
                                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full" style={{ background: "var(--glass-border)" }} />
                                 </div>
-                                <div className="px-6 pt-5 pb-8 sm:p-10">
-                                    <h3 className="text-xl font-bold mb-1 tracking-tight" style={{ color: "var(--foreground)" }}>Map FB Shortcut</h3>
+                                <div className="p-4 sm:p-10">
+                                    <h3 className="text-xl font-bold mb-1 tracking-tight truncate" style={{ color: "var(--foreground)" }}>Map FB Shortcut</h3>
                                     <p className="text-sm mb-6 font-medium" style={{ color: "var(--muted-foreground)" }}>Select a system event to automate with a new flow.</p>
 
                                     <div className="space-y-3">
