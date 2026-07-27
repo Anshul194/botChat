@@ -317,6 +317,19 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
 
   const handleSave = async () => {
     if (!form.name.trim()) return toast.error("Campaign name is required");
+    if (!form.page_id) return toast.error("Please select a page / account");
+
+    // Validate filter rules if in filter mode
+    if (form.message_type === "filter") {
+      for (let i = 0; i < filterRules.length; i++) {
+        const rule = filterRules[i];
+        if (!rule.keywords.trim()) return toast.error(`Rule ${i + 1}: Filter word/sentence is required`);
+        if (!rule.message.trim()) return toast.error(`Rule ${i + 1}: Message for comment reply is required`);
+      }
+    } else {
+      if (!form.message.trim()) return toast.error("Message for comment reply is required");
+    }
+
     setIsSaving(true);
     try {
       const fd = new FormData();
@@ -351,6 +364,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
           fd.append(`rules[${i}][video]`, rule.video || "");
           fd.append(`rules[${i}][private_template_id]`, rule.template_id || "");
         });
+        // Fallback for filter mode is stored in the main message/image/video/private_template_id fields
       }
 
       const config = { headers: { "Content-Type": "multipart/form-data" } };
@@ -367,7 +381,14 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
       onSaved();
       onClose();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? "Failed to save template");
+      // Show first validation error message if available
+      const errors = err?.response?.data?.errors;
+      if (errors) {
+        const firstError = Object.values(errors)[0];
+        toast.error(Array.isArray(firstError) ? firstError[0] : String(firstError));
+      } else {
+        toast.error(err?.response?.data?.message ?? "Failed to save template");
+      }
     } finally { setIsSaving(false); }
   };
 
@@ -636,9 +657,9 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                       <Field label="Message for Comment Reply" icon={MessageCircle}>
                         <div className="relative border border-[var(--border)] rounded-2xl p-4 focus-within:border-[var(--primary)] transition-all bg-[var(--card)]">
                           <TextareaWithEmoji
-                            value={form.message}
+                            value={form.message ?? ""}
                             onChange={v => setForm({ ...form, message: v })}
-                            placeholder="Type your message here..."
+                            placeholder="Type your fallback message here..."
                             rows={4}
                             minHeight="100px"
                             recent={recentEmojis}
@@ -647,8 +668,8 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                         </div>
                       </Field>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
-                        <UploadBox label="Image for Comment Reply" value={form.image!!} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
-                        <UploadBox label="Video for Comment Reply" value={form.video!!} onChange={v => setForm({ ...form, video: v })} icon={Video} />
+                        <UploadBox label="Image for Comment Reply" value={form.image ?? ""} onChange={v => setForm({ ...form, image: v })} icon={ImageIcon} />
+                        <UploadBox label="Video for Comment Reply" value={form.video ?? ""} onChange={v => setForm({ ...form, video: v })} icon={Video} />
                       </div>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between px-1">
@@ -663,7 +684,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                           </div>
                         </div>
                         <div className="relative">
-                          <select value={form.private_template_id} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
+                          <select value={form.private_template_id ?? ""} onChange={e => setForm({ ...form, private_template_id: e.target.value })}
                             className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-[var(--card)]"
                           >
                             <option value="">Please select a message template</option>

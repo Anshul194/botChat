@@ -43,6 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     if (isInitialized && isAuthenticated && general) {
+      // landingPageEnabled is normalized to boolean by Redux normalizeGeneralSettings()
       if (general.landingPageEnabled === false) {
         router.replace("/auth/sign-in");
       }

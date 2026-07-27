@@ -1,65 +1,88 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
-import { fetchGeneralSettings } from '../store/slices/settingsSlice';
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState, AppDispatch } from '../store/store'
+import { fetchGeneralSettings } from '../store/slices/settingsSlice'
+import {
+  formatDate as dateFmt,
+  formatTime as timeFmt,
+  formatDateTime as dateTimeFmt,
+  formatRelativeTime as relativeFmt,
+  setTenantDateConfig,
+  getTenantDateConfig,
+} from './date'
+import { getGmtOffsetString } from './timezones'
 
 export function useAppSettings() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { general, isLoadingGeneral } = useSelector((state: RootState) => state.settings);
-    const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>()
+  const { general, isLoadingGeneral } = useSelector((state: RootState) => state.settings)
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth)
 
-    useEffect(() => {
-        if (isAuthenticated && !general) {
-            dispatch(fetchGeneralSettings({}));
-        }
-    }, [isAuthenticated, general, dispatch]);
-
-    const timezone = general?.timezone || 'UTC';
-    const dateFormat = general?.dateFormat || 'MMM DD, YYYY';
-    const timeFormat = general?.timeFormat || 'hh:mm A';
-    const landingPageEnabled = general?.landingPageEnabled !== false;
-
-    function formatDate(date: Date | string | number): string {
-        const d = new Date(date);
-        try {
-            return new Intl.DateTimeFormat('en-US', {
-                timeZone: timezone,
-                year: 'numeric',
-                month: 'short',
-                day: '2-digit',
-            }).format(d);
-        } catch {
-            return d.toLocaleDateString();
-        }
+  useEffect(() => {
+    if (isAuthenticated && !general) {
+      dispatch(fetchGeneralSettings({}))
     }
+  }, [isAuthenticated, general, dispatch])
 
-    function formatTime(date: Date | string | number): string {
-        const d = new Date(date);
-        try {
-            return new Intl.DateTimeFormat('en-US', {
-                timeZone: timezone,
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: timeFormat.includes('A'),
-            }).format(d);
-        } catch {
-            return d.toLocaleTimeString();
-        }
-    }
+  // Effective settings resolution (User / Workspace / Fallback)
+  // Note: general.landingPageEnabled and general.emailVerification are already
+  // normalized to booleans by normalizeGeneralSettings() in settingsSlice.ts
+  const timezone = general?.timezone || general?.defaultTimezone || 'UTC'
+  const dateFormat = general?.dateFormat || 'MMM DD, YYYY'
+  const timeFormat = general?.timeFormat || 'hh:mm A'
+  const locale = general?.locale || general?.defaultLanguage || 'en'
+  const landingPageEnabled = general?.landingPageEnabled ?? true
+  const emailVerification = general?.emailVerification ?? false
 
-    function formatDateTime(date: Date | string | number): string {
-        return `${formatDate(date)} ${formatTime(date)}`;
-    }
+  // Sync date config whenever Redux state updates
+  useEffect(() => {
+    setTenantDateConfig({
+      timezone,
+      dateFormat,
+      timeFormat,
+    })
+  }, [timezone, dateFormat, timeFormat])
 
-    return {
-        general,
-        timezone,
-        dateFormat,
-        timeFormat,
-        landingPageEnabled,
-        isLoadingGeneral,
-        formatDate,
-        formatTime,
-        formatDateTime,
-    };
+  function formatDate(date: Date | string | number, customFmt?: string, tz?: string): string {
+    if (!date) return ''
+    return dateFmt(date, customFmt || dateFormat, tz || timezone)
+  }
+
+  function formatTime(date: Date | string | number, customFmt?: string, tz?: string): string {
+    if (!date) return ''
+    return timeFmt(date, customFmt || timeFormat, tz || timezone)
+  }
+
+  function formatDateTime(
+    date: Date | string | number,
+    customDateFormat?: string,
+    customTimeFormat?: string,
+    tz?: string
+  ): string {
+    if (!date) return ''
+    return dateTimeFmt(date, customDateFormat || dateFormat, customTimeFormat || timeFormat, tz || timezone)
+  }
+
+  function formatRelative(date: Date | string | number, tz?: string): string {
+    if (!date) return ''
+    return relativeFmt(date, tz || timezone)
+  }
+
+  const gmtOffset = getGmtOffsetString(timezone)
+
+  return {
+    general,
+    timezone,
+    dateFormat,
+    timeFormat,
+    locale,
+    gmtOffset,
+    landingPageEnabled,
+    emailVerification,
+    isLoadingGeneral,
+    formatDate,
+    formatTime,
+    formatDateTime,
+    formatRelative,
+    currentTimezone: timezone,
+  }
 }

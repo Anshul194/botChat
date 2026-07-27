@@ -98,6 +98,47 @@ const initialState: SettingsState = {
 };
 
 // --- Helpers ---
+
+/**
+ * Normalize raw API settings payload:
+ * Coerce '1'/'on'/1 → true, '0'/'off'/0 → false for boolean feature flags.
+ */
+function normalizeGeneralSettings(data: any): GeneralSettings {
+    if (!data) return {};
+    const asBool = (val: any, fallback: boolean): boolean => {
+        if (val === undefined || val === null) return fallback;
+        if (typeof val === 'boolean') return val;
+        return val === '1' || val === 'on' || val === 1;
+    };
+    return {
+        ...data,
+        landingPageEnabled: asBool(
+            data.landing_page_status ?? data.landingPageEnabled,
+            true
+        ),
+        emailVerification: asBool(
+            data.email_verification ?? data.emailVerification,
+            false
+        ),
+        twoFactorAuth: asBool(data.two_factor_auth ?? data.twoFactorAuth, false),
+        smsVerification: asBool(data.sms_verification ?? data.smsVerification, false),
+        rtlEnabled: asBool(data.rtl_setting ?? data.rtlEnabled, false),
+        registerEnabled: asBool(data.register_setting ?? data.registerEnabled, false),
+        databasePermission: asBool(data.database_permission ?? data.databasePermission, false),
+        // Alias snake_case keys to camelCase for form binding
+        brandName: data.brand_name ?? data.brandName ?? '',
+        whiteLabelDomain: data.white_label_domain ?? data.whiteLabelDomain ?? '',
+        timezone: data.timezone ?? data.defaultTimezone ?? 'UTC',
+        locale: data.locale ?? data.default_language ?? data.defaultLanguage ?? 'en',
+        dateFormat: data.date_format ?? data.dateFormat ?? 'MMM DD, YYYY',
+        timeFormat: data.time_format ?? data.timeFormat ?? 'hh:mm A',
+        appName: data.app_name ?? data.appName ?? '',
+        logo: data.app_logo ?? data.logo ?? '',
+        favicon: data.favicon_logo ?? data.favicon ?? '',
+        gtag: data.gtag ?? '',
+    };
+}
+
 // Map snake_case Facebook API response → camelCase FacebookPlatformSettings
 function mapFbApiToState(data: any): any {
     if (!data) return null;
@@ -332,7 +373,7 @@ const settingsSlice = createSlice({
         builder.addCase(fetchGeneralSettings.pending, (state) => { state.isLoadingGeneral = true; })
             .addCase(fetchGeneralSettings.fulfilled, (state, action) => {
                 state.isLoadingGeneral = false;
-                state.general = action.payload;
+                state.general = normalizeGeneralSettings(action.payload);
             })
             .addCase(fetchGeneralSettings.rejected, (state, action) => {
                 state.isLoadingGeneral = false;
@@ -340,7 +381,7 @@ const settingsSlice = createSlice({
             });
 
         builder.addCase(updateGeneralSettings.fulfilled, (state, action) => {
-            state.general = action.payload;
+            state.general = normalizeGeneralSettings(action.payload);
         });
 
         // Facebook Platform

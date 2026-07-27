@@ -6,7 +6,7 @@ import {
     Target, Sparkles, MessageSquare,
     ChevronDown, Info, AlertCircle,
     Pause, Play, Settings2, LayoutGrid, Loader2, ArrowRight,
-    RefreshCw, Layers, Plus, ChevronLeft, Trash2, Edit3, MessageCircle, BarChart2
+    RefreshCw, Layers, Plus, ChevronLeft, Trash2, Edit3, MessageCircle, BarChart2, ArrowUpRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";

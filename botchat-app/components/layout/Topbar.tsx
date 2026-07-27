@@ -14,6 +14,7 @@ import { logoutUser, fetchMe } from "@/store/slices/authSlice";
 import { cn } from "@/lib/utils";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import { HeaderClock } from "@/components/layout/HeaderClock";
 import { useTourContext } from "@/components/onboarding/OnboardingTour";
 import { HelpCircle } from "lucide-react";
 
@@ -155,6 +156,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     </div>
                 </div>
             </div>
+
+            <HeaderClock />
 
             <div className="flex items-center gap-0.5 sm:gap-1.5 ml-auto flex-shrink-0">
                 <div className="w-px h-4 sm:h-5 mx-0.5 sm:mx-1"
