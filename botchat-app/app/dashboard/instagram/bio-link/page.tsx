@@ -1303,22 +1303,7 @@ function BioLinkBuilderContent() {
                 </header>
             )}
 
-            {/* ── MOBILE PHASE DOCK (SCROLLABLE BAR) ── */}
-            {(!showAddBlock && !showCarouselEditor) && (
-                <div className="xl:hidden bg-[var(--card)]/80 dark:bg-black/40 backdrop-blur-xl border-b border-[var(--border)] dark:border-[var(--border)] overflow-x-auto no-scrollbar shrink-0">
-                    <div className="flex items-center gap-1 p-2 min-w-max">
-                        {PHASES.map((p) => (
-                            <button key={p.id} onClick={() => setView(p.id)} className={cn(
-                                "h-10 px-4 rounded-full flex items-center justify-center gap-2 transition-all",
-                                view === p.id ? "bg-primary text-white shadow-lg" : "text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70"
-                            )}>
-                                <p.Icon size={16} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
+
 
             {/* CREATOR WORKSPACE */}
             <div className="relative flex-1 flex overflow-hidden">
@@ -2076,16 +2061,32 @@ function BioLinkBuilderContent() {
                 <main
                     ref={canvasRef}
                     className={cn(
-                        "bg-[var(--card)] dark:bg-slate-950 border-l border-[var(--border)] dark:border-white/5 relative flex items-center justify-center p-2 sm:p-4 z-10 h-full overflow-hidden shrink-0",
-                        "xl:w-[450px]",
-                        activePanel === "preview" ? "flex w-full" : "hidden xl:flex"
+                        "bg-[var(--card)] dark:bg-slate-950 border-l border-[var(--border)] dark:border-white/5 relative flex items-center justify-center z-10 h-full overflow-hidden shrink-0",
+                        "xl:w-[450px] xl:p-4",
+                        activePanel === "preview" ? "flex w-full pb-[4.5rem]" : "hidden xl:flex"
                     )}>
-                    <div style={{
+                    {/* Desktop: use scale transform inside fixed 380×850 box */}
+                    <div className="hidden xl:block" style={{
                         transform: `scale(${previewScale})`,
                         transformOrigin: 'center center',
                         width: '380px',
                         height: '850px'
                     }}>
+                        <PhonePreview
+                            profile={previewProfile || profile}
+                            tabs={previewTabs}
+                            selectedTabId={selectedTabId}
+                            setSelectedTabId={setSelectedTabId}
+                            instagramUsername={instagramUsername}
+                            viewportOffset={0}
+                            previewWidth={360}
+                            uiTypeOverrides={uiTypeOverrides}
+                            layoutStyle={profile?.settings?.layoutStyle || "standard"}
+                            openEditor={openEditor}
+                        />
+                    </div>
+                    {/* Mobile: PhonePreview fills full container naturally */}
+                    <div className="xl:hidden w-full h-full">
                         <PhonePreview
                             profile={previewProfile || profile}
                             tabs={previewTabs}
@@ -2126,9 +2127,7 @@ function BioLinkBuilderContent() {
                 </AnimatePresence>
             </div>
 
-            {/* ── MOBILE FLOATING CONTROLS (OUTSIDE MAIN OVERFLOW) ── */}
-            <div className="xl:hidden">
-            </div>
+
 
             {/* MODALS */}
             {/* Add Block is now handled inline in the workspace drawer above — no modal needed */}
@@ -3871,23 +3870,86 @@ function BioLinkBuilderContent() {
             </AnimatePresence>
             {
                 isUploadingImage && (
-                    <div className="fixed bottom-6 right-6 z-[600] flex items-center gap-3 bg-black/80 text-white px-4 py-2 rounded-full shadow-lg">
+                    <div className="fixed bottom-20 xl:bottom-6 right-6 z-[700] flex items-center gap-3 bg-black/80 text-white px-4 py-2 rounded-full shadow-lg">
                         <Loader2 className="w-4 h-4 animate-spin" />
                         <span className="text-sm font-bold">Uploading image...</span>
                     </div>
                 )
             }
-            {/* 📱 MOBILE PREVIEW FAB */}
-            <button
-                onClick={() => setActivePanel(activePanel === 'builder' ? 'preview' : 'builder')}
-                className={cn(
-                    "xl:hidden fixed right-6 z-[600] w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300",
-                    isUploadingImage ? "bottom-20" : "bottom-6"
-                )}
-                title={activePanel === 'preview' ? "Back to Editor" : "Live Preview"}
+            {/* 📱 MOBILE BOTTOM NAV — matches bot-replies style */}
+            <nav
+                className="xl:hidden fixed bottom-0 left-0 right-0 z-[600]"
+                style={{
+                    background: "var(--card)",
+                    borderTop: "1px solid var(--border)",
+                    boxShadow: "0 -8px 32px rgba(0,0,0,0.10)",
+                    paddingBottom: "env(safe-area-inset-bottom, 0px)"
+                }}
             >
-                {activePanel === 'preview' ? <Edit3 size={20} /> : <Eye size={20} />}
-            </button>
+                <div className="flex items-stretch px-1 pt-1.5 pb-1">
+                    {/* Phase tabs */}
+                    {PHASES.map((phase) => {
+                        const isActive = activePanel === "builder" && view === phase.id;
+                        return (
+                            <button
+                                key={phase.id}
+                                onClick={() => { setActivePanel("builder"); setView(phase.id); }}
+                                className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
+                                style={{ color: isActive ? "var(--primary)" : "var(--muted-foreground)" }}
+                            >
+                                {isActive && (
+                                    <span className="absolute top-0 left-2 right-2 h-[2.5px] rounded-full bg-primary" />
+                                )}
+                                <div
+                                    className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200"
+                                    style={{
+                                        background: isActive ? "rgba(var(--primary-rgb, 99,102,241), 0.09)" : "transparent",
+                                        transform: isActive ? "scale(1.08)" : "scale(1)"
+                                    }}
+                                >
+                                    <phase.Icon
+                                        size={17}
+                                        strokeWidth={isActive ? 2.5 : 1.8}
+                                    />
+                                </div>
+                                <span className="text-[9px] font-medium leading-none" style={{ opacity: isActive ? 1 : 0.5 }}>
+                                    {phase.label.split(".")[1]?.trim() || phase.label}
+                                </span>
+                            </button>
+                        );
+                    })}
+                    {/* Preview tab */}
+                    {(() => {
+                        const isPreviewActive = activePanel === "preview";
+                        return (
+                            <button
+                                onClick={() => setActivePanel(isPreviewActive ? "builder" : "preview")}
+                                className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
+                                style={{ color: isPreviewActive ? "#8b5cf6" : "var(--muted-foreground)" }}
+                            >
+                                {isPreviewActive && (
+                                    <span className="absolute top-0 left-2 right-2 h-[2.5px] rounded-full bg-violet-500" />
+                                )}
+                                <div
+                                    className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200"
+                                    style={{
+                                        background: isPreviewActive ? "rgba(139,92,246,0.09)" : "transparent",
+                                        transform: isPreviewActive ? "scale(1.08)" : "scale(1)"
+                                    }}
+                                >
+                                    <Smartphone
+                                        size={17}
+                                        strokeWidth={isPreviewActive ? 2.5 : 1.8}
+                                    />
+                                </div>
+                                <span className="text-[9px] font-medium leading-none" style={{ opacity: isPreviewActive ? 1 : 0.5 }}>
+                                    Preview
+                                </span>
+                            </button>
+                        );
+                    })()}
+                </div>
+            </nav>
         </div >
     );
 }
