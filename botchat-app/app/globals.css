@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -108,8 +108,8 @@ video,
   --chart-4: #f59e0b;
   --chart-5: #833AB4;
 
-  /* Sidebar */
-  --sidebar: #070509;
+  /* Sidebar — same as background for seamless look */
+  --sidebar: #09090b;
   --sidebar-foreground: #9a7da0;
   --sidebar-primary: #FF2D78;
   --sidebar-primary-foreground: #ffffff;
@@ -117,6 +117,13 @@ video,
   --sidebar-accent-foreground: #fdf2f8;
   --sidebar-border: rgba(255, 255, 255, 0.05);
   --sidebar-ring: #FF2D78;
+
+  /* Topbar — same as background for seamless look */
+  --topbar-bg: #09090b;
+  --topbar-border: rgba(255, 255, 255, 0.06);
+  --topbar-item-bg: rgba(255, 255, 255, 0.06);
+  --topbar-item-border: rgba(255, 255, 255, 0.10);
+  --topbar-item-hover: rgba(255, 255, 255, 0.12);
 
   /* ── Brand tokens ── */
   --brand-pink: #FF2D78;
@@ -221,6 +228,13 @@ html.light :root,
   --sidebar-accent-foreground: #1a1235;
   --sidebar-border: rgba(232, 23, 93, 0.08);
   --sidebar-ring: #e8175d;
+
+  /* Topbar — same as sidebar for unified look */
+  --topbar-bg: #fff5f8;
+  --topbar-border: rgba(232, 23, 93, 0.08);
+  --topbar-item-bg: rgba(232, 23, 93, 0.06);
+  --topbar-item-border: rgba(232, 23, 93, 0.12);
+  --topbar-item-hover: rgba(232, 23, 93, 0.12);
 
   /* Brand tokens */
   --brand-pink: #e8175d;
@@ -426,6 +440,66 @@ html.light :root,
     background: color-mix(in srgb, var(--primary) 28%, transparent);
     color: var(--foreground);
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE — ALL GREY TEXT TO NEAR BLACK
+   Forces every grey Tailwind class to near-black in light mode.
+═══════════════════════════════════════════════════════════════ */
+html.light { --muted-foreground: #1a1a1a; }
+
+html.light .text-gray-900, html.light .text-neutral-900,
+html.light .text-slate-900, html.light .text-zinc-900,
+html.light .text-gray-800, html.light .text-neutral-800,
+html.light .text-slate-800, html.light .text-zinc-800,
+html.light .text-gray-700, html.light .text-neutral-700,
+html.light .text-slate-700, html.light .text-zinc-700,
+html.light .text-gray-600, html.light .text-neutral-600,
+html.light .text-slate-600, html.light .text-zinc-600 { color: #0a0a0a !important; }
+
+html.light .text-gray-500, html.light .text-neutral-500,
+html.light .text-slate-500, html.light .text-zinc-500 { color: #1a1a1a !important; }
+
+html.light .text-gray-400, html.light .text-neutral-400,
+html.light .text-slate-400, html.light .text-zinc-400 { color: #333333 !important; }
+
+html.light .text-gray-300, html.light .text-neutral-300,
+html.light .text-slate-300, html.light .text-zinc-300,
+html.light .text-gray-200, html.light .text-neutral-200,
+html.light .text-slate-200, html.light .text-zinc-200 { color: #555555 !important; }
+
+html.light .dark\:text-white,
+html.light .dark\:text-gray-100, html.light .dark\:text-neutral-100 { color: #0a0a0a !important; }
+html.light .dark\:text-gray-200, html.light .dark\:text-neutral-200 { color: #111111 !important; }
+html.light .dark\:text-gray-300, html.light .dark\:text-neutral-300 { color: #1a1a1a !important; }
+html.light .dark\:text-gray-400, html.light .dark\:text-neutral-400 { color: #333333 !important; }
+
+html.light .dark\:border-neutral-800, html.light .dark\:border-gray-800,
+html.light .border-neutral-800, html.light .border-gray-800 { border-color: rgba(0,0,0,0.09) !important; }
+
+html.light .dark\:bg-neutral-900, html.light .dark\:bg-gray-900 { background-color: transparent !important; }
+html.light .bg-neutral-900, html.light .bg-gray-900 { background-color: #f4f4f5 !important; }
+
+html.light input, html.light textarea, html.light select { color: #0a0a0a !important; }
+html.light input::placeholder, html.light textarea::placeholder { color: #999999 !important; }
+/* ═══════════════════════════════════════════════════════════════
+   MODERN ACCENT HEADINGS — brand-gradient left bar on sections
+═══════════════════════════════════════════════════════════════ */
+.glass-card h2,
+.glass-card h3 {
+  position: relative;
+  padding-left: 0.875rem;
+}
+.glass-card h2::before,
+.glass-card h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 3px;
+  border-radius: 99px;
+  background: var(--brand-gradient);
 }
 
 /* ═══════════════════════════════════════════════════════════════

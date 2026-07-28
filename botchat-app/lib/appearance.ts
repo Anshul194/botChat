@@ -175,43 +175,45 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
     root.style.setProperty("--radius", `${Math.max(settings.borderRadius / 16, 0.4)}rem`);
 
     if (settings.darkMode) {
-        root.style.setProperty("--background", "#020617");
-        root.style.setProperty("--foreground", "#e2e8f8");
-        root.style.setProperty("--card", "#080d1a");
-        root.style.setProperty("--card-foreground", "#e2e8f8");
-        root.style.setProperty("--popover", "#080d1a");
-        root.style.setProperty("--popover-foreground", "#e2e8f8");
-        root.style.setProperty("--sidebar", "#050914");
-        root.style.setProperty("--sidebar-foreground", "#6b7fa8");
+        // Dark mode: background, sidebar, topbar ALL use the same #09090b
+        root.style.setProperty("--background", "#09090b");
+        root.style.setProperty("--foreground", "#f8fafc");
+        root.style.setProperty("--card", "#110a14");
+        root.style.setProperty("--card-foreground", "#f8fafc");
+        root.style.setProperty("--popover", "#110a14");
+        root.style.setProperty("--popover-foreground", "#f8fafc");
+        root.style.setProperty("--sidebar", "#09090b");
+        root.style.setProperty("--sidebar-foreground", "#9a7da0");
         root.style.setProperty("--sidebar-border", "rgba(255,255,255,0.05)");
-        root.style.setProperty("--topbar-bg", "rgba(9, 11, 20, 0.95)");
-        root.style.setProperty("--topbar-border", "rgba(255, 255, 255, 0.05)");
-        root.style.setProperty("--topbar-item-bg", "rgba(255, 255, 255, 0.07)");
-        root.style.setProperty("--topbar-item-border", "rgba(255, 255, 255, 0.09)");
-        root.style.setProperty("--topbar-item-hover", "rgba(255, 255, 255, 0.12)");
-        root.style.setProperty("--glass-bg", rgba("#080911", 0.75));
+        root.style.setProperty("--topbar-bg", "#09090b");
+        root.style.setProperty("--topbar-border", "rgba(255,255,255,0.06)");
+        root.style.setProperty("--topbar-item-bg", "rgba(255,255,255,0.06)");
+        root.style.setProperty("--topbar-item-border", "rgba(255,255,255,0.10)");
+        root.style.setProperty("--topbar-item-hover", "rgba(255,255,255,0.12)");
+        root.style.setProperty("--glass-bg", rgba("#110a14", 0.75));
         root.style.setProperty("--glass-border", "rgba(255,255,255,0.08)");
-        root.style.setProperty("--muted-foreground", "#64748b");
+        root.style.setProperty("--muted-foreground", "#cbd5e1");
         root.classList.add("dark");
         root.classList.remove("light");
     } else {
-        root.style.setProperty("--background", "#f8fafc");
-        root.style.setProperty("--foreground", "#0f172a");
+        // Light mode: topbar uses same color as sidebar (#fff5f8)
+        root.style.setProperty("--background", "#ffffff");
+        root.style.setProperty("--foreground", "#111827");
         root.style.setProperty("--card", "#ffffff");
-        root.style.setProperty("--card-foreground", "#0f172a");
+        root.style.setProperty("--card-foreground", "#111827");
         root.style.setProperty("--popover", "#ffffff");
-        root.style.setProperty("--popover-foreground", "#0f172a");
-        root.style.setProperty("--sidebar", "#ffffff"); // Consistent with light theme sidebar
-        root.style.setProperty("--sidebar-foreground", "#334155");
-        root.style.setProperty("--sidebar-border", "rgba(0,0,0,0.06)");
-        root.style.setProperty("--topbar-bg", "rgba(255, 255, 255, 0.94)");
-        root.style.setProperty("--topbar-border", "rgba(0, 0, 0, 0.07)");
-        root.style.setProperty("--topbar-item-bg", "rgba(0, 0, 0, 0.05)");
-        root.style.setProperty("--topbar-item-border", "rgba(0, 0, 0, 0.08)");
-        root.style.setProperty("--topbar-item-hover", "rgba(0, 0, 0, 0.09)");
+        root.style.setProperty("--popover-foreground", "#111827");
+        root.style.setProperty("--sidebar", "#fff5f8");
+        root.style.setProperty("--sidebar-foreground", "#4a3459");
+        root.style.setProperty("--sidebar-border", "rgba(232,23,93,0.08)");
+        root.style.setProperty("--topbar-bg", "#fff5f8");
+        root.style.setProperty("--topbar-border", "rgba(232,23,93,0.08)");
+        root.style.setProperty("--topbar-item-bg", "rgba(232,23,93,0.06)");
+        root.style.setProperty("--topbar-item-border", "rgba(232,23,93,0.12)");
+        root.style.setProperty("--topbar-item-hover", "rgba(232,23,93,0.12)");
         root.style.setProperty("--glass-bg", "rgba(255,255,255,0.92)");
-        root.style.setProperty("--glass-border", "rgba(0,0,0,0.07)");
-        root.style.setProperty("--muted-foreground", "#64748b");
+        root.style.setProperty("--glass-border", "rgba(232,23,93,0.08)");
+        root.style.setProperty("--muted-foreground", "#374151");
         root.classList.add("light");
         root.classList.remove("dark");
     }
