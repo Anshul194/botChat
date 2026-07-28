@@ -1069,7 +1069,7 @@ export const VisualsLab = ({ profile, updateProfile, applyTemplate, applyBioThem
                                 className={cn(
                                     "flex-shrink-0 h-8 px-3.5 rounded-full flex items-center gap-1.5 text-[11px] font-medium transition-all",
                                     selectedNiche === cat.id
-                                        ? "bg-[var(--background)] dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] shadow-sm"
+                                        ? "bg-neutral-900 dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] shadow-sm"
                                         : "bg-[var(--card)] dark:bg-[var(--background)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 dark:hover:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)]"
                                 )}>
                                 {React.cloneElement(cat.icon as React.ReactElement, { size: 12 })}

@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { CheckCircle2, XCircle, Loader2, MessageSquare, ArrowRight, Mail } from "lucide-react";
 import Link from "next/link";
 import PageMeta from "@/components/PageMeta";
-import { useTheme } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAppDispatch } from "@/store/hooks";
 import { verifyEmail } from "@/store/slices/authSlice";
@@ -14,9 +13,6 @@ function VerifyContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { theme } = useTheme();
-    const isLight = theme === "light";
-
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [message, setMessage] = useState("Verifying your email address...");
     const token = searchParams.get("token");
@@ -54,7 +50,7 @@ function VerifyContent() {
                 description="Verify your email address to activate your BotChat account."
                 noindex
             />
-            <div className="min-h-screen flex flex-col" style={{ background: isLight ? "#fdf2f8" : "#06030f" }}>
+            <div className="min-h-screen flex flex-col" style={{ background: "var(--background)" }}>
             {/* Topbar */}
             <div className="flex items-center justify-between px-6 py-5">
                 <div className="flex items-center gap-2">
@@ -80,9 +76,9 @@ function VerifyContent() {
 
                     <div className="relative z-10 p-8 rounded-3xl shadow-2xl border transition-all duration-500"
                         style={{ 
-                            background: isLight ? "rgba(255,255,255,0.8)" : "rgba(15,10,31,0.6)",
+                            background: "var(--card)",
                             backdropFilter: "blur(20px)",
-                            borderColor: isLight ? "rgba(236,72,153,0.1)" : "rgba(236,72,153,0.1)"
+                            borderColor: "color-mix(in srgb, var(--primary) 10%, transparent)"
                         }}>
                         
                         <div className="flex flex-col items-center text-center">
@@ -107,13 +103,13 @@ function VerifyContent() {
                                 </div>
                             )}
 
-                            <h1 className="text-2xl font-extrabold mb-3" style={{ color: isLight ? "#1e1b4b" : "#f8fafc" }}>
+                            <h1 className="text-2xl font-extrabold mb-3" style={{ color: "var(--foreground)" }}>
                                 {status === "loading" && "Verifying Email"}
                                 {status === "success" && "Success!"}
                                 {status === "error" && "Verification Failed"}
                             </h1>
 
-                            <p className="text-sm leading-relaxed mb-8" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
+                            <p className="text-sm leading-relaxed mb-8" style={{ color: "var(--muted-foreground)" }}>
                                 {message}
                             </p>
 
@@ -138,14 +134,14 @@ function VerifyContent() {
                                         }}>
                                         Back to Sign In
                                     </Link>
-                                    <p className="text-xs" style={{ color: isLight ? "#94a3b8" : "#64748b" }}>
+                                    <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
                                         Need help? <Link href="#" className="underline">Contact Support</Link>
                                     </p>
                                 </div>
                             )}
 
                             {status === "loading" && (
-                                <div className="flex items-center gap-2 text-xs font-medium" style={{ color: isLight ? "#94a3b8" : "#64748b" }}>
+                                <div className="flex items-center gap-2 text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                                     <Mail className="w-3.5 h-3.5" />
                                     Security check in progress...
                                 </div>
@@ -155,7 +151,7 @@ function VerifyContent() {
                 </div>
             </div>
 
-            <div className="py-8 text-center text-xs" style={{ color: isLight ? "#94a3b8" : "#475569" }}>
+                    <div className="py-8 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
                 &copy; 2026 BotChat. All rights reserved.
             </div>
         </div>

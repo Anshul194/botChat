@@ -47,7 +47,6 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
     const { user } = useAppSelector((state) => state.auth);
     const { settings } = useTenantSettings();
     const pathname = usePathname();
-    const isLight = theme === "light";
     const [profileOpen, setProfileOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null);
@@ -82,7 +81,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
             }}
         >
             <div className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none"
-                style={{ background: "linear-gradient(90deg,rgba(108,92,231,0.7),rgba(236,72,153,0.45),transparent 65%)" }} />
+                style={{ background: "linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--nav-active-color) 80%, transparent) 20%, color-mix(in srgb, var(--nav-active-color) 90%, transparent) 50%, color-mix(in srgb, var(--nav-active-color) 60%, transparent) 80%, transparent 100%)" }} />
 
             <button
                 onClick={onMenuToggle}
@@ -94,6 +93,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                 }}
                 title="Toggle menu"
                 aria-label="Toggle sidebar navigation"
+                onFocus={e => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.borderColor = "var(--nav-active-color)"; }}
+                onBlur={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.borderColor = "var(--topbar-item-border)"; }}
             >
                 {mobileSidebarOpen
                     ? <X className="w-4 h-4" />
@@ -110,6 +111,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                 }}
                 title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                onFocus={e => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.borderColor = "var(--nav-active-color)"; }}
+                onBlur={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.borderColor = "var(--topbar-item-border)"; }}
             >
                 {collapsed
                     ? <PanelLeftOpen className="w-[13px] h-[13px] sm:w-[15px] sm:h-[15px]" />
@@ -126,7 +129,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
             </div>
 
             <div className="hidden sm:block w-px h-4 sm:h-5 flex-shrink-0"
-                style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
+                style={{ background: "var(--topbar-divider)" }} />
 
             <div className="hidden sm:flex flex-1 max-w-[360px] lg:max-w-[460px] min-w-0">
                 <div className="flex items-center gap-2 px-3 py-1.5 sm:py-2 rounded-full cursor-pointer group transition-all duration-200 w-full"
@@ -136,9 +139,17 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     }}
                     onMouseEnter={e => {
                         e.currentTarget.style.borderColor = "var(--nav-active-color)";
-                        e.currentTarget.style.boxShadow = "0 0 0 3px rgba(108,92,231,0.08)";
+                        e.currentTarget.style.boxShadow = "0 0 0 3px color-mix(in srgb, var(--nav-active-color) 8%, transparent)";
                     }}
                     onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = "var(--topbar-item-border)";
+                        e.currentTarget.style.boxShadow = "none";
+                    }}
+                    onFocus={e => {
+                        e.currentTarget.style.borderColor = "var(--nav-active-color)";
+                        e.currentTarget.style.boxShadow = "0 0 0 3px color-mix(in srgb, var(--nav-active-color) 8%, transparent)";
+                    }}
+                    onBlur={e => {
                         e.currentTarget.style.borderColor = "var(--topbar-item-border)";
                         e.currentTarget.style.boxShadow = "none";
                     }}
@@ -150,9 +161,9 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     </span>
                     <div className="hidden lg:flex items-center gap-0.5">
                         <kbd className="flex items-center justify-center w-[16px] h-[16px] rounded-md text-[8px] font-bold font-mono"
-                            style={{ background: isLight ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.09)", color: "var(--muted-foreground)", border: `1px solid ${isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}` }}>⌘</kbd>
+                            style={{ background: "var(--topbar-kbd-bg)", color: "var(--topbar-muted-fg)", border: "1px solid var(--topbar-kbd-border)" }}>⌘</kbd>
                         <kbd className="flex items-center justify-center px-1 h-[16px] rounded-md text-[8px] font-bold font-mono"
-                            style={{ background: isLight ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.09)", color: "var(--muted-foreground)", border: `1px solid ${isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}` }}>K</kbd>
+                            style={{ background: "var(--topbar-kbd-bg)", color: "var(--topbar-muted-fg)", border: "1px solid var(--topbar-kbd-border)" }}>K</kbd>
                     </div>
                 </div>
             </div>
@@ -161,13 +172,13 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
             <div className="flex items-center gap-0.5 sm:gap-1.5 ml-auto flex-shrink-0">
                 <div className="w-px h-4 sm:h-5 mx-0.5 sm:mx-1"
-                    style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
+                    style={{ background: "var(--topbar-divider)" }} />
 
                 <div data-tour="topbar-theme" className="flex-shrink-0"><ThemeToggle /></div>
 
                 <div data-tour="topbar-settings" className="hidden xs:block">
                     <Link href="/dashboard/settings">
-                        <TopBtn title="Settings" isLight={isLight}>
+                        <TopBtn title="Settings">
                             <Settings className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]" />
                         </TopBtn>
                     </Link>
@@ -177,21 +188,23 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     <NotificationBell />
                 </div>
 
-                <div className="w-px h-4 sm:h-5 mx-0 sm:mx-0.5" style={{ background: isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.08)" }} />
+                <div className="w-px h-4 sm:h-5 mx-0 sm:mx-0.5" style={{ background: "var(--topbar-divider)" }} />
 
                 <div className="relative" ref={profileRef} data-tour="topbar-profile">
                     <button
                         onClick={() => setProfileOpen(o => !o)}
                         className="flex items-center gap-1 sm:gap-2 pl-0.5 sm:pl-1 pr-1.5 sm:pr-2.5 py-0.5 sm:py-1 rounded-full transition-all duration-200 hover:scale-[1.02]"
                         style={{
-                            background: profileOpen ? (isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.08)") : "transparent",
-                            border: `1.5px solid ${profileOpen ? (isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") : "transparent"}`,
+                            background: profileOpen ? "var(--topbar-item-hover)" : "transparent",
+                            border: `1.5px solid ${profileOpen ? "var(--topbar-item-border)" : "transparent"}`,
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)"; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "var(--topbar-item-bg)"; }}
                         onMouseLeave={e => { if (!profileOpen) e.currentTarget.style.background = "transparent"; }}
+                        onFocus={e => { e.currentTarget.style.background = "var(--topbar-item-bg)"; }}
+                        onBlur={e => { if (!profileOpen) e.currentTarget.style.background = "transparent"; }}
                     >
                         <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-[13px] font-black text-white shrink-0"
-                            style={{ background: "var(--brand-gradient)", boxShadow: "0 2px 10px rgba(108,92,231,0.4)" }}>
+                            style={{ background: "var(--brand-gradient)", boxShadow: "0 2px 10px color-mix(in srgb, var(--primary) 40%, transparent)" }}>
                             {mounted ? (user?.name?.[0] || user?.email?.[0]?.toUpperCase() || 'A') : 'A'}
                         </div>
                         <div className="hidden lg:block text-left ml-0.5">
@@ -207,8 +220,8 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
                     {profileOpen && (
                         <div className="absolute right-0 top-[calc(100%+8px)] w-56 sm:w-64 rounded-2xl shadow-2xl overflow-hidden z-[200] animate-in fade-in slide-in-from-top-2 duration-150"
-                            style={{ background: isLight ? "rgba(255,255,255,0.98)" : "rgba(12,16,28,0.98)", border: `1px solid ${isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.07)"}`, backdropFilter: "blur(20px)" }}>
-                            <div className="p-3 sm:p-4" style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.07)" : "rgba(255,255,255,0.06)"}` }}>
+                            style={{ background: "var(--topbar-dropdown-bg)", border: "1px solid var(--topbar-dropdown-border)", backdropFilter: "blur(20px)" }}>
+                            <div className="p-3 sm:p-4" style={{ borderBottom: "1px solid var(--topbar-dropdown-border)" }}>
                                 <div className="flex items-center gap-3">
                                     <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-black text-white shrink-0"
                                         style={{ background: "var(--brand-gradient)" }}>
@@ -232,7 +245,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                                         if ('action' in item) (item as any).action();
                                     }}
                                     className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-semibold transition-colors flex items-center gap-2 sm:gap-2.5"
-                                    style={{ color: "var(--foreground)", borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)"}` }}
+                                    style={{ color: "var(--topbar-fg)", borderBottom: "1px solid var(--topbar-dropdown-border)" }}
                                     onMouseEnter={e => (e.currentTarget.style.background = `${item.color}0D`)}
                                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                                     <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: item.color }} />
@@ -241,7 +254,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                             ))}
                             <button
                                 className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-semibold transition-colors flex items-center gap-2 sm:gap-2.5"
-                                style={{ color: "var(--foreground)", borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)"}` }}
+                                style={{ color: "var(--topbar-fg)", borderBottom: "1px solid var(--topbar-dropdown-border)" }}
                                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(108,92,231,0.08)")}
                                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                                 onClick={() => { setProfileOpen(false); startTour(); }}
@@ -251,7 +264,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                             </button>
                             <button className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold transition-colors"
                                 style={{ color: "var(--muted-foreground)" }}
-                                onMouseEnter={e => { e.currentTarget.style.background = isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "var(--foreground)"; }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "var(--topbar-item-bg)"; e.currentTarget.style.color = "var(--topbar-fg)"; }}
                                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--muted-foreground)"; }}
                                 onClick={handleLogout}>
                                 Sign out
@@ -264,9 +277,9 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
     );
 }
 
-function TopBtn({ children, title, onClick, active, isLight }: {
+function TopBtn({ children, title, onClick, active }: {
     children: React.ReactNode; title?: string; onClick?: () => void;
-    active?: boolean; isLight: boolean;
+    active?: boolean;
 }) {
     return (
         <button
@@ -282,6 +295,16 @@ function TopBtn({ children, title, onClick, active, isLight }: {
                 e.currentTarget.style.color = "var(--foreground)";
             }}
             onMouseLeave={e => {
+                if (!active) {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "var(--muted-foreground)";
+                }
+            }}
+            onFocus={e => {
+                e.currentTarget.style.background = "var(--topbar-item-bg)";
+                e.currentTarget.style.color = "var(--foreground)";
+            }}
+            onBlur={e => {
                 if (!active) {
                     e.currentTarget.style.background = "transparent";
                     e.currentTarget.style.color = "var(--muted-foreground)";

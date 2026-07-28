@@ -1168,7 +1168,7 @@ export default function InstagramCommentManagerPage() {
                                         <button
                                             onClick={handlePauseAllOthers}
                                             disabled={isPausingAllOthers}
-                                            className="w-full py-4 rounded-2xl bg-[var(--background)] dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] text-[11px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 disabled:opacity-50"
+                                            className="w-full py-4 rounded-2xl bg-neutral-900 dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] text-[11px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 disabled:opacity-50"
                                         >
                                             {isPausingAllOthers ? "Processing..." : "Yes, Pause all Others"}
                                         </button>

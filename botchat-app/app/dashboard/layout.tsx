@@ -89,10 +89,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         };
     }, []);
 
-    useEffect(() => {
-        // Theme and appearance are handled by ThemeProvider at the root layout level
-    }, []);
-
     // Collapse sidebar on navigation
     useEffect(() => {
         /* eslint-disable react-hooks/set-state-in-effect */
@@ -127,7 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {mobileSidebarOpen && (
                     <div
                         className="fixed inset-0 z-[55] md:hidden"
-                        style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
+                        style={{ background: "var(--background-overlay)", backdropFilter: "blur(4px)" }}
                         onClick={() => setMobileSidebarOpen(false)}
                     />
                 )}
@@ -135,7 +131,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {/* ── Sidebar: desktop always visible, mobile as drawer ── */}
                 <div
                     className={[
-                        "fixed inset-y-0 left-0 z-[60] md:relative md:flex md:z-auto",
+                        "fixed inset-y-0 left-0 z-[110] md:relative md:flex md:z-auto",
                         "transition-transform duration-300 ease-in-out",
                         mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
                     ].join(" ")}

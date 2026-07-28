@@ -548,7 +548,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div variants={itemVariants} className="space-y-0.5">
                             {!collapsed && (
                                 <div className="px-3 pb-1.5">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] dark:text-[var(--foreground)]">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)]">
                                         Administration
                                     </span>
                                 </div>
@@ -835,7 +835,8 @@ function NavAccordion({
                             zIndex: 9999,
                             background: "var(--card)",
                             borderColor: "var(--glass-border)",
-                            boxShadow: "0 20px 60px rgba(0,0,0,0.25), 0 4px 20px rgba(0,0,0,0.15)"
+                            boxShadow: "var(--shadow-card)",
+                            color: "var(--foreground)"
                         }}
                     >
                         {/* Header */}
@@ -966,7 +967,7 @@ function NavItem({
                             <TooltipTrigger asChild>
                                 <div className="absolute inset-0 z-10" aria-hidden="true" />
                             </TooltipTrigger>
-                            <TooltipContent side="right" sideOffset={10} className="bg-neutral-900 text-white border-none font-bold">
+                            <TooltipContent side="right" sideOffset={10} className="border-none font-bold" style={{ background: "#171717", color: "#ffffff" }}>
                                 {item.label}
                             </TooltipContent>
                         </Tooltip>

@@ -149,7 +149,7 @@ export default function CreateBlogPage() {
                     </div>
                 </div>
                 <button onClick={handleSubmit} disabled={loading}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[var(--background)] text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition disabled:opacity-50">
+                    className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition disabled:opacity-50">
                     {loading
                         ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         : <Send className="w-4 h-4" />}
@@ -303,7 +303,7 @@ export default function CreateBlogPage() {
 
                     {/* Submit */}
                     <button type="submit" disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--background)] text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition disabled:opacity-50">
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 transition disabled:opacity-50">
                         {loading
                             ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             : <Send className="w-4 h-4" />}

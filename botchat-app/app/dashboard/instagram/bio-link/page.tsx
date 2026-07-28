@@ -262,7 +262,7 @@ const ToggleField = ({ label, desc, icon: Icon, checked, onChange, colorClass }:
     <div className="group flex items-center justify-between p-5 rounded-[24px] bg-[var(--muted)]/50 dark:bg-[var(--card)]/[0.03] border border-[var(--border)] dark:border-white/5 hover:border-[var(--border)] dark:hover:border-white/10 transition-all">
         <div className="flex items-center gap-4">
             {Icon && (
-                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-[var(--background)]")}>
+                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-neutral-900")}>
                     <Icon size={18} />
                 </div>
             )}

@@ -13,16 +13,16 @@ export const PortfolioCanvas = ({ section, sidx, sectionsLength, isArranging, on
             {isArranging ? (
                 <div className="flex items-center gap-1.5 mr-2">
                     <button disabled={sidx === 0} onClick={() => onReorder(sidx, sidx - 1)}
-                        className="w-8 h-8 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-[var(--background)] hover:text-white transition-all border border-[var(--border)] dark:border-[var(--border)]">
+                        className="w-8 h-8 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-neutral-100 dark:hover:bg-[var(--muted)] hover:text-neutral-900 dark:hover:text-white transition-all border border-[var(--border)] dark:border-[var(--border)]">
                         <ChevronLeft size={14} />
                     </button>
                     <button disabled={sidx === sectionsLength - 1} onClick={() => onReorder(sidx, sidx + 1)}
-                        className="w-8 h-8 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-[var(--background)] hover:text-white transition-all border border-[var(--border)] dark:border-[var(--border)]">
+                        className="w-8 h-8 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] shadow-sm flex items-center justify-center disabled:opacity-30 hover:bg-neutral-100 dark:hover:bg-[var(--muted)] hover:text-neutral-900 dark:hover:text-white transition-all border border-[var(--border)] dark:border-[var(--border)]">
                         <ChevronRight size={14} />
                     </button>
                 </div>
             ) : (
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--background)] dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] shadow-sm">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-[var(--card)] text-neutral-900 dark:text-[var(--foreground)] shadow-sm">
                     <Layers size={14} />
                 </div>
             )}
