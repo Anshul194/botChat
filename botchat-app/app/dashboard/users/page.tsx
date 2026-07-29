@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { fetchUsers, toggleUserStatus, fetchUserById, createUser, assignPlanToUser } from "@/store/slices/usersSlice";
-import { fetchMyPlans } from "@/store/slices/plansSlice";
+import { fetchPlans } from "@/store/slices/plansSlice";
 import { Users, Search, Filter, MoreVertical, Shield, UserCheck, UserMinus, Mail } from "lucide-react";
 import { Phone, Globe, Calendar, ArrowUpRight, Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { AlertCircle, UserPlus, ChevronDown } from "lucide-react";
@@ -109,7 +109,7 @@ export default function UserManagementPage() {
     const dispatch = useAppDispatch();
     const { settings } = useTenantSettings();
     const { users, isLoading, selectedUser } = useAppSelector((state) => state.users);
-    const { myPlans: plans } = useAppSelector((state) => state.plans);
+    const { plans } = useAppSelector((state) => state.plans);
     const { showModal } = useModal();
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
@@ -152,7 +152,7 @@ export default function UserManagementPage() {
 
     useEffect(() => {
         dispatch(fetchUsers());
-        dispatch(fetchMyPlans());
+        dispatch(fetchPlans());
         document.title = `User Management | ${settings.appName}`;
     }, [dispatch]);
 
