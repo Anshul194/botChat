@@ -503,9 +503,10 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="flex items-center justify-center gap-5 px-6 py-4 text-xs" style={{ color: isLight ? "#94a3b8" : "#475569" }}>
-                    {["Privacy Policy", "Terms of Service", "Help"].map((t) => (
-                        <Link key={t} href="#" className="hover:underline">{t}</Link>
-                    ))}
+                    <Link href="/home/privacy_policy" className="hover:underline">Privacy Policy</Link>
+                    <Link href="/home/disclaimer" className="hover:underline">Disclaimer</Link>
+                    <Link href="/home/terms_use" className="hover:underline">Terms of Use</Link>
+                    <Link href="/home/terms_use" className="hover:underline">Terms</Link>
                 </div>
             </div>
         </div>

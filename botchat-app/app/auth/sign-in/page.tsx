@@ -20,6 +20,7 @@ import { useSocialLoginSettings } from "@/hooks/useSocialLoginSettings";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ForgotPasswordDialog } from "@/components/auth/ForgotPasswordDialog";
 
 export default function SignInPage() {
     const router = useRouter();
@@ -338,10 +339,7 @@ export default function SignInPage() {
                                         style={{ color: isLight ? "#1e1b4b" : "#e2e8f0" }}>
                                         Password
                                     </label>
-                                    <Link href="/auth/forgot-password" className="text-xs font-semibold"
-                                        style={{ color: "var(--primary)" }}>
-                                        Forgot password?
-                                    </Link>
+                                    <ForgotPasswordDialog />
                                 </div>
                                 <div className="relative">
                                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
@@ -527,9 +525,10 @@ export default function SignInPage() {
 
                 {/* Footer */}
                 <div className="flex items-center justify-center gap-5 px-6 py-5 text-xs" style={{ color: isLight ? "#94a3b8" : "#475569" }}>
-                    {["Privacy", "Terms", "Help"].map((t) => (
-                        <Link key={t} href="#" className="hover:underline transition-colors">{t}</Link>
-                    ))}
+                    <Link href="/home/privacy_policy" className="hover:underline transition-colors">Privacy Policy</Link>
+                    <Link href="/home/disclaimer" className="hover:underline transition-colors">Disclaimer</Link>
+                    <Link href="/home/terms_use" className="hover:underline transition-colors">Terms of Use</Link>
+                    <Link href="/home/terms_use" className="hover:underline transition-colors">Terms</Link>
                 </div>
             </div>
         </div>

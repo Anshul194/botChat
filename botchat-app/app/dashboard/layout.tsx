@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
+import AppFooter from "@/components/layout/AppFooter";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPlans, fetchMyPlan } from "@/store/slices/plansSlice";
@@ -157,6 +158,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <BillingWarningBanner />
                         {children}
                     </main>
+                    <AppFooter />
                 </div>
             </div>
             <RenewalPopup />
