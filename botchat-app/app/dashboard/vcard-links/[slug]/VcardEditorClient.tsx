@@ -45,7 +45,7 @@ const InputBlock = ({ label, icon: Icon, value, onChange, placeholder, type = "t
             placeholder={placeholder}
             className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl border border-[var(--border)] dark:border-[var(--border)] bg-[var(--card)] dark:bg-[var(--background)] outline-none focus:ring-1 focus:ring-primary/20 transition-all text-xs sm:text-sm" 
         />
-        {description && <p className="text-[10px] text-[var(--muted-foreground)]/70 ml-1 leading-relaxed">{description}</p>}
+        {description && <p className="text-[10px] font-medium text-[var(--muted-foreground)]/70 ml-1 leading-relaxed">{description}</p>}
     </div>
 );
 
@@ -314,7 +314,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                         </div>
                                         <div className="min-w-0">
                                             <div className="text-sm font-black text-[var(--foreground)] dark:text-white">Profile Avatar</div>
-                                            <p className="text-[10px] text-[var(--muted-foreground)]/70 uppercase tracking-widest mt-1">Recommended size 400x400</p>
+                                            <p className="text-[10px] font-medium text-[var(--muted-foreground)]/70 uppercase tracking-widest mt-1">Recommended size 400x400</p>
                                         </div>
                                     </div>
 
@@ -426,7 +426,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                                     <div key={pixel.id || pixel.pixel_id} className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[var(--muted)]/50 dark:bg-[var(--muted)]/30 border border-[var(--border)] dark:border-[var(--border)] flex items-center justify-between">
                                                         <div className="min-w-0 flex-1 mr-2">
                                                             <div className="text-sm font-bold text-[var(--foreground)] truncate">{pixel.name}</div>
-                                                            <p className="text-[11px] text-[var(--muted-foreground)] mt-1 truncate">{pixel.type} — {pixel.pixel_id_value}</p>
+                                                            <p className="text-[11px] font-medium text-[var(--muted-foreground)] mt-1 truncate">{pixel.type} — {pixel.pixel_id_value}</p>
                                                         </div>
                                                         <button
                                                             onClick={() => {
@@ -461,7 +461,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                             </button>
                                             <div>
                                                 <div className="text-xs font-bold text-[var(--foreground)]">Schedule</div>
-                                                <p className="text-[11px] text-[var(--muted-foreground)]">Configure the dates on which the link will be active.</p>
+                                                <p className="text-[11px] font-medium text-[var(--muted-foreground)]">Configure the dates on which the link will be active.</p>
                                             </div>
                                         </div>
                                         {draft.temporaryEnabled && (
@@ -499,7 +499,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                             </button>
                                             <div>
                                                 <div className="text-xs font-bold text-[var(--foreground)]">Sensitive content warning</div>
-                                                <p className="text-[11px] text-[var(--muted-foreground)]">Enable a warning message before users can view the vCard.</p>
+                                                <p className="text-[11px] font-medium text-[var(--muted-foreground)]">Enable a warning message before users can view the vCard.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -521,7 +521,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                                         >
                                             <option value="">None</option>
                                         </select>
-                                        <p className="text-[10px] text-[var(--muted-foreground)]/70">Redirect visitors to a splash page before the final destination.</p>
+                                        <p className="text-[10px] font-medium text-[var(--muted-foreground)]/70">Redirect visitors to a splash page before the final destination.</p>
                                     </div>
                                 </div>
                             )}

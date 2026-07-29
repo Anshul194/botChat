@@ -215,7 +215,7 @@ export default function EditBlogPage() {
                     </Link>
                     <div>
                         <h1 className="text-lg font-bold text-[var(--foreground)]">Edit Blog Post</h1>
-                        <p className="text-xs text-[var(--muted-foreground)]/70">Update the content and settings below</p>
+                        <p className="text-xs font-medium text-[var(--muted-foreground)]/70">Update the content and settings below</p>
                     </div>
                 </div>
                 <button onClick={handleSubmit} disabled={loading}

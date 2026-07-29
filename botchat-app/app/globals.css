@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -502,6 +502,157 @@ html.light .bg-neutral-900, html.light .bg-gray-900 { background-color: #f4f4f5 
 
 html.light input, html.light textarea, html.light select { color: #0a0a0a !important; }
 html.light input::placeholder, html.light textarea::placeholder { color: #999999 !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE READABILITY — Global small-screen font & contrast fixes
+   Ensures all text across every page is legible on mobile.
+═══════════════════════════════════════════════════════════════ */
+
+/* 1. Scale up any hardcoded tiny font sizes on small screens */
+@media (max-width: 640px) {
+  /* Upgrade 10px → 12px */
+  [class*="text-[10px]"] {
+    font-size: 0.75rem !important; /* 12px */
+    line-height: 1.4 !important;
+  }
+
+  /* Upgrade 11px → 12px */
+  [class*="text-[11px]"] {
+    font-size: 0.75rem !important; /* 12px */
+    line-height: 1.4 !important;
+  }
+
+  /* Upgrade 12px → 13px */
+  [class*="text-[12px]"] {
+    font-size: 0.8125rem !important; /* 13px */
+    line-height: 1.45 !important;
+  }
+
+  /* Upgrade 13px → 14px */
+  [class*="text-[13px]"] {
+    font-size: 0.875rem !important; /* 14px */
+    line-height: 1.5 !important;
+  }
+
+  /* Upgrade 9px → 11px (extra tiny badges) */
+  [class*="text-[9px]"],
+  [class*="text-[8px]"] {
+    font-size: 0.6875rem !important; /* 11px */
+    line-height: 1.4 !important;
+  }
+
+  /* xs text → 13px minimum */
+  .text-xs {
+    font-size: 0.8125rem !important;
+    line-height: 1.45 !important;
+  }
+
+  /* 2. Ensure muted/secondary text has enough contrast on mobile */
+  /* Remove heavy opacity reductions that kill readability */
+  [class*="text-[10px]"] [class*="opacity-"],
+  [class*="text-[11px]"] [class*="opacity-"],
+  [class*="text-[12px]"] [class*="opacity-"] {
+    opacity: 1 !important;
+  }
+
+  /* Fix muted-foreground + opacity combo classes common in this codebase */
+  [class*="text-muted-foreground"][class*="opacity-"],
+  [class*="text-neutral-500"][class*="opacity-"],
+  [class*="text-gray-500"][class*="opacity-"],
+  [class*="text-slate-500"][class*="opacity-"] {
+    opacity: 1 !important;
+  }
+
+  /* 3. Connected Account / page labels — boost font weight on mobile */
+  [class*="text-neutral-500"],
+  [class*="text-gray-500"],
+  [class*="text-slate-500"] {
+    font-weight: 500;
+  }
+
+  [class*="text-neutral-400"],
+  [class*="text-gray-400"],
+  [class*="text-slate-400"] {
+    font-weight: 500;
+  }
+
+  /* 4. Dark mode: brighten muted text on mobile for better contrast */
+  :root:not(.light) [class*="text-neutral-500"],
+  :root:not(.light) [class*="text-gray-500"],
+  :root:not(.light) [class*="text-slate-500"] {
+    color: #a1a1aa !important; /* zinc-400 — brighter than default */
+  }
+
+  :root:not(.light) [class*="text-neutral-400"],
+  :root:not(.light) [class*="text-gray-400"],
+  :root:not(.light) [class*="text-slate-400"] {
+    color: #d4d4d8 !important; /* zinc-300 — clearly readable */
+  }
+
+  /* 5. Light mode: darken muted text on mobile */
+  html.light [class*="text-neutral-500"],
+  html.light [class*="text-gray-500"],
+  html.light [class*="text-slate-500"] {
+    color: #374151 !important; /* gray-700 */
+  }
+
+  html.light [class*="text-neutral-400"],
+  html.light [class*="text-gray-400"],
+  html.light [class*="text-slate-400"] {
+    color: #4b5563 !important; /* gray-600 */
+  }
+
+  /* 6. Muted-foreground CSS variable — enhanced on mobile */
+  :root:not(.light) {
+    --muted-foreground: #b0b8c8;
+  }
+
+  html.light {
+    --muted-foreground: #374151;
+  }
+
+  /* 7. Fix opacity-based text color hacks on small text */
+  .text-\[var\(--muted-foreground\)\]\/70,
+  [style*="muted-foreground"]:not([style*="background"]) {
+    opacity: 1;
+  }
+
+  /* 8. Stats cards — ensure label text is readable */
+  .text-neutral-500.dark\:text-neutral-400,
+  h3.text-neutral-500 {
+    font-weight: 500;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE READABILITY — Inline opacity/color muted text boost
+   Targets the specific "/70", "/60", "/50" Tailwind opacity 
+   modifiers used heavily on muted small text.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Boost low-opacity muted colors to be readable */
+  .text-muted-foreground\/70,
+  .text-muted-foreground\/60,
+  .text-muted-foreground\/50 {
+    color: var(--muted-foreground) !important;
+    opacity: 1 !important;
+  }
+
+  /* Font weight boost for metadata/label text on mobile */
+  .font-medium {
+    font-weight: 500;
+  }
+
+  /* Tracking — reduce extra tight tracking on mobile for readability */
+  .tracking-widest {
+    letter-spacing: 0.08em;
+  }
+
+  .tracking-wider {
+    letter-spacing: 0.05em;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MODERN ACCENT HEADINGS — brand-gradient left bar on sections
 ═══════════════════════════════════════════════════════════════ */

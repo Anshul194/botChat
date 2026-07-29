@@ -478,10 +478,10 @@ export default function PostStudioPage() {
 
                   <div>
                     <h3 className="font-bold text-sm sm:text-lg truncate text-[var(--foreground)]">{camp.campaign_name}</h3>
-                    <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] mt-0.5">ID: #{camp.id}</p>
+                    <p className="text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-0.5">ID: #{camp.id}</p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-[var(--muted-foreground)]">
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)]">
                     <Badge variant="secondary" className="rounded-md text-[9px] sm:text-[10px] font-bold uppercase px-2 py-0.5">
                       {camp.post_type || postType}
                     </Badge>
@@ -492,13 +492,13 @@ export default function PostStudioPage() {
                   </div>
 
                   {camp.schedule_time && (
-                    <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)]">
+                    <p className="text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)]">
                       {new Date(camp.schedule_time).toLocaleString()}
                     </p>
                   )}
 
                   {camp.error_message && (
-                    <div className="text-[9px] sm:text-[10px] text-red-500 bg-red-500/5 p-2 rounded-lg border border-red-500/10 line-clamp-2 leading-relaxed">
+                    <div className="text-[9px] sm:text-[10px] font-medium text-red-500 bg-red-500/5 p-2 rounded-lg border border-red-500/10 line-clamp-2 leading-relaxed">
                       {camp.error_message}
                     </div>
                   )}
@@ -548,7 +548,7 @@ export default function PostStudioPage() {
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-semibold truncate text-[var(--foreground)]">{camp.campaign_name}</p>
-                            <p className="text-[11px] text-[var(--muted-foreground)] mt-px">#{camp.id}</p>
+                            <p className="text-[11px] font-medium text-[var(--muted-foreground)] mt-px">#{camp.id}</p>
                           </div>
                         </div>
                       </td>
@@ -560,7 +560,7 @@ export default function PostStudioPage() {
                       <td className="px-5 py-4">
                         <span className="text-sm font-medium">{camp.schedule_type === 'later' ? 'Scheduled' : 'Direct'}</span>
                         {camp.schedule_time && (
-                          <p className="text-[11px] text-[var(--muted-foreground)] mt-0.5">{new Date(camp.schedule_time).toLocaleString()}</p>
+                          <p className="text-[11px] font-medium text-[var(--muted-foreground)] mt-0.5">{new Date(camp.schedule_time).toLocaleString()}</p>
                         )}
                       </td>
                       <td className="px-5 py-4">
@@ -576,7 +576,7 @@ export default function PostStudioPage() {
                           {camp.posting_status || 'Pending'}
                         </div>
                         {camp.error_message && (
-                          <p className="mt-1 text-[10px] text-red-500 truncate max-w-[160px]" title={camp.error_message}>{camp.error_message}</p>
+                          <p className="mt-1 text-[10px] font-medium text-red-500 truncate max-w-[160px]" title={camp.error_message}>{camp.error_message}</p>
                         )}
                       </td>
                       <td className="px-5 py-4 text-right">
@@ -605,7 +605,7 @@ export default function PostStudioPage() {
                         </div>
                         <div className="min-w-0">
                           <p className="font-medium text-sm truncate text-[var(--foreground)]">{camp.campaign_name}</p>
-                          <p className="text-[10px] text-[var(--muted-foreground)] truncate">{camp.post_type || postType} &middot; {camp.schedule_type === 'later' ? 'Scheduled' : 'Now'}</p>
+                          <p className="text-[10px] font-medium text-[var(--muted-foreground)] truncate">{camp.post_type || postType} &middot; {camp.schedule_type === 'later' ? 'Scheduled' : 'Now'}</p>
                         </div>
                       </div>
                       <div className={cn(

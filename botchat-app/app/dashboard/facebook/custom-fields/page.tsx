@@ -244,7 +244,7 @@ export default function CustomFieldsPage() {
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs sm:text-[13px] font-semibold text-[var(--foreground)]">
               {fields.length}
-              <span className="text-[var(--muted-foreground)] ml-1 text-[10px] sm:text-xs">Properties</span>
+              <span className="text-[var(--muted-foreground)] ml-1 text-[10px] sm:text-xs font-medium">Properties</span>
             </span>
           </div>
           <div className="flex items-center gap-2 flex-1 w-full">

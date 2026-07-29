@@ -114,7 +114,7 @@ export default function AnalyticsPage() {
                             </div>
                             <div className="text-3xl font-bold mb-1" style={{ color: "var(--foreground)" }}>{kpi.value}</div>
                             <div className="text-sm" style={{ color: "var(--muted-foreground)" }}>{kpi.label}</div>
-                            <div className="text-[10px] mt-0.5 opacity-60" style={{ color: "var(--muted-foreground)" }}>{kpi.sub}</div>
+                            <div className="text-[10px] font-medium mt-0.5 opacity-60" style={{ color: "var(--muted-foreground)" }}>{kpi.sub}</div>
                         </div>
                     </div>
                 ))}
@@ -126,13 +126,13 @@ export default function AnalyticsPage() {
                     <div className="flex items-center justify-between mb-5">
                         <div>
                             <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>Message Volume Trend</h2>
-                            <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>Instagram vs Facebook</p>
+                            <p className="text-xs font-medium mt-0.5" style={{ color: "var(--muted-foreground)" }}>Instagram vs Facebook</p>
                         </div>
                         <div className="flex items-center gap-4">
                             {[{ label: "Instagram", color: "#ec4899" }, { label: "Facebook", color: "#3b82f6" }].map((l) => (
                                 <div key={l.label} className="flex items-center gap-1.5">
                                     <div className="w-2 h-2 rounded-full" style={{ background: l.color }} />
-                                    <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{l.label}</span>
+                                    <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{l.label}</span>
                                 </div>
                             ))}
                         </div>
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
 
                 <div className="glass-card rounded-2xl p-6">
                     <h2 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Performance Score</h2>
-                    <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>Overall automation health</p>
+                    <p className="text-xs font-medium mb-4" style={{ color: "var(--muted-foreground)" }}>Overall automation health</p>
                     <ResponsiveContainer width="100%" height={200}>
                         <RadarChart data={radarData}>
                             <PolarGrid stroke="var(--glass-border)" />
@@ -171,7 +171,7 @@ export default function AnalyticsPage() {
                     </ResponsiveContainer>
                     <div className="mt-2 text-center">
                         <div className="text-2xl font-bold gradient-text">A+ Score</div>
-                        <div className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>Above 90th percentile</div>
+                        <div className="text-xs font-medium mt-1" style={{ color: "var(--muted-foreground)" }}>Above 90th percentile</div>
                     </div>
                 </div>
             </div>
@@ -180,7 +180,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 <div className="xl:col-span-2 glass-card rounded-2xl p-6">
                     <h2 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Weekly Performance</h2>
-                    <p className="text-xs mb-5" style={{ color: "var(--muted-foreground)" }}>Replies, leads & message opens</p>
+                    <p className="text-xs font-medium mb-5" style={{ color: "var(--muted-foreground)" }}>Replies, leads & message opens</p>
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={weeklyBar} margin={{ left: -20, bottom: 0 }} barGap={4} barSize={16}>
                             <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" vertical={false} />
@@ -196,7 +196,7 @@ export default function AnalyticsPage() {
 
                 <div className="glass-card rounded-2xl p-6">
                     <h2 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Top Keywords</h2>
-                    <p className="text-xs mb-4" style={{ color: "var(--muted-foreground)" }}>Most used trigger words</p>
+                    <p className="text-xs font-medium mb-4" style={{ color: "var(--muted-foreground)" }}>Most used trigger words</p>
                     <div className="space-y-3">
                         {topKeywords.map((kw, i) => (
                             <div key={kw.word} className="flex items-center gap-3">
@@ -212,7 +212,7 @@ export default function AnalyticsPage() {
                                             background: i === 0 ? "var(--brand-gradient)" : `hsl(${260 - i * 20}, 70%, 60%)`,
                                         }} />
                                     </div>
-                                    <div className="text-[10px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>{kw.count.toLocaleString()} mentions</div>
+                                    <div className="text-[10px] font-medium mt-0.5" style={{ color: "var(--muted-foreground)" }}>{kw.count.toLocaleString()} mentions</div>
                                 </div>
                             </div>
                         ))}

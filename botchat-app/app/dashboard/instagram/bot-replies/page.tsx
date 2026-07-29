@@ -1171,7 +1171,7 @@ export default function InstagramBotRepliesPage() {
                             key={menu.id}
                             onClick={() => setActiveMenu(menu.id)}
                             className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                            style={{ color: activeMenu === menu.id ? IG_PINK : "var(--muted-foreground)" }}
+                            style={{ color: activeMenu === menu.id ? IG_PINK : "var(--foreground)" }}
                         >
                             {/* Active pill indicator */}
                             {activeMenu === menu.id && (
@@ -1186,7 +1186,7 @@ export default function InstagramBotRepliesPage() {
                             >
                                 <menu.icon className="w-[17px] h-[17px]" strokeWidth={activeMenu === menu.id ? 2.5 : 1.8} />
                             </div>
-                            <span className="text-[9.5px] font-medium leading-none" style={{ opacity: activeMenu === menu.id ? 1 : 0.5 }}>
+                            <span className="text-[11px] font-medium leading-none" style={{ opacity: activeMenu === menu.id ? 1 : 0.65 }}>
                                 {menu.label}
                             </span>
                         </button>

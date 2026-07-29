@@ -303,7 +303,7 @@ function AddSourceModal({
 
                                     <div>
                                         <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1 mb-2">
-                                            Fetch Content Configuration <span className="text-[10px] font-normal text-neutral-500">(Use selectors to specify which parts of the webpage the AI should learn from.)</span>
+                                            Fetch Content Configuration <span className="text-[10px] font-medium text-neutral-500">(Use selectors to specify which parts of the webpage the AI should learn from.)</span>
                                         </h5>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <FormField label="Selector Type">
@@ -323,7 +323,7 @@ function AddSourceModal({
 
                                     <div>
                                         <h5 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1 mb-2">
-                                            Remove Content Configuration <span className="text-[10px] font-normal text-neutral-500">(Specify areas to exclude if the webpage contains unnecessary details.)</span>
+                                            Remove Content Configuration <span className="text-[10px] font-medium text-neutral-500">(Specify areas to exclude if the webpage contains unnecessary details.)</span>
                                         </h5>
                                         <div className="space-y-3 mb-3">
                                             {urlRemoveSelectors.map((sel, idx) => (
@@ -359,7 +359,7 @@ function AddSourceModal({
                                     <div>
                                         <h4 className="text-sm font-bold text-primary uppercase tracking-wide flex flex-wrap items-center gap-2 mb-1">
                                             UPLOAD FILE
-                                            <span className="text-xs normal-case text-neutral-500 font-normal">
+                                            <span className="text-xs normal-case text-neutral-500 font-medium">
                                                 (Upload documents (PDF, Word, Excel, CSV, OpenDocument, TXT) with structured information for the bot to learn from.
                                             </span>
                                         </h4>
@@ -382,7 +382,7 @@ function AddSourceModal({
                                         </div>
                                         <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
 
-                                        <p className="text-[11px] text-neutral-500 mt-2">
+                                        <p className="text-[11px] font-medium text-neutral-500 mt-2">
                                             Accepted Formats: PDF, Word (.doc, .docx), Excel (.xls, .xlsx), CSV, OpenDocument (.ods, .odt), TXT.
                                         </p>
                                     </div>
@@ -408,10 +408,10 @@ function AddSourceModal({
                                     </div>
 
                                     <div className="space-y-1">
-                                        <p className="text-[11px] text-neutral-500">
+                                        <p className="text-[11px] font-medium text-neutral-500">
                                             Generate Raw Response: Accurate and in-depth responses without splitting content.
                                         </p>
-                                        <p className="text-[11px] text-neutral-500">
+                                        <p className="text-[11px] font-medium text-neutral-500">
                                             Generate FAQ: Optimized for efficiency, split into clear, concise sections.
                                         </p>
                                     </div>
@@ -488,8 +488,8 @@ function AddSourceModal({
                             {type === "url" ? (
                                 <>
                                     <div>
-                                        <p className="text-[10px] text-neutral-500">Generate Raw Response: Single text box extraction.</p>
-                                        <p className="text-[10px] text-neutral-500">Generate FAQ: Split content into clear FAQ entries.</p>
+                                        <p className="text-[10px] font-medium text-neutral-500">Generate Raw Response: Single text box extraction.</p>
+                                        <p className="text-[10px] font-medium text-neutral-500">Generate FAQ: Split content into clear FAQ entries.</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <button onClick={() => handleSubmit("raw_response")} disabled={isAddingSource} className="h-10 px-5 rounded-md bg-[var(--card)] border border-neutral-200 hover:bg-neutral-50 dark:bg-neutral-900 dark:border-neutral-700 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-semibold transition-colors disabled:opacity-60">{isAddingSource ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate Raw Response"}</button>
@@ -647,7 +647,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
             if (activeTab === "processed" || s.type === "manual") return (
                 <div className="px-4 py-3 max-w-[220px]">
                     <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">{s.title || "—"}</p>
-                    {(s.content) && <p className="text-[10px] text-neutral-400 truncate mt-0.5">{s.content}</p>}
+                    {(s.content) && <p className="text-[10px] font-medium text-neutral-400 truncate mt-0.5">{s.content}</p>}
                 </div>
             );
             if (s.type === "url") return <div className="px-4 py-3 max-w-[220px]"><p className="text-xs text-primary truncate font-medium">{s.url || "—"}</p></div>;
@@ -768,12 +768,12 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 {isLoadingSources || isLoadingContents ? (
                     <div className="flex items-center justify-center py-10 gap-2">
                         <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                        <span className="text-xs text-neutral-400">Loading data...</span>
+                        <span className="text-xs font-medium text-neutral-400">Loading data...</span>
                     </div>
                 ) : tabSources.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 gap-2">
                         <AlertCircle className="w-6 h-6 text-neutral-300 dark:text-neutral-600" />
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500">No data available</p>
+                        <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500">No data available</p>
                     </div>
                 ) : (
                     <div className="divide-y divide-neutral-100 dark:divide-neutral-800/60 border border-neutral-200 dark:border-neutral-800 rounded-xl">
@@ -789,7 +789,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                                         {mainCell()}
                                     </div>
                                     {activeTab === "processed" && (
-                                        <div className="flex items-center gap-2 text-[10px] text-neutral-400">
+                                        <div className="flex items-center gap-2 text-[10px] font-medium text-neutral-400">
                                             <span>{(source.source_type || "Source")} • {(source.content_format || "Raw")}</span>
                                             {source.source_reference && <span className="truncate">— {source.source_reference}</span>}
                                         </div>
@@ -826,12 +826,12 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 {isLoadingSources || isLoadingContents ? (
                     <div className="flex items-center justify-center py-10 gap-2">
                         <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                        <span className="text-xs text-neutral-400">Loading data...</span>
+                        <span className="text-xs font-medium text-neutral-400">Loading data...</span>
                     </div>
                 ) : tabSources.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10 gap-2">
                         <AlertCircle className="w-6 h-6 text-neutral-300 dark:text-neutral-600" />
-                        <p className="text-xs text-neutral-400 dark:text-neutral-500">No data available in table</p>
+                        <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500">No data available in table</p>
                     </div>
                 ) : (
                     <div className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
@@ -846,7 +846,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                                             <span className="text-[10px] font-semibold text-neutral-600 dark:text-neutral-300 uppercase shrink-0 truncate">
                                                 {source.source_type || "Source"} • {source.content_format || "Raw"}
                                             </span>
-                                            <span className="text-[10px] text-neutral-400 truncate w-full" title={source.source_reference}>
+                                            <span className="text-[10px] font-medium text-neutral-400 truncate w-full" title={source.source_reference}>
                                                 {source.source_reference || "—"}
                                             </span>
                                         </div>
@@ -873,7 +873,7 @@ function KnowledgeBaseSources({ campaign }: { campaign: Campaign }) {
                 {/* Table footer */}
                 {tabSources.length > 0 && (
                     <div className="px-4 py-2.5 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
-                        <p className="text-[10px] text-neutral-400">
+                        <p className="text-[10px] font-medium text-neutral-400">
                             Showing {tabSources.length} of {tabSources.length} entries
                         </p>
                     </div>

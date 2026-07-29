@@ -68,7 +68,7 @@ export default function BillingPage() {
                     <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
                     <div>
                         <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Payment Successful!</p>
-                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Your plan has been upgraded. Welcome to {planName}!</p>
+                        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>Your plan has been upgraded. Welcome to {planName}!</p>
                     </div>
                 </motion.div>
             )}
@@ -78,7 +78,7 @@ export default function BillingPage() {
                     <XCircle className="w-5 h-5 text-red-500 shrink-0" />
                     <div>
                         <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Payment Failed</p>
-                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Please try again or use a different payment method.</p>
+                        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>Please try again or use a different payment method.</p>
                     </div>
                 </motion.div>
             )}
@@ -88,7 +88,7 @@ export default function BillingPage() {
                     <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
                     <div>
                         <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Payment Cancelled</p>
-                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>No charges were made. You can retry whenever you&apos;re ready.</p>
+                        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>No charges were made. You can retry whenever you&apos;re ready.</p>
                     </div>
                 </motion.div>
             )}
@@ -102,7 +102,7 @@ export default function BillingPage() {
                     <h1 className="text-2xl sm:text-3xl font-black tracking-tight" style={{ color: "var(--foreground)" }}>
                         Billing & Plans
                     </h1>
-                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>
                         Manage your subscription, usage, and invoices
                     </p>
                 </div>
@@ -138,7 +138,7 @@ export default function BillingPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs sm:text-sm font-bold" style={{ color: "var(--foreground)" }}>{item.label}</p>
-                                    <p className="text-[10px] sm:text-xs truncate" style={{ color: "var(--muted-foreground)" }}>{item.desc}</p>
+                                    <p className="text-[10px] sm:text-xs font-medium truncate" style={{ color: "var(--muted-foreground)" }}>{item.desc}</p>
                                 </div>
                                 <ArrowRight className="hidden sm:block w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" style={{ color: "var(--muted-foreground)" }} />
                             </div>
@@ -174,7 +174,7 @@ export default function BillingPage() {
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs sm:text-sm truncate" style={{ color: "var(--muted-foreground)" }}>
+                                    <p className="text-xs sm:text-sm font-medium truncate" style={{ color: "var(--muted-foreground)" }}>
                                         {currentPlanData ? `${planPrice} / ${planInterval || "month"}` : "Subscribe to unlock features"}
                                         {days !== null && !expired && ` · ${Math.max(0, days)}d remaining`}
                                     </p>
@@ -251,7 +251,7 @@ export default function BillingPage() {
                                             <span className="text-2xl sm:text-4xl font-black tabular-nums leading-none" style={{ color: "var(--foreground)" }}>
                                                 {formatCurrency(plan.price)}
                                             </span>
-                                            <span className="mb-0.5 sm:mb-1.5 text-[10px] sm:text-sm" style={{ color: "var(--muted-foreground)" }}>
+                                            <span className="mb-0.5 sm:mb-1.5 text-[10px] sm:text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>
                                                 / {plan.duration} {plan.duration_type}
                                             </span>
                                         </div>
@@ -291,7 +291,7 @@ export default function BillingPage() {
                 <div className="flex items-center justify-between mb-4 sm:mb-5">
                     <div>
                         <h2 className="text-sm sm:text-base font-bold" style={{ color: "var(--foreground)" }}>Payment History</h2>
-                        <p className="text-[10px] sm:text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                        <p className="text-[10px] sm:text-xs font-medium mt-0.5" style={{ color: "var(--muted-foreground)" }}>
                             Recent transactions and receipts
                         </p>
                     </div>

@@ -36,7 +36,7 @@ export function FormField({
             </div>
             {children}
             {hint && (
-                <p className="text-xs text-neutral-400 dark:text-neutral-500 flex items-start gap-1 leading-relaxed">
+                <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500 flex items-start gap-1 leading-relaxed">
                     <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
                     {hint}
                 </p>
@@ -216,7 +216,7 @@ export default function CreateCampaignPanel({ open, onClose }: Props) {
                                     <h2 className="text-base font-bold text-neutral-900 dark:text-white truncate">
                                         New Campaign
                                     </h2>
-                                    <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                                    <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
                                         Set up a new AI training campaign
                                     </p>
                                 </div>

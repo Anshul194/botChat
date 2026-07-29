@@ -51,7 +51,7 @@ function UserMobileCard({ user, onView, onAssignPlan, onToggleStatus }: {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-black leading-none truncate">{user.name}</h4>
-                        <p className="text-[11px] text-muted-foreground mt-1 truncate flex items-center gap-1">
+                        <p className="text-[11px] font-medium text-muted-foreground mt-1 truncate flex items-center gap-1">
                             <Mail className="h-2.5 w-2.5 shrink-0" /> {user.email}
                         </p>
                         <div className="flex items-center gap-2 mt-1.5 text-[10px] font-bold text-muted-foreground">
@@ -402,7 +402,7 @@ export default function UserManagementPage() {
                                                     </Avatar>
                                                     <div>
                                                         <p className="text-sm font-black leading-none">{user.name}</p>
-                                                        <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                                                        <p className="text-[11px] font-medium text-muted-foreground mt-1 flex items-center gap-1">
                                                             <Mail className="h-2.5 w-2.5" />
                                                             {user.email}
                                                         </p>
@@ -901,7 +901,7 @@ export default function UserManagementPage() {
                                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                                 </div>
                                 {plans.length === 0 && (
-                                    <p className="text-[11px] text-amber-500">No plans found. Please create a plan first.</p>
+                                    <p className="text-[11px] font-medium text-amber-500">No plans found. Please create a plan first.</p>
                                 )}
                             </div>
                         </div>

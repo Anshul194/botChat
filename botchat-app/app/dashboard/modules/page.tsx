@@ -193,7 +193,7 @@ export default function ModulesPage() {
                         className="rounded-xl bg-muted/40 border-none h-11 font-mono"
                         required
                     />
-                    <p className="text-[10px] text-muted-foreground">Use lowercase slugs (reports, user-management)</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Use lowercase slugs (reports, user-management)</p>
                 </div>
 
                 <div className="space-y-2.5">
@@ -233,7 +233,7 @@ export default function ModulesPage() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs font-bold leading-none" style={{ color: on ? m.color : "var(--foreground)" }}>{m.label}</p>
-                                        <p className="text-[10px] text-muted-foreground mt-0.5">{m.desc}</p>
+                                        <p className="text-[10px] font-medium text-muted-foreground mt-0.5">{m.desc}</p>
                                     </div>
                                     {on && <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: m.color }} />}
                                 </button>
@@ -396,7 +396,7 @@ export default function ModulesPage() {
                                                     </div>
                                                     <div>
                                                         <h3 className="font-black text-sm font-mono tracking-tight leading-none">{mod.name}</h3>
-                                                        <p className="text-[10px] text-muted-foreground mt-0.5">ID #{mod.id}</p>
+                                                        <p className="text-[10px] font-medium text-muted-foreground mt-0.5">ID #{mod.id}</p>
                                                     </div>
                                                 </div>
                                                 <ActionsMenu id={mod.id} compact />
@@ -479,7 +479,7 @@ export default function ModulesPage() {
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-black font-mono truncate">{mod.name}</p>
-                                                    <p className="text-[10px] text-muted-foreground">#{mod.id}</p>
+                                                    <p className="text-[10px] font-medium text-muted-foreground">#{mod.id}</p>
                                                 </div>
                                             </div>
 
@@ -487,7 +487,7 @@ export default function ModulesPage() {
                                             <div className="flex flex-wrap gap-1">
                                                 {mod.permissions.length > 0
                                                     ? mod.permissions.map(p => <PermTag key={p} perm={p} size="xs" />)
-                                                    : <span className="text-[10px] text-muted-foreground italic">None</span>}
+                                                    : <span className="text-[10px] font-medium text-muted-foreground italic">None</span>}
                                             </div>
 
                                             {/* Coverage bar + fraction */}
@@ -635,7 +635,7 @@ export default function ModulesPage() {
                                             );
                                         })}
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground text-right">{selectedModule.permissions.length}/{ALL_PERMISSIONS.length} enabled</p>
+                                    <p className="text-[10px] font-medium text-muted-foreground text-right">{selectedModule.permissions.length}/{ALL_PERMISSIONS.length} enabled</p>
                                 </div>
 
                                 {/* Permission grid */}

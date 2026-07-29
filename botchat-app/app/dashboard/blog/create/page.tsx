@@ -145,7 +145,7 @@ export default function CreateBlogPage() {
                     </Link>
                     <div>
                         <h1 className="text-lg font-bold text-[var(--foreground)]">Create Blog Post</h1>
-                        <p className="text-xs text-[var(--muted-foreground)]/70">Fill in the details and publish</p>
+                        <p className="text-xs font-medium text-[var(--muted-foreground)]/70">Fill in the details and publish</p>
                     </div>
                 </div>
                 <button onClick={handleSubmit} disabled={loading}
