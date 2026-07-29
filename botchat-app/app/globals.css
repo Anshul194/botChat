@@ -504,6 +504,20 @@ html.light input, html.light textarea, html.light select { color: #0a0a0a !impor
 html.light input::placeholder, html.light textarea::placeholder { color: #999999 !important; }
 
 /* ═══════════════════════════════════════════════════════════════
+   DARK MODE — ALL GREY TEXT TO READABLE WHITE/SLATE
+   Forces every low-contrast grey Tailwind class to a brighter shade in dark mode.
+═══════════════════════════════════════════════════════════════ */
+:root:not(.light) .text-gray-500, :root:not(.light) .text-neutral-500,
+:root:not(.light) .text-slate-500, :root:not(.light) .text-zinc-500 { color: #94a3b8 !important; }
+
+:root:not(.light) .text-gray-400, :root:not(.light) .text-neutral-400,
+:root:not(.light) .text-slate-400, :root:not(.light) .text-zinc-400 { color: #cbd5e1 !important; }
+
+:root:not(.light) .text-gray-300, :root:not(.light) .text-neutral-300,
+:root:not(.light) .text-slate-300, :root:not(.light) .text-zinc-300 { color: #f1f5f9 !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════
    MOBILE READABILITY — Global small-screen font & contrast fixes
    Ensures all text across every page is legible on mobile.
 ═══════════════════════════════════════════════════════════════ */
