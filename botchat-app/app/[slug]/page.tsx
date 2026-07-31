@@ -16,7 +16,8 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
 
   if (!devDomain && host) {
     const cleanHostname = host.replace('www.', '').split(':')[0];
-    
+
+
     // Check if it is a platform subdomain
     if (cleanHostname.endsWith('megadm.chat')) {
       const prefix = cleanHostname.split('.')[0];
@@ -61,7 +62,7 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
 
   if (realIp) {
     forwardHeaders['X-Forwarded-For'] = realIp;
-    forwardHeaders['X-Real-IP']       = realIp;
+    forwardHeaders['X-Real-IP'] = realIp;
   }
 
   // ── Call Laravel ─────────────────────────────────────────────────────
@@ -103,7 +104,7 @@ export default async function SlugResolverPage({ params }: { params: Promise<{ s
     if (result.data?.ga4_pixels && result.data.ga4_pixels.length > 0) {
       return <RedirectWithTracking destination={result.destination} ga4Pixels={result.data.ga4_pixels} />;
     }
-    
+
     // Otherwise, fast server-side redirect
     redirect(result.destination);
   }
