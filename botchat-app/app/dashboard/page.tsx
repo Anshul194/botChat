@@ -244,7 +244,9 @@ export default function DashboardPage() {
     const [hiddenSections, setHiddenSections] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        dispatch(fetchMyPlan());
+        if (user && user.role !== 'SUPER_ADMIN') {
+            dispatch(fetchMyPlan());
+        }
         loadDashboard();
     }, [user]);
 
@@ -252,7 +254,12 @@ export default function DashboardPage() {
         if (!user) return;
         setIsLoading(true);
         try {
-            const role = user.role === 'ADMIN' || user.type === 'TENANT' || user.type === 'ADMIN' ? 'tenant-admin' : 'tenant-user';
+            let role = 'tenant-user';
+            if (user.role === 'SUPER_ADMIN') {
+                role = 'super-admin';
+            } else if (user.role === 'ADMIN' || user.role === 'TENANT' || user.role === 'Admin') {
+                role = 'tenant-admin';
+            }
             const response = await api.get(`/dashboard/${role}`);
             const d = response.data.data;
             const redirectItem = (item: any) => {

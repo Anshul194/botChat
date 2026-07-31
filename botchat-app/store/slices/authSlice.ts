@@ -37,7 +37,7 @@ const initialState: AuthState = {
 
 function normalizeRole(user: Record<string, unknown>) {
     const rawType = String(user?.type || '').toLowerCase().trim();
-    return rawType === 'super admin' ? 'SUPER_ADMIN' :
+    return rawType === 'super admin' || rawType === 'superadmin' ? 'SUPER_ADMIN' :
         rawType === 'reseller' ? 'RESELLER' :
             rawType === 'tenant' ? 'TENANT' :
             rawType === 'admin' ? 'ADMIN' : 'USER';
@@ -96,7 +96,11 @@ export const loginUser = createAsyncThunk(
                 if (normalizedUser) localStorage.setItem('user', JSON.stringify(normalizedUser));
             }
 
-            setTimeout(() => dispatch(fetchSubscription()), 0);
+            setTimeout(() => {
+                if (normalizedUser.role !== 'SUPER_ADMIN') {
+                    dispatch(fetchSubscription());
+                }
+            }, 0);
 
             return { token, user: normalizedUser };
         } catch (error: unknown) {
