@@ -1,157 +1,188 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { Star, CheckCircle2, TrendingUp, Sparkles, Quote } from "lucide-react";
-import { useRef } from "react";
-import Image from "next/image";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
-const testimonials = [
-  {
-    name: "Samantha Wright",
-    role: "@sam_creates",
-    quote: "LinkDM doubled my reach in weeks. I no longer spend 4h/day on DMs.",
-    result: "+240% Reach",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150",
-    detail: "Replaced 4 hours of daily manual work with a fully automated funnel. Now she focuses only on content creation."
-  },
-  {
-    name: "Alex Miller",
-    role: "@marketing_alex",
-    quote: "Collected 2,000+ emails directly from Reels. ROI is through the roof.",
-    result: "2k+ Emails",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150",
-    detail: "Used the Comment-to-Inbox trigger to build a massive email list from a single viral Reel campaign."
-  },
-  {
-    name: "Elena Rossi",
-    role: "@fashion_elena",
-    quote: "Followers think I'm replying personally. Instant delivery works!",
-    result: "10x Loyalty",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&h=150",
-    detail: "Followers get resources in 0.8s. The speed builds trust and turns casual fans into loyal buyers instantly."
-  },
-  {
-    name: "Marcus Chen",
-    role: "@marcus_vlog",
-    quote: "Automated every comment for my launch. $50k in sales via DMs alone.",
-    result: "$50k Sales",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150",
-    detail: "Sold out his first digital product in 48 hours. LinkDM handled all the 'Where do I buy?' comments automatically."
-  },
-  {
-    name: "Jessica Lee",
-    role: "@jess_tech",
-    quote: "The easiest setup I've ever seen. My conversion rate tripled overnight.",
-    result: "3x Conversions",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150",
-    detail: "Scaled her digital course sales by automating the 'link in bio' requests directly into DMs."
-  },
-  {
-    name: "David Smith",
-    role: "@dave_fitness",
-    quote: "I save 20 hours a week. It's like having a full-time assistant for DMs.",
-    result: "20h Saved/wk",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&h=150",
-    detail: "Manages a community of 500k without getting overwhelmed by the thousands of comments."
-  }
+const TESTIMONIALS = [
+    {
+        name: "Sarah Chen",
+        role: "Instagram Creator",
+        handle: "@sarahchenstyle",
+        followers: "412K followers",
+        text: "BotChat 10x'd my Instagram DM response rate overnight. I used to manually reply to hundreds of comments — now my bot handles everything while I sleep. It's insane how much time I've saved.",
+        stars: 5,
+        avatar: "SC",
+        gradient: "from-pink-400 to-rose-600",
+    },
+    {
+        name: "Marcus Rivera",
+        role: "Digital Marketing Agency",
+        handle: "@riveramarketing",
+        followers: "23 client accounts",
+        text: "Managing 20+ Facebook pages was a nightmare. With BotChat, every client account runs automated comment replies and inbox routing. Our team went from 8 people to 3 for the same output.",
+        stars: 5,
+        avatar: "MR",
+        gradient: "from-violet-400 to-purple-600",
+    },
+    {
+        name: "Priya Sharma",
+        role: "E-commerce Brand Owner",
+        handle: "@priyabeauty",
+        followers: "218K followers",
+        text: "The AI Reply Builder is a game changer. Our bot understands product questions, handles complaints intelligently, and even upsells. It's like having a senior customer support agent working 24/7.",
+        stars: 5,
+        avatar: "PS",
+        gradient: "from-cyan-400 to-blue-600",
+    },
+    {
+        name: "Jordan Kim",
+        role: "Content Creator",
+        handle: "@jordankreates",
+        followers: "1.2M followers",
+        text: "Bio Links plus Social Posting in one platform is a dream. I publish once and the automation handles the rest. My link-in-bio analytics alone have helped me negotiate better brand deals.",
+        stars: 5,
+        avatar: "JK",
+        gradient: "from-amber-400 to-orange-600",
+    },
+    {
+        name: "Anika Patel",
+        role: "SaaS Startup Founder",
+        handle: "@anikatechlife",
+        followers: "67K followers",
+        text: "The Developer API is incredibly well-documented. We integrated BotChat into our CRM in under a day. Webhooks work flawlessly — every new subscriber lands directly in our pipeline.",
+        stars: 5,
+        avatar: "AP",
+        gradient: "from-emerald-400 to-teal-600",
+    },
 ];
 
-// Duplicate for infinite effect
-const infiniteTestimonials = [...testimonials, ...testimonials];
+function Stars({ count }: { count: number }) {
+    return (
+        <div className="flex gap-1">
+            {[...Array(count)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-[#FF2D78] text-[#FF2D78]" />
+            ))}
+        </div>
+    );
+}
 
 export default function Testimonials() {
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sliderRef, { once: false, amount: 0.1 });
+    const [current, setCurrent] = useState(0);
 
-  return (
-    <section ref={sliderRef} className="py-24 bg-[#1a1235] relative overflow-hidden">
-      {/* Dark Pink Ambient Glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#e8175d] opacity-20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#e8175d] opacity-10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+    const prev = () => setCurrent(i => (i === 0 ? TESTIMONIALS.length - 1 : i - 1));
+    const next = () => setCurrent(i => (i === TESTIMONIALS.length - 1 ? 0 : i + 1));
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10 mb-16">
-        <div className="text-center space-y-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[10px] font-black tracking-widest uppercase mb-2 shadow-sm"
-          >
-            <Sparkles size={14} fill="currentColor" />
-            Social Proof
-          </motion.div>
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[0.9]">
-            The Global <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-[#ff2d78]">Success List.</span>
-          </h2>
-          <p className="text-gray-300 font-medium text-lg max-w-2xl mx-auto">
-            Scaling creators don't work harder, they automate smarter. Join the league of performant creators.
-          </p>
-        </div>
-      </div>
+    const t = TESTIMONIALS[current];
 
-      {/* Infinite Horizontal Slider */}
-      <div className="flex overflow-hidden group">
-        <motion.div
-          animate={isInView ? { x: [0, -2100] } : { x: 0 }}
-          transition={{ duration: 45, repeat: isInView ? Infinity : 0, ease: "linear" }}
-          className="flex gap-8 px-4 py-8 pointer-events-auto hover:[animation-play-state:paused]"
-        >
-          {infiniteTestimonials.map((t, i) => (
-            <div key={`${t.name}-${i}`} className="h-[400px] w-[350px] flex-shrink-0 [perspective:1200px] group/card">
-              <div className="relative h-full w-full rounded-[48px] transition-all duration-700 [transform-style:preserve-3d] group-hover/card:[transform:rotateY(180deg)]">
-
-                {/* FRONT side */}
-                <div className="absolute inset-0 h-full w-full rounded-[48px] bg-white/5 border border-white/10 p-8 backdrop-blur-xl flex flex-col items-center justify-between text-center [backface-visibility:hidden]">
-                  <div className="relative mb-6">
-                    <img src={t.avatar} alt={t.name} width={96} height={96} className="w-24 h-24 rounded-full border-4 border-white/20 shadow-2xl relative z-10 object-cover" />
-                    <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white p-1 rounded-full shadow-lg border-2 border-[#1a1235] z-20">
-                      <CheckCircle2 size={16} fill="currentColor" />
-                    </div>
-                  </div>
-
-                  <div className="flex-1 space-y-4">
-                    <div className="flex gap-1 justify-center text-pink-400">
-                      {[...Array(5)].map((_, j) => <Star key={j} className="w-3 h-3 fill-current" />)}
-                    </div>
-                    <p className="text-white font-bold text-xl leading-tight italic tracking-tight">
-                      “{t.quote}”
-                    </p>
-                  </div>
-
-                  <div className="w-full pt-8 border-t border-white/5 flex flex-col gap-3">
-                    <div className="inline-flex items-center justify-center gap-2 text-pink-400 font-black text-xs uppercase tracking-widest">
-                      <TrendingUp size={14} />
-                      {t.result}
-                    </div>
-                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                      {t.name} · {t.role}
-                    </div>
-                  </div>
+    return (
+        <section className="py-24 bg-gray-50/60 border-t border-gray-100 overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="text-center mb-14">
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/8 text-[#FF2D78] uppercase tracking-wider mb-5"
+                    >
+                        Testimonials
+                    </motion.div>
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.05 }}
+                        className="text-4xl md:text-5xl font-black text-black mb-4 tracking-tight"
+                    >
+                        Loved by{" "}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#E1306C]">
+                            creators worldwide.
+                        </span>
+                    </motion.h2>
                 </div>
 
-                {/* BACK side */}
-                <div className="absolute inset-0 h-full w-full rounded-[48px] bg-[#e8175d] p-8 text-white flex flex-col items-center justify-center text-center [backface-visibility:hidden] [transform:rotateY(180deg)] shadow-2xl">
-                  <Quote size={40} className="text-white/20 mb-6 rotate-180" />
-                  <p className="text-white font-bold text-lg leading-relaxed mb-6">
-                    {t.detail}
-                  </p>
-                  <div className="mt-4 px-6 py-2 rounded-xl bg-[#1a1235] text-white font-black text-[10px] uppercase tracking-widest shadow-xl">
-                    Full Case Study
-                  </div>
+                {/* Featured testimonial */}
+                <div className="relative max-w-3xl mx-auto">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={current}
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -40 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-white rounded-3xl border border-gray-100 shadow-xl p-10"
+                        >
+                            <div className="flex items-start gap-5 mb-6">
+                                {/* Avatar */}
+                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-black text-lg shrink-0 shadow-lg`}>
+                                    {t.avatar}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-black text-gray-900 text-lg">{t.name}</p>
+                                    <p className="text-sm font-semibold text-gray-500">{t.role}</p>
+                                    <div className="flex items-center gap-3 mt-1.5">
+                                        <span className="text-xs font-bold text-gray-400">{t.handle}</span>
+                                        <span className="text-xs font-bold text-[#FF2D78]">{t.followers}</span>
+                                    </div>
+                                </div>
+                                <Stars count={t.stars} />
+                            </div>
+
+                            <blockquote className="text-gray-700 font-medium text-lg leading-relaxed">
+                                "{t.text}"
+                            </blockquote>
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {/* Navigation */}
+                    <div className="flex items-center justify-between mt-8">
+                        <button
+                            onClick={prev}
+                            className="w-12 h-12 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:border-[#FF2D78] hover:text-[#FF2D78] transition-all shadow-sm"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+
+                        {/* Dots */}
+                        <div className="flex gap-2">
+                            {TESTIMONIALS.map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrent(i)}
+                                    className={`rounded-full transition-all ${i === current ? "w-8 h-2 bg-[#FF2D78]" : "w-2 h-2 bg-gray-200"}`}
+                                />
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={next}
+                            className="w-12 h-12 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:border-[#FF2D78] hover:text-[#FF2D78] transition-all shadow-sm"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
 
-              </div>
+                {/* Mini grid below */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-14 max-w-3xl mx-auto">
+                    {TESTIMONIALS.map((t, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setCurrent(i)}
+                            className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all ${
+                                i === current
+                                    ? "border-[#FF2D78] bg-[#FF2D78]/5 shadow-md"
+                                    : "border-gray-100 bg-white hover:border-gray-200"
+                            }`}
+                        >
+                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.gradient} flex items-center justify-center text-white font-black text-sm`}>
+                                {t.avatar}
+                            </div>
+                            <span className="text-xs font-bold text-gray-500 truncate w-full text-center">{t.name.split(" ")[0]}</span>
+                        </button>
+                    ))}
+                </div>
             </div>
-          ))}
-        </motion.div>
-      </div >
-
-      {/* Manual Controls Callout */}
-      < div className="text-center mt-12" >
-        <p className="text-gray-400 text-xs font-black uppercase tracking-[0.3em]">
-          Auto-sliding experience · Hover to flip
-        </p>
-      </div >
-    </section >
-  );
+        </section>
+    );
 }

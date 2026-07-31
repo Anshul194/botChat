@@ -1,177 +1,209 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, HelpCircle, MessageCircle, ShieldCheck, Zap, Sparkles, ArrowRight, Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Minus } from "lucide-react";
 
-const faqs = [
-  {
-    question: "Is LinkDM officially compliant with Meta (Facebook/Instagram)?",
-    answer: "Yes, 100%. We use the Official Messenger API and follow all Meta developer guidelines. Unlike 'grey-hat' scrapers, LinkDM is a verified partner tool, meaning your credentials are safe and your account remains in perfect standing.",
-    icon: <ShieldCheck className="text-emerald-500" />
-  },
-  {
-    question: "Will my Instagram account get flagged or banned for automation?",
-    answer: "Never. We've processed over 25M+ automated interactions with a 0% ban rate. Our system mimics natural human behavior with dynamic delays and 'Smart Throttling' that stays well below platform limits.",
-    icon: <Zap className="text-amber-500" />
-  },
-  {
-    question: "How fast does it actually reply to a Reel comment?",
-    answer: "Lightning fast—usually within 0.8 seconds. Speed-to-lead is our obsession. By hitting the inbox while the user is still watching your Reel, we maximize your conversion opportunity by up to 300%.",
-    icon: <Zap className="text-pink-500" />
-  },
-  {
-    question: "Can I collect emails and sync them to my CRM (Klaviyo/Mailchimp)?",
-    answer: "Absolutely. LinkDM features 'Intelligent Data Capture.' Our AI prompts users for their email naturally within the flow, validates it, and syncs it instantly to your preferred marketing tool.",
-    icon: <MessageCircle className="text-blue-500" />
-  },
-  {
-    question: "Do I need any technical skill or coding to set this up?",
-    answer: "Zero. If you can type a message, you can use LinkDM. Our 'Logic-Mapper' is a visual drag-and-drop system. You can have your first Reel fully automated in less than 3 minutes.",
-    icon: <Sparkles className="text-purple-500" />
-  },
-  {
-    question: "Can I use my own domain for my Bio Link?",
-    answer: "Absolutely. You can use your custom domain or a subdomain to maintain brand consistency. We also provide SEO-optimized slugs (e.g., botchat.com/yourname) that load in under 1 second.",
-    icon: <LinkIcon className="text-cyan-500" />
-  }
+const FAQ_CATEGORIES = [
+    {
+        label: "General",
+        faqs: [
+            {
+                q: "Is BotChat compliant with Meta's terms of service?",
+                a: "Yes. We exclusively use the official Meta Messenger & Instagram Graph APIs. Unlike unofficial bots that scrape web data, our platform is fully recognized by Meta, ensuring your account remains safe and policy-compliant."
+            },
+            {
+                q: "Which platforms does BotChat support?",
+                a: "BotChat currently supports Facebook Pages, Instagram Professional accounts, WhatsApp Business (Cloud API), and Telegram. All four channels are available from a single unified inbox."
+            },
+            {
+                q: "Do I need to install anything?",
+                a: "No. BotChat is fully cloud-hosted. Just sign up, connect your social accounts, and you're live — no downloads, no servers, no DevOps required."
+            },
+        ]
+    },
+    {
+        label: "Billing",
+        faqs: [
+            {
+                q: "How does annual billing work?",
+                a: "Annual plans are billed upfront for 12 months, giving you a 20% discount compared to the monthly rate. You can cancel anytime — unused months are refunded on a pro-rated basis."
+            },
+            {
+                q: "Can I switch plans at any time?",
+                a: "Absolutely. You can upgrade or downgrade at any time from your billing dashboard. Pro-rated adjustments are automatically calculated and applied to your next invoice."
+            },
+            {
+                q: "Is there a free trial?",
+                a: "Yes — every plan includes a free trial period with full feature access. No credit card is required to start. You only pay when you're ready to go live."
+            },
+        ]
+    },
+    {
+        label: "Features",
+        faqs: [
+            {
+                q: "What counts as a 'Message Credit'?",
+                a: "Any private message sent by the bot in response to a user action — a post comment, story mention, or DM. Comment replies themselves are unlimited on all plans and do not count against your credits."
+            },
+            {
+                q: "How does the AI Reply Builder work?",
+                a: "The AI Reply Builder uses OpenAI (GPT-4), Google Gemini, or Anthropic Claude — your choice — to understand message intent and generate on-brand responses automatically. It supports conditional logic, flow branching, and custom training data."
+            },
+            {
+                q: "Can I use my own custom domain for Bio Links?",
+                a: "Yes. You can connect your own domain to your bio link pages on eligible plans. Custom domains must be verified via DNS, and setup typically takes under 5 minutes."
+            },
+        ]
+    },
 ];
 
-function FAQItem({ item, index, isOpen, toggleOpen }: { item: typeof faqs[0], index: number, isOpen: boolean, toggleOpen: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-      className={`group relative p-6 md:p-8 rounded-[32px] border transition-all duration-500 cursor-pointer overflow-hidden ${
-        isOpen 
-          ? "bg-white border-pink-100 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.05)] mb-8" 
-          : "bg-slate-50/30 border-slate-100 hover:bg-white hover:border-pink-50 mb-4"
-      }`}
-      onClick={toggleOpen}
-    >
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute -right-20 -bottom-20 w-80 h-80 bg-pink-50/40 blur-[80px] rounded-full pointer-events-none z-0"
-          />
-        )}
-      </AnimatePresence>
-
-      <div className="relative z-10 flex items-center justify-between gap-6">
-        <div className="flex items-center gap-5">
-           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${isOpen ? 'bg-[#e8175d] text-white rotate-[360deg] shadow-lg shadow-pink-100' : 'bg-white text-slate-300 group-hover:text-pink-400 border border-slate-100'}`}>
-              {item.icon}
-           </div>
-           <h3 className={`text-xl md:text-2xl font-bold tracking-tight transition-colors duration-500 ${isOpen ? 'text-[#1a1235]' : 'text-[#1a1235]/85'}`}>
-              {item.question}
-            </h3>
-        </div>
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${isOpen ? 'bg-[#1a1235] text-white rotate-180' : 'bg-white border border-slate-100 text-slate-300 group-hover:text-pink-500'}`}>
-           {isOpen ? <Minus size={18} /> : <Plus size={18} />}
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
-            className="overflow-hidden"
-          >
-             <div className="pt-6 md:pt-8 pl-17 md:pl-17 text-lg text-[#4a3555] font-medium leading-relaxed max-w-2xl">
-              {item.answer}
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
-                className="mt-6 flex items-center gap-2 text-pink-500 text-[9px] font-bold uppercase tracking-[0.3em]"
-              >
-                Verified Solution Path <ArrowRight size={14} />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
+function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.04 }}
+            className="border-b border-gray-100 last:border-0"
+        >
+            <button
+                onClick={() => setOpen(v => !v)}
+                className="flex items-start justify-between w-full py-5 text-left gap-4 group"
+                aria-expanded={open}
+            >
+                <span className="text-base font-bold text-gray-900 group-hover:text-[#FF2D78] transition-colors leading-snug">
+                    {q}
+                </span>
+                <motion.div
+                    animate={{ rotate: open ? 45 : 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="shrink-0 mt-0.5"
+                >
+                    <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${open ? "border-[#FF2D78] bg-[#FF2D78]" : "border-gray-200 bg-white"}`}>
+                        {open
+                            ? <Minus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                            : <Plus className="w-3.5 h-3.5 text-gray-500" strokeWidth={3} />
+                        }
+                    </div>
+                </motion.div>
+            </button>
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                    >
+                        <p className="text-gray-500 font-medium leading-relaxed pb-5 pr-10 text-[15px]">
+                            {a}
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
+    );
 }
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+    const [activeCategory, setActiveCategory] = useState(FAQ_CATEGORIES[0].label);
 
-  return (
-    <section className="py-24 md:py-32 bg-white relative overflow-hidden">
-      
-      {/* Decorative Elements */}
-      <div className="absolute top-1/4 left-0 w-80 h-80 bg-pink-50/50 blur-[130px] rounded-full -translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-1/4 right-0 w-60 h-60 bg-indigo-50/30 blur-[100px] rounded-full translate-x-1/2 pointer-events-none" />
+    const active = FAQ_CATEGORIES.find(c => c.label === activeCategory) ?? FAQ_CATEGORIES[0];
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
-          
-          {/* LEFT: Heading & Help Box (Sticky on Desktop) */}
-          <div className="lg:w-1/3 lg:sticky lg:top-32 lg:h-fit">
-            <div className="space-y-8">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-bold tracking-[0.3em] uppercase"
-              >
-                <HelpCircle size={14} className="text-pink-400" /> Common Queries
-              </motion.div>
-
-              <div className="space-y-4">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a1235] tracking-tight leading-[1]">
-                  Smart <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8175d] to-[#ff2d78]">Answers</span>
-                </h2>
-                <p className="text-xl font-medium text-[#4a3555] max-w-sm">
-                  Everything you need to know about the most advanced automation platform in the game.
-                </p>
-              </div>
-
-              {/* Still have questions? */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                className="p-8 rounded-[32px] bg-[#1a1235] text-white space-y-4 shadow-xl overflow-hidden relative border border-white/5"
-              >
-                <div className="absolute -right-4 -bottom-4 opacity-10">
-                   <HelpCircle size={120} />
+    return (
+        <section className="py-24 bg-white overflow-hidden" id="faq">
+            <div className="max-w-4xl mx-auto px-6">
+                {/* Header */}
+                <div className="text-center mb-14">
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/8 text-[#FF2D78] uppercase tracking-wider mb-5"
+                    >
+                        FAQ
+                    </motion.div>
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.05 }}
+                        className="text-4xl md:text-5xl font-black text-black mb-4 tracking-tight"
+                    >
+                        Common Questions.{" "}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#E1306C]">
+                            Straight Answers.
+                        </span>
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 }}
+                        className="text-gray-500 text-lg max-w-xl mx-auto font-medium"
+                    >
+                        Everything you need to know before getting started.
+                    </motion.p>
                 </div>
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-bold tracking-tight mb-2">Still Curious?</h3>
-                  <p className="text-slate-300 text-sm font-medium mb-6">
-                    Our team is ready to help 24/7. Ask us anything directly in the DM.
-                  </p>
-                  <button className="flex items-center gap-3 bg-white text-[#1a1235] px-6 py-3 rounded-2xl font-bold text-sm hover:bg-pink-50 transition-colors">
-                     Open Live Chat <ArrowRight size={18} />
-                  </button>
+
+                {/* Category tabs */}
+                <div className="flex gap-2 justify-center mb-8 overflow-x-auto pb-1 no-scrollbar">
+                    {FAQ_CATEGORIES.map(cat => (
+                        <button
+                            key={cat.label}
+                            onClick={() => setActiveCategory(cat.label)}
+                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-black transition-all ${
+                                activeCategory === cat.label
+                                    ? "bg-[#FF2D78] text-white shadow-md shadow-[#FF2D78]/30"
+                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                            }`}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
                 </div>
-              </motion.div>
-            </div>
-          </div>
 
-          {/* RIGHT: FAQ Accordions */}
-          <div className="lg:w-2/3">
-            <div className="space-y-4">
-              {faqs.map((faq, i) => (
-                <FAQItem 
-                  key={faq.question} 
-                  item={faq} 
-                  index={i} 
-                  isOpen={openIndex === i} 
-                  toggleOpen={() => setOpenIndex(openIndex === i ? null : i)}
-                />
-              ))}
-            </div>
-          </div>
+                {/* FAQ list */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeCategory}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white rounded-3xl border border-gray-100 shadow-sm px-6 divide-y divide-gray-100"
+                    >
+                        {active.faqs.map((faq, i) => (
+                            <FAQItem key={`${activeCategory}-${i}`} q={faq.q} a={faq.a} index={i} />
+                        ))}
+                    </motion.div>
+                </AnimatePresence>
 
-        </div>
-      </div>
-    </section>
-  );
+                {/* CTA */}
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mt-12 p-8 rounded-3xl bg-gradient-to-br from-gray-950 to-gray-900 border border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-6"
+                >
+                    <div>
+                        <h4 className="text-xl font-black text-white mb-1.5">Still have questions?</h4>
+                        <p className="text-gray-400 font-medium text-sm">
+                            Chat with our team or browse the documentation.
+                        </p>
+                    </div>
+                    <div className="flex gap-3 shrink-0">
+                        <button className="px-6 py-3 rounded-full bg-white/10 text-white font-black text-sm uppercase tracking-widest hover:bg-white/20 transition-all border border-white/10">
+                            Docs
+                        </button>
+                        <button className="px-6 py-3 rounded-full bg-[#FF2D78] text-white font-black text-sm uppercase tracking-widest hover:bg-[#e7266a] transition-all shadow-lg shadow-[#FF2D78]/30">
+                            Contact Us
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
 }
