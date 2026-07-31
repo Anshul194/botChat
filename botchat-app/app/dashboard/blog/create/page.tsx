@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, Send, Plus } from "lucide-react";
+import { ChevronLeft, Send, Plus, Sparkles } from "lucide-react";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BlogEditor from "@/components/blog/BlogEditor";
+import AIBlogStudioModal, { BlogAIGenerationResult } from "@/components/blog/AIBlogStudioModal";
 
 interface Category {
     id: number;
@@ -40,6 +41,22 @@ export default function CreateBlogPage() {
     const [bannerImagePrev, setBannerImagePrev] = useState("");
     const [authorImage, setAuthorImage] = useState<File | null>(null);
     const [authorImagePrev, setAuthorImagePrev] = useState("");
+
+    const [aiStudioOpen, setAiStudioOpen] = useState(false);
+    const [editorKey, setEditorKey] = useState(0);
+
+    const handleAiApply = (result: BlogAIGenerationResult) => {
+        setTitle(result.blog.title || "");
+        if (!slug) setSlug(result.blog.slug || "");
+        setShortDescription(result.blog.short_description || "");
+        setReadingTime(result.blog.reading_time ? String(result.blog.reading_time) : "");
+        setMetaTitle(result.blog.meta_title || "");
+        setMetaDescription(result.blog.meta_description || "");
+        setMetaKeywords(result.blog.meta_keywords || "");
+        setContent(result.blog.content || "");
+        setEditorKey((k) => k + 1);
+        toast.success("Blog draft filled. Review the content before publishing.");
+    };
 
     useEffect(() => {
         api.get("/blog-categories").then((res) => {
@@ -148,13 +165,20 @@ export default function CreateBlogPage() {
                         <p className="text-xs font-medium text-[var(--muted-foreground)]/70">Fill in the details and publish</p>
                     </div>
                 </div>
-                <button onClick={handleSubmit} disabled={loading}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition disabled:opacity-50">
-                    {loading
-                        ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        : <Send className="w-4 h-4" />}
-                    Publish Post
-                </button>
+                <div className="flex items-center gap-3">
+                    <button onClick={() => setAiStudioOpen(true)}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-[var(--muted)]/60 text-[var(--foreground)] text-sm font-semibold rounded-lg hover:bg-[var(--muted)]/90 transition">
+                        <Sparkles className="w-4 h-4" />
+                        AI Blog Studio
+                    </button>
+                    <button onClick={handleSubmit} disabled={loading}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition disabled:opacity-50">
+                        {loading
+                            ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            : <Send className="w-4 h-4" />}
+                        Publish Post
+                    </button>
+                </div>
             </div>
 
             {/* Two-column layout */}
@@ -199,7 +223,7 @@ export default function CreateBlogPage() {
                     {/* Content Editor */}
                     <div>
                         <label className={lbl}>Content <span className="text-red-400">*</span></label>
-                        <BlogEditor content={content} onChange={setContent} />
+                        <BlogEditor key={editorKey} content={content} onChange={setContent} />
                     </div>
 
                     {/* Images */}
@@ -311,6 +335,12 @@ export default function CreateBlogPage() {
                     </button>
                 </div>
             </form>
+
+            <AIBlogStudioModal
+                open={aiStudioOpen}
+                onOpenChange={setAiStudioOpen}
+                onApply={handleAiApply}
+            />
         </div>
     );
 }
