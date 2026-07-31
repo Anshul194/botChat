@@ -47,326 +47,185 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
     shadow: 0.08,
     glass: true,
     glassOpacity: 0.9,
-    darkMode: true,
+    darkMode: false,
 };
 
 /* ------------------------------------------------------------------ */
-/*  PRESET THEMES — trendy, professional color + font combinations     */
-/*  Drop any of these into applyAppearanceVariables() to preview,      */
-/*  or expose them as a theme picker (e.g. THEME_PRESETS.oceanBlue).   */
+/*  PRESET THEMES — organized color-wise (Pink, Blue, Purple, Green)  */
 /* ------------------------------------------------------------------ */
 export const THEME_PRESETS: Record<string, AppearanceSettings> = {
-    // 1. Signature pink (default)
+    // 1. Pink (Signature & Landing page vibe)
     pinkSignature: { ...DEFAULT_APPEARANCE },
-
-    // 2. Cool, "enterprise SaaS" blue — Linear / Vercel-adjacent
-    oceanBlue: {
+    
+    pinkDark: {
         ...DEFAULT_APPEARANCE,
-        primary: "#2563EB",
-        secondary: "#1E1B4B",
-        tertiary: "#60A5FA",
-        buttonPrimary: "#2563EB",
-        buttonSecondary: "#1E1B4B",
-        fontFamily: "Inter, sans-serif",
-        chartColor: "#2563EB",
+        darkMode: true,
     },
 
-    // 3. Fresh, fintech-style emerald
-    emeraldFintech: {
+    // 2. Blue (Messenger / Ocean)
+    messengerBlue: {
+        ...DEFAULT_APPEARANCE,
+        primary: "#006AFF",
+        secondary: "#0084FF",
+        tertiary: "#00C6FF",
+        gradient: true,
+        buttonPrimary: "#006AFF",
+        buttonSecondary: "#00C6FF",
+        chartColor: "#006AFF",
+        fontFamily: "Inter, sans-serif",
+        darkMode: true,
+    },
+    
+    oceanBlueLight: {
+        ...DEFAULT_APPEARANCE,
+        primary: "#2563EB",
+        secondary: "#1E3A8A",
+        tertiary: "#60A5FA",
+        buttonPrimary: "#2563EB",
+        buttonSecondary: "#1E3A8A",
+        chartColor: "#2563EB",
+        fontFamily: "Inter, sans-serif",
+        darkMode: false,
+    },
+
+    // 3. Purple (Discord / Twitch / Insta)
+    instaGradient: {
+        ...DEFAULT_APPEARANCE,
+        primary: "#DD2A7B",
+        secondary: "#8134AF",
+        tertiary: "#FEDA77",
+        gradient: true,
+        gradientDirection: "radial",
+        buttonPrimary: "#DD2A7B",
+        buttonSecondary: "#F58529",
+        chartColor: "#DD2A7B",
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        darkMode: true,
+    },
+
+    discordBlurple: {
+        ...DEFAULT_APPEARANCE,
+        primary: "#5865F2",
+        secondary: "#2C2F33",
+        tertiary: "#EB459E",
+        buttonPrimary: "#5865F2",
+        buttonSecondary: "#EB459E",
+        chartColor: "#5865F2",
+        fontFamily: "Inter, sans-serif",
+        darkMode: true,
+    },
+
+    twitchPurpleLight: {
+        ...DEFAULT_APPEARANCE,
+        primary: "#9146FF",
+        secondary: "#772CE8",
+        tertiary: "#BF94FF",
+        buttonPrimary: "#9146FF",
+        buttonSecondary: "#772CE8",
+        chartColor: "#9146FF",
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        darkMode: false,
+    },
+
+    // 4. Green (Chat / WhatsApp / Fintech)
+    chatGreen: {
+        ...DEFAULT_APPEARANCE,
+        primary: "#25D366",
+        secondary: "#075E54",
+        tertiary: "#34D399",
+        gradient: true,
+        buttonPrimary: "#25D366",
+        buttonSecondary: "#128C7E",
+        chartColor: "#25D366",
+        fontFamily: "Manrope, sans-serif",
+        darkMode: true,
+    },
+
+    emeraldFintechLight: {
         ...DEFAULT_APPEARANCE,
         primary: "#10B981",
         secondary: "#064E3B",
         tertiary: "#6EE7B7",
         buttonPrimary: "#10B981",
         buttonSecondary: "#064E3B",
-        fontFamily: "Manrope, Inter, sans-serif",
         chartColor: "#10B981",
-    },
-
-    // 4. Warm, energetic sunset (great for consumer/creative apps)
-    sunsetEnergy: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#F97316",
-        secondary: "#7C2D12",
-        tertiary: "#FBBF24",
-        buttonPrimary: "#F97316",
-        buttonSecondary: "#DB2777",
-        fontFamily: "Sora, Inter, sans-serif",
-        chartColor: "#F97316",
-    },
-
-    // 5. Premium, "AI product" royal purple
-    royalPurple: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#8B5CF6",
-        secondary: "#312E81",
-        tertiary: "#C4B5FD",
-        buttonPrimary: "#8B5CF6",
-        buttonSecondary: "#312E81",
-        fontFamily: "Space Grotesk, Inter, sans-serif",
-        chartColor: "#8B5CF6",
-    },
-
-    // 6. Minimal, professional light theme (great for docs/dashboards)
-    blackProfessional: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#0F172A",
-        secondary: "#334155",
-        tertiary: "#38BDF8",
-        buttonStyle: "solid",
-        buttonPrimary: "#0F172A",
-        buttonSecondary: "#334155",
-        buttonText: "#FFFFFF",
-        fontFamily: "Inter, sans-serif",
-        chartColor: "#38BDF8",
+        fontFamily: "Manrope, sans-serif",
         darkMode: false,
-        glass: false,
-    },
-
-    // 7. High-contrast, punchy crimson (bold marketing sites)
-    crimsonBold: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#DC2626",
-        secondary: "#1C1917",
-        tertiary: "#F87171",
-        buttonPrimary: "#DC2626",
-        buttonSecondary: "#1C1917",
-        fontFamily: "Sora, Inter, sans-serif",
-        chartColor: "#DC2626",
-    },
-
-    // 8. Neon Pulse — pink + electric blue + white glow, night-mode creator theme
-    neonPulse: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#FF2E9F",     // neon pink
-        secondary: "#00C2FF",   // electric blue
-        tertiary: "#FFFFFF",    // white glow accent
-        gradient: true,
-        gradientDirection: "horizontal",
-        buttonStyle: "gradient",
-        buttonPrimary: "#FF2E9F",
-        buttonSecondary: "#00C2FF",
-        buttonText: "#FFFFFF",
-        fontFamily: "Space Grotesk, Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 600,
-        chartColor: "#FF2E9F",
-        chartMatchTheme: true,
-        borderRadius: 16,
-        shadow: 0.12,
-        glass: true,
-        glassOpacity: 0.85,
-        darkMode: true,
-    },
-
-    // 9. Instagram Gradient — purple → pink → orange, the iconic IG DM glow
-    instaGradient: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#DD2A7B",     // IG pink
-        secondary: "#8134AF",   // IG purple
-        tertiary: "#FEDA77",    // IG yellow-orange
-        gradient: true,
-        gradientDirection: "radial",
-        buttonStyle: "gradient",
-        buttonPrimary: "#DD2A7B",
-        buttonSecondary: "#F58529", // IG orange
-        buttonText: "#FFFFFF",
-        fontFamily: "Plus Jakarta Sans, Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 600,
-        chartColor: "#DD2A7B",
-        chartMatchTheme: true,
-        borderRadius: 18,
-        shadow: 0.14,
-        glass: true,
-        glassOpacity: 0.85,
-        darkMode: true,
-    },
-
-    // 10. Messenger Blue — electric blue gradient, familiar FB DM feel
-    messengerBlue: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#006AFF",     // Messenger blue
-        secondary: "#0084FF",
-        tertiary: "#00C6FF",
-        gradient: true,
-        gradientDirection: "horizontal",
-        buttonStyle: "gradient",
-        buttonPrimary: "#006AFF",
-        buttonSecondary: "#00C6FF",
-        buttonText: "#FFFFFF",
-        fontFamily: "Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 500,
-        chartColor: "#006AFF",
-        chartMatchTheme: true,
-        borderRadius: 20,
-        shadow: 0.10,
-        glass: true,
-        glassOpacity: 0.9,
-        darkMode: true,
-    },
-
-    // 11. Snap Yellow — bright, punchy, high-energy Gen Z chat vibe
-    snapYellow: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#FFFC00",     // Snapchat yellow
-        secondary: "#1A1A1A",
-        tertiary: "#FF5F1F",
-        gradient: false,
-        buttonStyle: "solid",
-        buttonPrimary: "#FFFC00",
-        buttonSecondary: "#1A1A1A",
-        buttonText: "#111827",
-        fontFamily: "Space Grotesk, Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 700,
-        chartColor: "#FFFC00",
-        chartMatchTheme: true,
-        borderRadius: 16,
-        shadow: 0.08,
-        glass: false,
-        glassOpacity: 0.9,
-        darkMode: true,
-    },
-
-    // 12. WhatsApp Green — clean, trusted, minty fresh
-    chatGreen: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#25D366",     // WhatsApp green
-        secondary: "#075E54",
-        tertiary: "#34D399",
-        gradient: true,
-        gradientDirection: "horizontal",
-        buttonStyle: "gradient",
-        buttonPrimary: "#25D366",
-        buttonSecondary: "#128C7E",
-        buttonText: "#FFFFFF",
-        fontFamily: "Manrope, Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 500,
-        chartColor: "#25D366",
-        chartMatchTheme: true,
-        borderRadius: 16,
-        shadow: 0.08,
-        glass: true,
-        glassOpacity: 0.9,
-        darkMode: true,
-    },
-
-    // 13. Twitch Purple — vibrant streamer-chat purple, playful and bright
-    twitchPurple: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#9146FF",     // Twitch purple
-        secondary: "#772CE8",
-        tertiary: "#BF94FF",
-        gradient: true,
-        gradientDirection: "horizontal",
-        buttonStyle: "gradient",
-        buttonPrimary: "#9146FF",
-        buttonSecondary: "#772CE8",
-        buttonText: "#FFFFFF",
-        fontFamily: "Space Grotesk, Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 600,
-        chartColor: "#9146FF",
-        chartMatchTheme: true,
-        borderRadius: 16,
-        shadow: 0.10,
-        glass: true,
-        glassOpacity: 0.88,
-        darkMode: true,
-    },
-
-    // 14. Discord Blurple — modern community-chat blue-violet
-    discordBlurple: {
-        ...DEFAULT_APPEARANCE,
-        primary: "#5865F2",     // Discord blurple
-        secondary: "#2C2F33",
-        tertiary: "#EB459E",    // Discord fuchsia accent
-        gradient: true,
-        gradientDirection: "horizontal",
-        buttonStyle: "gradient",
-        buttonPrimary: "#5865F2",
-        buttonSecondary: "#EB459E",
-        buttonText: "#FFFFFF",
-        fontFamily: "Inter, sans-serif",
-        fontSize: 15,
-        fontWeight: 500,
-        chartColor: "#5865F2",
-        chartMatchTheme: true,
-        borderRadius: 16,
-        shadow: 0.10,
-        glass: true,
-        glassOpacity: 0.9,
-        darkMode: true,
     },
 };
 
-/**
- * UI metadata for the creator-preset picker card grid
- * (matches the "Reels Pop / Nordic Minimal / Midnight Studio" style cards).
- * Pair each entry's `key` with THEME_PRESETS[key] to apply it.
- *
- * Ordered with the brightest / most "social DM app" presets first —
- * Instagram is the strongest default if you only want to surface one.
- */
 export const THEME_PRESET_CARDS = [
     {
-        key: "instaGradient",
-        name: "Insta Gradient",
-        description: "Purple, pink & orange DM glow",
-        swatches: ["#8134AF", "#DD2A7B", "#FEDA77"],
+        key: "pinkSignature",
+        name: "Default Pink",
+        description: "Vibrant pink, landing page light vibe",
+        swatches: ["#EC1560", "#7C1D6F", "#FF6FA3"],
         font: "PLUS JAKARTA SANS",
-        mode: "dark" as const,
+        mode: "light" as const,
     },
     {
-        key: "neonPulse",
-        name: "Neon Pulse",
-        description: "Electric pink & blue nightlife glow",
-        swatches: ["#FF2E9F", "#00C2FF", "#FFFFFF"],
-        font: "SPACE GROTESK",
+        key: "pinkDark",
+        name: "Pink Dark",
+        description: "Midnight plum & pink glow",
+        swatches: ["#EC1560", "#7C1D6F", "#FF6FA3"],
+        font: "PLUS JAKARTA SANS",
         mode: "dark" as const,
     },
     {
         key: "messengerBlue",
         name: "Messenger Blue",
-        description: "Electric blue, familiar chat feel",
+        description: "Familiar Messenger dark chat style",
         swatches: ["#006AFF", "#0084FF", "#00C6FF"],
         font: "INTER",
         mode: "dark" as const,
     },
     {
-        key: "snapYellow",
-        name: "Snap Yellow",
-        description: "Bold, high-energy Gen Z chat",
-        swatches: ["#FFFC00", "#1A1A1A", "#FF5F1F"],
-        font: "SPACE GROTESK",
-        mode: "dark" as const,
+        key: "oceanBlueLight",
+        name: "Ocean Blue Light",
+        description: "Clean enterprise blue light style",
+        swatches: ["#2563EB", "#1E3A8A", "#60A5FA"],
+        font: "INTER",
+        mode: "light" as const,
     },
     {
-        key: "chatGreen",
-        name: "Chat Green",
-        description: "Clean, trusted messaging mint",
-        swatches: ["#25D366", "#075E54", "#34D399"],
-        font: "MANROPE",
-        mode: "dark" as const,
-    },
-    {
-        key: "twitchPurple",
-        name: "Twitch Purple",
-        description: "Vibrant streamer-chat purple",
-        swatches: ["#9146FF", "#772CE8", "#BF94FF"],
-        font: "SPACE GROTESK",
+        key: "instaGradient",
+        name: "Insta Gradient",
+        description: "Iconic Instagram DM gradient glow",
+        swatches: ["#8134AF", "#DD2A7B", "#FEDA77"],
+        font: "PLUS JAKARTA SANS",
         mode: "dark" as const,
     },
     {
         key: "discordBlurple",
         name: "Discord Blurple",
-        description: "Modern community chat blue-violet",
+        description: "Modern community chat blurple",
         swatches: ["#5865F2", "#2C2F33", "#EB459E"],
         font: "INTER",
         mode: "dark" as const,
+    },
+    {
+        key: "twitchPurpleLight",
+        name: "Twitch Purple Light",
+        description: "Vibrant streamer-chat light theme",
+        swatches: ["#9146FF", "#772CE8", "#BF94FF"],
+        font: "SPACE GROTESK",
+        mode: "light" as const,
+    },
+    {
+        key: "chatGreen",
+        name: "Chat Green",
+        description: "WhatsApp dark style messaging mint",
+        swatches: ["#25D366", "#075E54", "#34D399"],
+        font: "MANROPE",
+        mode: "dark" as const,
+    },
+    {
+        key: "emeraldFintechLight",
+        name: "Emerald Light",
+        description: "Clean fintech style mint light theme",
+        swatches: ["#10B981", "#064E3B", "#6EE7B7"],
+        font: "MANROPE",
+        mode: "light" as const,
     },
 ];
 
@@ -549,42 +408,46 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
         root.classList.add("dark");
         root.classList.remove("light");
     } else {
-        // Light mode: topbar uses same color as sidebar (#fff5f8)
+        // Light mode: Dynamically tint the sidebar and topbar based on the selected primary color
+        const [r, g, b] = hexToRgb(settings.primary);
+        const mix = (c: number) => Math.round(c * 0.03 + 255 * 0.97);
+        const dynamicSidebarBg = `#${mix(r).toString(16).padStart(2, "0")}${mix(g).toString(16).padStart(2, "0")}${mix(b).toString(16).padStart(2, "0")}`;
+
         root.style.setProperty("--background", "#ffffff");
         root.style.setProperty("--foreground", "#111827");
         root.style.setProperty("--card", "#ffffff");
         root.style.setProperty("--card-foreground", "#111827");
         root.style.setProperty("--popover", "#ffffff");
         root.style.setProperty("--popover-foreground", "#111827");
-        root.style.setProperty("--sidebar", "#fff5f8");
-        root.style.setProperty("--sidebar-foreground", "#4a3459");
-        root.style.setProperty("--sidebar-border", "rgba(232,23,93,0.08)");
-        root.style.setProperty("--sidebar-accent", "rgba(232,23,93,0.10)");
-        root.style.setProperty("--sidebar-accent-foreground", "#1a1235");
+        root.style.setProperty("--sidebar", dynamicSidebarBg);
+        root.style.setProperty("--sidebar-foreground", "#1e293b");
+        root.style.setProperty("--sidebar-border", rgba(settings.primary, 0.08));
+        root.style.setProperty("--sidebar-accent", rgba(settings.primary, 0.05));
+        root.style.setProperty("--sidebar-accent-foreground", settings.primary);
         root.style.setProperty("--sidebar-primary", settings.primary);
         root.style.setProperty("--sidebar-primary-foreground", "#ffffff");
         root.style.setProperty("--primary-foreground", onPrimary);
-        root.style.setProperty("--border", "rgba(0,0,0,0.08)");
-        root.style.setProperty("--input", "rgba(0,0,0,0.06)");
-        root.style.setProperty("--secondary", "#fff5f8");
+        root.style.setProperty("--border", "rgba(0,0,0,0.06)");
+        root.style.setProperty("--input", "rgba(0,0,0,0.05)");
+        root.style.setProperty("--secondary", rgba(settings.primary, 0.04));
         root.style.setProperty("--secondary-foreground", onSecondary);
-        root.style.setProperty("--muted", "#f3f4f6");
-        root.style.setProperty("--background-overlay", "rgba(0,0,0,0.25)");
-        root.style.setProperty("--topbar-bg", "#fff5f8");
-        root.style.setProperty("--topbar-border", "rgba(232,23,93,0.08)");
-        root.style.setProperty("--topbar-item-bg", "rgba(232,23,93,0.06)");
-        root.style.setProperty("--topbar-item-border", "rgba(232,23,93,0.12)");
-        root.style.setProperty("--topbar-item-hover", "rgba(232,23,93,0.12)");
-        root.style.setProperty("--topbar-fg", "#4a3459");
-        root.style.setProperty("--topbar-muted-fg", "#9a7da0");
-        root.style.setProperty("--topbar-divider", "rgba(232,23,93,0.08)");
-        root.style.setProperty("--topbar-kbd-bg", "rgba(232,23,93,0.06)");
-        root.style.setProperty("--topbar-kbd-border", "rgba(232,23,93,0.12)");
-        root.style.setProperty("--topbar-dropdown-bg", "rgba(255,245,248,0.98)");
-        root.style.setProperty("--topbar-dropdown-border", "rgba(232,23,93,0.08)");
-        root.style.setProperty("--glass-bg", "rgba(255,255,255,0.92)");
-        root.style.setProperty("--glass-border", "rgba(232,23,93,0.08)");
-        root.style.setProperty("--muted-foreground", "#374151");
+        root.style.setProperty("--muted", "#f1f5f9");
+        root.style.setProperty("--background-overlay", "rgba(0,0,0,0.15)");
+        root.style.setProperty("--topbar-bg", "#ffffff");
+        root.style.setProperty("--topbar-border", "rgba(0,0,0,0.06)");
+        root.style.setProperty("--topbar-item-bg", rgba(settings.primary, 0.04));
+        root.style.setProperty("--topbar-item-border", rgba(settings.primary, 0.08));
+        root.style.setProperty("--topbar-item-hover", rgba(settings.primary, 0.08));
+        root.style.setProperty("--topbar-fg", "#1e293b");
+        root.style.setProperty("--topbar-muted-fg", "#64748b");
+        root.style.setProperty("--topbar-divider", "rgba(0,0,0,0.06)");
+        root.style.setProperty("--topbar-kbd-bg", "#f1f5f9");
+        root.style.setProperty("--topbar-kbd-border", "rgba(0,0,0,0.08)");
+        root.style.setProperty("--topbar-dropdown-bg", "rgba(255,255,255,0.98)");
+        root.style.setProperty("--topbar-dropdown-border", "rgba(0,0,0,0.06)");
+        root.style.setProperty("--glass-bg", "rgba(255,255,255,0.85)");
+        root.style.setProperty("--glass-border", "rgba(0,0,0,0.06)");
+        root.style.setProperty("--muted-foreground", "#475569");
         root.classList.add("light");
         root.classList.remove("dark");
     }

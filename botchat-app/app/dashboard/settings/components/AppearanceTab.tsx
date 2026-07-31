@@ -31,32 +31,30 @@ const fontOptions = [
 ];
 
 const creatorPresets = [
-    // LIGHT GROUP
-    { name: "Reels Pop", vibe: "Bold creator funnel", mode: "Light", primary: "#FF4D6D", secondary: "#7C3AED", tertiary: "#2DD4BF", fontFamily: "Poppins, sans-serif", fontSize: 16, fontWeight: 600, darkMode: false },
-    { name: "Nordic Minimal", vibe: "Clean, organic, airy", mode: "Light", primary: "#4A5568", secondary: "#A0AEC0", tertiary: "#E2E8F0", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 400, darkMode: false },
-    { name: "Matcha Zen", vibe: "Peaceful holistic brand", mode: "Light", primary: "#7C9082", secondary: "#E8EAE6", tertiary: "#D6E5D8", fontFamily: "Nunito, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
-    { name: "Neobrutalism", vibe: "Bold startup energy", mode: "Light", primary: "#000000", secondary: "#FF90E8", tertiary: "#FFC900", fontFamily: "IBM Plex Sans, sans-serif", fontSize: 16, fontWeight: 700, darkMode: false },
-    { name: "Golden Hour", vibe: "Warm photography portfolio", mode: "Light", primary: "#F6A867", secondary: "#D7816A", tertiary: "#F4EBD9", fontFamily: "Lora, serif", fontSize: 17, fontWeight: 500, darkMode: false },
-    { name: "Soft Editorial", vibe: "Course creator aesthetic", mode: "Light", primary: "#2563EB", secondary: "#EC4899", tertiary: "#14B8A6", fontFamily: "Playfair Display, serif", fontSize: 17, fontWeight: 600, darkMode: false },
-    { name: "Growth Mint", vibe: "Clean coaching brand", mode: "Light", primary: "#0EA5A4", secondary: "#2563EB", tertiary: "#F97316", fontFamily: "Nunito, sans-serif", fontSize: 17, fontWeight: 600, darkMode: false },
-    { name: "Creator Luxe", vibe: "Elegant product launch", mode: "Light", primary: "#BE185D", secondary: "#9333EA", tertiary: "#F59E0B", fontFamily: "Roboto, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
-    // DARK GROUP
-    { name: "Midnight Studio", vibe: "Premium dark creator", mode: "Dark", primary: "#8B5CF6", secondary: "#06B6D4", tertiary: "#F59E0B", fontFamily: "Montserrat, sans-serif", fontSize: 16, fontWeight: 500, darkMode: true },
-    { name: "Cyberpunk 2077", vibe: "High contrast neon glow", mode: "Dark", primary: "#FCE205", secondary: "#FF003C", tertiary: "#00FF9F", fontFamily: "Urbanist, sans-serif", fontSize: 16, fontWeight: 700, darkMode: true },
-    { name: "Velvet Royal", vibe: "Luxurious & elegant", mode: "Dark", primary: "#D4AF37", secondary: "#4A0404", tertiary: "#800020", fontFamily: "Playfair Display, serif", fontSize: 17, fontWeight: 600, darkMode: true },
-    { name: "Aurora Borealis", vibe: "Northern lights gradient", mode: "Dark", primary: "#4ade80", secondary: "#818cf8", tertiary: "#c084fc", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
-    { name: "Ocean Depths", vibe: "Tech and SaaS scale", mode: "Dark", primary: "#0EA5E9", secondary: "#0369A1", tertiary: "#38BDF8", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 500, darkMode: true },
-    { name: "Sunset Drive", vibe: "Vibrant synthwave", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "Work Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
-    { name: "Monokai Dev", vibe: "Hacker / Coder aesthetic", mode: "Dark", primary: "#A6E22E", secondary: "#F92672", tertiary: "#66D9EF", fontFamily: "Fira Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Noir Creator", vibe: "Dark black and white focus", mode: "Dark", primary: "#E5E7EB", secondary: "#9CA3AF", tertiary: "#6B7280", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
-    // SOCIAL / DM APP GROUP — bright, trendy, chat-native
-    { name: "Insta Gradient", vibe: "Iconic IG DM glow", mode: "Dark", primary: "#DD2A7B", secondary: "#8134AF", tertiary: "#FEDA77", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Messenger Blue", vibe: "Familiar, trusted chat", mode: "Dark", primary: "#006AFF", secondary: "#0084FF", tertiary: "#00C6FF", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Snap Yellow", vibe: "High-energy Gen Z chat", mode: "Dark", primary: "#FFFC00", secondary: "#1A1A1A", tertiary: "#FF5F1F", fontFamily: "Space Grotesk, sans-serif", fontSize: 15, fontWeight: 700, darkMode: true },
-    { name: "Chat Green", vibe: "Clean messaging mint", mode: "Dark", primary: "#25D366", secondary: "#075E54", tertiary: "#34D399", fontFamily: "Manrope, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Twitch Purple", vibe: "Vibrant streamer chat", mode: "Dark", primary: "#9146FF", secondary: "#772CE8", tertiary: "#BF94FF", fontFamily: "Space Grotesk, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Discord Blurple", vibe: "Modern community chat", mode: "Dark", primary: "#5865F2", secondary: "#2C2F33", tertiary: "#EB459E", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Neon Pulse", vibe: "Nightlife creator glow", mode: "Dark", primary: "#FF2E9F", secondary: "#00C2FF", tertiary: "#FFFFFF", fontFamily: "Space Grotesk, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    // --- LIGHT & WHITE GROUP ---
+    { name: "Default Pink", vibe: "Landing page signature vibe", mode: "Light", primary: "#EC1560", secondary: "#7C1D6F", tertiary: "#FF6FA3", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
+    { name: "Reels Pop", vibe: "Bold creator funnel style", mode: "Light", primary: "#FF4D6D", secondary: "#7C3AED", tertiary: "#2DD4BF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: false },
+    { name: "Ocean Blue Light", vibe: "Clean enterprise blue style", mode: "Light", primary: "#2563EB", secondary: "#1E3A8A", tertiary: "#60A5FA", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
+    { name: "Soft Editorial", vibe: "Clean editorial & content focus", mode: "Light", primary: "#1E40AF", secondary: "#DB2777", tertiary: "#3B82F6", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
+    { name: "Twitch Purple Light", vibe: "Vibrant streamer-chat theme", mode: "Light", primary: "#9146FF", secondary: "#772CE8", tertiary: "#BF94FF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: false },
+    { name: "Growth Mint Light", vibe: "Clean coaching brand style", mode: "Light", primary: "#0EA5A4", secondary: "#2563EB", tertiary: "#F97316", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
+    { name: "Emerald Fintech Light", vibe: "Fintech style mint light theme", mode: "Light", primary: "#10B981", secondary: "#064E3B", tertiary: "#6EE7B7", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
+    { name: "Retro Pop Light", vibe: "High energy neon-light hybrid", mode: "Light", primary: "#FFD300", secondary: "#FF007F", tertiary: "#00F0FF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 700, darkMode: false },
+
+    // --- DARK & NEON GROUP ---
+    { name: "Pink Dark", vibe: "Midnight plum & pink glow", mode: "Dark", primary: "#EC1560", secondary: "#7C1D6F", tertiary: "#FF6FA3", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Velvet Royal", vibe: "Luxurious deep ruby dark", mode: "Dark", primary: "#FF0055", secondary: "#3A000F", tertiary: "#FF8AA5", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Messenger Blue", vibe: "Familiar Messenger style", mode: "Dark", primary: "#006AFF", secondary: "#0084FF", tertiary: "#00C6FF", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Ocean Depths", vibe: "Tech and SaaS scale", mode: "Dark", primary: "#0EA5E9", secondary: "#0369A1", tertiary: "#38BDF8", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Insta Gradient", vibe: "Iconic Instagram DM gradient", mode: "Dark", primary: "#DD2A7B", secondary: "#8134AF", tertiary: "#FEDA77", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Discord Blurple", vibe: "Modern community chat dark", mode: "Dark", primary: "#5865F2", secondary: "#2C2F33", tertiary: "#EB459E", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Midnight Studio", vibe: "Premium dark creator studio", mode: "Dark", primary: "#8B5CF6", secondary: "#06B6D4", tertiary: "#F59E0B", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Chat Green", vibe: "WhatsApp style messaging mint", mode: "Dark", primary: "#25D366", secondary: "#075E54", tertiary: "#34D399", fontFamily: "Manrope, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Aurora Borealis", vibe: "Northern lights gradient theme", mode: "Dark", primary: "#4ade80", secondary: "#818cf8", tertiary: "#c084fc", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
+    { name: "Cyberpunk Neon", vibe: "High-contrast neon yellow & cyan", mode: "Dark", primary: "#FCE205", secondary: "#FF003C", tertiary: "#00FF9F", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 700, darkMode: true },
+    { name: "Neon Pulse", vibe: "Nightlife creator glow theme", mode: "Dark", primary: "#FF2E9F", secondary: "#00C2FF", tertiary: "#FFFFFF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Synthwave Sunset", vibe: "Vibrant hot pink & synthwave glow", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Matrix Green", vibe: "Electric acid green hacker dev", mode: "Dark", primary: "#A6E22E", secondary: "#1A1A1A", tertiary: "#66D9EF", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
 ];
 
 export default function AppearanceTab({ showModal }: { showModal: (type: string, title: string, desc: string) => void }) {
@@ -132,23 +130,16 @@ export default function AppearanceTab({ showModal }: { showModal: (type: string,
         }));
     };
 
+    const lightPresets = creatorPresets.filter(p => !p.darkMode);
+    const darkPresets = creatorPresets.filter(p => p.darkMode);
+
     return (
         <div className="space-y-8 slide-up">
             <IntegrationHeader title="Appearance & Theme" desc="Personalize color theme and typography across the dashboard." Icon={Palette} color={appearance.primary} />
-            <Section title="Color Customization" desc="Pick your brand colors or choose a creator-focused preset.">
-                <div className="flex flex-wrap gap-6 items-center mb-4">
-                    {(["primary", "secondary", "tertiary"] as const).map((key) => (
-                        <div key={key} className="flex flex-col items-center">
-                            <label className="text-xs font-semibold mb-1" style={{ color: "var(--foreground)" }}>
-                                {key.charAt(0).toUpperCase() + key.slice(1)} Color
-                            </label>
-                            <input type="color" value={appearance[key]} onChange={(e) => setAppearance({ ...appearance, [key]: e.target.value })} className="w-12 h-12 rounded-full border-2 border-[var(--glass-border)]" />
-                            <input type="text" value={appearance[key]} onChange={(e) => setAppearance({ ...appearance, [key]: e.target.value })} className="mt-1 w-20 px-2 py-1 rounded text-xs border" />
-                        </div>
-                    ))}
-                </div>
-                <div className="mb-6">
-                    <label className="text-xs font-semibold mb-3 block" style={{ color: "var(--foreground)" }}>Dashboard Mode</label>
+            
+            <Section title="Theme Modes & Presets" desc="Pick your style. Themes are separated into Light & White bases and Dark & Neon bases.">
+                <div className="mb-8">
+                    <label className="text-xs font-semibold mb-3 block" style={{ color: "var(--foreground)" }}>Manual Mode Override</label>
                     <div className="flex bg-[var(--glass-bg)] border border-[var(--glass-border)] p-1 rounded-2xl w-fit gap-1">
                         <button
                             type="button"
@@ -162,45 +153,93 @@ export default function AppearanceTab({ showModal }: { showModal: (type: string,
                         ><Moon className="w-4 h-4" /> Dark</button>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {creatorPresets.map((preset) => (
-                        <button
-                            key={preset.name}
-                            type="button"
-                            className="group relative flex flex-col items-start overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 hover:-tranblack-y-1 hover:shadow-xl dark:hover:shadow-primary/10"
-                            style={{
-                                background: preset.darkMode ? "rgba(10,10,10,0.8)" : "rgba(255,255,255,0.9)",
-                                border: `1px solid ${preset.darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
-                                boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
-                            }}
-                            onClick={() => applyCreatorPreset(preset)}
-                        >
-                            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-40" style={{ background: preset.primary }} />
-                            <div className="flex w-full items-center justify-between gap-3 relative z-10">
-                                <div>
-                                    <div className="text-base font-bold tracking-tight" style={{ color: preset.darkMode ? "#fff" : "#111" }}>{preset.name}</div>
-                                    <div className="text-xs font-medium mt-0.5 opacity-60" style={{ color: preset.darkMode ? "#fff" : "#111" }}>{preset.vibe}</div>
-                                </div>
-                                <div className="flex -space-x-1">
-                                    <span className="h-6 w-6 rounded-full border-2 border-white dark:border-black shadow-sm z-30" style={{ background: preset.primary }} />
-                                    <span className="h-6 w-6 rounded-full border-2 border-white dark:border-black shadow-sm z-20" style={{ background: preset.secondary }} />
-                                    <span className="h-6 w-6 rounded-full border-2 border-white dark:border-black shadow-sm z-10" style={{ background: preset.tertiary }} />
-                                </div>
-                            </div>
-                            <div className="mt-6 flex w-full items-center justify-between relative z-10">
-                                <div className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/10" style={{ color: preset.darkMode ? "#ddd" : "#444" }}>
-                                    {preset.fontFamily.split(",")[0]}
-                                </div>
-                                <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 border" style={{
-                                    background: preset.mode === "Dark" ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,1)",
-                                    borderColor: preset.darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                                    color: preset.darkMode ? "#fff" : "#000"
-                                }}>
-                                    <div className="h-2 w-2 rounded-full" style={{ background: preset.mode === "Dark" ? "#fff" : "#000" }} /> {preset.mode}
-                                </span>
-                            </div>
-                        </button>
-                    ))}
+
+                <div className="space-y-8">
+                    {/* LIGHT & WHITE PRESETS SECTION */}
+                    <div>
+                        <h4 className="text-sm font-bold tracking-tight uppercase mb-4 flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+                            <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400" />
+                            Light & White Presets
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {lightPresets.map((preset) => (
+                                <button
+                                    key={preset.name}
+                                    type="button"
+                                    className="group relative flex flex-col items-start overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-xl border border-[var(--glass-border)]"
+                                    style={{
+                                        background: "rgba(255,255,255,0.9)",
+                                        boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
+                                    }}
+                                    onClick={() => applyCreatorPreset(preset)}
+                                >
+                                    <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-40" style={{ background: preset.primary }} />
+                                    <div className="flex w-full items-center justify-between gap-3 relative z-10">
+                                        <div>
+                                            <div className="text-base font-bold tracking-tight text-neutral-900">{preset.name}</div>
+                                            <div className="text-xs font-medium mt-0.5 text-neutral-500">{preset.vibe}</div>
+                                        </div>
+                                        <div className="flex -space-x-1">
+                                            <span className="h-6 w-6 rounded-full border-2 border-white shadow-sm z-30" style={{ background: preset.primary }} />
+                                            <span className="h-6 w-6 rounded-full border-2 border-white shadow-sm z-20" style={{ background: preset.secondary }} />
+                                            <span className="h-6 w-6 rounded-full border-2 border-white shadow-sm z-10" style={{ background: preset.tertiary }} />
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 flex w-full items-center justify-between relative z-10">
+                                        <div className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-600">
+                                            {preset.fontFamily.split(",")[0]}
+                                        </div>
+                                        <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 border bg-white border-neutral-200 text-neutral-800">
+                                            <div className="h-2 w-2 rounded-full bg-amber-500" /> {preset.mode}
+                                        </span>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* DARK & NEON PRESETS SECTION */}
+                    <div>
+                        <h4 className="text-sm font-bold tracking-tight uppercase mb-4 flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+                            <span className="inline-block w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                            Dark & Neon Presets
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {darkPresets.map((preset) => (
+                                <button
+                                    key={preset.name}
+                                    type="button"
+                                    className="group relative flex flex-col items-start overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-xl border border-[var(--glass-border)]"
+                                    style={{
+                                        background: "rgba(15,15,20,0.95)",
+                                        boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+                                    }}
+                                    onClick={() => applyCreatorPreset(preset)}
+                                >
+                                    <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-40" style={{ background: preset.primary }} />
+                                    <div className="flex w-full items-center justify-between gap-3 relative z-10">
+                                        <div>
+                                            <div className="text-base font-bold tracking-tight text-white">{preset.name}</div>
+                                            <div className="text-xs font-medium mt-0.5 text-neutral-400">{preset.vibe}</div>
+                                        </div>
+                                        <div className="flex -space-x-1">
+                                            <span className="h-6 w-6 rounded-full border-2 border-neutral-900 shadow-sm z-30" style={{ background: preset.primary }} />
+                                            <span className="h-6 w-6 rounded-full border-2 border-neutral-900 shadow-sm z-20" style={{ background: preset.secondary }} />
+                                            <span className="h-6 w-6 rounded-full border-2 border-neutral-900 shadow-sm z-10" style={{ background: preset.tertiary }} />
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 flex w-full items-center justify-between relative z-10">
+                                        <div className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-white/10 text-neutral-300">
+                                            {preset.fontFamily.split(",")[0]}
+                                        </div>
+                                        <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 border border-neutral-800 bg-neutral-900 text-white">
+                                            <div className="h-2 w-2 rounded-full bg-indigo-500" /> {preset.mode}
+                                        </span>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </Section>
             <Section title="Typography" desc="Customize font family, size, and weight.">
