@@ -21,7 +21,7 @@ export default function TrustAndFinalCTA() {
               {security.map((item) => (
                 <div key={item} className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
                   <ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-600" />
-                  <p className="text-slate-700 font-body">{item}</p>
+                  <p className="text-slate-800 font-body">{item}</p>
                 </div>
               ))}
             </div>
@@ -36,7 +36,7 @@ export default function TrustAndFinalCTA() {
         <div className="mx-auto max-w-5xl px-6 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-rose-600">Final CTA</p>
           <h3 className="mt-3 text-4xl font-bold text-slate-900 font-display">Ready to automate your next 10,000 conversations?</h3>
-          <p className="mx-auto mt-4 max-w-2xl text-slate-600 font-body">Start free, launch your first workflow today, and scale without increasing support headcount.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-slate-700 font-body">Start free, launch your first workflow today, and scale without increasing support headcount.</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <a href="/auth/sign-up" className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-300/40 transition hover:bg-rose-700">
               Start free trial

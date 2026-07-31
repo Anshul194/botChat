@@ -81,14 +81,14 @@ export default function BlogSection() {
                 </div>
 
                 <div className="p-8 flex flex-col flex-1">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">
                     {/* TODO: Replace 'en-US' with tenant locale from settings.locale */}
                     {new Date(post.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                   <h3 className="text-2xl font-black text-gray-900 leading-tight mb-4 group-hover:text-[#FF2D78] transition-colors line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-8 flex-1 line-clamp-3">
+                  <p className="text-gray-600 text-base leading-relaxed mb-8 flex-1 line-clamp-3">
                     {post.short_description || post.content?.replace(/<[^>]+>/g, '') || "Read full article..."}
                   </p>
 

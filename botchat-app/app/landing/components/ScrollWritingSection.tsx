@@ -363,10 +363,10 @@ function RightPanel({ stage }: { stage: number }) {
           key={stage + "d"}
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.3, delay: 0.08 }}
-          style={{ color: "#6b5780", fontSize: 13, lineHeight: 1.7, marginBottom: 20 }}
-        >
-          {s.detail}
-        </motion.p>
+            style={{ color: "#4a3a5e", fontSize: 14, lineHeight: 1.7, marginBottom: 20 }}
+          >
+            {s.detail}
+          </motion.p>
       </AnimatePresence>
 
       {/* Stat pill */}
@@ -407,7 +407,7 @@ function RightPanel({ stage }: { stage: number }) {
             }}>{f.icon}</div>
             <div>
               <div style={{ color: "#1a1235", fontSize: 12, fontWeight: 700 }}>{f.title}</div>
-              <div style={{ color: "#7a4d73", fontSize: 11, marginTop: 1 }}>{f.desc}</div>
+              <div style={{ color: "#5a4a66", fontSize: 11, marginTop: 1 }}>{f.desc}</div>
             </div>
           </motion.div>
         ))}

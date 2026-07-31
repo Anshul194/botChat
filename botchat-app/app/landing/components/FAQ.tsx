@@ -72,7 +72,7 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                 className="flex items-start justify-between w-full py-5 text-left gap-4 group"
                 aria-expanded={open}
             >
-                <span className="text-base font-bold text-gray-900 group-hover:text-[#FF2D78] transition-colors leading-snug">
+                <span className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-[#FF2D78] transition-colors leading-snug">
                     {q}
                 </span>
                 <motion.div
@@ -97,7 +97,7 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                         transition={{ duration: 0.22, ease: "easeInOut" }}
                         className="overflow-hidden"
                     >
-                        <p className="text-gray-500 font-medium leading-relaxed pb-5 pr-10 text-[15px]">
+                        <p className="text-gray-600 font-medium leading-relaxed pb-5 pr-10 text-base">
                             {a}
                         </p>
                     </motion.div>
@@ -142,7 +142,7 @@ export default function FAQ() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-lg max-w-xl mx-auto font-medium"
+                        className="text-gray-600 text-lg max-w-xl mx-auto font-medium"
                     >
                         Everything you need to know before getting started.
                     </motion.p>
@@ -190,7 +190,7 @@ export default function FAQ() {
                 >
                     <div>
                         <h4 className="text-xl font-black text-white mb-1.5">Still have questions?</h4>
-                        <p className="text-gray-400 font-medium text-sm">
+                        <p className="text-gray-500 font-medium text-sm">
                             Chat with our team or browse the documentation.
                         </p>
                     </div>

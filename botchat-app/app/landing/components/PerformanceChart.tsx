@@ -55,7 +55,7 @@ export default function PerformanceChart() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8175d] to-[#ff2d78]">Start scaling.</span>
             </h2>
 
-            <p className="text-[#6b5780] text-xl leading-relaxed font-medium max-w-lg">
+            <p className="text-[#4a3a5e] text-xl leading-relaxed font-medium max-w-lg">
               Manual management is a lead graveyard. While you're typing, your competitors are closing. 
               <span className="text-[#1a1235] font-bold"> LinkDM handles 100% of your interactions </span> 
               to turn every "how do I get this?" into a conversion.
@@ -68,7 +68,7 @@ export default function PerformanceChart() {
                 </div>
                 <div>
                   <h4 className="font-black text-[#1a1235] text-lg uppercase tracking-tight">Zero Leaks</h4>
-                  <p className="text-[#7a4d73] text-sm">Every single comment is tracked and DM'd instantly. No one falls through the cracks.</p>
+                  <p className="text-[#5a4a66] text-[15px]">Every single comment is tracked and DM'd instantly. No one falls through the cracks.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -77,7 +77,7 @@ export default function PerformanceChart() {
                 </div>
                 <div>
                   <h4 className="font-black text-[#1a1235] text-lg uppercase tracking-tight">3x Conversion</h4>
-                  <p className="text-[#7a4d73] text-sm">Speed to lead is king. By replying in 0.8s, conversion rates skyrocket by over 300%.</p>
+                  <p className="text-[#5a4a66] text-[15px]">Speed to lead is king. By replying in 0.8s, conversion rates skyrocket by over 300%.</p>
                 </div>
               </div>
             </div>

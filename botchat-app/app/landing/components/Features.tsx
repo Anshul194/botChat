@@ -113,7 +113,7 @@ export default function Features() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-lg max-w-2xl mx-auto font-medium"
+                        className="text-gray-600 text-lg max-w-2xl mx-auto font-medium"
                     >
                         150+ features across 7 powerful modules — powered directly from our live feature registry.
                     </motion.p>
@@ -136,7 +136,7 @@ export default function Features() {
                                     <span className="text-2xl">{group.icon}</span>
                                     <div>
                                         <h3 className="text-base font-black text-gray-900">{group.title}</h3>
-                                        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mt-0.5">
+                                        <p className="text-[11px] text-gray-500 uppercase tracking-widest font-bold mt-0.5">
                                             {entries.length} features
                                         </p>
                                     </div>
@@ -155,7 +155,7 @@ export default function Features() {
                                             </li>
                                         ))}
                                         {entries.length > 8 && (
-                                            <li className="text-xs font-bold text-gray-400 pl-6">
+                                            <li className="text-sm font-bold text-gray-500 pl-6">
                                                 +{entries.length - 8} more features
                                             </li>
                                         )}

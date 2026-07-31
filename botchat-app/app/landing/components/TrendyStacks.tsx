@@ -48,7 +48,7 @@ function IntegrationBadge({ item, delay }: { item: typeof INTEGRATIONS[0]; delay
                     </span>
                 )}
             </div>
-            <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 transition-colors">{item.name}</span>
+            <span className="text-sm font-bold text-gray-600 group-hover:text-gray-900 transition-colors">{item.name}</span>
         </motion.div>
     );
 }
@@ -67,7 +67,7 @@ export default function TrendyStacks() {
                     {STATS.map((stat, i) => (
                         <div key={i} className="text-center p-4 rounded-2xl bg-gray-50 border border-gray-100">
                             <p className="text-2xl font-black text-black mb-1">{stat.value}</p>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</p>
                         </div>
                     ))}
                 </motion.div>
@@ -99,7 +99,7 @@ export default function TrendyStacks() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-lg max-w-xl mx-auto font-medium"
+                        className="text-gray-600 text-lg max-w-xl mx-auto font-medium"
                     >
                         Native integrations with the platforms and AI models your team already relies on.
                     </motion.p>
@@ -116,7 +116,7 @@ export default function TrendyStacks() {
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.5 }}
-                    className="text-center text-xs text-gray-400 font-bold uppercase tracking-widest mt-8"
+                    className="text-center text-[13px] text-gray-500 font-bold uppercase tracking-widest mt-8"
                 >
                     More integrations added regularly
                 </motion.p>

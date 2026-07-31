@@ -38,7 +38,7 @@ export default function Blogs() {
             <h2 className="text-4xl font-bold font-display text-black mb-4">
               Insights & <span className="text-[#FF2D78]">Education</span>
             </h2>
-            <p className="text-gray-500 font-body">Master the art of automation with our expert guides and reports.</p>
+            <p className="text-gray-600 font-body">Master the art of automation with our expert guides and reports.</p>
           </div>
           <Link href="/blog" className="hidden md:flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-50 text-black font-bold font-display border border-gray-100 hover:bg-gray-100 transition-all group">
             View All Posts
@@ -71,7 +71,7 @@ export default function Blogs() {
                 <h3 className="text-xl font-bold font-display text-black group-hover:text-[#FF2D78] transition-colors duration-300">
                   {post.title}
                 </h3>
-                <p className="text-gray-500 text-sm font-body leading-relaxed line-clamp-2">
+                <p className="text-gray-600 text-sm font-body leading-relaxed line-clamp-2">
                   {post.description}
                 </p>
                 <div className="flex items-center gap-2 pt-2 text-[#FF2D78] font-bold text-sm font-display group-hover:gap-3 transition-all">

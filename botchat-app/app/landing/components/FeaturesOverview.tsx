@@ -122,7 +122,7 @@ export default function FeaturesOverview() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-lg max-w-2xl mx-auto font-medium"
+                        className="text-gray-600 text-lg max-w-2xl mx-auto font-medium"
                     >
                         Everything you need to automate your social presence and turn followers into loyal customers — in one workspace.
                     </motion.p>
@@ -157,8 +157,8 @@ export default function FeaturesOverview() {
                                     </div>
 
                                     <h3 className="text-lg font-black text-gray-900 mb-1 group-hover:text-black">{mod.name}</h3>
-                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{mod.tagline}</p>
-                                    <p className="text-sm text-gray-500 font-medium leading-relaxed flex-1">{mod.description}</p>
+                                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">{mod.tagline}</p>
+                                    <p className="text-[15px] text-gray-600 font-medium leading-relaxed flex-1">{mod.description}</p>
 
                                     <div className="flex items-center gap-1 mt-5 text-xs font-bold text-[#FF2D78] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                         Explore

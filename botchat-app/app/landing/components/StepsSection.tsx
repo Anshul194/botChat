@@ -74,7 +74,7 @@ export default function StepsSection() {
                    <span className="text-4xl font-black text-gray-50 tabular-nums select-none group-hover:text-pink-50 transition-colors">0{i+1}</span>
                    <h3 className="text-2xl font-black text-[#1a1235] tracking-tight">{step.title}</h3>
                 </div>
-                <p className="text-[#6b5780] leading-relaxed font-medium">
+                <p className="text-[#4a3a5e] text-base leading-relaxed font-medium">
                   {step.desc}
                 </p>
               </div>

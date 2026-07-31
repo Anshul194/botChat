@@ -28,7 +28,7 @@ export default function Footer() {
               <span className="text-2xl font-bold tracking-tighter">botChat<span className="text-pink-500">.</span></span>
             </div>
 
-            <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-sm">
+            <p className="text-slate-300 text-lg font-medium leading-relaxed max-w-sm">
               The world's most advanced <span className="text-white hover:text-pink-400 cursor-default transition-colors duration-300">automation engine</span> for social growth and precision conversion.
             </p>
 
@@ -59,7 +59,7 @@ export default function Footer() {
                 <ul className="space-y-4">
                   {['Comment Strikers', 'DM Funnels', 'Data Mining', 'AI Automation'].map((link) => (
                     <li key={link}>
-                      <Link href="#" className="text-slate-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center gap-2 group">
+                      <Link href="#" className="text-slate-300 hover:text-white transition-all duration-300 text-[15px] font-medium flex items-center gap-2 group">
                         <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 text-pink-500">—</span>
                         {link}
                       </Link>
@@ -78,7 +78,7 @@ export default function Footer() {
                     { n: 'Documentation', h: '#' }
                   ].map((link) => (
                     <li key={link.n}>
-                      <Link href={link.h} className="text-slate-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center gap-2 group">
+                      <Link href={link.h} className="text-slate-300 hover:text-white transition-all duration-300 text-[15px] font-medium flex items-center gap-2 group">
                         <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 text-pink-500">—</span>
                         {link.n}
                       </Link>
@@ -94,10 +94,10 @@ export default function Footer() {
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                     <span className="text-xs font-bold text-white tracking-widest uppercase">System Operational</span>
                   </div>
-                  <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest">
+                  <p className="text-slate-300 text-[11px] uppercase font-bold tracking-widest">
                     All official APIs running at peak speed.
                   </p>
-                  <button className="flex items-center gap-2 text-pink-500 text-[10px] font-bold uppercase tracking-widest group-hover:gap-3 transition-all duration-300">
+                  <button className="flex items-center gap-2 text-pink-400 text-[11px] font-bold uppercase tracking-widest group-hover:gap-3 transition-all duration-300">
                     View Status <ArrowRight size={12} />
                   </button>
                 </div>
@@ -110,7 +110,7 @@ export default function Footer() {
         {/* BOTTOM SECTION: Legal & Local */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-12 pl-2">
 
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 text-[11px] md:text-xs font-bold uppercase tracking-widest text-slate-300">
             <p className="text-center md:text-left">&copy; {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
 <div className="flex flex-wrap justify-center gap-x-6 md:gap-x-8 gap-y-3">
                <Link href="/home/privacy_policy" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</Link>

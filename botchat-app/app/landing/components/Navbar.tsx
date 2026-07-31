@@ -67,7 +67,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
             <Link
               key={link.name}
               href={link.href}
-              className={`text-sm font-semibold transition-all hover:scale-105 active:scale-95 ${useLight ? "text-gray-600 hover:text-[#FF2D78]" : "text-white/60 hover:text-white"
+              className={`text-sm font-bold transition-all hover:scale-105 active:scale-95 ${useLight ? "text-gray-600 hover:text-[#FF2D78]" : "text-white/85 hover:text-white"
                 }`}
             >
               {link.name}

@@ -80,7 +80,7 @@ export default function BioLinkShowcase() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-gray-500 text-lg md:text-xl leading-relaxed mb-12 max-w-xl"
+              className="text-gray-600 text-lg md:text-xl leading-relaxed mb-12 max-w-xl"
             >
               Stop sending people to dead-end links. Create a premium, interactive landing page that showcases everything you do in seconds.
             </motion.p>
@@ -102,7 +102,7 @@ export default function BioLinkShowcase() {
                     <feature.icon className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-bold text-black mb-2">{feature.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -156,7 +156,7 @@ export default function BioLinkShowcase() {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Live Clicks</span>
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live Clicks</span>
                 </div>
                 <div className="text-2xl font-bold text-black tracking-tighter">1,284</div>
                 <div className="text-[10px] text-green-600 font-bold">+12% from yesterday</div>

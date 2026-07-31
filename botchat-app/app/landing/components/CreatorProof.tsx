@@ -197,7 +197,7 @@ export default function CreatorProof() {
           <motion.p
             {...FADE_UP}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-5 text-lg md:text-xl text-slate-500 max-w-3xl mx-auto font-medium leading-relaxed"
+            className="mt-5 text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium leading-relaxed"
           >
             Powering compliant, high-conversion Instagram & Facebook automation for top creators, global brands, and every niche in between.
           </motion.p>
@@ -263,7 +263,7 @@ export default function CreatorProof() {
         >
           <div className="flex items-center gap-3 mb-5 px-1 justify-center">
             <div className="h-px flex-1 bg-gradient-to-l from-rose-200/60 to-transparent max-w-20" />
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">Across Every Niche</h3>
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em]">Across Every Niche</h3>
             <div className="h-px flex-1 bg-gradient-to-r from-rose-200/60 to-transparent max-w-20" />
           </div>
           <InfiniteMarquee
@@ -302,7 +302,7 @@ export default function CreatorProof() {
               </p>
             </div>
             <div className="flex-shrink-0 rounded-2xl bg-white border border-emerald-200/80 px-8 py-7 text-center min-w-[200px] shadow-md shadow-emerald-900/5">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Active Users</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Active Users</p>
               <p className="text-4xl md:text-5xl font-black text-emerald-600 mt-2 tracking-tight">47,000+</p>
               <div className="mt-3 flex items-center justify-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

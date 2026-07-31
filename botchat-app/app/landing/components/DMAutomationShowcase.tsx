@@ -402,9 +402,9 @@ export default function DMAutomationShowcase() {
                       <f.icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className={`text-xs font-black uppercase tracking-wider mb-1 ${isActive ? 'text-[#FF2D78]' : 'text-white/40'}`}>Step {f.step}</div>
+                      <div className={`text-xs font-black uppercase tracking-wider mb-1 ${isActive ? 'text-[#FF2D78]' : 'text-white/60'}`}>Step {f.step}</div>
                       <h4 className="text-white font-bold text-[15px] mb-1">{f.title}</h4>
-                      <p className="text-white/60 text-sm leading-relaxed">{f.description}</p>
+                      <p className="text-white/80 text-sm leading-relaxed">{f.description}</p>
                     </div>
                   </div>
                 )

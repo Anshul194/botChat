@@ -83,7 +83,7 @@ export default function Pricing() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-500 text-lg max-w-xl mx-auto font-medium mb-8"
+                        className="text-gray-600 text-lg max-w-xl mx-auto font-medium mb-8"
                     >
                         Start free. Scale when you need to.
                     </motion.p>
@@ -145,7 +145,7 @@ export default function Pricing() {
                                     <div className="mb-6">
                                         <h3 className="text-2xl font-black mb-1">{plan.name}</h3>
                                         {plan.description && (
-                                            <p className={`text-sm font-medium ${isPopular ? "text-gray-400" : "text-gray-500"}`}>
+                                            <p className={`text-[15px] font-medium ${isPopular ? "text-gray-300" : "text-gray-600"}`}>
                                                 {plan.description}
                                             </p>
                                         )}
@@ -158,7 +158,7 @@ export default function Pricing() {
                                                 className="flex items-end gap-1.5 mt-5"
                                             >
                                                 <span className="text-5xl font-black tracking-tight">₹{displayPrice}</span>
-                                                <span className={`text-sm font-bold mb-2 ${isPopular ? "text-gray-500" : "text-gray-400"}`}>
+                                                <span className={`text-sm font-bold mb-2 ${isPopular ? "text-gray-400" : "text-gray-500"}`}>
                                                     / {plan.duration_type}
                                                 </span>
                                             </motion.div>

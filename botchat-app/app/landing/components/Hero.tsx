@@ -380,9 +380,9 @@ export default function Hero() {
           </h1>
 
           {/* Body */}
-          <p className="hero-text-elem text-base md:text-lg leading-relaxed max-w-md"
-            style={{ color: "rgba(240,220,240,.75)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400 }}>
-            The ultimate tool to <span className="text-white font-medium">convert comments &rarr; customers</span>.
+          <p className="hero-text-elem text-lg md:text-xl leading-relaxed max-w-md font-medium"
+            style={{ color: "rgba(245,235,245,.92)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>
+            The ultimate tool to <span className="text-white font-semibold">convert comments &rarr; customers</span>.
             Automate your growth and never miss a lead again.
           </p>
 
@@ -425,9 +425,9 @@ export default function Hero() {
               ))}
             </div>
             <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              <span className="text-white font-bold text-base" style={{ fontFamily: "'Syne', sans-serif" }}>11,000+</span>
-              <span className="text-sm" style={{ color: "rgba(255,255,255,.7)" }}> creators trust us</span>
-              <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,.55)" }}>25M+ DMs sent & counting.</div>
+              <span className="text-white font-bold text-lg" style={{ fontFamily: "'Syne', sans-serif" }}>11,000+</span>
+              <span className="text-base" style={{ color: "rgba(255,255,255,.9)" }}> creators trust us</span>
+              <div className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,.75)" }}>25M+ DMs sent & counting.</div>
             </div>
           </div>
         </div>

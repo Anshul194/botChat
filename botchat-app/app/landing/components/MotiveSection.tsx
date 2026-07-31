@@ -120,7 +120,7 @@ export default function MotiveSection() {
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-gray-600 text-sm mt-1.5 max-w-sm leading-relaxed"
+              className="text-gray-700 text-[15px] mt-1.5 max-w-sm leading-relaxed"
             >
               One AI engine across Instagram, Facebook & Bio — every interaction becomes revenue.
             </motion.p>
@@ -225,7 +225,7 @@ export default function MotiveSection() {
                         {ch.stat}
                       </span>
                     </div>
-                    <p className="text-gray-400 text-xs mt-0.5 leading-relaxed">{ch.desc}</p>
+                    <p className="text-gray-600 text-[13px] mt-0.5 leading-relaxed">{ch.desc}</p>
                   </div>
                 </motion.div>
               </AnimatePresence>

@@ -119,16 +119,16 @@ export default function Testimonials() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-black text-gray-900 text-lg">{t.name}</p>
-                                    <p className="text-sm font-semibold text-gray-500">{t.role}</p>
+                                    <p className="text-[15px] font-semibold text-gray-600">{t.role}</p>
                                     <div className="flex items-center gap-3 mt-1.5">
-                                        <span className="text-xs font-bold text-gray-400">{t.handle}</span>
-                                        <span className="text-xs font-bold text-[#FF2D78]">{t.followers}</span>
+                                        <span className="text-sm font-bold text-gray-500">{t.handle}</span>
+                                        <span className="text-sm font-bold text-[#FF2D78]">{t.followers}</span>
                                     </div>
                                 </div>
                                 <Stars count={t.stars} />
                             </div>
 
-                            <blockquote className="text-gray-700 font-medium text-lg leading-relaxed">
+                            <blockquote className="text-gray-800 font-medium text-lg leading-relaxed">
                                 "{t.text}"
                             </blockquote>
                         </motion.div>
