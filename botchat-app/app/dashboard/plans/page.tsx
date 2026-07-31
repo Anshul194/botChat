@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchMyPlans, createPlan, updatePlan, deletePlan, setSelectedPlan } from "@/store/slices/plansSlice";
 import {
-    Plus, MoreHorizontal, Edit2, Trash2, Loader2,
+    Plus, MoreHorizontal, Edit2, Trash2, Loader2, Copy,
     Users, DollarSign, CheckCircle2, FileText, Smartphone,
     Zap, CreditCard, Star
 } from "lucide-react";
@@ -43,6 +43,13 @@ export default function PlansPage() {
 
     const handleEdit = (plan: any) => {
         dispatch(setSelectedPlan(plan));
+        setIsFormOpen(true);
+    };
+
+    const handleDuplicate = (plan: any) => {
+        const cloned = { ...plan, name: `${plan.name} Copy` };
+        delete cloned.id;
+        dispatch(setSelectedPlan(cloned));
         setIsFormOpen(true);
     };
 
@@ -200,6 +207,9 @@ export default function PlansPage() {
                                                     <DropdownMenuContent align="end" className="w-44">
                                                         <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => handleEdit(plan)}>
                                                             <Edit2 className="w-3.5 h-3.5" /> Edit Plan
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => handleDuplicate(plan)}>
+                                                            <Copy className="w-3.5 h-3.5" /> Duplicate Plan
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem

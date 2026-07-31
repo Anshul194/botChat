@@ -56,10 +56,12 @@ const KPI_COLORS: Record<string, string> = {
 };
 
 function getIcon(key: string): typeof MessageSquare {
+    if (!key) return Activity;
     return KPI_ICONS[key] || KPI_ICONS[Object.keys(KPI_ICONS).find(k => key.includes(k)) || ''] || Activity;
 }
 
 function getColor(key: string): string {
+    if (!key) return "#6C5CE7";
     return KPI_COLORS[key] || KPI_COLORS[Object.keys(KPI_COLORS).find(k => key.includes(k)) || ''] || "#6C5CE7";
 }
 
@@ -244,7 +246,9 @@ export default function DashboardPage() {
     const [hiddenSections, setHiddenSections] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        dispatch(fetchMyPlan());
+        if (user && user.role !== 'SUPER_ADMIN') {
+            dispatch(fetchMyPlan());
+        }
         loadDashboard();
     }, [user]);
 
@@ -252,7 +256,12 @@ export default function DashboardPage() {
         if (!user) return;
         setIsLoading(true);
         try {
-            const role = user.role === 'ADMIN' || user.type === 'TENANT' || user.type === 'ADMIN' ? 'tenant-admin' : 'tenant-user';
+            let role = 'tenant-user';
+            if (user.role === 'SUPER_ADMIN') {
+                role = 'super-admin';
+            } else if (user.role === 'ADMIN' || user.role === 'TENANT' || user.role === 'Admin') {
+                role = 'tenant-admin';
+            }
             const response = await api.get(`/dashboard/${role}`);
             const d = response.data.data;
             const redirectItem = (item: any) => {

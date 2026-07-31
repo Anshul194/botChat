@@ -50,7 +50,6 @@ export default function Home() {
 
   useEffect(() => {
     if (isInitialized && isAuthenticated && general) {
-      // landingPageEnabled is normalized to boolean by Redux normalizeGeneralSettings()
       if (general.landingPageEnabled === false) {
         router.replace("/auth/sign-in");
       }
@@ -60,44 +59,61 @@ export default function Home() {
   return (
     <>
       <PageMeta
-        title="BotChat — Instagram DM & Facebook Messenger Automation"
-        description="Automate Instagram DMs and Facebook Messenger with AI-powered chatbots. Convert comments into customers in under 1 second. Trusted by 47,000+ creators and brands. Fully Meta policy compliant."
+        title="BotChat — AI-Powered Social Media Automation Platform"
+        description="Manage Facebook, Instagram, WhatsApp & Telegram from one platform. Smart Inbox, AI Bot Builder, Social Posting, Bio Links, Broadcast Campaigns and Analytics. Trusted by 11,000+ creators and agencies. Fully Meta compliant."
       />
       <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
         <SmoothScrollingUI />
         <Navbar />
 
-        {/* HERO: The main entry point */}
+        {/* ── HERO ─────────────────────────────────────────── */}
         <Hero />
 
-        {/* SUBSEQUENT SECTIONS */}
+        {/* ── MAIN CONTENT ─────────────────────────────────── */}
         <div className="relative z-10">
-          <div id="features">
+
+          {/* Platform Modules — immediately after hero */}
+          <div id="modules">
             <FeaturesOverview />
           </div>
+
+          {/* Legacy showcase sections — rich storytelling */}
           <BioLinkShowcase />
           <DMAutomationShowcase />
           <MotiveSection />
-          <Features />
           <ScrollWritingSection />
-          <PerformanceChart />
-          <div id="solutions">
-            {/* <GrowthSections /> */}
+
+          {/* Registry-powered features grid */}
+          <div id="features">
+            <Features />
           </div>
-          <TrendyStacks />
 
+          {/* Performance metrics */}
+          <PerformanceChart />
+
+          {/* Integrations + Stats */}
+          <div id="integrations">
+            <TrendyStacks />
+          </div>
+
+          {/* Social proof */}
           <CreatorProof />
-
           <Testimonials />
 
+          {/* Blog */}
           <BlogSection />
 
+          {/* Dynamic pricing preview */}
           <div id="pricing">
             <Pricing />
           </div>
 
-          <FAQ />
+          {/* FAQ */}
+          <div id="faq">
+            <FAQ />
+          </div>
 
+          {/* Final CTA */}
           <div id="company">
             <TrustAndFinalCTA />
           </div>

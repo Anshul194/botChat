@@ -20,21 +20,27 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 if (token && userStr) {
                     const rawUser = JSON.parse(userStr);
                     const rawType = (rawUser.type || '').toLowerCase().trim();
-                    const role = rawType === 'super admin' ? 'SUPER_ADMIN' :
+                    const role = rawType === 'super admin' || rawType === 'Super Admin' || rawType === 'superadmin' ? 'SUPER_ADMIN' :
                         rawType === 'reseller' ? 'RESELLER' :
-                            rawType === 'tenant' ? 'TENANT' :
-                            rawType === 'admin' ? 'ADMIN' : 'USER';
+                            rawType === 'tenant'  ? 'TENANT' :
+                            rawType === 'Admin' ? 'ADMIN' : 'USER';
                     const user = {
                         ...rawUser,
                         role,
                     };
                     // 1. Restore auth immediately from localStorage
                     dispatch(setCredentials({ user, token }));
+                    
                     // 2. Fetch critical app data right away
-                    console.log(`[AUTH PROVIDER] Dispatching fetchMyPlan, fetchPlans, fetchSubscription, fetchMe`);
-                    dispatch(fetchMyPlan());
-                    dispatch(fetchPlans());
-                    dispatch(fetchSubscription());
+                    if (role !== 'SUPER_ADMIN') {
+                        console.log(`[AUTH PROVIDER] Dispatching fetchMyPlan, fetchPlans, fetchSubscription, fetchMe`);
+                        dispatch(fetchMyPlan());
+                        dispatch(fetchPlans());
+                        dispatch(fetchSubscription());
+                    } else {
+                        console.log(`[AUTH PROVIDER] SuperAdmin detected, skipping plan fetches.`);
+                    }
+                    
                     // 3. Silently validate & refresh user from server
                     dispatch(fetchMe());
                 } else {

@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import {
     ArrowLeft, Save, Loader2, CheckCircle,
     Zap, Settings2, Wifi, Tag, DollarSign,
-    Facebook, Instagram, Smartphone, Send, AlertCircle
+    Facebook, Instagram, Smartphone, Send, AlertCircle,
+    Info, Search
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,14 +13,21 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import { formatCurrency } from "@/lib/currency";
 
 // ── Types ──────────────────────────────────────────────────────────
 
 interface FeatureDefinition {
     label: string;
+    description?: string;
+    unit?: string;
+    tooltip?: string;
+    depends_on?: string;
     type: "toggle" | "limit";
     group: string;
     default: string;
@@ -29,18 +37,17 @@ interface FeatureDefinitions {
     [key: string]: FeatureDefinition;
 }
 
-const GROUP_LABELS: Record<string, string> = {
-    platform:  "Messaging Channels",
-    core:      "Core Limits",
-    chat:      "Smart Inbox",
-    bot:       "Bot Capabilities",
-    campaign:  "Campaigns & Automation",
-    links:     "Link Builder",
-    analytics: "Analytics",
-    developer: "Developer & API",
+const GROUP_LABELS: Record<string, { label: string; description: string }> = {
+    platform: { label: "🌐 Platform Access", description: "Messaging channels and integrations" },
+    core: { label: "⚡ Core Limits", description: "Account capacities and usage quotas" },
+    chat: { label: "📨 Smart Inbox", description: "Conversation management" },
+    bot: { label: "🤖 Bot Capabilities", description: "Bot builder, AI and automation" },
+    campaign: { label: "📢 Campaigns", description: "Broadcasting and automation" },
+    links: { label: "🔗 Bio Links", description: "Landing pages and short links" },
+    developer: { label: "⚙ Developer", description: "API & integrations" },
 };
 
-const GROUP_ORDER = ["platform", "core", "chat", "bot", "campaign", "links", "analytics", "developer"];
+const GROUP_ORDER = ["core", "chat", "bot", "campaign", "links", "developer"];
 
 const CHANNEL_ICONS: Record<string, React.ElementType> = {
     whatsapp:  Smartphone,
@@ -73,34 +80,16 @@ const INITIAL_BASE = {
     apply_to_other_packages: "no",
 };
 
-// ── Infinity icon inline (avoid lucide import collision) ───────────
-
-function InfinityIcon({ className }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="M12 12c-2-2.5-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.5 6-4z"/>
-            <path d="M12 12c2 2.5 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.5-6 4z"/>
-        </svg>
-    );
-}
-
-// ── Component ──────────────────────────────────────────────────────
-
-interface PlanFormProps {
-    initialData?: any;
-    isSubmitting?: boolean;
-    onClose: () => void;
-    onSubmit: (data: any) => Promise<void>;
-}
-
-export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit }: PlanFormProps) {
+export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit }: any) {
     const [definitions, setDefinitions] = useState<FeatureDefinitions>({});
     const [defsLoading, setDefsLoading] = useState(true);
     const [defsError, setDefsError]     = useState<string | null>(null);
     const [formData, setFormData]       = useState<any>({ ...INITIAL_BASE, features: {} });
     const [activeTab, setActiveTab]     = useState<"general" | "channels" | "features" | "discount">("general");
-    const [unlimitedKeys, setUnlimitedKeys] = useState<Set<string>>(new Set());
+    
+    // UI states
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isReviewOpen, setIsReviewOpen] = useState(false);
 
     // Load definitions from backend
     useEffect(() => {
@@ -133,61 +122,116 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                 features[k] = typeof v === "object" && v !== null ? String(v.value) : String(v);
             });
         }
-        const unlimited = new Set<string>();
-        Object.entries(features).forEach(([key, val]) => {
-            if (val === "-1" && definitions[key]?.type === "limit") unlimited.add(key);
-        });
-        setUnlimitedKeys(unlimited);
         setFormData({
-            name:                    initialData.name || "",
-            price:                   initialData.price || "",
-            duration:                initialData.duration || "30",
-            duration_type:           (initialData.duration_type || "day").toLowerCase(),
-            description:             initialData.description || "",
-            status:                  initialData.status ?? true,
-            is_highlighted:          initialData.is_highlighted ?? false,
-            discount:                initialData.discount || 0,
-            discount_terms:          initialData.discount_terms || "",
-            discount_start:          initialData.discount_start || "",
-            discount_end:            initialData.discount_end || "",
-            discount_status:         initialData.discount_status ?? false,
-            apply_to_other_packages: initialData.apply_to_other_packages || "no",
+            ...INITIAL_BASE,
+            ...initialData,
             features,
         });
     }, [initialData, definitions]);
 
-    const setFeature = (key: string, val: string) =>
-        setFormData((p: any) => ({ ...p, features: { ...p.features, [key]: val } }));
+    // Validation for inputs
+    const handleLimitChange = (key: string, val: string) => {
+        if (val === "") {
+            setFormData((p: any) => ({ ...p, features: { ...p.features, [key]: "" } }));
+            return;
+        }
+        const num = parseInt(val);
+        if (isNaN(num) || num < 0) return;
+        setFormData((p: any) => ({ ...p, features: { ...p.features, [key]: String(num) } }));
+    };
 
-    const toggleUnlimited = (key: string) => {
-        setUnlimitedKeys(prev => {
-            const next = new Set(prev);
-            if (next.has(key)) {
-                next.delete(key);
-                setFeature(key, definitions[key]?.default ?? "0");
-            } else {
-                next.add(key);
-                setFeature(key, "-1");
+    const toggleUnlimited = (key: string, checked: boolean) => {
+        if (checked) {
+            setFormData((p: any) => ({ ...p, features: { ...p.features, [key]: "-1" } }));
+        } else {
+            setFormData((p: any) => ({ ...p, features: { ...p.features, [key]: definitions[key]?.default ?? "0" } }));
+        }
+    };
+
+    // Calculate disabled status recursively based on dependencies
+    const isFeatureDisabled = (key: string): boolean => {
+        const def = definitions[key];
+        if (!def?.depends_on) return false;
+        
+        if (formData.features[def.depends_on] === "0") return true;
+        
+        return isFeatureDisabled(def.depends_on);
+    };
+
+    const handleFeatureToggle = (key: string, checked: boolean) => {
+        setFormData((p: any) => {
+            const newFeatures = { ...p.features, [key]: checked ? "1" : "0" };
+            
+            if (!checked) {
+                const turnOffChildren = (parentKey: string) => {
+                    Object.entries(definitions).forEach(([childKey, childDef]) => {
+                        if (childDef.depends_on === parentKey) {
+                            if (childDef.type === "toggle") {
+                                newFeatures[childKey] = "0";
+                            }
+                            turnOffChildren(childKey);
+                        }
+                    });
+                };
+                turnOffChildren(key);
             }
-            return next;
+            
+            return { ...p, features: newFeatures };
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await onSubmit(formData);
+    const handleSubmit = async () => {
+        setIsReviewOpen(false);
+        const cleanedFeatures = { ...formData.features };
+        Object.keys(cleanedFeatures).forEach(k => {
+            if (cleanedFeatures[k] === "") cleanedFeatures[k] = "0";
+            if (isFeatureDisabled(k)) {
+                cleanedFeatures[k] = "0";
+            }
+        });
+        await onSubmit({ ...formData, features: cleanedFeatures });
+    };
+
+    const scrollToSection = (id: string) => {
+        const el = document.getElementById(`section-${id}`);
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     };
 
     const featuresByGroup = useMemo(() => {
         const groups: Record<string, Array<[string, FeatureDefinition]>> = {};
+        const query = searchQuery.toLowerCase();
+        
         Object.entries(definitions).forEach(([key, def]) => {
-            if (key === "live_chat") return; // legacy alias — hidden
+            if (key === "live_chat") return; // legacy
+            if (query && !def.label.toLowerCase().includes(query) && !def.description?.toLowerCase().includes(query)) {
+                return;
+            }
             const g = def.group || "other";
             if (!groups[g]) groups[g] = [];
             groups[g].push([key, def]);
         });
         return groups;
-    }, [definitions]);
+    }, [definitions, searchQuery]);
+
+    // Live counter stats
+    const stats = useMemo(() => {
+        let enabled = 0, disabled = 0, unlimited = 0, limited = 0;
+        Object.entries(definitions).forEach(([key, def]) => {
+            if (key === "live_chat") return;
+            if (def.type === "toggle") {
+                if (formData.features[key] === "1" && !isFeatureDisabled(key)) enabled++;
+                else disabled++;
+            } else if (def.type === "limit") {
+                if (!isFeatureDisabled(key)) {
+                    if (formData.features[key] === "-1") unlimited++;
+                    else limited++;
+                }
+            }
+        });
+        return { enabled, disabled, unlimited, limited };
+    }, [formData.features, definitions]);
 
     const isEdit = !!initialData;
     const tabs = [
@@ -198,119 +242,118 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
     ] as const;
 
     return (
-        <div className="min-h-screen bg-background">
-            {/* Top Bar */}
-            <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                        <Button variant="ghost" size="sm" onClick={onClose}
-                            className="gap-2 text-muted-foreground hover:text-foreground font-medium shrink-0">
-                            <ArrowLeft className="w-4 h-4" />
-                            <span className="hidden xs:inline">Plans</span>
-                        </Button>
-                        <span className="text-muted-foreground shrink-0">/</span>
-                        <span className="text-sm font-semibold truncate min-w-0">
-                            {isEdit ? `Edit: ${initialData?.name}` : "New Plan"}
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                        <Badge variant="outline" className={cn(
-                            "hidden text-xs font-medium sm:inline-flex",
-                            formData.status
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800"
-                                : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"
-                        )}>
-                            {formData.status ? "Active" : "Draft"}
-                        </Badge>
-                        <Button variant="outline" size="sm" onClick={onClose} className="font-medium">Cancel</Button>
-                        <Button size="sm" onClick={handleSubmit} disabled={isSubmitting || defsLoading}
-                            className="gap-2 font-medium min-w-[110px]">
-                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                            {isEdit ? "Save Changes" : "Create Plan"}
-                        </Button>
+        <TooltipProvider>
+            <div className="min-h-screen bg-background flex flex-col">
+                {/* Top Bar */}
+                <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                            <Button variant="ghost" size="sm" onClick={onClose}
+                                className="gap-2 text-muted-foreground hover:text-foreground font-medium shrink-0">
+                                <ArrowLeft className="w-4 h-4" />
+                                <span className="hidden xs:inline">Plans</span>
+                            </Button>
+                            <span className="text-muted-foreground shrink-0">/</span>
+                            <span className="text-sm font-semibold truncate min-w-0">
+                                {isEdit ? `Edit: ${initialData?.name}` : "New Plan"}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                            <Badge variant="outline" className={cn(
+                                "hidden text-xs font-medium sm:inline-flex",
+                                formData.status ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
+                            )}>
+                                {formData.status ? "Active" : "Draft"}
+                            </Badge>
+                            <Button variant="outline" size="sm" onClick={onClose} className="font-medium hidden sm:flex">Cancel</Button>
+                            <Button size="sm" onClick={() => setIsReviewOpen(true)} disabled={isSubmitting || defsLoading}
+                                className="gap-2 font-medium min-w-[110px]">
+                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                <span className="hidden xs:inline">Review & Save</span>
+                                <span className="xs:hidden">Save</span>
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-                <div className="mb-6 sm:mb-8">
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-                        {isEdit ? "Edit Subscription Plan" : "Create Subscription Plan"}
-                    </h1>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                        {isEdit ? "Update plan details, features, and pricing."
-                                : "Set up pricing, features, and availability for your new plan."}
-                    </p>
-                </div>
+                <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    {/* LEFT NAV (3 cols on lg) */}
+                    <div className="lg:col-span-3 space-y-6">
+                        <div className="sticky top-24 space-y-8">
+                            <div className="hidden lg:block">
+                                <h1 className="text-2xl font-bold tracking-tight">Plan Builder</h1>
+                                <p className="text-muted-foreground mt-1 text-sm">Design your subscription tier.</p>
+                            </div>
+                            
+                            <nav className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:space-y-1 lg:pb-0 no-scrollbar">
+                                {tabs.map(tab => (
+                                    <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                                        className={cn(
+                                            "flex shrink-0 items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left lg:w-full",
+                                            activeTab === tab.id
+                                                ? "bg-primary text-primary-foreground"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                                        )}>
+                                        <tab.icon className="w-4 h-4 shrink-0" />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </nav>
 
-                {defsError && (
-                    <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
-                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                        <span>{defsError}</span>
+                            {/* Sticky Features Jump Nav */}
+                            <AnimatePresence>
+                                {activeTab === "features" && (
+                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="hidden lg:block space-y-1 pt-4 border-t border-border">
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Sections</p>
+                                        {GROUP_ORDER.filter(g => featuresByGroup[g]?.length).map(group => (
+                                            <button key={group} onClick={() => scrollToSection(group)}
+                                                className="w-full text-left px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors truncate">
+                                                {GROUP_LABELS[group]?.label.replace(/[^a-zA-Z\s]/g, '') || group}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
-                )}
 
-                <div className="flex flex-col gap-6 md:flex-row md:gap-8">
-                    {/* Tab Nav */}
-                    <div className="w-full md:w-48 md:shrink-0">
-                        <nav className="flex gap-2 overflow-x-auto no-scrollbar pb-1 md:flex-col md:space-y-1 md:overflow-visible md:pb-0 md:sticky md:top-24">
-                            {tabs.map(tab => (
-                                <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                                    className={cn(
-                                        "flex shrink-0 items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left md:w-full",
-                                        activeTab === tab.id
-                                            ? "bg-primary text-primary-foreground"
-                                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                                    )}>
-                                    <tab.icon className="w-4 h-4 shrink-0" />
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
+                    {/* MAIN FORM (6 cols on lg) */}
+                    <div className="lg:col-span-6 min-w-0 pb-20">
+                        {defsError && (
+                            <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
+                                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                <span>{defsError}</span>
+                            </div>
+                        )}
 
-                    {/* Main Content */}
-                    <div className="flex-1 min-w-0">
                         <AnimatePresence mode="wait">
-                            <motion.div key={activeTab}
-                                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
-
+                            <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }}>
+                                
                                 {/* ── General ── */}
                                 {activeTab === "general" && (
-                                    <div className="space-y-6">
+                                    <div className="space-y-8">
                                         <Section title="Plan Details" description="Basic information about this subscription plan.">
                                             <Field label="Plan Name" required>
-                                                <Input placeholder="e.g. Pro, Business, Enterprise"
-                                                    value={formData.name}
-                                                    onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                                                <Input placeholder="e.g. Professional" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="max-w-md" />
                                             </Field>
                                             <Field label="Description">
-                                                <Textarea placeholder="Briefly describe what this plan offers..."
-                                                    value={formData.description}
-                                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                                    className="resize-none" rows={3} />
+                                                <Textarea placeholder="Briefly describe what this plan offers..." value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="resize-none" rows={3} />
                                             </Field>
                                         </Section>
 
-                                        <Section title="Pricing" description="Set the billing amount and cycle for this plan.">
-                                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
-                                                <Field label="Price (INR)" required>
+                                        <Section title="Pricing" description="Set the billing amount and cycle.">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-xl">
+                                                <Field label="Price" required>
                                                     <div className="relative">
                                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                                        <Input type="number" placeholder="0.00" className="pl-9"
-                                                            value={formData.price}
-                                                            onChange={e => setFormData({ ...formData, price: e.target.value })} />
+                                                        <Input type="number" placeholder="0" className="pl-9 font-semibold" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
                                                     </div>
                                                 </Field>
                                                 <Field label="Billing Cycle" required>
                                                     <div className="flex gap-2">
-                                                        <Input type="number" placeholder="30" className="w-24 shrink-0"
-                                                            value={formData.duration}
-                                                            onChange={e => setFormData({ ...formData, duration: e.target.value })} />
-                                                        <select value={formData.duration_type}
-                                                            onChange={e => setFormData({ ...formData, duration_type: e.target.value })}
-                                                            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                                        <Input type="number" placeholder="30" className="w-20 shrink-0 text-center font-semibold" value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })} />
+                                                        <select value={formData.duration_type} onChange={e => setFormData({ ...formData, duration_type: e.target.value })} className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                                             <option value="day">Day(s)</option>
                                                             <option value="week">Week(s)</option>
                                                             <option value="month">Month(s)</option>
@@ -322,11 +365,21 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
                                         </Section>
 
                                         <Section title="Visibility" description="Control how and where this plan appears.">
-                                            <div className="space-y-4">
-                                                <ToggleRow label="Active" description="Make this plan available for new subscriptions."
-                                                    checked={formData.status} onChange={v => setFormData({ ...formData, status: v })} />
-                                                <ToggleRow label="Featured" description="Highlight this plan on the pricing page as recommended."
-                                                    checked={formData.is_highlighted} onChange={v => setFormData({ ...formData, is_highlighted: v })} />
+                                            <div className="space-y-4 max-w-xl">
+                                                <div className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border bg-card">
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Active Status</p>
+                                                        <p className="text-xs text-muted-foreground mt-0.5">Make this plan available for new subscriptions.</p>
+                                                    </div>
+                                                    <Switch checked={formData.status} onCheckedChange={v => setFormData({ ...formData, status: v })} />
+                                                </div>
+                                                <div className="flex items-center justify-between gap-4 p-4 rounded-lg border border-border bg-card">
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Featured Plan</p>
+                                                        <p className="text-xs text-muted-foreground mt-0.5">Highlight this plan on the pricing page.</p>
+                                                    </div>
+                                                    <Switch checked={formData.is_highlighted} onCheckedChange={v => setFormData({ ...formData, is_highlighted: v })} />
+                                                </div>
                                             </div>
                                         </Section>
                                     </div>
@@ -334,222 +387,328 @@ export default function PlanForm({ initialData, isSubmitting, onClose, onSubmit 
 
                                 {/* ── Channels ── */}
                                 {activeTab === "channels" && (
-                                    <div className="space-y-6">
-                                        {defsLoading ? <SkeletonSection rows={4} /> : (
-                                            <Section title="Messaging Channels" description="Enable the platforms included in this plan.">
-                                                <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
-                                                    {(featuresByGroup["platform"] ?? []).map(([key, def]) => {
-                                                        const active = formData.features[key] === "1";
-                                                        const Icon = CHANNEL_ICONS[key] ?? Wifi;
-                                                        const color = CHANNEL_COLORS[key] ?? "";
-                                                        return (
-                                                            <div key={key} className="flex items-center justify-between px-4 py-3 bg-card">
-                                                                <div className="flex items-center gap-3">
-                                                                    <Icon className={cn("w-5 h-5", color)} />
-                                                                    <p className="text-sm font-medium">{def.label}</p>
+                                    <div className="space-y-8">
+                                        <Section title={GROUP_LABELS.platform.label} description={GROUP_LABELS.platform.description}>
+                                            <div className="grid gap-4 max-w-2xl">
+                                                {(featuresByGroup["platform"] ?? []).map(([key, def]) => {
+                                                    const active = formData.features[key] === "1";
+                                                    const Icon = CHANNEL_ICONS[key] ?? Wifi;
+                                                    return (
+                                                        <div key={key} className={cn("flex items-center justify-between p-4 rounded-xl border transition-colors", active ? "border-primary/40 bg-primary/5" : "border-border bg-card")}>
+                                                            <div className="flex items-start gap-4">
+                                                                <div className={cn("p-2 rounded-lg bg-background shadow-sm border border-border", CHANNEL_COLORS[key])}>
+                                                                    <Icon className="w-5 h-5" />
                                                                 </div>
-                                                                <Switch checked={active} onCheckedChange={v => setFeature(key, v ? "1" : "0")} />
+                                                                <div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <p className="text-sm font-semibold">{def.label}</p>
+                                                                        {def.tooltip && (
+                                                                            <Tooltip><TooltipTrigger><Info className="w-3.5 h-3.5 text-muted-foreground" /></TooltipTrigger><TooltipContent>{def.tooltip}</TooltipContent></Tooltip>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-xs text-muted-foreground mt-0.5">{def.description}</p>
+                                                                </div>
                                                             </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </Section>
-                                        )}
+                                                            <Switch checked={active} onCheckedChange={v => handleFeatureToggle(key, v)} />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </Section>
                                     </div>
                                 )}
 
                                 {/* ── Features ── */}
                                 {activeTab === "features" && (
-                                    <div className="space-y-6">
-                                        {defsLoading ? (
-                                            <>
-                                                <SkeletonSection rows={3} />
-                                                <SkeletonSection rows={5} />
-                                                <SkeletonSection rows={4} />
-                                            </>
-                                        ) : (
-                                            GROUP_ORDER.filter(g => g !== "platform" && featuresByGroup[g]?.length).map(group => {
-                                                const entries = featuresByGroup[group] ?? [];
-                                                const toggles = entries.filter(([, d]) => d.type === "toggle");
-                                                const limits  = entries.filter(([, d]) => d.type === "limit");
-                                                return (
-                                                    <Section key={group} title={GROUP_LABELS[group] ?? group}>
+                                    <div className="space-y-10">
+                                        <div className="relative sticky top-16 z-30 pt-4 pb-2 bg-background/95 backdrop-blur shadow-[0_8px_10px_-10px_rgba(0,0,0,0.1)]">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 mt-1 w-4 h-4 text-muted-foreground" />
+                                            <Input placeholder="Search features... (e.g. AI, Bio)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 h-11 bg-muted/40 font-medium" />
+                                        </div>
+
+                                        {GROUP_ORDER.map(group => {
+                                            const entries = featuresByGroup[group] ?? [];
+                                            if (entries.length === 0) return null;
+                                            
+                                            const toggles = entries.filter(([, d]) => d.type === "toggle");
+                                            const limits  = entries.filter(([, d]) => d.type === "limit");
+
+                                            return (
+                                                <div key={group} id={`section-${group}`} className="scroll-mt-32">
+                                                    <Section title={GROUP_LABELS[group]?.label ?? group} description={GROUP_LABELS[group]?.description}>
+                                                        
                                                         {limits.length > 0 && (
-                                                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 mb-4">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                                                                 {limits.map(([key, def]) => {
-                                                                    const isUnlim = unlimitedKeys.has(key);
+                                                                    const disabled = isFeatureDisabled(key);
+                                                                    const isUnlim = formData.features[key] === "-1";
                                                                     const val = formData.features[key] ?? def.default;
                                                                     return (
-                                                                        <div key={key} className="rounded-lg border border-border p-4 bg-card space-y-2">
-                                                                            <div className="flex items-center justify-between">
-                                                                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                                                    {def.label}
-                                                                                    {def.default_type === "monthly" && (
-                                                                                        <span className="ml-1.5 text-[10px] font-normal normal-case text-primary">/mo</span>
+                                                                        <div key={key} className={cn("rounded-xl border p-4 transition-all duration-200 flex flex-col justify-between gap-4", disabled ? "border-border/50 bg-muted/30 opacity-60 pointer-events-none grayscale-[0.5]" : "border-border bg-card shadow-sm hover:border-primary/30")}>
+                                                                            <div>
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <Label className="text-sm font-semibold">{def.label}</Label>
+                                                                                    {def.tooltip && (
+                                                                                        <Tooltip><TooltipTrigger><Info className="w-3.5 h-3.5 text-muted-foreground" /></TooltipTrigger><TooltipContent>{def.tooltip}</TooltipContent></Tooltip>
                                                                                     )}
-                                                                                </Label>
-                                                                                <button type="button" onClick={() => toggleUnlimited(key)}
-                                                                                    title={isUnlim ? "Set a specific limit" : "Set to Unlimited"}
-                                                                                    className={cn("p-1 rounded transition-colors",
-                                                                                        isUnlim ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground")}>
-                                                                                    <InfinityIcon className="w-3.5 h-3.5" />
-                                                                                </button>
-                                                                            </div>
-                                                                            {isUnlim ? (
-                                                                                <div className="flex items-center h-9 px-3 rounded-md border border-dashed border-primary/40 bg-primary/5 text-primary text-sm font-medium">
-                                                                                    Unlimited
                                                                                 </div>
-                                                                            ) : (
-                                                                                <Input type="number" min="0"
-                                                                                    value={val === "-1" ? "" : val}
-                                                                                    onChange={e => setFeature(key, e.target.value)}
-                                                                                    className="font-semibold" placeholder="0" />
-                                                                            )}
+                                                                                {def.description && <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{def.description}</p>}
+                                                                            </div>
+                                                                            <div className="flex items-center gap-3">
+                                                                                {!isUnlim ? (
+                                                                                    <div className="relative flex-1">
+                                                                                        <Input type="number" value={val === "-1" ? "" : val} onChange={e => handleLimitChange(key, e.target.value)} disabled={disabled} placeholder="Enter limit..." className="pr-20 font-semibold" />
+                                                                                        {def.unit && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium pointer-events-none">{def.unit}</span>}
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div className="flex-1 h-9 rounded-md border border-dashed border-primary/40 bg-primary/5 flex items-center justify-center text-primary text-sm font-semibold">
+                                                                                        Unlimited
+                                                                                    </div>
+                                                                                )}
+                                                                                <label className="flex items-center gap-2 text-sm cursor-pointer select-none group">
+                                                                                    <input type="checkbox" className="rounded border-input text-primary focus:ring-primary w-4 h-4 cursor-pointer" checked={isUnlim} onChange={(e) => toggleUnlimited(key, e.target.checked)} disabled={disabled} />
+                                                                                    <span className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Unlimited</span>
+                                                                                </label>
+                                                                            </div>
                                                                         </div>
                                                                     );
                                                                 })}
                                                             </div>
                                                         )}
+
                                                         {toggles.length > 0 && (
-                                                            <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                                                            <div className="divide-y divide-border rounded-xl border border-border overflow-hidden bg-card shadow-sm">
                                                                 {toggles.map(([key, def]) => {
-                                                                    const active = formData.features[key] === "1";
+                                                                    const disabled = isFeatureDisabled(key);
+                                                                    const active = formData.features[key] === "1" && !disabled;
                                                                     return (
-                                                                        <div key={key} className="flex items-center justify-between px-4 py-3 bg-card">
-                                                                            <p className="text-sm font-medium">{def.label}</p>
-                                                                            <Switch checked={active} onCheckedChange={v => setFeature(key, v ? "1" : "0")} />
+                                                                        <div key={key} className={cn("flex items-center justify-between px-5 py-4 transition-all duration-200", disabled && "bg-muted/30 opacity-60 pointer-events-none grayscale-[0.5]", active && !disabled && "bg-primary/[0.02]")}>
+                                                                            <div className="pr-4">
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <p className="text-sm font-semibold">{def.label}</p>
+                                                                                    {def.tooltip && (
+                                                                                        <Tooltip><TooltipTrigger><Info className="w-3.5 h-3.5 text-muted-foreground" /></TooltipTrigger><TooltipContent>{def.tooltip}</TooltipContent></Tooltip>
+                                                                                    )}
+                                                                                </div>
+                                                                                {def.description && <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{def.description}</p>}
+                                                                            </div>
+                                                                            <div className="flex items-center gap-3 shrink-0">
+                                                                                {disabled && <Badge variant="outline" className="text-[10px] uppercase font-bold text-muted-foreground">Disabled</Badge>}
+                                                                                <Switch checked={active} disabled={disabled} onCheckedChange={v => handleFeatureToggle(key, v)} />
+                                                                            </div>
                                                                         </div>
                                                                     );
                                                                 })}
                                                             </div>
                                                         )}
                                                     </Section>
-                                                );
-                                            })
+                                                </div>
+                                            );
+                                        })}
+                                        {Object.values(featuresByGroup).every(arr => arr.length === 0) && (
+                                            <div className="text-center py-20 text-muted-foreground flex flex-col items-center">
+                                                <Search className="w-10 h-10 mb-4 opacity-20" />
+                                                <p className="font-medium text-foreground">No features found</p>
+                                                <p className="text-sm mt-1">Try adjusting your search query.</p>
+                                            </div>
                                         )}
                                     </div>
                                 )}
 
                                 {/* ── Discount ── */}
                                 {activeTab === "discount" && (
-                                    <div className="space-y-6">
+                                    <div className="space-y-8">
                                         <Section title="Promotional Discount" description="Offer a time-limited discount on this plan.">
-                                            <ToggleRow label="Enable Discount" description="Activate a promotional discount for this plan."
-                                                checked={formData.discount_status}
-                                                onChange={v => setFormData({ ...formData, discount_status: v })} />
-                                            <AnimatePresence>
-                                                {formData.discount_status && (
-                                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-                                                        exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                                                        <div className="space-y-4 pt-4 border-t border-border mt-4">
-                                                            <Field label="Discount (%)" required>
-                                                                <div className="relative">
-                                                                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                                                    <Input type="number" placeholder="e.g. 20" className="pl-9"
-                                                                        min={0} max={100} value={formData.discount}
-                                                                        onChange={e => setFormData({ ...formData, discount: parseInt(e.target.value) || 0 })} />
-                                                                </div>
-                                                            </Field>
-                                                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
-                                                                <Field label="Start Date">
-                                                                    <Input type="date" value={formData.discount_start}
-                                                                        onChange={e => setFormData({ ...formData, discount_start: e.target.value })} />
+                                            <div className="max-w-xl space-y-6">
+                                                <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border bg-card">
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Enable Discount</p>
+                                                        <p className="text-xs text-muted-foreground mt-0.5">Activate a promotional discount for this plan.</p>
+                                                    </div>
+                                                    <Switch checked={formData.discount_status} onCheckedChange={v => setFormData({ ...formData, discount_status: v })} />
+                                                </div>
+                                                <AnimatePresence>
+                                                    {formData.discount_status && (
+                                                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                                                            <div className="space-y-6 pt-4 border-t border-border">
+                                                                <Field label="Discount (%)" required>
+                                                                    <div className="relative">
+                                                                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                                        <Input type="number" placeholder="e.g. 20" className="pl-9 font-semibold" min={0} max={100} value={formData.discount} onChange={e => setFormData({ ...formData, discount: parseInt(e.target.value) || 0 })} />
+                                                                    </div>
                                                                 </Field>
-                                                                <Field label="End Date">
-                                                                    <Input type="date" value={formData.discount_end}
-                                                                        onChange={e => setFormData({ ...formData, discount_end: e.target.value })} />
+                                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                                    <Field label="Start Date">
+                                                                        <Input type="date" value={formData.discount_start} onChange={e => setFormData({ ...formData, discount_start: e.target.value })} />
+                                                                    </Field>
+                                                                    <Field label="End Date">
+                                                                        <Input type="date" value={formData.discount_end} onChange={e => setFormData({ ...formData, discount_end: e.target.value })} />
+                                                                    </Field>
+                                                                </div>
+                                                                <Field label="Terms & Conditions">
+                                                                    <Input placeholder="e.g. Valid for annual subscribers only" value={formData.discount_terms} onChange={e => setFormData({ ...formData, discount_terms: e.target.value })} />
+                                                                </Field>
+                                                                <Field label="Apply to Existing Packages">
+                                                                    <select value={formData.apply_to_other_packages} onChange={e => setFormData({ ...formData, apply_to_other_packages: e.target.value })} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                                                        <option value="no">No — new subscribers only</option>
+                                                                        <option value="yes">Yes — all subscribers</option>
+                                                                    </select>
                                                                 </Field>
                                                             </div>
-                                                            <Field label="Terms & Conditions">
-                                                                <Input placeholder="e.g. Valid for annual subscribers only"
-                                                                    value={formData.discount_terms}
-                                                                    onChange={e => setFormData({ ...formData, discount_terms: e.target.value })} />
-                                                            </Field>
-                                                            <Field label="Apply to Existing Packages">
-                                                                <select value={formData.apply_to_other_packages}
-                                                                    onChange={e => setFormData({ ...formData, apply_to_other_packages: e.target.value })}
-                                                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                                                                    <option value="no">No — new subscribers only</option>
-                                                                    <option value="yes">Yes — all subscribers</option>
-                                                                </select>
-                                                            </Field>
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
                                         </Section>
                                     </div>
                                 )}
                             </motion.div>
                         </AnimatePresence>
+                    </div>
 
-                        {/* Bottom action bar */}
-                        <div className="flex flex-col-reverse gap-3 pt-6 mt-6 border-t border-border sm:flex-row sm:items-center sm:justify-between">
-                            <Button variant="ghost" onClick={onClose} className="w-full text-muted-foreground sm:w-auto">Cancel</Button>
-                            <Button onClick={handleSubmit} disabled={isSubmitting || defsLoading} className="w-full gap-2 min-w-[130px] sm:w-auto">
-                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                                {isEdit ? "Save Changes" : "Create Plan"}
-                            </Button>
+                    {/* RIGHT SUMMARY (3 cols on lg) */}
+                    <div className="hidden lg:block lg:col-span-3">
+                        <div className="sticky top-24 rounded-xl border border-border bg-card shadow-sm overflow-hidden flex flex-col">
+                            <div className="p-5 border-b border-border bg-muted/20">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Plan Summary</p>
+                                <h3 className="text-xl font-extrabold truncate tracking-tight">{formData.name || "Untitled Plan"}</h3>
+                                <div className="mt-3 flex items-end gap-1.5 text-primary">
+                                    <span className="text-3xl font-extrabold tracking-tight">{formData.price ? formatCurrency(formData.price) : "Free"}</span>
+                                    {formData.price && <span className="text-sm font-semibold mb-1">/ {formData.duration_type}</span>}
+                                </div>
+                            </div>
+                            
+                            <div className="p-5 flex-1 overflow-y-auto space-y-6 max-h-[calc(100vh-320px)] no-scrollbar">
+                                <div>
+                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        Modules Enabled
+                                        <Badge variant="secondary" className="px-1.5 py-0 text-[9px]">{stats.enabled}</Badge>
+                                    </h4>
+                                    <ul className="space-y-3">
+                                        {['smart_inbox', 'bot_reply', 'social_posting_access', 'bio_links', 'api_developer'].map(key => {
+                                            const def = definitions[key];
+                                            if (!def) return null;
+                                            const active = formData.features[key] === "1" && !isFeatureDisabled(key);
+                                            return (
+                                                <li key={key} className="flex items-center gap-3 text-sm">
+                                                    {active ? <CheckCircle className="w-4 h-4 text-primary shrink-0" /> : <div className="w-4 h-4 border-2 border-muted rounded-full shrink-0" />}
+                                                    <span className={cn(active ? "text-foreground font-semibold" : "text-muted-foreground opacity-60")}>{def.label}</span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        Core Limits
+                                    </h4>
+                                    <ul className="space-y-2.5">
+                                        {['connect_account', 'message_credit', 'subscribers', 'bot_ai_token', 'domains_limit'].map(key => {
+                                            const def = definitions[key];
+                                            if (!def) return null;
+                                            const disabled = isFeatureDisabled(key);
+                                            const val = formData.features[key];
+                                            return (
+                                                <li key={key} className="flex items-center justify-between text-sm py-1 border-b border-border/50 last:border-0">
+                                                    <span className="text-muted-foreground font-medium">{def.unit || def.label}</span>
+                                                    <span className="font-bold text-foreground bg-muted px-2 py-0.5 rounded text-xs">
+                                                        {disabled ? "0" : (val === "-1" ? "Unlimited" : (val || "0"))}
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="p-4 bg-muted/30 border-t border-border grid grid-cols-4 gap-2 text-center text-xs">
+                                <div><p className="font-bold text-foreground text-sm">{stats.enabled}</p><p className="text-muted-foreground text-[10px] uppercase font-bold mt-0.5">Enabled</p></div>
+                                <div><p className="font-bold text-foreground text-sm">{stats.disabled}</p><p className="text-muted-foreground text-[10px] uppercase font-bold mt-0.5">Disabled</p></div>
+                                <div><p className="font-bold text-primary text-sm">{stats.unlimited}</p><p className="text-muted-foreground text-[10px] uppercase font-bold mt-0.5">Unlimited</p></div>
+                                <div><p className="font-bold text-foreground text-sm">{stats.limited}</p><p className="text-muted-foreground text-[10px] uppercase font-bold mt-0.5">Limited</p></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
-        </div>
+
+            {/* Review Modal */}
+            <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl">Review Plan Details</DialogTitle>
+                        <DialogDescription>Please review the configuration before saving.</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-5">
+                        <div className="flex items-center justify-between bg-primary/5 p-4 rounded-xl border border-primary/20">
+                            <div>
+                                <p className="font-bold text-xl text-primary">{formData.name || "Untitled Plan"}</p>
+                                <p className="text-xs text-primary/70 font-semibold mt-1 uppercase tracking-wide">{formData.status ? "Active Plan" : "Draft Plan"}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-bold text-xl text-primary">{formData.price ? formatCurrency(formData.price) : "Free"}</p>
+                                <p className="text-xs text-primary/70 font-semibold mt-1 uppercase tracking-wide">/ {formData.duration_type}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-3">
+                            <div className="p-3 border border-border bg-card rounded-xl text-center shadow-sm">
+                                <p className="text-xl font-extrabold">{stats.enabled}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Enabled</p>
+                            </div>
+                            <div className="p-3 border border-border bg-card rounded-xl text-center shadow-sm">
+                                <p className="text-xl font-extrabold">{stats.disabled}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Disabled</p>
+                            </div>
+                            <div className="p-3 border border-border bg-card rounded-xl text-center shadow-sm">
+                                <p className="text-xl font-extrabold text-primary">{stats.unlimited}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Unlimited</p>
+                            </div>
+                            <div className="p-3 border border-border bg-card rounded-xl text-center shadow-sm">
+                                <p className="text-xl font-extrabold">{stats.limited}</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Limited</p>
+                            </div>
+                        </div>
+                        
+                        <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg flex items-start gap-3">
+                            <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                            <p>You are about to {isEdit ? "update an existing plan" : "create a new subscription plan"}. All associated limits and feature access will take effect immediately for new subscribers.</p>
+                        </div>
+                    </div>
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button variant="ghost" onClick={() => setIsReviewOpen(false)}>Back to Editing</Button>
+                        <Button onClick={handleSubmit} disabled={isSubmitting} className="min-w-[140px]">
+                            {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                            Confirm & Save
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </TooltipProvider>
     );
 }
 
-// ── Sub-components ─────────────────────────────────────────────────
-
-function Section({ title, description, children }: {
-    title: string; description?: string; children: React.ReactNode;
-}) {
+function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode; }) {
     return (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6 space-y-4">
-            <div className="space-y-1 pb-2 border-b border-border">
-                <h3 className="text-sm font-semibold">{title}</h3>
-                {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <div className="space-y-5">
+            <div className="space-y-1.5 pb-2">
+                <h3 className="text-lg font-extrabold tracking-tight">{title}</h3>
+                {description && <p className="text-sm text-muted-foreground font-medium">{description}</p>}
             </div>
             {children}
         </div>
     );
 }
 
-function Field({ label, required, children }: {
-    label: string; required?: boolean; children: React.ReactNode;
-}) {
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode; }) {
     return (
-        <div className="space-y-1.5">
-            <Label className="text-sm font-medium">
-                {label}{required && <span className="text-destructive ml-0.5">*</span>}
+        <div className="space-y-2">
+            <Label className="text-sm font-bold text-foreground/90 flex items-center gap-1">
+                {label}{required && <span className="text-destructive">*</span>}
             </Label>
             {children}
-        </div>
-    );
-}
-
-function ToggleRow({ label, description, checked, onChange }: {
-    label: string; description: string; checked: boolean; onChange: (v: boolean) => void;
-}) {
-    return (
-        <div className="flex items-center justify-between gap-4">
-            <div className="space-y-0.5">
-                <p className="text-sm font-medium">{label}</p>
-                <p className="text-xs text-muted-foreground">{description}</p>
-            </div>
-            <Switch checked={checked} onCheckedChange={onChange} />
-        </div>
-    );
-}
-
-function SkeletonSection({ rows }: { rows: number }) {
-    return (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6 space-y-4 animate-pulse">
-            <div className="h-4 w-32 bg-muted rounded" />
-            <div className="space-y-3">
-                {Array.from({ length: rows }).map((_, i) => (
-                    <div key={i} className="h-10 bg-muted rounded-lg" />
-                ))}
-            </div>
         </div>
     );
 }

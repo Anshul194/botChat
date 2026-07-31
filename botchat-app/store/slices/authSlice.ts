@@ -37,7 +37,7 @@ const initialState: AuthState = {
 
 function normalizeRole(user: Record<string, unknown>) {
     const rawType = String(user?.type || '').toLowerCase().trim();
-    return rawType === 'super admin' ? 'SUPER_ADMIN' :
+    return rawType === 'super admin' || rawType === 'superadmin' ? 'SUPER_ADMIN' :
         rawType === 'reseller' ? 'RESELLER' :
             rawType === 'tenant' ? 'TENANT' :
             rawType === 'admin' ? 'ADMIN' : 'USER';
@@ -96,7 +96,11 @@ export const loginUser = createAsyncThunk(
                 if (normalizedUser) localStorage.setItem('user', JSON.stringify(normalizedUser));
             }
 
-            setTimeout(() => dispatch(fetchSubscription()), 0);
+            setTimeout(() => {
+                if (normalizedUser.role !== 'SUPER_ADMIN') {
+                    dispatch(fetchSubscription());
+                }
+            }, 0);
 
             return { token, user: normalizedUser };
         } catch (error: unknown) {
@@ -133,6 +137,41 @@ export const resendVerification = createAsyncThunk(
             return response.data.message;
         } catch (error: any) {
             const message = error.response?.data?.message || error.message || 'Failed to resend verification.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk(
+    'auth/forgotPassword',
+    async (payload: { email: string }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/forgot-password', payload);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Failed to send reset link.');
+            }
+            return response.data.message || 'If your email exists in our system, a password reset link has been sent.';
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Failed to send reset link.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    'auth/resetPassword',
+    async (
+        payload: { token: string; email: string; password: string; password_confirmation: string },
+        { rejectWithValue }
+    ) => {
+        try {
+            const response = await api.post('/auth/reset-password', payload);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Password reset failed.');
+            }
+            return response.data.message || 'Password reset successfully.';
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Password reset failed.';
             return rejectWithValue(message);
         }
     }
