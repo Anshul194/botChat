@@ -56,10 +56,12 @@ const KPI_COLORS: Record<string, string> = {
 };
 
 function getIcon(key: string): typeof MessageSquare {
+    if (!key) return Activity;
     return KPI_ICONS[key] || KPI_ICONS[Object.keys(KPI_ICONS).find(k => key.includes(k)) || ''] || Activity;
 }
 
 function getColor(key: string): string {
+    if (!key) return "#6C5CE7";
     return KPI_COLORS[key] || KPI_COLORS[Object.keys(KPI_COLORS).find(k => key.includes(k)) || ''] || "#6C5CE7";
 }
 
