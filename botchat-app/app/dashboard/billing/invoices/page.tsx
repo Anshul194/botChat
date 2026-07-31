@@ -74,11 +74,11 @@ export default function InvoicesPage() {
                     <div className="flex justify-between items-start mb-6 sm:mb-10">
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-black tracking-tight" style={{ color: "var(--foreground)" }}>INVOICE</h1>
-                            <p className="text-xs sm:text-sm mt-0.5 sm:mt-1" style={{ color: "var(--muted-foreground)" }}>#{selectedInvoice.payment_id || `INV-${selectedInvoice.id}`}</p>
+                            <p className="text-xs sm:text-sm font-medium mt-0.5 sm:mt-1" style={{ color: "var(--muted-foreground)" }}>#{selectedInvoice.payment_id || `INV-${selectedInvoice.id}`}</p>
                         </div>
                         <div className="text-right">
                             <p className="text-base sm:text-lg font-black" style={{ color: "var(--foreground)" }}>BotChat</p>
-                            <p className="text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>botchat.app</p>
+                            <p className="text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>botchat.app</p>
                         </div>
                     </div>
 
@@ -119,7 +119,7 @@ export default function InvoicesPage() {
                         <p className="text-[10px] sm:text-xs mt-0.5 sm:mt-1" style={{ color: "var(--muted-foreground)" }}>Status: <span className="font-semibold capitalize">{selectedInvoice.status}</span></p>
                     </div>
 
-                    <div className="mt-8 sm:mt-12 text-center text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>
+                    <div className="mt-8 sm:mt-12 text-center text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                         Thank you for your business!
                     </div>
                 </div>
@@ -137,7 +137,7 @@ export default function InvoicesPage() {
                 <div>
                     <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-0.5 sm:mb-1" style={{ color: "var(--nav-active-color)" }}>Billing</p>
                     <h1 className="text-2xl sm:text-3xl font-black tracking-tight" style={{ color: "var(--foreground)" }}>Invoices</h1>
-                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm" style={{ color: "var(--muted-foreground)" }}>View and download your payment receipts</p>
+                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>View and download your payment receipts</p>
                 </div>
             </motion.div>
 
@@ -150,7 +150,7 @@ export default function InvoicesPage() {
                     style={{ borderColor: "var(--glass-border)" }}>
                     <Receipt className="mx-auto h-8 sm:h-10 w-8 sm:w-10 mb-3 sm:mb-4" style={{ color: "var(--muted-foreground)" }} />
                     <p className="text-sm sm:text-base font-semibold" style={{ color: "var(--foreground)" }}>No invoices yet</p>
-                    <p className="text-xs sm:text-sm mt-0.5 sm:mt-1" style={{ color: "var(--muted-foreground)" }}>Invoices will appear here after your first payment.</p>
+                    <p className="text-xs sm:text-sm font-medium mt-0.5 sm:mt-1" style={{ color: "var(--muted-foreground)" }}>Invoices will appear here after your first payment.</p>
                 </motion.div>
             ) : (
                 <motion.div variants={itemVariants} className="space-y-2">
@@ -172,7 +172,7 @@ export default function InvoicesPage() {
                                 <p className="text-xs sm:text-sm font-semibold truncate" style={{ color: "var(--foreground)" }}>
                                     {item.payment_id || `INV-${String(item.id).padStart(4, "0")}`}
                                 </p>
-                                <p className="text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>
+                                <p className="text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                                     {item.created_at ? new Date(item.created_at).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" }) : ""}
                                 </p>
                             </div>

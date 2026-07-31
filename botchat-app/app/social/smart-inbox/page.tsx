@@ -159,7 +159,7 @@ export default function SmartInboxPage() {
                             </div>
                             <div>
                                 <p className="text-sm font-bold" style={{ color: "var(--foreground)" }}>Select a conversation</p>
-                                <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                                <p className="text-xs font-medium mt-1" style={{ color: "var(--muted-foreground)" }}>
                                     Choose from the list on the left to start chatting
                                 </p>
                             </div>

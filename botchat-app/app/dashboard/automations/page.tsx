@@ -82,7 +82,7 @@ export default function AutomationsPage() {
                 ].map((s) => (
                     <div key={s.label} className="glass-card rounded-2xl p-4">
                         <div className="text-2xl font-bold mb-1" style={{ color: s.color }}>{s.value}</div>
-                        <div className="text-xs" style={{ color: "var(--muted-foreground)" }}>{s.label}</div>
+                        <div className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{s.label}</div>
                     </div>
                 ))}
             </div>
@@ -99,7 +99,7 @@ export default function AutomationsPage() {
                             style={{ background: `${t.color}10`, border: `1px solid ${t.color}20` }}>
                             <div className="text-2xl mb-1">{t.icon}</div>
                             <div className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>{t.name}</div>
-                            <div className="text-[10px] mt-0.5" style={{ color: "var(--muted-foreground)" }}>{t.cat}</div>
+                            <div className="text-[10px] font-medium mt-0.5" style={{ color: "var(--muted-foreground)" }}>{t.cat}</div>
                         </button>
                     ))}
                 </div>
@@ -139,7 +139,7 @@ export default function AutomationsPage() {
                         <div className="flex items-start justify-between mb-3">
                             <div className="flex-1 min-w-0 pr-2">
                                 <h3 className="font-semibold text-sm" style={{ color: "var(--foreground)" }}>{a.name}</h3>
-                                <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>{a.desc}</p>
+                                <p className="text-xs font-medium mt-0.5" style={{ color: "var(--muted-foreground)" }}>{a.desc}</p>
                             </div>
                             <div className="flex items-center gap-1 flex-shrink-0">
                                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1"
@@ -154,18 +154,18 @@ export default function AutomationsPage() {
 
                         <div className="flex items-center gap-2 mb-3">
                             {(a.platform === "instagram" || a.platform === "both") &&
-                                <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px]"
+                                <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium"
                                     style={{ background: "rgba(236,72,153,0.1)", color: "#ec4899" }}>
                                     <Instagram className="w-3 h-3" />Instagram
                                 </div>}
                             {(a.platform === "facebook" || a.platform === "both") &&
-                                <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px]"
+                                <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium"
                                     style={{ background: "rgba(59,130,246,0.1)", color: "#3b82f6" }}>
                                     <Facebook className="w-3 h-3" />Facebook
                                 </div>}
                         </div>
 
-                        <div className="flex items-center gap-3 text-xs mb-3" style={{ color: "var(--muted-foreground)" }}>
+                        <div className="flex items-center gap-3 text-xs font-medium mb-3" style={{ color: "var(--muted-foreground)" }}>
                             <Zap className="w-3 h-3" />
                             <span>{a.trigger}</span>
                         </div>
@@ -179,7 +179,7 @@ export default function AutomationsPage() {
                                 <div key={m.label} className="text-center p-2 rounded-xl"
                                     style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
                                     <div className="text-sm font-bold" style={{ color: m.color }}>{m.value}</div>
-                                    <div className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{m.label}</div>
+                                    <div className="text-[10px] font-medium" style={{ color: "var(--muted-foreground)" }}>{m.label}</div>
                                 </div>
                             ))}
                         </div>
@@ -187,7 +187,7 @@ export default function AutomationsPage() {
                         <div className="flex items-center gap-2">
                             <div className="flex gap-1 flex-1 flex-wrap">
                                 {a.tags.map((tag) => (
-                                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full"
+                                    <span key={tag} className="text-[10px] font-medium px-2 py-0.5 rounded-full"
                                         style={{ background: "var(--glass-bg)", color: "var(--muted-foreground)", border: "1px solid var(--glass-border)" }}>
                                         #{tag}
                                     </span>

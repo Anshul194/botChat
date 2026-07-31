@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { fetchUsers, toggleUserStatus, fetchUserById, createUser, assignPlanToUser } from "@/store/slices/usersSlice";
-import { fetchMyPlans } from "@/store/slices/plansSlice";
+import { fetchPlans } from "@/store/slices/plansSlice";
 import { Users, Search, Filter, MoreVertical, Shield, UserCheck, UserMinus, Mail } from "lucide-react";
 import { Phone, Globe, Calendar, ArrowUpRight, Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { AlertCircle, UserPlus, ChevronDown } from "lucide-react";
@@ -51,7 +51,7 @@ function UserMobileCard({ user, onView, onAssignPlan, onToggleStatus }: {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-black leading-none truncate">{user.name}</h4>
-                        <p className="text-[11px] text-muted-foreground mt-1 truncate flex items-center gap-1">
+                        <p className="text-[11px] font-medium text-muted-foreground mt-1 truncate flex items-center gap-1">
                             <Mail className="h-2.5 w-2.5 shrink-0" /> {user.email}
                         </p>
                         <div className="flex items-center gap-2 mt-1.5 text-[10px] font-bold text-muted-foreground">
@@ -109,7 +109,7 @@ export default function UserManagementPage() {
     const dispatch = useAppDispatch();
     const { settings } = useTenantSettings();
     const { users, isLoading, selectedUser } = useAppSelector((state) => state.users);
-    const { myPlans: plans } = useAppSelector((state) => state.plans);
+    const { plans } = useAppSelector((state) => state.plans);
     const { showModal } = useModal();
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
@@ -152,7 +152,7 @@ export default function UserManagementPage() {
 
     useEffect(() => {
         dispatch(fetchUsers());
-        dispatch(fetchMyPlans());
+        dispatch(fetchPlans());
         document.title = `User Management | ${settings.appName}`;
     }, [dispatch]);
 
@@ -402,7 +402,7 @@ export default function UserManagementPage() {
                                                     </Avatar>
                                                     <div>
                                                         <p className="text-sm font-black leading-none">{user.name}</p>
-                                                        <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+                                                        <p className="text-[11px] font-medium text-muted-foreground mt-1 flex items-center gap-1">
                                                             <Mail className="h-2.5 w-2.5" />
                                                             {user.email}
                                                         </p>
@@ -901,7 +901,7 @@ export default function UserManagementPage() {
                                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                                 </div>
                                 {plans.length === 0 && (
-                                    <p className="text-[11px] text-amber-500">No plans found. Please create a plan first.</p>
+                                    <p className="text-[11px] font-medium text-amber-500">No plans found. Please create a plan first.</p>
                                 )}
                             </div>
                         </div>

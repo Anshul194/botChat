@@ -210,7 +210,7 @@ export default function ContentLibraryPage() {
                                         <p className="text-[10px] uppercase font-bold" style={{ color: "var(--brand-purple)" }}>
                                             {asset.type}
                                         </p>
-                                        <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                                        <p className="text-[10px] font-medium" style={{ color: "var(--muted-foreground)" }}>
                                             {formatBytes(asset.size)}
                                         </p>
                                     </div>

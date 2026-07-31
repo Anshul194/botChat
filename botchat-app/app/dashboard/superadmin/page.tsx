@@ -120,7 +120,7 @@ export default function SuperAdminDashboardPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-bold truncate">{n.title}</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{n.message}</p>
+                                <p className="text-[10px] sm:text-xs font-medium text-muted-foreground line-clamp-1">{n.message}</p>
                             </div>
                             <span className="text-[10px] font-semibold text-muted-foreground shrink-0">{timeAgo(n.created_at)}</span>
                         </div>

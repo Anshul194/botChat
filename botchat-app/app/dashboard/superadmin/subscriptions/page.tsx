@@ -142,7 +142,7 @@ export default function SubscriptionsPage() {
                                 >
                                     <div className="col-span-3 min-w-0">
                                         <p className="text-sm font-bold truncate" style={{ color: "var(--foreground)" }}>{t.name}</p>
-                                        <p className="text-xs truncate" style={{ color: "var(--muted-foreground)" }}>{t.email}</p>
+                                        <p className="text-xs font-medium truncate" style={{ color: "var(--muted-foreground)" }}>{t.email}</p>
                                     </div>
                                     <div className="col-span-2">
                                         {t.plan ? (
@@ -151,7 +151,7 @@ export default function SubscriptionsPage() {
                                                 <Crown className="w-3 h-3" /> {t.plan.name}
                                             </span>
                                         ) : (
-                                            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>—</span>
+                                            <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>—</span>
                                         )}
                                     </div>
                                     <div className="col-span-2">

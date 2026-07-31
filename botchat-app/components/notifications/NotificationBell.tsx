@@ -6,13 +6,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchNotifications, fetchUnreadCount, markAllNotificationsRead } from "@/store/slices/notificationSlice";
 import NotificationItem from "./NotificationItem";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/components/ThemeProvider";
+
 
 export default function NotificationBell() {
     const dispatch = useAppDispatch();
     const router = useRouter();
-    const { theme } = useTheme();
-    const isLight = theme === "light";
     const { notifications, unreadCount } = useAppSelector((s) => s.notification);
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -62,10 +60,10 @@ export default function NotificationBell() {
 
             {open && (
                 <div className="absolute right-0 top-[calc(100%+10px)] w-[calc(100vw-2rem)] sm:w-[360px] max-w-[360px] rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150"
-                    style={{ background: isLight ? "rgba(255,255,255,0.98)" : "rgba(12,16,28,0.98)", border: `1px solid ${isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.07)"}`, backdropFilter: "blur(20px)" }}>
+                    style={{ background: "var(--topbar-dropdown-bg)", border: "1px solid var(--topbar-dropdown-border)", backdropFilter: "blur(20px)" }}>
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3"
-                        style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.05)"}` }}>
+                        style={{ borderBottom: "1px solid var(--topbar-dropdown-border)" }}>
                         <div className="flex items-center gap-2">
                             <Bell className="w-3.5 h-3.5" style={{ color: "#6C5CE7" }} />
                             <span className="text-[13px] font-black" style={{ color: "var(--foreground)" }}>Notifications</span>
@@ -103,7 +101,7 @@ export default function NotificationBell() {
                         ) : (
                             notifications.slice(0, 8).map((n, i) => (
                                 <div key={n.id}
-                                    style={{ borderBottom: i < Math.min(notifications.length, 8) - 1 ? `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)"}` : "none" }}>
+                                    style={{ borderBottom: i < Math.min(notifications.length, 8) - 1 ? "1px solid var(--topbar-dropdown-border)" : "none" }}>
                                     <NotificationItem notification={n} />
                                 </div>
                             ))
@@ -111,7 +109,7 @@ export default function NotificationBell() {
                     </div>
 
                     {/* Footer */}
-                    <div className="p-3" style={{ borderTop: `1px solid ${isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.05)"}` }}>
+                    <div className="p-3" style={{ borderTop: "1px solid var(--topbar-dropdown-border)" }}>
                         <button
                             onClick={() => { setOpen(false); router.push("/dashboard/notifications"); }}
                             className="w-full text-[11px] font-bold flex items-center justify-center gap-1 py-2 rounded-xl transition-colors"

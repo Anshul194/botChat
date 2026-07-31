@@ -548,7 +548,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div variants={itemVariants} className="space-y-0.5">
                             {!collapsed && (
                                 <div className="px-3 pb-1.5">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] dark:text-[var(--foreground)]">
+                                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--foreground)]">
                                         Administration
                                     </span>
                                 </div>
@@ -710,6 +710,7 @@ function NavAccordion({
     return (
         <div
             className="relative"
+            style={{ overflow: "visible" }}
             onMouseEnter={() => collapsed && setIsHovered(true)}
             onMouseLeave={() => collapsed && setIsHovered(false)}
         >
@@ -820,60 +821,73 @@ function NavAccordion({
             </AnimatePresence>
 
             {/* Collapsed hover floating panel via Tooltip */}
-            <AnimatePresence>
-                {collapsed && (
-                    <Tooltip open={isHovered} onOpenChange={setIsHovered}>
-                        <TooltipTrigger asChild>
-                            <div className="absolute inset-0 z-10" aria-hidden="true" />
-                        </TooltipTrigger>
-                        <TooltipContent
-                            side="right"
-                            sideOffset={10}
-                            className="p-2 min-w-[200px] bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden"
+            {collapsed && (
+                <Tooltip open={isHovered} onOpenChange={setIsHovered}>
+                    <TooltipTrigger asChild>
+                        <div className="absolute inset-0" style={{ zIndex: 10, pointerEvents: "none" }} aria-hidden="true" />
+                    </TooltipTrigger>
+                    <TooltipContent
+                        side="right"
+                        sideOffset={12}
+                        collisionPadding={12}
+                        className="p-0 min-w-[210px] border shadow-2xl rounded-2xl overflow-hidden"
+                        style={{
+                            zIndex: 9999,
+                            background: "var(--card)",
+                            borderColor: "var(--glass-border)",
+                            boxShadow: "var(--shadow-card)",
+                            color: "var(--foreground)"
+                        }}
+                    >
+                        {/* Header */}
+                        <div
+                            className="px-4 py-2.5"
+                            style={{ borderBottom: "1px solid var(--glass-border)", background: "var(--glass-bg)" }}
                         >
-                            <div className="px-3 py-2 mb-1 border-b border-neutral-100 dark:border-neutral-800">
-                                <span className="text-xs font-black uppercase tracking-widest text-neutral-400">{label}</span>
-                            </div>
-                            <div className="space-y-0.5">
-                                {items.map(sub => {
-                                    const SubIcon = sub.icon;
-                                    const isSubActive = pathname.startsWith(sub.href);
-                                    return (
-                                        <button
-                                            key={sub.href}
-                                            onClick={() => { if (onClose) onClose(); navigate(sub.href); setIsHovered(false); }}
-                                            aria-label={sub.ariaLabel || sub.label}
-                                            aria-current={isSubActive ? "page" : undefined}
-                                            className={cn(
-                                                "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left",
-                                                isSubActive
-                                                    ? "bg-neutral-100 dark:bg-neutral-800"
-                                                    : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                            <span
+                                className="text-[10px] font-black uppercase tracking-widest"
+                                style={{ color: "var(--muted-foreground)" }}
+                            >
+                                {label}
+                            </span>
+                        </div>
+                        {/* Items */}
+                        <div className="p-1.5 space-y-0.5">
+                            {items.map(sub => {
+                                const SubIcon = sub.icon;
+                                const isSubActive = pathname.startsWith(sub.href);
+                                return (
+                                    <button
+                                        key={sub.href}
+                                        onClick={() => { if (onClose) onClose(); navigate(sub.href); setIsHovered(false); }}
+                                        aria-label={sub.ariaLabel || sub.label}
+                                        aria-current={isSubActive ? "page" : undefined}
+                                        className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
+                                        style={{
+                                            color: isSubActive ? "var(--nav-active-color)" : "var(--foreground)",
+                                            background: isSubActive ? "var(--nav-active-bg)" : "transparent",
+                                        }}
+                                        onMouseEnter={e => { if (!isSubActive) (e.currentTarget as HTMLElement).style.background = "var(--nav-hover-bg)"; }}
+                                        onMouseLeave={e => { if (!isSubActive) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                                    >
+                                        <span className="flex items-center gap-2.5 truncate">
+                                            {SubIcon && (
+                                                <SubIcon
+                                                    className="w-3.5 h-3.5 flex-shrink-0"
+                                                    style={{ color: isSubActive ? "var(--nav-active-color)" : "var(--muted-foreground)" }}
+                                                    aria-hidden="true"
+                                                />
                                             )}
-                                            style={{ color: isSubActive ? "var(--nav-active-color)" : "var(--sidebar-foreground)" }}
-                                        >
-                                            <span className="flex items-center gap-2.5 truncate">
-                                                {SubIcon && (
-                                                    <SubIcon
-                                                        className={cn(
-                                                            "w-3.5 h-3.5 flex-shrink-0",
-                                                            isSubActive ? "" : "text-neutral-400"
-                                                        )}
-                                                        style={isSubActive ? { color: "var(--nav-active-color)" } : undefined}
-                                                        aria-hidden="true"
-                                                    />
-                                                )}
-                                                {sub.label}
-                                            </span>
-                                            {sub.badge && <SubBadge badge={sub.badge} />}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
-            </AnimatePresence>
+                                            {sub.label}
+                                        </span>
+                                        {sub.badge && <SubBadge badge={sub.badge} />}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </TooltipContent>
+                </Tooltip>
+            )}
         </div>
     );
 }
@@ -953,7 +967,7 @@ function NavItem({
                             <TooltipTrigger asChild>
                                 <div className="absolute inset-0 z-10" aria-hidden="true" />
                             </TooltipTrigger>
-                            <TooltipContent side="right" sideOffset={10} className="bg-neutral-900 text-white border-none font-bold">
+                            <TooltipContent side="right" sideOffset={10} className="border-none font-bold" style={{ background: "#171717", color: "#ffffff" }}>
                                 {item.label}
                             </TooltipContent>
                         </Tooltip>

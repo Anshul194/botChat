@@ -95,7 +95,7 @@ function EmptyStateCard({ widget }: { widget: any }) {
                 <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color }} />
             </div>
             <p className="relative text-xs sm:text-sm font-bold mb-1">{es.action}</p>
-            <p className="relative text-[10px] sm:text-xs text-foreground/50">Get started with {widget.module?.replace('_', ' ')}</p>
+            <p className="relative text-[10px] sm:text-xs font-medium text-foreground/50">Get started with {widget.module?.replace('_', ' ')}</p>
         </div>
     );
 }
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-bold truncate text-foreground/90">{n.title}</p>
-                                <p className="text-[11px] text-foreground/60 line-clamp-1">{n.message}</p>
+                                <p className="text-[11px] font-medium text-foreground/60 line-clamp-1">{n.message}</p>
                             </div>
                             <span className="text-[10px] font-semibold text-foreground/40 shrink-0">{timeAgo(n.created_at)}</span>
                         </div>

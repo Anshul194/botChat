@@ -124,7 +124,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                     </div>
                     <div>
                       <p className="text-xs font-bold leading-tight">your_page</p>
-                      <p className="text-[10px] text-[var(--muted-foreground)]">Sponsored</p>
+                      <p className="text-[10px] font-medium text-[var(--muted-foreground)]">Sponsored</p>
                     </div>
                   </div>
                   <MoreHorizontal className="w-4 h-4 text-[var(--muted-foreground)]" />
@@ -214,12 +214,12 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                   <div className="space-y-1">
                     <p className="text-[11px] font-bold">1,234 likes</p>
                     {type !== 'text' && (
-                        <p className="text-[11px] whitespace-pre-wrap">
+                        <p className="text-[11px] font-medium whitespace-pre-wrap">
                           <span className="font-bold mr-1">your_page</span>
                           {content || 'Your caption will appear here...'}
                         </p>
                     )}
-                    <p className="text-[9px] text-[var(--muted-foreground)] uppercase">Just now</p>
+                    <p className="text-[9px] font-medium text-[var(--muted-foreground)] uppercase">Just now</p>
                   </div>
                 </div>
               </>
@@ -232,7 +232,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                         <div className="w-10 h-10 rounded-full bg-[var(--border)]" />
                         <div>
                             <p className="text-sm font-bold leading-tight">Your Page Name</p>
-                            <p className="text-[10px] text-[var(--muted-foreground)] flex items-center gap-1">
+                            <p className="text-[10px] font-medium text-[var(--muted-foreground)] flex items-center gap-1">
                                 Just now · <GlobeIcon className="w-2 h-2" />
                             </p>
                         </div>
@@ -250,7 +250,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                           <>
                               <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
                                {displayMedia.length > 1 && (
-                                  <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px]">
+                                  <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px] font-medium">
                                       {currentMediaIndex + 1}/{displayMedia.length}
                                   </Badge>
                                )}
@@ -260,12 +260,12 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                                     <p className="text-xs font-bold text-[var(--foreground)] truncate">
                                       {carouselItems[currentMediaIndex].title || 'Card Title'}
                                     </p>
-                                    <p className="text-[10px] text-[var(--muted-foreground)] line-clamp-1">
+                                    <p className="text-[10px] font-medium text-[var(--muted-foreground)] line-clamp-1">
                                       {carouselItems[currentMediaIndex].description || 'Card description goes here...'}
                                     </p>
                                     {carouselItems[currentMediaIndex].link && (
                                       <div className="mt-1 flex items-center justify-between">
-                                        <span className="text-[10px] text-[var(--muted-foreground)] uppercase">
+                                        <span className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase">
                                           {new URL(carouselItems[currentMediaIndex].link).hostname.replace('www.', '')}
                                         </span>
                                         <button className="px-2 py-0.5 bg-[var(--border)] rounded text-[10px] font-bold">Learn More</button>

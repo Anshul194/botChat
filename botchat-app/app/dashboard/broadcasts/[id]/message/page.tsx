@@ -100,7 +100,7 @@ function TextBuilder({ payload, onChange }: { payload: any; onChange: (p: any) =
                 className="resize-none font-mono text-sm"
             />
             <div>
-                <p className="text-xs text-neutral-500 mb-1.5">Insert personalisation variable:</p>
+                <p className="text-xs font-medium text-neutral-500 mb-1.5">Insert personalisation variable:</p>
                 <PlaceholderChips onInsert={insert} />
             </div>
             <div className="flex justify-between text-xs text-neutral-400">
@@ -139,7 +139,7 @@ function ImageBuilder({ payload, onChange, onOpenMediaPicker }: { payload: any; 
                     onChange={(e) => onChange({ ...payload, caption: e.target.value })}
                 />
             </div>
-            <p className="text-xs text-neutral-500">Supported: JPG, PNG, GIF, WebP. Max 8 MB. For video use a separate MP4 URL.</p>
+            <p className="text-xs font-medium text-neutral-500">Supported: JPG, PNG, GIF, WebP. Max 8 MB. For video use a separate MP4 URL.</p>
         </div>
     );
 }
@@ -202,7 +202,7 @@ function ButtonBuilder({ payload, onChange }: { payload: any; onChange: (p: any)
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="text-xs text-neutral-500 mb-1 block">Type</label>
+                                <label className="text-xs font-medium text-neutral-500 mb-1 block">Type</label>
                                 <Select
                                     value={btn.type}
                                     onValueChange={(v) => updateButton(i, { type: v as "web_url" | "postback", url: "", payload: "" })}
@@ -217,7 +217,7 @@ function ButtonBuilder({ payload, onChange }: { payload: any; onChange: (p: any)
                                 </Select>
                             </div>
                             <div>
-                                <label className="text-xs text-neutral-500 mb-1 block">Title (max 20 chars)</label>
+                                <label className="text-xs font-medium text-neutral-500 mb-1 block">Title (max 20 chars)</label>
                                 <Input
                                     className="h-8 text-sm"
                                     placeholder="e.g. Visit Website"
@@ -229,7 +229,7 @@ function ButtonBuilder({ payload, onChange }: { payload: any; onChange: (p: any)
                         </div>
                         {btn.type === "web_url" ? (
                             <div>
-                                <label className="text-xs text-neutral-500 mb-1 block">URL</label>
+                                <label className="text-xs font-medium text-neutral-500 mb-1 block">URL</label>
                                 <Input
                                     className="h-8 text-sm"
                                     type="url"
@@ -240,7 +240,7 @@ function ButtonBuilder({ payload, onChange }: { payload: any; onChange: (p: any)
                             </div>
                         ) : (
                             <div>
-                                <label className="text-xs text-neutral-500 mb-1 block">Postback Payload</label>
+                                <label className="text-xs font-medium text-neutral-500 mb-1 block">Postback Payload</label>
                                 <Input
                                     className="h-8 text-sm font-mono"
                                     placeholder="e.g. PROMO_CLICKED"
@@ -344,7 +344,7 @@ function CarouselBuilder({ payload, onChange, onOpenMediaPicker }: { payload: an
             <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="text-xs text-neutral-500 mb-1 block">Card Title *</label>
+                        <label className="text-xs font-medium text-neutral-500 mb-1 block">Card Title *</label>
                         <Input
                             placeholder="Product Name"
                             value={card.title}
@@ -352,7 +352,7 @@ function CarouselBuilder({ payload, onChange, onOpenMediaPicker }: { payload: an
                         />
                     </div>
                     <div>
-                        <label className="text-xs text-neutral-500 mb-1 block">Image URL</label>
+                        <label className="text-xs font-medium text-neutral-500 mb-1 block">Image URL</label>
                         <div className="flex items-center gap-1">
                             <Input
                                 type="url"
@@ -368,7 +368,7 @@ function CarouselBuilder({ payload, onChange, onOpenMediaPicker }: { payload: an
                     </div>
                 </div>
                 <div>
-                    <label className="text-xs text-neutral-500 mb-1 block">Subtitle</label>
+                    <label className="text-xs font-medium text-neutral-500 mb-1 block">Subtitle</label>
                     <Input
                         placeholder="Short description for this card"
                         value={card.subtitle}
@@ -522,7 +522,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
                     {preview?.url ? (
                         <div className="space-y-2">
                             <img src={preview.url} alt="Preview" className="rounded-xl max-w-full object-cover max-h-48" />
-                            {preview.caption && <p className="text-xs text-neutral-600">{preview.caption}</p>}
+                            {preview.caption && <p className="text-xs font-medium text-neutral-600">{preview.caption}</p>}
                         </div>
                     ) : (
                         <div className="bg-neutral-100 dark:bg-neutral-700 w-48 h-36 rounded-xl flex items-center justify-center text-neutral-400 text-xs">
@@ -555,7 +555,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
                                 {card?.image_url && <img src={card.image_url} alt={card.title} className="w-full h-28 object-cover" />}
                                 <div className="p-3">
                                     <p className="font-bold text-sm text-neutral-900 dark:text-neutral-100">{card?.title || "Card Title"}</p>
-                                    <p className="text-xs text-neutral-500 mt-0.5">{card?.subtitle || "Subtitle"}</p>
+                                    <p className="text-xs font-medium text-neutral-500 mt-0.5">{card?.subtitle || "Subtitle"}</p>
                                     {(card?.buttons || []).map((b: ButtonItem, bi: number) => (
                                         <div key={bi} className="mt-2 border-t border-neutral-100 dark:border-neutral-700 pt-1.5 text-center text-blue-600 dark:text-blue-400 text-xs font-semibold">
                                             {b.title || `Btn ${bi + 1}`}
@@ -567,7 +567,7 @@ function MessengerPreview({ messageType, preview }: { messageType: MessageType; 
                                         <button onClick={() => setCarouselIdx(Math.max(0, carouselIdx - 1))} disabled={carouselIdx === 0} className="text-neutral-400 hover:text-neutral-600 disabled:opacity-30">
                                             <ChevronLeft className="w-4 h-4" />
                                         </button>
-                                        <span className="text-xs text-neutral-400">{carouselIdx + 1} / {cards.length}</span>
+                                        <span className="text-xs font-medium text-neutral-400">{carouselIdx + 1} / {cards.length}</span>
                                         <button onClick={() => setCarouselIdx(Math.min(cards.length - 1, carouselIdx + 1))} disabled={carouselIdx === cards.length - 1} className="text-neutral-400 hover:text-neutral-600 disabled:opacity-30">
                                             <ChevronRight className="w-4 h-4" />
                                         </button>
@@ -647,8 +647,8 @@ function TemplatePickerModal({ open, onClose, onSelect }: { open: boolean; onClo
                                     onClose();
                                 }} className="p-4 rounded-xl cursor-pointer transition-colors border border-neutral-800 hover:border-brand-purple hover:bg-[var(--card)]/5">
                                     <h4 className="font-bold text-sm mb-1">{t.name}</h4>
-                                    <p className="text-xs text-brand-purple mb-2">{t.category} • {t.message_type}</p>
-                                    <p className="text-xs text-neutral-400 line-clamp-2">{t.description || "No description"}</p>
+                                    <p className="text-xs font-medium text-brand-purple mb-2">{t.category} • {t.message_type}</p>
+                                    <p className="text-xs font-medium text-neutral-400 line-clamp-2">{t.description || "No description"}</p>
                                 </div>
                             ))}
                         </div>
@@ -841,7 +841,7 @@ export default function MessageBuilderPage() {
                     <span className="shrink-0 text-neutral-400">Review &amp; Schedule</span>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                    <span className={`text-xs ${isDirty ? "text-amber-500" : "text-emerald-500"}`}>
+                                            <span className={`text-xs font-medium ${isDirty ? "text-amber-500" : "text-emerald-500"}`}>
                         {autosaveStatus}
                     </span>
                     <Button variant="outline" size="sm" onClick={handleSave} disabled={saveMutation.isPending || !isDirty}>
@@ -936,7 +936,7 @@ export default function MessageBuilderPage() {
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-neutral-900 dark:text-neutral-100">Your Page</p>
-                                            <p className="text-xs text-neutral-500">Messenger Preview</p>
+                                            <p className="text-xs font-medium text-neutral-500">Messenger Preview</p>
                                         </div>
                                     </div>
                                     <Badge variant="outline" className="text-xs">Live</Badge>

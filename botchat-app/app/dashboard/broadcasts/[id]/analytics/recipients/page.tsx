@@ -182,7 +182,7 @@ function TimelineModal({
                                                         <div className="flex items-center justify-between gap-2 flex-wrap">
                                                             <span className="text-sm font-semibold capitalize"
                                                                 style={{ color: cfg.color }}>{ev.event_type}</span>
-                                                            <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                                                            <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                                                                 {fmtTime(ev.occurred_at)}
                                                             </span>
                                                         </div>
@@ -464,7 +464,7 @@ export default function BroadcastRecipientsReportPage() {
                         {meta.last_page > 1 && (
                             <div className="flex items-center justify-between px-4 py-3 border-t"
                                 style={{ borderColor: "var(--border)" }}>
-                                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                                <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                                     Page {meta.current_page} of {meta.last_page} · {meta.total?.toLocaleString()} total
                                 </p>
                                 <div className="flex gap-2">

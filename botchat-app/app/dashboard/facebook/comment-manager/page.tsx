@@ -837,25 +837,25 @@ export default function CommentManager() {
                     paddingBottom: "env(safe-area-inset-bottom, 0px)"
                 }}>
                 <div className="flex items-stretch px-1 pt-1.5 pb-1">
-                    <button onClick={() => router.push("/dashboard/facebook/comment-templates")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--muted-foreground)" }}>
+                    <button onClick={() => router.push("/dashboard/facebook/comment-templates")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--foreground)" }}>
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
                             <MessageSquare className="w-[17px] h-[17px]" strokeWidth={1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>Comment<br />Templates</span>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 0.65 }}>Comment<br />Templates</span>
                     </button>
 
-                    <button onClick={() => router.push("/dashboard/facebook/reply-templates")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--muted-foreground)" }}>
+                    <button onClick={() => router.push("/dashboard/facebook/reply-templates")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--foreground)" }}>
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
                             <FileText className="w-[17px] h-[17px]" strokeWidth={1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>Reply<br />Templates</span>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 0.65 }}>Reply<br />Templates</span>
                     </button>
 
-                    <button onClick={() => router.push("/dashboard/facebook/custom-fields")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--muted-foreground)" }}>
+                    <button onClick={() => router.push("/dashboard/facebook/custom-fields")} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "var(--foreground)" }}>
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
                             <SlidersHorizontal className="w-[17px] h-[17px]" strokeWidth={1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>Custom<br />Fields</span>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 0.65 }}>Custom<br />Fields</span>
                     </button>
 
                     <button onClick={() => setIsCampaignModalOpen(true)} className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative" style={{ color: "#0866FF" }}>
@@ -863,7 +863,7 @@ export default function CommentManager() {
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200" style={{ background: "rgba(8,102,255,0.09)" }}>
                             <Sparkles className="w-[17px] h-[17px]" strokeWidth={2.5} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 1 }}>Bot Reply<br />Setup</span>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 1 }}>Bot Reply<br />Setup</span>
                     </button>
                 </div>
             </nav>

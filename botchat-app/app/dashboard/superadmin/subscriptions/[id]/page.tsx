@@ -183,7 +183,7 @@ export default function TenantSubscriptionDetailPage() {
                                         <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
                                             {p.payment_id || `#${p.id}`}
                                         </p>
-                                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                                        <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                                             {p.payment_type} {p.coupon_code ? `· coupon: ${p.coupon_code}` : ""}
                                         </p>
                                     </div>
@@ -194,7 +194,7 @@ export default function TenantSubscriptionDetailPage() {
                                     <span className="text-sm font-black tabular-nums" style={{ color: "var(--foreground)" }}>
                                         {formatCurrency(p.amount)}
                                     </span>
-                                    <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                                    <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                                         {new Date(p.created_at).toLocaleDateString("en-IN")}
                                     </span>
                                 </div>

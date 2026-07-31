@@ -29,7 +29,7 @@ export default function RevenueDashboardPage() {
             {/* Header */}
             <motion.div variants={itemVariants}>
                 <h1 className="text-xl font-black" style={{ color: "var(--foreground)" }}>Revenue Center</h1>
-                <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
+                <p className="text-xs font-medium mt-1" style={{ color: "var(--muted-foreground)" }}>
                     Revenue analytics, payment metrics, and tenant insights
                 </p>
             </motion.div>

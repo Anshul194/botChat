@@ -54,7 +54,7 @@ function StatCard({
                 </div>
             </div>
             <p className="text-3xl font-bold" style={{ color: "var(--foreground)" }}>{value}</p>
-            {sub && <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{sub}</p>}
+            {sub && <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{sub}</p>}
         </div>
     );
 }
@@ -310,7 +310,7 @@ export default function BroadcastAnalyticsPage() {
                             </div>
                         ))}
                     </div>
-                    <p className="text-xs text-center" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="text-xs font-medium text-center" style={{ color: "var(--muted-foreground)" }}>
                         Each bar = 1 hour window
                     </p>
                 </div>

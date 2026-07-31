@@ -148,7 +148,7 @@ export default function BroadcastTemplatesPage() {
                             <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-bold text-sm truncate" style={{ color: "var(--foreground)" }}>{t.name}</h3>
-                                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--brand-purple)" }}>{t.category}</p>
+                                    <p className="text-xs font-medium truncate mt-0.5" style={{ color: "var(--brand-purple)" }}>{t.category}</p>
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <button onClick={() => toggleFavMutation.mutate({ id: t.id, is_favorite: !t.is_favorite })}
@@ -179,7 +179,7 @@ export default function BroadcastTemplatesPage() {
                             </div>
 
                             {/* Desc */}
-                            <p className="text-xs flex-1 line-clamp-2" style={{ color: "var(--muted-foreground)" }}>
+                            <p className="text-xs font-medium flex-1 line-clamp-2" style={{ color: "var(--muted-foreground)" }}>
                                 {t.description || "No description provided."}
                             </p>
 

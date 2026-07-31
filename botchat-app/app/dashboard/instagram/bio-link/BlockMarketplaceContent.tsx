@@ -183,7 +183,7 @@ export default function BlockMarketplaceContent({
                         className={cn(
                             "px-4 py-2 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap",
                             activeCategory === "all"
-                                ? "bg-[var(--background)] text-white dark:bg-[var(--card)] dark:text-[var(--foreground)]"
+                                ? "bg-neutral-900 text-white dark:bg-[var(--card)] dark:text-[var(--foreground)]"
                                 : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]"
                         )}
                     >
@@ -197,7 +197,7 @@ export default function BlockMarketplaceContent({
                             className={cn(
                                 "px-4 py-2 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap capitalize",
                                 activeCategory === category
-                                    ? "bg-[var(--background)] text-white dark:bg-[var(--card)] dark:text-[var(--foreground)]"
+                                    ? "bg-neutral-900 text-white dark:bg-[var(--card)] dark:text-[var(--foreground)]"
                                     : "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)]/60 dark:hover:bg-[var(--muted)]"
                             )}
                         >

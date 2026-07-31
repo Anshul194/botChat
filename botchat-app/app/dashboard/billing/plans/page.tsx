@@ -124,7 +124,7 @@ export default function BillingPlansPage() {
                                         <div>
                                             <h3 className="text-base sm:text-lg font-black" style={{ color: "var(--foreground)" }}>{plan.name}</h3>
                                             {plan.description && (
-                                                <p className="text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>{plan.description}</p>
+                                                <p className="text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{plan.description}</p>
                                             )}
                                         </div>
                                     </div>
@@ -133,7 +133,7 @@ export default function BillingPlansPage() {
                                         <span className="text-2xl sm:text-4xl font-black tabular-nums leading-none" style={{ color: "var(--foreground)" }}>
                                             {formatCurrency(plan.price)}
                                         </span>
-                                        <span className="mb-0.5 sm:mb-1.5 text-[10px] sm:text-sm" style={{ color: "var(--muted-foreground)" }}>
+                                        <span className="mb-0.5 sm:mb-1.5 text-[10px] sm:text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>
                                             / {plan.duration} {plan.duration_type}
                                         </span>
                                     </div>
@@ -196,7 +196,7 @@ export default function BillingPlansPage() {
                 </div>
                 <div className="rounded-2xl border p-4 sm:p-5" style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)" }}>
                     <h3 className="text-xs sm:text-sm font-bold mb-1.5 sm:mb-2" style={{ color: "var(--foreground)" }}>Need help?</h3>
-                    <p className="text-[10px] sm:text-xs" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                         Contact support for enterprise plans, custom requirements, or billing inquiries.
                     </p>
                 </div>

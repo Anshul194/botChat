@@ -222,7 +222,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                         <div className="flex-1 min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                 <div className="min-w-0">
-                                    <p className="text-[10px] sm:text-xs text-[var(--muted-foreground)] mb-0.5 sm:mb-1 truncate">
+                                    <p className="text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)] mb-0.5 sm:mb-1 truncate">
                                         Links <span className="text-[var(--muted-foreground)]/50">›</span> <span className="font-semibold">{draft.slug}</span>
                                     </p>
                                     <h2 className="text-lg sm:text-2xl font-extrabold tracking-tight text-[var(--foreground)] dark:text-white truncate">{draft.slug}</h2>
@@ -236,7 +236,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                     </Link>
                                 </div>
                             </div>
-                            <p className="text-[11px] sm:text-sm text-[var(--muted-foreground)] mt-1 sm:mt-2">Customize delivery rules and integrations for this short link.</p>
+                            <p className="text-[11px] sm:text-sm font-medium text-[var(--muted-foreground)] mt-1 sm:mt-2">Customize delivery rules and integrations for this short link.</p>
                         </div>
                     </div>
                 </div>
@@ -266,7 +266,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             </button>
                         </div>
                         {!isValidUrl(draft.destinationUrl) && (
-                            <div className="text-[11px] sm:text-xs text-red-600 mt-1.5 sm:mt-2">Please enter a valid URL (e.g. example.com or https://example.com)</div>
+                            <div className="text-[11px] sm:text-xs font-medium text-red-600 mt-1.5 sm:mt-2">Please enter a valid URL (e.g. example.com or https://example.com)</div>
                         )}
                     </div>
                 </div>
@@ -340,7 +340,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                         <div className="flex items-start justify-between mb-4">
                             <div className="min-w-0">
                                 <div className="text-base sm:text-lg font-extrabold">{currentMeta?.label}</div>
-                                <div className="text-[11px] sm:text-sm text-[var(--muted-foreground)] mt-0.5 sm:mt-1">Configure {currentMeta?.label.toLowerCase()} behavior and options for this short link.</div>
+                                <div className="text-[11px] sm:text-sm font-medium text-[var(--muted-foreground)] mt-0.5 sm:mt-1">Configure {currentMeta?.label.toLowerCase()} behavior and options for this short link.</div>
                             </div>
                             <div className="shrink-0 ml-3">
                                 {openSection === "app" && (
@@ -402,7 +402,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                                 <div key={pid} className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-[var(--card)] dark:bg-[var(--muted)] border border-[var(--border)] dark:border-[var(--border)]">
                                                     <div className="min-w-0 flex-1 mr-2">
                                                         <div className="text-xs sm:text-sm font-bold text-[var(--foreground)] dark:text-[var(--foreground)] truncate">{pixel.name}</div>
-                                                        <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] truncate">{pixel.type} — {pixel.pixel_id_value}</div>
+                                                        <div className="text-[10px] sm:text-[11px] font-medium text-[var(--muted-foreground)] truncate">{pixel.type} — {pixel.pixel_id_value}</div>
                                                     </div>
                                                     <input
                                                         type="checkbox"
@@ -433,7 +433,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                     </button>
                                     <div>
                                         <div className="text-sm font-bold">Schedule</div>
-                                        <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)]">Configure the dates on which it will work.</div>
+                                        <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)]">Configure the dates on which it will work.</div>
                                     </div>
                                 </div>
 
@@ -453,12 +453,12 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                 <div className="mt-4 sm:mt-6">
                                     <label className="text-xs sm:text-sm font-bold text-[var(--foreground)]">Clicks limit</label>
                                     <input type="number" value={(draft as any).clicksLimit || ""} onChange={(e) => setDraft((p: any) => ({ ...p, clicksLimit: e.target.value }))} className="w-full mt-1.5 sm:mt-2 h-9 sm:h-10 px-3 rounded-lg border border-[var(--border)] dark:border-[var(--border)] bg-transparent text-xs sm:text-sm" />
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">Only allow the link to work for a certain amount of clicks.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">Only allow the link to work for a certain amount of clicks.</div>
                                 </div>
                                 <div className="mt-4 sm:mt-6">
                                     <label className="text-xs sm:text-sm font-bold text-[var(--foreground)]">Expiration URL</label>
                                     <input type="text" value={(draft as any).expirationUrl || ""} onChange={(e) => setDraft((p: any) => ({ ...p, expirationUrl: e.target.value }))} className="w-full mt-1.5 sm:mt-2 h-9 sm:h-10 px-3 rounded-lg border border-[var(--border)] dark:border-[var(--border)] bg-transparent text-xs sm:text-sm" />
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">Visitors will be redirected to this URL after the main link expires.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">Visitors will be redirected to this URL after the main link expires.</div>
                                 </div>
                             </div>
                         )}
@@ -483,7 +483,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                 <div className="mt-4 sm:mt-6 border-t border-[var(--border)] dark:border-[var(--border)] pt-3 sm:pt-4">
                                     <label className="text-xs sm:text-sm font-bold text-[var(--foreground)] flex items-center gap-2"><Globe size={14} className="sm:size-4" /> UTM preview</label>
                                     <div className="text-xs sm:text-sm mt-1.5 sm:mt-2 break-all">{draft.destinationUrl}{draft.utmSource || draft.utmMedium || draft.utmCampaign ? `?utm_source=${draft.utmSource}&utm_medium=${draft.utmMedium}&utm_campaign=${draft.utmCampaign}` : "None"}</div>
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">This query parameter will be appended to your destination URL.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">This query parameter will be appended to your destination URL.</div>
                                 </div>
                             </div>
                         )}
@@ -494,7 +494,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                 <div>
                                     <label className="text-xs sm:text-sm font-bold text-[var(--foreground)] flex items-center gap-2 mb-1.5 sm:mb-2"><Shield size={14} className="sm:size-4" /> Password</label>
                                     <input value={draft.password} onChange={(e) => setDraft((prev) => ({ ...prev, password: e.target.value }))} placeholder="Password" type="password" className="w-full h-9 sm:h-10 px-3 rounded-lg border border-[var(--border)] dark:border-[var(--border)] bg-transparent text-xs sm:text-sm" />
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">Require users to enter a password before accessing the link.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">Require users to enter a password before accessing the link.</div>
                                 </div>
                                 <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-[var(--border)] dark:border-[var(--border)]">
                                     <div className="flex items-center gap-3">
@@ -503,7 +503,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         </button>
                                         <span className="text-xs sm:text-sm font-bold">Sensitive content warning</span>
                                     </div>
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">Require users to confirm that they want to access your link and letting them know that the link might be sensitive.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">Require users to confirm that they want to access your link and letting them know that the link might be sensitive.</div>
                                 </div>
                             </div>
                         )}
@@ -588,7 +588,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                     <input type="checkbox" />
                                     <span className="text-xs sm:text-sm">Block search engine indexing</span>
                                 </label>
-                                <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-2 sm:mt-3">Prevent this short link from being indexed by search engines.</div>
+                                <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-2 sm:mt-3">Prevent this short link from being indexed by search engines.</div>
                             </div>
                         )}
 
@@ -613,11 +613,11 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                                 className="bg-[var(--card)] dark:bg-slate-700 px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm border border-[var(--border)] dark:border-slate-600 shadow-sm shrink-0">
                                                 Choose File
                                             </button>
-                                            <span className="text-[11px] sm:text-sm text-[var(--muted-foreground)] truncate">
+                                            <span className="text-[11px] sm:text-sm font-medium text-[var(--muted-foreground)] truncate">
                                                 {(draft as any).cloaking_favicon instanceof File ? (draft as any).cloaking_favicon.name : ((draft as any).cloaking_favicon ? "Uploaded" : "No file")}
                                             </span>
                                         </div>
-                                        <div className="text-[10px] sm:text-xs text-[var(--muted-foreground)]/70 mt-1">.jpg, .jpeg, .png, .ico, .svg, .gif, .webp allowed. 2 MB max.</div>
+                                        <div className="text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)]/70 mt-1">.jpg, .jpeg, .png, .ico, .svg, .gif, .webp allowed. 2 MB max.</div>
                                     </div>
                                     <div>
                                         <label className="text-xs sm:text-sm font-bold text-[var(--foreground)] block mb-1.5 sm:mb-2">Opengraph of the cloaked page</label>
@@ -628,16 +628,16 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                                 className="bg-[var(--card)] dark:bg-slate-700 px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm border border-[var(--border)] dark:border-slate-600 shadow-sm shrink-0">
                                                 Choose File
                                             </button>
-                                            <span className="text-[11px] sm:text-sm text-[var(--muted-foreground)] truncate">
+                                            <span className="text-[11px] sm:text-sm font-medium text-[var(--muted-foreground)] truncate">
                                                 {(draft as any).cloaking_opengraph instanceof File ? (draft as any).cloaking_opengraph.name : ((draft as any).cloaking_opengraph ? "Uploaded" : "No file")}
                                             </span>
                                         </div>
-                                        <div className="text-[10px] sm:text-xs text-[var(--muted-foreground)]/70 mt-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB max.</div>
+                                        <div className="text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)]/70 mt-1">.jpg, .jpeg, .png, .svg, .gif, .webp, .avif allowed. 2 MB max.</div>
                                     </div>
                                     <div>
                                         <label className="text-xs sm:text-sm font-bold text-[var(--foreground)] block mb-1.5 sm:mb-2">Custom JS</label>
                                         <textarea value={(draft as any).cloaking_custom_js || ""} onChange={(e) => setDraft((p: any) => ({ ...p, cloaking_custom_js: e.target.value }))} placeholder="<script>console.log(`Hello world`);</script>" className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-[var(--border)] dark:border-[var(--border)] bg-transparent text-xs sm:text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all h-20 sm:h-24 font-mono" />
-                                        <div className="text-[10px] sm:text-xs text-[var(--muted-foreground)]/70 mt-1">Custom JS code to enhance the capability of your page.</div>
+                                        <div className="text-[10px] sm:text-xs font-medium text-[var(--muted-foreground)]/70 mt-1">Custom JS code to enhance the capability of your page.</div>
                                     </div>
                                 </div>
                             </div>
@@ -656,7 +656,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         <option value="307">307 (Temporary Redirect)</option>
                                         <option value="308">308 (Permanent Redirect)</option>
                                     </select>
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">Select the HTTP status code for this link.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">Select the HTTP status code for this link.</div>
                                 </div>
                                 <div className="mt-4 sm:mt-6">
                                     <label className="block text-xs sm:text-sm font-bold text-[var(--foreground)]">Splash page</label>
@@ -665,7 +665,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                         className="w-full mt-1.5 sm:mt-2 h-9 sm:h-10 px-3 rounded-lg border border-[var(--border)] dark:border-[var(--border)] bg-transparent text-xs sm:text-sm">
                                         <option value="">None</option>
                                     </select>
-                                    <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] mt-1">Redirect visitors to a splash page before the final destination.</div>
+                                    <div className="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1">Redirect visitors to a splash page before the final destination.</div>
                                 </div>
                                 <label className="flex items-center gap-3 mt-4 sm:mt-6">
                                     <input type="checkbox" />

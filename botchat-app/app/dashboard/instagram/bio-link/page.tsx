@@ -262,7 +262,7 @@ const ToggleField = ({ label, desc, icon: Icon, checked, onChange, colorClass }:
     <div className="group flex items-center justify-between p-5 rounded-[24px] bg-[var(--muted)]/50 dark:bg-[var(--card)]/[0.03] border border-[var(--border)] dark:border-white/5 hover:border-[var(--border)] dark:hover:border-white/10 transition-all">
         <div className="flex items-center gap-4">
             {Icon && (
-                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-[var(--background)]")}>
+                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105", colorClass || "bg-neutral-900")}>
                     <Icon size={18} />
                 </div>
             )}
@@ -3895,7 +3895,7 @@ function BioLinkBuilderContent() {
                                 key={phase.id}
                                 onClick={() => { setActivePanel("builder"); setView(phase.id); }}
                                 className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                                style={{ color: isActive ? "var(--primary)" : "var(--muted-foreground)" }}
+                                style={{ color: isActive ? "var(--primary)" : "var(--foreground)" }}
                             >
                                 {isActive && (
                                     <span className="absolute top-0 left-2 right-2 h-[2.5px] rounded-full bg-primary" />
@@ -3912,7 +3912,7 @@ function BioLinkBuilderContent() {
                                         strokeWidth={isActive ? 2.5 : 1.8}
                                     />
                                 </div>
-                                <span className="text-[9px] font-medium leading-none" style={{ opacity: isActive ? 1 : 0.5 }}>
+                                <span className="text-[11px] font-medium leading-none" style={{ opacity: isActive ? 1 : 0.65 }}>
                                     {phase.label.split(".")[1]?.trim() || phase.label}
                                 </span>
                             </button>
@@ -3925,7 +3925,7 @@ function BioLinkBuilderContent() {
                             <button
                                 onClick={() => setActivePanel(isPreviewActive ? "builder" : "preview")}
                                 className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                                style={{ color: isPreviewActive ? "#8b5cf6" : "var(--muted-foreground)" }}
+                                style={{ color: isPreviewActive ? "#8b5cf6" : "var(--foreground)" }}
                             >
                                 {isPreviewActive && (
                                     <span className="absolute top-0 left-2 right-2 h-[2.5px] rounded-full bg-violet-500" />
@@ -3942,7 +3942,7 @@ function BioLinkBuilderContent() {
                                         strokeWidth={isPreviewActive ? 2.5 : 1.8}
                                     />
                                 </div>
-                                <span className="text-[9px] font-medium leading-none" style={{ opacity: isPreviewActive ? 1 : 0.5 }}>
+                                <span className="text-[11px] font-medium leading-none" style={{ opacity: isPreviewActive ? 1 : 0.65 }}>
                                     Preview
                                 </span>
                             </button>

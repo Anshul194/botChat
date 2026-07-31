@@ -208,7 +208,7 @@ export function CarouselComposer({ onPublish, isPublishing, accounts, isLoadingA
                       <img src={page.image} className="w-4 h-4 rounded-full" />
                       <div className="flex flex-col">
                         <span className="font-bold text-xs">{page.name}</span>
-                        <span className="text-[10px] text-[var(--muted-foreground)]">{page.accountName}</span>
+                        <span className="text-[10px] font-medium text-[var(--muted-foreground)]">{page.accountName}</span>
                       </div>
                     </div>
                   </SelectItem>

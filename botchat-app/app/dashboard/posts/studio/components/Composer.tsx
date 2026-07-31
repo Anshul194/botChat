@@ -221,7 +221,7 @@ export function Composer({
                       <img src={page.image} className="w-5 h-5 rounded-full object-cover" alt="" />
                       <div className="flex flex-col">
                         <span className="font-bold text-xs">{page.name}</span>
-                        <span className="text-[10px] text-[var(--muted-foreground)]">{page.accountName}</span>
+                        <span className="text-[10px] font-medium text-[var(--muted-foreground)]">{page.accountName}</span>
                       </div>
                     </div>
                   </SelectItem>
@@ -540,7 +540,7 @@ export function Composer({
                   {activeTab === 'video' && (
                     <div className="flex items-center gap-2 h-9 lg:h-11">
                       <Switch checked={isReel} onCheckedChange={setIsReel} className="data-[state=checked]:bg-primary scale-75 lg:scale-100" />
-                      <Label className="text-[10px] lg:text-sm text-[var(--muted-foreground)]">Reels</Label>
+                      <Label className="text-[10px] lg:text-sm font-medium text-[var(--muted-foreground)]">Reels</Label>
                     </div>
                   )}
                 </div>

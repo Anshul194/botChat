@@ -216,7 +216,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
                                 className="w-2 h-2 rounded-full"
                                 style={{ background: step.done ? "#10b981" : "var(--glass-border)" }}
                             />
-                            <span className="text-[10px]" style={{ color: step.done ? "#10b981" : "var(--muted-foreground)" }}>{step.label}</span>
+                            <span className="text-[10px] font-medium" style={{ color: step.done ? "#10b981" : "var(--muted-foreground)" }}>{step.label}</span>
                         </div>
                         {i < 3 && <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: "var(--glass-border)" }} />}
                     </div>
@@ -233,7 +233,7 @@ function CampaignCard({ campaign, onDelete, onClone, onSaveTemplate }: {
                     <div key={s.label} className="p-2 rounded-xl text-center" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
                         <s.icon className="w-3.5 h-3.5 mx-auto mb-1" style={{ color: "var(--muted-foreground)" }} />
                         <div className="text-xs font-bold" style={{ color: "var(--foreground)" }}>{s.value}</div>
-                        <div className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{s.label}</div>
+                        <div className="text-[10px] font-medium" style={{ color: "var(--muted-foreground)" }}>{s.label}</div>
                     </div>
                 ))}
             </div>

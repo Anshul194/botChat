@@ -125,7 +125,7 @@ export default function BroadcastTemplateEditorPage() {
                     <FileJson className="w-4 h-4 text-brand-purple" />
                     Message Payload Preview
                 </h3>
-                <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                <p className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
                     To modify the actual message content, create a new campaign from this template, edit it there, and save it as a new template.
                 </p>
                 <div className="bg-neutral-900 rounded-xl p-4 overflow-x-auto">

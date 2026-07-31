@@ -167,7 +167,7 @@ export default function AITrainingPage() {
                                                         {campaign.name}
                                                     </div>
                                                     {campaign.description && (
-                                                        <div className="text-xs text-neutral-400 dark:text-neutral-500 truncate mt-0.5">
+                                                        <div className="text-xs font-medium text-neutral-400 dark:text-neutral-500 truncate mt-0.5">
                                                             {campaign.description}
                                                         </div>
                                                     )}
@@ -291,7 +291,7 @@ export default function AITrainingPage() {
                                     </table>
                                 </div>
                                 <div className="px-6 py-3 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
-                                    <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                                    <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
                                         Showing {filtered.length} of {campaigns.length} campaigns
                                     </p>
                                 </div>

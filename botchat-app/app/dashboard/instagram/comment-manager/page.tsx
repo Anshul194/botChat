@@ -1168,7 +1168,7 @@ export default function InstagramCommentManagerPage() {
                                         <button
                                             onClick={handlePauseAllOthers}
                                             disabled={isPausingAllOthers}
-                                            className="w-full py-4 rounded-2xl bg-[var(--background)] dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] text-[11px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 disabled:opacity-50"
+                                            className="w-full py-4 rounded-2xl bg-neutral-900 dark:bg-[var(--card)] text-white dark:text-[var(--foreground)] text-[11px] font-black uppercase tracking-widest shadow-xl transition-all active:scale-95 disabled:opacity-50"
                                         >
                                             {isPausingAllOthers ? "Processing..." : "Yes, Pause all Others"}
                                         </button>
@@ -1198,7 +1198,7 @@ export default function InstagramCommentManagerPage() {
                     <button
                         onClick={() => { setActiveView("comment-templates"); }}
                         className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                        style={{ color: activeView === "comment-templates" ? "var(--nav-active-color)" : "var(--muted-foreground)" }}
+                        style={{ color: activeView === "comment-templates" ? "var(--nav-active-color)" : "var(--foreground)" }}
                     >
                         {activeView === "comment-templates" && (
                             <span className="absolute top-0 left-3 right-3 h-[2.5px] rounded-full" style={{ background: "var(--nav-active-color)" }} />
@@ -1208,7 +1208,7 @@ export default function InstagramCommentManagerPage() {
                         >
                             <MessageSquare className="w-[17px] h-[17px]" strokeWidth={activeView === "comment-templates" ? 2.5 : 1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: activeView === "comment-templates" ? 1 : 0.7 }}>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: activeView === "comment-templates" ? 1 : 0.65 }}>
                             Comment<br />Templates
                         </span>
                     </button>
@@ -1216,7 +1216,7 @@ export default function InstagramCommentManagerPage() {
                     <button
                         onClick={() => { setActiveView("reply-templates"); }}
                         className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                        style={{ color: activeView === "reply-templates" ? "var(--nav-active-color)" : "var(--muted-foreground)" }}
+                        style={{ color: activeView === "reply-templates" ? "var(--nav-active-color)" : "var(--foreground)" }}
                     >
                         {activeView === "reply-templates" && (
                             <span className="absolute top-0 left-3 right-3 h-[2.5px] rounded-full" style={{ background: "var(--nav-active-color)" }} />
@@ -1226,7 +1226,7 @@ export default function InstagramCommentManagerPage() {
                         >
                             <FileText className="w-[17px] h-[17px]" strokeWidth={activeView === "reply-templates" ? 2.5 : 1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: activeView === "reply-templates" ? 1 : 0.7 }}>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: activeView === "reply-templates" ? 1 : 0.65 }}>
                             Reply<br />Templates
                         </span>
                     </button>
@@ -1234,12 +1234,12 @@ export default function InstagramCommentManagerPage() {
                     <button
                         onClick={() => setShowFullReplyModal(true)}
                         className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                        style={{ color: "var(--muted-foreground)" }}
+                        style={{ color: "var(--foreground)" }}
                     >
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
                             <Sparkles className="w-[17px] h-[17px]" strokeWidth={1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 0.65 }}>
                             Full<br />Reply
                         </span>
                     </button>
@@ -1247,12 +1247,12 @@ export default function InstagramCommentManagerPage() {
                     <button
                         onClick={() => setShowMentionReplyModal(true)}
                         className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                        style={{ color: "var(--muted-foreground)" }}
+                        style={{ color: "var(--foreground)" }}
                     >
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
                             <User className="w-[17px] h-[17px]" strokeWidth={1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 0.65 }}>
                             Mention<br />Reply
                         </span>
                     </button>
@@ -1260,12 +1260,12 @@ export default function InstagramCommentManagerPage() {
                     <button
                         onClick={() => { setCampaignReportType("auto-reply"); setShowCampaignReportModal(true); }}
                         className="flex flex-col items-center gap-0.5 py-1.5 transition-all min-w-0 flex-1 relative"
-                        style={{ color: "var(--muted-foreground)" }}
+                        style={{ color: "var(--foreground)" }}
                     >
                         <div className="w-9 h-8 rounded-xl flex items-center justify-center transition-all duration-200 bg-transparent">
                             <ClipboardList className="w-[17px] h-[17px]" strokeWidth={1.8} />
                         </div>
-                        <span className="text-[9.5px] font-medium leading-none text-center" style={{ opacity: 0.7 }}>
+                        <span className="text-[11px] font-medium leading-none text-center" style={{ opacity: 0.65 }}>
                             Reports
                         </span>
                     </button>
