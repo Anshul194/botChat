@@ -16,7 +16,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 
 export function ForgotPasswordDialog() {
-    const { showModal } = useModal();
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState("");
     const [step, setStep] = useState<"email" | "sent" | "error">("email");
@@ -60,9 +59,9 @@ export function ForgotPasswordDialog() {
                 Forgot password?
             </Button>
             <Dialog open={open} onOpenChange={handleClose}>
-                <DialogContent className="sm:max-w-[420px] rounded-3xl border-none bg-background shadow-2xl p-0 overflow-hidden">
-                    <div className="h-1.5 w-full bg-gradient-to-r from-primary via-pink-500 to-primary" />
-                    <div className="px-8 pt-8 pb-6">
+                <DialogContent className="sm:max-w-[420px] rounded-3xl border border-[var(--border)] bg-[var(--card)] shadow-2xl p-0 overflow-hidden">
+                    <div className="h-1.5 w-full bg-gradient-to-r from-primary via-primary to-primary" />
+                    <div className="px-5 sm:px-8 pt-8 pb-6">
                         <DialogHeader>
                             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                                 <Mail className="w-6 h-6 text-primary" />
@@ -84,7 +83,7 @@ export function ForgotPasswordDialog() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -8 }}
                                 onSubmit={handleSubmit}
-                                className="px-8 pb-6 space-y-4"
+                                className="px-5 sm:px-8 pb-6 space-y-4"
                             >
                                 <div className="space-y-1.5">
                                     <Label htmlFor="reset-email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -105,7 +104,8 @@ export function ForgotPasswordDialog() {
                                 </div>
                                 {error && (
                                     <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                        className="text-xs flex items-center gap-1" style={{ color: "#ef4444" }}>
+                                        className="text-xs flex items-center gap-1.5 px-3 py-2.5 rounded-lg"
+                                        style={{ color: "var(--destructive)", background: "color-mix(in srgb, var(--destructive) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--destructive) 25%, transparent)" }}>
                                         {error}
                                     </motion.p>
                                 )}
@@ -113,7 +113,7 @@ export function ForgotPasswordDialog() {
                                     type="submit"
                                     disabled={loading}
                                     className="w-full h-12 rounded-xl font-black text-sm text-white gap-2"
-                                    style={{ background: "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)" }}
+                                    style={{ background: "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)", boxShadow: "0 4px 20px rgba(30,95,212,0.30)" }}
                                 >
                                     {loading ? (
                                         <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
@@ -128,10 +128,11 @@ export function ForgotPasswordDialog() {
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -8 }}
-                                className="px-8 pb-8 pt-4 flex flex-col items-center text-center gap-4"
+                                className="px-5 sm:px-8 pb-8 pt-4 flex flex-col items-center text-center gap-4"
                             >
-                                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                                    <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                                <div className="w-16 h-16 rounded-full flex items-center justify-center"
+                                    style={{ background: "color-mix(in srgb, #10b981 12%, transparent)" }}>
+                                    <CheckCircle2 className="w-8 h-8" style={{ color: "#10b981" }} />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-black tracking-tight">Check your inbox</h3>
@@ -155,14 +156,15 @@ export function ForgotPasswordDialog() {
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -8 }}
-                                className="px-8 pb-8 pt-4 flex flex-col items-center text-center gap-4"
+                                className="px-5 sm:px-8 pb-8 pt-4 flex flex-col items-center text-center gap-4"
                             >
-                                <div className="w-16 h-16 rounded-full bg-rose-500/10 flex items-center justify-center">
-                                    <Mail className="w-8 h-8 text-rose-500" />
+                                <div className="w-16 h-16 rounded-full flex items-center justify-center"
+                                    style={{ background: "color-mix(in srgb, var(--destructive) 12%, transparent)" }}>
+                                    <Mail className="w-8 h-8" style={{ color: "var(--destructive)" }} />
                                 </div>
                                 <h3 className="text-lg font-black tracking-tight">Something went wrong</h3>
                                 <p className="text-sm text-muted-foreground">{error}</p>
-                                <Button className="w-full rounded-xl font-bold" onClick={() => setStep("email")}>
+                                <Button className="w-full rounded-xl font-bold text-white" style={{ background: "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)" }} onClick={() => setStep("email")}>
                                     Try Again
                                 </Button>
                             </motion.div>
