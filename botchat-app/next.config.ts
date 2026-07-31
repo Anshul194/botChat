@@ -23,10 +23,24 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/:all*(mp4|webm)",
+        locale: false,
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         source: "/_next/static/:path*",
         locale: false,
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
+        source: "/_next/image",
+        locale: false,
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
         ],
       },
       {
@@ -38,9 +52,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/(.*?)",
+        locale: false,
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         ],
       },
     ];

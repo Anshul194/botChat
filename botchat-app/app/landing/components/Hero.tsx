@@ -186,8 +186,17 @@ function BrowserStage() {
   );
 }
 
-function VideoStage() {
+function VideoStage({ active }: { active: boolean }) {
   const [videoError, setVideoError] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+
+  // Only load the heavy mp4 once the stage is actually shown
+  useEffect(() => {
+    if (active && !videoReady) {
+      const timer = setTimeout(() => setVideoReady(true), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [active, videoReady]);
 
   return (
     <div className="w-full h-full relative">
@@ -201,12 +210,21 @@ function VideoStage() {
           <p className="text-pink-300/80 text-xs font-semibold tracking-widest uppercase">Demo Video</p>
         </div>
 
+      ) : !videoReady ? (
+        <div className="w-full aspect-video flex flex-col items-center justify-center gap-4"
+          style={{ background: "linear-gradient(135deg,#0a0411 0%,#1a0828 100%)" }}>
+          <div className="w-16 h-16 rounded-full bg-pink-500/20 border border-pink-500/30 flex items-center justify-center animate-pulse">
+            <Play className="w-7 h-7 text-pink-400 fill-pink-400" />
+          </div>
+          <p className="text-pink-300/80 text-xs font-semibold tracking-widest uppercase">Loading Demo</p>
+        </div>
       ) : (
         <video
           autoPlay
           muted
           loop
           playsInline
+          preload="metadata"
           crossOrigin="anonymous"
           poster="/mobile_preview.png"
           onError={() => setVideoError(true)}
@@ -266,7 +284,7 @@ function VisualCarousel() {
   const [stage, setStage] = useState(0);
   const stages = [
     { component: <BrowserStage />, label: "Dashboard" },
-    { component: <VideoStage />, label: "Video" },
+    { component: <VideoStage active={true} />, label: "Video" },
     { component: <AutomationStage />, label: "Automation" }
   ];
 

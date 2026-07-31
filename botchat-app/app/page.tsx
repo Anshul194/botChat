@@ -10,24 +10,31 @@ import PageMeta from "@/components/PageMeta";
 import Navbar from "./landing/components/Navbar";
 import Hero from "./landing/components/Hero";
 
+function SectionLoader() {
+  return (
+    <div className="w-full h-40 animate-pulse rounded-2xl"
+      style={{ background: "color-mix(in srgb, var(--muted) 50%, transparent)" }} />
+  );
+}
+
 const SmoothScrollingUI = dynamic(() => import("./landing/components/SmoothScrollingUI"), { ssr: false });
-const FeaturesOverview = dynamic(() => import("./landing/components/FeaturesOverview"));
-const BioLinkShowcase = dynamic(() => import("./landing/components/BioLinkShowcase"));
-const DMAutomationShowcase = dynamic(() => import("./landing/components/DMAutomationShowcase"));
-const MotiveSection = dynamic(() => import("./landing/components/MotiveSection"));
-const Features = dynamic(() => import("./landing/components/Features"));
-const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"));
-const TrendyStacks = dynamic(() => import("./landing/components/TrendyStacks"));
-const CreatorProof = dynamic(() => import("./landing/components/CreatorProof"));
-const Testimonials = dynamic(() => import("./landing/components/Testimonials"));
-const Pricing = dynamic(() => import("./landing/components/Pricing"));
-const FAQ = dynamic(() => import("./landing/components/FAQ"));
-const Footer = dynamic(() => import("./landing/components/Footer"));
-const GrowthSections = dynamic(() => import("./landing/components/GrowthSections"));
-const TrustAndFinalCTA = dynamic(() => import("./landing/components/TrustAndFinalCTA"));
-const PerformanceChart = dynamic(() => import("./landing/components/PerformanceChart"));
-const StepsSection = dynamic(() => import("./landing/components/StepsSection"));
-const BlogSection = dynamic(() => import("./landing/components/BlogSection"));
+const FeaturesOverview = dynamic(() => import("./landing/components/FeaturesOverview"), { loading: () => <SectionLoader /> });
+const BioLinkShowcase = dynamic(() => import("./landing/components/BioLinkShowcase"), { loading: () => <SectionLoader /> });
+const DMAutomationShowcase = dynamic(() => import("./landing/components/DMAutomationShowcase"), { loading: () => <SectionLoader /> });
+const MotiveSection = dynamic(() => import("./landing/components/MotiveSection"), { loading: () => <SectionLoader /> });
+const Features = dynamic(() => import("./landing/components/Features"), { loading: () => <SectionLoader /> });
+const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"), { loading: () => <SectionLoader /> });
+const TrendyStacks = dynamic(() => import("./landing/components/TrendyStacks"), { loading: () => <SectionLoader /> });
+const CreatorProof = dynamic(() => import("./landing/components/CreatorProof"), { loading: () => <SectionLoader /> });
+const Testimonials = dynamic(() => import("./landing/components/Testimonials"), { loading: () => <SectionLoader /> });
+const Pricing = dynamic(() => import("./landing/components/Pricing"), { loading: () => <SectionLoader /> });
+const FAQ = dynamic(() => import("./landing/components/FAQ"), { loading: () => <SectionLoader /> });
+const Footer = dynamic(() => import("./landing/components/Footer"), { loading: () => <SectionLoader /> });
+const GrowthSections = dynamic(() => import("./landing/components/GrowthSections"), { loading: () => <SectionLoader /> });
+const TrustAndFinalCTA = dynamic(() => import("./landing/components/TrustAndFinalCTA"), { loading: () => <SectionLoader /> });
+const PerformanceChart = dynamic(() => import("./landing/components/PerformanceChart"), { loading: () => <SectionLoader /> });
+const StepsSection = dynamic(() => import("./landing/components/StepsSection"), { loading: () => <SectionLoader /> });
+const BlogSection = dynamic(() => import("./landing/components/BlogSection"), { loading: () => <SectionLoader /> });
 
 export default function Home() {
   const router = useRouter();
