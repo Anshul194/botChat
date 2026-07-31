@@ -26,7 +26,8 @@ const fontOptions = [
     "Urbanist, sans-serif", "Source Sans Pro, sans-serif", "PT Sans, sans-serif",
     "Merriweather, serif", "Playfair Display, serif", "Lora, serif",
     "Libre Baskerville, serif", "Fira Sans, sans-serif", "IBM Plex Sans, sans-serif",
-    "Josefin Sans, sans-serif",
+    "Josefin Sans, sans-serif", "Plus Jakarta Sans, sans-serif", "Sora, sans-serif",
+    "Space Grotesk, sans-serif",
 ];
 
 const creatorPresets = [
@@ -48,6 +49,14 @@ const creatorPresets = [
     { name: "Sunset Drive", vibe: "Vibrant synthwave", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "Work Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
     { name: "Monokai Dev", vibe: "Hacker / Coder aesthetic", mode: "Dark", primary: "#A6E22E", secondary: "#F92672", tertiary: "#66D9EF", fontFamily: "Fira Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
     { name: "Noir Creator", vibe: "Dark black and white focus", mode: "Dark", primary: "#E5E7EB", secondary: "#9CA3AF", tertiary: "#6B7280", fontFamily: "DM Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
+    // SOCIAL / DM APP GROUP — bright, trendy, chat-native
+    { name: "Insta Gradient", vibe: "Iconic IG DM glow", mode: "Dark", primary: "#DD2A7B", secondary: "#8134AF", tertiary: "#FEDA77", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Messenger Blue", vibe: "Familiar, trusted chat", mode: "Dark", primary: "#006AFF", secondary: "#0084FF", tertiary: "#00C6FF", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Snap Yellow", vibe: "High-energy Gen Z chat", mode: "Dark", primary: "#FFFC00", secondary: "#1A1A1A", tertiary: "#FF5F1F", fontFamily: "Space Grotesk, sans-serif", fontSize: 15, fontWeight: 700, darkMode: true },
+    { name: "Chat Green", vibe: "Clean messaging mint", mode: "Dark", primary: "#25D366", secondary: "#075E54", tertiary: "#34D399", fontFamily: "Manrope, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Twitch Purple", vibe: "Vibrant streamer chat", mode: "Dark", primary: "#9146FF", secondary: "#772CE8", tertiary: "#BF94FF", fontFamily: "Space Grotesk, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Discord Blurple", vibe: "Modern community chat", mode: "Dark", primary: "#5865F2", secondary: "#2C2F33", tertiary: "#EB459E", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Neon Pulse", vibe: "Nightlife creator glow", mode: "Dark", primary: "#FF2E9F", secondary: "#00C2FF", tertiary: "#FFFFFF", fontFamily: "Space Grotesk, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
 ];
 
 export default function AppearanceTab({ showModal }: { showModal: (type: string, title: string, desc: string) => void }) {
@@ -144,12 +153,12 @@ export default function AppearanceTab({ showModal }: { showModal: (type: string,
                         <button
                             type="button"
                             onClick={() => setAppearance({ ...appearance, darkMode: false })}
-                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", !appearance.darkMode ? "bg-[var(--card)] dark:bg-slate-800 shadow-lg scale-[1.02] text-amber-500" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
+                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", !appearance.darkMode ? "bg-[var(--card)] dark:bg-black-800 shadow-lg scale-[1.02] text-amber-500" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
                         ><Sun className="w-4 h-4" /> Light</button>
                         <button
                             type="button"
                             onClick={() => setAppearance({ ...appearance, darkMode: true })}
-                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", appearance.darkMode ? "bg-[var(--card)] dark:bg-slate-800 shadow-lg scale-[1.02] text-indigo-400" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
+                            className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all duration-300", appearance.darkMode ? "bg-[var(--card)] dark:bg-black-800 shadow-lg scale-[1.02] text-indigo-400" : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5")}
                         ><Moon className="w-4 h-4" /> Dark</button>
                     </div>
                 </div>
@@ -158,7 +167,7 @@ export default function AppearanceTab({ showModal }: { showModal: (type: string,
                         <button
                             key={preset.name}
                             type="button"
-                            className="group relative flex flex-col items-start overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-primary/10"
+                            className="group relative flex flex-col items-start overflow-hidden rounded-2xl p-5 text-left transition-all duration-500 hover:-tranblack-y-1 hover:shadow-xl dark:hover:shadow-primary/10"
                             style={{
                                 background: preset.darkMode ? "rgba(10,10,10,0.8)" : "rgba(255,255,255,0.9)",
                                 border: `1px solid ${preset.darkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
