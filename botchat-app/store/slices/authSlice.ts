@@ -142,6 +142,41 @@ export const resendVerification = createAsyncThunk(
     }
 );
 
+export const forgotPassword = createAsyncThunk(
+    'auth/forgotPassword',
+    async (payload: { email: string }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/forgot-password', payload);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Failed to send reset link.');
+            }
+            return response.data.message || 'If your email exists in our system, a password reset link has been sent.';
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Failed to send reset link.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    'auth/resetPassword',
+    async (
+        payload: { token: string; email: string; password: string; password_confirmation: string },
+        { rejectWithValue }
+    ) => {
+        try {
+            const response = await api.post('/auth/reset-password', payload);
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Password reset failed.');
+            }
+            return response.data.message || 'Password reset successfully.';
+        } catch (error: any) {
+            const message = error.response?.data?.message || error.message || 'Password reset failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
 export const fetchMe = createAsyncThunk(
     'auth/fetchMe',
     async (_, { rejectWithValue }) => {
