@@ -15,7 +15,8 @@ import {
     fetchSocialLoginSettings, updateSocialLoginSettings
 } from "../../../store/slices/settingsSlice";
 import {
-    changePassword
+    changePassword,
+    selectIsSuperAdmin
 } from "../../../store/slices/authSlice";
 import { useModal } from "@/components/providers/ModalProvider";
 import {
@@ -169,8 +170,23 @@ export default function SettingsPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { showModal } = useModal();
     
+    // Selectors
+    const { user, isLoading: authLoading } = useSelector((state: RootState) => state.auth);
+    const isSuperAdmin = useSelector(selectIsSuperAdmin);
+    const { general, facebookPlatform, ai, socialLogin, tenantSocialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
+
     // Filter navigation groups based on app type
     const navigationGroups = baseNavigationGroups.map(group => {
+        if (group.title === "Account Setup") {
+            return {
+                ...group,
+                items: group.items.filter(item => {
+                    // Custom Domain is only for tenant admins, not Super Admin
+                    if (item.id === "custom-domain" && isSuperAdmin) return false;
+                    return true;
+                })
+            };
+        }
         if (group.title === "App Integrations") {
             return {
                 ...group,
@@ -196,10 +212,6 @@ export default function SettingsPage() {
         if (tabFromUrl) setTab(tabFromUrl);
     }, [searchParams]);
 
-    // File selection state
-    // Selectors
-    const { user, isLoading: authLoading } = useSelector((state: RootState) => state.auth);
-    const { general, facebookPlatform, ai, socialLogin, tenantSocialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
 
     // Initial Fetch (when opening relevant tabs for the first time or mounted)
     useEffect(() => {
