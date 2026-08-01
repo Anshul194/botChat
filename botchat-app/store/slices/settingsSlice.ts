@@ -286,9 +286,11 @@ export const fetchDomainRequests = createAsyncThunk(
 
 export const requestDomainChange = createAsyncThunk(
     'settings/requestDomainChange',
-    async (domain_name: string, { rejectWithValue }) => {
+    async (domain_name: string, { dispatch, rejectWithValue }) => {
         try {
             const res = await api.post('/settings/change-domain', { domain_name });
+            // Refetch domain requests after successful submission
+            dispatch(fetchDomainRequests());
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -298,9 +300,11 @@ export const requestDomainChange = createAsyncThunk(
 
 export const checkDomainDns = createAsyncThunk(
     'settings/checkDomainDns',
-    async (id: string | number, { rejectWithValue }) => {
+    async (id: string | number, { dispatch, rejectWithValue }) => {
         try {
             const res = await api.post(`/settings/domain-requests/${id}/check-dns`);
+            // Refetch domain requests after DNS check to get updated status
+            dispatch(fetchDomainRequests());
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);

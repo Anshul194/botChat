@@ -4,27 +4,36 @@ import api from "../../lib/api";
 export interface SuperAdminDomainRequest {
     id: number;
     tenant_id: string;
+    user_id?: number;
     domain_name: string;
     actual_domain_name: string;
     status: string; // "0" = pending, "1" = approved, "2" = rejected
     verification_token: string;
     dns_verified: boolean;
+    dns_verified_at?: string | null;
+    ssl_status?: string | null;
+    ssl_expires_at?: string | null;
     reason: string | null;
     rejection_reason: string | null;
     suggested_fix: string | null;
     created_at: string;
+    updated_at?: string;
     server_ip?: string;
 }
 
 interface SuperAdminDomainsState {
     requests: SuperAdminDomainRequest[];
     isLoading: boolean;
+    isApproving: number | null; // ID of request being approved
+    isRejecting: number | null; // ID of request being rejected
     error: string | null;
 }
 
 const initialState: SuperAdminDomainsState = {
     requests: [],
     isLoading: false,
+    isApproving: null,
+    isRejecting: null,
     error: null,
 };
 
@@ -70,7 +79,11 @@ export const rejectDomainRequest = createAsyncThunk(
 const superadminDomainsSlice = createSlice({
     name: "superadminDomains",
     initialState,
-    reducers: {},
+    reducers: {
+        clearSuperAdminDomainsError: (state) => {
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             // fetch
@@ -87,20 +100,39 @@ const superadminDomainsSlice = createSlice({
                 state.error = action.payload as string;
             })
             // approve
+            .addCase(approveDomainRequest.pending, (state, action) => {
+                state.isApproving = action.meta.arg;
+                state.error = null;
+            })
             .addCase(approveDomainRequest.fulfilled, (state, action) => {
+                state.isApproving = null;
                 const index = state.requests.findIndex(r => r.id === action.payload.id);
                 if (index !== -1) {
                     state.requests[index] = action.payload;
                 }
             })
+            .addCase(approveDomainRequest.rejected, (state, action) => {
+                state.isApproving = null;
+                state.error = action.payload as string;
+            })
             // reject
+            .addCase(rejectDomainRequest.pending, (state, action) => {
+                state.isRejecting = action.meta.arg.id;
+                state.error = null;
+            })
             .addCase(rejectDomainRequest.fulfilled, (state, action) => {
+                state.isRejecting = null;
                 const index = state.requests.findIndex(r => r.id === action.payload.id);
                 if (index !== -1) {
                     state.requests[index] = action.payload;
                 }
+            })
+            .addCase(rejectDomainRequest.rejected, (state, action) => {
+                state.isRejecting = null;
+                state.error = action.payload as string;
             });
     },
 });
 
+export const { clearSuperAdminDomainsError } = superadminDomainsSlice.actions;
 export default superadminDomainsSlice.reducer;

@@ -25,12 +25,16 @@
 
 const DEV_DOMAIN = process.env.NEXT_PUBLIC_DEV_DOMAIN;
 
+// Central domain patterns - configurable via env
+const CENTRAL_DOMAINS = (process.env.NEXT_PUBLIC_CENTRAL_DOMAINS || 'megadm.chat')
+    .split(',')
+    .map(d => d.trim());
+
 export function isCentralAdminApp(): boolean {
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname.replace('www.', '');
-        if (hostname === 'megadm.chat' || hostname === 'localhost') {
-            // Localhost can be tricky, but we fall back to env var below for true local dev distinction
-            if (hostname === 'megadm.chat') return true;
+        if (CENTRAL_DOMAINS.includes(hostname) || hostname === 'localhost') {
+            if (CENTRAL_DOMAINS.includes(hostname)) return true;
         }
     }
     return process.env.NEXT_PUBLIC_APP_TYPE === 'admin';
@@ -48,12 +52,9 @@ export function getTenantDomain(): string {
         return DEV_DOMAIN || 'botchat.divyangtechlabs.com';
     }
 
-    console.log('Resolving tenant domain for hostname:', window.location.hostname);
-
     // Only use DEV_DOMAIN if we are running in development, or if DEV_DOMAIN was explicitly provided and we are overriding.
     // However, for single-build production, we MUST use window.location.hostname.
     if (process.env.NODE_ENV !== 'production' && DEV_DOMAIN) {
-        console.log('Using DEV_DOMAIN:', DEV_DOMAIN);
         return DEV_DOMAIN;
     }
 
@@ -69,8 +70,8 @@ export function getTenantDomain(): string {
     // Extract the first part of the domain (e.g., 'agency' from 'agency.megadm.chat', or 'botchat' from 'botchat.com')
     const prefix = cleanHostname.split('.')[0];
 
-    // Localhost or base megadm fallback
-    if (prefix === 'localhost' || prefix === 'api' || cleanHostname === 'megadm.chat') {
+    // Localhost or base central domain fallback
+    if (prefix === 'localhost' || prefix === 'api' || CENTRAL_DOMAINS.includes(cleanHostname)) {
         return 'api.megadm.chat';
     }
 
