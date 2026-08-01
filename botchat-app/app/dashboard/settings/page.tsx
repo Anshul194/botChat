@@ -28,6 +28,7 @@ import {
 import BrandingTab from "./components/BrandingTab";
 import AppearanceTab from "./components/AppearanceTab";
 import ModuleSettings from "./components/ModuleSettings";
+import CustomDomainTab from "./components/CustomDomainTab";
 import { Section, InputField, IntegrationHeader, Toggle, ApiKeyRow } from "./components/shared-ui";
 import { useAIProviders } from "../../../hooks/useAIProviders";
 import { useAIModels } from "../../../hooks/useAIModels";
@@ -46,6 +47,7 @@ const baseNavigationGroups = [
         items: [
             { id: "profile", label: "General Profile", Icon: User },
             { id: "branding", label: "General Settings", Icon: Globe },
+            { id: "custom-domain", label: "Custom Domain", Icon: Globe },
             { id: "security", label: "Security", Icon: Shield },
         ]
     },
@@ -615,6 +617,9 @@ export default function SettingsPage() {
 
                     {/* Branding & General Settings */}
                     {tab === "branding" && <BrandingTab />}
+
+                    {/* Custom Domain */}
+                    {tab === "custom-domain" && <CustomDomainTab />}
 
                     {/* Notifications */}
                     {/* Security */}
