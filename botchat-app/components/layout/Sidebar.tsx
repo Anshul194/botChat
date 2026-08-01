@@ -47,6 +47,8 @@ import {
     LayoutGrid,
     TrendingUp,
     Bell,
+    MessageSquare,
+    Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -137,6 +139,12 @@ const adminNav = [
         icon: Crown,
         href: "/dashboard/superadmin/subscriptions",
         ariaLabel: "Manage tenant subscriptions",
+    },
+    {
+        label: "Custom Domains",
+        icon: Globe,
+        href: "/dashboard/superadmin/domains",
+        ariaLabel: "Manage tenant domain requests",
     },
     {
         label: "Plan Management",

@@ -69,12 +69,32 @@ export interface TenantSocialLoginSettings {
     google_enabled: boolean;
 }
 
+export interface DomainRequest {
+    id: number;
+    tenant_id: string;
+    domain_name: string;
+    actual_domain_name: string;
+    status: string;
+    dns_verified: boolean;
+    dns_verified_at: string | null;
+    verification_token: string;
+    verification_method: string;
+    rejection_reason?: string;
+    suggested_fix?: string;
+    ssl_status?: string;
+    ssl_expires_at?: string;
+    server_ip?: string;
+    created_at: string;
+    updated_at: string;
+}
+
 interface SettingsState {
     general: GeneralSettings | null;
     facebookPlatform: FacebookPlatformSettings | null;
     ai: AISettings | null;
     socialLogin: SocialLoginProviderSettings | null;
     tenantSocialLogin: TenantSocialLoginSettings | null;
+    domainRequests: DomainRequest[];
 
     isLoading: boolean;
     isLoadingGeneral: boolean;
@@ -90,6 +110,7 @@ const initialState: SettingsState = {
     ai: null,
     socialLogin: null,
     tenantSocialLogin: null,
+    domainRequests: [],
     isLoading: false,
     isLoadingGeneral: false,
     isLoadingFacebook: false,
@@ -243,6 +264,43 @@ export const updateEmailSettings = createAsyncThunk(
     async (payload: Record<string, any>, { rejectWithValue }) => {
         try {
             const res = await api.patch('/settings/email', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// Domain Requests
+export const fetchDomainRequests = createAsyncThunk(
+    'settings/fetchDomainRequests',
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await api.get('/settings/domain-requests');
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+export const requestDomainChange = createAsyncThunk(
+    'settings/requestDomainChange',
+    async (domain_name: string, { rejectWithValue }) => {
+        try {
+            const res = await api.post('/settings/change-domain', { domain_name });
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+export const checkDomainDns = createAsyncThunk(
+    'settings/checkDomainDns',
+    async (id: string | number, { rejectWithValue }) => {
+        try {
+            const res = await api.post(`/settings/domain-requests/${id}/check-dns`);
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -444,6 +502,33 @@ const settingsSlice = createSlice({
         builder.addCase(updateAiSettings.fulfilled, (state, action) => {
             state.ai = action.payload;
         });
+
+        // Domain Requests
+        builder.addCase(fetchDomainRequests.pending, (state) => { state.isLoading = true; })
+            .addCase(fetchDomainRequests.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.domainRequests = action.payload;
+            })
+            .addCase(fetchDomainRequests.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(requestDomainChange.pending, (state) => { state.isLoading = true; })
+            .addCase(requestDomainChange.fulfilled, (state) => {
+                state.isLoading = false;
+            })
+            .addCase(requestDomainChange.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(checkDomainDns.pending, (state) => { state.isLoading = true; })
+            .addCase(checkDomainDns.fulfilled, (state) => {
+                state.isLoading = false;
+            })
+            .addCase(checkDomainDns.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            });
     }
 });
 

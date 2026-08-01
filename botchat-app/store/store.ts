@@ -17,6 +17,7 @@ import smartInboxReducer from './slices/smartInboxSlice';
 import subscriptionReducer from './slices/subscriptionSlice';
 import paymentReducer from './slices/paymentSlice';
 import superadminSubscriptionReducer from './slices/superadminSubscriptionSlice';
+import superadminDomainsReducer from './slices/superadminDomainsSlice';
 import notificationReducer from './slices/notificationSlice';
 
 export const store = configureStore({
@@ -38,6 +39,7 @@ export const store = configureStore({
         subscription: subscriptionReducer,
         payment: paymentReducer,
         superadminSubscription: superadminSubscriptionReducer,
+        superadminDomains: superadminDomainsReducer,
         notification: notificationReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
