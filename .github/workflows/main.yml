@@ -46,11 +46,13 @@ jobs:
           # Relative to the FTP account home (the Node.js app lives at the
           # account root, in the botchat_app directory). No leading slash.
           server-dir: botchat_app/
-          # node_modules is uploaded on purpose — the server has no terminal and
-          # cannot run `npm install` / `npm run build`.
+          # node_modules is NOT uploaded — the server installs its own via
+          # cPanel ("Setup Node.js App" -> "Install npm dependencies"). The
+          # repo's .npmrc (legacy-peer-deps=true) makes that install succeed.
           exclude: |
             **/.git*
             **/.git*/**
+            **/node_modules/**
             **/.next/cache/**
             .env*
             **/*.log
