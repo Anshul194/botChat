@@ -53,8 +53,8 @@ export default function FlowChartComponent({ data, chartType: forcedType }: Prop
                         ))}
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                    <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
+                    <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 700 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 700 }} />
                     <Tooltip />
                     {keys.map((k, i) => (
                         <Area key={k} type="monotone" dataKey={k} fill={`url(#grad_${k})`} stroke={COLORS[i % COLORS.length]} strokeWidth={2} />
@@ -69,8 +69,8 @@ export default function FlowChartComponent({ data, chartType: forcedType }: Prop
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                    <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
+                    <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 700 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 700 }} />
                     <Tooltip />
                     <Legend />
                     {keys.map((k, i) => (
@@ -85,8 +85,8 @@ export default function FlowChartComponent({ data, chartType: forcedType }: Prop
         <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }} />
+                <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 700 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 700 }} />
                 <Tooltip />
                 <Bar dataKey={keys[0]} fill={COLORS[0]} radius={[4, 4, 0, 0]} />
             </BarChart>
