@@ -57,7 +57,7 @@ export default function TopTenantsTable() {
                             key={tenant.id}
                             href={`/dashboard/superadmin/subscriptions/${tenant.id}`}
                             className="flex items-center gap-3 p-3 rounded-xl border transition-colors hover:opacity-80"
-                            style={{ borderColor: "var(--glass-border)", background: "var(--card-bg)" }}
+                            style={{ borderColor: "var(--glass-border)", background: "var(--card)" }}
                         >
                             <span className="text-xs font-black w-6 text-center tabular-nums" style={{ color: i < 3 ? "#f59e0b" : "var(--muted-foreground)" }}>
                                 #{i + 1}

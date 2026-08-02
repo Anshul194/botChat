@@ -88,7 +88,7 @@ export default function NotificationsPage() {
                                 onClick={() => dispatch(updateNotificationPreferences({ [pref.key]: !preferences[pref.key] }))}
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-colors"
                                 style={{
-                                    background: preferences[pref.key] ? "rgba(16,185,129,0.1)" : "var(--card-bg)",
+                                    background: preferences[pref.key] ? "rgba(16,185,129,0.1)" : "var(--card)",
                                     color: preferences[pref.key] ? "#10b981" : "var(--muted-foreground)",
                                     border: `1px solid ${preferences[pref.key] ? "rgba(16,185,129,0.3)" : "var(--glass-border)"}`,
                                 }}

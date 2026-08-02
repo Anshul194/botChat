@@ -60,7 +60,7 @@ export default function RevenueByPlanChart() {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ borderRadius: 12, border: "1px solid var(--glass-border)", background: "var(--card-bg)", fontSize: 12 }}
+                                    contentStyle={{ borderRadius: 12, border: "1px solid var(--glass-border)", background: "var(--card)", fontSize: 12 }}
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     formatter={((value: number) => [formatCurrency(value), "Revenue"]) as any}
                                 />

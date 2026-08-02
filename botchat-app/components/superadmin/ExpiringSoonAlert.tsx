@@ -40,7 +40,7 @@ export default function ExpiringSoonAlert() {
                     value={days}
                     onChange={(e) => setDays(Number(e.target.value))}
                     className="px-2 py-1 text-xs rounded-lg border"
-                    style={{ borderColor: "var(--glass-border)", background: "var(--card-bg)", color: "var(--foreground)" }}
+                    style={{ borderColor: "var(--glass-border)", background: "var(--card)", color: "var(--foreground)" }}
                 >
                     <option value={7}>7 days</option>
                     <option value={14}>14 days</option>
@@ -99,7 +99,7 @@ function TenantRow({ tenant }: { tenant: { id: number; name: string; email: stri
         <Link
             href={`/dashboard/superadmin/subscriptions/${tenant.id}`}
             className="flex items-center justify-between p-3 rounded-xl border transition-colors hover:opacity-80"
-            style={{ borderColor, background: "var(--card-bg)" }}
+            style={{ borderColor, background: "var(--card)" }}
         >
             <div className="min-w-0">
                 <p className="text-xs font-semibold truncate" style={{ color: "var(--foreground)" }}>{tenant.name}</p>

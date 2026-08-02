@@ -34,7 +34,7 @@ export default function PaymentAnalyticsChart() {
                     value={days}
                     onChange={(e) => setDays(Number(e.target.value))}
                     className="px-2 py-1 text-xs rounded-lg border"
-                    style={{ borderColor: "var(--glass-border)", background: "var(--card-bg)", color: "var(--foreground)" }}
+                    style={{ borderColor: "var(--glass-border)", background: "var(--card)", color: "var(--foreground)" }}
                 >
                     <option value={30}>30 days</option>
                     <option value={60}>60 days</option>
@@ -77,7 +77,7 @@ export default function PaymentAnalyticsChart() {
                                     <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
                                     <YAxis tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
                                     <Tooltip
-                                        contentStyle={{ borderRadius: 12, border: "1px solid var(--glass-border)", background: "var(--card-bg)", fontSize: 12 }}
+                                        contentStyle={{ borderRadius: 12, border: "1px solid var(--glass-border)", background: "var(--card)", fontSize: 12 }}
                                     />
                                     <Legend iconType="circle" iconSize={8} />
                                     <Bar dataKey="success_count" name="Successful" fill="#10b981" radius={[4, 4, 0, 0]} />

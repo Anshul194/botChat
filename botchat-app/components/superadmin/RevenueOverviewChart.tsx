@@ -54,7 +54,7 @@ export default function RevenueOverviewChart() {
                         value={days}
                         onChange={(e) => setDays(Number(e.target.value))}
                         className="px-2 py-1 text-xs rounded-lg border"
-                        style={{ borderColor: "var(--glass-border)", background: "var(--card-bg)", color: "var(--foreground)" }}
+                        style={{ borderColor: "var(--glass-border)", background: "var(--card)", color: "var(--foreground)" }}
                     >
                         <option value={30}>30 days</option>
                         <option value={60}>60 days</option>
@@ -87,7 +87,7 @@ export default function RevenueOverviewChart() {
                             <XAxis dataKey="label" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
                             <YAxis tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(v)} />
                             <Tooltip
-                                contentStyle={{ borderRadius: 12, border: "1px solid var(--glass-border)", background: "var(--card-bg)", fontSize: 12 }}
+                                contentStyle={{ borderRadius: 12, border: "1px solid var(--glass-border)", background: "var(--card)", fontSize: 12 }}
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 formatter={((value: number) => [formatCurrency(value), "Revenue"]) as any}
                                 labelStyle={{ color: "var(--foreground)" }}
