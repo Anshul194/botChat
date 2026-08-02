@@ -1,39 +1,61 @@
-- name: Setup Node.js
-  uses: actions/setup-node@v4
-  with:
-    node-version: '22'
-    cache: npm
+name: Deploy Next.js to cPanel
 
-- name: Install Dependencies
-  working-directory: ./botchat-app
-  run: npm ci
+on:
+  push:
+    branches:
+      - main
 
-- name: Build Next.js App
-  working-directory: ./botchat-app
-  env:
-    NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
-  run: npm run build
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-- name: Create Restart File
-  run: |
-    mkdir -p ./botchat-app/tmp
-    touch ./botchat-app/tmp/restart.txt
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-- name: Sync Files to cPanel via FTP
-  uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-  with:
-    server: ${{ secrets.CPANEL_FTP_SERVER }}
-    username: ${{ secrets.CPANEL_FTP_USERNAME }}
-    password: ${{ secrets.CPANEL_FTP_PASSWORD }}
-    local-dir: ./botchat-app/
-    server-dir: botchat_app/
-    log-level: verbose
-    exclude: |
-      **/.git*
-      **/.git*/**
-      **/node_modules/**
-      **/.next/cache/**
-      **/.env*
-      **/.DS_Store
-      **/__MACOSX/**
-      **/*.log
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        working-directory: ./botchat-app
+        # --legacy-peer-deps: package-lock.json has a known ajv peer conflict
+        # (eslint needs ajv@6, next/dotenv-cli need ajv@8) that plain `npm ci`
+        # rejects. Builds fine once installed.
+        run: npm ci --legacy-peer-deps
+
+      - name: Build Next.js App
+        working-directory: ./botchat-app
+        env:
+          NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
+        run: npm run build
+
+      - name: Create Restart File
+        run: |
+          mkdir -p ./botchat-app/tmp
+          touch ./botchat-app/tmp/restart.txt
+
+      - name: Sync Files to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          local-dir: ./botchat-app/
+          # Relative to the FTP account home (the Node.js app lives at the
+          # account root, in the botchat_app directory). No leading slash.
+          server-dir: botchat_app/
+          # node_modules and .next are uploaded on purpose — the server has no
+          # terminal and cannot run `npm install` / `npm run build`.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.next/cache/**
+            .env*
+            **/*.log
+            **/build_output.log
+            **/startup-error.txt
+            **/startup-success.txt
+            **/.DS_Store
+            **/__MACOSX/**
