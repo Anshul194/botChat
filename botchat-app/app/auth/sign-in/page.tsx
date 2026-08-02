@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginUser, fetchMe } from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -19,14 +19,15 @@ import { useSocialLogin } from "@/hooks/useSocialLogin";
 import { useSocialLoginSettings } from "@/hooks/useSocialLoginSettings";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { ForgotPasswordDialog } from "@/components/auth/ForgotPasswordDialog";
+import WelcomeSplash from "@/components/auth/WelcomeSplash";
 
 export default function SignInPage() {
     const router = useRouter();
     const { theme } = useTheme();
     const dispatch = useAppDispatch();
     const { showModal } = useModal();
+    const { user } = useAppSelector((state) => state.auth);
     const isLight = theme === "light";
 
     const [showPwd, setShowPwd] = useState(false);
@@ -35,6 +36,7 @@ export default function SignInPage() {
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [serverError, setServerError] = useState("");
     const [isPopupClosing, setIsPopupClosing] = useState(false);
+    const [showWelcome, setShowWelcome] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined" && window.opener && window.name === "instagram-connect") {
@@ -63,8 +65,7 @@ export default function SignInPage() {
         try {
             await dispatch(loginUser({ email: form.email, password: form.password })).unwrap();
             setStatus("success");
-            toast.success("Welcome back! Redirecting to dashboard...");
-            setTimeout(() => router.push("/dashboard"), 1000);
+            setShowWelcome(true);
         } catch (err: any) {
             setStatus("error");
             setServerError(err || "Invalid credentials. Please try again.");
@@ -531,6 +532,10 @@ export default function SignInPage() {
                     <Link href="/home/terms_use" className="hover:underline transition-colors">Terms</Link>
                 </div>
             </div>
+
+            {showWelcome && (
+                <WelcomeSplash name={user?.name} onFinish={() => router.push("/dashboard")} />
+            )}
         </div>
     );
 }
