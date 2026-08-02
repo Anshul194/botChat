@@ -8,17 +8,17 @@ export const metadata: Metadata = {
 
 export default function AccessibilityPage() {
   return (
-    <article className="prose prose-pink prose-invert max-w-none">
+    <article className="prose prose-pink dark:prose-invert max-w-none">
       <div className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-white">
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-foreground">
           Accessibility <span className="text-[#ec4899]">Statement</span>
         </h1>
-        <p className="text-slate-400 font-medium">Last Updated: June 14, 2026</p>
+        <p className="text-muted-foreground font-medium">Last Updated: June 14, 2026</p>
       </div>
 
-      <div className="space-y-12 text-slate-300 leading-relaxed">
+      <div className="space-y-12 leading-relaxed text-foreground">
         <section id="commitment">
-          <h2 className="text-2xl font-bold text-white mb-4">1. Commitment to Accessibility</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">1. Commitment to Accessibility</h2>
           <p>
             BotChat is committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply the relevant accessibility standards. Our goal is to make our platform perceivable, operable, understandable, and robust for all users.
           </p>
@@ -28,7 +28,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="measures">
-          <h2 className="text-2xl font-bold text-white mb-4">2. Measures to Support Accessibility</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">2. Measures to Support Accessibility</h2>
           <p>BotChat takes the following measures to ensure accessibility:</p>
           <ul className="list-disc pl-6 mt-4 space-y-3">
             <li>Include accessibility as a requirement for all new components and features.</li>
@@ -39,7 +39,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="conformance">
-          <h2 className="text-2xl font-bold text-white mb-4">3. Conformance Status</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">3. Conformance Status</h2>
           <p>
             The Web Content Accessibility Guidelines (WCAG) define requirements for designers and developers to improve accessibility for people with disabilities. It defines three levels of conformance: Level A, Level AA, and Level AAA.
           </p>
@@ -49,7 +49,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="feedback">
-          <h2 className="text-2xl font-bold text-white mb-4">4. Feedback & Reporting Barriers</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">4. Feedback & Reporting Barriers</h2>
           <p>
             We welcome your feedback on the accessibility of BotChat. Please let us know if you encounter accessibility barriers:
           </p>
@@ -73,16 +73,16 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="sign-language">
-          <h2 className="text-2xl font-bold text-white mb-4">5. German Sign Language (DGS)</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">5. German Sign Language (DGS)</h2>
           <p>
             A German Sign Language (DGS) version of this accessibility statement is available. You can access the DGS video below:
           </p>
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[32px] mt-6 text-center">
-            <p className="text-slate-400 text-lg mb-4">&#x1F5E3;&#xFE0F; DGS Video: Accessibility Statement</p>
-            <div className="w-full max-w-2xl mx-auto aspect-video bg-white/10 rounded-2xl flex items-center justify-center border border-white/5">
-              <p className="text-slate-500 text-sm">DGS video content will be available here.</p>
+          <div className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px] mt-6 text-center">
+            <p className="text-muted-foreground text-lg mb-4">&#x1F5E3;&#xFE0F; DGS Video: Accessibility Statement</p>
+            <div className="w-full max-w-2xl mx-auto aspect-video bg-zinc-200/50 dark:bg-white/10 rounded-2xl flex items-center justify-center border border-zinc-300 dark:border-white/5">
+              <p className="text-muted-foreground text-sm">DGS video content will be available here.</p>
             </div>
-            <p className="mt-4 text-slate-400 text-sm">
+            <p className="mt-4 text-muted-foreground text-sm">
               Alternatively, you can download the{" "}
               <a href="#" className="text-[#ec4899] hover:underline font-bold">DGS transcript (PDF)</a>.
             </p>
@@ -90,20 +90,20 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="easy-read">
-          <h2 className="text-2xl font-bold text-white mb-4">6. Easy-to-Read Language Version</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">6. Easy-to-Read Language Version</h2>
           <p>
             We provide an easy-to-read version of this accessibility statement for people with learning disabilities or limited reading proficiency.
           </p>
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[32px] mt-6">
-            <h3 className="text-xl font-bold text-white mb-4">Easy-to-Read Summary</h3>
-            <ul className="space-y-3 text-slate-300">
+          <div className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px] mt-6">
+            <h3 className="text-xl font-bold text-foreground mb-4">Easy-to-Read Summary</h3>
+            <ul className="space-y-3">
               <li>&bull; BotChat wants everyone to be able to use our website.</li>
               <li>&bull; We work hard to make our website easy to use for all people.</li>
               <li>&bull; If you have trouble using our website, please tell us.</li>
               <li>&bull; You can email us at accessibility@botchat.ai.</li>
               <li>&bull; We will answer within 5 days.</li>
             </ul>
-            <p className="mt-6 text-slate-400 text-sm">
+            <p className="mt-6 text-muted-foreground text-sm">
               Download the{" "}
               <a href="#" className="text-[#ec4899] hover:underline font-bold">easy-to-read PDF version</a>.
             </p>
@@ -111,7 +111,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="technical">
-          <h2 className="text-2xl font-bold text-white mb-4">7. Technical Specifications</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">7. Technical Specifications</h2>
           <p>
             Accessibility of BotChat relies on the following technologies to work with the particular combination of web browser and any assistive technologies or plugins installed on your computer:
           </p>
@@ -123,7 +123,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="limitations">
-          <h2 className="text-2xl font-bold text-white mb-4">8. Known Limitations</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">8. Known Limitations</h2>
           <p>Despite our best efforts, some areas may still have accessibility limitations. We are actively working to address these:</p>
           <ul className="list-disc pl-6 mt-4 space-y-3">
             <li><strong>Color contrast:</strong> Some non-essential decorative elements may not meet the strictest contrast ratios.</li>
@@ -133,13 +133,13 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="complaints">
-          <h2 className="text-2xl font-bold text-white mb-4">9. Filing a Complaint</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">9. Filing a Complaint</h2>
           <p>
             If you are not satisfied with our response to your accessibility feedback, you have the right to file a complaint with the relevant national authority:
           </p>
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[32px] mt-6">
-            <p className="font-bold text-white">Competent Authority for Accessibility</p>
-            <p className="mt-2 text-slate-300">
+          <div className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px] mt-6">
+            <p className="font-bold text-foreground">Competent Authority for Accessibility</p>
+            <p className="mt-2">
               Federal Office for Accessibility<br />
               Musterweg 10<br />
               10115 Berlin, Germany<br />
@@ -148,8 +148,8 @@ export default function AccessibilityPage() {
           </div>
         </section>
 
-        <section className="pt-8 border-t border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-4">10. Contact Information</h2>
+        <section className="pt-8 border-t border-zinc-200 dark:border-white/10">
+          <h2 className="text-2xl font-bold text-foreground mb-4">10. Contact Information</h2>
           <p>For all accessibility-related inquiries:</p>
           <p className="mt-4">
             Email: <a href="mailto:accessibility@botchat.ai" className="text-[#ec4899] hover:underline font-bold">accessibility@botchat.ai</a>

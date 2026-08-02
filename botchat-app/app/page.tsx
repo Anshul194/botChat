@@ -24,7 +24,7 @@ const DMAutomationShowcase = dynamic(() => import("./landing/components/DMAutoma
 const MotiveSection = dynamic(() => import("./landing/components/MotiveSection"), { loading: () => <SectionLoader /> });
 const Features = dynamic(() => import("./landing/components/Features"), { loading: () => <SectionLoader /> });
 const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"), { loading: () => <SectionLoader /> });
-const TrendyStacks = dynamic(() => import("./landing/components/TrendyStacks"), { loading: () => <SectionLoader /> });
+// const TrendyStacks = dynamic(() => import("./landing/components/TrendyStacks"), { loading: () => <SectionLoader /> });
 const CreatorProof = dynamic(() => import("./landing/components/CreatorProof"), { loading: () => <SectionLoader /> });
 const Testimonials = dynamic(() => import("./landing/components/Testimonials"), { loading: () => <SectionLoader /> });
 const Pricing = dynamic(() => import("./landing/components/Pricing"), { loading: () => <SectionLoader /> });

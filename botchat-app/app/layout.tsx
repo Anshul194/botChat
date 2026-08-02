@@ -25,6 +25,7 @@ import { TenantSettingsProvider } from "@/providers/TenantSettingsProvider";
 import { DateTimeProvider } from "@/providers/DateTimeProvider";
 import SubscriptionProvider from "@/providers/SubscriptionProvider";
 import DynamicBranding from "@/components/DynamicBranding";
+import CookieConsent from "@/components/CookieConsent";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -149,6 +150,7 @@ export default function RootLayout({
                         {children}
                         <NavigationOverlay />
                         <Toaster richColors position="top-right" />
+                        <CookieConsent />
                       </ModalProvider>
                     </DateTimeProvider>
                   </ThemeProvider>

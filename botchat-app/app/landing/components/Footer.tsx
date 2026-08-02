@@ -72,7 +72,7 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="relative text-white pt-24 pb-12 overflow-hidden antialiased" style={{ background: "#06000d" }}>
+        <footer className="relative text-white pt-24 pb-32 overflow-hidden antialiased" style={{ background: "#06000d" }}>
 
             {/* Ambient glows */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"
@@ -219,33 +219,32 @@ export default function Footer() {
                 </div>
 
                 {/* ── BOTTOM BAR ── */}
-                <div className="pt-10 border-t flex flex-col md:flex-row justify-between items-center gap-8"
+                <div className="pt-10 border-t flex flex-col gap-6"
                     style={{ borderColor: "rgba(255,255,255,0.06)" }}>
 
-                    <div className="flex flex-col md:flex-row items-center gap-5 text-[11px] font-bold uppercase tracking-widest"
-                        style={{ color: "rgba(255,255,255,0.4)" }}>
-                        <p className="text-center md:text-left">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-center md:text-left text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
                             &copy; {currentYear} {platformName}. Proudly built for the next billion creators.
                         </p>
-                        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-                            {LEGAL_LINKS.map((link) => (
-                                <Link key={link.label} href={link.href}
-                                    className="transition-colors"
-                                    style={{ color: "rgba(255,255,255,0.35)" }}
-                                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
-                                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.35)")}>
-                                    {link.label}
-                                </Link>
-                            ))}
+                        <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border cursor-default group transition-colors duration-300"
+                            style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
+                            onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.color = "#fff")}
+                            onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,0.45)")}>
+                            <ShieldCheck size={14} style={{ color: "#FF2D78" }} />
+                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border cursor-default group transition-colors duration-300"
-                        style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
-                        onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.color = "#fff")}
-                        onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,0.45)")}>
-                        <ShieldCheck size={14} style={{ color: "#FF2D78" }} />
-                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
+                    <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-3 text-[11px] font-bold uppercase tracking-widest">
+                        {LEGAL_LINKS.map((link) => (
+                            <Link key={link.label} href={link.href}
+                                className="transition-colors"
+                                style={{ color: "rgba(255,255,255,0.35)" }}
+                                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
+                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.35)")}>
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
 
                 </div>
