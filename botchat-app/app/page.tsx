@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
 import { fetchGeneralSettings } from "../store/slices/settingsSlice";
@@ -37,9 +36,8 @@ const StepsSection = dynamic(() => import("./landing/components/StepsSection"), 
 const BlogSection = dynamic(() => import("./landing/components/BlogSection"), { loading: () => <SectionLoader /> });
 
 export default function Home() {
-  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { general } = useSelector((state: RootState) => state.settings);
 
   useEffect(() => {
@@ -47,14 +45,6 @@ export default function Home() {
       dispatch(fetchGeneralSettings({}));
     }
   }, [isAuthenticated, general, dispatch]);
-
-  useEffect(() => {
-    if (isInitialized && isAuthenticated && general) {
-      if (general.landingPageEnabled === false) {
-        router.replace("/auth/sign-in");
-      }
-    }
-  }, [isInitialized, isAuthenticated, general, router]);
 
   return (
     <>

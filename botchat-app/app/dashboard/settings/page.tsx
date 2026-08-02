@@ -15,7 +15,6 @@ import {
     fetchSocialLoginSettings, updateSocialLoginSettings
 } from "../../../store/slices/settingsSlice";
 import {
-    changePassword,
     selectIsSuperAdmin
 } from "../../../store/slices/authSlice";
 import { useModal } from "@/components/providers/ModalProvider";
@@ -31,11 +30,13 @@ import AppearanceTab from "./components/AppearanceTab";
 import ModuleSettings from "./components/ModuleSettings";
 import CustomDomainTab from "./components/CustomDomainTab";
 import DomainSettingsTab from "./components/DomainSettingsTab";
+import SecurityTab from "./components/SecurityTab";
 import { Section, InputField, IntegrationHeader, Toggle, ApiKeyRow } from "./components/shared-ui";
 import { useAIProviders } from "../../../hooks/useAIProviders";
 import { useAIModels } from "../../../hooks/useAIModels";
 import api from "../../../lib/api";
 import { isCentralAdminApp } from "../../../lib/config";
+import { toast } from "sonner";
 
 const baseNavigationGroups = [
     {
@@ -173,7 +174,7 @@ export default function SettingsPage() {
     const { showModal } = useModal();
     
     // Selectors
-    const { user, isLoading: authLoading } = useSelector((state: RootState) => state.auth);
+    const { user } = useSelector((state: RootState) => state.auth);
     const isSuperAdmin = useSelector(selectIsSuperAdmin);
     const { general, facebookPlatform, ai, socialLogin, tenantSocialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
 
@@ -259,7 +260,6 @@ export default function SettingsPage() {
     });
     const [showFbSecret, setShowFbSecret] = useState(false);
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
-    const [passwordForm, setPasswordForm] = useState({ current_password: '', password: '', password_confirmation: '' });
 
     const [paymentForm, setPaymentForm] = useState({
         currency: 'USD',
@@ -511,30 +511,6 @@ export default function SettingsPage() {
         }
     };
 
-    const handleChangePassword = async () => {
-        const { current_password, password, password_confirmation } = passwordForm;
-        if (!current_password || !password) {
-            showModal("error", "Validation", "All password fields are required.");
-            return;
-        }
-        if (password.length < 8) {
-            showModal("error", "Validation", "New password must be at least 8 characters.");
-            return;
-        }
-        if (password !== password_confirmation) {
-            showModal("error", "Validation", "Passwords do not match.");
-            return;
-        }
-        try {
-            await dispatch(changePassword({ current_password, password, password_confirmation })).unwrap();
-            showModal("success", "Password Updated", "Your password has been changed successfully.");
-            setPasswordForm({ current_password: '', password: '', password_confirmation: '' });
-        } catch (err: any) {
-            showModal("error", "Error", typeof err === 'string' ? err : "Failed to change password.");
-        }
-    };
-
-
     const [mobileSettingsView, setMobileSettingsView] = useState<"nav" | "content">("nav");
 
     return (
@@ -644,24 +620,7 @@ export default function SettingsPage() {
 
                     {/* Notifications */}
                     {/* Security */}
-                    {tab === "security" && (
-                        <div className="space-y-4">
-                            <IntegrationHeader title="Security & Authentication" desc="Manage your password, 2FA, and active sessions." Icon={Shield} color="#10b981" />
-                            <Section title="Change Password" desc="Use a strong, unique password">
-                                <InputField label="Current Password" type="password" placeholder="••••••••" value={passwordForm.current_password} onChange={(e: any) => setPasswordForm(p => ({ ...p, current_password: e.target.value }))} />
-                                <InputField label="New Password" type="password" placeholder="Min 8 characters" value={passwordForm.password} onChange={(e: any) => setPasswordForm(p => ({ ...p, password: e.target.value }))} />
-                                <InputField label="Confirm Password" type="password" placeholder="Repeat new password" value={passwordForm.password_confirmation} onChange={(e: any) => setPasswordForm(p => ({ ...p, password_confirmation: e.target.value }))} />
-                                <div className="flex justify-end">
-                                    <button onClick={handleChangePassword} disabled={authLoading} className="w-full px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50 sm:w-auto"
-                                        style={{ background: "var(--brand-gradient)", color: "white" }}>{authLoading ? "Updating..." : "Update Password"}</button>
-                                </div>
-                            </Section>
-                            <Section title="Two-Factor Authentication" desc="Extra layer of security">
-                                <Toggle label="Enable 2FA via Authenticator App" defaultChecked={false} />
-                                <Toggle label="Enable 2FA via SMS" defaultChecked={false} />
-                            </Section>
-                        </div>
-                    )}
+                    {tab === "security" && <SecurityTab showModal={showModal} />}
 
                     {/* Data & Privacy */}
                     {tab === "data" && (

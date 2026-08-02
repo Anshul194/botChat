@@ -11,7 +11,6 @@ export interface GeneralSettings {
     twoFactorAuth?: boolean;
     smsVerification?: boolean;
     rtlEnabled?: boolean;
-    landingPageEnabled?: boolean;
     registerEnabled?: boolean;
     theme?: {
         primaryColor: string;
@@ -156,10 +155,6 @@ function normalizeGeneralSettings(data: any): GeneralSettings {
     };
     return {
         ...data,
-        landingPageEnabled: asBool(
-            data.landing_page_status ?? data.landingPageEnabled,
-            true
-        ),
         twoFactorAuth: asBool(data.two_factor_auth ?? data.twoFactorAuth, false),
         smsVerification: asBool(data.sms_verification ?? data.smsVerification, false),
         rtlEnabled: asBool(data.rtl_setting ?? data.rtlEnabled, false),

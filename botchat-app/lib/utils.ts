@@ -13,7 +13,6 @@ const settingsFieldMap: Record<string, string> = {
   twoFactorAuth: 'two_factor_auth',
   smsVerification: 'sms_verification',
   rtlEnabled: 'rtl_setting',
-  landingPageEnabled: 'landing_page_status',
   registerEnabled: 'register_setting',
   defaultLanguage: 'default_language',
   defaultTimezone: 'default_timezone',
@@ -56,7 +55,6 @@ const themeFieldMap: Record<string, string> = {
 export function mapSettingsToApi(payload: Record<string, any>): Record<string, any> {
   // All settings that Laravel stores/reads as '1' or '0' strings
   const booleanApiKeys = new Set([
-    'landing_page_status',
     'sms_verification',
     'two_factor_auth',
     'rtl_setting',

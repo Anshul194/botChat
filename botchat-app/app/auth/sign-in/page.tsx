@@ -11,13 +11,15 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loginUser, fetchMe } from "@/store/slices/authSlice";
+import {
+    loginUser, fetchMe, verifyTwoFactorLogin, recoveryCodeLogin, clearTwoFactorChallenge
+} from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { useSocialLogin } from "@/hooks/useSocialLogin";
 import { useSocialLoginSettings } from "@/hooks/useSocialLoginSettings";
-import { Loader2 } from "lucide-react";
+import { Loader2, KeyRound, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ForgotPasswordDialog } from "@/components/auth/ForgotPasswordDialog";
 import WelcomeSplash from "@/components/auth/WelcomeSplash";
@@ -36,6 +38,14 @@ export default function SignInPage() {
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [serverError, setServerError] = useState("");
     const [isPopupClosing, setIsPopupClosing] = useState(false);
+
+    // ── Two-factor step state ────────────────────────────────────────────────
+    const twoFactorChallenge = useAppSelector((state) => state.auth.twoFactorChallenge);
+    const [twoFactorCode, setTwoFactorCode] = useState("");
+    const [usingRecovery, setUsingRecovery] = useState(false);
+    const [twoFactorRecovery, setTwoFactorRecovery] = useState("");
+    const [twoFactorStatus, setTwoFactorStatus] = useState<"idle" | "loading" | "error">("idle");
+    const [twoFactorError, setTwoFactorError] = useState("");
     const [showWelcome, setShowWelcome] = useState(false);
 
     useEffect(() => {
@@ -63,13 +73,53 @@ export default function SignInPage() {
         setStatus("loading");
         setServerError("");
         try {
-            await dispatch(loginUser({ email: form.email, password: form.password })).unwrap();
+            const result = await dispatch(loginUser({ email: form.email, password: form.password })).unwrap();
+            // 2FA enabled → the store now holds a challenge; render the 2FA step.
+            if (result?.requiresTwoFactor) {
+                setStatus("idle");
+                setTwoFactorCode("");
+                setTwoFactorError("");
+                setUsingRecovery(false);
+                return;
+            }
             setStatus("success");
             setShowWelcome(true);
         } catch (err: any) {
             setStatus("error");
             setServerError(err || "Invalid credentials. Please try again.");
             setTimeout(() => setStatus("idle"), 2500);
+        }
+    };
+
+    const handleTwoFactorSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!twoFactorChallenge?.temporaryLoginToken) return;
+        setTwoFactorStatus("loading");
+        setTwoFactorError("");
+        try {
+            if (usingRecovery) {
+                await dispatch(recoveryCodeLogin({
+                    recoveryCode: twoFactorRecovery,
+                    temporaryLoginToken: twoFactorChallenge.temporaryLoginToken,
+                })).unwrap();
+            } else {
+                await dispatch(verifyTwoFactorLogin({
+                    code: twoFactorCode,
+                    temporaryLoginToken: twoFactorChallenge.temporaryLoginToken,
+                })).unwrap();
+            }
+            toast.success("Welcome back! Redirecting to dashboard...");
+            setTimeout(() => router.push("/dashboard"), 1000);
+        } catch (err: any) {
+            const msg = err || "Invalid code. Please try again.";
+            setTwoFactorStatus("error");
+            setTwoFactorError(msg);
+            // If the challenge session expired, send the user back to the sign-in form.
+            if (/expired|session|required/i.test(msg)) {
+                dispatch(clearTwoFactorChallenge());
+                setStatus("idle");
+            }
+            setTimeout(() => setTwoFactorStatus("idle"), 2500);
         }
     };
 
@@ -532,6 +582,135 @@ export default function SignInPage() {
                     <Link href="/home/terms_use" className="hover:underline transition-colors">Terms</Link>
                 </div>
             </div>
+
+            {/* ── Two-Factor Challenge Modal ── */}
+            <AnimatePresence>
+                {twoFactorChallenge && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+                    >
+                        <motion.div
+                            className="w-full max-w-[420px] rounded-2xl p-6 sm:p-8 space-y-5"
+                            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            style={{
+                                background: isLight ? "#ffffff" : "rgba(17,10,38,0.98)",
+                                border: "1px solid rgba(99,102,241,0.25)",
+                                boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
+                            }}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+                                    style={{ background: "linear-gradient(135deg, #1e5fd4, #6366f1)" }}>
+                                    <ShieldCheck className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold" style={{ color: isLight ? "#1e1b4b" : "#f8fafc" }}>
+                                        Two-factor authentication
+                                    </h3>
+                                    <p className="text-xs" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
+                                        {twoFactorChallenge.user?.email || "Your account"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p className="text-sm leading-relaxed" style={{ color: isLight ? "#475569" : "#cbd5e1" }}>
+                                {usingRecovery
+                                    ? "Enter one of your single-use recovery codes to finish signing in."
+                                    : "Enter the 6-digit code from your authenticator app to finish signing in."}
+                            </p>
+
+                            <form onSubmit={handleTwoFactorSubmit} className="space-y-4" noValidate>
+                                {usingRecovery ? (
+                                    <input
+                                        type="text"
+                                        autoComplete="one-time-code"
+                                        placeholder="XXXX-XXXXXX"
+                                        value={twoFactorRecovery}
+                                        onChange={(e) => { setTwoFactorRecovery(e.target.value.toUpperCase()); setTwoFactorError(""); }}
+                                        className="w-full px-4 h-12 rounded-xl text-sm outline-none text-center tracking-widest font-mono transition-all"
+                                        style={{
+                                            background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
+                                            border: `1.5px solid ${twoFactorError ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}`,
+                                            color: isLight ? "#1e1b4b" : "#f1f5f9",
+                                        }}
+                                        onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
+                                        onBlur={(e) => { e.currentTarget.style.borderColor = twoFactorError ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        autoComplete="one-time-code"
+                                        maxLength={6}
+                                        placeholder="000000"
+                                        value={twoFactorCode}
+                                        onChange={(e) => { setTwoFactorCode(e.target.value.replace(/\D/g, "")); setTwoFactorError(""); }}
+                                        className="w-full px-4 h-12 rounded-xl text-sm outline-none text-center tracking-[0.5em] font-mono transition-all"
+                                        style={{
+                                            background: isLight ? "#ffffff" : "rgba(255,255,255,0.06)",
+                                            border: `1.5px solid ${twoFactorError ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}`,
+                                            color: isLight ? "#1e1b4b" : "#f1f5f9",
+                                        }}
+                                        onFocus={(e) => { e.currentTarget.style.borderColor = "var(--primary)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(30,95,212,0.12)"; }}
+                                        onBlur={(e) => { e.currentTarget.style.borderColor = twoFactorError ? "#ef4444" : isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"; e.currentTarget.style.boxShadow = "none"; }}
+                                    />
+                                )}
+
+                                <AnimatePresence>
+                                    {twoFactorError && (
+                                        <motion.p
+                                            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                                            className="text-xs flex items-center gap-1" style={{ color: "#ef4444" }}>
+                                            <AlertCircle className="w-3 h-3" />{twoFactorError}
+                                        </motion.p>
+                                    )}
+                                </AnimatePresence>
+
+                                <button
+                                    type="submit"
+                                    disabled={twoFactorStatus === "loading"}
+                                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 font-semibold text-sm text-white transition-all disabled:opacity-70"
+                                    style={{ background: "linear-gradient(135deg, #1e5fd4 0%, #6366f1 100%)", boxShadow: "0 4px 20px rgba(30,95,212,0.30)" }}
+                                >
+                                    {twoFactorStatus === "loading" ? (
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    ) : usingRecovery ? (
+                                        <><KeyRound className="w-4 h-4" /> Verify Recovery Code</>
+                                    ) : (
+                                        <>Verify Code <ArrowRight className="w-4 h-4" /></>
+                                    )}
+                                </button>
+                            </form>
+
+                            <div className="flex items-center justify-between pt-1 text-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => { setUsingRecovery(v => !v); setTwoFactorError(""); }}
+                                    className="font-medium hover:opacity-70 transition-opacity"
+                                    style={{ color: "var(--primary)" }}
+                                >
+                                    {usingRecovery ? "Use authenticator code" : "Use a recovery code"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { dispatch(clearTwoFactorChallenge()); setStatus("idle"); }}
+                                    className="font-medium hover:opacity-70 transition-opacity"
+                                    style={{ color: isLight ? "#64748b" : "#94a3b8" }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {showWelcome && (
                 <WelcomeSplash name={user?.name} onFinish={() => router.push("/dashboard")} />
