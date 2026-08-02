@@ -9,7 +9,6 @@ export interface GeneralSettings {
     timezone?: string;
     locale?: string;
     twoFactorAuth?: boolean;
-    emailVerification?: boolean;
     smsVerification?: boolean;
     rtlEnabled?: boolean;
     landingPageEnabled?: boolean;
@@ -160,10 +159,6 @@ function normalizeGeneralSettings(data: any): GeneralSettings {
         landingPageEnabled: asBool(
             data.landing_page_status ?? data.landingPageEnabled,
             true
-        ),
-        emailVerification: asBool(
-            data.email_verification ?? data.emailVerification,
-            false
         ),
         twoFactorAuth: asBool(data.two_factor_auth ?? data.twoFactorAuth, false),
         smsVerification: asBool(data.sms_verification ?? data.smsVerification, false),
