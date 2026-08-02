@@ -174,9 +174,7 @@ export default function SuperAdminDomainsPage() {
                                         {req.status === "2" && <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-500 flex items-center gap-1"><XCircle className="w-3 h-3" /> Rejected</span>}
                                     </div>
                                     <div className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>
-                                        Target: {req.actual_domain_name} &nbsp;&bull;&nbsp; 
-                                        DNS: {req.dns_verified ? <span className="text-emerald-500 font-semibold">Verified</span> : <span className="text-rose-500 font-semibold">Unverified</span>}
-                                        {req.ssl_status && <>&nbsp;&bull;&nbsp; SSL: <span className={`font-semibold ${req.ssl_status === 'Active' ? 'text-emerald-500' : 'text-amber-500'}`}>{req.ssl_status}</span></>}
+                                        Target: {req.actual_domain_name}
                                     </div>
                                 </div>
 
@@ -261,20 +259,7 @@ export default function SuperAdminDomainsPage() {
                                         {viewingRequest.status === "2" && <span className="text-rose-500">Rejected</span>}
                                     </p>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">DNS Verified</label>
-                                    <p className="font-medium">
-                                        {viewingRequest.dns_verified ? <span className="text-emerald-500">Yes</span> : <span className="text-rose-500">No</span>}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">SSL Status</label>
-                                    <p className="font-medium">{viewingRequest.ssl_status || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Verification Token</label>
-                                    <p className="font-mono text-xs break-all">{viewingRequest.verification_token}</p>
-                                </div>
+
                                 <div>
                                     <label className="text-xs font-semibold uppercase opacity-60">Submitted</label>
                                     <p className="font-medium">{new Date(viewingRequest.created_at).toLocaleString()}</p>

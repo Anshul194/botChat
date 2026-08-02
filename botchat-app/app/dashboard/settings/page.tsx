@@ -30,6 +30,7 @@ import BrandingTab from "./components/BrandingTab";
 import AppearanceTab from "./components/AppearanceTab";
 import ModuleSettings from "./components/ModuleSettings";
 import CustomDomainTab from "./components/CustomDomainTab";
+import DomainSettingsTab from "./components/DomainSettingsTab";
 import { Section, InputField, IntegrationHeader, Toggle, ApiKeyRow } from "./components/shared-ui";
 import { useAIProviders } from "../../../hooks/useAIProviders";
 import { useAIModels } from "../../../hooks/useAIModels";
@@ -49,6 +50,7 @@ const baseNavigationGroups = [
             { id: "profile", label: "General Profile", Icon: User },
             { id: "branding", label: "General Settings", Icon: Globe },
             { id: "custom-domain", label: "Custom Domain", Icon: Globe },
+            { id: "domain-settings", label: "Domain Settings", Icon: Globe },
             { id: "security", label: "Security", Icon: Shield },
         ]
     },
@@ -183,6 +185,8 @@ export default function SettingsPage() {
                 items: group.items.filter(item => {
                     // Custom Domain is only for tenant admins, not Super Admin
                     if (item.id === "custom-domain" && isSuperAdmin) return false;
+                    // Domain Settings is only for Super Admin
+                    if (item.id === "domain-settings" && !isSuperAdmin) return false;
                     return true;
                 })
             };
@@ -632,6 +636,9 @@ export default function SettingsPage() {
 
                     {/* Custom Domain */}
                     {tab === "custom-domain" && <CustomDomainTab />}
+
+                    {/* Super Admin Domain Settings */}
+                    {tab === "domain-settings" && <DomainSettingsTab />}
 
                     {/* Notifications */}
                     {/* Security */}

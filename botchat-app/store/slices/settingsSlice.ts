@@ -69,23 +69,45 @@ export interface TenantSocialLoginSettings {
     google_enabled: boolean;
 }
 
+export interface DomainSettings {
+    primary_hostname?: string;
+    ipv4?: string;
+    ipv6?: string;
+    ttl?: number;
+    txt_prefix?: string;
+    ssl_provider?: string;
+    verify_interval?: number;
+    allow_wildcard_domains?: boolean;
+    allow_root_domains?: boolean;
+    reserved_domains?: string[];
+    allowed_tlds?: string[];
+}
+
 export interface DomainRequest {
     id: number;
     tenant_id: string;
     domain_name: string;
     actual_domain_name: string;
-    status: string;
-    dns_verified: boolean;
-    dns_verified_at: string | null;
-    verification_token: string;
-    verification_method: string;
+    status: string; // '0' = pending, '1' = approved, '2' = rejected
     rejection_reason?: string;
     suggested_fix?: string;
-    ssl_status?: string;
-    ssl_expires_at?: string;
-    server_ip?: string;
     created_at: string;
     updated_at: string;
+    connection_instructions?: DomainConnectionInstructions;
+}
+
+export interface DnsRecord {
+    type: string;
+    host: string;
+    value: string | null;
+    ttl: string | number;
+}
+
+export interface DomainConnectionInstructions {
+    nameservers: { ns1: string; ns2: string };
+    a_record: DnsRecord;
+    aaaa_record: DnsRecord | null;
+    cname_record: DnsRecord | null;
 }
 
 interface SettingsState {
@@ -94,6 +116,7 @@ interface SettingsState {
     ai: AISettings | null;
     socialLogin: SocialLoginProviderSettings | null;
     tenantSocialLogin: TenantSocialLoginSettings | null;
+    domainSettings: DomainSettings | null;
     domainRequests: DomainRequest[];
 
     isLoading: boolean;
@@ -110,6 +133,7 @@ const initialState: SettingsState = {
     ai: null,
     socialLogin: null,
     tenantSocialLogin: null,
+    domainSettings: null,
     domainRequests: [],
     isLoading: false,
     isLoadingGeneral: false,
@@ -201,6 +225,18 @@ export const updateGeneralSettings = createAsyncThunk(
         try {
             const mapped = mapSettingsToApi(payload as any);
             const res = await api.patch('/settings', mapped);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+export const updateDomainSettings = createAsyncThunk(
+    'settings/updateDomainSettings',
+    async (payload: Record<string, unknown>, { rejectWithValue }) => {
+        try {
+            const res = await api.patch('/settings/domain', payload);
             return res.data?.data || res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
@@ -306,19 +342,6 @@ export const requestDomainChange = createAsyncThunk(
     }
 );
 
-export const checkDomainDns = createAsyncThunk(
-    'settings/checkDomainDns',
-    async (id: string | number, { dispatch, rejectWithValue }) => {
-        try {
-            const res = await api.post(`/settings/domain-requests/${id}/check-dns`);
-            // Refetch domain requests after DNS check to get updated status
-            dispatch(fetchDomainRequests());
-            return res.data?.data || res.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || error.message);
-        }
-    }
-);
 
 // SMS Settings
 export const updateSmsSettings = createAsyncThunk(
@@ -444,6 +467,7 @@ const settingsSlice = createSlice({
             .addCase(fetchGeneralSettings.fulfilled, (state, action) => {
                 state.isLoadingGeneral = false;
                 state.general = normalizeGeneralSettings(action.payload);
+                state.domainSettings = action.payload?.domain_settings || null;
             })
             .addCase(fetchGeneralSettings.rejected, (state, action) => {
                 state.isLoadingGeneral = false;
@@ -452,6 +476,13 @@ const settingsSlice = createSlice({
 
         builder.addCase(updateGeneralSettings.fulfilled, (state, action) => {
             state.general = normalizeGeneralSettings(action.payload);
+            state.domainSettings = action.payload?.domain_settings || state.domainSettings;
+        });
+
+        builder.addCase(updateDomainSettings.fulfilled, (state, action) => {
+            state.domainSettings = action.payload;
+        }).addCase(updateDomainSettings.rejected, (state, action) => {
+            state.error = action.payload as string;
         });
 
         // Facebook Platform
@@ -533,14 +564,7 @@ const settingsSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
-            .addCase(checkDomainDns.pending, (state) => { state.isLoading = true; })
-            .addCase(checkDomainDns.fulfilled, (state) => {
-                state.isLoading = false;
-            })
-            .addCase(checkDomainDns.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload as string;
-            });
+
     }
 });
 
