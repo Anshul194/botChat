@@ -1,0 +1,63 @@
+name: Deploy BotChat Next.js App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          local-dir: ./
+          # cPanel Node.js app directory. Change if your app lives elsewhere
+          # (e.g. public_html/botchat_app or /botchat_app).
+          server-dir: botchat_app/
+
+          # `.next/` and `node_modules/` are deliberately NOT excluded — the
+          # server has no terminal, so the CI build is uploaded as-is.
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/.gitignore
+            **/.gitattributes
+            **/README.md
+
+            **/.env
+            **/.env.*
+            **/.env.example
+
+            **/*.log
+            **/build_output.log
+            **/startup-error.txt
+            **/startup-success.txt
+
+            **/.DS_Store
+            docs/**
+            tests/**
+            coverage/**
