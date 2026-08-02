@@ -1,49 +1,39 @@
-name: Deploy Next.js to cPanel
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: '22'
+    cache: npm
 
-on:
-  push:
-    branches:
-      - main
+- name: Install Dependencies
+  working-directory: ./botchat-app
+  run: npm ci
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+- name: Build Next.js App
+  working-directory: ./botchat-app
+  env:
+    NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
+  run: npm run build
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+- name: Create Restart File
+  run: |
+    mkdir -p ./botchat-app/tmp
+    touch ./botchat-app/tmp/restart.txt
 
-      - name: Install Dependencies
-        working-directory: ./botchat-app
-        run: npm ci
-
-      - name: Build Next.js App
-        working-directory: ./botchat-app
-        env:
-          NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
-        run: npm run build
-
-      - name: Create Restart File
-        run: |
-          mkdir -p ./botchat-app/tmp
-          touch ./botchat-app/tmp/restart.txt
-
-      - name: Sync Files to cPanel via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.CPANEL_FTP_SERVER }}
-          username: ${{ secrets.CPANEL_FTP_USERNAME }}
-          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
-          local-dir: ./botchat-app/
-          server-dir: /botchat_app/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.next/cache/**
-            .env*
+- name: Sync Files to cPanel via FTP
+  uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+  with:
+    server: ${{ secrets.CPANEL_FTP_SERVER }}
+    username: ${{ secrets.CPANEL_FTP_USERNAME }}
+    password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+    local-dir: ./botchat-app/
+    server-dir: botchat_app/
+    log-level: verbose
+    exclude: |
+      **/.git*
+      **/.git*/**
+      **/node_modules/**
+      **/.next/cache/**
+      **/.env*
+      **/.DS_Store
+      **/__MACOSX/**
+      **/*.log
