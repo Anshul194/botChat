@@ -12,57 +12,74 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             onClick={toggleTheme}
             aria-label="Toggle theme"
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className={`relative w-[54px] h-7 rounded-full flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${className}`}
+            className={`relative w-[58px] h-[30px] rounded-full flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring group ${className}`}
             style={{
                 background: isDark
-                    ? "linear-gradient(135deg, color-mix(in srgb, var(--background) 100%, black), var(--card))"
-                    : "linear-gradient(135deg, var(--card), var(--background))",
+                    ? "linear-gradient(120deg, #1b1030 0%, #2a1240 55%, #3a1245 100%)"
+                    : "linear-gradient(120deg, #fff 0%, #ffeef4 55%, #ffd9e6 100%)",
                 border: "1.5px solid",
                 borderColor: isDark
-                    ? "color-mix(in srgb, var(--primary) 35%, transparent)"
-                    : "color-mix(in srgb, var(--primary) 25%, transparent)",
+                    ? "rgba(255,45,120,0.45)"
+                    : "rgba(232,23,93,0.30)",
                 boxShadow: isDark
-                    ? "0 0 12px rgba(29,110,245,0.25), inset 0 1px 0 color-mix(in srgb, var(--foreground) 6%, transparent)"
-                    : "0 0 10px rgba(30,95,212,0.15), inset 0 1px 0 rgba(255,255,255,0.8)",
-                transition: "all 0.35s ease",
+                    ? "0 0 16px rgba(255,45,120,0.28), inset 0 1px 0 rgba(255,255,255,0.08)"
+                    : "0 0 14px rgba(232,23,93,0.18), inset 0 1px 0 rgba(255,255,255,0.9)",
+                transition: "all 0.35s cubic-bezier(.4,0,.2,1)",
+            }}
+            onMouseEnter={e => {
+                e.currentTarget.style.transform = "scale(1.06)";
+                e.currentTarget.style.boxShadow = isDark
+                    ? "0 0 22px rgba(255,45,120,0.45), inset 0 1px 0 rgba(255,255,255,0.08)"
+                    : "0 0 20px rgba(232,23,93,0.30), inset 0 1px 0 rgba(255,255,255,0.9)";
+            }}
+            onMouseLeave={e => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = isDark
+                    ? "0 0 16px rgba(255,45,120,0.28), inset 0 1px 0 rgba(255,255,255,0.08)"
+                    : "0 0 14px rgba(232,23,93,0.18), inset 0 1px 0 rgba(255,255,255,0.9)";
             }}
         >
-            {/* Sun icon (left side) */}
+            {/* Sun (left) */}
             <Sun
-                className="absolute left-1.5 w-3.5 h-3.5 transition-all duration-300"
+                className="absolute left-2 w-[15px] h-[15px] transition-all duration-300"
                 style={{
-                    color: isDark ? "color-mix(in srgb, var(--foreground) 20%, transparent)" : "#1e5fd4",
-                    opacity: isDark ? 0.3 : 1,
-                    transform: isDark ? "rotate(-20deg)" : "rotate(0deg)",
+                    color: isDark ? "#fff" : "#e8175d",
+                    opacity: isDark ? 0.25 : 1,
+                    transform: isDark ? "rotate(-90deg) scale(0.6)" : "rotate(0deg) scale(1)",
+                    filter: isDark ? "none" : "drop-shadow(0 0 4px rgba(232,23,93,0.6))",
                 }}
             />
 
-            {/* Moon icon (right side) */}
+            {/* Moon (right) */}
             <Moon
-                className="absolute right-1.5 w-3.5 h-3.5 transition-all duration-300"
+                className="absolute right-2 w-[15px] h-[15px] transition-all duration-300"
                 style={{
-                    color: isDark ? "#fff" : "rgba(30,95,212,0.2)",
-                    opacity: isDark ? 1 : 0.3,
+                    color: isDark ? "#ffd7e8" : "#fff",
+                    opacity: isDark ? 1 : 0.25,
+                    transform: isDark ? "rotate(0deg) scale(1)" : "rotate(90deg) scale(0.6)",
+                    filter: isDark ? "drop-shadow(0 0 5px rgba(255,128,171,0.8))" : "none",
                 }}
             />
 
             {/* Sliding thumb */}
             <span
-                className="absolute w-[22px] h-[22px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ease-[cubic-bezier(.4,0,.2,1)]"
+                className="absolute w-[24px] h-[24px] rounded-full flex items-center justify-center transition-all duration-500"
                 style={{
-                    left: isDark ? "calc(100% - 24px)" : "2px",
+                    left: isDark ? "calc(100% - 26px)" : "2px",
+                    top: "2px",
                     background: isDark
-                        ? "linear-gradient(135deg, var(--primary), var(--accent))"
-                        : "linear-gradient(135deg, var(--card), var(--background))",
+                        ? "linear-gradient(135deg, #FF2D78 0%, #ff80ab 100%)"
+                        : "linear-gradient(135deg, #ffffff 0%, #ffe3ed 100%)",
                     boxShadow: isDark
-                        ? "0 2px 10px rgba(29,110,245,0.70)"
-                        : "0 2px 10px rgba(0,0,0,0.15)",
+                        ? "0 0 14px rgba(255,45,120,0.85), inset 0 1px 0 rgba(255,255,255,0.4)"
+                        : "0 2px 8px rgba(232,23,93,0.35), inset 0 1px 0 rgba(255,255,255,0.9)",
+                    transition: "all 0.45s cubic-bezier(.34,1.56,.64,1)",
                 }}
             >
                 {isDark ? (
-                    <Moon className="w-3 h-3 text-white" />
+                    <Moon className="w-[13px] h-[13px] text-white" />
                 ) : (
-                    <Sun className="w-3 h-3 text-[#1e5fd4]" />
+                    <Sun className="w-[13px] h-[13px] text-[#e8175d]" />
                 )}
             </span>
         </button>

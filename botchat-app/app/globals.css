@@ -1657,3 +1657,24 @@ th,
 span {
   text-wrap: pretty;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR TRENDY ANIMATIONS
+   Animated gradient sweep + soft breathing glow for the topbar.
+═══════════════════════════════════════════════════════════════ */
+@keyframes topbar-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes topbar-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.96); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes topbar-spark {
+  0% { opacity: 0; transform: scale(0.4) rotate(-40deg); }
+  60% { opacity: 1; transform: scale(1.15) rotate(8deg); }
+  100% { opacity: 0; transform: scale(0.6) rotate(20deg); }
+}
