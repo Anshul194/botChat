@@ -68,16 +68,18 @@ export default function GrowthSections() {
   const btnOpacity = useTransform(scrollYProgress, [0.96, 1], [0, 1]);
   const btnScale = useTransform(scrollYProgress, [0.96, 1], [0.9, 1]);
 
-  if (!mounted) return <div ref={containerRef} className="h-[500vh] bg-white" />;
+  if (!mounted) return <div ref={containerRef} className="h-[500vh]" style={{ background: "#06000d" }} />;
 
   return (
-    <div ref={containerRef} className="relative bg-white antialiased">
+    <div ref={containerRef} className="relative antialiased" style={{ background: "#06000d" }}>
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-6 overflow-hidden">
 
-        {/* Soft Ambient Glows */}
+        {/* Dark Ambient Glows */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[60vh] h-[60vh] bg-pink-50/50 blur-[120px] rounded-full -translate-y-1/3 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-[50vh] h-[50vh] bg-indigo-50/50 blur-[120px] rounded-full translate-y-1/3 -translate-x-1/3" />
+          <div className="absolute top-0 right-0 w-[60vh] h-[60vh] rounded-full -translate-y-1/3 translate-x-1/3"
+            style={{ background: "rgba(255,45,120,0.12)", filter: "blur(120px)" }} />
+          <div className="absolute bottom-0 left-0 w-[50vh] h-[50vh] rounded-full translate-y-1/3 -translate-x-1/3"
+            style={{ background: "rgba(131,58,180,0.08)", filter: "blur(120px)" }} />
         </div>
 
         <div className="relative z-10 w-full max-w-5xl flex flex-col items-center text-center">
@@ -87,10 +89,11 @@ export default function GrowthSections() {
             style={{ opacity: opacity1, y: y1 }}
             className="absolute inset-0 flex flex-col items-center justify-center space-y-6 pointer-events-none"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-black tracking-widest uppercase">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black tracking-widest uppercase"
+              style={{ background: "rgba(255,45,120,0.12)", borderColor: "rgba(255,45,120,0.3)", color: "#FF2D78" }}>
               {NARRATIVE[0].icon} {NARRATIVE[0].tag}
             </div>
-            <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] max-w-4xl">
               <TypewriterText text={NARRATIVE[0].text} progress={prog.t1} />
               <motion.span
                 animate={{ opacity: [1, 0] }}
@@ -105,10 +108,11 @@ export default function GrowthSections() {
             style={{ opacity: opacity2, y: y2 }}
             className="absolute inset-0 flex flex-col items-center justify-center space-y-6 pointer-events-none"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-black tracking-widest uppercase">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black tracking-widest uppercase"
+              style={{ background: "rgba(255,45,120,0.12)", borderColor: "rgba(255,45,120,0.3)", color: "#FF2D78" }}>
               {NARRATIVE[1].icon} {NARRATIVE[1].tag}
             </div>
-            <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] max-w-4xl">
               <TypewriterText text={NARRATIVE[1].text} progress={prog.t2} />
               <motion.span
                 animate={{ opacity: [1, 0] }}
@@ -124,10 +128,11 @@ export default function GrowthSections() {
             className="absolute inset-0 flex flex-col items-center justify-center space-y-12"
           >
             <div className="flex flex-col items-center space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#e8175d] text-[10px] font-black tracking-widest uppercase">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black tracking-widest uppercase"
+                style={{ background: "rgba(255,45,120,0.12)", borderColor: "rgba(255,45,120,0.3)", color: "#FF2D78" }}>
                 {NARRATIVE[2].icon} {NARRATIVE[2].tag}
               </div>
-              <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-[#1a1235] tracking-tight leading-[1.1] max-w-4xl">
+              <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] max-w-4xl">
                 <TypewriterText text={NARRATIVE[2].text} progress={prog.t3} />
                 <motion.span
                   animate={{ opacity: [1, 0] }}

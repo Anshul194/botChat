@@ -59,10 +59,10 @@ const infiniteTestimonials = [...testimonials, ...testimonials];
 
 export default function Testimonials() {
   return (
-    <section className="py-24 bg-[#1a1235] relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0a0114 0%, #06000d 100%)" }}>
       {/* Dark Pink Ambient Glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#e8175d] opacity-20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#e8175d] opacity-10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] opacity-25 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" style={{ background: "#e8175d" }} />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] opacity-12 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" style={{ background: "#e8175d" }} />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10 mb-16">
         <div className="text-center space-y-4">
@@ -78,7 +78,7 @@ export default function Testimonials() {
             The Global <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-[#ff2d78]">Success List.</span>
           </h2>
-          <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
+          <p className="font-medium text-lg max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.6)" }}>
             Scaling creators don't work harder, they automate smarter. Join the league of performant creators.
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function Testimonials() {
                 <div className="absolute inset-0 h-full w-full rounded-[48px] bg-white/5 border border-white/10 p-8 backdrop-blur-xl flex flex-col items-center justify-between text-center [backface-visibility:hidden]">
                   <div className="relative mb-6">
                     <img src={t.avatar} alt={t.name} className="w-24 h-24 rounded-full border-4 border-white/20 shadow-2xl relative z-10 object-cover" />
-                    <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white p-1 rounded-full shadow-lg border-2 border-[#1a1235] z-20">
+                    <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white p-1 rounded-full shadow-lg border-2 z-20" style={{ borderColor: "#06000d" }}>
                       <CheckCircle2 size={16} fill="currentColor" />
                     </div>
                   </div>
@@ -118,7 +118,7 @@ export default function Testimonials() {
                       <TrendingUp size={14} />
                       {t.result}
                     </div>
-                    <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                    <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.5)" }}>
                       {t.name} · {t.role}
                     </div>
                   </div>

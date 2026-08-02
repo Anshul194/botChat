@@ -65,7 +65,7 @@ function FeatureCard({
     feature,
     isActive,
     onClick,
-    size = "normal", // "normal" | "large"
+    size = "normal",
 }: {
     feature: typeof features[0];
     isActive: boolean;
@@ -79,11 +79,19 @@ function FeatureCard({
             layout
             onClick={onClick}
             className={`
-        group relative rounded-3xl overflow-hidden bg-white border border-gray-100
-        shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer
-        ${isActive ? "shadow-2xl border-[#FF2060]/30 ring-1 ring-[#FF2060]/20" : ""}
+        group relative rounded-3xl overflow-hidden border cursor-pointer transition-all duration-500
+        ${isActive ? "ring-1" : ""}
         ${size === "large" ? "md:col-span-2 md:row-span-2" : "md:col-span-1 md:row-span-1"}
       `}
+            style={{
+                background: isActive
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(255,255,255,0.03)",
+                borderColor: isActive
+                    ? `${feature.color}55`
+                    : "rgba(255,255,255,0.08)",
+                boxShadow: isActive ? `0 0 40px ${feature.color}22` : undefined,
+            }}
             whileHover={{ scale: isActive ? 1.015 : 1.03, y: -4 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
@@ -94,7 +102,7 @@ function FeatureCard({
                         style={{
                             background: isActive
                                 ? `linear-gradient(135deg, ${feature.color}, #ff4d8d)`
-                                : "rgba(255,32,96,0.08)",
+                                : `${feature.color}18`,
                         }}
                     >
                         <Icon
@@ -106,14 +114,15 @@ function FeatureCard({
 
                     <div>
                         <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-xl text-gray-900">{feature.name}</h4>
+                            <h4 className="font-semibold text-xl text-white">{feature.name}</h4>
                             {feature.badge && (
-                                <span className="text-xs font-bold uppercase px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+                                <span className="text-xs font-bold uppercase px-2.5 py-1 rounded-full"
+                                    style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
                                     {feature.badge}
                                 </span>
                             )}
                         </div>
-                        <p className="text-sm text-gray-500 mt-0.5">{feature.cat}</p>
+                        <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>{feature.cat}</p>
                     </div>
                 </div>
 
@@ -127,14 +136,15 @@ function FeatureCard({
                             transition={{ duration: 0.35 }}
                             className="flex-1 flex flex-col"
                         >
-                            <p className="text-base leading-relaxed text-gray-700 mb-6 italic">
-                                “{feature.longDesc || feature.desc}”
+                            <p className="text-base leading-relaxed mb-6 italic" style={{ color: "rgba(255,255,255,0.75)" }}>
+                                "{feature.longDesc || feature.desc}"
                             </p>
                             <div className="mt-auto flex flex-wrap gap-2">
                                 {["Real-time", "Scalable", "Safe"].map((tag) => (
                                     <span
                                         key={tag}
-                                        className="text-xs px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-600"
+                                        className="text-xs px-3 py-1 rounded-full border"
+                                        style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.6)" }}
                                     >
                                         {tag}
                                     </span>
@@ -147,7 +157,8 @@ function FeatureCard({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="text-sm text-gray-600 leading-relaxed flex-1"
+                            className="text-sm leading-relaxed flex-1"
+                            style={{ color: "rgba(255,255,255,0.55)" }}
                         >
                             {feature.desc}
                         </motion.p>
@@ -159,7 +170,8 @@ function FeatureCard({
                 <motion.div
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 0.7, scale: 1 }}
-                    className="absolute bottom-5 right-5 text-[#FF2060]"
+                    className="absolute bottom-5 right-5"
+                    style={{ color: feature.color }}
                 >
                     <ArrowUpRight className="w-6 h-6" />
                 </motion.div>
@@ -192,22 +204,28 @@ export default function FeaturesBento() {
     };
 
     return (
-        <section className="relative py-24 md:py-32 bg-gray-50/50 overflow-hidden">
-            {/* Optional subtle bg */}
+        <section
+            className="relative py-24 md:py-32 overflow-hidden"
+            style={{ background: "linear-gradient(180deg, #0a0114 0%, #06000d 100%)" }}
+        >
+            {/* ambient glows */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#FF2060]/4 blur-3xl" />
-                <div className="absolute bottom-[-15%] left-[-15%] w-[800px] h-[800px] rounded-full bg-[#FF4D8D]/4 blur-3xl" />
+                <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full"
+                    style={{ background: "radial-gradient(circle, rgba(255,32,96,0.1) 0%, transparent 70%)", filter: "blur(80px)" }} />
+                <div className="absolute bottom-[-15%] left-[-15%] w-[800px] h-[800px] rounded-full"
+                    style={{ background: "radial-gradient(circle, rgba(255,77,141,0.07) 0%, transparent 70%)", filter: "blur(100px)" }} />
             </div>
 
             <div className="max-w-7xl mx-auto px-5 md:px-8 relative z-10">
                 <div className="text-center mb-16 md:mb-20">
-                    <h2 className="text-5xl md:text-6xl font-bold text-gray-900 tracking-tight">
+                    <h2 className="text-5xl md:text-6xl font-bold text-white tracking-tight">
                         Scale Your
-                        <span className="bg-gradient-to-r from-[#FF4D8D] to-[#FF2060] bg-clip-text text-transparent block mt-2">
+                        <span className="block mt-2"
+                            style={{ background: "linear-gradient(135deg, #FF4D8D, #FF2060)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                             Influence
                         </span>
                     </h2>
-                    <p className="mt-5 text-xl text-gray-600 max-w-2xl mx-auto">
+                    <p className="mt-5 text-xl max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.55)" }}>
                         Every comment is revenue waiting. Never miss another opportunity — automatically.
                     </p>
                 </div>
@@ -220,23 +238,24 @@ export default function FeaturesBento() {
                             feature={feature}
                             isActive={activeIndex === i}
                             onClick={() => handleSelect(i)}
-                            size={i === activeIndex ? "large" : "normal"} // only active becomes big
+                            size={i === activeIndex ? "large" : "normal"}
                         />
                     ))}
                 </div>
 
-                {/* Progress dots below grid */}
+                {/* Progress dots */}
                 <div className="flex justify-center gap-3 mt-12">
                     {features.map((_, i) => (
                         <button
                             key={i}
                             onClick={() => handleSelect(i)}
-                            className={`
-                w-2.5 h-2.5 rounded-full transition-all duration-400
-                ${activeIndex === i
-                                    ? "bg-[#FF2060] scale-150 shadow-md"
-                                    : "bg-gray-300 hover:bg-gray-400"}
-              `}
+                            className="rounded-full transition-all duration-400"
+                            style={{
+                                width: activeIndex === i ? "2.5rem" : "0.625rem",
+                                height: "0.625rem",
+                                background: activeIndex === i ? "#FF2060" : "rgba(255,255,255,0.2)",
+                                transform: activeIndex === i ? "scale(1)" : undefined,
+                            }}
                         />
                     ))}
                 </div>
@@ -248,13 +267,14 @@ export default function FeaturesBento() {
                     viewport={{ once: true }}
                     className="mt-20 text-center"
                 >
-                    <h3 className="text-4xl font-bold text-gray-900 mb-6">
+                    <h3 className="text-4xl font-bold text-white mb-6">
                         Ready to turn comments into customers?
                     </h3>
                     <Link href="/dashboard">
                         <motion.button
-                            className="inline-flex items-center gap-3 bg-gradient-to-r from-[#FF2060] to-[#E8185A] text-white font-semibold uppercase tracking-wider text-sm px-10 py-5 rounded-full shadow-xl"
-                            whileHover={{ scale: 1.06, boxShadow: "0 25px 50px -12px rgba(255,32,96,0.4)" }}
+                            className="inline-flex items-center gap-3 text-white font-semibold uppercase tracking-wider text-sm px-10 py-5 rounded-full shadow-xl"
+                            style={{ background: "linear-gradient(135deg, #FF2060, #E8185A)", boxShadow: "0 16px 40px -8px rgba(255,32,96,0.4)" }}
+                            whileHover={{ scale: 1.06, boxShadow: "0 25px 50px -12px rgba(255,32,96,0.5)" }}
                             whileTap={{ scale: 0.97 }}
                         >
                             Start Automating Now

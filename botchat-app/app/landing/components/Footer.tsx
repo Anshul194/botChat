@@ -2,137 +2,255 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Sparkles, Instagram, Twitter, Linkedin, Facebook, ArrowRight, MessageCircle, ShieldCheck, Mail } from "lucide-react";
+import { Sparkles, Instagram, Twitter, Linkedin, Facebook, ArrowRight, ShieldCheck, ExternalLink } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+
+/* ─── Static fallback data ─────────────────────────────────────── */
+const PLATFORM_NAME = "BotChat";
+const PLATFORM_TAGLINE = "The world's most advanced automation engine for social growth and precision conversion.";
+
+const SOLUTIONS = [
+    { label: "Comment Automation", href: "/features" },
+    { label: "DM Funnels", href: "/features" },
+    { label: "Lead Capture", href: "/features" },
+    { label: "AI Workflows", href: "/features" },
+    { label: "Flow Builder", href: "/features" },
+];
+
+const PLATFORM_LINKS = [
+    { label: "Features", href: "/features" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Blog Insights", href: "/blog" },
+    { label: "Platform Guide", href: "/features" },
+];
+
+const LEGAL_LINKS = [
+    { label: "Privacy Policy", href: "/home/privacy_policy" },
+    { label: "Terms of Use", href: "/home/terms_use" },
+    { label: "Disclaimer", href: "/home/disclaimer" },
+    { label: "Accessibility Statement", href: "/home/accessibility" },
+    { label: "Cookie Policy", href: "/home/cookie_policy" },
+    { label: "Browser Caching", href: "/home/browser_caching" },
+    { label: "Sitemap", href: "/sitemap.xml" },
+];
+
+const SOCIALS = [
+    { icon: <Instagram size={18} />, href: "#", name: "Instagram" },
+    { icon: <Twitter size={18} />, href: "#", name: "Twitter" },
+    { icon: <Facebook size={18} />, href: "#", name: "Facebook" },
+    { icon: <Linkedin size={18} />, href: "#", name: "LinkedIn" },
+];
+
+const STATS = [
+    { value: "25M+", label: "DMs Sent" },
+    { value: "11K+", label: "Creators" },
+    { value: "99.9%", label: "Uptime" },
+    { value: "250%", label: "Avg Growth" },
+];
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear();
 
-  return (
-    <footer className="relative bg-[#0a0a0b] text-white pt-24 pb-12 overflow-hidden antialiased">
+    // Try to pull platform name from settings if available
+    const general = useSelector((state: RootState) => state.settings?.general);
+    const platformName: string = (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME;
+    const platformTagline: string = (general as any)?.tagline || PLATFORM_TAGLINE;
+    const supportEmail: string = (general as any)?.supportEmail || (general as any)?.email || "";
+    const socialLinks = {
+        instagram: (general as any)?.instagramUrl || "#",
+        twitter: (general as any)?.twitterUrl || "#",
+        facebook: (general as any)?.facebookUrl || "#",
+        linkedin: (general as any)?.linkedinUrl || "#",
+    };
 
-      {/* 🌫️ AMBIENT BACKGROUND GLOWS */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-pink-500/10 blur-[140px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+    const dynamicSocials = [
+        { icon: <Instagram size={18} />, href: socialLinks.instagram, name: "Instagram" },
+        { icon: <Twitter size={18} />, href: socialLinks.twitter, name: "Twitter" },
+        { icon: <Facebook size={18} />, href: socialLinks.facebook, name: "Facebook" },
+        { icon: <Linkedin size={18} />, href: socialLinks.linkedin, name: "LinkedIn" },
+    ];
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+    return (
+        <footer className="relative text-white pt-24 pb-12 overflow-hidden antialiased" style={{ background: "#06000d" }}>
 
-        {/* TOP SECTION: Main Navigation & Brand */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-24 mb-24 pr-4">
+            {/* Ambient glows */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"
+                style={{ background: "rgba(255,45,120,0.08)", filter: "blur(140px)" }} />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"
+                style={{ background: "rgba(131,58,180,0.05)", filter: "blur(120px)" }} />
 
-          {/* BRAND COLUMN */}
-          <div className="lg:col-span-4 space-y-10">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#e8175d] to-[#ff2d78] shadow-[0_8px_25px_-5px_rgba(232,23,93,0.4)]">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold tracking-tighter">botChat<span className="text-pink-500">.</span></span>
-            </div>
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-            <p className="text-slate-300 text-lg font-medium leading-relaxed max-w-sm">
-              The world's most advanced <span className="text-white hover:text-pink-400 cursor-default transition-colors duration-300">automation engine</span> for social growth and precision conversion.
-            </p>
-
-            <div className="flex items-center gap-4">
-              {[
-                { icon: <Instagram size={18} />, href: "#", name: "Instagram" },
-                { icon: <Twitter size={18} />, href: "#", name: "Twitter" },
-                { icon: <Facebook size={18} />, href: "#", name: "Facebook" },
-                { icon: <Linkedin size={18} />, href: "#", name: "LinkedIn" }
-              ].map((social) => (
-                <Link
-                  key={social.name} href={social.href}
-                  aria-label={`Visit us on ${social.name}`}
-                  className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0a0a0b] hover:scale-110 transition-all duration-300"
-                >
-                  {social.icon}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* LINK COLUMNS */}
-          <div className="lg:col-span-8">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-8">
-
-              <div className="space-y-8">
-                <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-pink-500">Solutions</h4>
-                <ul className="space-y-4">
-                  {['Comment Strikers', 'DM Funnels', 'Data Mining', 'AI Automation'].map((link) => (
-                    <li key={link}>
-                      <Link href="#" className="text-slate-300 hover:text-white transition-all duration-300 text-[15px] font-medium flex items-center gap-2 group">
-                        <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 text-pink-500">—</span>
-                        {link}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-8">
-                <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-slate-500">Links</h4>
-                <ul className="space-y-4">
-                  {[
-                    { n: 'Features', h: '/features' },
-                    { n: 'Pricing', h: '/pricing' },
-                    { n: 'Blog Insights', h: '/blog' },
-                    { n: 'Documentation', h: '#' }
-                  ].map((link) => (
-                    <li key={link.n}>
-                      <Link href={link.h} className="text-slate-300 hover:text-white transition-all duration-300 text-[15px] font-medium flex items-center gap-2 group">
-                        <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 text-pink-500">—</span>
-                        {link.n}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="col-span-2 md:col-span-1 space-y-8">
-                <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-500">Status</h4>
-                <div className="p-6 rounded-[32px] bg-white/[0.03] border border-white/[0.05] space-y-4 relative overflow-hidden group hover:border-pink-500/30 transition-all duration-500">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                    <span className="text-xs font-bold text-white tracking-widest uppercase">System Operational</span>
-                  </div>
-                  <p className="text-slate-300 text-[11px] uppercase font-bold tracking-widest">
-                    All official APIs running at peak speed.
-                  </p>
-                  <button className="flex items-center gap-2 text-pink-400 text-[11px] font-bold uppercase tracking-widest group-hover:gap-3 transition-all duration-300">
-                    View Status <ArrowRight size={12} />
-                  </button>
+                {/* ── PLATFORM STATS BAR ── */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-20 p-6 rounded-3xl border"
+                    style={{ borderColor: "rgba(255,45,120,0.15)", background: "rgba(255,45,120,0.05)" }}>
+                    {STATS.map((s) => (
+                        <div key={s.label} className="text-center">
+                            <div className="text-2xl font-black" style={{ color: "#FF2D78" }}>{s.value}</div>
+                            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{s.label}</div>
+                        </div>
+                    ))}
                 </div>
-              </div>
+
+                {/* ── MAIN GRID ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-20 mb-20">
+
+                    {/* Brand column */}
+                    <div className="lg:col-span-4 space-y-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
+                                style={{ background: "linear-gradient(135deg, #e8175d, #FF2D78)", boxShadow: "0 8px 25px -5px rgba(232,23,93,0.4)" }}>
+                                <Sparkles className="w-6 h-6 text-white" />
+                            </div>
+                            <span className="text-2xl font-bold tracking-tighter">
+                                {platformName}<span style={{ color: "#FF2D78" }}>.</span>
+                            </span>
+                        </div>
+
+                        <p className="text-lg font-medium leading-relaxed max-w-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                            {platformTagline}
+                        </p>
+
+                        {/* Social icons */}
+                        <div className="flex items-center gap-3">
+                            {dynamicSocials.map((social) => (
+                                <Link
+                                    key={social.name}
+                                    href={social.href}
+                                    aria-label={`Visit us on ${social.name}`}
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border group"
+                                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}
+                                    onMouseEnter={(e) => {
+                                        (e.currentTarget as HTMLAnchorElement).style.background = "#FF2D78";
+                                        (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
+                                        (e.currentTarget as HTMLAnchorElement).style.borderColor = "#FF2D78";
+                                        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.1)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)";
+                                        (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.5)";
+                                        (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)";
+                                        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
+                                    }}
+                                >
+                                    {social.icon}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Contact email if available */}
+                        {supportEmail && (
+                            <a href={`mailto:${supportEmail}`} className="flex items-center gap-2 text-sm font-medium transition-colors"
+                                style={{ color: "rgba(255,255,255,0.45)" }}
+                                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#FF2D78")}
+                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.45)")}>
+                                <ExternalLink size={14} />
+                                {supportEmail}
+                            </a>
+                        )}
+                    </div>
+
+                    {/* Link columns */}
+                    <div className="lg:col-span-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-10">
+
+                            {/* Solutions */}
+                            <div className="space-y-6">
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "#FF2D78" }}>Solutions</h4>
+                                <ul className="space-y-4">
+                                    {SOLUTIONS.map((link) => (
+                                        <li key={link.label}>
+                                            <Link href={link.href}
+                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
+                                                style={{ color: "rgba(255,255,255,0.55)" }}
+                                                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
+                                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
+                                                <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
+                                                {link.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Platform Links */}
+                            <div className="space-y-6">
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>Platform</h4>
+                                <ul className="space-y-4">
+                                    {PLATFORM_LINKS.map((link) => (
+                                        <li key={link.label}>
+                                            <Link href={link.href}
+                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
+                                                style={{ color: "rgba(255,255,255,0.55)" }}
+                                                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
+                                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
+                                                <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
+                                                {link.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* System Status */}
+                            <div className="col-span-2 md:col-span-1 space-y-6">
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>Status</h4>
+                                <div className="p-5 rounded-[28px] border space-y-4 group transition-all duration-500 cursor-default"
+                                    style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}
+                                    onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,45,120,0.3)")}
+                                    onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)")}>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
+                                            style={{ boxShadow: "0 0 10px rgba(52,211,153,0.6)" }} />
+                                        <span className="text-xs font-bold text-white tracking-widest uppercase">System Operational</span>
+                                    </div>
+                                    <p className="text-[11px] uppercase font-bold tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+                                        All official APIs running at peak speed.
+                                    </p>
+                                    <Link href="/dashboard" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 hover:text-white" style={{ color: "#FF2D78" }}>
+                                        View Status <ArrowRight size={12} />
+                                    </Link>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── BOTTOM BAR ── */}
+                <div className="pt-10 border-t flex flex-col md:flex-row justify-between items-center gap-8"
+                    style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+
+                    <div className="flex flex-col md:flex-row items-center gap-5 text-[11px] font-bold uppercase tracking-widest"
+                        style={{ color: "rgba(255,255,255,0.4)" }}>
+                        <p className="text-center md:text-left">
+                            &copy; {currentYear} {platformName}. Proudly built for the next billion creators.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+                            {LEGAL_LINKS.map((link) => (
+                                <Link key={link.label} href={link.href}
+                                    className="transition-colors"
+                                    style={{ color: "rgba(255,255,255,0.35)" }}
+                                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
+                                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.35)")}>
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border cursor-default group transition-colors duration-300"
+                        style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
+                        onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.color = "#fff")}
+                        onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,0.45)")}>
+                        <ShieldCheck size={14} style={{ color: "#FF2D78" }} />
+                        <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
+                    </div>
+
+                </div>
 
             </div>
-          </div>
-        </div>
-
-        {/* BOTTOM SECTION: Legal & Local */}
-        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-12 pl-2">
-
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 text-[11px] md:text-xs font-bold uppercase tracking-widest text-slate-300">
-            <p className="text-center md:text-left">&copy; {currentYear} botChat Lab. PROUDLY BUILT FOR THE NEXT BILLION CREATORS.</p>
-<div className="flex flex-wrap justify-center gap-x-6 md:gap-x-8 gap-y-3">
-               <Link href="/home/privacy_policy" className="text-slate-400 hover:text-white transition-colors">Privacy Policy</Link>
-               <Link href="/home/disclaimer" className="text-slate-400 hover:text-white transition-colors">Disclaimer</Link>
-               <Link href="/home/terms_use" className="text-slate-400 hover:text-white transition-colors">Terms of Use</Link>
-               <Link href="/home/terms_use" className="text-slate-400 hover:text-white transition-colors">Terms</Link>
-               <Link href="/home/accessibility" className="text-slate-400 hover:text-white transition-colors">Accessibility Statement</Link>
-               <Link href="/home/accessibility#sign-language" className="text-slate-400 hover:text-white transition-colors">German Sign Language (DGS)</Link>
-               <Link href="/home/accessibility#easy-read" className="text-slate-400 hover:text-white transition-colors">Easy-to-Read</Link>
-               <Link href="/home/accessibility#report-barrier" className="text-slate-400 hover:text-white transition-colors">Report a Barrier</Link>
-               <Link href="/sitemap.xml" className="text-slate-400 hover:text-white transition-colors">Sitemap</Link>
-             </div>
-          </div>
-
-          <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.05] text-slate-400 hover:text-white transition-colors duration-300 group cursor-default">
-            <ShieldCheck size={14} className="group-hover:text-pink-500 transition-colors" />
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
-          </div>
-
-        </div>
-
-      </div>
-    </footer>
-  );
+        </footer>
+    );
 }

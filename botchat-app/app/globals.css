@@ -1678,3 +1678,116 @@ span {
   60% { opacity: 1; transform: scale(1.15) rotate(8deg); }
   100% { opacity: 0; transform: scale(0.6) rotate(20deg); }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LANDING PAGE — Dark section isolation
+   Prevents global dark-mode gray→white overrides from
+   bleeding into sections that use inline style colors.
+   These sections manage their own color via inline styles.
+═══════════════════════════════════════════════════════════════ */
+
+/* Hero always stays dark-pink regardless of theme */
+[data-hero-section],
+.hero-dark-lock {
+  background: #06000d !important;
+  color: #f0e0f0 !important;
+}
+
+/* Shimmer text animation (used in hero headline) */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #ff2d78 0%,
+    #ff80ab 30%,
+    #ffffff 50%,
+    #ff80ab 70%,
+    #ff2d78 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+/* Stat cards in hero */
+.stat-card {
+  background: rgba(255, 45, 120, 0.10);
+  border: 1px solid rgba(255, 45, 120, 0.20);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Notification cards in hero */
+.notif-card {
+  background: rgba(13, 6, 23, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Device glow under carousel */
+.device-glow {
+  box-shadow: 0 0 80px rgba(255, 45, 120, 0.20), 0 0 200px rgba(255, 45, 120, 0.08);
+}
+
+/* Scan line animation */
+.scan {
+  animation: scan-move 4s ease-in-out infinite;
+  top: 0;
+}
+@keyframes scan-move {
+  0%   { top: 0%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Blob animations */
+.blob1 { animation: blob-float1 8s ease-in-out infinite; }
+.blob2 { animation: blob-float2 10s ease-in-out infinite; }
+.blob3 { animation: blob-float3 6s ease-in-out infinite; }
+
+@keyframes blob-float1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(4%, 3%) scale(1.05); }
+  66%       { transform: translate(-3%, 5%) scale(0.95); }
+}
+@keyframes blob-float2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(-5%, -4%) scale(1.08); }
+}
+@keyframes blob-float3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%       { transform: translate(-48%, -52%) scale(1.1); }
+}
+
+/* CTA primary button */
+.cta-primary {
+  background: linear-gradient(135deg, #FF2D78 0%, #E1306C 100%);
+  box-shadow: 0 8px 24px rgba(255, 45, 120, 0.40);
+}
+.cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(255, 45, 120, 0.55);
+}
+
+/* Live badge pulse */
+.live-badge::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: rgba(255, 45, 120, 0.15);
+  animation: live-ping 2s ease-in-out infinite;
+}
+@keyframes live-ping {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50%       { transform: scale(1.08); opacity: 0; }
+}

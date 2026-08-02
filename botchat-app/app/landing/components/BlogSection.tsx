@@ -32,7 +32,7 @@ export default function BlogSection() {
   if (!loading && posts.length === 0) return null;
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #06000d 0%, #0a0114 100%)" }}>
       <div className="max-w-7xl mx-auto px-6 relative z-10">
 
         {/* Header */}
@@ -42,11 +42,11 @@ export default function BlogSection() {
               <BookOpen size={16} />
               <span>THE PLAYBOOK</span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-[#0f0f0f] leading-tight">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
               Latest from our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#ff8cc8]">Blog</span>
             </h2>
           </div>
-          <Link href="/blog" className="hidden md:flex items-center gap-2 font-bold text-gray-600 hover:text-[#FF2D78] transition-colors group pb-2">
+          <Link href="/blog" className="hidden md:flex items-center gap-2 font-bold hover:text-[#FF2D78] transition-colors group pb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
             View All Posts
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </Link>
@@ -55,7 +55,7 @@ export default function BlogSection() {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {loading ? (
-            [1, 2, 3].map(i => <div key={i} className="h-[400px] bg-slate-50 animate-pulse rounded-[32px]" />)
+            [1, 2, 3].map(i => <div key={i} className="h-[400px] animate-pulse rounded-[32px]" style={{ background: "rgba(255,255,255,0.06)" }} />)
           ) : (
             posts.map((post, i) => (
               <motion.a
@@ -65,9 +65,12 @@ export default function BlogSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="group flex flex-col bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-xl shadow-black/5 hover:shadow-2xl hover:shadow-[#FF2D78]/10 hover:-translate-y-1 transition-all duration-300"
+                className="group flex flex-col rounded-[32px] overflow-hidden border transition-all duration-300 hover:-translate-y-1"
+                style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,45,120,0.3)"; (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 20px 60px rgba(255,45,120,0.1)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.boxShadow = ""; }}
               >
-                <div className="relative w-full h-[240px] overflow-hidden bg-gray-100">
+                <div className="relative w-full h-[240px] overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
                   <img
                     src={post.featured_image_url || post.featured_image || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800"}
                     alt={post.title}
@@ -81,20 +84,22 @@ export default function BlogSection() {
                 </div>
 
                 <div className="p-8 flex flex-col flex-1">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>
                     {/* TODO: Replace 'en-US' with tenant locale from settings.locale */}
                     {new Date(post.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
-                  <h3 className="text-2xl font-black text-gray-900 leading-tight mb-4 group-hover:text-[#FF2D78] transition-colors line-clamp-2">
+                  <h3 className="text-2xl font-black leading-tight mb-4 group-hover:text-[#FF2D78] transition-colors line-clamp-2" style={{ color: "rgba(255,255,255,0.9)" }}>
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-base leading-relaxed mb-8 flex-1 line-clamp-3">
+                  <p className="text-base leading-relaxed mb-8 flex-1 line-clamp-3" style={{ color: "rgba(255,255,255,0.55)" }}>
                     {post.short_description || post.content?.replace(/<[^>]+>/g, '') || "Read full article..."}
                   </p>
 
-                  <div className="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between font-bold text-[13px] uppercase tracking-widest text-[#0f0f0f] group-hover:text-[#FF2D78] transition-colors">
+                  <div className="mt-auto pt-6 border-t flex items-center justify-between font-bold text-[13px] uppercase tracking-widest group-hover:text-[#FF2D78] transition-colors"
+                    style={{ borderColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.7)" }}>
                     <span>Read Article</span>
-                    <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-[#FF2D78]/10 flex items-center justify-center transition-colors">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center transition-colors group-hover:bg-[#FF2D78]/10"
+                      style={{ background: "rgba(255,255,255,0.06)" }}>
                       <ArrowRight size={16} className="-rotate-45 group-hover:rotate-0 transition-transform" />
                     </div>
                   </div>
@@ -105,7 +110,8 @@ export default function BlogSection() {
         </div>
 
         {/* Mobile Button */}
-        <button className="md:hidden w-full mt-10 py-4 rounded-full border-2 border-gray-200 font-bold text-gray-700 flex items-center justify-center gap-2 hover:border-[#FF2D78] hover:text-[#FF2D78] transition-colors">
+        <button className="md:hidden w-full mt-10 py-4 rounded-full border-2 font-bold flex items-center justify-center gap-2 hover:border-[#FF2D78] hover:text-[#FF2D78] transition-colors"
+          style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}>
           View All Posts <ArrowRight size={18} />
         </button>
 

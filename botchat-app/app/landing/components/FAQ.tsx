@@ -65,14 +65,16 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.04 }}
-            className="border-b border-gray-100 last:border-0"
+            className="border-b last:border-0"
+            style={{ borderColor: "rgba(255,255,255,0.07)" }}
         >
             <button
                 onClick={() => setOpen(v => !v)}
                 className="flex items-start justify-between w-full py-5 text-left gap-4 group"
                 aria-expanded={open}
             >
-                <span className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-[#FF2D78] transition-colors leading-snug">
+                <span className="text-base sm:text-lg font-bold leading-snug transition-colors group-hover:text-[#FF2D78]"
+                    style={{ color: "rgba(255,255,255,0.9)" }}>
                     {q}
                 </span>
                 <motion.div
@@ -80,10 +82,11 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                     transition={{ duration: 0.18 }}
                     className="shrink-0 mt-0.5"
                 >
-                    <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${open ? "border-[#FF2D78] bg-[#FF2D78]" : "border-gray-200 bg-white"}`}>
+                    <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${open ? "border-[#FF2D78] bg-[#FF2D78]" : ""}`}
+                        style={!open ? { borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.05)" } : {}}>
                         {open
                             ? <Minus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                            : <Plus className="w-3.5 h-3.5 text-gray-500" strokeWidth={3} />
+                            : <Plus className="w-3.5 h-3.5" strokeWidth={3} style={{ color: "rgba(255,255,255,0.5)" }} />
                         }
                     </div>
                 </motion.div>
@@ -97,7 +100,8 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                         transition={{ duration: 0.22, ease: "easeInOut" }}
                         className="overflow-hidden"
                     >
-                        <p className="text-gray-600 font-medium leading-relaxed pb-5 pr-10 text-base">
+                        <p className="font-medium leading-relaxed pb-5 pr-10 text-base"
+                            style={{ color: "rgba(255,255,255,0.6)" }}>
                             {a}
                         </p>
                     </motion.div>
@@ -113,7 +117,8 @@ export default function FAQ() {
     const active = FAQ_CATEGORIES.find(c => c.label === activeCategory) ?? FAQ_CATEGORIES[0];
 
     return (
-        <section className="py-24 bg-white overflow-hidden" id="faq">
+        <section className="py-24 overflow-hidden relative" id="faq"
+            style={{ background: "linear-gradient(180deg, #0d0617 0%, #06000d 100%)" }}>
             <div className="max-w-4xl mx-auto px-6">
                 {/* Header */}
                 <div className="text-center mb-14">
@@ -130,7 +135,7 @@ export default function FAQ() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.05 }}
-                        className="text-4xl md:text-5xl font-black text-black mb-4 tracking-tight"
+                        className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight"
                     >
                         Common Questions.{" "}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#E1306C]">
@@ -142,7 +147,8 @@ export default function FAQ() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-gray-600 text-lg max-w-xl mx-auto font-medium"
+                        className="text-lg max-w-xl mx-auto font-medium"
+                        style={{ color: "rgba(255,255,255,0.55)" }}
                     >
                         Everything you need to know before getting started.
                     </motion.p>
@@ -154,11 +160,12 @@ export default function FAQ() {
                         <button
                             key={cat.label}
                             onClick={() => setActiveCategory(cat.label)}
-                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-black transition-all ${
+                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-black transition-all border ${
                                 activeCategory === cat.label
-                                    ? "bg-[#FF2D78] text-white shadow-md shadow-[#FF2D78]/30"
-                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                    ? "bg-[#FF2D78] text-white shadow-md border-transparent"
+                                    : "text-white/60 hover:text-white border-white/10"
                             }`}
+                            style={activeCategory !== cat.label ? { background: "rgba(255,255,255,0.06)" } : {}}
                         >
                             {cat.label}
                         </button>
@@ -173,7 +180,8 @@ export default function FAQ() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="bg-white rounded-3xl border border-gray-100 shadow-sm px-6 divide-y divide-gray-100"
+                        className="rounded-3xl border px-6 divide-y"
+                        style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)", divideColor: "rgba(255,255,255,0.07)" }}
                     >
                         {active.faqs.map((faq, i) => (
                             <FAQItem key={`${activeCategory}-${i}`} q={faq.q} a={faq.a} index={i} />
@@ -190,7 +198,7 @@ export default function FAQ() {
                 >
                     <div>
                         <h4 className="text-xl font-black text-white mb-1.5">Still have questions?</h4>
-                        <p className="text-gray-500 font-medium text-sm">
+                        <p className="font-medium text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
                             Chat with our team or browse the documentation.
                         </p>
                     </div>
