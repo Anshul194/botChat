@@ -20,15 +20,10 @@ jobs:
 
       - name: Install Dependencies
         working-directory: ./botchat-app
-        # --legacy-peer-deps: package-lock.json has a known ajv peer conflict
-        # (eslint needs ajv@6, next/dotenv-cli need ajv@8) that plain `npm ci`
-        # rejects. Builds fine once installed.
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Build Next.js App
         working-directory: ./botchat-app
-        env:
-          NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
         run: npm run build
 
       - name: Create Restart File
@@ -43,12 +38,7 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./botchat-app/
-          # Relative to the FTP account home (the Node.js app lives at the
-          # account root, in the botchat_app directory). No leading slash.
-          server-dir: botchat_app/
-          # node_modules is NOT uploaded — the server installs its own via
-          # cPanel ("Setup Node.js App" -> "Install npm dependencies"). The
-          # repo's .npmrc (legacy-peer-deps=true) makes that install succeed.
+          server-dir: /botchat_app/
           exclude: |
             **/.git*
             **/.git*/**
