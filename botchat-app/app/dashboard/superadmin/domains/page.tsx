@@ -241,47 +241,53 @@ export default function SuperAdminDomainsPage() {
                                 <X className="w-5 h-5 text-[var(--muted-foreground)]" />
                             </button>
                         </div>
-                        <div className="p-6 space-y-4">
-                            <div className="space-y-4">
-                                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                                    <label className="text-xs font-semibold uppercase opacity-60">Requested Domain</label>
-                                    <p className="font-bold text-xl mt-1">{viewingRequest.domain_name}</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label className="text-xs font-semibold uppercase opacity-60">Status</label>
-                                        <div className="mt-1">
-                                            {viewingRequest.status === "0" && <span className="text-amber-500 font-semibold flex items-center gap-1.5"><Clock className="w-4 h-4" /> Pending</span>}
-                                            {viewingRequest.status === "1" && <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Approved</span>}
-                                            {viewingRequest.status === "2" && <span className="text-rose-500 font-semibold flex items-center gap-1.5"><XCircle className="w-4 h-4" /> Rejected</span>}
-                                        </div>
-                                    </div>
-                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label className="text-xs font-semibold uppercase opacity-60">Submitted</label>
-                                        <p className="font-medium mt-1">{new Date(viewingRequest.created_at).toLocaleString()}</p>
+                        <div className="p-6 space-y-5">
+                            <div className="flex flex-col gap-1 pb-4 border-b border-[var(--border-color)]">
+                                <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Requested Domain</label>
+                                <p className="font-bold text-xl text-[var(--foreground)]">{viewingRequest.domain_name}</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-y-5 gap-x-4">
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Status</label>
+                                    <div className="mt-0.5">
+                                        {viewingRequest.status === "0" && <span className="text-amber-500 font-semibold flex items-center gap-1.5"><Clock className="w-4 h-4" /> Pending</span>}
+                                        {viewingRequest.status === "1" && <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Approved</span>}
+                                        {viewingRequest.status === "2" && <span className="text-rose-500 font-semibold flex items-center gap-1.5"><XCircle className="w-4 h-4" /> Rejected</span>}
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 break-all">
-                                        <label className="text-xs font-semibold uppercase opacity-60">Target Address</label>
-                                        <p className="font-medium mt-1">{viewingRequest.actual_domain_name || "N/A"}</p>
-                                    </div>
-                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 break-all">
-                                        <label className="text-xs font-semibold uppercase opacity-60">Tenant ID</label>
-                                        <p className="font-medium mt-1">{viewingRequest.tenant_id}</p>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Submitted</label>
+                                    <p className="font-medium text-[var(--foreground)] mt-0.5">{new Date(viewingRequest.created_at).toLocaleString()}</p>
+                                </div>
+                                <div className="flex flex-col gap-1 col-span-2 sm:col-span-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Target Address</label>
+                                    <p className="font-medium text-[var(--foreground)] mt-0.5 break-all">{viewingRequest.actual_domain_name || "N/A"}</p>
+                                </div>
+                                <div className="flex flex-col gap-1 col-span-2 sm:col-span-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Tenant Details</label>
+                                    <div className="mt-0.5">
+                                        <p className="font-medium text-[var(--foreground)]">{viewingRequest.name || viewingRequest.tenant_id}</p>
+                                        {viewingRequest.email && (
+                                            <p className="text-sm text-[var(--muted-foreground)] mt-0.5">{viewingRequest.email}</p>
+                                        )}
+                                        {viewingRequest.name && (
+                                            <p className="text-xs text-[var(--muted-foreground)] mt-1 opacity-70">ID: {viewingRequest.tenant_id}</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
+                            
                             {viewingRequest.rejection_reason && (
-                                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20">
-                                    <label className="text-xs font-semibold uppercase text-rose-500">Rejection Reason</label>
-                                    <p className="text-sm">{viewingRequest.rejection_reason}</p>
+                                <div className="mt-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-rose-500 mb-1 block">Rejection Reason</label>
+                                    <p className="text-sm text-rose-600 dark:text-rose-400 leading-relaxed">{viewingRequest.rejection_reason}</p>
                                 </div>
                             )}
                             {viewingRequest.suggested_fix && (
-                                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                    <label className="text-xs font-semibold uppercase text-amber-500">Suggested Fix</label>
-                                    <p className="text-sm">{viewingRequest.suggested_fix}</p>
+                                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500 mb-1 block">Suggested Fix</label>
+                                    <p className="text-sm text-amber-700 dark:text-amber-400 leading-relaxed">{viewingRequest.suggested_fix}</p>
                                 </div>
                             )}
                         </div>
@@ -304,43 +310,46 @@ export default function SuperAdminDomainsPage() {
                                 </button>
                             )}
                         </div>
-                        <form onSubmit={handleReject} className="p-6 space-y-5">
+                        <form onSubmit={handleReject} className="p-6 space-y-6">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Rejection Reason <span className="text-rose-500">*</span></label>
+                                <label className="block text-sm font-semibold mb-2" style={{ color: "var(--foreground)" }}>Rejection Reason <span className="text-rose-500">*</span></label>
                                 <textarea
                                     required
                                     rows={3}
                                     value={rejectReason}
                                     onChange={e => setRejectReason(e.target.value)}
                                     placeholder="Explain why this domain request is being rejected..."
-                                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-sm resize-none"
+                                    className="w-full p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all text-sm resize-none"
+                                    style={{ background: "var(--surface-color)", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
                                     disabled={isSubmitting}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Suggested Fix <span className="opacity-60 font-normal">(Optional)</span></label>
+                                <label className="block text-sm font-semibold mb-2" style={{ color: "var(--foreground)" }}>Suggested Fix <span className="opacity-50 font-normal ml-1">(Optional)</span></label>
                                 <textarea
                                     rows={2}
                                     value={suggestedFix}
                                     onChange={e => setSuggestedFix(e.target.value)}
                                     placeholder="e.g. Try using a subdomain instead, verify DNS records..."
-                                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-sm resize-none"
+                                    className="w-full p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 transition-all text-sm resize-none"
+                                    style={{ background: "var(--surface-color)", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
                                     disabled={isSubmitting}
                                 />
                             </div>
-                            <div className="pt-2 flex justify-end gap-3">
+                            <div className="pt-2 flex justify-end gap-3 border-t border-[var(--border-color)] pt-5">
                                 <button
                                     type="button"
                                     onClick={() => setRejectingId(null)}
                                     disabled={isSubmitting}
-                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
+                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 transition-colors"
+                                    style={{ background: "transparent", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !rejectReason.trim()}
-                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center min-w-[140px]"
+                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center min-w-[140px] shadow-sm shadow-rose-500/20"
                                 >
                                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                     {isSubmitting ? "Rejecting..." : "Confirm Rejection"}

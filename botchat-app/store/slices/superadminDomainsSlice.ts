@@ -20,6 +20,8 @@ export interface SuperAdminDomainRequest {
     id: number;
     tenant_id: string;
     user_id?: number;
+    name?: string;
+    email?: string;
     domain_name: string;
     actual_domain_name: string;
     status: string; // "0" = pending, "1" = approved, "2" = rejected
