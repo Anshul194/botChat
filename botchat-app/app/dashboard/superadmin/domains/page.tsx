@@ -31,6 +31,8 @@ export default function SuperAdminDomainsPage() {
     // Details Modal State
     const [viewingId, setViewingId] = useState<number | null>(null);
 
+    const viewingRequest = viewingId ? requests.find(r => r.id === viewingId) : null;
+
     useEffect(() => {
         dispatch(fetchSuperAdminDomainRequests());
     }, [dispatch]);
@@ -93,8 +95,6 @@ export default function SuperAdminDomainsPage() {
             setIsSubmitting(false);
         }
     };
-
-    const viewingRequest = viewingId ? requests.find(r => r.id === viewingId) : null;
 
     return (
         <div className="p-4 sm:p-8 space-y-8 pb-32 max-w-7xl mx-auto">
