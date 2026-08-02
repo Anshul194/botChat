@@ -84,7 +84,6 @@ export default function BrandingTab() {
     timezone: "UTC",
     locale: "en",
     twoFactorAuth: false,
-    emailVerification: false,
     smsVerification: false,
     rtlEnabled: false,
     landingPageEnabled: true,
@@ -113,7 +112,6 @@ export default function BrandingTab() {
       setGeneralForm({
         ...general,
         landingPageEnabled: general.landingPageEnabled ?? true,
-        emailVerification: general.emailVerification ?? false,
         theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
       });
       if (general.logo) setLogoPreview(general.logo.startsWith('http') ? general.logo : `${process.env.NEXT_PUBLIC_BASE_URL?.replace('/api/v1', '')}/uploads/${general.logo}`);
@@ -222,18 +220,6 @@ export default function BrandingTab() {
                 style={{ background: generalForm.landingPageEnabled ? "var(--brand-purple)" : "var(--glass-border)" }}>
                 <span className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
                   style={{ left: generalForm.landingPageEnabled ? "calc(100% - 22px)" : "2px" }} />
-              </button>
-            </div>
-            <div className="flex items-center justify-between py-3 border-b border-[var(--glass-border)]">
-              <div>
-                <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>Email Verification</p>
-                <p className="text-xs text-[var(--muted-foreground)]">Force users to verify email before access</p>
-              </div>
-              <button type="button" onClick={() => setGeneralForm({ ...generalForm, emailVerification: !generalForm.emailVerification })}
-                className="relative w-11 h-6 rounded-full transition-all duration-300"
-                style={{ background: generalForm.emailVerification ? "var(--brand-purple)" : "var(--glass-border)" }}>
-                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
-                  style={{ left: generalForm.emailVerification ? "calc(100% - 22px)" : "2px" }} />
               </button>
             </div>
           </div>
