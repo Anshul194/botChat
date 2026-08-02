@@ -99,7 +99,7 @@ export default function SuperAdminDomainsPage() {
     return (
         <div className="p-4 sm:p-8 space-y-8 pb-32 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[var(--border-color)] pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[var(--border)] pb-6">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
                         <div className="p-2.5 rounded-2xl" style={{ background: "var(--brand-gradient)", color: "white" }}>
@@ -122,17 +122,17 @@ export default function SuperAdminDomainsPage() {
                         placeholder="Search domains..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border font-medium outline-none transition-all focus:ring-2 focus:ring-opacity-20"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border font-medium outline-none transition-all focus:ring-2 focus:ring-[var(--primary)]/20"
                         style={{
-                            background: "var(--input-bg)",
-                            borderColor: "var(--input-border)",
+                            background: "var(--card)",
+                            borderColor: "var(--input)",
                             color: "var(--foreground)",
                             boxShadow: "0 2px 8px rgba(0,0,0,0.02)"
                         }}
                     />
                 </div>
                 
-                <div className="flex bg-[var(--surface-color)] p-1 rounded-xl border border-[var(--border-color)]">
+                <div className="flex bg-[var(--card)] p-1 rounded-xl border border-[var(--border)]">
                     {[
                         { id: "all", label: "All" },
                         { id: "0", label: "Pending" },
@@ -144,7 +144,7 @@ export default function SuperAdminDomainsPage() {
                             onClick={() => setStatusFilter(tab.id)}
                             className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                                 statusFilter === tab.id
-                                    ? "bg-[var(--background-color)] shadow-sm text-[var(--foreground)]"
+                                    ? "bg-[var(--background)] shadow-sm text-[var(--foreground)]"
                                     : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                             }`}
                         >
@@ -157,10 +157,10 @@ export default function SuperAdminDomainsPage() {
             {/* List */}
             {isLoading ? (
                 <div className="flex justify-center py-20">
-                    <div className="w-8 h-8 rounded-full border-4 border-[var(--muted-foreground)] border-t-[var(--brand-primary)] animate-spin"></div>
+                    <div className="w-8 h-8 rounded-full border-4 border-[var(--muted-foreground)] border-t-[var(--primary)] animate-spin"></div>
                 </div>
             ) : filteredRequests.length === 0 ? (
-                <div className="text-center py-20 bg-[var(--surface-color)] border border-[var(--border-color)] rounded-2xl">
+                <div className="text-center py-20 bg-[var(--card)] border border-[var(--border)] rounded-2xl">
                     <Globe className="w-12 h-12 mx-auto mb-4 opacity-20" />
                     <h3 className="text-lg font-bold mb-1">No requests found</h3>
                     <p style={{ color: "var(--muted-foreground)" }}>
@@ -170,13 +170,13 @@ export default function SuperAdminDomainsPage() {
             ) : (
                 <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid gap-4">
                     {filteredRequests.map(req => (
-                        <motion.div key={req.id} variants={itemVariants} className="bg-[var(--surface-color)] border border-[var(--border-color)] rounded-2xl p-5 hover:shadow-lg transition-all">
+                        <motion.div key={req.id} variants={itemVariants} className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 hover:shadow-lg transition-all">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-3">
                                         <h3 className="text-lg font-bold flex items-center gap-2">
                                             {req.domain_name}
-                                            <a href={`https://${req.domain_name}`} target="_blank" rel="noreferrer" className="text-[var(--muted-foreground)] hover:text-brand-primary">
+                                            <a href={`https://${req.domain_name}`} target="_blank" rel="noreferrer" className="text-[var(--muted-foreground)] hover:text-[var(--primary)]">
                                                 <ExternalLink className="w-4 h-4" />
                                             </a>
                                         </h3>
@@ -192,8 +192,8 @@ export default function SuperAdminDomainsPage() {
                                 <div className="flex items-center gap-2">
                                     <button 
                                         onClick={() => setViewingId(req.id)}
-                                        className="px-3 py-2 rounded-xl text-sm font-semibold border hover:bg-[var(--background-color)] transition-colors"
-                                        style={{ borderColor: "var(--border-color)", color: "var(--foreground)" }}
+                                        className="px-3 py-2 rounded-xl text-sm font-semibold border hover:bg-[var(--background)] transition-colors"
+                                        style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
                                         title="View Details"
                                     >
                                         <Eye className="w-4 h-4" />
@@ -204,7 +204,7 @@ export default function SuperAdminDomainsPage() {
                                                 onClick={() => setRejectingId(req.id)}
                                                 disabled={isRejecting === req.id}
                                                 className="px-4 py-2 rounded-xl text-sm font-semibold border hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/50 transition-colors disabled:opacity-50"
-                                                style={{ borderColor: "var(--border-color)", color: "var(--foreground)" }}
+                                                style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
                                             >
                                                 {isRejecting === req.id ? <Loader2 className="w-4 h-4 animate-spin" /> : "Reject"}
                                             </button>
@@ -252,21 +252,21 @@ export default function SuperAdminDomainsPage() {
                         initial={{ opacity: 0, scale: 0.95, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                        className="relative w-full max-w-lg shadow-2xl border border-[var(--border-color)] rounded-2xl flex flex-col"
-                        style={{ background: "var(--background-color)", maxHeight: "85vh" }}
+                        className="relative w-full max-w-lg shadow-2xl border border-[var(--border)] rounded-2xl flex flex-col"
+                        style={{ background: "var(--background)", maxHeight: "85vh" }}
                     >
                         {/* Sticky Header */}
-                        <div className="p-5 border-b border-[var(--border-color)] flex justify-between items-center rounded-t-2xl flex-shrink-0" style={{ background: "var(--surface-color)" }}>
+                        <div className="p-5 border-b border-[var(--border)] flex justify-between items-center rounded-t-2xl flex-shrink-0" style={{ background: "var(--card)" }}>
                             <h3 className="text-lg font-bold flex items-center gap-2">
                                 <Globe className="w-5 h-5" /> Domain Request Details
                             </h3>
-                            <button onClick={() => setViewingId(null)} className="p-2 rounded-full hover:bg-[var(--background-color)] transition-colors">
+                            <button onClick={() => setViewingId(null)} className="p-2 rounded-full hover:bg-[var(--background)] transition-colors">
                                 <X className="w-4 h-4 text-[var(--muted-foreground)]" />
                             </button>
                         </div>
                         {/* Scrollable Body */}
                         <div className="overflow-y-auto flex-1 p-6 space-y-5">
-                            <div className="flex flex-col gap-1 pb-4 border-b border-[var(--border-color)]">
+                            <div className="flex flex-col gap-1 pb-4 border-b border-[var(--border)]">
                                 <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Requested Domain</label>
                                 <p className="font-bold text-xl text-[var(--foreground)]">{viewingRequest.domain_name}</p>
                             </div>
@@ -328,15 +328,15 @@ export default function SuperAdminDomainsPage() {
                         initial={{ opacity: 0, scale: 0.95, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                        className="relative w-full max-w-md shadow-2xl border border-[var(--border-color)] rounded-2xl"
-                        style={{ background: "var(--background-color)" }}
+                        className="relative w-full max-w-md shadow-2xl border border-[var(--border)] rounded-2xl"
+                        style={{ background: "var(--background)" }}
                     >
-                        <div className="p-5 border-b border-[var(--border-color)] flex justify-between items-center rounded-t-2xl" style={{ background: "var(--surface-color)" }}>
+                        <div className="p-5 border-b border-[var(--border)] flex justify-between items-center rounded-t-2xl" style={{ background: "var(--card)" }}>
                             <h3 className="text-lg font-bold flex items-center gap-2 text-rose-500">
                                 <XCircle className="w-5 h-5" /> Reject Domain
                             </h3>
                             {!isSubmitting && (
-                                <button onClick={() => setRejectingId(null)} className="p-2 rounded-full hover:bg-[var(--background-color)] transition-colors">
+                                <button onClick={() => setRejectingId(null)} className="p-2 rounded-full hover:bg-[var(--background)] transition-colors">
                                     <X className="w-4 h-4 text-[var(--muted-foreground)]" />
                                 </button>
                             )}
@@ -351,7 +351,7 @@ export default function SuperAdminDomainsPage() {
                                     onChange={e => setRejectReason(e.target.value)}
                                     placeholder="Explain why this domain request is being rejected..."
                                     className="w-full p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/30 transition-all text-sm resize-none"
-                                    style={{ background: "var(--surface-color)", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
+                                    style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                                     disabled={isSubmitting}
                                 />
                             </div>
@@ -363,17 +363,17 @@ export default function SuperAdminDomainsPage() {
                                     onChange={e => setSuggestedFix(e.target.value)}
                                     placeholder="e.g. Try using a subdomain instead, verify DNS records..."
                                     className="w-full p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/30 transition-all text-sm resize-none"
-                                    style={{ background: "var(--surface-color)", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
+                                    style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                                     disabled={isSubmitting}
                                 />
                             </div>
-                            <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border-color)]">
+                            <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
                                 <button
                                     type="button"
                                     onClick={() => setRejectingId(null)}
                                     disabled={isSubmitting}
                                     className="px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 transition-colors"
-                                    style={{ background: "transparent", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
+                                    style={{ background: "transparent", border: "1px solid var(--border)", color: "var(--foreground)" }}
                                 >
                                     Cancel
                                 </button>

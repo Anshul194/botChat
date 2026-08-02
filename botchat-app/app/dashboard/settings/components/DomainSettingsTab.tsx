@@ -90,11 +90,11 @@ export default function DomainSettingsTab() {
                 <Field label="Reserved Domains / Prefixes (comma separated)" value={form.domain_reserved_domains} onChange={(value) => updateField('domain_reserved_domains', value)} placeholder="admin,api,www,mail" />
 
                 <div className="grid gap-3 md:grid-cols-2">
-                    <label className="flex items-center gap-3 rounded-xl border border-[var(--border-color)] p-4">
+                    <label className="flex items-center gap-3 rounded-xl border border-[var(--border)] p-4">
                         <input type="checkbox" checked={form.domain_allow_wildcard} onChange={(e) => updateField('domain_allow_wildcard', e.target.checked)} />
                         <span className="text-sm font-semibold">Allow Wildcard Domains</span>
                     </label>
-                    <label className="flex items-center gap-3 rounded-xl border border-[var(--border-color)] p-4">
+                    <label className="flex items-center gap-3 rounded-xl border border-[var(--border)] p-4">
                         <input type="checkbox" checked={form.domain_allow_root} onChange={(e) => updateField('domain_allow_root', e.target.checked)} />
                         <span className="text-sm font-semibold">Allow Root Domains</span>
                     </label>

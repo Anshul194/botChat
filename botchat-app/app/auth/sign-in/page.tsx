@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector, useAppSelector } from "@/store/hooks";
 import {
     loginUser, fetchMe, verifyTwoFactorLogin, recoveryCodeLogin, clearTwoFactorChallenge
 } from "@/store/slices/authSlice";
@@ -21,14 +21,15 @@ import { useSocialLogin } from "@/hooks/useSocialLogin";
 import { useSocialLoginSettings } from "@/hooks/useSocialLoginSettings";
 import { Loader2, KeyRound, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { ForgotPasswordDialog } from "@/components/auth/ForgotPasswordDialog";
+import WelcomeSplash from "@/components/auth/WelcomeSplash";
 
 export default function SignInPage() {
     const router = useRouter();
     const { theme } = useTheme();
     const dispatch = useAppDispatch();
     const { showModal } = useModal();
+    const { user } = useAppSelector((state) => state.auth);
     const isLight = theme === "light";
 
     const [showPwd, setShowPwd] = useState(false);
@@ -45,6 +46,7 @@ export default function SignInPage() {
     const [twoFactorRecovery, setTwoFactorRecovery] = useState("");
     const [twoFactorStatus, setTwoFactorStatus] = useState<"idle" | "loading" | "error">("idle");
     const [twoFactorError, setTwoFactorError] = useState("");
+    const [showWelcome, setShowWelcome] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined" && window.opener && window.name === "instagram-connect") {
@@ -81,8 +83,7 @@ export default function SignInPage() {
                 return;
             }
             setStatus("success");
-            toast.success("Welcome back! Redirecting to dashboard...");
-            setTimeout(() => router.push("/dashboard"), 1000);
+            setShowWelcome(true);
         } catch (err: any) {
             setStatus("error");
             setServerError(err || "Invalid credentials. Please try again.");
@@ -710,6 +711,10 @@ export default function SignInPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {showWelcome && (
+                <WelcomeSplash name={user?.name} onFinish={() => router.push("/dashboard")} />
+            )}
         </div>
     );
 }

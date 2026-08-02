@@ -109,7 +109,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder }: any) => {
                         className="absolute z-50 w-full mt-2 rounded-xl shadow-2xl flex flex-col"
                         style={{ 
                             borderColor: "var(--glass-border)", 
-                            background: "var(--card-bg)", 
+                            background: "var(--card)", 
                             border: "1px solid var(--glass-border)",
                             maxHeight: "320px",
                             overflow: "hidden",
@@ -773,11 +773,11 @@ export default function SettingsPage() {
                                         <label className="block text-sm font-semibold mb-3">Select Mailer Service</label>
                                         <div className="flex flex-wrap gap-4">
                                             <label className="flex items-center gap-2 cursor-pointer">
-                                                <input type="radio" name="mailerType" value="resend" checked={emailForm.mail_mailer === 'resend'} onChange={(e) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} className="w-4 h-4 accent-[var(--brand-color)]" />
+                                                <input type="radio" name="mailerType" value="resend" checked={emailForm.mail_mailer === 'resend'} onChange={(e) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} className="w-4 h-4 accent-[var(--primary)]" />
                                                 <span className="text-sm font-medium">Resend API</span>
                                             </label>
                                             <label className="flex items-center gap-2 cursor-pointer">
-                                                <input type="radio" name="mailerType" value="smtp" checked={emailForm.mail_mailer === 'smtp'} onChange={(e) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} className="w-4 h-4 accent-[var(--brand-color)]" />
+                                                <input type="radio" name="mailerType" value="smtp" checked={emailForm.mail_mailer === 'smtp'} onChange={(e) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} className="w-4 h-4 accent-[var(--primary)]" />
                                                 <span className="text-sm font-medium">Custom SMTP</span>
                                             </label>
                                         </div>
@@ -1050,7 +1050,7 @@ export default function SettingsPage() {
                             <IntegrationHeader title="Razorpay" desc="Process payments securely with Razorpay." Icon={CreditCard} color="#6366f1" isConnected={!!paymentForm.razorpay_key} />
                             <form onSubmit={handleSavePayment}>
                                 <div className="p-6 rounded-2xl transition-all duration-300" style={{
-                                    background: "var(--card-bg)",
+                                    background: "var(--card)",
                                     border: paymentForm.razorpaysetting === 'on' ? "1px solid rgba(99,102,241,0.3)" : "1px solid var(--glass-border)",
                                     boxShadow: paymentForm.razorpaysetting === 'on' ? "0 0 0 1px rgba(99,102,241,0.1)" : "none"
                                 }}>
@@ -1085,7 +1085,7 @@ export default function SettingsPage() {
                                 </div>
 
                                 {paymentForm.razorpaysetting === 'on' && (
-                                    <div className="p-6 rounded-2xl space-y-5 animate-in fade-in slide-in-from-top-2 duration-300" style={{ background: "var(--card-bg)", border: "1px solid var(--glass-border)" }}>
+                                    <div className="p-6 rounded-2xl space-y-5 animate-in fade-in slide-in-from-top-2 duration-300" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
                                         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>API Credentials</p>
                                         <div className="space-y-4">
                                             <div>

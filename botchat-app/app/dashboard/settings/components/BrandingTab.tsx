@@ -39,7 +39,7 @@ function InputField({ label, name, type = "text", placeholder, defaultValue, val
 
 function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }) {
   return (
-    <div className="p-5 rounded-2xl transition-all duration-300" style={{ background: "var(--card-bg)", border: "1px solid var(--glass-border)" }}>
+    <div className="p-5 rounded-2xl transition-all duration-300" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
       <div className="mb-5">
         <h3 className="text-sm font-bold tracking-tight" style={{ color: "var(--foreground)" }}>{title}</h3>
         {desc && <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>{desc}</p>}
@@ -51,7 +51,7 @@ function Section({ title, desc, children }: { title: string; desc?: string; chil
 
 function IntegrationHeader({ title, desc, Icon, color, isConnected }: { title: string; desc: string; Icon: any; color: string; isConnected?: boolean }) {
   return (
-    <div className="flex items-center gap-4 p-5 rounded-2xl transition-all duration-300" style={{ background: "var(--card-bg)", border: "1px solid var(--glass-border)" }}>
+    <div className="flex items-center gap-4 p-5 rounded-2xl transition-all duration-300" style={{ background: "var(--card)", border: "1px solid var(--glass-border)" }}>
       <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm" style={{ background: `${color}15` }}>
         <Icon className="w-6 h-6" style={{ color }} />
       </div>

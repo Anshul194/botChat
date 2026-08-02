@@ -84,7 +84,7 @@ export default function AnalyticsPage() {
                         ))}
                     </div>
                     <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-80"
-                        style={{ background: "rgba(124,58,237,0.1)", color: "var(--brand-purple-light)", border: "1px solid rgba(124,58,237,0.2)" }}>
+                        style={{ background: "rgba(124,58,237,0.1)", color: "var(--brand-pink-light)", border: "1px solid rgba(124,58,237,0.2)" }}>
                         <Download className="w-4 h-4" />Export
                     </button>
                 </div>
