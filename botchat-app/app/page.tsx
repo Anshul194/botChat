@@ -92,9 +92,9 @@ export default function Home() {
           <PerformanceChart />
 
           {/* Integrations + Stats */}
-          <div id="integrations">
+          {/* <div id="integrations">
             <TrendyStacks />
-          </div>
+          </div> */}
 
           {/* Social proof */}
           <CreatorProof />

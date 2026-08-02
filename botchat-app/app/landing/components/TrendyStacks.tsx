@@ -1,126 +1,173 @@
-"use client";
+// "use client";
 
-import { motion } from "framer-motion";
-import { Facebook, Instagram, Smartphone, Send, Chrome } from "lucide-react";
+// import { useRef } from "react";
+// import { motion } from "framer-motion";
+// import gsap from "gsap";
+// import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+// import { useGSAP } from "@gsap/react";
+// import { Target, Heart, Rocket, Workflow, Sparkles, User, MessageCircle } from "lucide-react";
 
-const INTEGRATIONS = [
-    { name: "Facebook",  icon: Facebook,    color: "#1877F2", bg: "rgba(24,119,242,0.08)" },
-    { name: "Instagram", icon: Instagram,   color: "#C13584", bg: "rgba(193,53,132,0.08)" },
-    { name: "WhatsApp",  icon: Smartphone,  color: "#25D366", bg: "rgba(37,211,102,0.08)" },
-    { name: "Telegram",  icon: Send,        color: "#2AABEE", bg: "rgba(42,171,238,0.08)" },
-    { name: "OpenAI",    label: "GPT",      color: "#10A37F", bg: "rgba(16,163,127,0.08)" },
-    { name: "Gemini",    label: "Gemini",   color: "#4285F4", bg: "rgba(66,133,244,0.08)" },
-    { name: "Claude",    label: "Claude",   color: "#D4631A", bg: "rgba(212,99,26,0.08)"  },
-    { name: "Google",    icon: Chrome,      color: "#EA4335", bg: "rgba(234,67,53,0.08)"  },
-    { name: "REST API",  label: "API",      color: "#6366F1", bg: "rgba(99,102,241,0.08)" },
-    { name: "Webhook",   label: "Webhook",  color: "#0EA5E9", bg: "rgba(14,165,233,0.08)" },
-];
+// gsap.registerPlugin(ScrollTrigger);
 
-const STATS = [
-    { value: "20+",   label: "Modules"       },
-    { value: "150+",  label: "Features"      },
-    { value: "99.9%", label: "Uptime"        },
-    { value: "100%",  label: "Cloud Hosted"  },
-    { value: "AI",    label: "Powered"       },
-    { value: "Meta",  label: "Verified"      },
-];
+// const CREATORS = [
+//   {
+//     title: "AI Sniper Replies",
+//     name: "@alex_digital",
+//     role: "280K Followers",
+//     desc: "Instantly targets comments with context-aware AI responses that feel 100% human.",
+//     icon: <Target className="w-5 h-5" />,
+//     metric: "3x Faster Conversion",
+//     color: "#FF2D78"
+//   },
+//   {
+//     title: "Story Magnet",
+//     name: "@sarah.social",
+//     role: "120K Followers",
+//     desc: "Auto-engages with story mentions and reactions. Deepen bonds while you sleep.",
+//     icon: <Heart className="w-5 h-5" />,
+//     metric: "+45% Engagement",
+//     color: "#FF2D78"
+//   },
+//   {
+//     title: "Flow Logic Builder",
+//     name: "@marketing_guru",
+//     role: "500K Followers",
+//     desc: "No-code drag & drop builder for automated journeys that speak your brand voice.",
+//     icon: <Workflow className="w-5 h-5" />,
+//     metric: "Saves 20h/Week",
+//     color: "#FF2D78"
+//   }
+// ];
 
-function IntegrationBadge({ item, delay }: { item: typeof INTEGRATIONS[0]; delay: number }) {
-    const Icon = "icon" in item ? item.icon : undefined;
-    return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay, duration: 0.35 }}
-            whileHover={{ scale: 1.08, y: -4 }}
-            className="flex flex-col items-center gap-2.5 group cursor-default"
-        >
-            <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center border border-gray-100 shadow-sm group-hover:shadow-md transition-all duration-300"
-                style={{ background: item.bg }}
-            >
-                {Icon ? (
-                    <Icon className="w-7 h-7" style={{ color: item.color }} />
-                ) : (
-                    <span className="text-sm font-black" style={{ color: item.color }}>
-                        {"label" in item ? item.label : item.name.substring(0, 3)}
-                    </span>
-                )}
-            </div>
-            <span className="text-sm font-bold text-gray-600 group-hover:text-gray-900 transition-colors">{item.name}</span>
-        </motion.div>
-    );
-}
+// export default function TrendyStacks() {
+//   const containerRef = useRef<HTMLDivElement>(null);
+//   const cardsRef = useRef<HTMLDivElement>(null);
 
-export default function TrendyStacks() {
-    return (
-        <section className="py-24 bg-white border-t border-gray-50 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6">
-                {/* Stats strip */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="grid grid-cols-3 sm:grid-cols-6 gap-4 mb-20"
-                >
-                    {STATS.map((stat, i) => (
-                        <div key={i} className="text-center p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                            <p className="text-2xl font-black text-black mb-1">{stat.value}</p>
-                            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</p>
-                        </div>
-                    ))}
-                </motion.div>
+//   useGSAP(() => {
+//     const cards = gsap.utils.toArray(".stack-card");
 
-                {/* Integrations */}
-                <div className="text-center mb-14">
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/8 text-[#FF2D78] uppercase tracking-wider mb-5"
-                    >
-                        Integrations
-                    </motion.div>
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.05 }}
-                        className="text-4xl md:text-5xl font-black text-black mb-4 tracking-tight"
-                    >
-                        Connects to your{" "}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#E1306C]">
-                            entire stack.
-                        </span>
-                    </motion.h2>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="text-gray-600 text-lg max-w-xl mx-auto font-medium"
-                    >
-                        Native integrations with the platforms and AI models your team already relies on.
-                    </motion.p>
-                </div>
+//     // Create the pinning effect
+//     const tl = gsap.timeline({
+//       scrollTrigger: {
+//         trigger: containerRef.current,
+//         start: "top top",
+//         end: `+=${cards.length * 100}%`,
+//         pin: true,
+//         scrub: 1,
+//       }
+//     });
 
-                <div className="grid grid-cols-5 sm:grid-cols-10 gap-6 max-w-3xl mx-auto">
-                    {INTEGRATIONS.map((item, i) => (
-                        <IntegrationBadge key={item.name} item={item} delay={i * 0.05} />
-                    ))}
-                </div>
+//     // Animate cards stacking one by one
+//     cards.forEach((card: any, i) => {
+//       if (i === 0) return; // First card is already visible
 
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5 }}
-                    className="text-center text-[13px] text-gray-500 font-bold uppercase tracking-widest mt-8"
-                >
-                    More integrations added regularly
-                </motion.p>
-            </div>
-        </section>
-    );
-}
+//       tl.fromTo(card,
+//         { y: "150%", rotate: 5, scale: 0.9 },
+//         {
+//           y: i * 20, // Final stack position with slight offset
+//           rotate: 0,
+//           scale: 1,
+//           ease: "power2.out",
+//         },
+//         i === 1 ? "0" : `>-0.2` // Start shortly after previous card
+//       );
+//     });
+
+//   }, { scope: containerRef });
+
+//   return (
+//     <section
+//       ref={containerRef}
+//       className="bg-black text-white min-h-screen relative overflow-hidden flex items-center justify-center py-20"
+//     >
+//       <div className="max-w-6xl w-full px-8 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+
+//         {/* Left Content - Sticky in Pin */}
+//         <div className="flex flex-col items-center lg:items-start text-center lg:text-left z-20">
+//           <div className="relative w-28 h-28 mb-10">
+//             <motion.div
+//               animate={{ rotate: 360 }}
+//               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+//               className="absolute inset-0 border-2 border-dashed border-[#FF2D78]/20 rounded-full"
+//             />
+//             <div className="absolute inset-0 flex items-center justify-center">
+//               <div className="p-4 bg-[#FF2D78]/10 rounded-full border border-[#FF2D78]/30">
+//                 <Sparkles className="w-8 h-8 text-[#FF2D78]" />
+//               </div>
+//             </div>
+//           </div>
+
+//           <h2 className="text-5xl lg:text-7xl font-black font-display tracking-tighter leading-[0.9] mb-8">
+//             Strategy <span className="text-[#FF2D78]">Stacks</span>
+//           </h2>
+//           <p className="text-gray-400 text-lg font-body leading-relaxed max-w-sm">
+//             Three powerful modules that stack together to build your digital empire automatically.
+//           </p>
+
+//           <div className="mt-12 flex items-center gap-4">
+//             <div className="flex -space-x-3">
+//               {[1, 2, 3, 4].map(i => (
+//                 <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center text-[10px] font-bold">
+//                   {i === 4 ? "+11k" : <User className="w-4 h-4" />}
+//                 </div>
+//               ))}
+//             </div>
+//             <span className="text-gray-500 text-sm font-bold">Trusted by creators</span>
+//           </div>
+//         </div>
+
+//         {/* Right - The Deck of Cards */}
+//         <div className="relative w-full h-[500px] flex items-center justify-center">
+//           {CREATORS.map((c, i) => (
+//             <div
+//               key={i}
+//               className="stack-card absolute top-0 w-full max-w-[440px] p-10 rounded-[48px] bg-[#0a0a0a] border border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] flex flex-col group transition-all duration-500 hover:border-[#FF2D78]/30"
+//               style={{
+//                 zIndex: i + 10,
+//                 // Initial state for static view (before scroll)
+//                 transform: i === 0 ? "none" : "translateY(150%) rotate(5deg) scale(0.9)"
+//               }}
+//             >
+//               {/* Card Header */}
+//               <div className="flex items-center justify-between mb-8">
+//                 <div className="flex items-center gap-4">
+//                   <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+//                     <User className="w-7 h-7 text-gray-500" />
+//                   </div>
+//                   <div>
+//                     <div className="text-xl font-bold font-display text-white">{c.name}</div>
+//                     <div className="text-sm text-gray-500 font-bold tracking-wider">{c.role}</div>
+//                   </div>
+//                 </div>
+//                 <div className="w-12 h-12 rounded-xl bg-[#FF2D78]/10 flex items-center justify-center text-[#FF2D78] border border-[#FF2D78]/20 group-hover:scale-110 transition-transform">
+//                   {c.icon}
+//                 </div>
+//               </div>
+
+//               <h3 className="text-2xl font-bold font-display text-white mb-4">{c.title}</h3>
+//               <p className="text-gray-400 text-base leading-relaxed mb-10 flex-1">
+//                 {c.desc}
+//               </p>
+
+//               <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
+//                 <div className="flex flex-col">
+//                   <span className="text-[10px] font-black uppercase text-white/30 tracking-widest mb-1">Impact</span>
+//                   <span className="text-lg font-bold text-[#FF2D78] font-display">{c.metric}</span>
+//                 </div>
+//                 <div className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-[#FF2D78] hover:border-[#FF2D78] transition-all cursor-pointer">
+//                   Preview Flow
+//                 </div>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* Background Orbs */}
+//       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none opacity-20">
+//         <div className="absolute top-0 right-0 w-96 h-96 bg-[#FF2D78] rounded-full blur-[150px] animate-pulse" />
+//         <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500 rounded-full blur-[150px] animate-pulse" />
+//       </div>
+//     </section>
+//   );
+// }
