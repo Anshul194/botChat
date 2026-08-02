@@ -30,6 +30,7 @@ import BrandingTab from "./components/BrandingTab";
 import AppearanceTab from "./components/AppearanceTab";
 import ModuleSettings from "./components/ModuleSettings";
 import CustomDomainTab from "./components/CustomDomainTab";
+import DomainSettingsTab from "./components/DomainSettingsTab";
 import { Section, InputField, IntegrationHeader, Toggle, ApiKeyRow } from "./components/shared-ui";
 import { useAIProviders } from "../../../hooks/useAIProviders";
 import { useAIModels } from "../../../hooks/useAIModels";
@@ -49,6 +50,7 @@ const baseNavigationGroups = [
             { id: "profile", label: "General Profile", Icon: User },
             { id: "branding", label: "General Settings", Icon: Globe },
             { id: "custom-domain", label: "Custom Domain", Icon: Globe },
+            { id: "domain-settings", label: "Domain Settings", Icon: Globe },
             { id: "security", label: "Security", Icon: Shield },
         ]
     },
@@ -183,6 +185,8 @@ export default function SettingsPage() {
                 items: group.items.filter(item => {
                     // Custom Domain is only for tenant admins, not Super Admin
                     if (item.id === "custom-domain" && isSuperAdmin) return false;
+                    // Domain Settings is only for Super Admin
+                    if (item.id === "domain-settings" && !isSuperAdmin) return false;
                     return true;
                 })
             };
@@ -278,7 +282,8 @@ export default function SettingsPage() {
 
     const [emailForm, setEmailForm] = useState({
         email_setting_enable: 'on',
-        mail_mailer: 'smtp',
+        mail_mailer: 'resend',
+        resend_api_key: '',
         mail_host: '',
         mail_port: '587',
         mail_username: '',
@@ -364,7 +369,8 @@ export default function SettingsPage() {
             });
             setEmailForm({
                 email_setting_enable: general.email_setting_enable || 'on',
-                mail_mailer: general.mail_mailer || 'smtp',
+                mail_mailer: general.mail_mailer || 'resend',
+                resend_api_key: general.resend_api_key || '',
                 mail_host: general.mail_host || '',
                 mail_port: general.mail_port || '587',
                 mail_username: general.mail_username || '',
@@ -633,6 +639,9 @@ export default function SettingsPage() {
                     {/* Custom Domain */}
                     {tab === "custom-domain" && <CustomDomainTab />}
 
+                    {/* Super Admin Domain Settings */}
+                    {tab === "domain-settings" && <DomainSettingsTab />}
+
                     {/* Notifications */}
                     {/* Security */}
                     {tab === "security" && (
@@ -801,18 +810,40 @@ export default function SettingsPage() {
 
                             <form onSubmit={handleSaveEmail}>
                                 <Section title="SMTP Configuration">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <InputField label="SMTP Host" value={emailForm.mail_host} onChange={(e: any) => setEmailForm({ ...emailForm, mail_host: e.target.value })} placeholder="smtp.mailserver.com" />
-                                        <InputField label="Port" value={emailForm.mail_port} onChange={(e: any) => setEmailForm({ ...emailForm, mail_port: e.target.value })} placeholder="587" />
-                                        <InputField label="SMTP Username" value={emailForm.mail_username} onChange={(e: any) => setEmailForm({ ...emailForm, mail_username: e.target.value })} placeholder="apikey" />
-                                        <InputField label="SMTP Password" type="password" value={emailForm.mail_password} onChange={(e: any) => setEmailForm({ ...emailForm, mail_password: e.target.value })} placeholder="••••••••" />
-                                        <InputField label="Mailer" value={emailForm.mail_mailer} onChange={(e: any) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} placeholder="smtp" />
-                                        <InputField label="Encryption" value={emailForm.mail_encryption} onChange={(e: any) => setEmailForm({ ...emailForm, mail_encryption: e.target.value })} placeholder="tls" />
-                                        <div className="md:col-span-2">
-                                            <InputField label="Sender 'From' Address" value={emailForm.mail_from_address} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_address: e.target.value })} placeholder="no-reply@botchat.com" />
+                                    <div className="mb-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <label className="block text-sm font-semibold mb-3">Select Mailer Service</label>
+                                        <div className="flex flex-wrap gap-4">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input type="radio" name="mailerType" value="resend" checked={emailForm.mail_mailer === 'resend'} onChange={(e) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} className="w-4 h-4 accent-[var(--brand-color)]" />
+                                                <span className="text-sm font-medium">Resend API</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input type="radio" name="mailerType" value="smtp" checked={emailForm.mail_mailer === 'smtp'} onChange={(e) => setEmailForm({ ...emailForm, mail_mailer: e.target.value })} className="w-4 h-4 accent-[var(--brand-color)]" />
+                                                <span className="text-sm font-medium">Custom SMTP</span>
+                                            </label>
                                         </div>
-                                        <div className="md:col-span-2">
-                                            <InputField label="Sender Name" value={emailForm.mail_from_name} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_name: e.target.value })} placeholder="App Name" />
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                                        {emailForm.mail_mailer === 'smtp' && (
+                                            <>
+                                                <InputField label="SMTP Host" value={emailForm.mail_host} onChange={(e: any) => setEmailForm({ ...emailForm, mail_host: e.target.value })} placeholder="smtp.mailserver.com" />
+                                                <InputField label="Port" value={emailForm.mail_port} onChange={(e: any) => setEmailForm({ ...emailForm, mail_port: e.target.value })} placeholder="587" />
+                                                <InputField label="SMTP Username" value={emailForm.mail_username} onChange={(e: any) => setEmailForm({ ...emailForm, mail_username: e.target.value })} placeholder="apikey" />
+                                                <InputField label="SMTP Password" type="password" value={emailForm.mail_password} onChange={(e: any) => setEmailForm({ ...emailForm, mail_password: e.target.value })} placeholder="••••••••" />
+                                                <InputField label="Encryption" value={emailForm.mail_encryption} onChange={(e: any) => setEmailForm({ ...emailForm, mail_encryption: e.target.value })} placeholder="tls" />
+                                            </>
+                                        )}
+                                        {emailForm.mail_mailer === 'resend' && (
+                                            <div className="md:col-span-2">
+                                                <InputField label="Resend API Key" type="password" value={emailForm.resend_api_key || ''} onChange={(e: any) => setEmailForm({ ...emailForm, resend_api_key: e.target.value })} placeholder="re_..." />
+                                            </div>
+                                        )}
+                                        <div className="md:col-span-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                <InputField label="Sender 'From' Address" value={emailForm.mail_from_address} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_address: e.target.value })} placeholder="no-reply@botchat.com" />
+                                                <InputField label="Sender Name" value={emailForm.mail_from_name} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_name: e.target.value })} placeholder="App Name" />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">

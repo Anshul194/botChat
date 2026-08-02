@@ -31,9 +31,22 @@ export default function SuperAdminDomainsPage() {
     // Details Modal State
     const [viewingId, setViewingId] = useState<number | null>(null);
 
+    const viewingRequest = viewingId ? requests.find(r => r.id === viewingId) : null;
+
     useEffect(() => {
         dispatch(fetchSuperAdminDomainRequests());
     }, [dispatch]);
+
+    // Lock body scroll when any modal is open
+    useEffect(() => {
+        const isOpen = !!viewingRequest || !!rejectingId;
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [viewingRequest, rejectingId]);
 
     // Clear error on unmount
     useEffect(() => {
@@ -82,8 +95,6 @@ export default function SuperAdminDomainsPage() {
             setIsSubmitting(false);
         }
     };
-
-    const viewingRequest = viewingId ? requests.find(r => r.id === viewingId) : null;
 
     return (
         <div className="p-4 sm:p-8 space-y-8 pb-32 max-w-7xl mx-auto">
@@ -174,9 +185,7 @@ export default function SuperAdminDomainsPage() {
                                         {req.status === "2" && <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-500 flex items-center gap-1"><XCircle className="w-3 h-3" /> Rejected</span>}
                                     </div>
                                     <div className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>
-                                        Target: {req.actual_domain_name} &nbsp;&bull;&nbsp; 
-                                        DNS: {req.dns_verified ? <span className="text-emerald-500 font-semibold">Verified</span> : <span className="text-rose-500 font-semibold">Unverified</span>}
-                                        {req.ssl_status && <>&nbsp;&bull;&nbsp; SSL: <span className={`font-semibold ${req.ssl_status === 'Active' ? 'text-emerald-500' : 'text-amber-500'}`}>{req.ssl_status}</span></>}
+                                        Target: {req.actual_domain_name}
                                     </div>
                                 </div>
 
@@ -232,136 +241,153 @@ export default function SuperAdminDomainsPage() {
 
             {/* Details Modal */}
             {viewingRequest && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewingId(null)}></div>
-                    <div className="relative bg-[var(--background-color)] rounded-2xl w-full max-w-lg shadow-2xl border border-[var(--border-color)] overflow-hidden max-h-[80vh] overflow-y-auto">
-                        <div className="p-6 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--surface-color)]">
-                            <h3 className="text-xl font-bold flex items-center gap-2">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                        onClick={() => setViewingId(null)}
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                        className="relative w-full max-w-lg shadow-2xl border border-[var(--border-color)] rounded-2xl flex flex-col"
+                        style={{ background: "var(--background-color)", maxHeight: "85vh" }}
+                    >
+                        {/* Sticky Header */}
+                        <div className="p-5 border-b border-[var(--border-color)] flex justify-between items-center rounded-t-2xl flex-shrink-0" style={{ background: "var(--surface-color)" }}>
+                            <h3 className="text-lg font-bold flex items-center gap-2">
                                 <Globe className="w-5 h-5" /> Domain Request Details
                             </h3>
-                            <button onClick={() => setViewingId(null)} className="p-2 rounded-full hover:bg-[var(--background-color)]">
-                                <X className="w-5 h-5 text-[var(--muted-foreground)]" />
+                            <button onClick={() => setViewingId(null)} className="p-2 rounded-full hover:bg-[var(--background-color)] transition-colors">
+                                <X className="w-4 h-4 text-[var(--muted-foreground)]" />
                             </button>
                         </div>
-                        <div className="p-6 space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Requested Domain</label>
-                                    <p className="font-bold text-lg">{viewingRequest.domain_name}</p>
+                        {/* Scrollable Body */}
+                        <div className="overflow-y-auto flex-1 p-6 space-y-5">
+                            <div className="flex flex-col gap-1 pb-4 border-b border-[var(--border-color)]">
+                                <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Requested Domain</label>
+                                <p className="font-bold text-xl text-[var(--foreground)]">{viewingRequest.domain_name}</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-y-5 gap-x-4">
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Status</label>
+                                    <div className="mt-0.5">
+                                        {viewingRequest.status === "0" && <span className="text-amber-500 font-semibold flex items-center gap-1.5"><Clock className="w-4 h-4" /> Pending</span>}
+                                        {viewingRequest.status === "1" && <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Approved</span>}
+                                        {viewingRequest.status === "2" && <span className="text-rose-500 font-semibold flex items-center gap-1.5"><XCircle className="w-4 h-4" /> Rejected</span>}
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Current Domain</label>
-                                    <p className="font-medium">{viewingRequest.actual_domain_name}</p>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Submitted</label>
+                                    <p className="font-medium text-[var(--foreground)] mt-0.5">{new Date(viewingRequest.created_at).toLocaleString()}</p>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Status</label>
-                                    <p className="font-medium">
-                                        {viewingRequest.status === "0" && <span className="text-amber-500">Pending</span>}
-                                        {viewingRequest.status === "1" && <span className="text-emerald-500">Approved</span>}
-                                        {viewingRequest.status === "2" && <span className="text-rose-500">Rejected</span>}
-                                    </p>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Target Address</label>
+                                    <p className="font-medium text-[var(--foreground)] mt-0.5 break-all">{viewingRequest.actual_domain_name || "N/A"}</p>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">DNS Verified</label>
-                                    <p className="font-medium">
-                                        {viewingRequest.dns_verified ? <span className="text-emerald-500">Yes</span> : <span className="text-rose-500">No</span>}
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">SSL Status</label>
-                                    <p className="font-medium">{viewingRequest.ssl_status || "N/A"}</p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Verification Token</label>
-                                    <p className="font-mono text-xs break-all">{viewingRequest.verification_token}</p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Submitted</label>
-                                    <p className="font-medium">{new Date(viewingRequest.created_at).toLocaleString()}</p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Tenant ID</label>
-                                    <p className="font-medium">{viewingRequest.tenant_id}</p>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Tenant</label>
+                                    <div className="mt-0.5">
+                                        <p className="font-semibold text-[var(--foreground)]">{viewingRequest.name || "—"}</p>
+                                        {viewingRequest.email && <p className="text-sm text-[var(--muted-foreground)] mt-0.5">{viewingRequest.email}</p>}
+                                        <p className="text-xs opacity-50 mt-0.5">ID: {viewingRequest.tenant_id}</p>
+                                    </div>
                                 </div>
                             </div>
+                            
                             {viewingRequest.rejection_reason && (
-                                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20">
-                                    <label className="text-xs font-semibold uppercase text-rose-500">Rejection Reason</label>
-                                    <p className="text-sm">{viewingRequest.rejection_reason}</p>
+                                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-rose-500 mb-1.5 block">Rejection Reason</label>
+                                    <p className="text-sm text-rose-600 dark:text-rose-400 leading-relaxed">{viewingRequest.rejection_reason}</p>
                                 </div>
                             )}
                             {viewingRequest.suggested_fix && (
-                                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                    <label className="text-xs font-semibold uppercase text-amber-500">Suggested Fix</label>
-                                    <p className="text-sm">{viewingRequest.suggested_fix}</p>
+                                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500 mb-1.5 block">Suggested Fix</label>
+                                    <p className="text-sm text-amber-700 dark:text-amber-400 leading-relaxed">{viewingRequest.suggested_fix}</p>
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             )}
 
             {/* Reject Modal */}
             {rejectingId && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isSubmitting && setRejectingId(null)}></div>
-                    <div className="relative bg-[var(--background-color)] rounded-2xl w-full max-w-md shadow-2xl border border-[var(--border-color)] overflow-hidden">
-                        <div className="p-6 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--surface-color)]">
-                            <h3 className="text-xl font-bold flex items-center gap-2 text-rose-500">
-                                <XCircle className="w-6 h-6" /> Reject Domain
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                        onClick={() => !isSubmitting && setRejectingId(null)}
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                        className="relative w-full max-w-md shadow-2xl border border-[var(--border-color)] rounded-2xl"
+                        style={{ background: "var(--background-color)" }}
+                    >
+                        <div className="p-5 border-b border-[var(--border-color)] flex justify-between items-center rounded-t-2xl" style={{ background: "var(--surface-color)" }}>
+                            <h3 className="text-lg font-bold flex items-center gap-2 text-rose-500">
+                                <XCircle className="w-5 h-5" /> Reject Domain
                             </h3>
                             {!isSubmitting && (
-                                <button onClick={() => setRejectingId(null)} className="p-2 rounded-full hover:bg-[var(--background-color)]">
-                                    <X className="w-5 h-5 text-[var(--muted-foreground)]" />
+                                <button onClick={() => setRejectingId(null)} className="p-2 rounded-full hover:bg-[var(--background-color)] transition-colors">
+                                    <X className="w-4 h-4 text-[var(--muted-foreground)]" />
                                 </button>
                             )}
                         </div>
-                        <form onSubmit={handleReject} className="p-6 space-y-4">
+                        <form onSubmit={handleReject} className="p-6 space-y-5">
                             <div>
-                                <label className="block text-sm font-bold mb-2">Rejection Reason *</label>
+                                <label className="block text-sm font-semibold mb-2" style={{ color: "var(--foreground)" }}>Rejection Reason <span className="text-rose-500">*</span></label>
                                 <textarea
                                     required
                                     rows={3}
                                     value={rejectReason}
                                     onChange={e => setRejectReason(e.target.value)}
                                     placeholder="Explain why this domain request is being rejected..."
-                                    className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
-                                    style={{ background: "var(--input-bg)", borderColor: "var(--input-border)", color: "var(--foreground)" }}
+                                    className="w-full p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/30 transition-all text-sm resize-none"
+                                    style={{ background: "var(--surface-color)", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
                                     disabled={isSubmitting}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold mb-2">Suggested Fix (Optional)</label>
+                                <label className="block text-sm font-semibold mb-2" style={{ color: "var(--foreground)" }}>Suggested Fix <span className="opacity-50 font-normal text-xs ml-1">(Optional)</span></label>
                                 <textarea
                                     rows={2}
                                     value={suggestedFix}
                                     onChange={e => setSuggestedFix(e.target.value)}
                                     placeholder="e.g. Try using a subdomain instead, verify DNS records..."
-                                    className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
-                                    style={{ background: "var(--input-bg)", borderColor: "var(--input-border)", color: "var(--foreground)" }}
+                                    className="w-full p-4 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/30 transition-all text-sm resize-none"
+                                    style={{ background: "var(--surface-color)", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
                                     disabled={isSubmitting}
                                 />
                             </div>
-                            <div className="pt-4 flex justify-end gap-3">
+                            <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border-color)]">
                                 <button
                                     type="button"
                                     onClick={() => setRejectingId(null)}
                                     disabled={isSubmitting}
-                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--surface-color)] border border-[var(--border-color)] hover:opacity-80 disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 transition-colors"
+                                    style={{ background: "transparent", border: "1px solid var(--border-color)", color: "var(--foreground)" }}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !rejectReason.trim()}
-                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2 justify-center min-w-[140px]"
                                 >
-                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
+                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
                                     {isSubmitting ? "Rejecting..." : "Confirm Rejection"}
                                 </button>
                             </div>
                         </form>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>

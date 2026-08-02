@@ -1,24 +1,37 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../lib/api";
 
+export interface DomainDnsRecord {
+    type: string;
+    host: string;
+    value: string | null;
+    ttl: number;
+}
+
+export interface DomainDnsInstructions {
+    ttl: number;
+    txt: DomainDnsRecord;
+    a: DomainDnsRecord;
+    aaaa?: DomainDnsRecord;
+    cname?: DomainDnsRecord;
+}
+
 export interface SuperAdminDomainRequest {
     id: number;
     tenant_id: string;
     user_id?: number;
+    name?: string;
+    email?: string;
     domain_name: string;
     actual_domain_name: string;
     status: string; // "0" = pending, "1" = approved, "2" = rejected
-    verification_token: string;
-    dns_verified: boolean;
-    dns_verified_at?: string | null;
-    ssl_status?: string | null;
-    ssl_expires_at?: string | null;
     reason: string | null;
     rejection_reason: string | null;
     suggested_fix: string | null;
     created_at: string;
     updated_at?: string;
     server_ip?: string;
+    dns_instructions?: DomainDnsInstructions;
 }
 
 interface SuperAdminDomainsState {
@@ -42,7 +55,15 @@ export const fetchSuperAdminDomainRequests = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get("/superadmin/domains");
-            return response.data.data;
+            const data = response.data.data;
+            // Ensure status is always a string for consistent comparisons
+            if (Array.isArray(data)) {
+                return data.map((item: any) => ({
+                    ...item,
+                    status: String(item.status),
+                }));
+            }
+            return data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch domain requests");
         }
@@ -54,7 +75,8 @@ export const approveDomainRequest = createAsyncThunk(
     async (id: number, { rejectWithValue }) => {
         try {
             const response = await api.post(`/superadmin/domains/${id}/approve`);
-            return response.data.data;
+            const data = response.data.data;
+            return { ...data, status: String(data.status) };
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to approve domain request");
         }
@@ -69,7 +91,8 @@ export const rejectDomainRequest = createAsyncThunk(
                 reason: payload.reason,
                 suggested_fix: payload.suggested_fix,
             });
-            return response.data.data;
+            const data = response.data.data;
+            return { ...data, status: String(data.status) };
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to reject domain request");
         }
