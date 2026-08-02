@@ -42,7 +42,15 @@ export const fetchSuperAdminDomainRequests = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get("/superadmin/domains");
-            return response.data.data;
+            const data = response.data.data;
+            // Ensure status is always a string for consistent comparisons
+            if (Array.isArray(data)) {
+                return data.map((item: any) => ({
+                    ...item,
+                    status: String(item.status),
+                }));
+            }
+            return data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch domain requests");
         }
@@ -54,7 +62,8 @@ export const approveDomainRequest = createAsyncThunk(
     async (id: number, { rejectWithValue }) => {
         try {
             const response = await api.post(`/superadmin/domains/${id}/approve`);
-            return response.data.data;
+            const data = response.data.data;
+            return { ...data, status: String(data.status) };
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to approve domain request");
         }
@@ -69,7 +78,8 @@ export const rejectDomainRequest = createAsyncThunk(
                 reason: payload.reason,
                 suggested_fix: payload.suggested_fix,
             });
-            return response.data.data;
+            const data = response.data.data;
+            return { ...data, status: String(data.status) };
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to reject domain request");
         }

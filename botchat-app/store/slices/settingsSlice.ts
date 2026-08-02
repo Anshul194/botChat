@@ -277,7 +277,15 @@ export const fetchDomainRequests = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const res = await api.get('/settings/domain-requests');
-            return res.data?.data || res.data;
+            const data = res.data?.data || res.data;
+            // Ensure status is always a string for consistent comparisons
+            if (Array.isArray(data)) {
+                return data.map((item: any) => ({
+                    ...item,
+                    status: String(item.status),
+                }));
+            }
+            return data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || error.message);
         }
