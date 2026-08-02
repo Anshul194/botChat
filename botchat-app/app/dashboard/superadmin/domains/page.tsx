@@ -242,31 +242,34 @@ export default function SuperAdminDomainsPage() {
                             </button>
                         </div>
                         <div className="p-6 space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
                                     <label className="text-xs font-semibold uppercase opacity-60">Requested Domain</label>
-                                    <p className="font-bold text-lg">{viewingRequest.domain_name}</p>
+                                    <p className="font-bold text-xl mt-1">{viewingRequest.domain_name}</p>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Current Domain</label>
-                                    <p className="font-medium">{viewingRequest.actual_domain_name}</p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <label className="text-xs font-semibold uppercase opacity-60">Status</label>
+                                        <div className="mt-1">
+                                            {viewingRequest.status === "0" && <span className="text-amber-500 font-semibold flex items-center gap-1.5"><Clock className="w-4 h-4" /> Pending</span>}
+                                            {viewingRequest.status === "1" && <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Approved</span>}
+                                            {viewingRequest.status === "2" && <span className="text-rose-500 font-semibold flex items-center gap-1.5"><XCircle className="w-4 h-4" /> Rejected</span>}
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <label className="text-xs font-semibold uppercase opacity-60">Submitted</label>
+                                        <p className="font-medium mt-1">{new Date(viewingRequest.created_at).toLocaleString()}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Status</label>
-                                    <p className="font-medium">
-                                        {viewingRequest.status === "0" && <span className="text-amber-500">Pending</span>}
-                                        {viewingRequest.status === "1" && <span className="text-emerald-500">Approved</span>}
-                                        {viewingRequest.status === "2" && <span className="text-rose-500">Rejected</span>}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Submitted</label>
-                                    <p className="font-medium">{new Date(viewingRequest.created_at).toLocaleString()}</p>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-semibold uppercase opacity-60">Tenant ID</label>
-                                    <p className="font-medium">{viewingRequest.tenant_id}</p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 break-all">
+                                        <label className="text-xs font-semibold uppercase opacity-60">Target Address</label>
+                                        <p className="font-medium mt-1">{viewingRequest.actual_domain_name || "N/A"}</p>
+                                    </div>
+                                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 break-all">
+                                        <label className="text-xs font-semibold uppercase opacity-60">Tenant ID</label>
+                                        <p className="font-medium mt-1">{viewingRequest.tenant_id}</p>
+                                    </div>
                                 </div>
                             </div>
                             {viewingRequest.rejection_reason && (
@@ -301,47 +304,45 @@ export default function SuperAdminDomainsPage() {
                                 </button>
                             )}
                         </div>
-                        <form onSubmit={handleReject} className="p-6 space-y-4">
+                        <form onSubmit={handleReject} className="p-6 space-y-5">
                             <div>
-                                <label className="block text-sm font-bold mb-2">Rejection Reason *</label>
+                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Rejection Reason <span className="text-rose-500">*</span></label>
                                 <textarea
                                     required
                                     rows={3}
                                     value={rejectReason}
                                     onChange={e => setRejectReason(e.target.value)}
                                     placeholder="Explain why this domain request is being rejected..."
-                                    className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
-                                    style={{ background: "var(--input-bg)", borderColor: "var(--input-border)", color: "var(--foreground)" }}
+                                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-sm resize-none"
                                     disabled={isSubmitting}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold mb-2">Suggested Fix (Optional)</label>
+                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Suggested Fix <span className="opacity-60 font-normal">(Optional)</span></label>
                                 <textarea
                                     rows={2}
                                     value={suggestedFix}
                                     onChange={e => setSuggestedFix(e.target.value)}
                                     placeholder="e.g. Try using a subdomain instead, verify DNS records..."
-                                    className="w-full p-3 rounded-xl border outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
-                                    style={{ background: "var(--input-bg)", borderColor: "var(--input-border)", color: "var(--foreground)" }}
+                                    className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-sm resize-none"
                                     disabled={isSubmitting}
                                 />
                             </div>
-                            <div className="pt-4 flex justify-end gap-3">
+                            <div className="pt-2 flex justify-end gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setRejectingId(null)}
                                     disabled={isSubmitting}
-                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--surface-color)] border border-[var(--border-color)] hover:opacity-80 disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !rejectReason.trim()}
-                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-rose-500 text-white hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center min-w-[140px]"
                                 >
-                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
+                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                     {isSubmitting ? "Rejecting..." : "Confirm Rejection"}
                                 </button>
                             </div>
