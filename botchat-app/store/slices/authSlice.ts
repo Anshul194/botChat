@@ -17,6 +17,11 @@ export interface User {
     role?: string;
 }
 
+export interface TwoFactorChallenge {
+    user: User | null;
+    temporaryLoginToken: string;
+}
+
 export interface AuthState {
     user: User | null;
     token: string | null;
@@ -24,6 +29,7 @@ export interface AuthState {
     isLoading: boolean;
     isInitialized: boolean;
     error: string | null;
+    twoFactorChallenge: TwoFactorChallenge | null;
 }
 
 const initialState: AuthState = {
@@ -33,6 +39,7 @@ const initialState: AuthState = {
     isLoading: false,
     isInitialized: false,
     error: null,
+    twoFactorChallenge: null,
 };
 
 function normalizeRole(user: Record<string, unknown>) {
@@ -86,6 +93,22 @@ export const loginUser = createAsyncThunk(
             }
 
             const data = response.data.data;
+
+            // ── Two-factor challenge ─────────────────────────────────────────
+            // No token is issued yet. The client must complete the second step
+            // with the temporary token via verifyTwoFactorLogin / recoveryCodeLogin.
+            if (data.requires_two_factor) {
+                const user = data.user || data;
+                const normalizedUser = { ...user, role: normalizeRole(user) };
+
+                return {
+                    requiresTwoFactor: true,
+                    token: null,
+                    user: normalizedUser,
+                    temporaryLoginToken: data.temporary_login_token,
+                };
+            }
+
             const token = data.token;
             const user = data.user || data;
 
@@ -102,9 +125,85 @@ export const loginUser = createAsyncThunk(
                 }
             }, 0);
 
-            return { token, user: normalizedUser };
+            return { requiresTwoFactor: false, token, user: normalizedUser };
         } catch (error: unknown) {
             const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Login failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const verifyTwoFactorLogin = createAsyncThunk(
+    'auth/verifyTwoFactorLogin',
+    async (payload: { code: string; temporaryLoginToken: string }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/login/2fa', {
+                code: payload.code,
+                temporary_login_token: payload.temporaryLoginToken,
+            });
+
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Two-factor verification failed.');
+            }
+
+            const data = response.data.data;
+            const token = data.token;
+            const user = data.user || data;
+
+            const normalizedUser = { ...user, role: normalizeRole(user) };
+
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(normalizedUser));
+            }
+
+            setTimeout(() => {
+                if (normalizedUser.role !== 'SUPER_ADMIN') {
+                    dispatch(fetchSubscription());
+                }
+            }, 0);
+
+            return { token, user: normalizedUser };
+        } catch (error: unknown) {
+            const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Two-factor verification failed.';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const recoveryCodeLogin = createAsyncThunk(
+    'auth/recoveryCodeLogin',
+    async (payload: { recoveryCode: string; temporaryLoginToken: string }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await api.post('/auth/login/recovery', {
+                recovery_code: payload.recoveryCode,
+                temporary_login_token: payload.temporaryLoginToken,
+            });
+
+            if (!response.data.success) {
+                return rejectWithValue(response.data.message || 'Recovery code verification failed.');
+            }
+
+            const data = response.data.data;
+            const token = data.token;
+            const user = data.user || data;
+
+            const normalizedUser = { ...user, role: normalizeRole(user) };
+
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(normalizedUser));
+            }
+
+            setTimeout(() => {
+                if (normalizedUser.role !== 'SUPER_ADMIN') {
+                    dispatch(fetchSubscription());
+                }
+            }, 0);
+
+            return { token, user: normalizedUser };
+        } catch (error: unknown) {
+            const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Recovery code verification failed.';
             return rejectWithValue(message);
         }
     }
@@ -261,6 +360,10 @@ const authSlice = createSlice({
         },
         setInitialized: (state) => {
             state.isInitialized = true;
+        },
+        clearTwoFactorChallenge: (state) => {
+            state.twoFactorChallenge = null;
+            state.error = null;
         }
     },
     extraReducers: (builder) => {
@@ -293,6 +396,13 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.isLoading = false;
+                if (action.payload.requiresTwoFactor) {
+                    state.twoFactorChallenge = {
+                        user: action.payload.user,
+                        temporaryLoginToken: action.payload.temporaryLoginToken,
+                    };
+                    return;
+                }
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
                 state.token = action.payload.token;
@@ -301,10 +411,41 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
+            .addCase(verifyTwoFactorLogin.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(verifyTwoFactorLogin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = true;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.twoFactorChallenge = null;
+            })
+            .addCase(verifyTwoFactorLogin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(recoveryCodeLogin.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(recoveryCodeLogin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = true;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.twoFactorChallenge = null;
+            })
+            .addCase(recoveryCodeLogin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;
                 state.token = null;
                 state.isAuthenticated = false;
+                state.twoFactorChallenge = null;
             })
             .addCase(changePassword.pending, (state) => {
                 state.isLoading = true;
@@ -335,6 +476,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = false;
                 state.user = null;
                 state.token = null;
+                state.twoFactorChallenge = null;
                 if (typeof window !== 'undefined') {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
@@ -343,7 +485,7 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearError, setCredentials, setInitialized } = authSlice.actions;
+export const { clearError, setCredentials, setInitialized, clearTwoFactorChallenge } = authSlice.actions;
 
 // Global Role Selectors (using any to avoid circular dependency with store)
 export const selectIsSuperAdmin = (state: any) => state.auth.user?.role === 'SUPER_ADMIN';

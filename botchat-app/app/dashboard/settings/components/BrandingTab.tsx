@@ -86,7 +86,6 @@ export default function BrandingTab() {
     twoFactorAuth: false,
     smsVerification: false,
     rtlEnabled: false,
-    landingPageEnabled: true,
     registerEnabled: false,
     theme: { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
     defaultLanguage: "en",
@@ -111,7 +110,6 @@ export default function BrandingTab() {
     if (general) {
       setGeneralForm({
         ...general,
-        landingPageEnabled: general.landingPageEnabled ?? true,
         theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
       });
       if (general.logo) setLogoPreview(general.logo.startsWith('http') ? general.logo : `${process.env.NEXT_PUBLIC_BASE_URL?.replace('/api/v1', '')}/uploads/${general.logo}`);
@@ -204,23 +202,6 @@ export default function BrandingTab() {
                 <option value="hh:mm A">hh:mm A (12-hour)</option>
                 <option value="HH:mm">HH:mm (24-hour)</option>
               </select>
-            </div>
-          </div>
-        </Section>
-
-        <Section title="Feature Flags" desc="Toggle core platform functionalities">
-          <div className="space-y-1">
-            <div className="flex items-center justify-between py-3 border-b border-[var(--glass-border)]">
-              <div>
-                <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>Landing Page Enabled</p>
-                <p className="text-xs text-[var(--muted-foreground)]">Show the public landing page for this workspace</p>
-              </div>
-              <button type="button" onClick={() => setGeneralForm({ ...generalForm, landingPageEnabled: !generalForm.landingPageEnabled })}
-                className="relative w-11 h-6 rounded-full transition-all duration-300"
-                style={{ background: generalForm.landingPageEnabled ? "var(--brand-purple)" : "var(--glass-border)" }}>
-                <span className="absolute top-0.5 w-5 h-5 rounded-full bg-[var(--card)] shadow transition-all duration-300"
-                  style={{ left: generalForm.landingPageEnabled ? "calc(100% - 22px)" : "2px" }} />
-              </button>
             </div>
           </div>
         </Section>
