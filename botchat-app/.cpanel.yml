@@ -5,14 +5,14 @@ deployment:
     # Deploy log
     - echo "DEPLOY $(date)" >> /home/megasfuh/deploy-log.txt
 
-    # Copy latest files
+    # Copy latest source files
     - /bin/cp -R botchat-app/. /home/megasfuh/botchat_app/
 
-    # Clean old build
-    - /bin/rm -rf /home/megasfuh/botchat_app/.next
+    # Clean old build + node_modules for a fresh, reliable install
+    - /bin/rm -rf /home/megasfuh/botchat_app/.next /home/megasfuh/botchat_app/node_modules
 
-    # Install + Build
-    - export PATH=/opt/cpanel/ea-nodejs20/bin:$PATH && cd /home/megasfuh/botchat_app && npm install && npm run build
+    # Install deps from lockfile + build. Fail loudly if next is missing.
+    - export PATH=/opt/cpanel/ea-nodejs20/bin:$PATH && cd /home/megasfuh/botchat_app && npm ci --no-audit --no-fund && npm run build && node -e "require('fs').existsSync('node_modules/next') || (console.error('FATAL: next is missing after install'); process.exit(1))"
 
     # Restart app
     - mkdir -p /home/megasfuh/botchat_app/tmp
