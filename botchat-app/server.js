@@ -1,6 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
+// This is the production server (next({ dev: false })). Must be set before
+// requiring `next`/`react` so the production builds load.
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
 // Catch any fatal errors and write them to a file so we can see them in cPanel File Manager
 process.on('uncaughtException', (err) => {
     fs.writeFileSync(__dirname + '/startup-error.txt', 'Uncaught Exception: ' + (err.stack || err.toString()));
@@ -10,7 +14,6 @@ process.on('uncaughtException', (err) => {
 try {
     const { createServer } = require('http')
     const next = require('next')
-    const compression = require('compression')
 
     const dev = false
     const app = next({ dev })
@@ -19,17 +22,6 @@ try {
     const port = process.env.PORT || 3000
 
     const PUBLIC_DIR = path.join(__dirname, 'public');
-
-    // Enable gzip/brotli compression for HTML/CSS/JS/JSON etc.
-    const compress = compression({
-        threshold: 1024,
-        filter: (req, res) => {
-            const ct = res.getHeader('Content-Type') || '';
-            // Never compress already-compressed media/fonts
-            if (/image|video|audio|font|octet-stream|pdf/.test(ct)) return false;
-            return true;
-        },
-    });
 
     // Serve static files from /public directly with long browser cache
     // (bypasses Next handler for media so browsers can cache & revalidate)
@@ -95,8 +87,8 @@ try {
         // Intercept + cache static public files
         if (servePublic(req, res)) return;
 
-        // Compress + forward everything else to Next.js
-        compress(req, res, () => handle(req, res));
+        // Forward everything else to Next.js
+        handle(req, res);
       }).listen(port, () => {
         console.log(`> Ready on http://localhost:${port}`)
         // Write a success file if it makes it this far

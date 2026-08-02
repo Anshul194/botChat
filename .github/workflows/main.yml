@@ -46,8 +46,8 @@ jobs:
           # Relative to the FTP account home (the Node.js app lives at the
           # account root, in the botchat_app directory). No leading slash.
           server-dir: botchat_app/
-          # node_modules and .next are uploaded on purpose — the server has no
-          # terminal and cannot run `npm install` / `npm run build`.
+          # node_modules is uploaded on purpose — the server has no terminal and
+          # cannot run `npm install` / `npm run build`.
           exclude: |
             **/.git*
             **/.git*/**
