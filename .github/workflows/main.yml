@@ -20,7 +20,10 @@ jobs:
 
       - name: Install Dependencies
         working-directory: ./botchat-app
-        run: npm ci
+        # --legacy-peer-deps: package-lock.json has a known ajv peer conflict
+        # (eslint needs ajv@6, next/dotenv-cli need ajv@8) that plain `npm ci`
+        # rejects. Builds fine once installed.
+        run: npm ci --legacy-peer-deps
 
       - name: Build Next.js App
         working-directory: ./botchat-app
@@ -41,7 +44,10 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./botchat-app/
-          server-dir: /botchat_app/
+          # Relative to the FTP account home (the Node.js app lives at the
+          # account root, in the botchat_app directory). NO leading slash —
+          # a leading slash caused FTP 553 "Can't open that file".
+          server-dir: botchat_app/
           log-level: verbose
           dangerous-clean-slate: false
           exclude: |
