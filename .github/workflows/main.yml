@@ -33,6 +33,7 @@ jobs:
           mkdir -p ./botchat-app/tmp
           touch ./botchat-app/tmp/restart.txt
 
+
       - name: Sync Files to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
