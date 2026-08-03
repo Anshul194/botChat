@@ -708,29 +708,29 @@ export default function InstagramBotRepliesPage() {
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
+                                                            <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
                                                             {action.automation_id && (
                                                                 <div className={cn(
-                                                                    "w-1.5 h-1.5 rounded-full",
+                                                                    "w-2 h-2 rounded-full",
                                                                     action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
                                                                 )} />
                                                             )}
                                                         </div>
-                                                        <p className="text-[11px] text-neutral-400 font-medium leading-relaxed">{def.desc}</p>
+                                                        <p className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold leading-relaxed mt-1">{def.desc}</p>
                                                     </div>
 
                                                     <div className="mt-8">
                                                         {action.automation_id ? (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); goToFlow(action.automation_id!); }}
-                                                                className="w-full py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border-2 border-pink-100 dark:border-pink-900/10 text-[#db2777] dark:text-[var(--primary)]/80 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-[var(--primary)]/10/50 dark:hover:bg-pink-900/20 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border-2 border-pink-200 dark:border-pink-900/30 text-[#db2777] dark:text-[var(--primary)]/80 text-xs font-extrabold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-[var(--primary)]/10 dark:hover:bg-pink-900/20 transition-all flex items-center justify-center gap-2"
                                                             >
-                                                                <Box size={14} /> Open Flow Logic
+                                                                <Box size={14} strokeWidth={2.5} /> Open Flow Logic
                                                             </button>
                                                         ) : (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); handleActionCreate(action.type); }}
-                                                                className="w-full py-3 rounded-2xl text-white text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3 rounded-2xl text-white text-xs font-extrabold uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                                                 style={{ background: `linear-gradient(135deg, ${IG_PINK} 0%, #be185d 100%)`, boxShadow: `${IG_PINK}40 0px 4px 14px` }}
                                                             >
                                                                 <Plus size={14} strokeWidth={2.5} /> Create Custom Layer

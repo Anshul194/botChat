@@ -653,7 +653,7 @@ export default function FacebookBotRepliesPage() {
                                     <div className="flex items-center gap-3">
                                         <button
                                             onClick={() => fetchActions()}
-                                            className="p-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 transition-all shadow-sm active:scale-95"
+                                            className="p-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all shadow-sm active:scale-95"
                                         >
                                             <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
                                         </button>
@@ -703,7 +703,7 @@ export default function FacebookBotRepliesPage() {
                                                                             onClick={(e) => { e.stopPropagation(); handleActionToggle(action); }}
                                                                             className={cn(
                                                                                 "p-2 rounded-lg border transition-all active:scale-90",
-                                                                                action.status === 'published' ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                                                action.status === 'published' ? "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800" : "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800"
                                                                             )}
                                                                             title={action.status === 'published' ? "Pause Action" : "Resume Action"}
                                                                         >
@@ -711,7 +711,7 @@ export default function FacebookBotRepliesPage() {
                                                                         </button>
                                                                         <button
                                                                             onClick={(e) => { e.stopPropagation(); handleActionDelete(action); }}
-                                                                            className="p-2 rounded-lg border bg-red-50 text-red-500 border-red-100 hover:bg-red-100 transition-all active:scale-90"
+                                                                            className="p-2 rounded-lg border bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 border-red-100 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 transition-all active:scale-90"
                                                                             title="Unmap Action"
                                                                         >
                                                                             <Trash2 size={14} />
@@ -721,29 +721,29 @@ export default function FacebookBotRepliesPage() {
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-2 mb-1">
-                                                            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
+                                                            <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
                                                             {action.automation_id && (
                                                                 <div className={cn(
-                                                                    "w-1.5 h-1.5 rounded-full",
+                                                                    "w-2 h-2 rounded-full",
                                                                     action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
                                                                 )} />
                                                             )}
                                                         </div>
-                                                        <p className="text-[11px] text-neutral-400 font-medium leading-relaxed">{def.desc}</p>
+                                                        <p className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold leading-relaxed mt-1">{def.desc}</p>
                                                     </div>
 
                                                     <div className="mt-8">
                                                         {action.automation_id ? (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); goToFlow(action.automation_id!); }}
-                                                                className="w-full py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border-2 border-blue-100 dark:border-blue-900/10 text-[#0866FF] dark:text-blue-400 text-[10px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border-2 border-blue-200 dark:border-blue-900/30 text-[#0866FF] dark:text-blue-400 text-xs font-extrabold uppercase tracking-widest shadow-sm hover:shadow-md hover:bg-blue-50/60 dark:hover:bg-blue-900/30 transition-all flex items-center justify-center gap-2"
                                                             >
-                                                                <Box size={14} /> Open Flow Logic
+                                                                <Box size={14} strokeWidth={2.5} /> Open Flow Logic
                                                             </button>
                                                         ) : (
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); handleActionCreate(action.type); }}
-                                                                className="w-full py-3 rounded-2xl bg-[#0866FF] text-white text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-blue-500/10 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                                                className="w-full py-3 rounded-2xl bg-[#0866FF] text-white text-xs font-extrabold uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                                                             >
                                                                 <Plus size={14} strokeWidth={2.5} /> Create Custom Layer
                                                             </button>
@@ -800,7 +800,7 @@ export default function FacebookBotRepliesPage() {
                                         className="w-full max-w-md p-10 bg-blue-50 dark:bg-blue-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20 flex flex-col items-center gap-4 text-center grayscale-0 mx-auto"
                                     >
                                         <div className="w-16 h-16 rounded-3xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
-                                            <Bot className="w-8 h-8 text-blue-600" />
+                                            <Bot className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <h4 className="text-lg font-black text-blue-900 dark:text-blue-400 uppercase tracking-tight leading-tight">Environment Required</h4>
                                         <p className="text-xs font-bold text-blue-700 dark:text-blue-500/80 uppercase tracking-widest leading-relaxed">Please select a specific Facebook page from the header to enable neural agent configuration.</p>

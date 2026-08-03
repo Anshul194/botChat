@@ -2745,19 +2745,21 @@ function PhonePreview({ steps, platform, pageName, pageProfilePic, isMobile }) {
 
                     {/* Quick-reply / action buttons */}
                     {!isUser && (m.buttons || []).length > 0 && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5, width: "100%", marginTop: 4 }}>
                         {(m.buttons || []).map((b, bi) => (
                           <div key={bi} style={{
-                            background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.1)" : "#FFFFFF"),
-                            border: `1.5px solid ${isFB ? "transparent" : (isDark ? "rgba(255,255,255,0.15)" : "#E2E8F0")}`,
-                            borderRadius: 18,
-                            padding: "7px 14px",
+                            background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.12)" : "#FFFFFF"),
+                            border: `1.5px solid ${isFB ? "rgba(8,102,255,0.3)" : (isDark ? "rgba(255,255,255,0.2)" : "#CBD5E1")}`,
+                            borderRadius: 20,
+                            padding: "9px 16px",
                             textAlign: "center",
-                            color: isFB ? "#0084FF" : (isDark ? "#FFF" : "#000"),
-                            fontWeight: 600,
-                            fontSize: 12,
+                            color: isFB ? "#0866FF" : (isDark ? "#FFF" : "#0F172A"),
+                            fontWeight: 800,
+                            fontSize: 12.5,
+                            letterSpacing: "0.01em",
                             cursor: "pointer",
-                            transition: "all 0.15s",
+                            boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
+                            transition: "all 0.15s ease",
                           }}>{b.title || b.label}</div>
                         ))}
                       </div>
@@ -2765,10 +2767,11 @@ function PhonePreview({ steps, platform, pageName, pageProfilePic, isMobile }) {
 
                     {!isUser && m.link && (
                       <div style={{
-                        background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.1)" : "#FFFFFF"),
-                        border: `1.5px solid ${isFB ? "transparent" : (isDark ? "rgba(255,255,255,0.15)" : "#E2E8F0")}`,
-                        borderRadius: 18, padding: "7px 14px", textAlign: "center",
-                        color: isFB ? "#0084FF" : (isDark ? "#FFF" : "#000"), fontWeight: 600, fontSize: 12, cursor: "pointer",
+                        background: isFB ? "#EBF5FF" : (isDark ? "rgba(255,255,255,0.12)" : "#FFFFFF"),
+                        border: `1.5px solid ${isFB ? "rgba(8,102,255,0.3)" : (isDark ? "rgba(255,255,255,0.2)" : "#CBD5E1")}`,
+                        borderRadius: 20, padding: "9px 16px", textAlign: "center",
+                        color: isFB ? "#0866FF" : (isDark ? "#FFF" : "#0F172A"), fontWeight: 800, fontSize: 12.5, cursor: "pointer",
+                        boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
                       }}>{m.link.title || m.link.btnTitle || m.link.label || m.link.btnLabel}</div>
                     )}
                   </div>
@@ -4346,15 +4349,49 @@ function FlowBuilder() {
               right: 0,
               bottom: 0,
               zIndex: 99999,
-              background: "rgba(15, 23, 42, 0.65)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
+              background: "rgba(15, 23, 42, 0.75)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              padding: "16px",
             }}
             onClick={() => setShowMobilePreview(false)}
           >
+            {/* Top-Right Floating Glass Cross Button */}
+            <motion.button
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={() => setShowMobilePreview(false)}
+              aria-label="Close preview"
+              style={{
+                position: "fixed",
+                top: 20,
+                right: 20,
+                zIndex: 100000,
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                background: "rgba(15, 23, 42, 0.8)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                color: "#FFFFFF",
+                border: "1.5px solid rgba(255, 255, 255, 0.25)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.1)"; e.currentTarget.style.background = "rgba(15, 23, 42, 0.95)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.background = "rgba(15, 23, 42, 0.8)"; }}
+            >
+              <X size={20} strokeWidth={2.5} />
+            </motion.button>
+
             <motion.div
               initial={{ scale: 0.92, y: 15 }}
               animate={{ scale: 1, y: 0 }}
@@ -4396,62 +4433,22 @@ function FlowBuilder() {
                       background: "#F1F5F9",
                       color: "#64748B",
                       borderRadius: "50%",
-                      width: 28,
-                      height: 28,
+                      width: 32,
+                      height: 32,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       cursor: "pointer",
-                      fontSize: 12,
-                      fontWeight: "bold",
-                      transition: "background 0.2s",
+                      transition: "all 0.2s",
                       flexShrink: 0,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "#E2E8F0"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F9"; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#E2E8F0"; e.currentTarget.style.color = "#0F172A"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F9"; e.currentTarget.style.color = "#64748B"; }}
                   >
-                    ✕
+                    <X size={16} strokeWidth={2.5} />
                   </button>
                 </div>
               )}
-
-              {isMobile && (
-                  <div style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 100,
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    padding: "8px 12px 0",
-                    pointerEvents: "none",
-                  }}>
-                    <button
-                      onClick={() => setShowMobilePreview(false)}
-                      aria-label="Close preview"
-style={{
-                        background: "rgba(0,0,0,0.35)",
-                        backdropFilter: "blur(6px)",
-                        WebkitBackdropFilter: "blur(6px)",
-                        color: "#fff",
-                        borderRadius: "50%",
-                        width: 36,
-                        height: 36,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        fontSize: 16,
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-                        transition: "all 0.15s",
-                        pointerEvents: "auto",
-                      }}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                )}
 
               <div style={{
                 flex: 1,

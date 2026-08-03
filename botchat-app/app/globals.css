@@ -155,9 +155,9 @@ video,
   --app-button-bg: linear-gradient(135deg, #FF2D78 0%, #ff80ab 100%);
   --app-button-text: #ffffff;
 
-  /* Glass / Surface */
-  --glass-bg: rgba(17, 10, 20, 0.75);
-  --glass-border: rgba(255, 45, 120, 0.10);
+  /* Glass / Surface - Solid High Contrast */
+  --glass-bg: #13101a;
+  --glass-border: rgba(255, 255, 255, 0.12);
   --surface-1: #09090b;
   --surface-2: #110a14;
   --surface-3: #1a0e1e;
@@ -272,9 +272,9 @@ html.light,
   --app-button-bg: linear-gradient(135deg, #e8175d 0%, #FF2D78 100%);
   --app-button-text: #ffffff;
 
-  /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.90);
-  --glass-border: rgba(232, 23, 93, 0.08);
+  /* Glass - Solid High Contrast White */
+  --glass-bg: #ffffff;
+  --glass-border: rgba(0, 0, 0, 0.12);
   --surface-1: #ffffff;
   --surface-2: #ffffff;
   --surface-3: #fff5f8;
