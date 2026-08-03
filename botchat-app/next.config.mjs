@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Standalone mode: bundles only runtime-needed files into .next/standalone
+  // Result: ~20MB deploy instead of 500MB+ node_modules upload
+  output: 'standalone',
   transpilePackages: ['recharts'],
   typescript: {
     ignoreBuildErrors: true,
