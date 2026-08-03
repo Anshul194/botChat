@@ -109,8 +109,7 @@ export default function SignInPage() {
                     temporaryLoginToken: twoFactorChallenge.temporaryLoginToken,
                 })).unwrap();
             }
-            toast.success("Welcome back! Redirecting to dashboard...");
-            setTimeout(() => router.push("/dashboard"), 1000);
+            setShowWelcome(true);
         } catch (err: any) {
             const msg = typeof err === "string" ? err : err?.message || "Invalid code. Please try again.";
             setTwoFactorStatus("error");
