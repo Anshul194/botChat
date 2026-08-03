@@ -375,8 +375,8 @@ export default function Hero() {
           {/* Headline */}
           <h1 className="hero-text-elem font-display leading-[1.06] tracking-tight"
             style={{ fontSize: "clamp(2.6rem, 5.5vw, 4.2rem)" }}>
-            <span className="block text-white uppercase tracking-tighter">DM Automation for</span>
-            <span className="shimmer-text block mt-1">Instagram & Facebook</span>
+            <span className="block text-white uppercase tracking-tighter">Automate Your Instagram & Facebook</span>
+            <span className="shimmer-text block mt-1">REAL Growth.</span>
           </h1>
 
           {/* Body */}
