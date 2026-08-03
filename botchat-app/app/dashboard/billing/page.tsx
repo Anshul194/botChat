@@ -53,6 +53,8 @@ export default function BillingPage() {
     const planPrice = currentPlanData ? formatCurrency(currentPlanData.price ?? 0) : formatCurrency(0);
     const planInterval = currentPlanData ? `${currentPlanData.duration} ${currentPlanData.duration_type}` : "";
     const days = daysRemaining();
+    const user = useAppSelector((s) => s.auth.user);
+    const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.type === "Super Admin";
 
     return (
         <motion.div
@@ -124,10 +126,14 @@ export default function BillingPage() {
             {/* Quick Actions */}
             <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {[
-                    { label: "View Plans", desc: "Compare & upgrade", href: "/dashboard/billing/plans", icon: Crown, color: "#8b5cf6" },
+                    isSuperAdmin
+                        ? { label: "Manage Plans", desc: "Edit & create plans", href: "/dashboard/plans", icon: Crown, color: "#8b5cf6" }
+                        : { label: "View Plans", desc: "Compare & upgrade", href: "/dashboard/billing/plans", icon: Crown, color: "#8b5cf6" },
                     { label: "Payment History", desc: "View receipts", href: "/dashboard/billing/invoices", icon: Receipt, color: "#0ea5e9" },
                     { label: "Usage", desc: "Monitor limits", href: "#usage", icon: CreditCard, color: "#10b981" },
-                    { label: "Current Plan", desc: expired ? "Expired — renew now" : `${days !== null ? `${Math.max(0, days)} days left` : "Active"}`, href: "#", icon: CalendarClock, color: expired ? "#ef4444" : "#f59e0b" },
+                    isSuperAdmin
+                        ? { label: "Plan Management", desc: "Full access", href: "/dashboard/plans", icon: CalendarClock, color: "#10b981" }
+                        : { label: "Current Plan", desc: expired ? "Expired — renew now" : `${days !== null ? `${Math.max(0, days)} days left` : "Active"}`, href: "#", icon: CalendarClock, color: expired ? "#ef4444" : "#f59e0b" },
                 ].map((item) => (
                     <Link key={item.label} href={item.href} className="group">
                         <div className="rounded-2xl border p-3 sm:p-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -150,48 +156,64 @@ export default function BillingPage() {
             {/* Current Plan Hero */}
             <motion.div variants={itemVariants}>
                 <div className="relative rounded-2xl overflow-hidden border"
-                    style={{ background: "var(--glass-bg)", borderColor: expired ? "rgba(239,68,68,0.3)" : "var(--glass-border)" }}>
+                    style={{ background: "var(--glass-bg)", borderColor: isSuperAdmin ? "rgba(16,185,129,0.3)" : expired ? "rgba(239,68,68,0.3)" : "var(--glass-border)" }}>
                     <div className="absolute inset-0 opacity-[0.06] pointer-events-none"
                         style={{ background: "radial-gradient(ellipse at 20% 50%, #8b5cf6 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, #6366f1 0%, transparent 60%)" }} />
                     <div className="relative p-4 sm:p-6 md:p-8">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                             <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
                                 <div className={cn("w-10 h-10 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0",
-                                    expired ? "bg-red-500/20" : "")}
-                                    style={expired ? {} : { background: "var(--brand-gradient)", boxShadow: "0 0 24px rgba(139,92,246,0.25)" }}>
-                                    <Crown className={cn("w-5 h-5 sm:w-7 sm:h-7", expired ? "" : "text-white")} style={expired ? { color: "#ef4444" } : {}} />
+                                    expired && !isSuperAdmin ? "bg-red-500/20" : "")}
+                                    style={expired && !isSuperAdmin ? {} : isSuperAdmin ? { background: "linear-gradient(135deg,#10b981,#059669)", boxShadow: "0 0 24px rgba(16,185,129,0.25)" } : { background: "var(--brand-gradient)", boxShadow: "0 0 24px rgba(139,92,246,0.25)" }}>
+                                    <Crown className={cn("w-5 h-5 sm:w-7 sm:h-7", expired && !isSuperAdmin ? "" : "text-white")} style={expired && !isSuperAdmin ? { color: "#ef4444" } : {}} />
                                 </div>
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-0.5 sm:mb-1">
                                         <h2 className="text-base sm:text-xl font-black truncate" style={{ color: "var(--foreground)" }}>
-                                            {currentPlanData ? `${planName} Plan` : "No Plan Active"}
+                                            {isSuperAdmin ? "Super Admin" : currentPlanData ? `${planName} Plan` : "No Plan Active"}
                                         </h2>
-                                        {currentPlanData && (
-                                            <span className={cn("inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-white uppercase shrink-0",
-                                                expired ? "bg-red-500" : "")}
-                                                style={expired ? {} : { background: "var(--brand-gradient)" }}>
-                                                <CheckCircle2 className="w-2 sm:w-2.5 h-2 sm:h-2.5" />{expired ? "Expired" : "Active"}
-                                            </span>
-                                        )}
+                                        <span className={cn("inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-white uppercase shrink-0",
+                                            expired && !isSuperAdmin ? "bg-red-500" : "")}
+                                            style={expired && !isSuperAdmin ? {} : isSuperAdmin ? { background: "linear-gradient(135deg,#10b981,#059669)" } : { background: "var(--brand-gradient)" }}>
+                                            <CheckCircle2 className="w-2 sm:w-2.5 h-2 sm:h-2.5" />
+                                            {isSuperAdmin ? "Full Access" : expired ? "Expired" : "Active"}
+                                        </span>
                                     </div>
                                     <p className="text-xs sm:text-sm font-medium truncate" style={{ color: "var(--muted-foreground)" }}>
-                                        {currentPlanData ? `${planPrice} / ${planInterval || "month"}` : "Subscribe to unlock features"}
-                                        {days !== null && !expired && ` · ${Math.max(0, days)}d remaining`}
+                                        {isSuperAdmin
+                                            ? "Unrestricted access to all platform features"
+                                            : currentPlanData
+                                                ? `${planPrice} / ${planInterval || "month"}${days !== null && !expired ? ` · ${Math.max(0, days)}d remaining` : ""}`
+                                                : "Subscribe to unlock features"}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <Link href="/dashboard/billing/plans" className="w-full sm:w-auto">
-                                    <motion.button
-                                        whileHover={{ scale: 1.03 }}
-                                        whileTap={{ scale: 0.97 }}
-                                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-white transition-all"
-                                        style={{ background: expired ? "#ef4444" : "var(--brand-gradient)" }}
-                                    >
-                                        {expired ? "Renew" : currentPlanData ? "Change Plan" : "View Plans"}
-                                        <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                    </motion.button>
-                                </Link>
+                                {isSuperAdmin ? (
+                                    <Link href="/dashboard/plans" className="w-full sm:w-auto">
+                                        <motion.button
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.97 }}
+                                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-white transition-all"
+                                            style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}
+                                        >
+                                            Manage Plans
+                                            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        </motion.button>
+                                    </Link>
+                                ) : (
+                                    <Link href="/dashboard/billing/plans" className="w-full sm:w-auto">
+                                        <motion.button
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.97 }}
+                                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold text-white transition-all"
+                                            style={{ background: expired ? "#ef4444" : "var(--brand-gradient)" }}
+                                        >
+                                            {expired ? "Renew" : currentPlanData ? "Change Plan" : "View Plans"}
+                                            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                        </motion.button>
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>

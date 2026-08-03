@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     useEffect(() => {
         if (isSuperAdmin) return;
         if (!isInitialized || !isAuthenticated || subscriptionLoading || !routeFeature) return;
-        if (!canAccess(routeFeature)) router.replace("/dashboard/billing");
+        if (!canAccess(routeFeature)) router.replace(`/dashboard/feature-locked?feature=${routeFeature}`);
     }, [canAccess, isAuthenticated, isInitialized, routeFeature, router, subscriptionLoading, isSuperAdmin]);
 
     // Expired plan guard: redirect to billing unless on allowed paths

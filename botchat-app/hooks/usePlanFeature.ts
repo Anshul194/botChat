@@ -6,7 +6,14 @@ const aliases: Record<string, string[]> = {
     bot_ai_agent: ["ai_agent"],
     smart_inbox: ["live_chat"],
     live_chat: ["smart_inbox"],
+    // Shortened Links: stored as short_links_access (toggle) or short_links_limit (limit)
+    short_links: ["short_links_access", "short_links_limit"],
+    short_links_access: ["short_links"],
+    // VCard Links: stored as vcard_access (toggle) or vcard_limit (limit)
+    vcard: ["vcard_access", "vcard_limit"],
+    vcard_access: ["vcard"],
 };
+
 
 function keysFor(feature: string) {
     return [feature, ...(aliases[feature] || [])];

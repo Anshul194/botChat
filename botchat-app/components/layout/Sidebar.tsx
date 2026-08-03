@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -49,6 +50,7 @@ import {
     Bell,
     MessageSquare,
     Globe,
+    Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -175,6 +177,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const [bioLinksOpen, setBioLinksOpen] = useState(false);
     const [blogOpen, setBlogOpen] = useState(false);
     const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+    const [lockedFeatureName, setLockedFeatureName] = useState<string | null>(null);
 
     const navigate = (href: string) => {
         setPendingRoute(href);
@@ -205,7 +208,9 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
 
         setBioLinksOpen(
             current.startsWith("/dashboard/instagram/bio-link") ||
-            current.startsWith("/dashboard/instagram/bio-links")
+            current.startsWith("/dashboard/instagram/bio-links") ||
+            current.startsWith("/dashboard/shortened-links") ||
+            current.startsWith("/dashboard/vcard-links")
         );
 
         if (current.startsWith("/dashboard/blog")) setBlogOpen(true);
@@ -236,12 +241,12 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     );
 
     const bioLinkItems = useMemo(() => [
-        { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", icon: LayoutGrid, badge: "Premium", ariaLabel: "Manage bio links", feature: "bio_links" },
-        { label: "Shortened Links", href: "/dashboard/shortened-links", icon: Unlink2, badge: "Premium", ariaLabel: "Manage shortened URLs", feature: "short_links" },
-        { label: "Vcard Links", href: "/dashboard/vcard-links", icon: QrCode, badge: "Premium", ariaLabel: "Manage vcard links", feature: "vcard" },
-        { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", icon: Globe2, ariaLabel: "Manage custom domains", feature: "domains" },
-        { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", icon: Fingerprint, ariaLabel: "Manage tracking pixels", feature: "pixels" },
-    ].filter(item => canShow(item.feature)), [isSuperAdmin, canAccess]);
+        { label: "Bio Link Manager", href: "/dashboard/instagram/bio-links", icon: LayoutGrid, badge: "Premium", ariaLabel: "Manage bio links", feature: "bio_links", locked: !isSuperAdmin && !canAccess("bio_links") },
+        { label: "Shortened Links", href: "/dashboard/shortened-links", icon: Unlink2, badge: "Premium", ariaLabel: "Manage shortened URLs", feature: "short_links", locked: !isSuperAdmin && !canAccess("short_links") },
+        { label: "Vcard Links", href: "/dashboard/vcard-links", icon: QrCode, badge: "Premium", ariaLabel: "Manage vcard links", feature: "vcard", locked: !isSuperAdmin && !canAccess("vcard") },
+        { label: "Custom Domains", href: "/dashboard/instagram/bio-link/custom-domain", icon: Globe2, ariaLabel: "Manage custom domains", feature: "domains", locked: !isSuperAdmin && !canAccess("domains") },
+        { label: "Tracking Pixels", href: "/dashboard/instagram/bio-link/pixels", icon: Fingerprint, ariaLabel: "Manage tracking pixels", feature: "pixels", locked: !isSuperAdmin && !canAccess("pixels") },
+    ], [isSuperAdmin, canAccess]);
 
     const { showModal } = useModal();
 
@@ -455,22 +460,21 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             />
                         </div>
 
-                        {/* Bio Links */}
-                        {bioLinkItems.length > 0 && (
-                            <div data-tour="sidebar-bio-links">
-                                <NavAccordion
-                                    label="Bio Links"
-                                    icon={Link2}
-                                    isOpen={bioLinksOpen}
-                                    onToggle={() => setBioLinksOpen(!bioLinksOpen)}
-                                    collapsed={collapsed}
-                                    items={bioLinkItems}
-                                    pathname={currentPath}
-                                    navigate={navigate}
-                                    onClose={onClose}
-                                />
-                            </div>
-                        )}
+                        {/* Bio Links — always visible; locked items show upgrade modal */}
+                        <div data-tour="sidebar-bio-links">
+                            <NavAccordion
+                                label="Bio Links"
+                                icon={Link2}
+                                isOpen={bioLinksOpen}
+                                onToggle={() => setBioLinksOpen(!bioLinksOpen)}
+                                collapsed={collapsed}
+                                items={bioLinkItems}
+                                pathname={currentPath}
+                                navigate={navigate}
+                                onClose={onClose}
+                                onLockedClick={(featureName) => setLockedFeatureName(featureName)}
+                            />
+                        </div>
                     </motion.div>
 
                     {/* GROWTH */}
@@ -525,7 +529,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                 pathname={currentPath}
                                 onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/dashboard/users"); }}
                             />
-                            {isTenantAdmin && (
+                            {(isSuperAdmin || isTenantAdmin) && (
                                 <NavItem
                                     item={{ label: "Plan Management", icon: ShieldCheck, href: "/dashboard/plans", ariaLabel: "Manage subscription plans" }}
                                     collapsed={collapsed}
@@ -533,6 +537,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                                     onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate("/dashboard/plans"); }}
                                 />
                             )}
+
                         </motion.div>
                     )}
 
@@ -663,6 +668,39 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Feature Unavailable Modal */}
+            <Dialog open={!!lockedFeatureName} onOpenChange={() => setLockedFeatureName(null)}>
+                <DialogContent className="sm:max-w-sm rounded-[2rem] p-8">
+                    <DialogHeader className="text-center">
+                        <div
+                            className="mx-auto mb-6 w-20 h-20 rounded-full flex items-center justify-center"
+                            style={{ background: "rgba(139,92,246,0.1)" }}
+                        >
+                            <Lock className="w-9 h-9" style={{ color: "#8b5cf6" }} aria-hidden="true" />
+                        </div>
+                        <DialogTitle className="text-2xl font-black tracking-tight">Feature Unavailable</DialogTitle>
+                        <DialogDescription className="text-neutral-500 dark:text-neutral-400 mt-2 text-base">
+                            <strong>{lockedFeatureName}</strong> is not included in your current plan. Upgrade your plan to unlock this feature.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="flex-col sm:flex-row gap-4 mt-8">
+                        <button
+                            onClick={() => setLockedFeatureName(null)}
+                            className="flex-1 py-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 font-bold hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                        >
+                            Close
+                        </button>
+                        <button
+                            onClick={() => { setLockedFeatureName(null); navigate("/dashboard/billing/plans"); }}
+                            className="flex-1 py-4 rounded-2xl text-white font-black active:scale-95 transition-all flex items-center justify-center gap-2"
+                            style={{ background: "var(--primary)", boxShadow: "var(--shadow-card)" }}
+                        >
+                            View Plans
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </TooltipProvider>
     );
 }
@@ -696,16 +734,18 @@ function NavAccordion({
     pathname,
     navigate,
     onClose,
+    onLockedClick,
 }: {
     label: string;
     icon: any;
     isOpen: boolean;
     onToggle: () => void;
     collapsed: boolean;
-    items: { label: string; href: string; icon?: any; badge?: string; ariaLabel?: string }[];
+    items: { label: string; href: string; icon?: any; badge?: string; ariaLabel?: string; locked?: boolean }[];
     pathname: string;
     navigate: (href: string) => void;
     onClose?: () => void;
+    onLockedClick?: (featureName: string) => void;
 }) {
     const isActive = items.some(item =>
         item.href === "/dashboard/facebook" || item.href === "/dashboard/instagram"
@@ -788,21 +828,32 @@ function NavAccordion({
                                     sub.href === "/dashboard/facebook" || sub.href === "/dashboard/instagram"
                                         ? pathname === sub.href
                                         : pathname.startsWith(sub.href);
+                                const isLocked = sub.locked;
                                 return (
                                     <Link
                                         key={sub.href}
-                                        href={sub.href}
+                                        href={isLocked ? "#" : sub.href}
                                         prefetch={false}
                                         aria-label={sub.ariaLabel || sub.label}
                                         aria-current={isSubActive ? "page" : undefined}
-                                        onClick={(e) => { e.preventDefault(); if (onClose) onClose(); navigate(sub.href); }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (isLocked) {
+                                                onLockedClick?.(sub.label);
+                                                return;
+                                            }
+                                            if (onClose) onClose();
+                                            navigate(sub.href);
+                                        }}
                                         className={cn(
                                             "group relative flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-                                            isSubActive
-                                                ? ""
-                                                : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                                            isLocked
+                                                ? "opacity-60 cursor-not-allowed"
+                                                : isSubActive
+                                                    ? ""
+                                                    : "hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
                                         )}
-                                        style={isSubActive
+                                        style={isSubActive && !isLocked
                                             ? { color: "var(--nav-active-color)", background: "var(--nav-active-bg)" }
                                             : { color: "var(--sidebar-foreground)" }
                                         }
@@ -812,14 +863,18 @@ function NavAccordion({
                                             <SubIcon
                                                 className={cn(
                                                     "w-3.5 h-3.5 flex-shrink-0",
-                                                    isSubActive ? "" : "text-neutral-400 dark:text-neutral-500"
+                                                    isSubActive && !isLocked ? "" : "text-neutral-400 dark:text-neutral-500"
                                                 )}
-                                                style={isSubActive ? { color: "var(--nav-active-color)" } : undefined}
+                                                style={isSubActive && !isLocked ? { color: "var(--nav-active-color)" } : undefined}
                                                 aria-hidden="true"
                                             />
                                         )}
                                         <span className="flex-1 truncate">{sub.label}</span>
-                                        {sub.badge && <SubBadge badge={sub.badge} />}
+                                        {isLocked ? (
+                                            <Lock className="w-3 h-3 flex-shrink-0" style={{ color: "#8b5cf6" }} aria-label="Premium feature" />
+                                        ) : sub.badge ? (
+                                            <SubBadge badge={sub.badge} />
+                                        ) : null}
                                     </Link>
                                 );
                             })}
@@ -864,31 +919,48 @@ function NavAccordion({
                             {items.map(sub => {
                                 const SubIcon = sub.icon;
                                 const isSubActive = pathname.startsWith(sub.href);
+                                const isLocked = sub.locked;
                                 return (
                                     <button
                                         key={sub.href}
-                                        onClick={() => { if (onClose) onClose(); navigate(sub.href); setIsHovered(false); }}
+                                        onClick={() => {
+                                            if (isLocked) {
+                                                onLockedClick?.(sub.label);
+                                                setIsHovered(false);
+                                                return;
+                                            }
+                                            if (onClose) onClose();
+                                            navigate(sub.href);
+                                            setIsHovered(false);
+                                        }}
                                         aria-label={sub.ariaLabel || sub.label}
                                         aria-current={isSubActive ? "page" : undefined}
-                                        className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left"
+                                        className={cn(
+                                            "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left",
+                                            isLocked && "opacity-60 cursor-not-allowed"
+                                        )}
                                         style={{
-                                            color: isSubActive ? "var(--nav-active-color)" : "var(--foreground)",
-                                            background: isSubActive ? "var(--nav-active-bg)" : "transparent",
+                                            color: isSubActive && !isLocked ? "var(--nav-active-color)" : "var(--foreground)",
+                                            background: isSubActive && !isLocked ? "var(--nav-active-bg)" : "transparent",
                                         }}
-                                        onMouseEnter={e => { if (!isSubActive) (e.currentTarget as HTMLElement).style.background = "var(--nav-hover-bg)"; }}
-                                        onMouseLeave={e => { if (!isSubActive) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                                        onMouseEnter={e => { if (!isSubActive && !isLocked) (e.currentTarget as HTMLElement).style.background = "var(--nav-hover-bg)"; }}
+                                        onMouseLeave={e => { if (!isSubActive && !isLocked) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                                     >
                                         <span className="flex items-center gap-2.5 truncate">
                                             {SubIcon && (
                                                 <SubIcon
                                                     className="w-3.5 h-3.5 flex-shrink-0"
-                                                    style={{ color: isSubActive ? "var(--nav-active-color)" : "var(--muted-foreground)" }}
+                                                    style={{ color: isSubActive && !isLocked ? "var(--nav-active-color)" : "var(--muted-foreground)" }}
                                                     aria-hidden="true"
                                                 />
                                             )}
                                             {sub.label}
                                         </span>
-                                        {sub.badge && <SubBadge badge={sub.badge} />}
+                                        {isLocked ? (
+                                            <Lock className="w-3 h-3 flex-shrink-0" style={{ color: "#8b5cf6" }} aria-label="Premium" />
+                                        ) : sub.badge ? (
+                                            <SubBadge badge={sub.badge} />
+                                        ) : null}
                                     </button>
                                 );
                             })}
