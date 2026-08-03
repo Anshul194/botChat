@@ -19,9 +19,9 @@ import {
 import { Section, IntegrationHeader } from "./shared-ui";
 
 const fontOptions = [
-    "Inter, sans-serif", "Poppins, sans-serif", "Montserrat, sans-serif",
+    "var(--font-inter), sans-serif", "Poppins, sans-serif", "var(--font-montserrat), sans-serif",
     "Nunito, sans-serif", "Roboto, sans-serif", "Open Sans, sans-serif",
-    "Lato, sans-serif", "Raleway, sans-serif", "DM Sans, sans-serif",
+    "Lato, sans-serif", "Raleway, sans-serif", "var(--font-dm-sans), sans-serif",
     "Manrope, sans-serif", "Mulish, sans-serif", "Work Sans, sans-serif",
     "Urbanist, sans-serif", "Source Sans Pro, sans-serif", "PT Sans, sans-serif",
     "Merriweather, serif", "Playfair Display, serif", "Lora, serif",
@@ -32,29 +32,29 @@ const fontOptions = [
 
 const creatorPresets = [
     // --- LIGHT & WHITE GROUP ---
-    { name: "Default Pink", vibe: "Landing page signature vibe", mode: "Light", primary: "#EC1560", secondary: "#7C1D6F", tertiary: "#FF6FA3", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
-    { name: "Reels Pop", vibe: "Bold creator funnel style", mode: "Light", primary: "#FF4D6D", secondary: "#7C3AED", tertiary: "#2DD4BF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 16, fontWeight: 600, darkMode: false },
-    { name: "Ocean Blue Light", vibe: "Clean enterprise blue style", mode: "Light", primary: "#2563EB", secondary: "#1E3A8A", tertiary: "#60A5FA", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
-    { name: "Soft Editorial", vibe: "Clean editorial & content focus", mode: "Light", primary: "#1E40AF", secondary: "#DB2777", tertiary: "#3B82F6", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
-    { name: "Twitch Purple Light", vibe: "Vibrant streamer-chat theme", mode: "Light", primary: "#9146FF", secondary: "#772CE8", tertiary: "#BF94FF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: false },
-    { name: "Growth Mint Light", vibe: "Clean coaching brand style", mode: "Light", primary: "#0EA5A4", secondary: "#2563EB", tertiary: "#F97316", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
-    { name: "Emerald Fintech Light", vibe: "Fintech style mint light theme", mode: "Light", primary: "#10B981", secondary: "#064E3B", tertiary: "#6EE7B7", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
-    { name: "Retro Pop Light", vibe: "High energy neon-light hybrid", mode: "Light", primary: "#FFD300", secondary: "#FF007F", tertiary: "#00F0FF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 700, darkMode: false },
+    { name: "Default Pink", vibe: "Landing page signature vibe", mode: "Light", primary: "#EC1560", secondary: "#7C1D6F", tertiary: "#FF6FA3", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
+    { name: "Reels Pop", vibe: "Bold creator funnel style", mode: "Light", primary: "#FF4D6D", secondary: "#7C3AED", tertiary: "#2DD4BF", fontFamily: "var(--font-inter), sans-serif", fontSize: 16, fontWeight: 600, darkMode: false },
+    { name: "Ocean Blue Light", vibe: "Clean enterprise blue style", mode: "Light", primary: "#2563EB", secondary: "#1E3A8A", tertiary: "#60A5FA", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
+    { name: "Soft Editorial", vibe: "Clean editorial & content focus", mode: "Light", primary: "#1E40AF", secondary: "#DB2777", tertiary: "#3B82F6", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: false },
+    { name: "Twitch Purple Light", vibe: "Vibrant streamer-chat style", mode: "Light", primary: "#9146FF", secondary: "#772CE8", tertiary: "#BF94FF", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 600, darkMode: false },
+    { name: "Growth Mint Light", vibe: "Clean coaching brand style", mode: "Light", primary: "#0EA5A4", secondary: "#2563EB", tertiary: "#F97316", fontFamily: "var(--font-montserrat), sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
+    { name: "Emerald Fintech Light", vibe: "Fintech style mint light theme", mode: "Light", primary: "#10B981", secondary: "#064E3B", tertiary: "#6EE7B7", fontFamily: "var(--font-montserrat), sans-serif", fontSize: 16, fontWeight: 500, darkMode: false },
+    { name: "Retro Pop Light", vibe: "High energy neon-light hybrid", mode: "Light", primary: "#FFD300", secondary: "#FF007F", tertiary: "#00F0FF", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 700, darkMode: false },
 
     // --- DARK & NEON GROUP ---
-    { name: "Pink Dark", vibe: "Midnight plum & pink glow", mode: "Dark", primary: "#EC1560", secondary: "#7C1D6F", tertiary: "#FF6FA3", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Velvet Royal", vibe: "Luxurious deep ruby dark", mode: "Dark", primary: "#FF0055", secondary: "#3A000F", tertiary: "#FF8AA5", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Messenger Blue", vibe: "Familiar Messenger style", mode: "Dark", primary: "#006AFF", secondary: "#0084FF", tertiary: "#00C6FF", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Ocean Depths", vibe: "Tech and SaaS scale", mode: "Dark", primary: "#0EA5E9", secondary: "#0369A1", tertiary: "#38BDF8", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Insta Gradient", vibe: "Iconic Instagram DM gradient", mode: "Dark", primary: "#DD2A7B", secondary: "#8134AF", tertiary: "#FEDA77", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Discord Blurple", vibe: "Modern community chat dark", mode: "Dark", primary: "#5865F2", secondary: "#2C2F33", tertiary: "#EB459E", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Midnight Studio", vibe: "Premium dark creator studio", mode: "Dark", primary: "#8B5CF6", secondary: "#06B6D4", tertiary: "#F59E0B", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Chat Green", vibe: "WhatsApp style messaging mint", mode: "Dark", primary: "#25D366", secondary: "#075E54", tertiary: "#34D399", fontFamily: "Manrope, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
-    { name: "Aurora Borealis", vibe: "Northern lights gradient theme", mode: "Dark", primary: "#4ade80", secondary: "#818cf8", tertiary: "#c084fc", fontFamily: "Manrope, sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
-    { name: "Cyberpunk Neon", vibe: "High-contrast neon yellow & cyan", mode: "Dark", primary: "#FCE205", secondary: "#FF003C", tertiary: "#00FF9F", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 700, darkMode: true },
-    { name: "Neon Pulse", vibe: "Nightlife creator glow theme", mode: "Dark", primary: "#FF2E9F", secondary: "#00C2FF", tertiary: "#FFFFFF", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Synthwave Sunset", vibe: "Vibrant hot pink & synthwave glow", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
-    { name: "Matrix Green", vibe: "Electric acid green hacker dev", mode: "Dark", primary: "#A6E22E", secondary: "#1A1A1A", tertiary: "#66D9EF", fontFamily: "Inter, sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Pink Dark", vibe: "Midnight plum & pink glow", mode: "Dark", primary: "#EC1560", secondary: "#7C1D6F", tertiary: "#FF6FA3", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Velvet Royal", vibe: "Luxurious deep ruby dark", mode: "Dark", primary: "#FF0055", secondary: "#3A000F", tertiary: "#FF8AA5", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Messenger Blue", vibe: "Familiar Messenger style", mode: "Dark", primary: "#006AFF", secondary: "#0084FF", tertiary: "#00C6FF", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Ocean Depths", vibe: "Tech and SaaS scale", mode: "Dark", primary: "#0EA5E9", secondary: "#0369A1", tertiary: "#38BDF8", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Insta Gradient", vibe: "Iconic Instagram DM gradient", mode: "Dark", primary: "#DD2A7B", secondary: "#8134AF", tertiary: "#FEDA77", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Discord Blurple", vibe: "Modern community chat dark", mode: "Dark", primary: "#5865F2", secondary: "#2C2F33", tertiary: "#EB459E", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Midnight Studio", vibe: "Premium dark creator studio", mode: "Dark", primary: "#8B5CF6", secondary: "#06B6D4", tertiary: "#F59E0B", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Chat Green", vibe: "WhatsApp style messaging mint", mode: "Dark", primary: "#25D366", secondary: "#075E54", tertiary: "#34D399", fontFamily: "var(--font-montserrat), sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
+    { name: "Aurora Borealis", vibe: "Northern lights gradient theme", mode: "Dark", primary: "#4ade80", secondary: "#818cf8", tertiary: "#c084fc", fontFamily: "var(--font-montserrat), sans-serif", fontSize: 16, fontWeight: 600, darkMode: true },
+    { name: "Cyberpunk Neon", vibe: "High-contrast neon yellow & cyan", mode: "Dark", primary: "#FCE205", secondary: "#FF003C", tertiary: "#00FF9F", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 700, darkMode: true },
+    { name: "Neon Pulse", vibe: "Nightlife creator glow theme", mode: "Dark", primary: "#FF2E9F", secondary: "#00C2FF", tertiary: "#FFFFFF", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Synthwave Sunset", vibe: "Vibrant hot pink & synthwave glow", mode: "Dark", primary: "#FF7E67", secondary: "#FF2A54", tertiary: "#230B48", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 600, darkMode: true },
+    { name: "Matrix Green", vibe: "Electric acid green hacker dev", mode: "Dark", primary: "#A6E22E", secondary: "#1A1A1A", tertiary: "#66D9EF", fontFamily: "var(--font-inter), sans-serif", fontSize: 15, fontWeight: 500, darkMode: true },
 ];
 
 export default function AppearanceTab({ showModal }: { showModal: (type: string, title: string, desc: string) => void }) {

@@ -3645,7 +3645,7 @@ function FlowBuilder() {
 
   return (
     <DSContext.Provider value={DS}>
-      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "var(--app-font-family, 'Inter', system-ui, sans-serif)" }} className="-m-4 md:-m-6">
+      <div style={{ minHeight: "100vh", background: DS.bg, fontFamily: "var(--app-font-family, var(--font-inter), sans-serif)" }} className="-m-4 md:-m-6">
         <style>{`
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; }

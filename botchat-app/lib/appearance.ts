@@ -37,7 +37,7 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
     buttonPrimary: "#EC1560",
     buttonSecondary: "#7C1D6F",
     buttonText: "#FFFFFF",
-    fontFamily: "Plus Jakarta Sans, Inter, sans-serif",
+    fontFamily: "var(--font-inter), sans-serif",
     fontSize: 15,
     fontWeight: 500,
     chartColor: "#EC1560",
@@ -72,7 +72,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#006AFF",
         buttonSecondary: "#00C6FF",
         chartColor: "#006AFF",
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
         darkMode: true,
     },
     
@@ -84,7 +84,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#2563EB",
         buttonSecondary: "#1E3A8A",
         chartColor: "#2563EB",
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
         darkMode: false,
     },
 
@@ -99,7 +99,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#DD2A7B",
         buttonSecondary: "#F58529",
         chartColor: "#DD2A7B",
-        fontFamily: "Plus Jakarta Sans, sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
         darkMode: true,
     },
 
@@ -111,7 +111,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#5865F2",
         buttonSecondary: "#EB459E",
         chartColor: "#5865F2",
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
         darkMode: true,
     },
 
@@ -123,7 +123,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#9146FF",
         buttonSecondary: "#772CE8",
         chartColor: "#9146FF",
-        fontFamily: "Plus Jakarta Sans, sans-serif",
+        fontFamily: "var(--font-inter), sans-serif",
         darkMode: false,
     },
 
@@ -137,7 +137,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#25D366",
         buttonSecondary: "#128C7E",
         chartColor: "#25D366",
-        fontFamily: "Manrope, sans-serif",
+        fontFamily: "var(--font-montserrat), sans-serif",
         darkMode: true,
     },
 
@@ -149,7 +149,7 @@ export const THEME_PRESETS: Record<string, AppearanceSettings> = {
         buttonPrimary: "#10B981",
         buttonSecondary: "#064E3B",
         chartColor: "#10B981",
-        fontFamily: "Manrope, sans-serif",
+        fontFamily: "var(--font-montserrat), sans-serif",
         darkMode: false,
     },
 };
@@ -160,7 +160,7 @@ export const THEME_PRESET_CARDS = [
         name: "Default Pink",
         description: "Vibrant pink, landing page light vibe",
         swatches: ["#EC1560", "#7C1D6F", "#FF6FA3"],
-        font: "PLUS JAKARTA SANS",
+        font: "INTER",
         mode: "light" as const,
     },
     {
@@ -168,7 +168,7 @@ export const THEME_PRESET_CARDS = [
         name: "Pink Dark",
         description: "Midnight plum & pink glow",
         swatches: ["#EC1560", "#7C1D6F", "#FF6FA3"],
-        font: "PLUS JAKARTA SANS",
+        font: "INTER",
         mode: "dark" as const,
     },
     {
@@ -192,7 +192,7 @@ export const THEME_PRESET_CARDS = [
         name: "Insta Gradient",
         description: "Iconic Instagram DM gradient glow",
         swatches: ["#8134AF", "#DD2A7B", "#FEDA77"],
-        font: "PLUS JAKARTA SANS",
+        font: "INTER",
         mode: "dark" as const,
     },
     {
@@ -216,7 +216,7 @@ export const THEME_PRESET_CARDS = [
         name: "Chat Green",
         description: "WhatsApp dark style messaging mint",
         swatches: ["#25D366", "#075E54", "#34D399"],
-        font: "MANROPE",
+        font: "MONTERRAT",
         mode: "dark" as const,
     },
     {
@@ -224,7 +224,7 @@ export const THEME_PRESET_CARDS = [
         name: "Emerald Light",
         description: "Clean fintech style mint light theme",
         swatches: ["#10B981", "#064E3B", "#6EE7B7"],
-        font: "MANROPE",
+        font: "MONTERRAT",
         mode: "light" as const,
     },
 ];
@@ -233,9 +233,8 @@ export const THEME_PRESET_CARDS = [
 /*  Recommended <head> font imports (add whichever presets you use)    */
 /*  <link rel="preconnect" href="https://fonts.googleapis.com">        */
 /*  <link href="https://fonts.googleapis.com/css2?                     */
-/*    family=Plus+Jakarta+Sans:wght@400;500;600;700;800&               */
 /*    family=Inter:wght@400;500;600;700&                                */
-/*    family=Manrope:wght@400;500;600;700&                              */
+/*    family=Montserrat:wght@400;500;600;700;800&                       */
 /*    family=Sora:wght@400;500;600;700&                                 */
 /*    family=Space+Grotesk:wght@400;500;600;700&display=swap"           */
 /*    rel="stylesheet">                                                 */

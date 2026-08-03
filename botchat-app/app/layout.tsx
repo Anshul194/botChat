@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Syne, DM_Sans } from "next/font/google";
+import { Inter, Syne, DM_Sans, Montserrat } from "next/font/google";
 import "./globals.css";
 import FAQSchema from "@/components/FAQSchema";
 
@@ -28,9 +28,15 @@ import DynamicBranding from "@/components/DynamicBranding";
 import CookieConsent from "@/components/CookieConsent";
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
+    variable: "--font-inter",
+    subsets: ["latin"],
+    display: "swap",
+});
+
+const montserrat = Montserrat({
+    variable: "--font-montserrat",
+    subsets: ["latin"],
+    display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -138,7 +144,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${syne.variable} ${dmSans.variable} antialiased`}>
+      <body className={`${inter.variable} ${syne.variable} ${dmSans.variable} ${montserrat.variable} antialiased`}>
         <ReduxProvider>
           <AuthProvider>
             <ReactQueryProvider>
