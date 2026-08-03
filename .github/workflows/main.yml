@@ -47,6 +47,12 @@ jobs:
         working-directory: ./botchat-app/.next
         run: zip -r ../../deploy.zip standalone/
 
+      # Move zip to a clean directory to ensure FTP action ONLY uploads the zip
+      - name: Prepare upload directory
+        run: |
+          mkdir -p upload_dir
+          mv deploy.zip upload_dir/
+
       # Upload just ONE zip file — much faster than FTP of node_modules
       - name: Upload ZIP to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -54,11 +60,10 @@ jobs:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
-          local-dir: ./
+          local-dir: ./upload_dir/
           server-dir: botchat_next_deploy/
           log-level: minimal
-          include: |
-            deploy.zip
+          dangerous-clean-slate: true
 
       # Extract zip on server using PHP helper
       - name: Trigger extraction on server
