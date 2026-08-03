@@ -24,6 +24,8 @@ jobs:
 
       - name: Build Next.js App
         working-directory: ./botchat-app
+        env:
+          NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
         run: npm run build
 
       - name: Create Restart File
@@ -39,15 +41,19 @@ jobs:
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./botchat-app/
           server-dir: /botchat_app/
+          log-level: verbose
+          dangerous-clean-slate: false
           exclude: |
             **/.git*
             **/.git*/**
+            **/.github/**
             **/node_modules/**
-            **/.next/cache/**
-            .env*
+            **/.next/cache/** 
+            **/.env*
             **/*.log
             **/build_output.log
             **/startup-error.txt
             **/startup-success.txt
             **/.DS_Store
             **/__MACOSX/**
+            README.md
