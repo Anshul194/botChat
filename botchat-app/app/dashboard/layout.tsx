@@ -97,11 +97,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         /* eslint-enable react-hooks/set-state-in-effect */
     }, [pathname]);
 
-    // Show loading state while initializing or while not authenticated
     if (!isInitialized || !isAuthenticated) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-black">
-                <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="flex items-center justify-center min-h-screen" 
+                 style={{ background: "var(--app-surface-bg, var(--background))" }}>
+                <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin" 
+                     role="status" aria-label="Loading dashboard" />
             </div>
         );
     }
@@ -109,7 +110,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (<OnboardingTourProvider>
         <>
             <div
-                data-dashboard-theme="true"
                 className="flex h-screen overflow-hidden"
                 style={{
                     background: "var(--app-surface-bg, var(--background))",

@@ -74,15 +74,16 @@ export default function SocialLayout({ children }: { children: React.ReactNode }
     // Show loading state while initializing or while not authenticated
     if (!isInitialized || !isAuthenticated) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#06030f]">
-                <div className="w-10 h-10 border-4 border-[#1d6ef5] border-t-transparent rounded-full animate-spin" />
-            </div>
+        <div className="flex items-center justify-center min-h-screen" 
+             style={{ background: "var(--app-surface-bg, var(--background))" }}>
+            <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" 
+                 role="status" aria-label="Loading" />
+        </div>
         );
     }
 
     return (<OnboardingTourProvider>
         <div
-            data-dashboard-theme="true"
             className="flex h-screen overflow-hidden"
             style={{
                 background: "var(--app-surface-bg, var(--background))",

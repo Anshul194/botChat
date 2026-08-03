@@ -520,6 +520,7 @@ export default function FacebookBotRepliesPage() {
                                                     <div className="border-t grid grid-cols-4 divide-x" style={{ borderColor: "var(--glass-border)" }}>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setEditReply(reply); }}
+                                                            aria-label={`Edit ${reply.name}`}
                                                             className="py-3 flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors active:scale-95"
                                                             style={{ color: "#0866FF" }}
                                                         >
@@ -527,6 +528,7 @@ export default function FacebookBotRepliesPage() {
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleToggleStatus(reply); }}
+                                                            aria-label={reply.status === 'published' ? `Pause ${reply.name}` : `Go Live ${reply.name}`}
                                                             className={cn("py-3 flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors active:scale-95",
                                                                 reply.status === 'published' ? "text-amber-500" : "text-emerald-500"
                                                             )}
@@ -536,6 +538,7 @@ export default function FacebookBotRepliesPage() {
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
+                                                            aria-label={`Duplicate ${reply.name}`}
                                                             className="py-3 flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors active:scale-95"
                                                             style={{ color: "var(--muted-foreground)" }}
                                                         >
@@ -543,6 +546,7 @@ export default function FacebookBotRepliesPage() {
                                                         </button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
+                                                            aria-label={`Delete ${reply.name}`}
                                                             className="py-3 flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors active:scale-95"
                                                             style={{ color: "var(--muted-foreground)" }}
                                                         >
@@ -590,6 +594,7 @@ export default function FacebookBotRepliesPage() {
                                                     </div>
                                                     <div className="flex items-center justify-end gap-2 col-span-3">
                                                         <button onClick={(e) => { e.stopPropagation(); goToFlow(reply.id); }}
+                                                            aria-label={`Edit flow for ${reply.name}`}
                                                             className="py-2 px-4 rounded-xl text-xs font-bold transition-all active:scale-95"
                                                             style={{ background: "rgba(8,102,255,0.1)", color: "#0866FF", border: "1px solid rgba(8,102,255,0.2)" }}>
                                                             Edit Flow
@@ -598,19 +603,22 @@ export default function FacebookBotRepliesPage() {
                                                             className={cn("p-2 rounded-xl transition-all active:scale-95",
                                                                 reply.status === 'published' ? "text-amber-500" : "text-emerald-500")}
                                                             style={{ border: "1px solid var(--glass-border)" }}
-                                                            title={reply.status === 'published' ? "Pause" : "Go Live"}>
+                                                            title={reply.status === 'published' ? "Pause" : "Go Live"}
+                                                            aria-label={reply.status === 'published' ? `Pause ${reply.name}` : `Go Live ${reply.name}`}>
                                                             {reply.status === 'published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                                                         </button>
                                                         <button onClick={(e) => { e.stopPropagation(); handleDuplicate(reply.id); }}
                                                             className="p-2 rounded-xl transition-all active:scale-95"
                                                             style={{ border: "1px solid var(--glass-border)", color: "var(--muted-foreground)" }}
-                                                            title="Duplicate">
+                                                            title="Duplicate"
+                                                            aria-label={`Duplicate ${reply.name}`}>
                                                             <Copy className="w-4 h-4" />
                                                         </button>
                                                         <button onClick={(e) => { e.stopPropagation(); handleDelete(reply.id); }}
                                                             className="p-2 rounded-xl transition-all active:scale-95"
                                                             style={{ border: "1px solid var(--glass-border)", color: "var(--muted-foreground)" }}
-                                                            title="Delete">
+                                                            title="Delete"
+                                                            aria-label={`Delete ${reply.name}`}>
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     </div>
@@ -651,8 +659,9 @@ export default function FacebookBotRepliesPage() {
                                         <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.15em] mt-1">Connect system events to custom automation layers</p>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <button
+                                         <button
                                             onClick={() => fetchActions()}
+                                            aria-label="Refresh actions"
                                             className="p-3 rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all shadow-sm active:scale-95"
                                         >
                                             <RefreshCw className={cn("w-4 h-4", isActionsLoading && "animate-spin")} />
@@ -699,13 +708,14 @@ export default function FacebookBotRepliesPage() {
                                                             <div className="flex items-center gap-2">
                                                                 {action.automation_id && (
                                                                     <>
-                                                                        <button
+                                                                         <button
                                                                             onClick={(e) => { e.stopPropagation(); handleActionToggle(action); }}
                                                                             className={cn(
                                                                                 "p-2 rounded-lg border transition-all active:scale-90",
                                                                                 action.status === 'published' ? "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800" : "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800"
                                                                             )}
                                                                             title={action.status === 'published' ? "Pause Action" : "Resume Action"}
+                                                                            aria-label={action.status === 'published' ? `Pause ${def.label} action` : `Resume ${def.label} action`}
                                                                         >
                                                                             {action.status === 'published' ? <Pause size={14} /> : <Play size={14} />}
                                                                         </button>
@@ -713,6 +723,7 @@ export default function FacebookBotRepliesPage() {
                                                                             onClick={(e) => { e.stopPropagation(); handleActionDelete(action); }}
                                                                             className="p-2 rounded-lg border bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 border-red-100 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 transition-all active:scale-90"
                                                                             title="Unmap Action"
+                                                                            aria-label={`Unmap ${def.label} action`}
                                                                         >
                                                                             <Trash2 size={14} />
                                                                         </button>
