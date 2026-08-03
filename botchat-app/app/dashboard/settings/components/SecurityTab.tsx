@@ -273,7 +273,7 @@ export default function SecurityTab({ showModal }: { showModal: (type: string, t
                                 <div className="flex flex-col sm:flex-row gap-6 items-start">
                                     <div className="p-3 rounded-xl shrink-0" style={{ background: "#ffffff", border: "1px solid var(--glass-border)" }}>
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={setup.qr_code_png || setup.qr_code_svg} alt="QR Code" width={190} height={190} className="rounded-lg" />
+                                        <img src={setup.qr_code_svg || setup.qr_code_png} alt="QR Code" width={190} height={190} className="rounded-lg" />
                                     </div>
                                     <div className="flex-1 space-y-3">
                                         <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
