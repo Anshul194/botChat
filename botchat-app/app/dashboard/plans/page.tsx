@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchMyPlans, createPlan, updatePlan, deletePlan, setSelectedPlan } from "@/store/slices/plansSlice";
+import { fetchMyPlans, fetchPlans, createPlan, updatePlan, deletePlan, setSelectedPlan } from "@/store/slices/plansSlice";
 import {
     Plus, MoreHorizontal, Edit2, Trash2, Loader2, Copy,
     Users, DollarSign, CheckCircle2, FileText, Smartphone,
@@ -25,16 +25,26 @@ import PlanForm from "./PlanForm";
 
 export default function PlansPage() {
     const dispatch = useAppDispatch();
-    const { myPlans, isLoading, selectedPlan } = useAppSelector((state) => state.plans);
+    const { myPlans, plans: centralPlans, isLoading, isLoadingMyPlans, selectedPlan } = useAppSelector((state) => state.plans);
+    const user = useAppSelector((state) => state.auth.user);
+    const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.type === "Super Admin";
     const { showModal } = useModal();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [planToDelete, setPlanToDelete] = useState<number | null>(null);
 
+    // Super Admin manages central plans; Tenant Admin manages their own local plans
+    const displayPlans = isSuperAdmin ? centralPlans : myPlans;
+    const isLoadingPlans = isSuperAdmin ? isLoading : isLoadingMyPlans;
+
     useEffect(() => {
-        dispatch(fetchMyPlans());
-    }, [dispatch]);
+        if (isSuperAdmin) {
+            dispatch(fetchPlans());
+        } else {
+            dispatch(fetchMyPlans());
+        }
+    }, [dispatch, isSuperAdmin]);
 
     const handleAdd = () => {
         dispatch(setSelectedPlan(null));
@@ -119,10 +129,10 @@ export default function PlansPage() {
             {/* Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: "Total Plans", value: myPlans.length, icon: FileText },
-                    { label: "Active", value: myPlans.filter(p => p.status).length, icon: CheckCircle2, accent: "text-emerald-600" },
-                    { label: "Highest Price", value: myPlans.length ? formatCurrency(Math.max(...myPlans.map(p => Number(p.price)))) : formatCurrency(0), icon: DollarSign },
-                    { label: "WhatsApp Enabled", value: myPlans.filter(p => p.features?.whatsapp === "1").length, icon: Smartphone },
+                    { label: "Total Plans", value: displayPlans.length, icon: FileText },
+                    { label: "Active", value: displayPlans.filter(p => p.status).length, icon: CheckCircle2, accent: "text-emerald-600" },
+                    { label: "Highest Price", value: displayPlans.length ? formatCurrency(Math.max(...displayPlans.map(p => Number(p.price)))) : formatCurrency(0), icon: DollarSign },
+                    { label: "WhatsApp Enabled", value: displayPlans.filter(p => p.features?.whatsapp === "1").length, icon: Smartphone },
                 ].map((stat) => (
                     <div key={stat.label} className="rounded-lg border border-border bg-card p-4">
                         <div className="flex items-center justify-between">
@@ -135,11 +145,11 @@ export default function PlansPage() {
             </div>
 
             {/* Plans Grid */}
-            {isLoading && myPlans.length === 0 ? (
+            {isLoadingPlans && displayPlans.length === 0 ? (
                 <div className="flex items-center justify-center py-24">
                     <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                 </div>
-            ) : myPlans.length === 0 ? (
+            ) : displayPlans.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center border border-dashed border-border rounded-xl">
                     <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4">
                         <FileText className="w-5 h-5 text-muted-foreground" />
@@ -154,7 +164,7 @@ export default function PlansPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4">
                     <AnimatePresence mode="popLayout">
-                        {myPlans.map((plan, index) => {
+                        {displayPlans.map((plan, index) => {
                             const getVal = (v: any) => (typeof v === "object" && v !== null ? v.value : v);
                             return (
                                 <motion.div
