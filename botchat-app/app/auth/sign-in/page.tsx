@@ -23,6 +23,7 @@ import { Loader2, KeyRound, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ForgotPasswordDialog } from "@/components/auth/ForgotPasswordDialog";
 import WelcomeSplash from "@/components/auth/WelcomeSplash";
+import { toast } from "sonner";
 
 export default function SignInPage() {
     const router = useRouter();
@@ -111,15 +112,22 @@ export default function SignInPage() {
             toast.success("Welcome back! Redirecting to dashboard...");
             setTimeout(() => router.push("/dashboard"), 1000);
         } catch (err: any) {
-            const msg = err || "Invalid code. Please try again.";
+            const msg = typeof err === "string" ? err : err?.message || "Invalid code. Please try again.";
             setTwoFactorStatus("error");
             setTwoFactorError(msg);
-            // If the challenge session expired, send the user back to the sign-in form.
+            // If the challenge session expired, show the error for 3s then return to login form
             if (/expired|session|required/i.test(msg)) {
-                dispatch(clearTwoFactorChallenge());
-                setStatus("idle");
+                setTimeout(() => {
+                    dispatch(clearTwoFactorChallenge());
+                    setServerError(msg);
+                    setStatus("error");
+                    setTwoFactorError("");
+                    setTwoFactorStatus("idle");
+                    setTimeout(() => setStatus("idle"), 4000);
+                }, 3000);
+            } else {
+                setTimeout(() => setTwoFactorStatus("idle"), 2500);
             }
-            setTimeout(() => setTwoFactorStatus("idle"), 2500);
         }
     };
 
