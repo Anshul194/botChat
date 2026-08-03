@@ -13,54 +13,59 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: botchat-app/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install ALL dependencies
         working-directory: ./botchat-app
-        # --legacy-peer-deps: package-lock.json has a known ajv peer conflict
-        # (eslint needs ajv@6, next/dotenv-cli need ajv@8) that plain `npm ci`
-        # rejects. Builds fine once installed.
         run: npm ci --legacy-peer-deps
 
-      - name: Build Next.js App
+      - name: Build Next.js
         working-directory: ./botchat-app
         env:
           NEXT_PUBLIC_SOCKET_URL: ${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
+          NODE_ENV: production
         run: npm run build
 
-      - name: Create Restart File
+      - name: Remove dev dependencies (keep only production)
+        working-directory: ./botchat-app
+        run: npm prune --omit=dev --legacy-peer-deps
+
+      - name: Create restart marker
         run: |
           mkdir -p ./botchat-app/tmp
           touch ./botchat-app/tmp/restart.txt
 
-
-      - name: Sync Files to cPanel via FTP
+      - name: Deploy to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./botchat-app/
-          # Relative to the FTP account home (the Node.js app lives at the
-          # account root, in the botchat_app directory). NO leading slash —
-          # a leading slash caused FTP 553 "Can't open that file".
-          server-dir: botchat_app/
+          server-dir: botchat_next/
           log-level: verbose
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
           exclude: |
             **/.git*
             **/.git*/**
             **/.github/**
-            **/node_modules/**
-            **/.next/cache/** 
-            **/.env*
+            **/.env.local
+            **/.env.admin
+            **/.env.reseller
+            **/.env.example
+            **/.next/cache/**
             **/*.log
-            **/build_output.log
             **/startup-error.txt
             **/startup-success.txt
             **/.DS_Store
             **/__MACOSX/**
+            **/*.mp4
+            **/*.zip
+            **/tsconfig.tsbuildinfo
             README.md
+            **/*.md
