@@ -157,7 +157,7 @@ export default function FacebookPage() {
             const title = expired ? "Subscription Expired" : feature ? "Feature Not Available" : "Error";
             showModal("error", title, message);
         }
-    }, [isConnecting, api, showModal, fetchConnectedPages]);
+    }, [isConnecting, showModal, fetchConnectedPages]);
 
     const handleAction = async () => {
         if (!confirmModal) return;

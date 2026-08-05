@@ -41,6 +41,10 @@ export default {
         input: "var(--input)",
         ring: "var(--ring)",
         destructive: "var(--destructive)",
+        /* ── Brand colours as Tailwind utilities ── */
+        "brand-pink": "var(--brand-pink)",
+        "brand-purple": "var(--brand-purple)",
+        "brand-emerald": "var(--brand-emerald)",
         sidebar: {
           DEFAULT: "var(--sidebar)",
           foreground: "var(--sidebar-foreground)",

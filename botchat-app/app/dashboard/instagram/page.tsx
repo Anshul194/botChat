@@ -150,7 +150,7 @@ export default function InstagramPage() {
             setIsConnecting(false);
             showModal("error", "Error", "Failed to start Instagram connection");
         }
-    }, [isConnecting, api, showModal, fetchConnectedAccounts]);
+    }, [isConnecting, showModal, fetchConnectedAccounts]);
 
     const handleAction = async (type: string, accountId: string | number) => {
         try {

@@ -105,7 +105,7 @@ export default function FacebookBotRepliesPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [api, showModal]);
+    }, [showModal]);
 
     const fetchPages = useCallback(async () => {
         try {
@@ -118,7 +118,7 @@ export default function FacebookBotRepliesPage() {
         } catch (error) {
             console.error("Fetch Pages Error:", error);
         }
-    }, [api]);
+    }, []);
 
     const fetchActions = useCallback(async (pageIdToUse?: string) => {
         const pageId = pageIdToUse || selectedPageId;
@@ -135,7 +135,7 @@ export default function FacebookBotRepliesPage() {
         } finally {
             setIsActionsLoading(false);
         }
-    }, [api, selectedPageId, pages]);
+    }, [selectedPageId, pages]);
 
     useEffect(() => {
         fetchReplies();

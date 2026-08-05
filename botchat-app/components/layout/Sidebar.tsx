@@ -187,13 +187,13 @@ const adminNav = [
         icon: ShieldCheck,
         href: "/dashboard/plans",
         ariaLabel: "Manage subscription plans",
-    },
-    {
-        label: "Modules",
-        icon: Blocks,
-        href: "/dashboard/modules",
-        ariaLabel: "Manage system modules",
-    },
+    }
+    //     {
+    //         label: "Modules",
+    //         icon: Blocks,
+    //         href: "/dashboard/modules",
+    //         ariaLabel: "Manage system modules",
+    //     },
 ];
 
 

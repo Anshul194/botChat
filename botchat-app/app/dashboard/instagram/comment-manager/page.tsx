@@ -199,7 +199,7 @@ export default function InstagramCommentManagerPage() {
  } finally {
  setIsLoading(false);
  }
- }, [api, showModal]);
+ }, [showModal]);
 
  const fetchPosts = useCallback(async () => {
  if (!selectedAccount) return;

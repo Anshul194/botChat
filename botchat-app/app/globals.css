@@ -525,14 +525,15 @@ html.light [class*="text-[var(--muted-foreground)]"],
 html.light [class*="text-[color:var(--foreground)]"],
 html.light [class*="text-[color:var(--muted-foreground)]"] { color: #000000 !important; }
 
-/* dark:* fallbacks — still grey text while in light mode → black */
-html.light [class*="dark:text-gray-"],
-html.light [class*="dark:text-neutral-"],
-html.light [class*="dark:text-slate-"],
-html.light [class*="dark:text-zinc-"],
-html.light [class*="dark:text-white"],
-html.light [class*="dark:text-muted-foreground"],
-html.light [class*="dark:text-foreground"] { color: #000000 !important; }
+/* dark:* fallbacks — still grey text while in light mode → black
+   NOTE: Buttons are excluded to preserve white text on colored buttons */
+html.light :not(button):not([role="button"])[class*="dark:text-gray-"],
+html.light :not(button):not([role="button"])[class*="dark:text-neutral-"],
+html.light :not(button):not([role="button"])[class*="dark:text-slate-"],
+html.light :not(button):not([role="button"])[class*="dark:text-zinc-"],
+html.light :not(button):not([role="button"])[class*="dark:text-white"],
+html.light :not(button):not([role="button"])[class*="dark:text-muted-foreground"],
+html.light :not(button):not([role="button"])[class*="dark:text-foreground"] { color: #000000 !important; }
 
 /* Borders from dark grey families → subtle black border in light mode */
 html.light [class*="dark:border-gray-"],
@@ -540,8 +541,20 @@ html.light [class*="dark:border-neutral-"],
 html.light [class*="border-neutral-800"],
 html.light [class*="border-gray-800"] { border-color: rgba(0, 0, 0, 0.09) !important; }
 
-html.light [class*="dark:bg-gray-"],
-html.light [class*="dark:bg-neutral-"] { background-color: transparent !important; }
+/* dark:bg-* → transparent in light mode, but NEVER on interactive elements */
+html.light :not(button):not([role="button"]):not(a):not(input):not(select):not(textarea)[class*="dark:bg-gray-"],
+html.light :not(button):not([role="button"]):not(a):not(input):not(select):not(textarea)[class*="dark:bg-neutral-"] { background-color: transparent !important; }
+
+/* Light mode: cancel / secondary buttons that use bg-neutral-50 must remain visible */
+html.light button[class*="bg-neutral-50"],
+html.light button[class*="bg-neutral-100"] {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+html.light button[class*="bg-neutral-50"]:hover,
+html.light button[class*="bg-neutral-100"]:hover {
+  background-color: #e5e7eb !important;
+}
 
 html.light input, html.light textarea, html.light select { color: #000000 !important; }
 html.light input::placeholder, html.light textarea::placeholder { color: #999999 !important; }
@@ -1796,3 +1809,85 @@ span {
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50%       { transform: scale(1.08); opacity: 0; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTON COLOUR & OPACITY FIXES — Light + Dark Mode Audit
+   Ensures all button variants are clearly visible in both themes.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Outline button: visible border in light mode ─────────────────
+   Default --border in light mode is rgba(232,23,93,0.08) — too faint.
+   Upgrade to a visible neutral border.                               */
+html.light [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(0, 0, 0, 0.18) !important;
+  background-color: #ffffff !important;
+  color: #111111 !important;
+}
+html.light [data-slot="button"][data-variant="outline"]:hover {
+  background-color: rgba(232, 23, 93, 0.06) !important;
+  border-color: rgba(232, 23, 93, 0.35) !important;
+  color: var(--primary) !important;
+}
+html.light [data-slot="button"][data-variant="outline"]:disabled {
+  background-color: #f5f5f5 !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #888888 !important;
+  opacity: 0.7 !important;
+}
+
+/* Dark mode outline button — ensure border is visible */
+:root:not(.light) [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+}
+:root:not(.light) [data-slot="button"][data-variant="outline"]:hover {
+  background-color: rgba(255, 45, 120, 0.10) !important;
+  border-color: rgba(255, 45, 120, 0.40) !important;
+}
+
+/* ── Ghost button hover: consistent in both modes ─────────────── */
+html.light [data-slot="button"][data-variant="ghost"]:hover {
+  background-color: rgba(232, 23, 93, 0.07) !important;
+  color: var(--primary) !important;
+}
+:root:not(.light) [data-slot="button"][data-variant="ghost"]:hover {
+  background-color: rgba(255, 45, 120, 0.10) !important;
+  color: var(--accent) !important;
+}
+
+/* ── Brand-purple button: both modes ─────────────────────────── */
+html.light [class*="bg-brand-purple"] {
+  background-color: var(--brand-purple) !important;
+  color: #ffffff !important;
+}
+html.light [class*="bg-brand-purple"]:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--brand-purple) 88%, #000000) !important;
+}
+
+/* ── Modal cancel buttons: always visible in both modes ─────────
+   bg-neutral-50 dark:bg-neutral-800 pattern                       */
+html.light button[class*="bg-neutral-50"],
+html.light button[class*="bg-neutral-100"] {
+  background-color: #f0f0f0 !important;
+  color: #555555 !important;
+}
+html.light button[class*="bg-neutral-50"]:hover,
+html.light button[class*="bg-neutral-100"]:hover {
+  background-color: #e0e0e0 !important;
+  color: #111111 !important;
+}
+
+/* ── White text on colored buttons stays white in both modes ───── */
+html.light button[class*="text-white"],
+html.light button[class*="text-white"] > * {
+  color: #ffffff !important;
+}
+
+/* ── Inline-styled bg-neutral-900 buttons in light mode ─────────── */
+html.light button[class*="bg-neutral-900"],
+html.light button[class*="bg-neutral-950"] {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+}
+
