@@ -376,7 +376,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                 if (!url) return null;
                                 const clean = url.split('?')[0].split('#')[0].toLowerCase();
                                 if (/instagram\.com\/(?:p|reel|tv)\/([a-zA-Z0-9_\-]+)/.test(clean) || /instagram\.com\/([a-zA-Z0-9_\.]+)/.test(clean) || /ig\.me\/m\/([a-zA-Z0-9_\.]+)/.test(clean)) return "instagram";
-                                if (/youtube\.com\/watch\?v=([a-zA-Z0-9_\-]+)/.test(url) || /youtu\.be\/([a-zA-Z0-9_\-]+)/.test(clean) || /youtube\.com\/@([a-zA-Z0-9_\-\.]+)/.test(clean)) return "youtube";
+                                if (/youtube\.com\/(?:watch|shorts|channel|playlist|@)/.test(clean) || /youtube\.com\/watch\?v=/.test(url) || /youtu\.be\//.test(clean)) return "youtube";
                                 if (/tiktok\.com\/@/.test(clean)) return "tiktok";
                                 if (/facebook\.com\//.test(clean)) return "facebook";
                                 if (/m\.me\//.test(clean) || /messenger\.com\//.test(clean)) return "messenger";
@@ -387,6 +387,7 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                                 if (/linkedin\.com\//.test(clean)) return "linkedin";
                                 return null;
                             };
+
 
                             const detectedApp = currentLink?.app_linking?.app || detectClientApp(draft.destinationUrl);
                             const iosUrl      = currentLink?.app_linking?.ios_location_url ?? null;
