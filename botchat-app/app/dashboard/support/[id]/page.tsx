@@ -6,6 +6,8 @@ import api from "@/lib/api";
 import { ArrowLeft, Send, Paperclip, Loader2, User, Shield, FileText } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
 
 interface Attachment {
     id: number;
@@ -83,14 +85,16 @@ export default function TenantTicketDetailPage() {
             if (res.data?.success) {
                 setReplyText("");
                 setFiles([]);
+                toast.success("Reply posted successfully!");
                 fetchTicket(); // reload conversation
             }
         } catch (err: any) {
-            alert(err.response?.data?.message || "Failed to post reply.");
+            toast.error(err.response?.data?.message || "Failed to post reply.");
         } finally {
             setSubmitting(false);
         }
     };
+
 
     if (loading) {
         return (

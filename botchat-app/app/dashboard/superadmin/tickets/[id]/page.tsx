@@ -6,6 +6,8 @@ import api from "@/lib/api";
 import { ArrowLeft, Send, Paperclip, Loader2, User, Shield, CheckCircle2, XCircle, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
 
 interface Attachment {
     id: number;
@@ -83,10 +85,11 @@ export default function SuperAdminTicketDetailPage() {
             if (res.data?.success) {
                 setReplyText("");
                 setFiles([]);
+                toast.success("Admin reply posted successfully!");
                 fetchTicket();
             }
         } catch (err: any) {
-            alert(err.response?.data?.message || "Failed to post reply.");
+            toast.error(err.response?.data?.message || "Failed to post reply.");
         } finally {
             setSubmitting(false);
         }
@@ -98,10 +101,11 @@ export default function SuperAdminTicketDetailPage() {
         try {
             const res = await api.patch(`/support-tickets/${id}/status`, { status: newStatus });
             if (res.data?.success) {
+                toast.success(`Ticket marked as ${newStatus}`);
                 fetchTicket();
             }
         } catch (err: any) {
-            alert(err.response?.data?.message || "Failed to update status.");
+            toast.error(err.response?.data?.message || "Failed to update status.");
         } finally {
             setActionLoading(false);
         }
@@ -113,14 +117,16 @@ export default function SuperAdminTicketDetailPage() {
         try {
             const res = await api.delete(`/support-tickets/${id}`);
             if (res.data?.success) {
+                toast.success("Ticket deleted successfully");
                 router.push("/dashboard/superadmin/tickets");
             }
         } catch (err: any) {
-            alert(err.response?.data?.message || "Failed to delete ticket.");
+            toast.error(err.response?.data?.message || "Failed to delete ticket.");
         } finally {
             setActionLoading(false);
         }
     };
+
 
     if (loading) {
         return (
