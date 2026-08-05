@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable StrictMode to prevent double useEffect invocations in dev.
+  // React 18 StrictMode intentionally mounts+unmounts components twice,
+  // which causes every API-fetching useEffect to fire twice.
+  reactStrictMode: false,
   // Standalone mode: bundles only runtime-needed files into .next/standalone
   // Result: ~20MB deploy instead of 500MB+ node_modules upload
   output: 'standalone',

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { fetchMyPlan } from "@/store/slices/plansSlice";
 import api from "@/lib/api";
@@ -235,7 +235,7 @@ function QuickAction({ action }: { action: any }) {
 export default function DashboardPage() {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const { user } = useSelector((state: RootState) => state.auth);
+    const { user } = useSelector((state: RootState) => state.auth, shallowEqual);
 
     const [widgets, setWidgets] = useState<any[]>([]);
     const [charts, setCharts] = useState<any[]>([]);
@@ -245,12 +245,19 @@ export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [hiddenSections, setHiddenSections] = useState<Record<string, boolean>>({});
 
+    // Use user?.id (primitive) as dep — the full user object gets a new reference
+    // every time AuthProvider's fetchMe() resolves, causing double API calls.
+    const userId = user?.id;
+    const userRole = user?.role;
+
     useEffect(() => {
-        if (user && user.role !== 'SUPER_ADMIN') {
+        if (!userId) return; // not authenticated yet
+        if (userRole !== 'SUPER_ADMIN') {
             dispatch(fetchMyPlan());
         }
         loadDashboard();
-    }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userId]); // only re-run when the actual user ID changes
 
     const loadDashboard = async () => {
         if (!user) return;
