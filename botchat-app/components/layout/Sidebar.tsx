@@ -127,6 +127,12 @@ const workspaceNav = [
         href: "/dashboard/notifications",
         ariaLabel: "View notifications",
     },
+    {
+        label: "Support",
+        icon: MessagesSquare,
+        href: "/dashboard/support",
+        ariaLabel: "Support Tickets",
+    },
 ];
 
 const adminNav = [
@@ -141,6 +147,12 @@ const adminNav = [
         icon: Crown,
         href: "/dashboard/superadmin/subscriptions",
         ariaLabel: "Manage tenant subscriptions",
+    },
+    {
+        label: "Support Tickets",
+        icon: MessagesSquare,
+        href: "/dashboard/superadmin/tickets",
+        ariaLabel: "Manage support tickets",
     },
     {
         label: "Custom Domains",
@@ -161,6 +173,7 @@ const adminNav = [
         ariaLabel: "Manage system modules",
     },
 ];
+
 
 export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) {
     const pathname = usePathname();
