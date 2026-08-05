@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { fetchCtaTypes, fetchAutoReplyTemplates } from '@/store/slices/socialPostingSlice';
 import type { AppDispatch, RootState } from '@/store/store';
 import api from "@/lib/api";
@@ -85,7 +85,7 @@ export function Composer({
   const filteredPages = accounts.filter(a => selectedParentAccounts.includes(a.accountId));
 
   const dispatch = useDispatch<AppDispatch>();
-  const { ctaTypes, autoReplyTemplates } = useSelector((state: RootState) => state.socialPosting);
+  const { ctaTypes, autoReplyTemplates } = useSelector((state: RootState) => state.socialPosting, shallowEqual);
 
   useEffect(() => {
     if (ctaTypes.length === 0) {

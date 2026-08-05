@@ -43,7 +43,7 @@ import { Input } from "@/components/ui/input";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { createCampaign, fetchCampaigns, createCtaCampaign, fetchCtaCampaigns } from "@/store/slices/socialPostingSlice";
 import { fetchCarouselCampaigns, createCarouselCampaign } from "@/store/slices/carouselSlice";
 import type { AppDispatch, RootState } from "@/store/store";
@@ -94,8 +94,8 @@ export default function PostStudioPage() {
   const [selectedParentAccounts, setSelectedParentAccounts] = useState<string[]>([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const { campaigns, ctaCampaigns, isLoading: isLoadingCampaigns } = useSelector((state: RootState) => state.socialPosting);
-  const { campaigns: carouselCampaigns, isPublishing: isPublishingCarousel } = useSelector((state: RootState) => state.carousel);
+  const { campaigns, ctaCampaigns, isLoading: isLoadingCampaigns } = useSelector((state: RootState) => state.socialPosting, shallowEqual);
+  const { campaigns: carouselCampaigns, isPublishing: isPublishingCarousel } = useSelector((state: RootState) => state.carousel, shallowEqual);
   const dispatch = useDispatch<AppDispatch>();
 
   // Fetch accounts whenever we're in list or studio mode (also covers post-refresh)

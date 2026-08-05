@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useSearchParams } from "next/navigation";
 import { AppDispatch, RootState } from "../../../store/store";
 import {
@@ -174,9 +174,9 @@ export default function SettingsPage() {
     const { showModal } = useModal();
     
     // Selectors
-    const { user } = useSelector((state: RootState) => state.auth);
+    const { user } = useSelector((state: RootState) => state.auth, shallowEqual);
     const isSuperAdmin = useSelector(selectIsSuperAdmin);
-    const { general, facebookPlatform, ai, socialLogin, tenantSocialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings);
+    const { general, facebookPlatform, ai, socialLogin, tenantSocialLogin, isLoadingFacebook, isLoadingAi } = useSelector((state: RootState) => state.settings, shallowEqual);
 
     // Filter navigation groups based on app type
     const navigationGroups = baseNavigationGroups.map(group => {
@@ -231,7 +231,7 @@ export default function SettingsPage() {
         if (tab === "int-social-login" || tab === "int-social-login-providers") {
             dispatch(fetchSocialLoginSettings());
         }
-    }, [tab, dispatch, user]);
+    }, [tab, dispatch]);
 
     const [aiForm, setAiForm] = useState({ provider: 'openai', secretKey: '', promptModel: 'gpt-4o', instructionToAi: '' });
 

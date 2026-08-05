@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { AppDispatch, RootState } from "../../../../store/store";
 import {
   updateGeneralSettings, fetchGeneralSettings, updateAppSettings,
@@ -73,7 +73,7 @@ function IntegrationHeader({ title, desc, Icon, color, isConnected }: { title: s
 export default function BrandingTab() {
   const dispatch = useDispatch<AppDispatch>();
   const { showModal } = useModal();
-  const { general, isLoadingGeneral } = useSelector((state: RootState) => state.settings);
+  const { general, isLoadingGeneral } = useSelector((state: RootState) => state.settings, shallowEqual);
   const isSuperAdmin = useSelector(isSuperAdminSelector);
   const isReseller = useSelector(isResellerSelector);
   const isTenant = useSelector(isTenantSelector);
