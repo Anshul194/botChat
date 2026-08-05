@@ -104,7 +104,7 @@ export default function InstagramBotRepliesPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [api, showModal]);
+    }, [showModal]);
 
     const fetchPages = useCallback(async () => {
         try {
@@ -116,7 +116,7 @@ export default function InstagramBotRepliesPage() {
         } catch (error) {
             console.error("Fetch Pages Error:", error);
         }
-    }, [api]);
+    }, []);
 
     const fetchActions = useCallback(async (accountIdToUse?: string) => {
         const accountId = accountIdToUse || selectedAccountId;
@@ -133,7 +133,7 @@ export default function InstagramBotRepliesPage() {
         } finally {
             setIsActionsLoading(false);
         }
-    }, [api, selectedAccountId, pages]);
+    }, [selectedAccountId, pages]);
 
     useEffect(() => {
         fetchReplies();

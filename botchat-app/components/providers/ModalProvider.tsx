@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { StatusModal } from "@/components/ui/StatusModal";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
@@ -46,11 +46,14 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     isOpen: false,
   });
 
-  const showModal = (type: ModalType, title: string, message: string) => {
+  // Stable references — wrapping in useCallback prevents child pages from
+  // re-creating their own useCallback functions (fetchReplies, etc.) on every
+  // render, which would cause useEffect to re-run and trigger repeated API calls.
+  const showModal = useCallback((type: ModalType, title: string, message: string) => {
     setModalState({ isOpen: true, type, title, message });
-  };
+  }, []);
 
-  const showConfirm = (options: {
+  const showConfirm = useCallback((options: {
     title?: string;
     message?: string;
     confirmText?: string;
@@ -58,16 +61,13 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     type?: "danger" | "warning";
     onConfirm: () => void;
   }) => {
-    setConfirmState({
-      isOpen: true,
-      ...options
-    });
-  };
+    setConfirmState({ isOpen: true, ...options });
+  }, []);
 
-  const hideModal = () => {
+  const hideModal = useCallback(() => {
     setModalState((prev) => ({ ...prev, isOpen: false }));
     setConfirmState((prev) => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
   return (
     <ModalContext.Provider value={{ showModal, showConfirm, hideModal }}>
