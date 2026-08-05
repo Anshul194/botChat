@@ -273,7 +273,9 @@ export default function BroadcastsPage() {
             queryClient.invalidateQueries({ queryKey: ["broadcastCampaigns"] });
             toast.success("Campaign deleted.");
         },
-        onError: () => toast.error("Failed to delete campaign.")
+        onError: (err: any) => {
+            toast.error(err.response?.data?.message || "Failed to delete campaign.");
+        }
     });
 
     const cloneMutation = useMutation({
