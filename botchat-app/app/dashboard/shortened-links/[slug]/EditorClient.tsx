@@ -120,7 +120,10 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
     const [saveState, setSaveState] = useState<"idle" | "saved">("idle");
     const currentMeta = SECTION_META.find((s) => s.key === openSection);
 
-    const shortUrl = `66biolinks.com/${draft.slug}`;
+    // Use full_url from the API — it is already resolved using the tenant's custom domain
+    // or subdomain (e.g. agency.megadm.chat/abc123), NOT the hardcoded 66biolinks.com default.
+    const shortUrl = currentLink?.full_url ?? (draft.slug ? `/${draft.slug}` : "");
+
 
     const [copied, setCopied] = useState(false);
 
@@ -361,30 +364,152 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                             </div>
                         </div>
 
-                        {openSection === "app" && (
-                            <>
-                                <div className="bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 border border-[var(--border)] dark:border-[var(--border)]/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
-                                    <div className="text-sm font-bold text-[var(--foreground)] dark:text-slate-100">Supported operating systems</div>
-                                    <div className="mt-2 sm:mt-3 flex gap-2 sm:gap-3 flex-wrap">
-                                        <span className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] text-xs sm:text-sm font-bold shadow-sm">Apple</span>
-                                        <span className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] text-xs sm:text-sm font-bold shadow-sm">Android</span>
-                                    </div>
-                                    <div className="text-sm font-bold text-[var(--foreground)] dark:text-slate-100 mt-4 sm:mt-6">Supported apps</div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs sm:text-sm text-[var(--muted-foreground)] mt-2 sm:mt-3">
-                                        {[
-                                            "AliExpress", "Reddit", "YouTube", "WhatsApp", "Facebook Messenger", "Telegram", "Apple Music", "Pinterest", "Netflix", "Google Docs", "Google Maps", "TripAdvisor", "StockX",
-                                            "TikTok", "X", "Instagram", "Snapchat", "Spotify", "LinkedIn", "Twitch", "Google Sheets", "Google Slides", "Airbnb", "Amazon", "Booking.com",
-                                        ].map((a) => (
-                                            <div key={a} className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-                                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-[var(--card)] dark:bg-[var(--muted)] grid place-items-center text-[10px] sm:text-xs font-bold border border-[var(--border)] dark:border-[var(--border)] shadow-sm shrink-0">{a[0]}</div>
-                                                <span className="text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70 font-medium truncate">{a}</span>
+                        {openSection === "app" && (() => {
+                            const detectedApp = currentLink?.app_linking?.app ?? null;
+                            const iosUrl      = currentLink?.app_linking?.ios_location_url ?? null;
+                            const androidUrl  = currentLink?.app_linking?.android_location_url ?? null;
+
+                            // Human-readable app names for detected keys
+                            const APP_LABELS: Record<string, string> = {
+                                youtube: "YouTube", tiktok: "TikTok", instagram: "Instagram",
+                                facebook: "Facebook", messenger: "Facebook Messenger",
+                                whatsapp: "WhatsApp", telegram: "Telegram", x: "X / Twitter",
+                                reddit: "Reddit", spotify: "Spotify", soundcloud: "SoundCloud",
+                                linkedin: "LinkedIn", pinterest: "Pinterest", snapchat: "Snapchat",
+                                twitch: "Twitch", apple_music: "Apple Music", amazon: "Amazon",
+                                netflix: "Netflix", google_maps: "Google Maps",
+                                google_docs: "Google Docs", google_sheets: "Google Sheets",
+                                google_slides: "Google Slides", aliexpress: "AliExpress",
+                                tripadvisor: "TripAdvisor", airbnb: "Airbnb", booking: "Booking.com",
+                            };
+
+                            const appLabel  = detectedApp ? (APP_LABELS[detectedApp] ?? detectedApp) : null;
+                            const isInstagram = detectedApp === "instagram";
+
+                            // Instagram DM state (stored in settings via backend)
+                            const isDM = (currentLink as any)?.settings?.destination_type === "instagram_dm"
+                                || (draft.destinationUrl?.includes("ig.me/m/"));
+
+                            return (
+                                <>
+                                    {/* Detected App Banner */}
+                                    {draft.appLinking && (
+                                        <div className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border mb-4 sm:mb-6 ${detectedApp ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/40" : "bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30"}`}>
+                                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-sm sm:text-base font-black shrink-0 ${detectedApp ? "bg-emerald-500 text-white" : "bg-amber-400 text-white"}`}>
+                                                {detectedApp ? "✓" : "?"}
                                             </div>
-                                        ))}
+                                            <div className="min-w-0">
+                                                <div className={`text-xs sm:text-sm font-bold ${detectedApp ? "text-emerald-800 dark:text-emerald-300" : "text-amber-800 dark:text-amber-300"}`}>
+                                                    {detectedApp ? `Detected: ${appLabel}` : "No supported app detected"}
+                                                </div>
+                                                <div className={`text-[10px] sm:text-xs font-medium mt-0.5 ${detectedApp ? "text-emerald-700/70 dark:text-emerald-400/70" : "text-amber-700/70 dark:text-amber-400/70"}`}>
+                                                    {detectedApp
+                                                        ? "App linking will attempt to open the native app on mobile devices."
+                                                        : "The destination URL does not match any supported app for automatic deep linking."}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Instagram DM toggle — only shown when Instagram is detected */}
+                                    {draft.appLinking && isInstagram && (
+                                        <div className="bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 border border-[var(--border)] dark:border-[var(--border)]/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 space-y-4">
+                                            <div className="text-sm font-bold text-[var(--foreground)] dark:text-slate-100">Instagram Destination</div>
+                                            <div className="flex gap-2 sm:gap-3">
+                                                <button
+                                                    onClick={() => setDraft(p => ({ ...p, destinationUrl: p.destinationUrl.replace(/ig\.me\/m\//, "instagram.com/").replace(/^https?:\/\//, "https://") }))}
+                                                    className={`flex-1 py-2.5 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${!isDM ? "bg-primary text-white border-primary shadow-md" : "bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"}`}
+                                                >
+                                                    Profile
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const username = draft.destinationUrl
+                                                            .replace(/^https?:\/\//, "")
+                                                            .replace(/^(?:www\.)?instagram\.com\//, "")
+                                                            .replace(/^ig\.me\/m\//, "")
+                                                            .replace(/^@/, "")
+                                                            .split("/")[0]
+                                                            .split("?")[0];
+                                                        setDraft(p => ({ ...p, destinationUrl: `https://ig.me/m/${username}` }));
+                                                    }}
+                                                    className={`flex-1 py-2.5 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${isDM ? "bg-primary text-white border-primary shadow-md" : "bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] hover:border-primary/50"}`}
+                                                >
+                                                    Direct Message
+                                                </button>
+                                            </div>
+                                            {isDM && (
+                                                <div className="text-[11px] sm:text-xs text-[var(--muted-foreground)] font-medium bg-primary/5 rounded-lg px-3 py-2">
+                                                    Visitors will be redirected via <span className="font-bold text-primary">ig.me/m/</span> which opens the Instagram DM compose screen.
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Deep link preview — shown when matched */}
+                                    {draft.appLinking && detectedApp && iosUrl && (
+                                        <div className="bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 border border-[var(--border)] dark:border-[var(--border)]/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 space-y-3">
+                                            <div className="text-sm font-bold text-[var(--foreground)] dark:text-slate-100">Generated Deep Links</div>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] w-16 shrink-0">iOS</span>
+                                                    <code className="text-[10px] sm:text-xs bg-[var(--background)] border border-[var(--border)] rounded-lg px-2 py-1.5 truncate flex-1 text-primary font-mono">{iosUrl}</code>
+                                                </div>
+                                                {androidUrl && (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] w-16 shrink-0">Android</span>
+                                                        <code className="text-[10px] sm:text-xs bg-[var(--background)] border border-[var(--border)] rounded-lg px-2 py-1.5 truncate flex-1 text-primary font-mono">{androidUrl}</code>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Supported apps list */}
+                                    <div className="bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 border border-[var(--border)] dark:border-[var(--border)]/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl">
+                                        <div className="text-sm font-bold text-[var(--foreground)] dark:text-slate-100">Supported apps</div>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs sm:text-sm text-[var(--muted-foreground)] mt-2 sm:mt-3">
+                                            {[
+                                                { key: "youtube",       label: "YouTube" },
+                                                { key: "tiktok",        label: "TikTok" },
+                                                { key: "instagram",     label: "Instagram" },
+                                                { key: "facebook",      label: "Facebook" },
+                                                { key: "messenger",     label: "Messenger" },
+                                                { key: "whatsapp",      label: "WhatsApp" },
+                                                { key: "telegram",      label: "Telegram" },
+                                                { key: "x",             label: "X / Twitter" },
+                                                { key: "reddit",        label: "Reddit" },
+                                                { key: "spotify",       label: "Spotify" },
+                                                { key: "soundcloud",    label: "SoundCloud" },
+                                                { key: "linkedin",      label: "LinkedIn" },
+                                                { key: "pinterest",     label: "Pinterest" },
+                                                { key: "snapchat",      label: "Snapchat" },
+                                                { key: "twitch",        label: "Twitch" },
+                                                { key: "apple_music",   label: "Apple Music" },
+                                                { key: "amazon",        label: "Amazon" },
+                                                { key: "netflix",       label: "Netflix" },
+                                                { key: "google_maps",   label: "Google Maps" },
+                                                { key: "google_docs",   label: "Google Docs" },
+                                                { key: "google_sheets", label: "Google Sheets" },
+                                                { key: "google_slides", label: "Google Slides" },
+                                                { key: "aliexpress",    label: "AliExpress" },
+                                                { key: "tripadvisor",   label: "TripAdvisor" },
+                                                { key: "airbnb",        label: "Airbnb" },
+                                                { key: "booking",       label: "Booking.com" },
+                                            ].map(({ key, label }) => (
+                                                <div key={key} className={`flex items-center gap-2 sm:gap-3 text-xs sm:text-sm ${detectedApp === key ? "text-primary font-bold" : ""}`}>
+                                                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg grid place-items-center text-[10px] sm:text-xs font-bold border shadow-sm shrink-0 transition-colors ${detectedApp === key ? "bg-primary text-white border-primary" : "bg-[var(--card)] dark:bg-[var(--muted)] border-[var(--border)] dark:border-[var(--border)]"}`}>
+                                                        {label[0]}
+                                                    </div>
+                                                    <span className={`truncate ${detectedApp === key ? "text-primary" : "text-[var(--muted-foreground)] dark:text-[var(--muted-foreground)]/70"} font-medium`}>{label}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="p-3 sm:p-4 rounded-xl text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30 text-xs sm:text-sm font-medium">Your destination URL is not matching any of the supported apps for automatic app opening.</div>
-                            </>
-                        )}
+                                </>
+                            );
+                        })()}
+
                         {openSection === "pixels" && (
                             <div className="bg-[var(--muted)]/50 dark:bg-[var(--muted)]/40 border border-[var(--border)] dark:border-[var(--border)]/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
                                 <div className="flex items-center justify-between mb-3 sm:mb-4">

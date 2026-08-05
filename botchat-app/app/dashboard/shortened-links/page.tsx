@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchLinks, createLink, fetchLinkById } from "@/store/slices/linksSlice";
+import { fetchLinks, createLink, fetchLinkById, deleteLink } from "@/store/slices/linksSlice";
 import { fetchDomains } from "@/store/slices/domainsSlice";
 import { useRouter } from "next/navigation";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
@@ -25,7 +25,7 @@ import {
     RefreshCw,
     ExternalLink,
     CheckCircle2,
-    History,
+
     Zap,
     MousePointer2,
     X,
@@ -500,6 +500,22 @@ function ShortLinkTableRow({ item, onEdit, onCopy, copied }: any) {
 
 function ShortLinkMobileCard({ item, onEdit, onCopy, copied }: any) {
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const { showModal } = useModal();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        if (!window.confirm(`Delete short link "/${item.slug}"? This cannot be undone.`)) return;
+        setIsDeleting(true);
+        try {
+            await dispatch(deleteLink(item.id)).unwrap();
+            showModal("success", "Deleted", `Link "/${item.slug}" deleted.`);
+        } catch (err: any) {
+            showModal("error", "Error", err.message || "Failed to delete.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
     return (
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
             <button
@@ -561,15 +577,18 @@ function ShortLinkMobileCard({ item, onEdit, onCopy, copied }: any) {
                         <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/shortened-links/analytics?page=${item.id}`)}>
                             <BarChart2 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                            <History size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Change Logs</span>
-                        </DropdownMenuItem>
                         <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
-                        <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
-                            <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Purge Link</span>
+                        <DropdownMenuItem
+                            disabled={isDeleting}
+                            onClick={handleDelete}
+                            className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer disabled:opacity-50"
+                        >
+                            {isDeleting ? <Loader2 size={16} className="text-red-500 animate-spin" /> : <Trash2 size={16} className="text-red-500" />}
+                            <span className="font-bold text-xs uppercase tracking-wider">{isDeleting ? "Deleting..." : "Purge Link"}</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
             </div>
         </div>
     );
@@ -578,6 +597,21 @@ function ShortLinkMobileCard({ item, onEdit, onCopy, copied }: any) {
 function ActionDropdown({ item, onEdit }: any) {
     const { showModal } = useModal();
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        if (!window.confirm(`Delete short link "/${item.slug}"? This cannot be undone.`)) return;
+        setIsDeleting(true);
+        try {
+            await dispatch(deleteLink(item.id)).unwrap();
+            showModal("success", "Deleted", `Link "/${item.slug}" has been permanently deleted.`);
+        } catch (err: any) {
+            showModal("error", "Error", err.message || "Failed to delete link.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     return (
         <DropdownMenu>
@@ -596,12 +630,14 @@ function ActionDropdown({ item, onEdit }: any) {
                 <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer" onClick={() => router.push(`/dashboard/shortened-links/analytics?page=${item.id}`)}>
                     <BarChart2 size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Deep Analytics</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 cursor-pointer">
-                    <History size={16} className="text-[var(--muted-foreground)]" /> <span className="font-bold text-xs uppercase tracking-wider">Change Logs</span>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator className="my-1 bg-[var(--muted)]/50 dark:bg-[var(--card)]/5" />
-                <DropdownMenuItem className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
-                    <Trash2 size={16} className="text-red-500" /> <span className="font-bold text-xs uppercase tracking-wider">Purge Link</span>
+                <DropdownMenuItem
+                    disabled={isDeleting}
+                    onClick={handleDelete}
+                    className="h-11 rounded-xl gap-3 px-3 text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer disabled:opacity-50"
+                >
+                    {isDeleting ? <Loader2 size={16} className="text-red-500 animate-spin" /> : <Trash2 size={16} className="text-red-500" />}
+                    <span className="font-bold text-xs uppercase tracking-wider">{isDeleting ? "Deleting..." : "Purge Link"}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
