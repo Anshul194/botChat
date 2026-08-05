@@ -1,62 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Loader2 } from "lucide-react";
+import api from "@/lib/api";
 
-const FAQ_CATEGORIES = [
-    {
-        label: "General",
-        faqs: [
-            {
-                q: "Is BotChat compliant with Meta's terms of service?",
-                a: "Yes. We exclusively use the official Meta Messenger & Instagram Graph APIs. Unlike unofficial bots that scrape web data, our platform is fully recognized by Meta, ensuring your account remains safe and policy-compliant."
-            },
-            {
-                q: "Which platforms does BotChat support?",
-                a: "BotChat currently supports Facebook Pages, Instagram Professional accounts, WhatsApp Business (Cloud API), and Telegram. All four channels are available from a single unified inbox."
-            },
-            {
-                q: "Do I need to install anything?",
-                a: "No. BotChat is fully cloud-hosted. Just sign up, connect your social accounts, and you're live — no downloads, no servers, no DevOps required."
-            },
-        ]
-    },
-    {
-        label: "Billing",
-        faqs: [
-            {
-                q: "How does annual billing work?",
-                a: "Annual plans are billed upfront for 12 months, giving you a 20% discount compared to the monthly rate. You can cancel anytime — unused months are refunded on a pro-rated basis."
-            },
-            {
-                q: "Can I switch plans at any time?",
-                a: "Absolutely. You can upgrade or downgrade at any time from your billing dashboard. Pro-rated adjustments are automatically calculated and applied to your next invoice."
-            },
-            {
-                q: "Is there a free trial?",
-                a: "Yes — every plan includes a free trial period with full feature access. No credit card is required to start. You only pay when you're ready to go live."
-            },
-        ]
-    },
-    {
-        label: "Features",
-        faqs: [
-            {
-                q: "What counts as a 'Message Credit'?",
-                a: "Any private message sent by the bot in response to a user action — a post comment, story mention, or DM. Comment replies themselves are unlimited on all plans and do not count against your credits."
-            },
-            {
-                q: "How does the AI Reply Builder work?",
-                a: "The AI Reply Builder uses OpenAI (GPT-4), Google Gemini, or Anthropic Claude — your choice — to understand message intent and generate on-brand responses automatically. It supports conditional logic, flow branching, and custom training data."
-            },
-            {
-                q: "Can I use my own custom domain for Bio Links?",
-                a: "Yes. You can connect your own domain to your bio link pages on eligible plans. Custom domains must be verified via DNS, and setup typically takes under 5 minutes."
-            },
-        ]
-    },
-];
+interface FaqItemData {
+    id: number;
+    question: string;
+    answer: string;
+    is_featured: boolean;
+}
+
+type GroupedFaqs = Record<string, FaqItemData[]>;
 
 function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
     const [open, setOpen] = useState(false);
@@ -69,12 +25,14 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
             style={{ borderColor: "rgba(255,255,255,0.07)" }}
         >
             <button
-                onClick={() => setOpen(v => !v)}
+                onClick={() => setOpen((v) => !v)}
                 className="flex items-start justify-between w-full py-5 text-left gap-4 group"
                 aria-expanded={open}
             >
-                <span className="text-base sm:text-lg font-bold leading-snug transition-colors group-hover:text-[#FF2D78]"
-                    style={{ color: "rgba(255,255,255,0.9)" }}>
+                <span
+                    className="text-base sm:text-lg font-bold leading-snug transition-colors group-hover:text-[#FF2D78]"
+                    style={{ color: "rgba(255,255,255,0.9)" }}
+                >
                     {q}
                 </span>
                 <motion.div
@@ -82,12 +40,17 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                     transition={{ duration: 0.18 }}
                     className="shrink-0 mt-0.5"
                 >
-                    <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${open ? "border-[#FF2D78] bg-[#FF2D78]" : ""}`}
-                        style={!open ? { borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.05)" } : {}}>
-                        {open
-                            ? <Minus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                            : <Plus className="w-3.5 h-3.5" strokeWidth={3} style={{ color: "rgba(255,255,255,0.5)" }} />
-                        }
+                    <div
+                        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            open ? "border-[#FF2D78] bg-[#FF2D78]" : ""
+                        }`}
+                        style={!open ? { borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.05)" } : {}}
+                    >
+                        {open ? (
+                            <Minus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                        ) : (
+                            <Plus className="w-3.5 h-3.5" strokeWidth={3} style={{ color: "rgba(255,255,255,0.5)" }} />
+                        )}
                     </div>
                 </motion.div>
             </button>
@@ -100,10 +63,11 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                         transition={{ duration: 0.22, ease: "easeInOut" }}
                         className="overflow-hidden"
                     >
-                        <p className="font-medium leading-relaxed pb-5 pr-10 text-base"
-                            style={{ color: "rgba(255,255,255,0.6)" }}>
-                            {a}
-                        </p>
+                        <div
+                            className="font-medium leading-relaxed pb-5 pr-10 text-base prose prose-invert max-w-none"
+                            style={{ color: "rgba(255,255,255,0.6)" }}
+                            dangerouslySetInnerHTML={{ __html: a }}
+                        />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -112,13 +76,35 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
 }
 
 export default function FAQ() {
-    const [activeCategory, setActiveCategory] = useState(FAQ_CATEGORIES[0].label);
+    const [faqGroups, setFaqGroups] = useState<GroupedFaqs>({});
+    const [loading, setLoading] = useState(true);
+    const [activeCategory, setActiveCategory] = useState<string>("");
 
-    const active = FAQ_CATEGORIES.find(c => c.label === activeCategory) ?? FAQ_CATEGORIES[0];
+    useEffect(() => {
+        api.get("/public/faqs/landing")
+            .then((res) => {
+                if (res.data?.success && res.data?.data) {
+                    const groups = res.data.data;
+                    setFaqGroups(groups);
+                    const cats = Object.keys(groups);
+                    if (cats.length > 0) {
+                        setActiveCategory(cats[0]);
+                    }
+                }
+            })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
+    const categoryNames = Object.keys(faqGroups);
+    const activeFaqs = activeCategory && faqGroups[activeCategory] ? faqGroups[activeCategory] : [];
 
     return (
-        <section className="py-24 overflow-hidden relative" id="faq"
-            style={{ background: "linear-gradient(180deg, #0d0617 0%, #06000d 100%)" }}>
+        <section
+            className="py-24 overflow-hidden relative"
+            id="faq"
+            style={{ background: "linear-gradient(180deg, #0d0617 0%, #06000d 100%)" }}
+        >
             <div className="max-w-4xl mx-auto px-6">
                 {/* Header */}
                 <div className="text-center mb-14">
@@ -154,42 +140,58 @@ export default function FAQ() {
                     </motion.p>
                 </div>
 
-                {/* Category tabs */}
-                <div className="flex gap-2 justify-center mb-8 overflow-x-auto pb-1 no-scrollbar">
-                    {FAQ_CATEGORIES.map(cat => (
-                        <button
-                            key={cat.label}
-                            onClick={() => setActiveCategory(cat.label)}
-                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-black transition-all border ${
-                                activeCategory === cat.label
-                                    ? "bg-[#FF2D78] text-white shadow-md border-transparent"
-                                    : "text-white/60 hover:text-white border-white/10"
-                            }`}
-                            style={activeCategory !== cat.label ? { background: "rgba(255,255,255,0.06)" } : {}}
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="p-12 flex justify-center items-center text-white/50">
+                        <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading FAQs...
+                    </div>
+                ) : categoryNames.length === 0 ? (
+                    <div className="p-12 text-center text-white/50 rounded-3xl border border-white/10 bg-white/5">
+                        No FAQs published yet.
+                    </div>
+                ) : (
+                    <>
+                        {/* Dynamic Category Tabs (Only categories with active FAQs) */}
+                        <div className="flex gap-2 justify-center mb-8 overflow-x-auto pb-1 no-scrollbar">
+                            {categoryNames.map((cat) => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setActiveCategory(cat)}
+                                    className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-black transition-all border ${
+                                        activeCategory === cat
+                                            ? "bg-[#FF2D78] text-white shadow-md border-transparent"
+                                            : "text-white/60 hover:text-white border-white/10"
+                                    }`}
+                                    style={activeCategory !== cat ? { background: "rgba(255,255,255,0.06)" } : {}}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
 
-                {/* FAQ list */}
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={activeCategory}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="rounded-3xl border px-6 divide-y"
-                        style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)", divideColor: "rgba(255,255,255,0.07)" }}
-                    >
-                        {active.faqs.map((faq, i) => (
-                            <FAQItem key={`${activeCategory}-${i}`} q={faq.q} a={faq.a} index={i} />
-                        ))}
-                    </motion.div>
-                </AnimatePresence>
+                        {/* Active Category FAQ List */}
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activeCategory}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="rounded-3xl border px-6 divide-y"
+                                style={{
+                                    background: "rgba(255,255,255,0.04)",
+                                    borderColor: "rgba(255,255,255,0.08)",
+                                    divideColor: "rgba(255,255,255,0.07)",
+                                }}
+                            >
+                                {activeFaqs.map((faq, i) => (
+                                    <FAQItem key={`${activeCategory}-${faq.id}`} q={faq.question} a={faq.answer} index={i} />
+                                ))}
+                            </motion.div>
+                        </AnimatePresence>
+                    </>
+                )}
 
-                {/* CTA */}
+                {/* Call to Action */}
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -215,3 +217,4 @@ export default function FAQ() {
         </section>
     );
 }
+
