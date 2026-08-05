@@ -97,7 +97,7 @@ export const UGCLayout = ({
             ];
 
     return (
-        <div className="flex flex-col w-full min-h-full overflow-x-hidden" style={{ background: C.bg, color: C.dark, fontFamily: "'Inter', sans-serif" }}>
+        <div className="flex flex-col w-full min-h-full overflow-x-hidden" style={{ background: C.bg, color: C.dark, fontFamily: "var(--app-font-family, var(--font-inter), sans-serif)" }}>
 
             {/* ══ NAV ══════════════════════════════════════ */}
             <header className="flex items-center justify-between px-3 py-2.5 bg-white/80 backdrop-blur-sm sticky top-0 z-30 border-b border-fuchsia-100">

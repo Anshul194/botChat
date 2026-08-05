@@ -28,19 +28,36 @@ export default function InvoicesPage() {
         if (!printContent) return;
         const win = window.open("", "_blank");
         if (!win) return;
+
+        const rootStyles = getComputedStyle(document.documentElement);
+        const themeVars = {
+            '--app-font-family': rootStyles.getPropertyValue('--app-font-family').trim() || 'var(--font-inter), sans-serif',
+            '--foreground': rootStyles.getPropertyValue('--foreground').trim() || '#111827',
+            '--background': rootStyles.getPropertyValue('--background').trim() || '#ffffff',
+            '--card': rootStyles.getPropertyValue('--card').trim() || '#ffffff',
+            '--border': rootStyles.getPropertyValue('--border').trim() || 'rgba(0,0,0,0.06)',
+            '--muted-foreground': rootStyles.getPropertyValue('--muted-foreground').trim() || '#6b7280',
+            '--primary': rootStyles.getPropertyValue('--primary').trim() || '#3b82f6',
+        };
+        const varDecls = Object.entries(themeVars)
+            .map(([k, v]) => `${k}: ${v || "inherit"};`)
+            .join("\n                ");
+
         win.document.write(`
             <html><head><title>Invoice</title>
             <style>
-                body { font-family: var(--app-font-family, var(--font-inter), sans-serif); padding: 40px; color: #1e293b; }
+                :root { ${varDecls} }
+                body { font-family: var(--app-font-family); padding: 40px; color: var(--foreground); background: var(--background); }
                 .header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px; }
-                .invoice-title { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
+                .invoice-title { font-size: 32px; font-weight: 900; letter-spacing: -1px; color: var(--foreground); }
                 .details { margin-bottom: 30px; }
-                .details p { margin: 4px 0; font-size: 14px; }
+                .details p { margin: 4px 0; font-size: 14px; color: var(--muted-foreground); }
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; background: #f1f5f9; }
-                td { padding: 12px; font-size: 14px; border-bottom: 1px solid #e2e8f0; }
-                .total { text-align: right; margin-top: 20px; font-size: 18px; font-weight: 900; }
-                .footer { margin-top: 50px; font-size: 12px; color: #94a3b8; text-align: center; }
+                th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; background: var(--muted); color: var(--muted-foreground); border-bottom: 1px solid var(--border); }
+                td { padding: 12px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--foreground); }
+                .total { text-align: right; margin-top: 20px; font-size: 18px; font-weight: 900; color: var(--foreground); }
+                .footer { margin-top: 50px; font-size: 12px; color: var(--muted-foreground); text-align: center; }
+                [class*="text-blue"], [class*="bg-blue"] { color: var(--primary) !important; }
             </style></head><body>${printContent.innerHTML}</body></html>
         `);
         win.document.close();

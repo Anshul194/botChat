@@ -414,7 +414,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             <div className="px-3 pb-1.5 flex items-center justify-between">
                                 <span
                                     className="text-xs font-semibold uppercase tracking-wider"
-                                    style={{ color: "var(--nav-active-color)" }}
+                                    style={{ color: "var(--sidebar-foreground)" }}
                                 >
                                     Platforms
                                 </span>

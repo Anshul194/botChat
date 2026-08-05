@@ -376,7 +376,7 @@ export function applyAppearanceVariables(settings: AppearanceSettings): void {
         root.style.setProperty("--popover", "#110a14");
         root.style.setProperty("--popover-foreground", "#f8fafc");
         root.style.setProperty("--sidebar", "#09090b");
-        root.style.setProperty("--sidebar-foreground", "#9a7da0");
+        root.style.setProperty("--sidebar-foreground", "#94a3b8");
         root.style.setProperty("--sidebar-border", "rgba(255,255,255,0.05)");
         root.style.setProperty("--sidebar-accent", "rgba(255,255,255,0.06)");
         root.style.setProperty("--sidebar-accent-foreground", "#e2e8f0");
