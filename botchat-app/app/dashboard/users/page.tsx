@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { fetchUsers, toggleUserStatus, fetchUserById, createUser, assignPlanToUser } from "@/store/slices/usersSlice";
-import { fetchPlans } from "@/store/slices/plansSlice";
+import { fetchPlans, fetchMyPlans } from "@/store/slices/plansSlice";
 import { Users, Search, Filter, MoreVertical, Shield, UserCheck, UserMinus, Mail } from "lucide-react";
 import { Phone, Globe, Calendar, ArrowUpRight, Loader2, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import { AlertCircle, UserPlus, ChevronDown } from "lucide-react";
@@ -109,7 +109,8 @@ export default function UserManagementPage() {
     const dispatch = useAppDispatch();
     const { settings } = useTenantSettings();
     const { users, isLoading, selectedUser } = useAppSelector((state) => state.users);
-    const { plans } = useAppSelector((state) => state.plans);
+    const { plans, myPlans } = useAppSelector((state) => state.plans);
+    const availableTenantPlans = myPlans && myPlans.length > 0 ? myPlans : plans;
     const { showModal } = useModal();
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
@@ -152,6 +153,7 @@ export default function UserManagementPage() {
 
     useEffect(() => {
         dispatch(fetchUsers());
+        dispatch(fetchMyPlans());
         dispatch(fetchPlans());
         document.title = `User Management | ${settings.appName}`;
     }, [dispatch]);
@@ -710,7 +712,7 @@ export default function UserManagementPage() {
                                     required
                                 >
                                     <option value="">Select a plan...</option>
-                                    {plans.map(plan => (
+                                    {availableTenantPlans.map(plan => (
                                         <option key={plan.id} value={plan.id}>
                                             {plan.name} — ₹{plan.price} / {plan.duration} {plan.duration_type}
                                         </option>
@@ -892,7 +894,7 @@ export default function UserManagementPage() {
                                         required
                                     >
                                         <option value="">Select a plan...</option>
-                                        {plans.map(plan => (
+                                        {availableTenantPlans.map(plan => (
                                             <option key={plan.id} value={plan.id}>
                                                 {plan.name} — ₹{plan.price} / {plan.duration} {plan.duration_type}
                                             </option>
@@ -900,7 +902,7 @@ export default function UserManagementPage() {
                                     </select>
                                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                                 </div>
-                                {plans.length === 0 && (
+                                {availableTenantPlans.length === 0 && (
                                     <p className="text-[11px] font-medium text-amber-500">No plans found. Please create a plan first.</p>
                                 )}
                             </div>

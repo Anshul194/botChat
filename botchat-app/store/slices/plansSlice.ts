@@ -31,22 +31,26 @@ export interface Plan {
 interface PlansState {
     plans: Plan[];
     myPlans: Plan[];
+    centralPlans: Plan[];
     selectedPlan: Plan | null;
     userPlan: Plan | null;
     isLoading: boolean;
     isLoadingUserPlan: boolean;
     isLoadingMyPlans: boolean;
+    isLoadingCentralPlans: boolean;
     error: string | null;
 }
 
 const initialState: PlansState = {
     plans: [],
     myPlans: [],
+    centralPlans: [],
     selectedPlan: null,
     userPlan: null,
     isLoading: true,
     isLoadingUserPlan: false,
     isLoadingMyPlans: false,
+    isLoadingCentralPlans: false,
     error: null,
 };
 
@@ -61,6 +65,21 @@ export const fetchPlans = createAsyncThunk(
             return rejectWithValue(response.data.message);
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch plans');
+        }
+    }
+);
+
+export const fetchCentralPlans = createAsyncThunk(
+    'plans/fetchCentralPlans',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('/plans/central');
+            if (response.data.success) {
+                return response.data.data;
+            }
+            return rejectWithValue(response.data.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch central plans');
         }
     }
 );
@@ -224,6 +243,18 @@ const plansSlice = createSlice({
             })
             .addCase(fetchMyPlans.rejected, (state, action) => {
                 state.isLoadingMyPlans = false;
+                state.error = action.payload as string;
+            })
+            .addCase(fetchCentralPlans.pending, (state) => {
+                state.isLoadingCentralPlans = true;
+                state.error = null;
+            })
+            .addCase(fetchCentralPlans.fulfilled, (state, action) => {
+                state.isLoadingCentralPlans = false;
+                state.centralPlans = action.payload;
+            })
+            .addCase(fetchCentralPlans.rejected, (state, action) => {
+                state.isLoadingCentralPlans = false;
                 state.error = action.payload as string;
             })
             .addCase(createPlan.fulfilled, (state, action) => {

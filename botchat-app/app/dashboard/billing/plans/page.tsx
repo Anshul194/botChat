@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, type Variants } from "framer-motion";
 import { Crown, CheckCircle2, ChevronRight, ArrowLeft, Sparkles, Loader2, Zap, Users, Bot, MessageSquare } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchPlans, Plan } from "@/store/slices/plansSlice";
+import { fetchPlans, fetchCentralPlans, Plan } from "@/store/slices/plansSlice";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/currency";
 import CouponPanel from "@/components/billing/CouponPanel";
@@ -20,7 +20,8 @@ const itemVariants: Variants = {
 export default function BillingPlansPage() {
     const dispatch = useAppDispatch();
     const router = useRouter();
-    const { plans, userPlan, isLoading } = useAppSelector((s) => s.plans);
+    const { plans, centralPlans, userPlan, isLoading } = useAppSelector((s) => s.plans);
+    const activePlans = centralPlans && centralPlans.length > 0 ? centralPlans : plans;
     const user = useAppSelector((s) => s.auth.user);
     const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.type === "Super Admin";
     const { checkout, processing } = useRazorpay();
@@ -30,6 +31,7 @@ export default function BillingPlansPage() {
     const [showComparison, setShowComparison] = useState(false);
 
     useEffect(() => {
+        dispatch(fetchCentralPlans());
         dispatch(fetchPlans());
     }, [dispatch]);
 
@@ -84,7 +86,7 @@ export default function BillingPlansPage() {
                 </div>
             ) : (
                 <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {plans.map((plan, idx) => {
+                    {activePlans.map((plan, idx) => {
                         const isCurrent = userPlan?.id === plan.id;
                         const isSelected = selectedPlanId === plan.id;
                         const isPopular = plan.is_highlighted && !isCurrent;
