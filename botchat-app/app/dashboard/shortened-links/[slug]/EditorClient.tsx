@@ -120,9 +120,15 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
     const [saveState, setSaveState] = useState<"idle" | "saved">("idle");
     const currentMeta = SECTION_META.find((s) => s.key === openSection);
 
-    // Use full_url from the API — it is already resolved using the tenant's custom domain
-    // or subdomain (e.g. agency.megadm.chat/abc123), NOT the hardcoded 66biolinks.com default.
-    const shortUrl = currentLink?.full_url ?? (draft.slug ? `/${draft.slug}` : "");
+    // Priority: 1. API resolved full_url (custom domain/subdomain), 2. window.location.origin + /slug fallback
+    const shortUrl = useMemo(() => {
+        if (currentLink?.full_url) return currentLink.full_url;
+        if (typeof window !== "undefined" && draft.slug) {
+            return `${window.location.origin}/${draft.slug}`;
+        }
+        return draft.slug ? `https://agency.megadm.chat/${draft.slug}` : "";
+    }, [currentLink?.full_url, draft.slug]);
+
 
 
     const [copied, setCopied] = useState(false);
@@ -365,9 +371,27 @@ export default function ShortenedLinkEditorClient({ slug: incomingSlug }: Props)
                         </div>
 
                         {openSection === "app" && (() => {
-                            const detectedApp = currentLink?.app_linking?.app ?? null;
+                            // Client side regex matching fallback for live input changes
+                            const detectClientApp = (url: string) => {
+                                if (!url) return null;
+                                const clean = url.split('?')[0].split('#')[0].toLowerCase();
+                                if (/instagram\.com\/(?:p|reel|tv)\/([a-zA-Z0-9_\-]+)/.test(clean) || /instagram\.com\/([a-zA-Z0-9_\.]+)/.test(clean) || /ig\.me\/m\/([a-zA-Z0-9_\.]+)/.test(clean)) return "instagram";
+                                if (/youtube\.com\/watch\?v=([a-zA-Z0-9_\-]+)/.test(url) || /youtu\.be\/([a-zA-Z0-9_\-]+)/.test(clean) || /youtube\.com\/@([a-zA-Z0-9_\-\.]+)/.test(clean)) return "youtube";
+                                if (/tiktok\.com\/@/.test(clean)) return "tiktok";
+                                if (/facebook\.com\//.test(clean)) return "facebook";
+                                if (/m\.me\//.test(clean) || /messenger\.com\//.test(clean)) return "messenger";
+                                if (/wa\.me\//.test(clean) || /whatsapp\.com\//.test(clean)) return "whatsapp";
+                                if (/t\.me\//.test(clean) || /telegram\.me\//.test(clean)) return "telegram";
+                                if (/(?:x|twitter)\.com\//.test(clean)) return "x";
+                                if (/spotify\.com\//.test(clean)) return "spotify";
+                                if (/linkedin\.com\//.test(clean)) return "linkedin";
+                                return null;
+                            };
+
+                            const detectedApp = currentLink?.app_linking?.app || detectClientApp(draft.destinationUrl);
                             const iosUrl      = currentLink?.app_linking?.ios_location_url ?? null;
                             const androidUrl  = currentLink?.app_linking?.android_location_url ?? null;
+
 
                             // Human-readable app names for detected keys
                             const APP_LABELS: Record<string, string> = {
