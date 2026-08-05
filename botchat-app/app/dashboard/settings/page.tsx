@@ -11,7 +11,7 @@ import {
     updateFacebookSettings,
     fetchAiSettings, updateAiSettings,
     updateEmailSettings,
-    updatePaymentSettings, updateStorageSettings,
+    updatePaymentSettings, updateStorageSettings, testStorageSettings,
     fetchSocialLoginSettings, updateSocialLoginSettings
 } from "../../../store/slices/settingsSlice";
 import {
@@ -271,14 +271,26 @@ export default function SettingsPage() {
     });
 
     const [storageForm, setStorageForm] = useState({
-        storage_type: 's3',
+        storage_driver: 'local',
+        storage_type: 'local',
+        local_storage_path: 'storage/app/public',
+        local_public_url: '',
+        local_visibility: 'public',
         s3_key: '',
         s3_secret: '',
         s3_region: 'us-east-1',
         s3_bucket: '',
         s3_url: '',
         s3_endpoint: '',
+        s3_visibility: 'public',
+        r2_account_id: '',
+        r2_key: '',
+        r2_secret: '',
+        r2_bucket: '',
+        r2_url: '',
+        r2_visibility: 'public',
     });
+    const [isTestingStorage, setIsTestingStorage] = useState(false);
 
     const [emailForm, setEmailForm] = useState({
         email_setting_enable: 'on',
@@ -358,14 +370,26 @@ export default function SettingsPage() {
                 razorpay_secret: general.razorpay_secret || '',
                 razorpay_description: general.razorpay_description || 'Razorpay Payment',
             });
+            const driver = general.storage_driver || general.storage_type || 'local';
             setStorageForm({
-                storage_type: general.storage_type || 's3',
+                storage_driver: driver,
+                storage_type: driver,
+                local_storage_path: general.local_storage_path || 'storage/app/public',
+                local_public_url: general.local_public_url || '',
+                local_visibility: general.local_visibility || 'public',
                 s3_key: general.s3_key || '',
                 s3_secret: general.s3_secret || '',
                 s3_region: general.s3_region || 'us-east-1',
                 s3_bucket: general.s3_bucket || '',
                 s3_url: general.s3_url || '',
                 s3_endpoint: general.s3_endpoint || '',
+                s3_visibility: general.s3_visibility || 'public',
+                r2_account_id: general.r2_account_id || '',
+                r2_key: general.r2_key || '',
+                r2_secret: general.r2_secret || '',
+                r2_bucket: general.r2_bucket || '',
+                r2_url: general.r2_url || '',
+                r2_visibility: general.r2_visibility || 'public',
             });
             setEmailForm({
                 email_setting_enable: general.email_setting_enable || 'on',
@@ -508,6 +532,18 @@ export default function SettingsPage() {
             showModal("error", "Error", err || "Failed to save storage settings");
         } finally {
             setIsSavingStorage(false);
+        }
+    };
+
+    const handleTestStorage = async () => {
+        setIsTestingStorage(true);
+        try {
+            const res = await dispatch(testStorageSettings(storageForm)).unwrap();
+            showModal("success", "Storage Connection Verified", res.message || "Test file uploaded, verified, and cleaned up successfully!");
+        } catch (err: any) {
+            showModal("error", "Storage Connection Failed", err || "Unable to write/read/delete test file on selected storage provider.");
+        } finally {
+            setIsTestingStorage(false);
         }
     };
 
@@ -1136,29 +1172,92 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* File Storage */}
+                    {/* File Storage Manager */}
                     {tab === "int-storage" && (
                         <div className="space-y-6 slide-up">
-                            <IntegrationHeader title="AWS S3 Storage" desc="Send assets and store heavy user attachments globally." Icon={UploadCloud} color="#f59e0b" />
+                            <IntegrationHeader title="Production Storage Manager" desc="Centralized media and attachment storage provider (Local, Amazon S3, Cloudflare R2)." Icon={UploadCloud} color="#f59e0b" />
                             <form onSubmit={handleSaveStorage}>
-                                <Section title="IAM Credentials">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <InputField label="Storage Type" value={storageForm.storage_type} onChange={(e: any) => setStorageForm({ ...storageForm, storage_type: e.target.value })} placeholder="s3" />
-                                        <InputField label="AWS Region" value={storageForm.s3_region} onChange={(e: any) => setStorageForm({ ...storageForm, s3_region: e.target.value })} placeholder="us-east-1" />
-                                        <InputField label="S3 Bucket Name" value={storageForm.s3_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, s3_bucket: e.target.value })} placeholder="botchat-uploads-prod" />
-                                        <InputField label="S3 URL" value={storageForm.s3_url} onChange={(e: any) => setStorageForm({ ...storageForm, s3_url: e.target.value })} placeholder="https://s3.amazonaws.com" />
-                                        <InputField label="S3 Endpoint" value={storageForm.s3_endpoint} onChange={(e: any) => setStorageForm({ ...storageForm, s3_endpoint: e.target.value })} placeholder="https://s3.amazonaws.com" />
-                                        <div className="md:col-span-2">
-                                            <InputField label="AWS Access Key ID" value={storageForm.s3_key} onChange={(e: any) => setStorageForm({ ...storageForm, s3_key: e.target.value })} placeholder="AKIAIOSFODNN7EXAMPLE" />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <InputField label="AWS Secret Access Key" type="password" value={storageForm.s3_secret} onChange={(e: any) => setStorageForm({ ...storageForm, s3_secret: e.target.value })} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
-                                        </div>
+                                <Section title="Select Storage Provider">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                                        {[
+                                            { id: 'local', title: 'Local Storage', desc: 'Direct web server disk storage' },
+                                            { id: 's3', title: 'Amazon S3', desc: 'AWS S3 cloud object storage' },
+                                            { id: 'r2', title: 'Cloudflare R2', desc: 'S3-compatible zero egress storage' },
+                                        ].map((drv) => (
+                                            <div
+                                                key={drv.id}
+                                                onClick={() => setStorageForm({ ...storageForm, storage_driver: drv.id, storage_type: drv.id })}
+                                                className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                                                    storageForm.storage_driver === drv.id
+                                                        ? "border-[var(--brand-color)] bg-[var(--brand-color)]/10 font-semibold shadow-sm"
+                                                        : "border-[var(--border-color)] hover:border-gray-400"
+                                                }`}
+                                            >
+                                                <div className="text-sm font-bold text-[var(--foreground)]">{drv.title}</div>
+                                                <div className="text-xs text-[var(--muted)] mt-1">{drv.desc}</div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
-                                        <button type="submit" disabled={isSavingStorage} className="w-full px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
-                                            style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingStorage ? 0.7 : 1 }}>
-                                            {isSavingStorage ? "Saving..." : "Save Credentials"}
+
+                                    {/* Local Storage Fields */}
+                                    {storageForm.storage_driver === 'local' && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-[var(--border-color)] pt-5">
+                                            <InputField label="Storage Path" value={storageForm.local_storage_path} onChange={(e: any) => setStorageForm({ ...storageForm, local_storage_path: e.target.value })} placeholder="storage/app/public" />
+                                            <InputField label="Public URL" value={storageForm.local_public_url} onChange={(e: any) => setStorageForm({ ...storageForm, local_public_url: e.target.value })} placeholder="https://example.com/storage" />
+                                            <div className="md:col-span-2">
+                                                <InputField label="Default Visibility" value={storageForm.local_visibility} onChange={(e: any) => setStorageForm({ ...storageForm, local_visibility: e.target.value })} placeholder="public" />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Amazon S3 Fields */}
+                                    {storageForm.storage_driver === 's3' && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-[var(--border-color)] pt-5">
+                                            <InputField label="AWS Access Key ID" value={storageForm.s3_key} onChange={(e: any) => setStorageForm({ ...storageForm, s3_key: e.target.value })} placeholder="AKIAIOSFODNN7EXAMPLE" />
+                                            <InputField label="AWS Secret Access Key" type="password" value={storageForm.s3_secret} onChange={(e: any) => setStorageForm({ ...storageForm, s3_secret: e.target.value })} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
+                                            <InputField label="AWS Region" value={storageForm.s3_region} onChange={(e: any) => setStorageForm({ ...storageForm, s3_region: e.target.value })} placeholder="us-east-1" />
+                                            <InputField label="S3 Bucket Name" value={storageForm.s3_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, s3_bucket: e.target.value })} placeholder="botchat-uploads-prod" />
+                                            <InputField label="Custom CDN URL (Optional)" value={storageForm.s3_url} onChange={(e: any) => setStorageForm({ ...storageForm, s3_url: e.target.value })} placeholder="https://cdn.example.com" />
+                                            <InputField label="Custom Endpoint (Optional)" value={storageForm.s3_endpoint} onChange={(e: any) => setStorageForm({ ...storageForm, s3_endpoint: e.target.value })} placeholder="https://s3.us-east-1.amazonaws.com" />
+                                        </div>
+                                    )}
+
+                                    {/* Cloudflare R2 Fields */}
+                                    {storageForm.storage_driver === 'r2' && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-[var(--border-color)] pt-5">
+                                            <InputField label="Cloudflare Account ID" value={storageForm.r2_account_id} onChange={(e: any) => setStorageForm({ ...storageForm, r2_account_id: e.target.value })} placeholder="9b8a7c6d5e4f3a2b1c0d" />
+                                            <InputField label="Bucket Name" value={storageForm.r2_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, r2_bucket: e.target.value })} placeholder="botchat-r2-bucket" />
+                                            <InputField label="R2 Access Key ID" value={storageForm.r2_key} onChange={(e: any) => setStorageForm({ ...storageForm, r2_key: e.target.value })} placeholder="Access Key ID" />
+                                            <InputField label="R2 Secret Access Key" type="password" value={storageForm.r2_secret} onChange={(e: any) => setStorageForm({ ...storageForm, r2_secret: e.target.value })} placeholder="Secret Access Key" />
+                                            <div className="md:col-span-2">
+                                                <InputField label="Public URL / Custom Domain (Optional)" value={storageForm.r2_url} onChange={(e: any) => setStorageForm({ ...storageForm, r2_url: e.target.value })} placeholder="https://pub-xxxx.r2.dev or https://media.yourdomain.com" />
+                                            </div>
+                                            {storageForm.r2_account_id && (
+                                                <div className="md:col-span-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 dark:text-blue-400">
+                                                    <strong>Auto-generated Endpoint:</strong> https://{storageForm.r2_account_id.trim()}.r2.cloudflarestorage.com
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end">
+                                        <button
+                                            type="button"
+                                            disabled={isTestingStorage}
+                                            onClick={handleTestStorage}
+                                            className="w-full px-5 py-2.5 rounded-xl text-sm font-semibold border border-[var(--border-color)] hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-sm sm:w-auto"
+                                        >
+                                            <RefreshCw className={`w-4 h-4 inline mr-2 ${isTestingStorage ? "animate-spin" : ""}`} />
+                                            {isTestingStorage ? "Testing Connection..." : "Test Connection"}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={isSavingStorage}
+                                            className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm sm:w-auto"
+                                            style={{ background: "var(--brand-gradient)", color: "white", opacity: isSavingStorage ? 0.7 : 1 }}
+                                        >
+                                            <Save className="w-4 h-4 inline mr-2" />
+                                            {isSavingStorage ? "Saving..." : "Save Settings"}
                                         </button>
                                     </div>
                                 </Section>

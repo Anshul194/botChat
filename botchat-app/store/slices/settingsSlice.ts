@@ -372,6 +372,18 @@ export const updateStorageSettings = createAsyncThunk(
     }
 );
 
+export const testStorageSettings = createAsyncThunk(
+    'settings/testStorage',
+    async (payload: Record<string, any>, { rejectWithValue }) => {
+        try {
+            const res = await api.post('/settings/storage/test', payload);
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
 // App Settings (logo & favicon upload)
 export const updateAppSettings = createAsyncThunk(
     'settings/updateApp',
