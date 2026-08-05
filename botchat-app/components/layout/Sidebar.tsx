@@ -10,7 +10,10 @@ import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
     ChevronDown,
+    HelpCircle,
+    FolderTree,
     LayoutDashboard,
+
     MessagesSquare,
     Zap,
     GitBranch,
@@ -133,6 +136,12 @@ const workspaceNav = [
         href: "/dashboard/support",
         ariaLabel: "Support Tickets",
     },
+    {
+        label: "FAQ",
+        icon: HelpCircle,
+        href: "/dashboard/faq",
+        ariaLabel: "Frequently Asked Questions",
+    },
 ];
 
 const adminNav = [
@@ -155,11 +164,24 @@ const adminNav = [
         ariaLabel: "Manage support tickets",
     },
     {
+        label: "FAQ Categories",
+        icon: FolderTree,
+        href: "/dashboard/superadmin/faq-categories",
+        ariaLabel: "Manage FAQ Categories",
+    },
+    {
+        label: "FAQ List",
+        icon: HelpCircle,
+        href: "/dashboard/superadmin/faqs",
+        ariaLabel: "Manage FAQ List",
+    },
+    {
         label: "Custom Domains",
         icon: Globe,
         href: "/dashboard/superadmin/domains",
         ariaLabel: "Manage tenant domain requests",
     },
+
     {
         label: "Plan Management",
         icon: ShieldCheck,
