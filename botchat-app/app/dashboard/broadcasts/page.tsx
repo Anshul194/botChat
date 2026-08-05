@@ -31,8 +31,11 @@ import {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
     draft: { label: "Draft", color: "#94a3b8", bg: "rgba(148,163,184,0.1)", icon: Edit3 },
     scheduled: { label: "Scheduled", color: "#f59e0b", bg: "rgba(245,158,11,0.1)", icon: Clock },
+    ready: { label: "Ready", color: "#8b5cf6", bg: "rgba(139,92,246,0.1)", icon: CheckCircle2 },
+    queued: { label: "Queued", color: "#06b6d4", bg: "rgba(6,182,212,0.1)", icon: Clock },
     sending: { label: "Sending", color: "#06b6d4", bg: "rgba(6,182,212,0.1)", icon: Play },
-    sent: { label: "Sent", color: "#10b981", bg: "rgba(16,185,129,0.1)", icon: CheckCircle2 },
+    completed: { label: "Completed", color: "#10b981", bg: "rgba(16,185,129,0.1)", icon: CheckCircle2 },
+    sent: { label: "Completed", color: "#10b981", bg: "rgba(16,185,129,0.1)", icon: CheckCircle2 },
     failed: { label: "Failed", color: "#ef4444", bg: "rgba(239,68,68,0.1)", icon: XCircle },
     cancelled: { label: "Cancelled", color: "#6b7280", bg: "rgba(107,114,128,0.1)", icon: PauseCircle },
 };
@@ -311,7 +314,7 @@ export default function BroadcastsPage() {
         total: campaigns.length,
         draft: campaigns.filter((c) => c.status === "draft").length,
         scheduled: campaigns.filter((c) => c.status === "scheduled").length,
-        sent: campaigns.filter((c) => c.status === "sent").length,
+        sent: campaigns.filter((c) => c.status === "completed" || c.status === "sent").length,
     };
 
     return (
@@ -344,7 +347,7 @@ export default function BroadcastsPage() {
                     { label: "Total Campaigns", value: stats.total, color: "#7c3aed", icon: Radio },
                     { label: "Drafts", value: stats.draft, color: "#94a3b8", icon: Edit3 },
                     { label: "Scheduled", value: stats.scheduled, color: "#f59e0b", icon: Clock },
-                    { label: "Sent", value: stats.sent, color: "#10b981", icon: Send },
+                    { label: "Sent / Completed", value: stats.sent, color: "#10b981", icon: Send },
                 ].map((s) => (
                     <div key={s.label} className="glass-card rounded-2xl p-4">
                         <div className="flex items-center gap-3">
@@ -375,17 +378,23 @@ export default function BroadcastsPage() {
                 </div>
 
                 <div className="flex items-center rounded-xl p-1 gap-1 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-1 sm:overflow-visible" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
-                    {(["all", "draft", "scheduled", "sent", "failed"] as const).map((s) => (
+                    {[
+                        { id: "all", label: "all" },
+                        { id: "draft", label: "draft" },
+                        { id: "scheduled", label: "scheduled" },
+                        { id: "completed", label: "sent" },
+                        { id: "failed", label: "failed" },
+                    ].map((tab) => (
                         <button
-                            key={s}
-                            onClick={() => setStatusFilter(s)}
+                            key={tab.id}
+                            onClick={() => setStatusFilter(tab.id)}
                             className="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium capitalize transition-all whitespace-nowrap shrink-0"
-                            style={statusFilter === s
+                            style={statusFilter === tab.id
                                 ? { background: "var(--brand-gradient)", color: "white" }
                                 : { color: "var(--muted-foreground)" }
                             }
                         >
-                            {s}
+                            {tab.label}
                         </button>
                     ))}
                 </div>
