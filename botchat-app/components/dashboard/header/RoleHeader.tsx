@@ -32,26 +32,14 @@ export const RoleHeader: React.FC = () => {
     const isSuperAdmin = role === 'super_admin';
 
     return (
-        <div
-            className="sticky top-0 z-[90] w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 transition-all duration-300"
-            style={{
-                background: "var(--topbar-bg, rgba(10, 10, 10, 0.7))",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                borderBottom: "1px solid var(--topbar-border, rgba(255, 255, 255, 0.06))",
-                boxShadow: "0 8px 32px -8px rgba(0, 0, 0, 0.3)",
-            }}
-        >
+        <div className="flex items-center gap-2 lg:gap-4 flex-1 min-w-0 px-2">
             {/* Left section: Workspace & Plan */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto shrink-0">
+            <div className="hidden md:flex items-center gap-2 shrink-0">
                 <PlanCard data={data} />
-                <div className="flex md:hidden overflow-x-auto no-scrollbar pb-1 gap-2 border-t border-white/5 pt-3 mt-1">
-                    <RoleActions data={data} />
-                </div>
             </div>
 
             {/* Center section: Dynamic Cards Loop */}
-            <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar py-0.5">
+            <div className="hidden lg:flex flex-1 min-w-0 overflow-x-auto no-scrollbar items-center">
                 {isSuperAdmin && platform_stats ? (
                     <div className="flex items-center gap-3 min-w-max">
                         <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400">
@@ -72,9 +60,9 @@ export const RoleHeader: React.FC = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-3 min-w-max snap-x snap-mandatory">
+                    <div className="flex items-center gap-3 min-w-max">
                         {cards && cards.map((card) => (
-                            <div key={card.id} className="snap-start transition-transform hover:scale-[1.02] active:scale-95">
+                            <div key={card.id} className="transition-transform hover:scale-[1.02] active:scale-95">
                                 <UsageCard
                                     card={card}
                                     compact={true}
@@ -87,7 +75,7 @@ export const RoleHeader: React.FC = () => {
             </div>
 
             {/* Desktop Right Quick Actions */}
-            <div className="hidden md:flex items-center justify-end shrink-0 pl-4 border-l border-white/10 ml-2">
+            <div className="hidden md:flex items-center justify-end shrink-0">
                 <RoleActions data={data} />
             </div>
         </div>

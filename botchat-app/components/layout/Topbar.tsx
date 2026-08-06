@@ -14,6 +14,7 @@ import { logoutUser, fetchMe } from "@/store/slices/authSlice";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { HeaderClock } from "@/components/layout/HeaderClock";
 import { useTourContext } from "@/components/onboarding/OnboardingTour";
+import { RoleHeader } from "@/components/dashboard/header/RoleHeader";
 
 interface TopbarProps {
     onMenuToggle: () => void;
@@ -149,7 +150,13 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     }}>{page}</span>
             </div>
 
-            <HeaderClock />
+            <div className="flex-1 min-w-0 overflow-hidden flex items-center justify-end">
+                <RoleHeader />
+            </div>
+
+            <div className="hidden xl:block">
+                <HeaderClock />
+            </div>
 
             <div className="flex items-center gap-0.5 sm:gap-1.5 ml-auto flex-shrink-0">
                 <div className="w-px h-4 sm:h-5 mx-0.5 sm:mx-1"

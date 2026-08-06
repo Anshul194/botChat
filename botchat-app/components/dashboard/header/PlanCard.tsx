@@ -57,7 +57,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ data }) => {
 
     return (
         <div
-            className="flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl shrink-0 transition-all duration-300 w-full sm:w-auto hover:bg-white/5"
+            className="flex items-center gap-2.5 sm:gap-3 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl shrink-0 transition-all duration-300 w-full sm:w-auto hover:bg-white/5"
             style={{
                 background: "var(--glass-bg, rgba(255, 255, 255, 0.03))",
                 border: "1px solid var(--glass-border, rgba(255, 255, 255, 0.08))",
@@ -66,10 +66,10 @@ export const PlanCard: React.FC<PlanCardProps> = ({ data }) => {
             }}
         >
             <div
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-[0_0_15px_rgba(108,92,231,0.5)]"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-white shrink-0 shadow-[0_0_15px_rgba(108,92,231,0.5)]"
                 style={{ background: "var(--brand-gradient, linear-gradient(135deg, #6C5CE7, #10b981))" }}
             >
-                <Sparkles className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
 
             <div className="min-w-0 flex-1">
