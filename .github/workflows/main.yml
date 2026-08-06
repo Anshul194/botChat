@@ -1,9 +1,7 @@
 name: Deploy Next.js to cPanel
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch: # Disabled automatic push deploy — use ./deploy.sh instead
 
 jobs:
   build-and-deploy:
