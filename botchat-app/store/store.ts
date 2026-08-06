@@ -19,6 +19,7 @@ import paymentReducer from './slices/paymentSlice';
 import superadminSubscriptionReducer from './slices/superadminSubscriptionSlice';
 import superadminDomainsReducer from './slices/superadminDomainsSlice';
 import notificationReducer from './slices/notificationSlice';
+import dashboardHeaderReducer from './slices/dashboardHeaderSlice';
 
 export const store = configureStore({
     reducer: {
@@ -41,6 +42,7 @@ export const store = configureStore({
         superadminSubscription: superadminSubscriptionReducer,
         superadminDomains: superadminDomainsReducer,
         notification: notificationReducer,
+        dashboardHeader: dashboardHeaderReducer,
     },
     devTools: process.env.NODE_ENV !== 'production',
 
