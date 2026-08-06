@@ -28,7 +28,7 @@ export function Section({ title, desc, children, icon, rightContent }: {
     );
 }
 
-export function InputField({ label, name, type = "text", placeholder, defaultValue, value, onChange, readOnly }: { label: string; name?: string; type?: string; placeholder?: string; defaultValue?: string; value?: string; onChange?: any; readOnly?: boolean }) {
+export function InputField({ label, name, type = "text", placeholder, defaultValue, value, onChange, readOnly, autoComplete }: { label: string; name?: string; type?: string; placeholder?: string; defaultValue?: string; value?: string; onChange?: any; readOnly?: boolean; autoComplete?: string }) {
     const resolvedReadOnly = readOnly ?? (!!value && !onChange);
 
     return (
@@ -37,6 +37,7 @@ export function InputField({ label, name, type = "text", placeholder, defaultVal
             <input
                 type={type}
                 name={name}
+                autoComplete={autoComplete}
                 placeholder={placeholder}
                 defaultValue={value === undefined ? defaultValue : undefined}
                 value={value}

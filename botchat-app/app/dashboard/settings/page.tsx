@@ -1213,24 +1213,24 @@ export default function SettingsPage() {
                                     {/* Amazon S3 Fields */}
                                     {storageForm.storage_driver === 's3' && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-[var(--border-color)] pt-5">
-                                            <InputField label="AWS Access Key ID" value={storageForm.s3_key} onChange={(e: any) => setStorageForm({ ...storageForm, s3_key: e.target.value })} placeholder="AKIAIOSFODNN7EXAMPLE" />
-                                            <InputField label="AWS Secret Access Key" type="password" value={storageForm.s3_secret} onChange={(e: any) => setStorageForm({ ...storageForm, s3_secret: e.target.value })} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
-                                            <InputField label="AWS Region" value={storageForm.s3_region} onChange={(e: any) => setStorageForm({ ...storageForm, s3_region: e.target.value })} placeholder="us-east-1" />
-                                            <InputField label="S3 Bucket Name" value={storageForm.s3_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, s3_bucket: e.target.value })} placeholder="botchat-uploads-prod" />
-                                            <InputField label="Custom CDN URL (Optional)" value={storageForm.s3_url} onChange={(e: any) => setStorageForm({ ...storageForm, s3_url: e.target.value })} placeholder="https://cdn.example.com" />
-                                            <InputField label="Custom Endpoint (Optional)" value={storageForm.s3_endpoint} onChange={(e: any) => setStorageForm({ ...storageForm, s3_endpoint: e.target.value })} placeholder="https://s3.us-east-1.amazonaws.com" />
+                                            <InputField label="AWS Access Key ID" autoComplete="off" value={storageForm.s3_key} onChange={(e: any) => setStorageForm({ ...storageForm, s3_key: e.target.value })} placeholder="AKIAIOSFODNN7EXAMPLE" />
+                                            <InputField label="AWS Secret Access Key" type="password" autoComplete="new-password" value={storageForm.s3_secret} onChange={(e: any) => setStorageForm({ ...storageForm, s3_secret: e.target.value })} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
+                                            <InputField label="AWS Region" autoComplete="off" value={storageForm.s3_region} onChange={(e: any) => setStorageForm({ ...storageForm, s3_region: e.target.value })} placeholder="us-east-1" />
+                                            <InputField label="S3 Bucket Name" autoComplete="off" value={storageForm.s3_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, s3_bucket: e.target.value })} placeholder="botchat-uploads-prod" />
+                                            <InputField label="Custom CDN URL (Optional)" autoComplete="off" value={storageForm.s3_url} onChange={(e: any) => setStorageForm({ ...storageForm, s3_url: e.target.value })} placeholder="https://cdn.example.com" />
+                                            <InputField label="Custom Endpoint (Optional)" autoComplete="off" value={storageForm.s3_endpoint} onChange={(e: any) => setStorageForm({ ...storageForm, s3_endpoint: e.target.value })} placeholder="https://s3.us-east-1.amazonaws.com" />
                                         </div>
                                     )}
 
                                     {/* Cloudflare R2 Fields */}
                                     {storageForm.storage_driver === 'r2' && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-[var(--border-color)] pt-5">
-                                            <InputField label="Cloudflare Account ID" value={storageForm.r2_account_id} onChange={(e: any) => setStorageForm({ ...storageForm, r2_account_id: e.target.value })} placeholder="9b8a7c6d5e4f3a2b1c0d" />
-                                            <InputField label="Bucket Name" value={storageForm.r2_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, r2_bucket: e.target.value })} placeholder="botchat-r2-bucket" />
-                                            <InputField label="R2 Access Key ID" value={storageForm.r2_key} onChange={(e: any) => setStorageForm({ ...storageForm, r2_key: e.target.value })} placeholder="Access Key ID" />
-                                            <InputField label="R2 Secret Access Key" type="password" value={storageForm.r2_secret} onChange={(e: any) => setStorageForm({ ...storageForm, r2_secret: e.target.value })} placeholder="Secret Access Key" />
+                                            <InputField label="Cloudflare Account ID" autoComplete="off" value={storageForm.r2_account_id} onChange={(e: any) => setStorageForm({ ...storageForm, r2_account_id: e.target.value })} placeholder="9b8a7c6d5e4f3a2b1c0d" />
+                                            <InputField label="Bucket Name" autoComplete="off" value={storageForm.r2_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, r2_bucket: e.target.value })} placeholder="botchat-r2-bucket" />
+                                            <InputField label="R2 Access Key ID" autoComplete="off" value={storageForm.r2_key} onChange={(e: any) => setStorageForm({ ...storageForm, r2_key: e.target.value })} placeholder="Access Key ID" />
+                                            <InputField label="R2 Secret Access Key" type="password" autoComplete="new-password" value={storageForm.r2_secret} onChange={(e: any) => setStorageForm({ ...storageForm, r2_secret: e.target.value })} placeholder="Secret Access Key" />
                                             <div className="md:col-span-2">
-                                                <InputField label="Public URL / Custom Domain (Optional)" value={storageForm.r2_url} onChange={(e: any) => setStorageForm({ ...storageForm, r2_url: e.target.value })} placeholder="https://pub-xxxx.r2.dev or https://media.yourdomain.com" />
+                                                <InputField label="Public URL / Custom Domain (Optional)" autoComplete="off" value={storageForm.r2_url} onChange={(e: any) => setStorageForm({ ...storageForm, r2_url: e.target.value })} placeholder="https://pub-xxxx.r2.dev or https://media.yourdomain.com" />
                                             </div>
                                             {storageForm.r2_account_id && (
                                                 <div className="md:col-span-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 dark:text-blue-400">
