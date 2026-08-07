@@ -497,10 +497,12 @@ export default function ChatOrbitSection() {
 
   useEffect(() => {
     let animId: number;
+    let isRunning = false;
     const startTime = performance.now();
     const duration = 12000;
 
     const tick = (now: number) => {
+      if (!isRunning) return;
       const elapsed = (now - startTime) % duration;
       const p = elapsed / duration;
       progressRef.current = p;
@@ -509,8 +511,26 @@ export default function ChatOrbitSection() {
       animId = requestAnimationFrame(tick);
     };
 
-    animId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animId);
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries[0].isIntersecting;
+        if (visible && !isRunning) {
+          isRunning = true;
+          animId = requestAnimationFrame(tick);
+        } else if (!visible && isRunning) {
+          isRunning = false;
+          cancelAnimationFrame(animId);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    if (wrapRef.current) io.observe(wrapRef.current);
+    return () => {
+      io.disconnect();
+      isRunning = false;
+      cancelAnimationFrame(animId);
+    };
   }, [compute]);
 
   useEffect(() => {

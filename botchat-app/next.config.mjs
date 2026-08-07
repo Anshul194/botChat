@@ -22,6 +22,13 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: "/",
+        locale: false,
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=600, s-maxage=3600, stale-while-revalidate=604800" },
+        ],
+      },
+      {
         source: "/:all*(svg|jpg|jpeg|png|gif|ico|webp|avif)",
         locale: false,
         headers: [
