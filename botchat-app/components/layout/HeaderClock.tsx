@@ -26,7 +26,7 @@ export function HeaderClock() {
   if (!now) return null
 
   const dayOfWeek = now.format('ddd')
-  const dateStr = now.format(dateFormat.replace('MMM DD, YYYY', 'MMM DD'))
+  const dateStr = now.format('MMM DD')
   const timeFormatString = timeFormat.includes('hh') || timeFormat.includes('g') ? 'hh:mm' : 'HH:mm'
   const timeStr = now.format(timeFormatString)
   const secStr = now.format('ss')
@@ -40,7 +40,7 @@ export function HeaderClock() {
         border: '1px solid var(--topbar-item-border)',
         color: 'var(--foreground)',
       }}
-      title={`Live Clock (${timezone} ${gmtOffset})`}
+      title={`Live Clock (${timezone} ${gmtOffset}) — ${now.format('dddd, MMMM D, YYYY')}`}
     >
       {/* Live pulse + time — always shown */}
       <div className="flex items-center gap-1.5">
@@ -56,8 +56,8 @@ export function HeaderClock() {
         {meridiem && <span className="text-[9px] font-black opacity-70">{meridiem}</span>}
       </div>
 
-      {/* Date — only at 2xl (1536px+) */}
-      <div className="hidden 2xl:flex items-center gap-2">
+      {/* Date — only at widescreen min-1700px */}
+      <div className="hidden min-[1700px]:flex items-center gap-2">
         <div className="w-px h-3 bg-muted-foreground/20" />
         <div className="flex items-center gap-1 opacity-80 text-[11px] whitespace-nowrap">
           <span className="font-bold">{dayOfWeek}</span>
@@ -65,8 +65,8 @@ export function HeaderClock() {
         </div>
       </div>
 
-      {/* Timezone — only at 2xl (1536px+) */}
-      <div className="hidden 2xl:flex items-center gap-2">
+      {/* Timezone — only at widescreen min-1700px */}
+      <div className="hidden min-[1700px]:flex items-center gap-2">
         <div className="w-px h-3 bg-muted-foreground/20" />
         <div className="flex items-center gap-1 opacity-80 text-[10px]">
           <Globe className="w-3 h-3 text-purple-400" />

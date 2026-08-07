@@ -244,9 +244,9 @@ export function TopbarUsagePopup() {
     return (
         <div className="relative flex items-center gap-1.5 flex-shrink-0" ref={ref}>
 
-            {/* ── Plan Chip — visible md+ ───────────────────────────── */}
+            {/* ── Plan Chip — visible xl+ ───────────────────────────── */}
             <div
-                className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full cursor-pointer select-none transition-all duration-200 hover:opacity-80 active:scale-95 flex-shrink-0"
+                className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full cursor-pointer select-none transition-all duration-200 hover:opacity-80 active:scale-95 flex-shrink-0"
                 style={{
                     background: `color-mix(in srgb, ${statusColor} 12%, var(--topbar-item-bg, rgba(255,255,255,0.06)))`,
                     border: `1px solid color-mix(in srgb, ${statusColor} 30%, transparent)`,
@@ -274,12 +274,12 @@ export function TopbarUsagePopup() {
                 </span>
             </div>
 
-            {/* ── Always show first 3 pills — hidden on mobile to avoid overflow ── */}
+            {/* ── Always show first 3 pills — hidden on mobile/tablet to avoid overflow ── */}
             {allCards.slice(0, 3).map((card) => (
                 <button
                     key={card.id}
                     onClick={() => setOpen(true)}
-                    className="hidden md:flex items-center px-1.5 py-1 rounded-xl transition-all duration-200 hover:opacity-80 active:scale-95 cursor-pointer border-none outline-none bg-transparent flex-shrink-0"
+                    className="hidden lg:flex items-center px-1.5 py-1 rounded-xl transition-all duration-200 hover:opacity-80 active:scale-95 cursor-pointer border-none outline-none bg-transparent flex-shrink-0"
                 >
                     <InlineRingPill card={card} />
                 </button>
