@@ -12,7 +12,6 @@ import BillingWarningBanner from "@/components/subscription/BillingWarningBanner
 import RenewalPopup from "@/components/subscription/RenewalPopup";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
 import { OnboardingTourProvider } from "@/components/onboarding/OnboardingTour";
-import { RoleHeader } from "@/components/dashboard/header/RoleHeader";
 
 const EXPIRED_ALLOWED_PATHS = ["/dashboard/billing", "/dashboard/profile"];
 

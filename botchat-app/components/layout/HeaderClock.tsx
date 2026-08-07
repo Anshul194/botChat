@@ -26,7 +26,7 @@ export function HeaderClock() {
   if (!now) return null
 
   const dayOfWeek = now.format('ddd')
-  const dateStr = now.format(dateFormat.replace('MMM DD, YYYY', 'MMM DD'))
+  const dateStr = now.format('MMM DD')
   const timeFormatString = timeFormat.includes('hh') || timeFormat.includes('g') ? 'hh:mm' : 'HH:mm'
   const timeStr = now.format(timeFormatString)
   const secStr = now.format('ss')
@@ -34,15 +34,15 @@ export function HeaderClock() {
 
   return (
     <div
-      className="hidden xl:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 group"
+      className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 group"
       style={{
         background: 'var(--topbar-item-bg)',
         border: '1px solid var(--topbar-item-border)',
         color: 'var(--foreground)',
       }}
-      title={`Live Clock (${timezone} ${gmtOffset})`}
+      title={`Live Clock (${timezone} ${gmtOffset}) — ${now.format('dddd, MMMM D, YYYY')}`}
     >
-      {/* Live pulse + time */}
+      {/* Live pulse + time — always shown */}
       <div className="flex items-center gap-1.5">
         <span className="relative flex w-1.5 h-1.5">
           <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
@@ -56,20 +56,22 @@ export function HeaderClock() {
         {meridiem && <span className="text-[9px] font-black opacity-70">{meridiem}</span>}
       </div>
 
-      <div className="w-px h-3 bg-muted-foreground/20" />
-
-      {/* Date */}
-      <div className="flex items-center gap-1 opacity-80 text-[11px] whitespace-nowrap">
-        <span className="font-bold">{dayOfWeek}</span>
-        <span>{dateStr}</span>
+      {/* Date — only at widescreen min-1700px */}
+      <div className="hidden min-[1700px]:flex items-center gap-2">
+        <div className="w-px h-3 bg-muted-foreground/20" />
+        <div className="flex items-center gap-1 opacity-80 text-[11px] whitespace-nowrap">
+          <span className="font-bold">{dayOfWeek}</span>
+          <span>{dateStr}</span>
+        </div>
       </div>
 
-      <div className="w-px h-3 bg-muted-foreground/20" />
-
-      {/* Timezone badge */}
-      <div className="flex items-center gap-1 opacity-80 text-[10px]">
-        <Globe className="w-3 h-3 text-purple-400" />
-        <span className="font-mono font-semibold text-[10px] px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-400">{gmtOffset}</span>
+      {/* Timezone — only at widescreen min-1700px */}
+      <div className="hidden min-[1700px]:flex items-center gap-2">
+        <div className="w-px h-3 bg-muted-foreground/20" />
+        <div className="flex items-center gap-1 opacity-80 text-[10px]">
+          <Globe className="w-3 h-3 text-purple-400" />
+          <span className="font-mono font-semibold text-[10px] px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-400">{gmtOffset}</span>
+        </div>
       </div>
     </div>
   )
