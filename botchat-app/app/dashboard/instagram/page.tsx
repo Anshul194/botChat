@@ -50,7 +50,12 @@ interface InstagramAccount {
     };
 }
 
+import { useSearchParams } from "next/navigation";
+
 export default function InstagramPage() {
+    const searchParams = useSearchParams();
+    const highlightAccountId = searchParams.get("highlight_account");
+
     const [accounts, setAccounts] = useState<InstagramAccount[]>([]);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [isLoading, setIsLoading] = useState(true);
@@ -86,6 +91,19 @@ export default function InstagramPage() {
     useEffect(() => {
         fetchConnectedAccounts();
     }, []);
+
+    // Scroll into view & highlight account card if redirected with highlight_account query param
+    useEffect(() => {
+        if (highlightAccountId && accounts.length > 0) {
+            const timer = setTimeout(() => {
+                const el = document.getElementById(`account-card-${highlightAccountId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [highlightAccountId, accounts]);
 
     const handleInstagramConnect = useCallback(async () => {
         if (isConnecting) return;
@@ -422,10 +440,15 @@ export default function InstagramPage() {
                                 <div className="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 pl-3 sm:pl-8 border-l-2 ml-2 sm:ml-4 dark:border-neutral-800 pb-4">
                                     {group.instagrams.map((acc: any) => {
                                         const isActive = acc.is_active === "1" || acc.is_active === 1 || acc.is_active === true;
+                                        const isHighlighted = highlightAccountId && (String(acc.id) === String(highlightAccountId) || String(acc.instagram_id) === String(highlightAccountId));
                                         return (
                                             <div
                                                 key={acc.id}
-                                                className="group relative rounded-2xl border bg-[var(--card)] dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
+                                                id={`account-card-${acc.id}`}
+                                                className={cn(
+                                                    "group relative rounded-2xl border bg-[var(--card)] dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md",
+                                                    isHighlighted && "ring-2 ring-primary ring-offset-2 animate-pulse shadow-2xl border-primary"
+                                                )}
                                             >
                                                 <div className="flex items-start gap-4 mb-5">
                                                     <div className="relative shrink-0">
