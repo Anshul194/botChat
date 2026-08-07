@@ -14,6 +14,7 @@ import { logoutUser, fetchMe } from "@/store/slices/authSlice";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { HeaderClock } from "@/components/layout/HeaderClock";
 import { useTourContext } from "@/components/onboarding/OnboardingTour";
+import { TopbarUsagePopup } from "@/components/layout/TopbarUsagePopup";
 
 interface TopbarProps {
     onMenuToggle: () => void;
@@ -77,7 +78,7 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
 
     return (
         <header
-            className="h-[52px] sm:h-[60px] flex items-center px-2 sm:px-4 gap-1.5 sm:gap-3 flex-shrink-0 relative z-[100]"
+            className="h-[52px] sm:h-[60px] flex items-center px-2 sm:px-4 gap-1 sm:gap-2 flex-shrink-0 relative z-[100]"
             style={{
                 background: "var(--topbar-bg)",
                 backdropFilter: "blur(24px)",
@@ -136,11 +137,11 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
             <div className="w-px h-4 sm:h-5 flex-shrink-0"
                 style={{ background: "var(--topbar-item-border)" }} />
 
-            <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-shrink-0">
-                <span className="hidden sm:inline text-[10px] sm:text-[11px] font-semibold truncate max-w-[100px]" style={{ color: "var(--foreground)", opacity: 0.72 }}>{settings.appName}</span>
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0 overflow-hidden" style={{ maxWidth: 160 }}>
+                <span className="hidden sm:inline text-[10px] sm:text-[11px] font-semibold truncate max-w-[70px]" style={{ color: "var(--foreground)", opacity: 0.72 }}>{settings.appName}</span>
                 <span className="hidden sm:inline w-1 h-1 rounded-full flex-shrink-0"
                     style={{ background: "var(--nav-active-color)", boxShadow: "0 0 6px var(--nav-active-color)" }} />
-                <span className="text-[12px] sm:text-[13px] font-black tracking-tight truncate max-w-[120px] sm:max-w-none"
+                <span className="text-[12px] sm:text-[13px] font-black tracking-tight truncate"
                     style={{
                         background: "linear-gradient(90deg, var(--foreground) 40%, var(--nav-active-color))",
                         WebkitBackgroundClip: "text",
@@ -149,11 +150,17 @@ export default function Topbar({ onMenuToggle, collapsed, onToggleSidebar, mobil
                     }}>{page}</span>
             </div>
 
-            <HeaderClock />
+            {/* HeaderClock — only renders space when xl+ (matches hidden xl:flex inside) */}
+            <div className="hidden xl:block flex-shrink-0">
+                <HeaderClock />
+            </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1.5 ml-auto flex-shrink-0">
-                <div className="w-px h-4 sm:h-5 mx-0.5 sm:mx-1"
-                    style={{ background: "var(--topbar-divider)" }} />
+            {/* ── Center flex-1: usage pills fill all remaining space ── */}
+            <div className="flex-1 flex items-center justify-end gap-1 sm:gap-1.5 min-w-0">
+                <TopbarUsagePopup />
+            </div>
+
+            <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
 
                 <div data-tour="topbar-theme" className="flex-shrink-0"><ThemeToggle /></div>
 

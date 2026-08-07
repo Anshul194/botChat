@@ -12,7 +12,6 @@ import BillingWarningBanner from "@/components/subscription/BillingWarningBanner
 import RenewalPopup from "@/components/subscription/RenewalPopup";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
 import { OnboardingTourProvider } from "@/components/onboarding/OnboardingTour";
-import { RoleHeader } from "@/components/dashboard/header/RoleHeader";
 
 const EXPIRED_ALLOWED_PATHS = ["/dashboard/billing", "/dashboard/profile"];
 
@@ -152,7 +151,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
                         mobileSidebarOpen={mobileSidebarOpen}
                     />
-                    <RoleHeader />
                     <main className="flex-1 overflow-y-auto px-4 py-3 sm:px-6 sm:py-4">
                         <VerificationBanner />
                         <PlanExpiredBanner />
