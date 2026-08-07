@@ -16,12 +16,12 @@ export function InstaMinimalLayout({ profile, tabs, openEditor }: any) {
         return isEnabled && isActive;
     });
 
-    const heroBlock = allBlocks.find(b => {
+    const heroBlock = allBlocks.find((b: any) => {
         const type = getUiTypeFromBlock(b);
         return ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(type);
     });
     
-    const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
+    const contentBlocks = allBlocks.filter((b: any) => b.id !== heroBlock?.id);
 
     return (
         <div className="w-full min-h-full bg-[var(--card)] text-zinc-900 font-sans px-4 sm:px-6 py-12 sm:py-20 flex flex-col items-center selection:bg-zinc-100 relative overflow-hidden">

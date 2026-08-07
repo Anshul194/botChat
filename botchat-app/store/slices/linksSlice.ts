@@ -13,7 +13,46 @@ export interface Link {
     clicks?: number;
     status?: number;
     title?: string;
-    // Add other fields as needed
+    slug?: string;
+    id?: number | string;
+    is_enabled?: boolean | number;
+    app_linking?: {
+        is_enabled?: boolean | number;
+        app?: string;
+        ios_location_url?: string | null;
+        android_location_url?: string | null;
+    };
+    temporary_url?: {
+        start_date?: string | null;
+        end_date?: string | null;
+        clicks_limit?: number | null;
+        expiration_url?: string | null;
+    };
+    utm?: {
+        source?: string | null;
+        medium?: string | null;
+        campaign?: string | null;
+    };
+    protection?: {
+        password?: string | null;
+        sensitive_content?: boolean;
+    };
+    targeting?: {
+        type?: string | null;
+        rules?: { key: string; value: string }[];
+    };
+    cloaking?: {
+        is_enabled?: boolean | number;
+        title?: string | null;
+        meta_description?: string | null;
+        custom_js?: string | null;
+        favicon?: string | File | null;
+        opengraph?: string | File | null;
+    };
+    http_status_code?: number | null;
+    splash_page_id?: string | number | null;
+    pixels_ids?: number[];
+    pixels?: number[];
 }
 
 interface LinksState {

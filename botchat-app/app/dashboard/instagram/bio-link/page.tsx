@@ -61,6 +61,8 @@ interface BioAdvancedSettings {
     brandingTextColor: string;
     // Pixels
     pixelsEnabled: number[];
+    pixelFacebookEnabled: boolean;
+    pixelGoogleEnabled: boolean;
     // UTM
     utmSource: string;
     utmMedium: string;
@@ -110,6 +112,8 @@ const DEFAULT_ADVANCED_SETTINGS: BioAdvancedSettings = {
     brandingTextColor: "",
     // Pixels
     pixelsEnabled: [],
+    pixelFacebookEnabled: false,
+    pixelGoogleEnabled: false,
     // UTM
     utmSource: "",
     utmMedium: "",
@@ -1180,7 +1184,7 @@ function BioLinkBuilderContent() {
                 },
             };
             // Add pixels as top-level field, not nested in settings
-            payload.pixels_ids = (advancedSettings.pixelsEnabled as number[]) || [];
+            (payload as any).pixels_ids = (advancedSettings.pixelsEnabled as number[]) || [];
             await api.put(`/bio/pages/${linkId}`, payload);
             // Refresh profile to sync hydrated state
             await fetchBuilderData();

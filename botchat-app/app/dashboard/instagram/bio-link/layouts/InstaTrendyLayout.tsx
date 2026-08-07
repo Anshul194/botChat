@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
@@ -50,8 +50,8 @@ export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
             <div className="relative z-10 w-full mx-auto px-5 sm:px-8">
                 {/* Hero Section */}
                 {(() => {
-                    const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
-                    const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
+                    const heroBlock = allBlocks.find((b: any) => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
+                    const contentBlocks = allBlocks.filter((b: any) => b.id !== heroBlock?.id);
                     
                     return (
                         <React.Fragment>
@@ -86,7 +86,7 @@ export function InstaTrendyLayout({ profile, tabs, openEditor }: any) {
                                                 transition={{ duration: 2, repeat: Infinity }}
                                                 className="absolute -bottom-2 -right-2 px-3 py-1 bg-[var(--card)] text-black text-[10px] font-black rounded-full shadow-xl uppercase tracking-tighter"
                                             >
-                                                Live ✨
+                                                Live âœ¨
                                             </motion.div>
                                         </motion.div>
 
@@ -518,7 +518,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
                         {(blockItems.length > 0 ? blockItems : [
                             { t: 'Content Strategy', d: 'Growth & Aesthetics', p: '$$' },
                             { t: 'Visual Design', d: 'UI/UX for Creators', p: '$$$' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/[0.03] border border-white/10 hover:border-[#ff0080] transition-all flex items-center justify-between group shadow-xl">
                                 <div className="min-w-0 pr-4">
                                     <h4 className="text-[14px] sm:text-[16px] font-black text-white italic truncate">{item.t}</h4>
@@ -554,7 +554,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
                         {(blockItems.length > 0 ? blockItems : [
                             { n: 'Jade W.', d: 'Stylist', t: '"The only bio-link that actually matches my aesthetic. Absolute vibe."' },
                             { n: 'Leo K.', d: 'Musician', t: '"Sleek, fast, and looks incredible on mobile. Highly recommend."' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="p-6 sm:p-8 rounded-[2rem] bg-white/[0.02] border border-white/10 hover:border-[#ff0080]/50 transition-all relative group overflow-hidden">
                                 <div className="absolute top-0 left-0 w-1 h-full bg-[#ff0080]/30" />
                                 <p className="text-[14px] sm:text-[16px] text-white/70 italic leading-relaxed mb-6 font-medium">"{item.t || item.text || item.description}"</p>
@@ -600,7 +600,7 @@ const renderTrendySection = (block: any, accentColor: string, profile: any, open
                         {(blockItems.length > 0 ? blockItems : [
                             { q: 'Is this limited?', a: 'Only 50 memberships available per drop. Stay tuned for the next release.' },
                             { q: 'What is the utility?', a: 'Full access to the digital ecosystem and exclusive community events.' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.03] transition-all group">
                                 <div className="flex items-center justify-between mb-3">
                                     <h4 className="text-[13px] sm:text-[14px] font-black text-white italic">{item.q || item.title || item.question}</h4>
