@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 
+import { useSearchParams } from "next/navigation";
+
 interface FacebookPageData {
     id: number;
     page_id: string;
@@ -50,6 +52,9 @@ interface FacebookAccount {
 }
 
 export default function FacebookPage() {
+    const searchParams = useSearchParams();
+    const highlightPageId = searchParams.get("highlight_page");
+
     const [accounts, setAccounts] = useState<FacebookAccount[]>([]);
     const [pages, setPages] = useState<FacebookPageData[]>([]);
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -109,6 +114,19 @@ export default function FacebookPage() {
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
     }, []);
+
+    // Scroll into view & highlight page card if redirected with highlight_page query param
+    useEffect(() => {
+        if (highlightPageId && pages.length > 0) {
+            const timer = setTimeout(() => {
+                const el = document.getElementById(`page-card-${highlightPageId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [highlightPageId, pages]);
 
     const handleConnectFacebook = useCallback(async () => {
         if (isConnecting) return;
@@ -373,10 +391,16 @@ export default function FacebookPage() {
                                             ...rawPage,
                                             is_enabled: rawPage.is_enabled === "1" || rawPage.is_enabled === 1 || rawPage.is_enabled === true,
                                         };
+                                        const isHighlighted = highlightPageId && (String(page.id) === String(highlightPageId) || String(page.page_id) === String(highlightPageId));
+
                                         return (
                                             <div
                                                 key={page.id}
-                                                className="group relative rounded-2xl border bg-[var(--card)] dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md"
+                                                id={`page-card-${page.id}`}
+                                                className={cn(
+                                                    "group relative rounded-2xl border bg-[var(--card)] dark:bg-neutral-900 p-5 shadow-sm dark:border-neutral-800 transition duration-200 hover:shadow-md",
+                                                    isHighlighted && "ring-2 ring-primary ring-offset-2 animate-pulse shadow-2xl border-primary"
+                                                )}
                                             >
                                                 <div className="flex items-start gap-4 mb-5">
                                                     <div className="relative shrink-0">

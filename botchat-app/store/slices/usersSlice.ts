@@ -5,7 +5,15 @@ export interface UserDetail {
     id: number;
     name: string;
     email: string;
+    role?: string;
     type: string;
+    status?: string;
+    current_plan?: string;
+    raw_plan_name?: string;
+    plan_status?: string;
+    tenant?: string;
+    two_factor_enabled?: boolean;
+    last_login?: string;
     phone: string;
     country: string;
     country_code: string;
@@ -14,6 +22,7 @@ export interface UserDetail {
     plan_id: number | null;
     plan_expired_date: string | null;
     active_status: boolean;
+    is_suspended?: boolean;
     email_verified_at: string;
     phone_verified_at: string;
     roles: any;
@@ -28,6 +37,9 @@ interface UsersState {
     isLoading: boolean;
     error: string | null;
     total: number;
+    page: number;
+    perPage: number;
+    totalPages: number;
 }
 
 const initialState: UsersState = {
@@ -36,13 +48,16 @@ const initialState: UsersState = {
     isLoading: false,
     error: null,
     total: 0,
+    page: 1,
+    perPage: 15,
+    totalPages: 1,
 };
 
 export const fetchUsers = createAsyncThunk(
     'users/fetchUsers',
-    async (_, { rejectWithValue }) => {
+    async (params: Record<string, any> | undefined, { rejectWithValue }) => {
         try {
-            const response = await api.get('/users');
+            const response = await api.get('/users', { params });
             if (response.data.success) {
                 return response.data;
             }
@@ -138,8 +153,12 @@ const usersSlice = createSlice({
             })
             .addCase(fetchUsers.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.users = action.payload.data;
-                state.total = action.payload.meta?.total || action.payload.data.length;
+                state.users = action.payload.data || [];
+                const meta = action.payload.meta || {};
+                state.total = meta.total ?? action.payload.total ?? state.users.length;
+                state.page = meta.current_page ?? action.payload.current_page ?? 1;
+                state.perPage = meta.per_page ?? action.payload.per_page ?? 15;
+                state.totalPages = meta.last_page ?? action.payload.last_page ?? 1;
             })
             .addCase(fetchUsers.rejected, (state, action) => {
                 state.isLoading = false;
