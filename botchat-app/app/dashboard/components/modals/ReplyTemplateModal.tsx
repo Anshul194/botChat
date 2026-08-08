@@ -425,13 +425,29 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                   <div className="relative">
                     <select
                       value={form.page_id}
-                      onChange={e => setForm({ ...form, page_id: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-[var(--card)]"
+                      onChange={e => {
+                        const val = e.target.value;
+                        const p = pages.find(item => String(item.id) === String(val) || String(item.page_id) === String(val));
+                        if (p) {
+                          const isEnabled = Boolean(p.is_enabled ?? p.is_active ?? true);
+                          if (!isEnabled) {
+                            toast.error(`The selected ${platform === 'instagram' ? 'Instagram Account' : 'Facebook Page'} "${p.name}" is disabled. Please enable it in Integrations first.`);
+                            return;
+                          }
+                        }
+                        setForm({ ...form, page_id: val });
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:border-[var(--primary)] outline-none transition-all font-medium text-[14px] appearance-none cursor-pointer bg-[var(--card)] text-[var(--foreground)]"
                     >
                       <option value="">{isLoadingPages ? "Syncing..." : "Select..."}</option>
-                      {pages.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
-                      ))}
+                      {pages.map(p => {
+                        const isEnabled = Boolean(p.is_enabled ?? p.is_active ?? true);
+                        return (
+                          <option key={p.id} value={p.id} disabled={!isEnabled}>
+                            {p.name} {!isEnabled ? " (🔴 Disabled)" : " (🟢 Active)"}
+                          </option>
+                        );
+                      })}
                     </select>
                     <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]/70" />
                   </div>

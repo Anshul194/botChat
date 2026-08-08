@@ -5,7 +5,7 @@ import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick, ArrowLeft,
     Menu, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Instagram, Layers,
-    ChevronDown
+    ChevronDown, Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
 import IceBreakersPanel from "../../facebook/bot-replies/IceBreakersPanel";
 import { AiAgentSettingsPanel } from "../AiAgentSettingsPanel";
+import { ChannelDisabledWarningModal } from "@/components/channels/ChannelDisabledWarningModal";
+import { CollectedLeadsPanel } from "@/components/leads/CollectedLeadsPanel";
 
 
 interface BotReply {
@@ -49,6 +51,7 @@ interface ActionData {
 const MENUS = [
     { id: 'bot_reply', label: 'Bot Replies', icon: MessageSquare },
     { id: 'ice_breakers', label: 'Ice Breakers', icon: Sparkles },
+    { id: 'collected_leads', label: 'Collected Leads', icon: Users },
     { id: 'ai_agent', label: 'AI Agent', icon: Bot },
     { id: 'action_buttons', label: 'Action Buttons', icon: MousePointerClick },
     { id: 'persistent_menu', label: 'Persistent Menu', icon: Menu },
@@ -299,7 +302,27 @@ export default function InstagramBotRepliesPage() {
         router.push(`/dashboard/flows?id=${replyId}&platform=instagram`);
     };
 
+    const [warningModalOpen, setWarningModalOpen] = useState(false);
+    const [disabledClickedChannel, setDisabledClickedChannel] = useState<any>(null);
+
     const handleAccountSelect = (id: string | "all") => {
+        if (id !== "all") {
+            const acc = pages.find(p => p.instagram_id === id || String(p.id) === String(id));
+            if (acc) {
+                const isEnabled = Boolean(acc.is_active ?? acc.is_enabled ?? true);
+                if (!isEnabled) {
+                    setDisabledClickedChannel({
+                        id: acc.id,
+                        instagram_id: acc.instagram_id,
+                        username: acc.username,
+                        platform: 'instagram',
+                        is_enabled: false,
+                    });
+                    setWarningModalOpen(true);
+                    return;
+                }
+            }
+        }
         setSelectedAccountId(id);
         if (id !== "all") {
             const acc = pages.find(p => p.instagram_id === id);
@@ -321,7 +344,7 @@ export default function InstagramBotRepliesPage() {
         );
     }, [replies, selectedAccountId, searchQuery]);
 
-    const creationAccountFallback = selectedAccountId === "all" ? (pages[0] || null) : selectedAccountObj;
+    const creationAccountFallback = selectedAccountId === "all" ? (pages.find(p => Boolean(p.is_active ?? p.is_enabled ?? true)) || pages[0] || null) : selectedAccountObj;
 
     const IG_PINK = "#db2777";
 
@@ -342,11 +365,8 @@ export default function InstagramBotRepliesPage() {
                     </button>
                     {/* Brand dot + text */}
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center"
-                            style={{ background: `linear-gradient(135deg, #E1306C, #833AB4)` }}>
-                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>
+                        <div className="w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-white" style={{ background: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)" }}>
+                            <Instagram className="w-4 h-4 text-white" />
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className="text-[9px] font-medium tracking-widest uppercase leading-none" style={{ color: IG_PINK }}>Instagram</span>
@@ -380,9 +400,9 @@ export default function InstagramBotRepliesPage() {
             </div>
 
             {/* ── PAGE BODY ─────────────────────────────────────────────────── */}
-            <div className="w-full pt-5 pb-28 md:pb-10 space-y-4 md:space-y-6">
+            <div className="w-full pt-5 pb-20 md:pb-10 space-y-4 md:space-y-6">
 
-                {/* Account filter pills */}
+                {/* Account filter pills with Enabled 🟢 vs Disabled 🔴 status badges */}
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
                     <button
                         onClick={() => handleAccountSelect("all")}
@@ -396,21 +416,29 @@ export default function InstagramBotRepliesPage() {
                     >
                         All Accounts
                     </button>
-                    {pages.map(acc => (
-                        <button
-                            key={acc.id}
-                            onClick={() => handleAccountSelect(acc.instagram_id)}
-                            className={cn(
-                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all flex-shrink-0 border",
-                                selectedAccountId === acc.instagram_id
-                                    ? "border-transparent text-[var(--background)]"
-                                    : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                            )}
-                            style={selectedAccountId === acc.instagram_id ? { background: "var(--foreground)" } : undefined}
-                        >
-                            @{acc.username}
-                        </button>
-                    ))}
+                    {pages.map(acc => {
+                        const isEnabled = Boolean(acc.is_active ?? acc.is_enabled ?? true);
+                        return (
+                            <button
+                                key={acc.id}
+                                onClick={() => handleAccountSelect(acc.instagram_id)}
+                                className={cn(
+                                    "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all flex-shrink-0 border flex items-center gap-1.5",
+                                    selectedAccountId === acc.instagram_id
+                                        ? "border-transparent text-[var(--background)]"
+                                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
+                                    !isEnabled && "opacity-60 hover:opacity-100 hover:border-rose-500/50"
+                                )}
+                                style={selectedAccountId === acc.instagram_id ? { background: "var(--foreground)" } : undefined}
+                            >
+                                <div className={cn("w-1.5 h-1.5 rounded-full", isEnabled ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-rose-500")} />
+                                <span>@{acc.username}</span>
+                                {!isEnabled && (
+                                    <span className="text-[9px] font-black uppercase text-rose-500 bg-rose-500/10 px-1 py-0.2 rounded border border-rose-500/20">Disabled</span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* 3. MAIN WORKSPACE */}
@@ -795,6 +823,21 @@ export default function InstagramBotRepliesPage() {
                                         <p className="text-xs font-bold text-pink-700 dark:text-[var(--primary)]/80 uppercase tracking-widest leading-relaxed">Please select a specific Instagram account from the header to enable neural agent configuration.</p>
                                     </motion.div>
                                 )}
+                            </motion.div>
+                        )}
+
+                        {activeMenu === 'collected_leads' && (
+                            <motion.div
+                                key="collected_leads"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="w-full"
+                            >
+                                <CollectedLeadsPanel
+                                    channel="instagram"
+                                    pageId={selectedAccountId !== 'all' ? selectedAccountId : undefined}
+                                    pageName={selectedAccountObj?.username}
+                                />
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -1193,6 +1236,13 @@ export default function InstagramBotRepliesPage() {
                     ))}
                 </div>
             </nav>
+
+            <ChannelDisabledWarningModal
+                open={warningModalOpen}
+                onOpenChange={setWarningModalOpen}
+                channel={disabledClickedChannel}
+                platform="instagram"
+            />
         </div>
     );
 }

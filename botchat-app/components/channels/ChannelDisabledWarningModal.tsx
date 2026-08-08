@@ -1,4 +1,4 @@
-"use "client";
+"use client";
 
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -68,7 +68,7 @@ export function ChannelDisabledWarningModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[480px] rounded-3xl p-6">
+            <DialogContent className="sm:max-w-[480px] rounded-3xl p-6 !z-[99999]">
                 <DialogHeader className="space-y-3">
                     <div className="flex items-center gap-3">
                         <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20">

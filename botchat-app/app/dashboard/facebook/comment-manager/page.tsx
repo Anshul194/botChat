@@ -29,6 +29,7 @@ import { CommentReportModal } from "../../components/modals/CommentReportModal";
 import { CampaignReportModal } from "../../components/modals/CampaignReportModal";
 import { PostCommentModal } from "../../components/modals/PostCommentModal";
 import { PostReplyReportModal } from "../../components/modals/PostReplyReportModal";
+import { ChannelDisabledWarningModal } from "@/components/channels/ChannelDisabledWarningModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface FacebookPage {
@@ -62,6 +63,8 @@ export default function CommentManager() {
  const { user } = useAppSelector((state) => state.auth);
  const [pages, setPages] = useState<FacebookPage[]>([]);
  const [selectedPage, setSelectedPage] = useState<FacebookPage | null>(null);
+ const [warningModalOpen, setWarningModalOpen] = useState(false);
+ const [disabledClickedChannel, setDisabledClickedChannel] = useState<any>(null);
  const [posts, setPosts] = useState<FacebookPost[]>([]);
  const [pageStats, setPageStats] = useState({
  auto_reply_count: 0,
@@ -372,26 +375,47 @@ export default function CommentManager() {
 
  <div className={cn("max-w-[1400px] mx-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-6 lg:py-8 space-y-0 sm:space-y-4 md:space-y-6")}>
 
- {/* ── TOP SECTION: PAGE SELECTION (Pill Style) ── */}
+ {/* ── TOP SECTION: PAGE SELECTION (Pill Style with Enabled 🟢 vs Disabled 🔴 Status Badging) ── */}
  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 sm:px-0 py-3 sm:py-0 border-b border-[var(--border)] sm:border-none">
- {pages.map(p => (
- <button
- key={p.id}
- onClick={() => setSelectedPage(p)}
- className={cn(
- "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all shrink-0 border flex items-center gap-1.5",
- selectedPage?.id === p.id
- ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm"
- : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] bg-[var(--card)]"
- )}
- >
- <div className={cn("w-4 h-4 rounded-[4px] overflow-hidden border border-white/20", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
- <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
- </div>
- {p.page_name}
- </button>
- ))}
- </div>
+    {pages.map(p => {
+      const isEnabled = Boolean(p.is_enabled ?? p.is_active);
+      return (
+        <button
+          key={p.id}
+          onClick={() => {
+            if (!isEnabled) {
+              setDisabledClickedChannel({
+                id: p.id,
+                page_id: p.page_id,
+                page_name: p.page_name || p.name,
+                platform: 'facebook',
+                is_enabled: false,
+              });
+              setWarningModalOpen(true);
+              return;
+            }
+            setSelectedPage(p);
+          }}
+          className={cn(
+            "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all shrink-0 border flex items-center gap-1.5",
+            selectedPage?.id === p.id
+              ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm"
+              : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] bg-[var(--card)]",
+            !isEnabled && "opacity-60 hover:opacity-100 hover:border-rose-500/50"
+          )}
+        >
+          <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", isEnabled ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-rose-500")} />
+          <div className={cn("w-4 h-4 rounded-[4px] overflow-hidden border border-white/20 shrink-0", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
+            <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+          </div>
+          <span>{p.page_name}</span>
+          {!isEnabled && (
+            <span className="text-[9px] font-black uppercase text-rose-500 bg-rose-500/10 px-1 py-0.2 rounded border border-rose-500/20">Disabled</span>
+          )}
+        </button>
+      );
+    })}
+  </div>
 
  {/* 3. MAIN GRID (1/3 LEFT, 2/3 RIGHT) */}
  <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 sm:gap-6 items-start">
@@ -1206,6 +1230,12 @@ export default function CommentManager() {
  </div>
  )}
  </AnimatePresence>
+ <ChannelDisabledWarningModal
+ open={warningModalOpen}
+ onOpenChange={setWarningModalOpen}
+ channel={disabledClickedChannel}
+ platform="facebook"
+ />
  </div>
  );
 }

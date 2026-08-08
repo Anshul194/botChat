@@ -5,7 +5,7 @@ import {
     Plus, Search, MessageSquare, Play, Pause, Trash2, Copy,
     CheckCircle2, Target, Bot, MousePointerClick, ArrowLeft,
     Menu, Settings2, Sparkles, Box, RefreshCw, ChevronRight, Facebook as FacebookIcon, Layers,
-    ChevronLeft, ChevronDown, ListFilter
+    ChevronLeft, ChevronDown, ListFilter, Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import PersistentMenu from "./PersistentMenu";
 import IceBreakersPanel from "./IceBreakersPanel";
 import { AiAgentSettingsPanel } from "../../instagram/AiAgentSettingsPanel";
+import { ChannelDisabledWarningModal } from "@/components/channels/ChannelDisabledWarningModal";
+import { CollectedLeadsPanel } from "@/components/leads/CollectedLeadsPanel";
 
 
 interface BotReply {
@@ -46,6 +48,7 @@ interface ActionData {
 const MENUS = [
     { id: 'bot_reply', label: 'Bot Replies', icon: MessageSquare },
     { id: 'ice_breakers', label: 'Ice Breakers', icon: Sparkles },
+    { id: 'collected_leads', label: 'Collected Leads', icon: Users },
     { id: 'ai_agent', label: 'AI Agent', icon: Bot },
     { id: 'action_buttons', label: 'Action Buttons', icon: MousePointerClick },
     { id: 'persistent_menu', label: 'Persistent Menu', icon: Menu },
@@ -306,7 +309,27 @@ export default function FacebookBotRepliesPage() {
         }
     };
 
+    const [warningModalOpen, setWarningModalOpen] = useState(false);
+    const [disabledClickedChannel, setDisabledClickedChannel] = useState<any>(null);
+
     const handlePageSelect = (id: string | "all") => {
+        if (id !== "all") {
+            const page = pages.find(p => p.page_id === id || String(p.id) === String(id));
+            if (page) {
+                const isEnabled = Boolean(page.is_enabled);
+                if (!isEnabled) {
+                    setDisabledClickedChannel({
+                        id: page.id,
+                        page_id: page.page_id,
+                        page_name: page.page_name,
+                        platform: 'facebook',
+                        is_enabled: false,
+                    });
+                    setWarningModalOpen(true);
+                    return;
+                }
+            }
+        }
         setSelectedPageId(id);
         setShowPageDropdown(false);
         if (id !== "all") {
@@ -328,7 +351,7 @@ export default function FacebookBotRepliesPage() {
         );
     }, [replies, selectedPageId, searchQuery]);
 
-    const creationPageFallback = selectedPageId === "all" ? (pages[0] || null) : selectedPageObj;
+    const creationPageFallback = selectedPageId === "all" ? (pages.find(p => p.is_enabled) || pages[0] || null) : selectedPageObj;
 
     return (
         <div className="bg-transparent w-full min-w-0">
@@ -386,7 +409,7 @@ export default function FacebookBotRepliesPage() {
             {/* ── PAGE BODY ─────────────────────────────────────────────────── */}
             <div className="w-full pt-5 pb-20 md:pb-10 space-y-4 md:space-y-6">
 
-                {/* Page filter pills */}
+                {/* Page filter pills with Enabled 🟢 vs Disabled 🔴 Status badging */}
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
                     <button
                         onClick={() => handlePageSelect("all")}
@@ -399,20 +422,28 @@ export default function FacebookBotRepliesPage() {
                     >
                         All Pages
                     </button>
-                    {pages.map(page => (
-                        <button
-                            key={page.id}
-                            onClick={() => handlePageSelect(page.page_id)}
-                            className={cn(
-                                "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all shrink-0 border",
-                                selectedPageId === page.page_id
-                                    ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm"
-                                    : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                            )}
-                        >
-                            {page.page_name}
-                        </button>
-                    ))}
+                    {pages.map(page => {
+                        const isEnabled = Boolean(page.is_enabled);
+                        return (
+                            <button
+                                key={page.id}
+                                onClick={() => handlePageSelect(page.page_id)}
+                                className={cn(
+                                    "px-3.5 py-1.5 rounded-full text-[11.5px] font-medium whitespace-nowrap transition-all shrink-0 border flex items-center gap-1.5",
+                                    selectedPageId === page.page_id
+                                        ? "bg-[#0866FF] border-[#0866FF] text-white shadow-sm"
+                                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
+                                    !isEnabled && "opacity-60 hover:opacity-100 hover:border-rose-500/50"
+                                )}
+                            >
+                                <div className={cn("w-1.5 h-1.5 rounded-full", isEnabled ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-rose-500")} />
+                                <span>{page.page_name}</span>
+                                {!isEnabled && (
+                                    <span className="text-[9px] font-black uppercase text-rose-500 bg-rose-500/10 px-1 py-0.2 rounded border border-rose-500/20">Disabled</span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* 3. MAIN WORKSPACE */}
@@ -819,6 +850,21 @@ export default function FacebookBotRepliesPage() {
                                 )}
                             </motion.div>
                         )}
+
+                        {activeMenu === 'collected_leads' && (
+                            <motion.div
+                                key="collected_leads"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="w-full"
+                            >
+                                <CollectedLeadsPanel
+                                    channel="facebook"
+                                    pageId={selectedPageId !== 'all' ? selectedPageId : undefined}
+                                    pageName={selectedPageObj?.page_name}
+                                />
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </div>
 
@@ -988,23 +1034,48 @@ export default function FacebookBotRepliesPage() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="max-h-48 overflow-y-auto no-scrollbar p-1">
-                                                                    {pages.filter(p => !createPageSearchQuery || p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).map(p => (
-                                                                        <button key={p.id} type="button"
-                                                                            onClick={() => { setNewReply({ ...newReply, facebook_page_id: p.page_id }); setIsCreatePageDropdownOpen(false); }}
-                                                                            className={cn("w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2",
-                                                                                (newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id
-                                                                                    ? "font-semibold" : ""
-                                                                            )}
-                                                                            style={(newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id
-                                                                                ? { background: "rgba(8,102,255,0.1)", color: "#0866FF" }
-                                                                                : { color: "var(--foreground)" }}>
-                                                                            <FacebookIcon className="w-4 h-4 opacity-50" style={{ color: "#0866FF" }} />
-                                                                            <span className="truncate">{p.page_name}</span>
-                                                                            {(newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id && (
-                                                                                <CheckCircle2 className="w-4 h-4 ml-auto" style={{ color: "#0866FF" }} />
-                                                                            )}
-                                                                        </button>
-                                                                    ))}
+                                                                    {pages.filter(p => !createPageSearchQuery || p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).map(p => {
+                                                                        const isEnabled = Boolean(p.is_enabled);
+                                                                        return (
+                                                                            <button key={p.id} type="button"
+                                                                                onClick={() => {
+                                                                                    if (!isEnabled) {
+                                                                                        setDisabledClickedChannel({
+                                                                                            id: p.id,
+                                                                                            page_id: p.page_id,
+                                                                                            page_name: p.page_name,
+                                                                                            platform: 'facebook',
+                                                                                            is_enabled: false,
+                                                                                        });
+                                                                                        setIsCreatePageDropdownOpen(false);
+                                                                                        setWarningModalOpen(true);
+                                                                                        return;
+                                                                                    }
+                                                                                    setNewReply({ ...newReply, facebook_page_id: p.page_id });
+                                                                                    setIsCreatePageDropdownOpen(false);
+                                                                                }}
+                                                                                className={cn("w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between gap-2",
+                                                                                    (newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id ? "font-semibold" : "",
+                                                                                    !isEnabled && "opacity-60 hover:bg-rose-500/10"
+                                                                                )}
+                                                                                style={(newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id
+                                                                                    ? { background: "rgba(8,102,255,0.1)", color: "#0866FF" }
+                                                                                    : { color: "var(--foreground)" }}>
+                                                                                <div className="flex items-center gap-2 min-w-0">
+                                                                                    <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", isEnabled ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-rose-500")} />
+                                                                                    <FacebookIcon className="w-4 h-4 opacity-50 shrink-0" style={{ color: "#0866FF" }} />
+                                                                                    <span className="truncate">{p.page_name}</span>
+                                                                                </div>
+                                                                                {!isEnabled ? (
+                                                                                    <span className="text-[9px] font-black uppercase text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 shrink-0">Disabled</span>
+                                                                                ) : (
+                                                                                    (newReply.facebook_page_id || creationPageFallback?.page_id) === p.page_id && (
+                                                                                        <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" />
+                                                                                    )
+                                                                                )}
+                                                                            </button>
+                                                                        );
+                                                                    })}
                                                                     {pages.filter(p => p.page_name.toLowerCase().includes(createPageSearchQuery.toLowerCase())).length === 0 && (
                                                                         <div className="py-4 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>No pages found</div>
                                                                     )}
@@ -1170,6 +1241,13 @@ export default function FacebookBotRepliesPage() {
                     ))}
                 </div>
             </nav>
+
+            <ChannelDisabledWarningModal
+                open={warningModalOpen}
+                onOpenChange={setWarningModalOpen}
+                channel={disabledClickedChannel}
+                platform="facebook"
+            />
         </div>
     );
 }
