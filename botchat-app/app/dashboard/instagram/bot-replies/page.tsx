@@ -857,7 +857,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 60 }}
                                 transition={{ type: "spring", damping: 26, stiffness: 320 }}
-                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md shadow-[0_20px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-10 overflow-hidden"
                             >
                                 {/* Drag handle */}
                                 <div className="sm:hidden flex justify-center pt-3.5 pb-1">
@@ -974,7 +974,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-y-auto shadow-2xl relative z-10"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-y-auto shadow-[0_20px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-10"
                             >
                                 {/* Modal drag handle (mobile) */}
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -1149,7 +1149,7 @@ export default function InstagramBotRepliesPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 40 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-y-auto shadow-2xl relative z-10"
+                                className="bg-[var(--card)] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-none sm:rounded-2xl w-full max-w-md h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-y-auto shadow-[0_20px_50px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative z-10"
                             >
                                 <div className="sm:hidden flex justify-center pt-3 pb-1">
                                     <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
