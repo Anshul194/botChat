@@ -155,6 +155,7 @@ export default function Footer() {
                     <div className="lg:col-span-8">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-10">
 
+
                             {/* Solutions */}
                             <div className="space-y-6">
                                 <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "#FF2D78" }}>Solutions</h4>
@@ -193,25 +194,23 @@ export default function Footer() {
                                 </ul>
                             </div>
 
-                            {/* System Status */}
-                            <div className="col-span-2 md:col-span-1 space-y-6">
-                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>Status</h4>
-                                <div className="p-5 rounded-[28px] border space-y-4 group transition-all duration-500 cursor-default"
-                                    style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}
-                                    onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,45,120,0.3)")}
-                                    onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)")}>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
-                                            style={{ boxShadow: "0 0 10px rgba(52,211,153,0.6)" }} />
-                                        <span className="text-xs font-bold text-white tracking-widest uppercase">System Operational</span>
-                                    </div>
-                                    <p className="text-[11px] uppercase font-bold tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
-                                        All official APIs running at peak speed.
-                                    </p>
-                                    <Link href="/dashboard" className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 hover:text-white" style={{ color: "#FF2D78" }}>
-                                        View Status <ArrowRight size={12} />
-                                    </Link>
-                                </div>
+                            {/* Legal */}
+                            <div className="space-y-6">
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>Legal</h4>
+                                <ul className="space-y-4">
+                                    {LEGAL_LINKS.map((link) => (
+                                        <li key={link.label}>
+                                            <Link href={link.href}
+                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
+                                                style={{ color: "rgba(255,255,255,0.55)" }}
+                                                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
+                                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
+                                                <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
+                                                {link.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
 
                         </div>
@@ -233,18 +232,6 @@ export default function Footer() {
                             <ShieldCheck size={14} style={{ color: "#FF2D78" }} />
                             <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
                         </div>
-                    </div>
-
-                    <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-3 text-[11px] font-bold uppercase tracking-widest">
-                        {LEGAL_LINKS.map((link) => (
-                            <Link key={link.label} href={link.href}
-                                className="transition-colors"
-                                style={{ color: "rgba(255,255,255,0.35)" }}
-                                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
-                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.35)")}>
-                                {link.label}
-                            </Link>
-                        ))}
                     </div>
 
                 </div>

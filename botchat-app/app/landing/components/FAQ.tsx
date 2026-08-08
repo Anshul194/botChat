@@ -176,11 +176,10 @@ export default function FAQ() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                className="rounded-3xl border px-6 divide-y"
+                                className="rounded-3xl border px-6 divide-y divide-white/10"
                                 style={{
                                     background: "rgba(255,255,255,0.04)",
                                     borderColor: "rgba(255,255,255,0.08)",
-                                    divideColor: "rgba(255,255,255,0.07)",
                                 }}
                             >
                                 {activeFaqs.map((faq, i) => (

@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { useResizeObserver } from '@/hooks/use-resize-observer'; // I'll assume this exists or create a simple one
 
 interface PostPreviewProps {
   content: string;

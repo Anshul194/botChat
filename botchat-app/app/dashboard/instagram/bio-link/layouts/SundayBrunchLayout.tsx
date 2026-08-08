@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
@@ -16,8 +16,8 @@ export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
         return isEnabled && isActive;
     });
 
-    const heroBlock = allBlocks.find(b => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
-    const contentBlocks = allBlocks.filter(b => b.id !== heroBlock?.id);
+    const heroBlock = allBlocks.find((b: any) => ['header', 'avatar', 'profile', 'hero', 'header_profile_section'].includes(getUiTypeFromBlock(b)));
+    const contentBlocks = allBlocks.filter((b: any) => b.id !== heroBlock?.id);
 
     return (
         <div className="w-full min-h-full bg-[#fdfaf5] text-[#4a403a] font-sans px-4 py-12 flex flex-col items-center selection:bg-[#e8dccb] relative">
@@ -83,7 +83,7 @@ export function SundayBrunchLayout({ profile, tabs, openEditor }: any) {
             <div className="mt-32 pb-16 opacity-30 text-center relative">
                 <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-96 h-96 bg-[#f8f1e9] rounded-full blur-[120px] pointer-events-none" />
                 <p className="text-[10px] font-black tracking-[0.4em] uppercase text-[#2d241e] mb-4">Curated with Intention</p>
-                <div className="text-[11px] tracking-[0.3em] uppercase font-black text-[#8c7e74]">© 2026 BIOSTUDIO LUXURY</div>
+                <div className="text-[11px] tracking-[0.3em] uppercase font-black text-[#8c7e74]">Â© 2026 BIOSTUDIO LUXURY</div>
             </div>
         </div>
     );
@@ -356,7 +356,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { t: 'Consultation', d: 'One-on-one session', p: '$150' },
                             { t: 'Creative Audit', d: 'Visual strategy review', p: '$450' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-[var(--card)] border border-[#f3eee8] flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
                                 <div className="min-w-0 pr-4">
                                     <h4 className="text-[14px] sm:text-[15px] font-bold text-[#2d241e] truncate">{item.t}</h4>
@@ -428,7 +428,7 @@ const renderBrunchSection = (block: any, profile: any) => {
                         {(blockItems.length > 0 ? blockItems : [
                             { q: 'Where do you ship?', a: 'We ship our handcrafted goods worldwide from our studio in the mountains.' },
                             { q: 'Custom orders?', a: 'Yes, we love working on bespoke pieces. Inquire via the contact form above.' }
-                        ]).map((item, i) => (
+                        ]).map((item: any, i: number) => (
                             <div key={i} className="p-6 rounded-2xl bg-white/50 border border-[#f3eee8] hover:bg-white transition-all group">
                                 <div className="flex items-center justify-between mb-3">
                                     <h4 className="text-[14px] font-bold text-[#2d241e] italic">{item.q || item.title || item.question}</h4>

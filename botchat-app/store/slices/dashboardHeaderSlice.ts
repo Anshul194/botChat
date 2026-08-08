@@ -116,7 +116,7 @@ const initialState: DashboardHeaderState = {
 
 export const fetchDashboardHeader = createAsyncThunk(
     'dashboardHeader/fetchDashboardHeader',
-    async (path?: string, { rejectWithValue }) => {
+    async (path: string | undefined, { rejectWithValue }: { rejectWithValue: (value: unknown) => unknown }) => {
         try {
             const url = path ? `/dashboard/header?path=${encodeURIComponent(path)}` : '/dashboard/header';
             const response = await api.get(url);

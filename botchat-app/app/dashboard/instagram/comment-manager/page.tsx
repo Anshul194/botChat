@@ -153,6 +153,11 @@ export default function InstagramCommentManagerPage() {
  }>({ isOpen: false, post: null, type: "reply" });
  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
  const [isDeleting, setIsDeleting] = useState(false);
+ const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+ const [manualPostId, setManualPostId] = useState("");
+ const [resolvedPostId, setResolvedPostId] = useState("");
+ const [isCheckingId, setIsCheckingId] = useState(false);
+ const [checkData, setCheckData] = useState<any>(null);
 
  // Success Follow-up Modal
  const [showPauseAllOthersModal, setShowPauseAllOthersModal] = useState(false);
@@ -180,6 +185,74 @@ export default function InstagramCommentManagerPage() {
  document.addEventListener("mousedown", handler);
  return () => document.removeEventListener("mousedown", handler);
  }, []);
+
+  const extractInstagramPostId = (urlStr: string): string => {
+    try {
+      const cleanUrl = urlStr.trim();
+      if (!cleanUrl) return "";
+      
+      if (!cleanUrl.includes(".") && !cleanUrl.startsWith("http")) {
+        return cleanUrl;
+      }
+      
+      const url = new URL(cleanUrl.startsWith("http") ? cleanUrl : `https://${cleanUrl}`);
+      const parts = url.pathname.split("/").filter(Boolean);
+      
+      const pIdx = parts.indexOf("p");
+      if (pIdx !== -1 && parts[pIdx + 1]) {
+        return parts[pIdx + 1];
+      }
+      
+      const reelIdx = parts.indexOf("reel");
+      if (reelIdx !== -1 && parts[reelIdx + 1]) {
+        return parts[reelIdx + 1];
+      }
+      
+      const tvIdx = parts.indexOf("tv");
+      if (tvIdx !== -1 && parts[tvIdx + 1]) {
+        return parts[tvIdx + 1];
+      }
+
+      const last = parts[parts.length - 1];
+      if (last && !["p", "reel", "tv"].includes(last.toLowerCase())) {
+        return last;
+      }
+    } catch (e) {
+      console.error("Error parsing Instagram URL:", e);
+    }
+    return urlStr.trim();
+  };
+
+ const handleCheckPostId = async () => {
+  const rawInput = manualPostId.trim();
+  if (!rawInput) {
+   toast.error("Please enter a Post ID or Instagram Link");
+   return;
+  }
+  const resolved = extractInstagramPostId(rawInput);
+  setResolvedPostId(resolved);
+
+  setIsCheckingId(true);
+  try {
+   const response = await api.post("/instagram/check-post-campaign", {
+    post_id: resolved,
+    instagram_id: selectedAccount?.instagram_id
+   });
+
+   if (response.data.success || response.data.is_success) {
+    toast.success("Post ID checked successfully!");
+    setCheckData(response.data.data);
+    fetchPosts(); // Refresh background grid
+   } else {
+    toast.error(response.data.message || "Failed to sync Post ID");
+   }
+  } catch (err: any) {
+   console.error("Check Post ID Error:", err);
+   toast.error(err.response?.data?.message || "Error validating Post ID");
+  } finally {
+   setIsCheckingId(false);
+  }
+ };
 
  // ── Data Fetching ────────────────────────────────────────────────────────
  const fetchAccounts = useCallback(async () => {
@@ -483,6 +556,12 @@ export default function InstagramCommentManagerPage() {
  Latest Interactions
  </h2>
  <div className="flex items-center gap-3 w-full sm:w-auto">
+ <button
+ onClick={() => setIsIdModalOpen(true)}
+ className="mr-2 px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[11px] tracking-wide hover:opacity-90 transition-colors shadow-sm whitespace-nowrap"
+ >
+ ID Lookup
+ </button>
  <div className="relative group flex-1 sm:flex-none sm:w-56">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]/70 group-focus-within:text-primary transition-colors" />
  <input
@@ -1142,6 +1221,162 @@ export default function InstagramCommentManagerPage() {
  {isDeleting ? "Deleting..." : "Yes, Delete it"}
  </button>
  </div>
+ </div>
+ </motion.div>
+ </div>
+ )}
+ </AnimatePresence>
+
+ {/* ── ID Modal ── */}
+ <AnimatePresence>
+ {isIdModalOpen && (
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
+ <motion.div
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
+ className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+ />
+ <motion.div
+ initial={{ opacity: 0, y: 40 }}
+ animate={{ opacity: 1, y: 0 }}
+ exit={{ opacity: 0, y: 40 }}
+ transition={{ type: "spring", stiffness: 350, damping: 30 }}
+ className="bg-[var(--card)] border border-[var(--border)] rounded-none sm:rounded-2xl w-full max-w-none sm:max-w-lg h-full max-h-full sm:h-auto sm:min-h-0 overflow-hidden shadow-2xl relative z-10"
+ >
+ {/* Mobile drag handle */}
+ <div className="sm:hidden flex justify-center pt-3 pb-1">
+ <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
+ </div>
+ <div className="p-6 space-y-6">
+ <div className="flex items-center justify-between">
+ <h3 className="text-lg font-bold text-[var(--foreground)] tracking-tight">Post ID Reconciliation</h3>
+ <button onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }} className="text-[var(--muted-foreground)] hover:text-rose-500">
+ <X className="w-5 h-5" />
+ </button>
+ </div>
+
+ <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+ <div className="flex gap-3">
+ <AlertCircle className="w-5 h-5 flex-shrink-0" />
+ <p className="text-[12px] font-medium leading-relaxed">
+ If you have edited your Instagram post or reel after creation, ID lookup may fail due to Instagram API limitations.
+ </p>
+ </div>
+ </div>
+
+ {checkData ? (
+ <div className="space-y-4">
+ {/* Auto Reply Box */}
+ <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/20 flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
+ <Megaphone className="w-5 h-5" />
+ </div>
+ <div>
+ <h4 className="text-[13px] font-bold text-[var(--foreground)]">Auto Reply Campaign</h4>
+ <p className="text-[10px] font-semibold text-[var(--muted-foreground)]">
+ {checkData.reply_exists ? "Currently Active or Configured" : "No campaign attached"}
+ </p>
+ </div>
+ </div>
+ {checkData.reply_exists ? (
+ <button
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: resolvedPostId } as any); setShowPostAutoReplyModal(true); }}
+ className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-colors border border-[var(--border)]"
+ >
+ Edit Reply
+ </button>
+ ) : (
+ <button
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: resolvedPostId } as any); setShowPostAutoReplyModal(true); }}
+ className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
+ >
+ Enable Auto Reply
+ </button>
+ )}
+ </div>
+
+ {/* Auto Comment Box */}
+ <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/20 flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center">
+ <MessageSquare className="w-5 h-5" />
+ </div>
+ <div>
+ <h4 className="text-[13px] font-bold text-[var(--foreground)]">Auto Comment Campaign</h4>
+ <p className="text-[10px] font-semibold text-[var(--muted-foreground)]">
+ {checkData.comment_exists ? "Currently Active or Configured" : "No campaign attached"}
+ </p>
+ </div>
+ </div>
+ {checkData.comment_exists ? (
+ <button
+ onClick={() => {
+ setIsIdModalOpen(false);
+ setTimeout(() => setCheckData(null), 200);
+ setSelectedPostForAuto({ id: resolvedPostId } as any);
+ setShowAutoCommentModal(true);
+ }}
+ className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-all border border-[var(--border)]"
+ >
+ Edit Comment
+ </button>
+ ) : (
+ <button
+ onClick={() => {
+ setIsIdModalOpen(false);
+ setTimeout(() => setCheckData(null), 200);
+ setSelectedPostForAuto({ id: resolvedPostId } as any);
+ setShowAutoCommentModal(true);
+ }}
+ className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
+ >
+ Enable Auto Comment
+ </button>
+ )}
+ </div>
+
+ <div className="pt-2">
+ <button
+ onClick={() => setCheckData(null)}
+ className="w-full py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] border border-[var(--border)] font-bold text-[13px] transition-all"
+ >
+ Check Another Post ID
+ </button>
+ </div>
+ </div>
+ ) : (
+ <div className="space-y-4">
+ <div className="space-y-1">
+ <label className="text-[11px] font-bold text-[var(--muted-foreground)] tracking-widest ml-1">Manual Post ID or Instagram Link</label>
+ <input
+ type="text"
+ value={manualPostId}
+ onChange={(e) => setManualPostId(e.target.value)}
+ placeholder="Example: C7uM3x1y8z9 or paste Instagram post link..."
+ className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-[var(--primary)]/30 transition-all"
+ />
+ </div>
+ <div className="flex gap-3 pt-2">
+ <button
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
+ className="flex-1 py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)] border border-[var(--border)] text-[var(--foreground)] font-bold text-[13px] transition-all"
+ >
+ Cancel
+ </button>
+ <button
+ onClick={handleCheckPostId}
+ disabled={isCheckingId}
+ className="flex-[1.5] flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-bold text-[13px] shadow-lg shadow-[var(--primary)]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:hover:scale-100"
+ >
+ {isCheckingId ? <RefreshCw className="w-4 h-4 animate-spin" /> : null}
+ {isCheckingId ? "Syncing..." : "Sync Interaction ID"}
+ </button>
+ </div>
+ </div>
+ )}
  </div>
  </motion.div>
  </div>

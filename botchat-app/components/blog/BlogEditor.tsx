@@ -20,6 +20,8 @@ interface BlogEditorProps {
 }
 
 const MenuBar = ({ editor }: { editor: any }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     if (!editor) return null;
 
     const addLink = () => {
@@ -28,8 +30,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
             editor.chain().focus().setLink({ href: url }).run();
         }
     };
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

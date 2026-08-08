@@ -1233,8 +1233,8 @@ html.light input::placeholder, html.light textarea::placeholder { color: #999999
   100% { background-position:  200% center; }
 }
 @keyframes scanLine {
-  0%   { top: 0%; opacity: .6; }
-  100% { top: 100%; opacity: 0; }
+  0%   { transform: translateY(0); opacity: .6; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
 @keyframes ringPulse {
   0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 50%, transparent); }
@@ -1245,7 +1245,7 @@ html.light input::placeholder, html.light textarea::placeholder { color: #999999
 .blob1 { animation: drift1 14s ease-in-out infinite; }
 .blob2 { animation: drift2 18s ease-in-out infinite; }
 .blob3 { animation: drift3 11s ease-in-out infinite; }
-.grid-bg { animation: gridScroll 6s linear infinite; }
+.grid-bg { background-position: 0 0; }
 
 .shimmer-text {
   background: linear-gradient(120deg, color-mix(in srgb, var(--primary) 70%, transparent) 0%, color-mix(in srgb, var(--accent) 70%, transparent) 40%, var(--primary) 60%, color-mix(in srgb, var(--accent) 70%, transparent) 100%);
@@ -1760,10 +1760,10 @@ span {
   top: 0;
 }
 @keyframes scan-move {
-  0%   { top: 0%; opacity: 0; }
+  0%   { transform: translateY(0); opacity: 0; }
   10%  { opacity: 1; }
   90%  { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
 
 /* Blob animations */

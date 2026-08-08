@@ -77,6 +77,7 @@ export default function CommentManager() {
  const [isIdModalOpen, setIsIdModalOpen] = useState(false);
  const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
  const [manualPostId, setManualPostId] = useState("");
+ const [resolvedPostId, setResolvedPostId] = useState("");
  const [isCheckingId, setIsCheckingId] = useState(false);
  const [checkData, setCheckData] = useState<any>(null);
  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -300,16 +301,93 @@ export default function CommentManager() {
  }
  };
 
+  const extractFacebookPostId = (urlStr: string): string => {
+    try {
+      const cleanUrl = urlStr.trim();
+      if (!cleanUrl) return "";
+      
+      if (!cleanUrl.includes(".") && !cleanUrl.startsWith("http")) {
+        return cleanUrl;
+      }
+      
+      const url = new URL(cleanUrl.startsWith("http") ? cleanUrl : `https://${cleanUrl}`);
+      
+      // 1. Query parameters
+      const storyFbid = url.searchParams.get("story_fbid");
+      if (storyFbid) return storyFbid;
+      
+      const fbid = url.searchParams.get("fbid");
+      if (fbid) return fbid;
+      
+      const v = url.searchParams.get("v");
+      if (v) return v;
+      
+      // 2. Path segments
+      const parts = url.pathname.split("/").filter(Boolean);
+      
+      // Look for /posts/ID
+      const postsIdx = parts.indexOf("posts");
+      if (postsIdx !== -1 && parts[postsIdx + 1]) {
+        return parts[postsIdx + 1];
+      }
+      
+      // Look for /permalink/ID
+      const permalinkIdx = parts.indexOf("permalink");
+      if (permalinkIdx !== -1 && parts[permalinkIdx + 1]) {
+        return parts[permalinkIdx + 1];
+      }
+      
+      // Look for /videos/ID
+      const videosIdx = parts.indexOf("videos");
+      if (videosIdx !== -1 && parts[videosIdx + 1]) {
+        return parts[videosIdx + 1];
+      }
+
+      // Look for /photo/ID
+      const photoIdx = parts.indexOf("photo");
+      if (photoIdx !== -1 && parts[photoIdx + 1]) {
+        return parts[photoIdx + 1];
+      }
+      
+      // Fallback: if there's a numeric segment in the path, look from the end
+      for (let i = parts.length - 1; i >= 0; i--) {
+        if (/^\d{10,}$/.test(parts[i])) {
+          return parts[i];
+        }
+      }
+
+      const last = parts[parts.length - 1];
+      if (last && !["p", "share"].includes(last.toLowerCase())) {
+        return last;
+      }
+    } catch (e) {
+      console.error("Error parsing URL inside extractFacebookPostId:", e);
+    }
+    
+    // Fallback: extract the first sequence of 10+ digits
+    const numMatch = urlStr.match(/\d{10,}/);
+    if (numMatch) return numMatch[0];
+
+    return urlStr.trim();
+  };
+
  const handleCheckPostId = async () => {
- if (!manualPostId.trim()) {
- toast.error("Please enter a Post ID");
- return;
- }
- setIsCheckingId(true);
- try {
- const response = await api.post("/facebook/check-post-campaign", {
- post_id: manualPostId.trim()
- });
+  const rawInput = manualPostId.trim();
+  if (!rawInput) {
+   toast.error("Please enter a Post ID or Facebook Link");
+   return;
+  }
+  let resolved = extractFacebookPostId(rawInput);
+  if (resolved && !resolved.includes("_") && selectedPage?.page_id) {
+   resolved = `${selectedPage.page_id}_${resolved}`;
+  }
+  setResolvedPostId(resolved);
+
+  setIsCheckingId(true);
+  try {
+   const response = await api.post("/facebook/check-post-campaign", {
+    post_id: resolved
+   });
 
  if (response.data.success || response.data.is_success) {
  toast.success("Post ID checked successfully!");
@@ -948,14 +1026,14 @@ export default function CommentManager() {
  </div>
  {checkData.reply_exists ? (
  <button
- onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: manualPostId } as any); setShowAutoReplyModal(true); }}
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: resolvedPostId } as any); setShowAutoReplyModal(true); }}
  className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-colors border border-[var(--border)]"
  >
  Edit Reply
  </button>
  ) : (
  <button
- onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: manualPostId } as any); setShowAutoReplyModal(true); }}
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: resolvedPostId } as any); setShowAutoReplyModal(true); }}
  className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
  >
  Enable Auto Reply
@@ -981,7 +1059,7 @@ export default function CommentManager() {
  onClick={() => {
  setIsIdModalOpen(false);
  setTimeout(() => setCheckData(null), 200);
- setSelectedPostForAuto({ id: manualPostId } as any);
+ setSelectedPostForAuto({ id: resolvedPostId } as any);
  setShowAutoCommentModal(true);
  }}
  className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-all border border-[var(--border)]"
@@ -993,7 +1071,7 @@ export default function CommentManager() {
  onClick={() => {
  setIsIdModalOpen(false);
  setTimeout(() => setCheckData(null), 200);
- setSelectedPostForAuto({ id: manualPostId } as any);
+ setSelectedPostForAuto({ id: resolvedPostId } as any);
  setShowAutoCommentModal(true);
  }}
  className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
@@ -1015,12 +1093,12 @@ export default function CommentManager() {
  ) : (
  <div className="space-y-4">
  <div className="space-y-1">
- <label className="text-[11px] font-bold text-[var(--muted-foreground)] tracking-widest ml-1">Manual Post ID</label>
+ <label className="text-[11px] font-bold text-[var(--muted-foreground)] tracking-widest ml-1">Manual Post ID or Facebook Link</label>
  <input
  type="text"
  value={manualPostId}
  onChange={(e) => setManualPostId(e.target.value)}
- placeholder="Example: 15692151032057..."
+ placeholder="Example: 15692151032057 or paste Facebook post link..."
  className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-[var(--primary)]/30 transition-all"
  />
  </div>

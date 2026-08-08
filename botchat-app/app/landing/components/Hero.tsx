@@ -47,14 +47,14 @@ const Aurora = React.memo(function Aurora() {
           style={{ background: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, #06000d 90%)" }} />
 
         {/* ── Blobs ── */}
-        <div className="blob1 absolute -top-32 -left-32 w-[700px] h-[700px] rounded-full opacity-50 mix-blend-screen"
-          style={{ background: "radial-gradient(circle, #ff2d78 0%, transparent 65%)", filter: "blur(100px)" }} />
+        <div className="blob1 absolute -top-32 -left-32 w-[700px] h-[700px] rounded-full opacity-50 mix-blend-screen will-change-transform"
+          style={{ background: "radial-gradient(circle, #ff2d78 0%, transparent 70%)" }} />
 
-        <div className="blob2 absolute -bottom-40 -right-40 w-[750px] h-[750px] rounded-full opacity-40 mix-blend-screen"
-          style={{ background: "radial-gradient(circle, #e1306c 0%, transparent 60%)", filter: "blur(110px)" }} />
+        <div className="blob2 absolute -bottom-40 -right-40 w-[750px] h-[750px] rounded-full opacity-40 mix-blend-screen will-change-transform"
+          style={{ background: "radial-gradient(circle, #e1306c 0%, transparent 70%)" }} />
 
-        <div className="blob3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-20 mix-blend-screen"
-          style={{ background: "radial-gradient(circle, #ff80ab 0%, transparent 70%)", filter: "blur(80px)" }} />
+        <div className="blob3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-20 mix-blend-screen will-change-transform"
+          style={{ background: "radial-gradient(circle, #ff80ab 0%, transparent 70%)" }} />
 
         {/* Mouse follower glow */}
         <motion.div
@@ -62,8 +62,7 @@ const Aurora = React.memo(function Aurora() {
           style={{
             left: glowLeft,
             top: glowTop,
-            background: "radial-gradient(circle, rgba(255,100,160,.8) 0%, transparent 60%)",
-            filter: "blur(70px)"
+            background: "radial-gradient(circle, rgba(255,100,160,.8) 0%, transparent 70%)",
           }}
         />
       </div>
