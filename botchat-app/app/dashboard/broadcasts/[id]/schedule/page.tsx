@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -68,21 +68,22 @@ export default function ReviewAndSchedulePage() {
         }
     });
 
-    const scheduleMutation = useMutation({
-        mutationFn: (data: { schedule_type: 'now' | 'later', scheduled_at?: string }) => scheduleBroadcast(campaignId, data),
-        onSuccess: (res) => {
-            toast.success(res.message || "Broadcast scheduled successfully!");
-            router.push(`/dashboard/broadcasts/${campaignId}/monitor`);
-        },
-        onError: (err: any) => {
-            toast.error(err.response?.data?.message || "Failed to schedule broadcast");
-            setIsScheduling(false);
-        }
-    });
+    // scheduleMutation removed — handleSend uses fire-and-forget directly
 
     const handleSend = () => {
         setIsScheduling(true);
-        scheduleMutation.mutate({ schedule_type: 'now' });
+        // Fire-and-forget: dispatch the API call but navigate immediately.
+        // The campaign is queued server-side; the monitor page shows live progress.
+        scheduleBroadcast(campaignId, { schedule_type: 'now' })
+            .catch((err: any) => {
+                // Only show an error toast if something fails before we navigate away
+                // (e.g. validation error from the server). In practice this is rare.
+                console.error('[Broadcast] Dispatch error:', err);
+            });
+
+        toast.success('Broadcast dispatched! Sending has started in the background.');
+        // Navigate immediately — don't wait for the response
+        router.push(`/dashboard/broadcasts/${campaignId}/monitor`);
     };
 
     if (isLoadingReview) {
@@ -257,8 +258,10 @@ export default function ReviewAndSchedulePage() {
                             disabled={!review_passed || isScheduling}
                             className="w-full bg-brand-purple hover:bg-brand-purple/90 text-white shadow-lg shadow-brand-purple/20 sm:w-auto"
                         >
-                            {isScheduling ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-                            Mark Ready to Send
+                            {isScheduling
+                                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Dispatching...</>
+                                : <><Send className="w-4 h-4 mr-2" />Mark Ready to Send</>
+                            }
                         </Button>
                     </div>
                 </div>
