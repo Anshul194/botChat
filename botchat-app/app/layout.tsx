@@ -1,19 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Syne, DM_Sans, Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import FAQSchema from "@/components/FAQSchema";
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -27,16 +15,40 @@ import SubscriptionProvider from "@/providers/SubscriptionProvider";
 import DynamicBranding from "@/components/DynamicBranding";
 import CookieConsent from "@/components/CookieConsent";
 
-const inter = Inter({
-    variable: "--font-inter",
-    subsets: ["latin"],
-    display: "swap",
+const syne = localFont({
+  src: [
+    { path: "../public/fonts/syne-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/syne-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-syne",
+  display: "swap",
 });
 
-const montserrat = Montserrat({
-    variable: "--font-montserrat",
-    subsets: ["latin"],
-    display: "swap",
+const dmSans = localFont({
+  src: [
+    { path: "../public/fonts/dm-sans-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/dm-sans-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const inter = localFont({
+  src: [
+    { path: "../public/fonts/inter-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/inter-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const montserrat = localFont({
+  src: [
+    { path: "../public/fonts/montserrat-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/montserrat-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-montserrat",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -47,6 +59,7 @@ export const metadata: Metadata = {
   description:
     "Automate Instagram DMs and Facebook Messenger with AI-powered chatbots.",
 };
+
 
 export const viewport: Viewport = {
   width: "device-width",

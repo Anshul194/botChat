@@ -3711,7 +3711,7 @@ function FlowBuilder() {
           flex-shrink: 0;
           position: sticky;
           top: 76px;
-          z-index: 100;
+          z-index: 40;
         }
 
         /* ─── Tablet: stack preview below ─── */
@@ -3870,7 +3870,7 @@ function FlowBuilder() {
           border-bottom: 1.5px solid ${DS.border};
           padding: 0 24px;
           flex-shrink: 0;
-          z-index: 300;
+          z-index: 45;
           box-shadow: 0 2px 16px rgba(0,0,0,0.12);
           display: flex;
           align-items: center;
@@ -4310,7 +4310,7 @@ function FlowBuilder() {
                 margin: "0 8px",
                 transition: "background 0.2s",
                 position: "relative",
-                zIndex: 100,
+                zIndex: 40,
               }}
               className="resize-divider"
               title="Drag to resize panels"
