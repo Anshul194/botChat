@@ -25,7 +25,9 @@ type Recipient = {
     channel_type: string;
     status: string;
     facebook_message_id: string | null;
-    failure_reason: string | null;
+    error_message: string | null;   // actual error from Meta API
+    error_code: string | null;       // Meta error code (e.g. "10" for 24h window)
+    failure_reason: string | null;   // legacy alias — same as error_message
     sent_at: string | null;
     delivered_at: string | null;
     read_at: string | null;
@@ -132,14 +134,36 @@ function TimelineModal({
                             <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--brand-purple)" }} />
                         </div>
                     ) : (
-                        <>
+                    <>
+                            {/* Failed error alert */}
+                            {recipient.status === 'failed' && (recipient.error_message || recipient.failure_reason) && (
+                                <div className="rounded-xl px-4 py-3 flex gap-3 items-start"
+                                    style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)" }}>
+                                    <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#ef4444" }} />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold mb-1" style={{ color: "#ef4444" }}>Send Failed</p>
+                                        <p className="text-xs break-words" style={{ color: "#ef4444" }}>
+                                            {recipient.error_message || recipient.failure_reason}
+                                        </p>
+                                        {recipient.error_code && (
+                                            <p className="text-xs mt-1 font-mono opacity-60" style={{ color: "#ef4444" }}>
+                                                Error Code: {recipient.error_code}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Recipient Meta */}
                             <div className="grid grid-cols-2 gap-3 text-sm">
                                 {[
                                     { label: "Subscriber ID", value: recipient.subscriber_id },
                                     { label: "Channel", value: recipient.channel_type },
                                     { label: "Message ID", value: recipient.facebook_message_id || "—" },
-                                    { label: "Failure", value: recipient.failure_reason || "—" },
+                                    {
+                                        label: "Failure Reason",
+                                        value: recipient.error_message || recipient.failure_reason || "—",
+                                    },
                                 ].map(({ label, value }) => (
                                     <div key={label} className="rounded-xl p-3"
                                         style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>

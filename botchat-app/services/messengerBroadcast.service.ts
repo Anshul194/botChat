@@ -110,10 +110,17 @@ export const resumeBroadcast = async (id: number) => {
     return res.data;
 };
 
+// Retry a failed campaign — calls /resume which detects failed status and calls prepareForRetry()
+export const retryBroadcast = async (id: number) => {
+    const res = await api.post(`/broadcasts/${id}/resume`);
+    return res.data;
+};
+
 export const cancelBroadcast = async (id: number) => {
     const res = await api.post(`/broadcasts/${id}/cancel`);
     return res.data;
 };
+
 
 // ─── Phase 6: Analytics & Delivery Tracking ─────────────────────────────────
 
