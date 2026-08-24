@@ -156,7 +156,9 @@ export default function UserManagementPage() {
 
     const { users, isLoading, selectedUser, total, page, totalPages } = useAppSelector((state) => state.users);
     const { plans, myPlans } = useAppSelector((state) => state.plans);
-    const availableTenantPlans = myPlans && myPlans.length > 0 ? myPlans : plans;
+    // Strict scoping: Only plans explicitly owned by this tenant can be assigned to its users
+    // Fallback between plans and myPlans to handle both Super Admin and Tenant Admin Redux states
+    const availableTenantPlans = (plans && plans.length > 0) ? plans : (myPlans || []);
     const { showModal } = useModal();
 
     // URL Search Params State Synchronization
@@ -207,6 +209,19 @@ export default function UserManagementPage() {
         userName: "",
         currentStatus: false
     });
+
+    // Fetch plans explicitly when Assign Plan modal opens
+    useEffect(() => {
+        if (isAssignPlanOpen) {
+            const isSuperAdmin = user?.role === 'SUPER_ADMIN' || user?.type === 'Super Admin';
+            if (isSuperAdmin) {
+                dispatch(fetchMyPlans()); // For SuperAdmin, my-plans returns all central plans
+                dispatch(fetchPlans());
+            } else {
+                dispatch(fetchPlans()); // For Tenant, plans returns active local plans
+            }
+        }
+    }, [isAssignPlanOpen, dispatch, user]);
 
     // Sync URL params update
     const updateUrlParams = useCallback((newParams: Record<string, string | number | null>) => {
@@ -731,6 +746,11 @@ export default function UserManagementPage() {
                                     <SelectValue placeholder="Choose a plan" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
+                                 {availableTenantPlans.length === 0 && (
+                                        <SelectItem value="__none__" disabled>
+                                            No plans available — create a local plan first
+                                        </SelectItem>
+                                    )}
                                     {availableTenantPlans.map((p) => (
                                         <SelectItem key={p.id} value={String(p.id)}>
                                             {p.name} — ${p.price}/{p.duration_type}
@@ -839,6 +859,11 @@ export default function UserManagementPage() {
                                     <SelectValue placeholder="Assign plan" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
+                                 {availableTenantPlans.length === 0 && (
+                                        <SelectItem value="__none__" disabled>
+                                            No plans available — create a local plan first
+                                        </SelectItem>
+                                    )}
                                     {availableTenantPlans.map((p) => (
                                         <SelectItem key={p.id} value={String(p.id)}>
                                             {p.name} — ${p.price}/{p.duration_type}

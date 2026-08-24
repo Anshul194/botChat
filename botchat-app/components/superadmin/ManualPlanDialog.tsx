@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Loader2, Crown } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchPlans } from "@/store/slices/plansSlice";
+import { fetchMyPlans } from "@/store/slices/plansSlice";
 import { assignTenantPlan } from "@/store/slices/superadminSubscriptionSlice";
 import { formatCurrency } from "@/lib/formatCurrency";
 
@@ -14,7 +14,7 @@ export default function ManualPlanDialog({ open, onClose, userId, userName }: {
     userName: string;
 }) {
     const dispatch = useAppDispatch();
-    const { plans } = useAppSelector((s) => s.plans);
+    const { myPlans: plans } = useAppSelector((s) => s.plans);
     const { actionLoading } = useAppSelector((s) => s.superadminSubscription);
     const [planId, setPlanId] = useState<number>(0);
     const [expiry, setExpiry] = useState("");
@@ -22,7 +22,7 @@ export default function ManualPlanDialog({ open, onClose, userId, userName }: {
 
     useEffect(() => {
         if (open) {
-            dispatch(fetchPlans());
+            dispatch(fetchMyPlans());
         }
     }, [open, dispatch]);
 
