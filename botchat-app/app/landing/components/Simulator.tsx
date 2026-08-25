@@ -480,6 +480,7 @@ export default function Simulator() {
               <AnimatePresence>
                 {state.commentsOpen && (
                   <motion.div
+                    key="comments-drawer"
                     initial={{ y: "100%" }}
                     animate={{ y: "0%" }}
                     exit={{ y: "100%" }}
@@ -504,6 +505,7 @@ export default function Simulator() {
                       <AnimatePresence>
                         {state.commentPosted && (
                           <motion.div
+                            key="posted-comment"
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             className="flex gap-2"
@@ -552,6 +554,7 @@ export default function Simulator() {
               <AnimatePresence>
                 {state.notifVisible && (
                   <motion.div
+                    key="notif-banner"
                     initial={{ y: -100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -100, opacity: 0 }}
@@ -621,7 +624,7 @@ export default function Simulator() {
                 <AnimatePresence mode="popLayout">
                   
                   {/* Brand Trigger keyword message */}
-                  <div className="flex justify-end w-full">
+                  <div key="brand-trigger-keyword" className="flex justify-end w-full">
                     <div className="bg-[#FF2D78] text-white text-[12px] px-3.5 py-2 rounded-2xl rounded-tr-none max-w-[70%] font-extrabold shadow-md">
                       {current.keyword}
                     </div>
@@ -706,6 +709,7 @@ export default function Simulator() {
                   {/* Brand Follower Verified Badge */}
                   {state.followed && state.dmPhase >= 4 && (
                     <motion.div
+                      key="follower-verified-badge"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       className="flex items-center justify-center gap-1.5 py-0.5 text-[8.5px] text-green-400 bg-green-500/10 rounded-full border border-green-500/25 max-w-[180px] mx-auto font-black"
@@ -806,6 +810,7 @@ export default function Simulator() {
       <AnimatePresence>
         {state.dmPhase === 7 && (
           <motion.div
+            key="success-conversion-banner"
             initial={{ opacity: 0, y: 15, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 15, scale: 0.95 }}
