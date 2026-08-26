@@ -145,6 +145,7 @@ export default function InstagramBioLinksPage() {
             username: page.url,
             slug: page.url,
             title: page.title,
+            domain_id: page.domain_id,
             is_enabled: page.is_enabled === "1" || page.is_enabled === true || page.is_enabled === "true"
         } as BioLinkRow));
     }, [pages]);
@@ -324,6 +325,7 @@ export default function InstagramBioLinksPage() {
                                     onCopy={handleCopy}
                                     onAction={(type) => setActionModal({ isOpen: true, type, row })}
                                     copied={copiedId === row.pageId}
+                                    domains={domains}
                                 />
                             ))}
                         </div>
@@ -348,6 +350,7 @@ export default function InstagramBioLinksPage() {
                                                 onCopy={handleCopy}
                                                 onAction={(type) => setActionModal({ isOpen: true, type, row })}
                                                 copied={copiedId === row.pageId}
+                                                domains={domains}
                                             />
                                         ))}
                                     </tbody>
@@ -363,6 +366,7 @@ export default function InstagramBioLinksPage() {
                                         onCopy={handleCopy}
                                         onAction={(type) => setActionModal({ isOpen: true, type, row })}
                                         copied={copiedId === row.pageId}
+                                        domains={domains}
                                     />
                                 ))}
                             </div>
@@ -489,10 +493,10 @@ export default function InstagramBioLinksPage() {
     );
 }
 
-function BioLinkCard({ row, onEdit, onCopy, onAction, copied }: any) {
-    const publicUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
-        : `/p?u=${row.username}&id=${row.pageId}`;
+function BioLinkCard({ row, onEdit, onCopy, onAction, copied, domains }: any) {
+    const domainObj = domains?.find((d: any) => (d.domain_id || d.id) === row.domain_id);
+    const domainStr = domainObj ? domainObj.domain : (typeof window !== "undefined" ? window.location.host : "megadm.com");
+    const publicUrl = `${typeof window !== "undefined" && window.location.protocol === 'http:' ? 'http:' : 'https:'}//${domainStr}/${row.username}`;
 
     return (
         <div
@@ -555,10 +559,10 @@ function BioLinkCard({ row, onEdit, onCopy, onAction, copied }: any) {
     );
 }
 
-function BioLinkTableRow({ row, onEdit, onCopy, onAction, copied }: any) {
-    const publicUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
-        : `/p?u=${row.username}&id=${row.pageId}`;
+function BioLinkTableRow({ row, onEdit, onCopy, onAction, copied, domains }: any) {
+    const domainObj = domains?.find((d: any) => (d.domain_id || d.id) === row.domain_id);
+    const domainStr = domainObj ? domainObj.domain : (typeof window !== "undefined" ? window.location.host : "megadm.com");
+    const publicUrl = `${typeof window !== "undefined" && window.location.protocol === 'http:' ? 'http:' : 'https:'}//${domainStr}/${row.username}`;
 
     return (
         <tr
@@ -606,11 +610,10 @@ function BioLinkTableRow({ row, onEdit, onCopy, onAction, copied }: any) {
     );
 }
 
-function BioLinkMobileCard({ row, onEdit, onCopy, onAction, copied }: any) {
-    const publicUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/p?u=${row.username}&id=${row.pageId}`
-        : `/p?u=${row.username}&id=${row.pageId}`;
-
+function BioLinkMobileCard({ row, onEdit, onCopy, onAction, copied, domains }: any) {
+    const domainObj = domains?.find((d: any) => (d.domain_id || d.id) === row.domain_id);
+    const domainStr = domainObj ? domainObj.domain : (typeof window !== "undefined" ? window.location.host : "megadm.com");
+    const publicUrl = `${typeof window !== "undefined" && window.location.protocol === 'http:' ? 'http:' : 'https:'}//${domainStr}/${row.username}`;
 
     return (
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">

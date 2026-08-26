@@ -156,6 +156,7 @@ export default function UserManagementPage() {
 
     const { users, isLoading, selectedUser, total, page, totalPages } = useAppSelector((state) => state.users);
     const { plans, myPlans } = useAppSelector((state) => state.plans);
+    const { user } = useAppSelector((state) => state.auth);
     // Strict scoping: Only plans explicitly owned by this tenant can be assigned to its users
     // Fallback between plans and myPlans to handle both Super Admin and Tenant Admin Redux states
     const availableTenantPlans = (plans && plans.length > 0) ? plans : (myPlans || []);
