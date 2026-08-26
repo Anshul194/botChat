@@ -155,11 +155,14 @@ export default function UserManagementPage() {
     const { settings } = useTenantSettings();
 
     const { users, isLoading, selectedUser, total, page, totalPages } = useAppSelector((state) => state.users);
-    const { plans, myPlans } = useAppSelector((state) => state.plans);
+    const { plans, myPlans, isLoadingMyPlans, isLoading: isLoadingPlans } = useAppSelector((state) => state.plans);
     const { user } = useAppSelector((state) => state.auth);
-    // Strict scoping: Only plans explicitly owned by this tenant can be assigned to its users
-    // Fallback between plans and myPlans to handle both Super Admin and Tenant Admin Redux states
-    const availableTenantPlans = (plans && plans.length > 0) ? plans : (myPlans || []);
+    const { user } = useAppSelector((state) => state.auth);
+    const isSuperAdmin = user?.role === 'SUPER_ADMIN' || user?.type === 'Super Admin';
+    // SuperAdmin creates plans → stored in state.plans.plans (fetchPlans → /plans)
+    // Tenant creates plans → stored in state.plans.myPlans (fetchMyPlans → /plans/my-plans)
+    const availableTenantPlans = isSuperAdmin ? (plans || []) : (myPlans || []);
+    const isLoadingAssignPlans = isSuperAdmin ? isLoadingPlans : isLoadingMyPlans;
     const { showModal } = useModal();
 
     // URL Search Params State Synchronization
@@ -214,15 +217,13 @@ export default function UserManagementPage() {
     // Fetch plans explicitly when Assign Plan modal opens
     useEffect(() => {
         if (isAssignPlanOpen) {
-            const isSuperAdmin = user?.role === 'SUPER_ADMIN' || user?.type === 'Super Admin';
             if (isSuperAdmin) {
-                dispatch(fetchMyPlans()); // For SuperAdmin, my-plans returns all central plans
-                dispatch(fetchPlans());
+                dispatch(fetchPlans()); // SuperAdmin's central plans live in state.plans.plans
             } else {
-                dispatch(fetchPlans()); // For Tenant, plans returns active local plans
+                dispatch(fetchMyPlans()); // Tenant's local plans live in state.plans.myPlans
             }
         }
-    }, [isAssignPlanOpen, dispatch, user]);
+    }, [isAssignPlanOpen, dispatch, isSuperAdmin]);
 
     // Sync URL params update
     const updateUrlParams = useCallback((newParams: Record<string, string | number | null>) => {
@@ -631,15 +632,16 @@ export default function UserManagementPage() {
                                             <td className="px-6 py-4 text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-card/10">
+                                                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-card/10" onClick={(e) => e.stopPropagation()}>
                                                             <MoreVertical className="h-4 w-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-48 rounded-2xl">
-                                                        <DropdownMenuItem className="gap-2" onClick={() => handleViewDetails(user.id)}>
+                                                        <DropdownMenuItem className="gap-2" onClick={(e) => { e.stopPropagation(); handleViewDetails(user.id); }}>
                                                             <ArrowUpRight className="h-3.5 w-3.5" /> View Details
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem className="gap-2" onClick={() => {
+                                                        <DropdownMenuItem className="gap-2" onClick={(e) => {
+                                                            e.stopPropagation();
                                                             setAssignPlanTarget({ id: user.id, name: user.name });
                                                             setAssignPlanData({ plan_id: "", plan_expired_date: "" });
                                                             setIsAssignPlanOpen(true);
@@ -647,7 +649,7 @@ export default function UserManagementPage() {
                                                             <Shield className="h-3.5 w-3.5" /> Assign Plan
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="gap-2 text-rose-500 focus:text-rose-500 focus:bg-rose-500/10" onClick={(e: React.MouseEvent) => triggerConfirm(e, user)}>
+                                                        <DropdownMenuItem className="gap-2 text-rose-500 focus:text-rose-500 focus:bg-rose-500/10" onClick={(e: React.MouseEvent) => { e.stopPropagation(); triggerConfirm(e, user); }}>
                                                             {user.active_status ? (
                                                                 <><UserMinus className="h-3.5 w-3.5" /> Deactivate Account</>
                                                             ) : (
@@ -747,7 +749,14 @@ export default function UserManagementPage() {
                                     <SelectValue placeholder="Choose a plan" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
-                                 {availableTenantPlans.length === 0 && (
+                                    {isLoadingAssignPlans && (
+                                        <SelectItem value="__loading__" disabled>
+                                            <span className="flex items-center gap-2">
+                                                <Loader2 className="h-3 w-3 animate-spin" /> Loading plans...
+                                            </span>
+                                        </SelectItem>
+                                    )}
+                                    {!isLoadingAssignPlans && availableTenantPlans.length === 0 && (
                                         <SelectItem value="__none__" disabled>
                                             No plans available — create a local plan first
                                         </SelectItem>

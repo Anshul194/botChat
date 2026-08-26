@@ -162,7 +162,7 @@ export default function CookieConsent() {
               </button>
               <button
                 onClick={handleReject}
-                className="w-full py-3.5 sm:py-4 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-all duration-300 text-center border cursor-pointer active:scale-95 bg-white hover:bg-zinc-50 dark:bg-transparent dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white border-zinc-200 dark:border-zinc-800"
+                className="w-full py-3.5 sm:py-4 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-widest transition-all duration-300 text-center border cursor-pointer active:scale-95 hover:-translate-y-0.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-white/[0.07] dark:hover:bg-white/[0.12] text-zinc-700 dark:text-zinc-100 border-zinc-200 dark:border-white/10"
               >
                 Reject Non-Essential
               </button>
