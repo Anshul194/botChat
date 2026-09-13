@@ -12,6 +12,12 @@ const aliases: Record<string, string[]> = {
     // VCard Links: stored as vcard_access (toggle) or vcard_limit (limit)
     vcard: ["vcard_access", "vcard_limit"],
     vcard_access: ["vcard"],
+    // Custom Domains: stored as domains_limit
+    domains: ["domains_limit"],
+    domains_limit: ["domains"],
+    // Tracking Pixels: stored as pixels_limit
+    pixels: ["pixels_limit"],
+    pixels_limit: ["pixels"],
 };
 
 

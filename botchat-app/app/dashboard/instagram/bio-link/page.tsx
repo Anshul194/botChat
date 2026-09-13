@@ -447,12 +447,18 @@ function BioLinkBuilderContent() {
         !!advancedSettings.leapLinkUrl && "Leap Redirect",
     ].filter(Boolean) as string[];
 
+    const [domains, setDomains] = useState<any[]>([]);
+
     useEffect(() => {
         const fetchAccounts = async () => {
             try {
                 const res = await api.get("/social/instagram-connect");
                 const accs = res.data?.data?.instagram_accounts || [];
                 setAccounts(accs);
+                
+                const dRes = await api.get("/domains");
+                setDomains(dRes.data?.data || []);
+
                 if (requestedPageId) {
                     setSelectedPageId(requestedPageId);
                 } else if (accs.length > 0) {
@@ -493,7 +499,10 @@ function BioLinkBuilderContent() {
                 const hydratedProfile = {
                     ...payload,
                     theme: payload.theme_name || payload.theme || payload.settings?.theme || "insta_minimal",
-                    niche: payload.niche || payload.settings?.niche || "photography"
+                    niche: payload.niche || payload.settings?.niche || "photography",
+                    title: payload.settings?.seo?.title || payload.title || "",
+                    bio: payload.settings?.seo?.meta_description || payload.description || "",
+                    avatar: payload.settings?.seo?.image || payload.avatar || ""
                 };
 
                 setProfile(hydratedProfile);
@@ -643,8 +652,21 @@ function BioLinkBuilderContent() {
         const nextProfile = { ...profile, ...updates };
         setProfile(nextProfile);
         const targetId = profile.id || profile.link_id;
+        
+        // Map fields to Altum BioService format
+        const payload: any = { ...updates };
+        if ('title' in payload || 'bio' in payload || 'avatar' in payload) {
+            payload.settings = { ...payload.settings, seo: { ...(payload.settings?.seo || {}) } };
+            if ('title' in payload) payload.settings.seo.title = payload.title;
+            if ('bio' in payload) payload.settings.seo.meta_description = payload.bio;
+            if ('avatar' in payload) payload.settings.seo.image = payload.avatar;
+            delete payload.title;
+            delete payload.bio;
+            delete payload.avatar;
+        }
+
         try {
-            await api.put(`/bio-builder/profile/${targetId}`, updates);
+            await api.put(`/bio/pages/${targetId}`, payload);
             // Optionally show a subtle success indicator or nothing if it's too frequent
             // showModal("success", "Saved", "Theme updated successfully.");
         } catch {
@@ -1259,11 +1281,11 @@ function BioLinkBuilderContent() {
 
                     {/* ── CENTRAL FLOATING PHASE DOCK (DESKTOP) ── */}
                     <div className="hidden xl:block absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[100]">
-                        <div className="bg-[var(--muted)]/60/90 dark:bg-[var(--muted)]/90 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-[var(--border)] dark:border-[var(--border)] shadow-xl">
+                        <div className="bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-3xl rounded-full p-1 flex items-center gap-1 border border-slate-200 dark:border-slate-800 shadow-xl">
                             {PHASES.map((p, idx) => (
                                 <button key={p.id} onClick={() => setView(p.id)} className={cn(
                                     "h-9 px-5 rounded-full flex items-center justify-center gap-2 transition-all relative group",
-                                    view === p.id ? "bg-[var(--card)] dark:bg-slate-700 text-[var(--foreground)] dark:text-white shadow-sm z-10" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--card)]/50 dark:text-[var(--muted-foreground)]/70 dark:hover:text-white dark:hover:bg-[var(--card)]/5"
+                                    view === p.id ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm z-10" : "text-slate-600 hover:text-slate-900 hover:bg-white/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/50"
                                 )}>
                                     <p.Icon size={14} className={cn("transition-transform duration-300", view === p.id ? "scale-110" : "scale-100")} />
                                     <span className="inline text-[10px] font-black uppercase tracking-widest">{p.label.split('.')[1]}</span>
@@ -1373,8 +1395,29 @@ function BioLinkBuilderContent() {
                                                 </div>
                                             </div>
                                             <div className="grid gap-6">
-                                                <InputField label="Name or Brand Title" value={profile?.title || ""} onChange={(e: any) => setProfile({ ...profile!, title: e.target.value })}
-                                                    onBlur={(e: any) => handleUpdateProfile({ title: e.target.value })} placeholder="e.g. My Awesome Studio" />
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <InputField label="Name or Brand Title" value={profile?.title || ""} onChange={(e: any) => setProfile({ ...profile!, title: e.target.value })}
+                                                        onBlur={(e: any) => handleUpdateProfile({ title: e.target.value })} placeholder="e.g. My Awesome Studio" />
+                                                    <InputField label="Public URL Slug" value={profile?.url || ""} onChange={(e: any) => setProfile({ ...profile!, url: e.target.value })}
+                                                        onBlur={(e: any) => handleUpdateProfile({ url: e.target.value })} placeholder="e.g. my-awesome-bio" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-black uppercase text-[var(--muted-foreground)]/70 ml-1">Custom Domain</label>
+                                                    <select
+                                                        value={profile?.domain_id || 0}
+                                                        onChange={(e: any) => {
+                                                            const val = parseInt(e.target.value);
+                                                            setProfile({ ...profile!, domain_id: val });
+                                                            handleUpdateProfile({ domain_id: val });
+                                                        }}
+                                                        className="w-full h-11 px-4 rounded-xl bg-[var(--muted)]/50 dark:bg-[var(--muted)] border-2 border-transparent focus:border-[var(--border)]/70 dark:focus:border-slate-600 text-sm font-medium text-[var(--foreground)] dark:text-white outline-none transition-all appearance-none"
+                                                    >
+                                                        <option value={0}>Default domain ({typeof window !== "undefined" ? window.location.host : "megadm.com"})</option>
+                                                        {domains.map((d: any) => (
+                                                            <option key={d.domain_id || d.id} value={d.domain_id || d.id}>{d.domain}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] font-black uppercase text-[var(--muted-foreground)]/70 ml-1">Short Biography</label>
                                                     <textarea value={profile?.bio || ""} onChange={e => setProfile({ ...profile!, bio: e.target.value })}

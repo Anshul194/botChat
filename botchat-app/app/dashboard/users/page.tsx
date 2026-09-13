@@ -157,6 +157,7 @@ export default function UserManagementPage() {
     const { users, isLoading, selectedUser, total, page, totalPages } = useAppSelector((state) => state.users);
     const { plans, myPlans, isLoadingMyPlans, isLoading: isLoadingPlans } = useAppSelector((state) => state.plans);
     const { user } = useAppSelector((state) => state.auth);
+    const { user } = useAppSelector((state) => state.auth);
     const isSuperAdmin = user?.role === 'SUPER_ADMIN' || user?.type === 'Super Admin';
     // SuperAdmin creates plans → stored in state.plans.plans (fetchPlans → /plans)
     // Tenant creates plans → stored in state.plans.myPlans (fetchMyPlans → /plans/my-plans)

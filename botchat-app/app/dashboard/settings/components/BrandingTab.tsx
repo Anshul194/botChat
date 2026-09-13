@@ -97,6 +97,8 @@ export default function BrandingTab() {
     gtag: "",
     databasePermission: false,
     appName: "",
+    company_email: "",
+    company_telephone: "",
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -109,6 +111,7 @@ export default function BrandingTab() {
   useEffect(() => {
     if (general) {
       setGeneralForm({
+        ...generalForm,
         ...general,
         theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
       });
@@ -167,6 +170,8 @@ export default function BrandingTab() {
             {(isTenant || isReseller) && (
               <InputField label="Custom Domain" value={generalForm.whiteLabelDomain} onChange={(e: any) => setGeneralForm({ ...generalForm, whiteLabelDomain: e.target.value })} placeholder="app.botchat.com" />
             )}
+            <InputField label="Support Email (Footer)" value={generalForm.company_email} onChange={(e: any) => setGeneralForm({ ...generalForm, company_email: e.target.value })} placeholder="support@yourdomain.com" />
+            <InputField label="Support Phone (Footer)" value={generalForm.company_telephone} onChange={(e: any) => setGeneralForm({ ...generalForm, company_telephone: e.target.value })} placeholder="+1 234 567 8900" />
           </div>
         </Section>
 
