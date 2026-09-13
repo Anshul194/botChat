@@ -15,10 +15,10 @@ const CHANNELS = [
     label: "Instagram",
     bg: "linear-gradient(135deg, #833ab4, #E1306C, #F77737)",
     color: "#E1306C",
-    stat: "10M+ DMs sent",
+    stat: "Instagram DM",
     desc: "Auto-reply to post & Reel comments, story reactions and mentions instantly.",
     bubble_user: "Hey! Can you send me the link? 🔥",
-    bubble_bot: "Hey! Here's the link you asked for 👉 replyrush.com/offer",
+    bubble_bot: "Hey! Here's the link you asked for 👉 megadm.chat/offer",
   },
   {
     id: "fb",
@@ -105,7 +105,7 @@ export default function MotiveSection() {
               className="inline-flex items-center gap-1.5 bg-pink-50 border border-pink-200 rounded-full px-3 py-1 text-[11px] font-semibold text-pink-500 uppercase tracking-wider mb-2.5"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-pink-400" />
-              Why ReplyRush
+              Why MegaDM
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 12 }}
@@ -136,11 +136,11 @@ export default function MotiveSection() {
               className="w-8 h-8 rounded-xl flex items-center justify-center text-white"
               style={{ background: "linear-gradient(135deg,#ff2d78,#ff8c42)" }}
             >
-              <Users className="w-3.5 h-3.5" />
+              <Zap className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-gray-900 font-bold text-sm leading-tight">11K+ brands</div>
-              <div className="text-gray-600 text-[11px]">already running</div>
+              <div className="text-gray-900 font-bold text-sm leading-tight">Meta Official API</div>
+              <div className="text-gray-600 text-[11px]">fully compliant</div>
             </div>
           </motion.div>
         </div>
@@ -154,15 +154,15 @@ export default function MotiveSection() {
         >
           <div className="flex flex-col md:flex-row">
 
-            {/* Sidebar tabs */}
-            <div className="md:w-52 flex-shrink-0 border-b md:border-b-0 md:border-r border-pink-50 p-2.5 flex md:flex-col gap-1.5">
+            {/* Sidebar tabs — horizontal scroll on mobile, vertical sidebar on desktop */}
+            <div className="md:w-52 flex-shrink-0 border-b md:border-b-0 md:border-r border-pink-50 p-2.5 flex md:flex-col gap-1.5 overflow-x-auto md:overflow-x-visible scrollbar-none">
               {CHANNELS.map((c) => (
                 <button
                   key={c.id}
                   onClick={() => setActive(c.id)}
                   aria-label={`Select ${c.label} channel`}
                   aria-pressed={active === c.id}
-                  className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all w-full group ${active === c.id ? "bg-pink-50" : "hover:bg-gray-50"
+                  className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all w-full md:w-full min-w-[90px] md:min-w-0 group flex-shrink-0 md:flex-shrink ${active === c.id ? "bg-pink-50" : "hover:bg-gray-50"
                     }`}
                 >
                   <div
@@ -184,15 +184,15 @@ export default function MotiveSection() {
                 </button>
               ))}
 
-              {/* Mini stats */}
+              {/* Meta API badge */}
               <div className="hidden md:block mt-auto pt-3 border-t border-pink-50 px-2">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-2">Platform stats</p>
-                {[["25M+", "Auto DMs"], ["5M+", "Link Clicks"], ["10M+", "Comment replies"]].map(([v, l]) => (
-                  <div key={l} className="flex justify-between items-baseline py-0.5">
-                    <span className="text-[11px] text-gray-600">{l}</span>
-                    <span className="text-[11px] font-bold text-gray-800">{v}</span>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-2">Built on</p>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded bg-blue-500 flex items-center justify-center">
+                    <span className="text-white text-[8px] font-bold">M</span>
                   </div>
-                ))}
+                  <span className="text-[11px] font-semibold text-gray-700">Meta Official API</span>
+                </div>
               </div>
             </div>
 
@@ -289,7 +289,7 @@ export default function MotiveSection() {
                       transition={{ delay: 0.6 }}
                     >
                       <Bot className="w-2.5 h-2.5 text-gray-500" />
-                      <span className="text-[10px] text-gray-500">Sent by ReplyRush AI · just now</span>
+                      <span className="text-[10px] text-gray-500">Sent by MegaDM AI · just now</span>
                     </motion.div>
                   </div>
                 </motion.div>

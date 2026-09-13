@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 /* ─── Static fallback data ─────────────────────────────────────── */
-const PLATFORM_NAME = "BotChat";
+const PLATFORM_NAME = "MegaDM";
 const PLATFORM_TAGLINE = "The world's most advanced automation engine for social growth and precision conversion.";
 
 const SOLUTIONS = [
@@ -43,10 +43,10 @@ const SOCIALS = [
 ];
 
 const STATS = [
-    { value: "25M+", label: "DMs Sent" },
-    { value: "11K+", label: "Creators" },
     { value: "99.9%", label: "Uptime" },
     { value: "250%", label: "Avg Growth" },
+    { value: "24/7", label: "Support" },
+    { value: "0", label: "Violations" },
 ];
 
 export default function Footer() {
@@ -230,7 +230,7 @@ export default function Footer() {
                             onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.color = "#fff")}
                             onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,0.45)")}>
                             <ShieldCheck size={14} style={{ color: "#FF2D78" }} />
-                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Verified Meta Technology</span>
+                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Built on Meta&apos;s Official API</span>
                         </div>
                     </div>
 

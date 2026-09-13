@@ -73,7 +73,7 @@ export default function TrustAndFinalCTA() {
                 <div className="fixed bottom-4 left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-4xl -translate-x-1/2 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur md:flex md:items-center md:justify-between md:px-6"
                     style={{ borderColor: "rgba(255,45,120,0.3)", background: "rgba(9,0,13,0.96)" }}>
                     <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>
-                        <span className="font-semibold" style={{ color: "#FF80AB" }}></span> Start your free BotChat workspace in 2 minutes.
+                        <span className="font-semibold" style={{ color: "#FF80AB" }}></span> Start your free MegaDM workspace in 2 minutes.
                     </p>
                     <a href="/auth/sign-up"
                         className="mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white transition md:mt-0"

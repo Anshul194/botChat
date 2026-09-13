@@ -85,7 +85,7 @@ const STAGES = [
     badge: "Full Page Protection",
     headline: "Zero trolls.\nSafe brand.",
     sub: "Protect your brand reputation while you sleep.",
-    detail: "LinkDM automatically hides or deletes trolls and spam based on your global keywords, keeping your community safe and clean.",
+    detail: "MegaDM automatically hides or deletes trolls and spam based on your global keywords, keeping your community safe and clean.",
     stat: { value: "100%", label: "automated moderation" },
   },
   {
@@ -99,7 +99,7 @@ const STAGES = [
     badge: "Growth Results",
     headline: "More sales.\nLess work.",
     sub: "Real numbers from real professional creators.",
-    detail: "Creators using LinkDM see 3× more leads from DMs and 10× faster response times, allowing them to scale without burnout.",
+    detail: "Creators using MegaDM see 3× more leads from DMs and 10× faster response times, allowing them to scale without burnout.",
     stat: { value: "3×", label: "lead conversion" },
   },
 ];
@@ -198,7 +198,7 @@ function Sidebar() {
             </svg>
           </div>
           <div>
-            <div style={{ color: "#1a1235", fontWeight: 800, fontSize: 15, letterSpacing: "-0.03em" }}>LinkDM</div>
+            <div style={{ color: "#1a1235", fontWeight: 800, fontSize: 15, letterSpacing: "-0.03em" }}>MegaDM</div>
             <div style={{ color: "#e8175d", fontSize: 10, letterSpacing: "0.07em", fontWeight: 600 }}>REPLY BOT AI</div>
           </div>
         </div>

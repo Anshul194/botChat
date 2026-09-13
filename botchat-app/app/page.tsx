@@ -49,8 +49,8 @@ export default function Home() {
   return (
     <>
       <PageMeta
-        title="BotChat — AI-Powered Social Media Automation Platform"
-        description="Manage Facebook, Instagram, WhatsApp & Telegram from one platform. Smart Inbox, AI Bot Builder, Social Posting, Bio Links, Broadcast Campaigns and Analytics. Trusted by 11,000+ creators and agencies. Fully Meta compliant."
+        title="MegaDM — AI-Powered Instagram & Facebook DM Automation"
+        description="Automate your Instagram & Facebook DMs, comments, and story replies with MegaDM. Convert comments into customers with smart AI-powered workflows. Built on Meta's Official API."
       />
       <main className="min-h-screen w-full selection:bg-[#FF2D78]/20 selection:text-[#FF2D78]">
         <SmoothScrollingUI />
@@ -90,8 +90,7 @@ export default function Home() {
           <CreatorProof />
           <Testimonials />
 
-          {/* Blog */}
-          <BlogSection />
+          {/* Blog section moved to /blog page — not on landing */}
 
           {/* Dynamic pricing preview */}
           <div id="pricing">

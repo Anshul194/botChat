@@ -33,9 +33,12 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   const useLight = forceLight || isScrolled;
 
   const navLinks = [
+    { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Blog", href: "/blog" },
+    { name: "About", href: "/home/about" },
+    { name: "Contact", href: "/home/contact" },
   ];
 
   return (
@@ -49,7 +52,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
           }`}
       >
         {/* LOGO */}
-        <div className="flex items-center gap-2.5 cursor-pointer group">
+        <Link href="/" className="flex items-center gap-2.5 cursor-pointer group">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-[#FF2D78] to-[#E1306C] group-hover:rotate-12 transition-transform duration-300">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
@@ -57,12 +60,12 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
             className={`font-extrabold text-lg tracking-tight transition-colors ${useLight ? "text-gray-900" : "text-white"
               }`}
           >
-            botChat
+            MegaDM
           </span>
-        </div>
+        </Link>
 
         {/* DESKTOP LINKS */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -92,7 +95,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-[#FF2D78] to-[#E1306C]" />
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
-                <span className="relative z-10 text-sm font-black text-white px-2">Let’s Start</span>
+                <span className="relative z-10 text-sm font-black text-white px-2">Start Free Trial</span>
               </Link>
             </>
           ) : (
@@ -162,35 +165,34 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className={`absolute top-24 inset-x-6 z-40 p-6 rounded-3xl border shadow-2xl pointer-events-auto md:hidden ${useLight ? "bg-white border-gray-100" : "bg-[#110818] border-white/10"
-              }`}
+            className="absolute top-24 inset-x-6 z-40 p-6 rounded-3xl border shadow-2xl pointer-events-auto md:hidden bg-[#110818] border-white/10"
           >
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-lg font-bold ${useLight ? "text-gray-900 hover:text-[#FF2D78]" : "text-white hover:text-[#FF2D78]"
-                    }`}
+                  className="text-lg font-bold text-white hover:text-[#FF2D78] transition-colors py-1"
                 >
                   {link.name}
                 </Link>
               ))}
-              <div className="h-px bg-gray-100/10" />
-              <div className="flex flex-col gap-4">
+              <div className="h-px bg-white/10 my-2" />
+              <div className="flex flex-col gap-3">
                 {!isAuthenticated ? (
                   <>
                     <Link
                       href="/auth/sign-in"
-                      className={`text-center py-3 rounded-2xl font-bold ${useLight ? "text-gray-900 bg-gray-50" : "text-white bg-white/5"
-                        }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-center py-3 rounded-2xl font-bold text-white bg-white/10 hover:bg-white/15 transition-colors"
                     >
                       Sign In
                     </Link>
                     <Link
                       href="/auth/sign-up"
-                      className="text-center py-4 rounded-2xl font-black text-white bg-gradient-to-r from-[#FF2D78] to-[#E1306C]"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-center py-4 rounded-2xl font-black text-white bg-gradient-to-r from-[#FF2D78] to-[#E1306C] hover:opacity-90 transition-opacity"
                     >
                       Start Free Trial
                     </Link>
@@ -199,25 +201,26 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
                   <>
                     <Link
                       href="/dashboard"
-                      className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF2D78] to-[#E1306C] flex items-center justify-center text-white font-bold overflow-hidden">
                           {(user?.name?.charAt(0) || user?.email?.charAt(0) || "U").toUpperCase()}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-bold text-gray-900">{user?.name}</span>
-                          <span className="text-xs text-gray-500">Go to Dashboard</span>
+                          <span className="text-sm font-bold text-white">{user?.name}</span>
+                          <span className="text-xs text-white/50">Go to Dashboard</span>
                         </div>
                       </div>
-                      <LayoutDashboard className="w-5 h-5 text-gray-400" />
+                      <LayoutDashboard className="w-5 h-5 text-white/40" />
                     </Link>
                     <button
                       onClick={() => {
                         dispatch(logoutUser());
                         router.push('/');
                       }}
-                      className="text-center py-3 rounded-2xl font-bold text-red-600 bg-red-50 border border-red-100"
+                      className="text-center py-3 rounded-2xl font-bold text-red-400 bg-red-500/10 border border-red-500/20"
                     >
                       Sign Out
                     </button>

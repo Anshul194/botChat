@@ -53,11 +53,11 @@ const montserrat = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "BotChat",
-    template: "%s — BotChat",
+    default: "MegaDM",
+    template: "%s — MegaDM",
   },
   description:
-    "Automate Instagram DMs and Facebook Messenger with AI-powered chatbots.",
+    "Automate Instagram DMs and Facebook Messenger with AI-powered workflows. Built on Meta's Official API.",
 };
 
 
@@ -85,20 +85,20 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "BotChat",
-              url: "https://botchat.divyangtechlabs.com",
-              logo: "https://botchat.divyangtechlabs.com/logo.png",
+              name: "MegaDM",
+              url: "https://megadm.chat",
+              logo: "https://megadm.chat/logo.png",
               description:
-                "AI-powered Instagram DM and Facebook Messenger automation platform. Convert comments into customers automatically.",
+                "AI-powered Instagram DM and Facebook automation platform. Convert comments into customers automatically.",
               sameAs: [
-                "https://facebook.com/botchat",
-                "https://instagram.com/botchat",
-                "https://twitter.com/botchat",
+                "https://facebook.com/megadm",
+                "https://instagram.com/megadm",
+                "https://twitter.com/megadm",
               ],
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer support",
-                email: "support@botchat.com",
+                email: "support@megadm.chat",
               },
               address: {
                 "@type": "PostalAddress",
@@ -113,12 +113,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              name: "BotChat",
+              name: "MegaDM",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description:
-                "Automate Instagram DMs and Facebook Messenger with AI chatbots. Reply to comments in under 1 second.",
-              url: "https://botchat.divyangtechlabs.com",
+                "Automate Instagram DMs and Facebook Messenger with AI workflows. Reply to comments in under 1 second.",
+              url: "https://megadm.chat",
               offers: {
                 "@type": "Offer",
                 price: "0",
