@@ -110,9 +110,9 @@ function Navbar({ open, setOpen, tenantData }: { open: boolean; setOpen: (v: boo
   const logo = tenantData.branding?.logo;
 
   return (
-    <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-6 pt-5 pointer-events-none">
+    <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-3.5 sm:px-6 pt-3 sm:pt-5 pointer-events-none">
       <nav
-        className="pointer-events-auto w-full max-w-5xl flex items-center justify-between px-6 py-3.5 rounded-2xl transition-all duration-300 relative"
+        className="pointer-events-auto w-full max-w-5xl flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl transition-all duration-300 relative"
         style={{
           background: scrolled ? "rgba(6,0,13,0.92)" : "rgba(6,0,13,0.60)",
           backdropFilter: "blur(20px)",
@@ -122,9 +122,9 @@ function Navbar({ open, setOpen, tenantData }: { open: boolean; setOpen: (v: boo
       >
         <div className="flex items-center gap-2.5">
           {logo ? (
-            <img src={logo} alt={companyName} className="h-8 rounded" />
+            <img src={logo} alt={companyName} className="h-7 sm:h-8 rounded object-contain max-w-[120px]" />
           ) : (
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
               <Send className="w-4 h-4 text-white" />
             </div>
           )}
@@ -152,7 +152,7 @@ function Navbar({ open, setOpen, tenantData }: { open: boolean; setOpen: (v: boo
               </a>
               <a
                 href={tenantData.landing_page?.cta_text ? "/auth/sign-up" : "/auth/sign-up"}
-                className="px-5 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
+                className="px-5 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95 shadow-md"
                 style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 4px 18px rgba(255,45,120,0.35)" }}
               >
                 {tenantData.landing_page?.cta_text || 'Get Started'} →
@@ -200,32 +200,70 @@ function Navbar({ open, setOpen, tenantData }: { open: boolean; setOpen: (v: boo
           )}
         </div>
 
-        <button onClick={() => setOpen(!open)} className="md:hidden p-1.5 rounded-lg hover:bg-white/10 text-white/80 transition-colors">
+        <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-xl hover:bg-white/10 text-white/80 transition-colors" aria-label="Toggle menu">
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </nav>
 
       {open && (
         <div
-          className="absolute top-20 inset-x-6 z-40 p-5 rounded-2xl border shadow-2xl pointer-events-auto md:hidden animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute top-16 sm:top-20 inset-x-3.5 sm:inset-x-6 z-40 p-5 rounded-2xl border shadow-2xl pointer-events-auto md:hidden animate-in fade-in slide-in-from-top-2 duration-200"
           style={{ background: "rgba(10,1,20,0.98)", borderColor: "rgba(255,255,255,0.10)", backdropFilter: "blur(20px)" }}
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3.5">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="text-base font-semibold hover:text-white transition-colors"
-                style={{ color: "rgba(255,255,255,0.70)" }}
+                className="text-sm font-semibold hover:text-white transition-colors py-1"
+                style={{ color: "rgba(255,255,255,0.75)" }}
               >
                 {item.label}
               </a>
             ))}
-            <div className="h-px" style={{ background: "rgba(255,255,255,0.10)" }} />
-            <a href="/auth/sign-up" className="text-center py-3 rounded-xl font-bold text-white text-sm" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
-              Get Started →
-            </a>
+            <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.10)" }} />
+            {!isAuthenticated ? (
+              <>
+                <a
+                  href="/auth/sign-in"
+                  onClick={() => setOpen(false)}
+                  className="text-center py-2.5 rounded-xl font-semibold text-white/80 hover:text-white border border-white/10 text-sm transition-colors"
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/auth/sign-up"
+                  onClick={() => setOpen(false)}
+                  className="text-center py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 active:scale-95 shadow-md"
+                  style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}
+                >
+                  {tenantData.landing_page?.cta_text || 'Get Started'} →
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="text-center py-2.5 rounded-xl font-semibold text-white/80 hover:text-white border border-white/10 text-sm flex items-center justify-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </a>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    dispatch(logoutUser());
+                    router.push('/');
+                  }}
+                  className="text-center py-2.5 rounded-xl font-semibold text-red-400 hover:text-red-300 border border-red-500/20 text-sm flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -296,9 +334,9 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 1: HERO — DARK (#06000d)                      */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section className="relative pt-36 pb-28 px-6 overflow-hidden" style={{ background: "linear-gradient(180deg, #06000d 0%, #0a0114 100%)" }}>
+      <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 px-4 sm:px-6 overflow-hidden" style={{ background: "linear-gradient(180deg, #06000d 0%, #0a0114 100%)" }}>
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[450px] pointer-events-none"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[320px] sm:w-[600px] md:w-[750px] h-[220px] sm:h-[360px] md:h-[450px] pointer-events-none max-w-full"
           style={{ background: "radial-gradient(ellipse, rgba(255,45,120,0.14) 0%, transparent 65%)", filter: "blur(50px)" }}
         />
 
@@ -306,42 +344,42 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
           <div>
             <SectionBadge isDark>⚡ AI-Powered Automation</SectionBadge>
 
-            <h1 className="font-black leading-[1.08] tracking-tight mb-6 text-white" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black leading-[1.12] sm:leading-[1.08] tracking-tight mb-4 sm:mb-6 text-white">
               {tenantData.landing_page?.hero_title || (
                 <>
-                  The Best Auto DM Tool<br />
-                  for{" "}
+                  The Best Auto DM Tool<br className="hidden sm:inline" />
+                  {" "}for{" "}
                   <span style={{ background: "linear-gradient(135deg, #FF2D78 0%, #ff80ab 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                    Instagram & Facebook
+                    Instagram &amp; Facebook
                   </span>
                 </>
               )}
             </h1>
 
-            <p className="text-lg leading-relaxed mb-10 max-w-xl mx-auto font-medium" style={{ color: "rgba(255,255,255,0.60)" }}>
+            <p className="text-sm sm:text-base md:text-lg leading-relaxed mb-8 sm:mb-10 max-w-xl mx-auto font-medium px-2 sm:px-0" style={{ color: "rgba(255,255,255,0.60)" }}>
               {tenantData.landing_page?.hero_description || "Auto DMs from comments, stories & messages. Turn engagement into conversations, leads & customers — automatically."}
             </p>
 
-            <div className="flex flex-wrap gap-4 justify-center mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-10 w-full max-w-xs sm:max-w-none mx-auto">
               <a
                 href="/auth/sign-up"
-                className="px-8 py-3.5 rounded-2xl font-bold text-base text-white transition-all hover:opacity-90 active:scale-95"
+                className="w-full sm:w-auto text-center px-8 py-3.5 rounded-2xl font-bold text-base text-white transition-all hover:opacity-90 active:scale-95 shadow-lg"
                 style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 8px 28px rgba(255,45,120,0.40)" }}
               >
                 Get Started Free →
               </a>
               <a
                 href="#simulator"
-                className="px-7 py-3.5 rounded-2xl font-semibold text-base hover:bg-white/10 transition-all flex items-center gap-2"
+                className="w-full sm:w-auto text-center px-7 py-3.5 rounded-2xl font-semibold text-base hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                 style={{ border: "1px solid rgba(255,255,255,0.14)", color: "rgba(255,255,255,0.80)" }}
               >
                 See Live Demo ↓
               </a>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-6">
               {["Built on Meta's official API", "No bans — human delay engine", "11,000+ creators trust us"].map((item) => (
-                <div key={item} className="flex items-center gap-2 text-sm font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <div key={item} className="flex items-center gap-2 text-xs sm:text-sm font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>
                   <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,45,120,0.15)", border: "1px solid rgba(255,45,120,0.35)" }}>
                     <Check className="w-2.5 h-2.5" style={{ color: "#ff80ab" }} />
                   </div>
@@ -356,32 +394,32 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 2: THE WORKFLOW — ELEGANT WHITE (bg-white)    */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section id="workflow" className="py-24 px-6 bg-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "rgba(255,45,120,0.04)", filter: "blur(90px)" }} />
+      <section id="workflow" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full pointer-events-none max-w-full" style={{ background: "rgba(255,45,120,0.04)", filter: "blur(90px)" }} />
 
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <div className="text-center mb-16">
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10 sm:mb-16">
             <SectionBadge>The Workflow</SectionBadge>
-            <h2 className="font-black text-black leading-tight mb-4" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-black leading-tight mb-3 sm:mb-4 text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Four simple steps to <span style={{ color: "#FF2D78" }}>hyper-growth.</span>
             </h2>
-            <p className="text-base font-medium max-w-md mx-auto" style={{ color: "#6b7280" }}>
+            <p className="text-sm sm:text-base font-medium max-w-md mx-auto" style={{ color: "#6b7280" }}>
               Set up in under 5 minutes. Let automation handle 100% of your incoming engagement.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             {STEPS.map((step, idx) => (
               <div
                 key={idx}
-                className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 w-full"
                 style={{ background: "#fffdfd", border: "1px solid rgba(255,45,120,0.12)", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}
               >
-                <div className="text-3xl font-black mb-3" style={{ color: "rgba(255,45,120,0.20)" }}>
+                <div className="text-2xl sm:text-3xl font-black mb-2 sm:mb-3" style={{ color: "rgba(255,45,120,0.20)" }}>
                   {step.n}
                 </div>
-                <h3 className="text-base font-black text-black mb-2">{step.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#4b5563" }}>
+                <h3 className="text-base font-black text-black mb-1.5">{step.title}</h3>
+                <p className="text-xs sm:text-sm leading-relaxed" style={{ color: "#4b5563" }}>
                   {step.desc}
                 </p>
               </div>
@@ -393,17 +431,17 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 3: LIVE SIMULATOR — DARK (#0a0114)             */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section id="simulator" className="py-24 px-6 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0a0114 0%, #0d0617 100%)" }}>
-        <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="text-center mb-14">
+      <section id="simulator" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0a0114 0%, #0d0617 100%)" }}>
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10 sm:mb-14">
             <SectionBadge isDark>✨ Interactive Demo</SectionBadge>
-            <h2 className="font-black text-white mb-4" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-white mb-3 sm:mb-4 text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Watch it work in{" "}
               <span style={{ background: "linear-gradient(135deg, #FF2D78, #ff80ab)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                 real time
               </span>
             </h2>
-            <p className="text-base font-medium max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.55)" }}>
+            <p className="text-sm sm:text-base font-medium max-w-md mx-auto px-2 sm:px-0" style={{ color: "rgba(255,255,255,0.55)" }}>
               Comment → DM → Follow gate → Reward delivery. Instant and 100% automated.
             </p>
           </div>
@@ -415,32 +453,32 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 4: FEATURES — ELEGANT WHITE (bg-white)        */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-white relative overflow-hidden">
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <div className="text-center mb-14">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10 sm:mb-14">
             <SectionBadge>Why MegaDM</SectionBadge>
-            <h2 className="font-black text-black leading-tight mb-4" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-black leading-tight mb-3 sm:mb-4 text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Automation that feels <span style={{ color: "#FF2D78" }}>human.</span>
             </h2>
-            <p className="text-base font-medium max-w-sm mx-auto" style={{ color: "#6b7280" }}>
+            <p className="text-sm sm:text-base font-medium max-w-sm mx-auto" style={{ color: "#6b7280" }}>
               Smart, safe, and indistinguishable from real manual engagement.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {FEATURES.map((item, idx) => {
               const Icon = item.icon;
               return (
                 <div
                   key={idx}
-                  className="p-7 rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                  className="p-6 sm:p-7 rounded-2xl transition-all duration-300 hover:-translate-y-1 w-full"
                   style={{ background: "#fafafa", border: "1px solid #f0e6ed", boxShadow: "0 4px 16px rgba(0,0,0,0.02)" }}
                 >
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: "rgba(255,45,120,0.08)", color: "#FF2D78" }}>
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center mb-4 sm:mb-5" style={{ background: "rgba(255,45,120,0.08)", color: "#FF2D78" }}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-black text-black mb-2">{item.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "#4b5563" }}>
+                  <h3 className="text-base font-black text-black mb-1.5 sm:mb-2">{item.title}</h3>
+                  <p className="text-xs sm:text-sm leading-relaxed" style={{ color: "#4b5563" }}>
                     {item.desc}
                   </p>
                 </div>
@@ -453,11 +491,11 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 5: TESTIMONIALS — DARK (#06000d)              */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section className="py-24 px-6 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #06000d 0%, #0a0114 100%)" }}>
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <div className="text-center mb-12">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #06000d 0%, #0a0114 100%)" }}>
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10 sm:mb-12">
             <SectionBadge isDark>✨ Social Proof</SectionBadge>
-            <h2 className="font-black text-white leading-tight" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-white leading-tight text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Loved by{" "}
               <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #ff80ab, #FF2D78)" }}>
                 top creators
@@ -465,11 +503,11 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
             {TESTIMONIALS.map((t, idx) => (
               <div
                 key={idx}
-                className="p-6 rounded-2xl"
+                className="p-6 rounded-2xl w-full"
                 style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
               >
                 <div className="flex gap-0.5 mb-3">
@@ -479,7 +517,7 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
                       <Star key={s} className="w-3.5 h-3.5" style={{ color: "#fbbf24" }} />
                     ))}
                 </div>
-                <p className="text-sm leading-relaxed mb-4 font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>
+                <p className="text-xs sm:text-sm leading-relaxed mb-4 font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>
                   &quot;{t.text}&quot;
                 </p>
                 <div className="text-sm font-bold text-white">{t.name}</div>
@@ -495,62 +533,64 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 6: PRICING — ELEGANT WHITE (bg-white)         */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-24 px-6 bg-white relative overflow-hidden">
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <div className="text-center mb-14">
+      <section id="pricing" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10 sm:mb-16">
             <SectionBadge>Pricing</SectionBadge>
-            <h2 className="font-black text-black leading-tight mb-3" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-black leading-tight mb-2 sm:mb-3 text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Simple, <span style={{ color: "#FF2D78" }}>transparent</span> pricing.
             </h2>
-            <p className="text-base font-medium" style={{ color: "#6b7280" }}>
+            <p className="text-sm sm:text-base font-medium" style={{ color: "#6b7280" }}>
               No hidden fees. Upgrade or cancel anytime.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 w-full items-stretch">
             {(tenantData.pricing && tenantData.pricing.length > 0 ? tenantData.pricing : PRICING).map((plan, idx) => (
               <div
                 key={idx}
-                className="relative p-7 rounded-3xl transition-all duration-300"
+                className="relative p-7 sm:p-8 rounded-3xl transition-all duration-300 flex flex-col justify-between w-full min-w-0"
                 style={
                   plan.is_highlighted || plan.highlight
                     ? { background: "#06000d", border: "1px solid rgba(255,45,120,0.40)", boxShadow: "0 24px 80px rgba(255,45,120,0.20)" }
                     : { background: "#fafafa", border: "1px solid #ede4ec" }
                 }
               >
-                {(plan.badge || (plan.is_highlighted && 'Recommended')) && (
-                  <div
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full text-xs font-black text-white whitespace-nowrap"
-                    style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}
-                  >
-                    {plan.badge || (plan.is_highlighted && 'Recommended')}
+                <div>
+                  {(plan.badge || (plan.is_highlighted && 'Recommended')) && (
+                    <div
+                      className="absolute -top-3.5 sm:-top-4 left-1/2 -translate-x-1/2 px-4 sm:px-5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-black text-white whitespace-nowrap shadow-md"
+                      style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}
+                    >
+                      {plan.badge || (plan.is_highlighted && 'Recommended')}
+                    </div>
+                  )}
+                  <h3 className={"text-base font-black mb-1 " + (plan.is_highlighted || plan.highlight ? "text-white" : "text-black")}>{plan.name}</h3>
+                  <p className="text-xs sm:text-sm mb-5" style={{ color: plan.is_highlighted || plan.highlight ? "rgba(255,255,255,0.60)" : "#6b7280" }}>
+                    {plan.description || plan.desc}
+                  </p>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    <span className={"text-4xl sm:text-5xl font-black " + (plan.is_highlighted || plan.highlight ? "text-white" : "text-black")}>
+                      {plan.price != null && !isNaN(plan.price) ? `₹${plan.price}` : plan.price}
+                    </span>
+                    <span className="text-sm font-medium" style={{ color: plan.is_highlighted || plan.highlight ? "rgba(255,255,255,0.60)" : "#6b7280" }}>
+                      {plan.period || (plan.duration_type ? `/${plan.duration_type}` : '')}
+                    </span>
                   </div>
-                )}
-                <h3 className={"text-sm font-black mb-1 " + (plan.is_highlighted || plan.highlight ? "text-white" : "text-black")}>{plan.name}</h3>
-                <p className="text-xs mb-5" style={{ color: plan.is_highlighted || plan.highlight ? "rgba(255,255,255,0.50)" : "#6b7280" }}>
-                  {plan.description || plan.desc}
-                </p>
-                <div className="flex items-end gap-1 mb-6">
-                  <span className={"text-4xl font-black " + (plan.is_highlighted || plan.highlight ? "text-white" : "text-black")}>
-                    {plan.price != null && !isNaN(plan.price) ? `₹${plan.price}` : plan.price}
-                  </span>
-                  <span className="text-sm font-medium mb-1" style={{ color: plan.is_highlighted || plan.highlight ? "rgba(255,255,255,0.50)" : "#6b7280" }}>
-                    {plan.period || (plan.duration_type ? `/${plan.duration_type}` : '')}
-                  </span>
+                  <ul className="space-y-3 mb-8">
+                    {((plan.features && Array.isArray(plan.features)) ? plan.features.map((f: any) => f.feature_key || f) : []).map((feat: string, fIdx: number) => (
+                      <li key={fIdx} className="flex items-center gap-3 text-xs sm:text-sm font-medium" style={{ color: plan.is_highlighted || plan.highlight ? "rgba(255,255,255,0.85)" : "#374151" }}>
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,45,120,0.15)", border: "1px solid rgba(255,45,120,0.35)" }}>
+                          <Check className="w-2.5 h-2.5" style={{ color: "#FF2D78" }} />
+                        </div>
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-3 mb-7">
-                  {((plan.features && Array.isArray(plan.features)) ? plan.features.map((f: any) => f.feature_key || f) : []).map((feat: string, fIdx: number) => (
-                    <li key={fIdx} className="flex items-center gap-2.5 text-sm" style={{ color: plan.is_highlighted || plan.highlight ? "rgba(255,255,255,0.80)" : "#374151" }}>
-                      <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,45,120,0.12)", border: "1px solid rgba(255,45,120,0.30)" }}>
-                        <Check className="w-2.5 h-2.5" style={{ color: "#FF2D78" }} />
-                      </div>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
                 <a
                   href="/auth/sign-up"
-                  className="block w-full text-center py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
+                  className="block w-full text-center py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-98 shadow-md"
                   style={(plan.is_highlighted || plan.highlight) ? { background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 4px 20px rgba(255,45,120,0.35)" } : { background: "#111", color: "#fff" }}
                 >
                   Get Started →
@@ -564,11 +604,11 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 7: FAQ — DARK (#0a0114)                       */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section id="faq" className="py-24 px-6 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0a0114 0%, #06000d 100%)" }}>
-        <div className="max-w-2xl mx-auto relative z-10">
-          <div className="text-center mb-12">
+      <section id="faq" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #0a0114 0%, #06000d 100%)" }}>
+        <div className="max-w-3xl mx-auto relative z-10 w-full">
+          <div className="text-center mb-10 sm:mb-12">
             <SectionBadge isDark>FAQ</SectionBadge>
-            <h2 className="font-black text-white leading-tight" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-white leading-tight text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Got{" "}
               <span style={{ background: "linear-gradient(135deg, #FF2D78, #ff80ab)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                 questions?
@@ -576,19 +616,19 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
             </h2>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {(tenantData.faqs && tenantData.faqs.length > 0 ? tenantData.faqs : FAQS).map((faq, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl overflow-hidden"
+                className="rounded-2xl overflow-hidden transition-colors"
                 style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
               >
                 <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)} className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors">
-                  <span className="text-sm font-semibold text-white pr-4">{faq.question || faq.q}</span>
-                  <ChevronDown className={"w-4 h-4 transition-transform duration-200 " + (openFaq === idx ? "rotate-180" : "rotate-0")} style={{ color: "rgba(255,255,255,0.40)" }} />
+                  <span className="text-sm sm:text-base font-semibold text-white pr-4">{faq.question || faq.q}</span>
+                  <ChevronDown className={"w-4 h-4 flex-shrink-0 transition-transform duration-200 " + (openFaq === idx ? "rotate-180" : "rotate-0")} style={{ color: "rgba(255,255,255,0.40)" }} />
                 </button>
                 {openFaq === idx && (
-                  <div className="px-5 pb-4 pt-3 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.60)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="px-5 pb-5 pt-2 text-xs sm:text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.60)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                     {faq.answer || faq.a}
                   </div>
                 )}
@@ -601,23 +641,23 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* SECTION 8: FINAL CTA — ELEGANT WHITE (bg-white)       */}
       {/* ══════════════════════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-white relative overflow-hidden">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[600px] h-[200px] sm:h-[300px] rounded-full pointer-events-none max-w-full"
           style={{ background: "radial-gradient(ellipse, rgba(255,45,120,0.08) 0%, transparent 70%)", filter: "blur(60px)" }}
         />
 
-        <div className="relative z-10 max-w-2xl mx-auto text-center">
+        <div className="relative z-10 max-w-3xl mx-auto text-center w-full">
           <div>
-            <h2 className="font-black text-black leading-tight mb-5" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", letterSpacing: "-0.02em" }}>
+            <h2 className="font-black text-black leading-tight mb-3 sm:mb-5 text-2xl sm:text-4xl md:text-5xl" style={{ letterSpacing: "-0.02em" }}>
               Start automating in <span style={{ color: "#FF2D78" }}>under 5 minutes.</span>
             </h2>
-            <p className="text-base font-medium mb-10" style={{ color: "#6b7280" }}>
+            <p className="text-sm sm:text-base font-medium mb-8 sm:mb-10 px-2 sm:px-0" style={{ color: "#6b7280" }}>
               No credit card required. Free 14-day trial on all plans.
             </p>
             <a
               href="/auth/sign-up"
-              className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl font-bold text-base text-white transition-all hover:opacity-90 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base text-white transition-all hover:opacity-90 active:scale-95 shadow-xl"
               style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 10px 40px rgba(255,45,120,0.35)" }}
             >
               Get Started Free →
@@ -629,13 +669,13 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
       {/* ══════════════════════════════════════════════════════ */}
       {/* FOOTER — DARK (#06000d)                               */}
       {/* ══════════════════════════════════════════════════════ */}
-      <footer id="contact-us" className="py-14 px-6" style={{ background: "#06000d", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-10">
-            <div className="md:col-span-1">
-              <div className="flex items-center gap-2.5 mb-4">
+      <footer id="contact-us" className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8" style={{ background: "#06000d", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
+            <div className="col-span-2 sm:col-span-2 lg:col-span-1">
+              <div className="flex items-center gap-2.5 mb-3 sm:mb-4">
                 {tenantData.branding?.logo ? (
-                  <img src={tenantData.branding.logo} alt="Logo" className="h-7 rounded" />
+                  <img src={tenantData.branding.logo} alt="Logo" className="h-7 rounded object-contain max-w-[120px]" />
                 ) : (
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
                     <Send className="w-3.5 h-3.5 text-white" />
@@ -643,7 +683,7 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
                 )}
                 <span className="font-black text-sm text-white">{tenantData.branding?.company_name || 'MegaDM'}</span>
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.40)" }}>
+              <p className="text-xs leading-relaxed max-w-xs" style={{ color: "rgba(255,255,255,0.40)" }}>
                 {tenantData.branding?.tagline || 'Auto DM tool for Instagram & Facebook. Turn engagement into revenue — automatically.'}
               </p>
             </div>
@@ -654,13 +694,13 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
             ].map((col, i) => (
               col.links.length > 0 ? (
                 <div key={i}>
-                  <h4 className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.30)" }}>
+                  <h4 className="text-xs font-black uppercase tracking-widest mb-2.5 sm:mb-3" style={{ color: "rgba(255,255,255,0.30)" }}>
                     {col.title}
                   </h4>
-                  <ul className="space-y-2.5">
+                  <ul className="space-y-2 sm:space-y-2.5">
                     {col.links.map((l) => (
                       <li key={l as string}>
-                        <a href="#" className="text-sm transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.50)" }}>
+                        <a href="#" className="text-xs sm:text-sm transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.50)" }}>
                           {l}
                         </a>
                       </li>
@@ -670,7 +710,7 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
               ) : null
             ))}
           </div>
-          <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <p className="text-xs" style={{ color: "rgba(255,255,255,0.30)" }}>
               © 2025 MegaDM. All rights reserved.
             </p>

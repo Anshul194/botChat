@@ -45,7 +45,7 @@ function CellValue({
                     </div>
                 ) : (
                     <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
-                        <X className="w-3 h-3 text-gray-300" strokeWidth={3} />
+                        <X className="w-3 h-3 text-gray-400" strokeWidth={3} />
                     </div>
                 )}
             </div>
@@ -53,7 +53,7 @@ function CellValue({
     }
 
     // Limit type
-    if (raw === "0" || raw === "") return <span className="text-gray-300 flex justify-center"><Minus className="w-4 h-4" /></span>;
+    if (raw === "0" || raw === "") return <span className="text-gray-400 flex justify-center"><Minus className="w-4 h-4" /></span>;
     if (raw === "-1") {
         return <span className={`text-sm font-black ${isPopular ? "text-[#FF2D78]" : "text-green-600"}`}>Unlimited</span>;
     }

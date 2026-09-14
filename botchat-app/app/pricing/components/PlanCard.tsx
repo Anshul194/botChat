@@ -42,7 +42,7 @@ const CARD_ICONS = [Zap, Sparkles, Crown, Shield];
 const CARD_COLORS = ["#6366F1", "#FF2D78", "#F59E0B", "#0EA5E9"];
 
 export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount = 0.8 }: PlanCardProps) {
-    const isPopular = plan.is_highlighted;
+    const isPopular = Boolean(plan.is_highlighted && plan.is_highlighted !== "0" && (plan.is_highlighted as any) !== 0);
     const rawPrice = Number(plan.price);
     const displayPrice = isAnnual ? Math.round(rawPrice * annualDiscount) : rawPrice;
     const IconEl = CARD_ICONS[index % CARD_ICONS.length];
@@ -54,33 +54,49 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.08 }}
+            style={{
+                backgroundColor: isPopular ? "#090312" : "#ffffff",
+                color: isPopular ? "#ffffff" : "#111827",
+            }}
             className={`relative flex flex-col rounded-[32px] overflow-hidden transition-all duration-300 ${
                 isPopular
-                    ? "bg-gray-950 text-white shadow-2xl ring-2 ring-[#FF2D78]/30"
-                    : "bg-white border border-gray-100 hover:shadow-xl hover:border-gray-200"
+                    ? "shadow-2xl border-2 border-[#FF2D78]/50 ring-1 ring-[#FF2D78]/30"
+                    : "border border-gray-200/80 hover:shadow-xl hover:border-gray-300"
             }`}
         >
             {/* Popular banner */}
             {isPopular && (
-                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#FF2D78] to-[#E1306C] py-2 text-center">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white flex items-center justify-center gap-1.5">
-                        <Sparkles className="w-3 h-3" /> Most Popular
+                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#FF2D78] via-[#FF4081] to-[#E1306C] py-2 text-center shadow-md z-10">
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white flex items-center justify-center gap-1.5 drop-shadow-sm">
+                        <Sparkles className="w-3.5 h-3.5" /> Most Popular
                     </span>
                 </div>
             )}
 
-            <div className={`p-8 flex flex-col flex-1 ${isPopular ? "pt-14" : ""}`}>
+            <div className={`p-7 sm:p-8 flex flex-col flex-1 ${isPopular ? "pt-12 sm:pt-14" : ""}`}>
                 {/* Icon + name */}
-                <div className="flex items-start justify-between mb-6">
+                <div className="flex items-start justify-between mb-5">
                     <div>
                         <div
-                            className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? "bg-white/10" : "bg-gray-50"}`}
+                            style={{
+                                backgroundColor: isPopular ? "rgba(255, 255, 255, 0.10)" : "rgba(243, 244, 246, 1)",
+                                borderColor: isPopular ? "rgba(255, 255, 255, 0.15)" : "rgba(229, 231, 235, 1)",
+                            }}
+                            className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border"
                         >
-                            <IconEl className="w-6 h-6" style={{ color: isPopular ? "white" : accentColor }} />
+                            <IconEl className="w-6 h-6" style={{ color: isPopular ? "#FF80AB" : accentColor }} />
                         </div>
-                        <h3 className="text-2xl font-black">{plan.name}</h3>
+                        <h3
+                            style={{ color: isPopular ? "#ffffff" : "#111827" }}
+                            className="text-2xl sm:text-3xl font-black"
+                        >
+                            {plan.name}
+                        </h3>
                         {plan.description && (
-                            <p className={`text-sm font-medium mt-1 ${isPopular ? "text-gray-400" : "text-gray-500"}`}>
+                            <p
+                                style={{ color: isPopular ? "rgba(255, 255, 255, 0.85)" : "#4b5563" }}
+                                className="text-sm font-medium mt-1"
+                            >
                                 {plan.description}
                             </p>
                         )}
@@ -96,22 +112,30 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                         exit={{ opacity: 0, y: 8 }}
                         className="mb-1"
                     >
-                        <div className="flex items-end gap-1.5">
-                            <span className="text-5xl font-black tracking-tight">₹{displayPrice}</span>
-                            <span className={`text-sm font-bold mb-2 ${isPopular ? "text-gray-500" : "text-gray-400"}`}>
+                        <div className="flex items-baseline gap-1.5">
+                            <span
+                                style={{ color: isPopular ? "#ffffff" : "#111827" }}
+                                className="text-4xl sm:text-5xl font-black tracking-tight"
+                            >
+                                ₹{displayPrice}
+                            </span>
+                            <span
+                                style={{ color: isPopular ? "rgba(255, 255, 255, 0.80)" : "#6b7280" }}
+                                className="text-sm font-bold"
+                            >
                                 / {plan.duration} {plan.duration_type}
                             </span>
                         </div>
                     </motion.div>
                 </AnimatePresence>
                 {isAnnual && rawPrice > 0 && (
-                    <p className="text-xs text-green-400 font-bold mb-6">
+                    <p className="text-xs text-green-400 font-bold mb-4">
                         Save ₹{Math.round(rawPrice * 0.2)} per {plan.duration_type}
                     </p>
                 )}
 
                 {/* Limit chips */}
-                <div className="grid grid-cols-2 gap-2 mb-6">
+                <div className="grid grid-cols-2 gap-2.5 my-5">
                     {LIMIT_KEYS.map(key => {
                         const val = getVal(plan.features?.[key]);
                         const def = defs[key];
@@ -119,14 +143,24 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                         return (
                             <div
                                 key={key}
-                                className={`px-3 py-2 rounded-xl text-xs font-bold ${
-                                    isPopular ? "bg-white/10 text-gray-300" : "bg-gray-50 text-gray-600 border border-gray-100"
-                                }`}
+                                style={{
+                                    backgroundColor: isPopular ? "rgba(255, 255, 255, 0.08)" : "rgba(249, 250, 251, 0.95)",
+                                    borderColor: isPopular ? "rgba(255, 255, 255, 0.15)" : "rgba(229, 231, 235, 0.8)",
+                                }}
+                                className="p-3 rounded-2xl border transition-colors"
                             >
-                                <span className={`block text-base font-black ${isPopular ? "text-white" : "text-gray-900"}`}>
+                                <span
+                                    style={{ color: isPopular ? "#ffffff" : "#111827" }}
+                                    className="block text-base sm:text-lg font-black leading-tight"
+                                >
                                     {formatLimit(val, def)}
                                 </span>
-                                {def.unit || def.label.replace(/ *\(.*\)/g, "")}
+                                <span
+                                    style={{ color: isPopular ? "rgba(255, 255, 255, 0.90)" : "#6b7280" }}
+                                    className="text-[11px] font-bold uppercase tracking-wider block mt-0.5 truncate"
+                                >
+                                    {def.unit || def.label.replace(/ *\(.*\)/g, "")}
+                                </span>
                             </div>
                         );
                     })}
@@ -140,17 +174,39 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                         const def = defs[key];
                         if (!def) return null;
                         return (
-                            <li key={key} className={`flex items-center gap-3 text-sm ${!enabled && "opacity-40"}`}>
+                            <li key={key} className="flex items-center gap-3 text-sm">
                                 {enabled ? (
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${isPopular ? "bg-[#FF2D78]/20 text-[#FF2D78]" : "bg-green-50 text-green-600"}`}>
-                                        <Check className="w-3 h-3" strokeWidth={3} />
+                                    <div
+                                        style={{ backgroundColor: isPopular ? "#FF2D78" : "rgba(209, 250, 229, 1)" }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm"
+                                    >
+                                        <Check
+                                            className="w-3 h-3"
+                                            style={{ color: isPopular ? "#ffffff" : "#047857" }}
+                                            strokeWidth={3}
+                                        />
                                     </div>
                                 ) : (
-                                    <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                        <X className="w-3 h-3 text-gray-300" strokeWidth={3} />
+                                    <div
+                                        style={{ backgroundColor: isPopular ? "rgba(255, 255, 255, 0.10)" : "rgba(243, 244, 246, 1)" }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                    >
+                                        <X
+                                            className="w-3 h-3"
+                                            style={{ color: isPopular ? "rgba(255, 255, 255, 0.50)" : "#9ca3af" }}
+                                            strokeWidth={3}
+                                        />
                                     </div>
                                 )}
-                                <span className={`font-semibold ${isPopular ? "text-gray-300" : "text-gray-700"}`}>
+                                <span
+                                    style={{
+                                        color: isPopular
+                                            ? enabled ? "#ffffff" : "rgba(255, 255, 255, 0.45)"
+                                            : enabled ? "#1f2937" : "#9ca3af",
+                                        textDecoration: !enabled ? "line-through" : "none",
+                                    }}
+                                    className="font-semibold"
+                                >
                                     {def.label}
                                 </span>
                             </li>
@@ -161,11 +217,11 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                 {/* CTA */}
                 <Link
                     href="/auth/sign-up"
-                    className={`block w-full py-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] ${
-                        isPopular
-                            ? "bg-white text-black hover:bg-gray-100 shadow-xl"
-                            : "bg-black text-white hover:bg-gray-800 shadow-lg"
-                    }`}
+                    style={{
+                        backgroundColor: isPopular ? "#ffffff" : "#000000",
+                        color: isPopular ? "#000000" : "#ffffff",
+                    }}
+                    className="block w-full py-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:opacity-95"
                 >
                     Start Free Trial
                 </Link>

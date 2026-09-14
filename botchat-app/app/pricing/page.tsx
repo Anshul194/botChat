@@ -176,12 +176,12 @@ export default function PricingPage() {
 
                             {/* Billing toggle */}
                             <div className="flex items-center justify-center gap-4 sm:gap-6">
-                                <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? "text-white" : "text-gray-600"}`}>
+                                <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? "text-white" : "text-white/60"}`}>
                                     Monthly
                                 </span>
                                 <button
                                     onClick={() => setIsAnnual(v => !v)}
-                                    className="relative w-16 h-8 rounded-full bg-white/10 border border-white/10 p-1"
+                                    className="relative w-16 h-8 rounded-full bg-white/10 border border-white/10 p-1 cursor-pointer"
                                 >
                                     <motion.div
                                         animate={{ x: isAnnual ? 32 : 0 }}
@@ -189,7 +189,7 @@ export default function PricingPage() {
                                         className="w-6 h-6 rounded-full bg-[#FF2D78] shadow-[0_0_12px_rgba(255,45,120,0.5)]"
                                     />
                                 </button>
-                                <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? "text-white" : "text-gray-600"}`}>
+                                <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? "text-white" : "text-white/60"}`}>
                                     Annual{" "}
                                     <span className="text-green-400 font-black text-xs ml-1">Save 20%</span>
                                 </span>
@@ -366,13 +366,13 @@ export default function PricingPage() {
                             <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
                                 Start automating your DMs with MegaDM.
                             </h2>
-                            <p className="text-gray-500 font-medium max-w-xl mx-auto mb-10">
+                            <p className="text-gray-300 font-medium max-w-xl mx-auto mb-10">
                                 Start your free trial today. No credit card required. Cancel anytime.
                             </p>
                             <div className="inline-flex items-center gap-8 p-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                                 <div className="flex items-center gap-2 pl-5">
                                     <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Live & Operating</span>
+                                    <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Live & Operating</span>
                                 </div>
                                 <Link
                                     href="/auth/sign-up"

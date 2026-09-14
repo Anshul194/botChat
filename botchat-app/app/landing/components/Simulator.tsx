@@ -339,7 +339,7 @@ export default function Simulator() {
   };
 
   return (
-    <div className="w-full max-w-[340px] md:max-w-[360px] mx-auto flex flex-col items-center relative z-10 select-none" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
+    <div className="w-full max-w-[340px] sm:max-w-[360px] mx-auto flex flex-col items-center relative z-10 select-none px-1 sm:px-0" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
       
       {/* ── TOP HORIZONTAL INDUSTRY SWITCHER ───────────────── */}
       <div className="w-full mb-6 relative z-30">
@@ -351,12 +351,12 @@ export default function Simulator() {
         </div>
         
         {/* Switcher bar: Horizontal scroll wrapper with fading mask */}
-        <div className="w-full p-1 bg-white/5 rounded-2xl border border-white/10 flex overflow-x-auto no-scrollbar gap-1 relative z-10">
+        <div className="w-full p-1 bg-white/5 rounded-2xl border border-white/10 flex overflow-x-auto no-scrollbar gap-1 relative z-10 touch-pan-x">
           {industries.map((ind, idx) => (
             <button
               key={ind.id}
               onClick={() => handleIndustryChange(idx)}
-              className={`flex items-center gap-1.5 py-2.5 px-3.5 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all duration-300 relative flex-shrink-0 cursor-pointer ${
+              className={`flex items-center gap-1.5 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl text-[11px] sm:text-[12px] font-black uppercase tracking-wider transition-all duration-300 relative flex-shrink-0 cursor-pointer ${
                 activeInd === idx 
                   ? "text-white shadow-[0_0_15px_rgba(255,45,120,0.2)]" 
                   : "text-white/60 hover:text-white"
@@ -372,22 +372,22 @@ export default function Simulator() {
                 />
               )}
               <span className="relative z-10 text-xs">{ind.icon}</span>
-              <span className="relative z-10 text-[9px] font-black tracking-wider">{ind.name}</span>
+              <span className="relative z-10 text-[9px] sm:text-[10px] font-black tracking-wider">{ind.name}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* ── SMARTPHONE SIMULATOR ───────────────────────────── */}
-      <div className="relative w-[320px] aspect-[9/19.5] rounded-[3.2rem] border-[3px] border-[#3f3b39] bg-black shadow-2xl overflow-hidden flex-shrink-0">
+      <div className="relative w-full max-w-[320px] aspect-[9/19.5] rounded-[2.5rem] sm:rounded-[3.2rem] border-[3px] border-[#3f3b39] bg-black shadow-2xl overflow-hidden flex-shrink-0 mx-auto">
         
         {/* Camera notch */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 w-[100px] h-[26px] bg-black rounded-full flex items-center px-3" style={{ border: '1px solid #1a1a1a' }}>
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 w-[90px] sm:w-[100px] h-[22px] sm:h-[26px] bg-black rounded-full flex items-center px-3" style={{ border: '1px solid #1a1a1a' }}>
           <div className="w-2 h-2 rounded-full bg-[#111] absolute right-3 border border-[#222]" />
         </div>
 
         {/* Screen container */}
-        <div className="absolute inset-[4px] rounded-[2.9rem] overflow-hidden bg-black z-0">
+        <div className="absolute inset-[3px] sm:inset-[4px] rounded-[2.3rem] sm:rounded-[2.9rem] overflow-hidden bg-black z-0">
           
           {/* --- REELS VIEW --- */}
           {state.screen === "reels" && (
