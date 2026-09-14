@@ -163,8 +163,8 @@ export default function FeaturesPage() {
     return (
         <>
             <PageMeta
-                title="Features — BotChat | Meta Automation Platform"
-                description="Explore BotChat's powerful features: AI-powered DM automation, Facebook & Instagram auto-reply, flow builder, bio links, and deep analytics."
+                title="Features — MegaDM | Meta Automation Platform"
+                description="Explore MegaDM's powerful features: AI-powered DM automation, Facebook & Instagram auto-reply, flow builder, bio links, and deep analytics."
             />
             <main className="min-h-screen bg-white">
             <Navbar forceLight={true} />
@@ -317,7 +317,7 @@ export default function FeaturesPage() {
                                         Great! Here is your personal link:
                                         <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-dashed border-[#FF2D78]/30">
                                             <div className="text-[10px] font-black text-[#FF2D78] uppercase mb-1">Your Bio-Link</div>
-                                            <div className="text-[10px] text-gray-400 truncate font-mono">botchat.ai/u/yourname</div>
+                                            <div className="text-[10px] text-gray-400 truncate font-mono">megadm.chat/u/yourname</div>
                                         </div>
                                     </motion.div>
                                 </div>

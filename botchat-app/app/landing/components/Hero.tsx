@@ -167,10 +167,10 @@ export default function Hero() {
 
           {/* CTAs */}
           <div className="hero-text-elem flex flex-col sm:flex-row gap-4">
-            <Link href="/dashboard"
+            <Link href="/auth/sign-up"
               className="cta-primary group flex items-center justify-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold text-white transition-all duration-300"
               style={{ fontFamily: "'Syne', sans-serif", letterSpacing: ".02em" }}>
-              Let’s Start
+              Start Free Trial
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
 
@@ -187,26 +187,11 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Social proof */}
-          <div className="hero-text-elem flex items-center gap-4">
-            <div className="flex -space-x-2.5">
-              {["AR", "PS", "JW", "KL"].map((a, i) => (
-                <div key={a}
-                  className="w-9 h-9 rounded-full border-[2px] flex items-center justify-center text-[11px] font-bold text-white hover:-translate-y-1 transition-transform cursor-pointer"
-                  style={{
-                    background: `hsl(${328 + i * 18}, 80%, 40%)`,
-                    borderColor: "#06000d",
-                    zIndex: 10 - i,
-                    fontFamily: "'Syne', sans-serif"
-                  }}>
-                  {a}
-                </div>
-              ))}
-            </div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              <span className="text-white font-bold text-lg" style={{ fontFamily: "'Syne', sans-serif" }}>11,000+</span>
-              <span className="text-base" style={{ color: "rgba(255,255,255,.9)" }}> creators trust us</span>
-              <div className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,.75)" }}>25M+ DMs sent & counting.</div>
+          {/* Trust badge — no unverified metrics */}
+          <div className="hero-text-elem flex items-center gap-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full border" style={{ background: "rgba(255,45,120,.08)", borderColor: "rgba(255,45,120,.25)", color: "#ff80ab" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13.09 8.26L19 7L15.45 11.86L21 14L15.45 16.14L19 21L13.09 15.74L12 22L10.91 15.74L5 21L8.55 16.14L3 14L8.55 11.86L5 7L10.91 8.26L12 2Z"/></svg>
+              <span className="text-xs font-bold uppercase tracking-widest">Built on Meta&apos;s Official API</span>
             </div>
           </div>
         </div>

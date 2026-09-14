@@ -7,7 +7,7 @@ const testimonials = [
   {
     name: "Samantha Wright",
     role: "@sam_creates",
-    quote: "LinkDM doubled my reach in weeks. I no longer spend 4h/day on DMs.",
+    quote: "MegaDM doubled my reach in weeks. I no longer spend 4h/day on DMs.",
     result: "+240% Reach",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150",
     detail: "Replaced 4 hours of daily manual work with a fully automated funnel. Now she focuses only on content creation."
@@ -34,7 +34,7 @@ const testimonials = [
     quote: "Automated every comment for my launch. $50k in sales via DMs alone.",
     result: "$50k Sales",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150",
-    detail: "Sold out his first digital product in 48 hours. LinkDM handled all the 'Where do I buy?' comments automatically."
+    detail: "Sold out his first digital product in 48 hours. MegaDM handled all the 'Where do I buy?' comments automatically."
   },
   {
     name: "Jessica Lee",

@@ -8,7 +8,7 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 const DATA = {
   before: [1, 1, 1, 2, 1, 3, 2, 1, 2, 1, 2, 1], // Stagnant Manual Replies
-  after: [2, 1.5, 3.5, 5, 8, 7.5, 6.5, 8.5, 7.8, 4, 6, 4.5], // Exponential growth with LinkDM
+  after: [2, 1.5, 3.5, 5, 8, 7.5, 6.5, 8.5, 7.8, 4, 6, 4.5], // Exponential growth with MegaDM
 };
 
 const PersonIcon = ({ color = "currentColor", fill = "none" }) => (
@@ -47,7 +47,7 @@ export default function PerformanceChart() {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-100/50 border border-pink-200 text-[#e8175d] text-xs font-black tracking-widest uppercase"
             >
               <Sparkles size={14} fill="currentColor" />
-              The LinkDM Advantage
+              The MegaDM Advantage
             </motion.div>
 
             <h2 className="text-5xl md:text-6xl font-black text-[#1a1235] tracking-tight leading-[0.95]">
@@ -57,7 +57,7 @@ export default function PerformanceChart() {
 
             <p className="text-[#4a3a5e] text-xl leading-relaxed font-medium max-w-lg">
               Manual management is a lead graveyard. While you're typing, your competitors are closing. 
-              <span className="text-[#1a1235] font-bold"> LinkDM handles 100% of your interactions </span> 
+              <span className="text-[#1a1235] font-bold"> MegaDM handles 100% of your interactions </span> 
               to turn every "how do I get this?" into a conversion.
             </p>
 

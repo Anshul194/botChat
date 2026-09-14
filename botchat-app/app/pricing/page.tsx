@@ -17,7 +17,7 @@ import { getPublicPlans, getPublicDefinitions, type PublicPlan, type FeatureDefi
 // ── FAQ ─────────────────────────────────────────────────────────
 const FAQS = [
     {
-        q: "Is BotChat compliant with Meta's terms of service?",
+        q: "Is MegaDM compliant with Meta's terms of service?",
         a: "Yes. We exclusively use the official Meta Messenger & Instagram APIs. Unlike unofficial bots that scrape web data, our platform is fully recognized and approved by Meta, ensuring your account stays safe and compliant."
     },
     {
@@ -129,8 +129,8 @@ export default function PricingPage() {
     return (
         <>
             <PageMeta
-                title="Pricing — BotChat | Plans for Creators & Agencies"
-                description="Choose the right BotChat plan for your business. All plans include a free trial. Simple, transparent pricing with monthly and annual billing options."
+                title="Pricing — MegaDM | Plans for Creators & Agencies"
+                description="Choose the right MegaDM plan for your business. All plans include a free trial. Simple, transparent pricing with monthly and annual billing options."
             />
             <main className="min-h-screen bg-white">
                 <Navbar forceLight={true} />
@@ -231,11 +231,10 @@ export default function PricingPage() {
                             className="flex flex-wrap items-center justify-center gap-6 mt-14"
                         >
                             {[
-                                { icon: Shield, label: "Meta Verified Partner" },
+                                { icon: Zap, label: "Built on Meta's Official API" },
                                 { icon: Zap, label: "99.9% Uptime SLA" },
                                 { icon: Check, label: "No Hidden Fees" },
                                 { icon: MessageSquare, label: "Priority Support" },
-                                { icon: Users, label: "11,000+ Happy Customers" },
                             ].map(({ icon: Icon, label }) => (
                                 <div key={label} className="flex items-center gap-2 text-sm font-bold text-gray-400">
                                     <Icon className="w-4 h-4 text-[#FF2D78]" />
@@ -365,7 +364,7 @@ export default function PricingPage() {
                                 ))}
                             </div>
                             <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
-                                Join 11,000+ creators scaling with BotChat.
+                                Start automating your DMs with MegaDM.
                             </h2>
                             <p className="text-gray-500 font-medium max-w-xl mx-auto mb-10">
                                 Start your free trial today. No credit card required. Cancel anytime.

@@ -14,7 +14,7 @@ const steps = [
   {
     icon: <MessageSquare className="w-6 h-6" />,
     title: "Trigger",
-    desc: "Set 'Keyword' triggers. When someone comments, LinkDM is ready to strike.",
+    desc: "Set 'Keyword' triggers. When someone comments, MegaDM is ready to strike.",
     color: "#e8175d",
     bg: "rgba(232, 23, 93, 0.05)"
   },
