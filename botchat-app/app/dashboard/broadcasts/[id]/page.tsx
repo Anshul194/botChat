@@ -81,7 +81,7 @@ function MultiSelect({
 
 // ─── Audience Size Card ──────────────────────────────────────────────────────
 
-function AudienceSizeCard({ count, isLoading }: { count: number | null; isLoading: boolean }) {
+function AudienceSizeCard({ counts, isLoading }: { counts: { eligible_now: number, total_historical: number } | null; isLoading: boolean }) {
     return (
         <div className="glass-card rounded-2xl p-5 text-center" style={{ border: "1px solid var(--glass-border)" }}>
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
@@ -90,15 +90,31 @@ function AudienceSizeCard({ count, isLoading }: { count: number | null; isLoadin
             </div>
             {isLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin mx-auto" style={{ color: "var(--brand-purple)" }} />
-            ) : count === null ? (
+            ) : counts === null ? (
                 <>
                     <p className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>—</p>
                     <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>Select filters to preview</p>
                 </>
             ) : (
                 <>
-                    <p className="text-3xl font-bold" style={{ color: "var(--brand-purple)" }}>{count.toLocaleString()}</p>
-                    <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>Estimated recipients</p>
+                    <p className="text-3xl font-bold" style={{ color: "var(--brand-purple)" }}>{counts.eligible_now.toLocaleString()}</p>
+                    <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>Eligible Subscribers</p>
+                    <div className="mt-4 p-3 rounded-lg text-xs flex flex-col gap-1.5 text-left" style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)" }}>
+                        <div className="flex justify-between items-center">
+                            <span style={{ color: "var(--muted-foreground)" }}>Total Historical:</span>
+                            <span className="font-semibold" style={{ color: "var(--foreground)" }}>{counts.total_historical.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span style={{ color: "var(--muted-foreground)" }}>Outside 24h Window:</span>
+                            <span className="font-semibold text-orange-500">{(counts.total_historical - counts.eligible_now).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    {counts.eligible_now === 0 && counts.total_historical > 0 && (
+                        <p className="text-xs mt-3 text-orange-500 font-medium bg-orange-500/10 p-2 rounded-lg border border-orange-500/20 text-left leading-relaxed">
+                            <Info className="w-3.5 h-3.5 inline mr-1 -mt-0.5" />
+                            Only subscribers who have interacted within the last 24 hours are eligible for messaging.
+                        </p>
+                    )}
                 </>
             )}
         </div>
@@ -120,7 +136,7 @@ export default function BroadcastAudiencePage() {
     const [excludeLabelIds, setExcludeLabelIds] = useState<number[]>([]);
     const [gender, setGender] = useState<string>("");
     const [subscriberStatus, setSubscriberStatus] = useState<string>("active");
-    const [audienceCount, setAudienceCount] = useState<number | null>(null);
+    const [audienceCounts, setAudienceCounts] = useState<{ eligible_now: number, total_historical: number } | null>(null);
     const [previewLoading, setPreviewLoading] = useState(false);
 
     // Fetch campaign
@@ -150,7 +166,7 @@ export default function BroadcastAudiencePage() {
             if (af.gender) setGender(af.gender);
             if (af.subscriber_status) setSubscriberStatus(af.subscriber_status);
             if (campaign.total_recipients !== null && campaign.total_recipients !== undefined) {
-                setAudienceCount(campaign.total_recipients);
+                setAudienceCounts({ eligible_now: campaign.total_recipients, total_historical: campaign.total_recipients });
             }
         }
     }, [campaign]);
@@ -171,7 +187,10 @@ export default function BroadcastAudiencePage() {
         setPreviewLoading(true);
         try {
             const res = await previewAudience(buildFilterPayload());
-            setAudienceCount(res.data.count);
+            setAudienceCounts({
+                eligible_now: res.data.eligible_now ?? res.data.count,
+                total_historical: res.data.total_historical ?? res.data.count,
+            });
         } catch (err: any) {
             toast.error(err.response?.data?.message || "Failed to preview audience.");
         } finally {
@@ -183,7 +202,10 @@ export default function BroadcastAudiencePage() {
     const saveMutation = useMutation({
         mutationFn: () => saveAudience(campaignId, buildFilterPayload()),
         onSuccess: (res) => {
-            setAudienceCount(res.data.total_recipients);
+            setAudienceCounts({
+                eligible_now: res.data.total_recipients,
+                total_historical: res.data.total_recipients
+            });
             toast.success("Audience saved! Proceeding to message builder…");
             router.push(`/dashboard/broadcasts/${campaignId}/message`);
         },
@@ -398,7 +420,7 @@ export default function BroadcastAudiencePage() {
 
                 {/* RIGHT: Preview + Actions */}
                 <div className="space-y-4 order-1 lg:order-2 lg:sticky lg:top-6 self-start">
-                    <AudienceSizeCard count={audienceCount} isLoading={previewLoading} />
+                    <AudienceSizeCard counts={audienceCounts} isLoading={previewLoading} />
 
                     <button
                         type="button"
