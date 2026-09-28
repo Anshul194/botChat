@@ -1,157 +1,475 @@
 "use client";
 
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { MessageCircle, History, Inbox, Users } from "lucide-react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    MessageSquare, Inbox, Link2, Send, Bot,
+    ChevronLeft, ChevronRight, Sparkles, CheckCircle2,
+    ArrowRight, ShieldCheck, Flame
+} from "lucide-react";
 
-const mainFeatures = [
+interface FeatureCardData {
+    id: string;
+    title: string;
+    pill: string;
+    tagline: string;
+    description: string;
+    icon: any;
+    image: string;
+    color: string;
+    stat: { label: string; value: string };
+    highlights: string[];
+    url: string;
+}
+
+const CARDS: FeatureCardData[] = [
     {
+        id: "comment-automation",
         title: "Comment Automation",
-        description: "Instantly reply to every comment on your posts and reels. Convert engagement into conversations.",
-        icon: MessageCircle,
-        image: "/feature-extra-3.jfif",
+        pill: "Comment-to-DM Engine",
+        tagline: "Turn Post & Reel Comments into Instant Sales",
+        description: "Instantly reply to comments on Instagram & Facebook posts and trigger personalized private DMs with resource links, discount codes, or booking URLs.",
+        icon: MessageSquare,
+        image: "/images/megadm_comment_manager_showcase.png",
         color: "#FF2D78",
+        stat: { label: "Engagement", value: "+340%" },
+        highlights: [
+            "Keyword triggers (PRICE, LINK, INFO)",
+            "Instant multi-page comment auto-replies",
+            "Auto-like comments & spam protection"
+        ],
+        url: "/dashboard/facebook/comment-templates"
     },
     {
-        title: "Inbox Automation",
-        description: "Manage your DMs at scale with intelligent sorting and automated initial responses.",
+        id: "smart-inbox",
+        title: "Smart AI Inbox",
+        pill: "Unified AI Inbox",
+        tagline: "AI-Powered Lead Routing & Intent Scoring",
+        description: "Manage all customer conversations across Instagram & Facebook in one place. AI automatically classifies intent, scores sentiment, and captures verified contact details.",
         icon: Inbox,
-        image: "/feature-extra-2.jfif",
+        image: "/images/megadm_smart_inbox_showcase.png",
         color: "#C13584",
+        stat: { label: "Response Time", value: "< 5s" },
+        highlights: [
+            "Unified Instagram & Facebook chat stream",
+            "Automated email & phone lead capture",
+            "Live sentiment classification & routing"
+        ],
+        url: "/dashboard/inbox"
     },
     {
-        title: "Bio Link Automation",
-        description: "Auto-reply to story mentions and reactions. Build deeper connections with your most active followers.",
-        icon: History,
-        image: "/feature-comment.jfif",
+        id: "bio-link",
+        title: "Bio Link Builder",
+        pill: "Bio-Link Studio",
+        tagline: "High-Converting Mini-Sites for Profiles",
+        description: "Design mobile-first bio link storefronts. Feature creator products, embed YouTube & Reels videos, collect subscribers, and track live conversion analytics.",
+        icon: Link2,
+        image: "/images/megadm_biolink_showcase.png",
         color: "#E1306C",
+        stat: { label: "Conversion", value: "24.8%" },
+        highlights: [
+            "Influencer, Store & UGC layouts",
+            "Integrated product catalog & videos",
+            "Real-time click & visitor analytics"
+        ],
+        url: "/dashboard/instagram/bio-link"
     },
     {
-        title: "Live Chat",
-        description: "Turn casual interactions into qualified leads. Collect emails and data directly within the chat.",
-        icon: Users,
-        image: "/feature-story.jfif",
+        id: "broadcasting",
+        title: "Broadcasting Campaigns",
+        pill: "Official Broadcasts",
+        tagline: "Meta-Compliant Direct Message Reach",
+        description: "Send broadcast updates, promotions, and flash product drop alerts directly to your subscribers within Meta's official 24-hour messaging guidelines.",
+        icon: Send,
+        image: "/images/megadm_broadcasting_showcase.png",
+        color: "#006AFF",
+        stat: { label: "Open Rate", value: "92.4%" },
+        highlights: [
+            "Multi-channel Facebook & Instagram DMs",
+            "Audience segmentation & tag filtering",
+            "Rich interactive media cards & buttons"
+        ],
+        url: "/dashboard/facebook/broadcast"
+    },
+    {
+        id: "flow-builder",
+        title: "Smart Bot Flow Builder",
+        pill: "Visual Bot Flows",
+        tagline: "Visual Drag & Drop Workflows",
+        description: "Build interactive conversation funnels without writing code. Guide leads through product recommendations, FAQs, qualification questions, and instant bookings.",
+        icon: Bot,
+        image: "/images/megadm_flow_builder_showcase.png",
         color: "#833AB4",
+        stat: { label: "Funnel Pass", value: "88%" },
+        highlights: [
+            "Interactive buttons, cards & quick replies",
+            "Real-time mobile preview simulator",
+            "Custom tag variables & lead validation"
+        ],
+        url: "/dashboard/instagram/bot-reply"
     }
 ];
 
 export default function FeaturesOverview() {
+    const [desktopIndex, setDesktopIndex] = useState(0);
+    const [mobileIndex, setMobileIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const maxDesktopIndex = CARDS.length - 3; // 3 visible cards on desktop
+
+    const nextDesktop = () => {
+        setDesktopIndex((prev) => (prev >= maxDesktopIndex ? 0 : prev + 1));
+    };
+
+    const prevDesktop = () => {
+        setDesktopIndex((prev) => (prev <= 0 ? maxDesktopIndex : prev - 1));
+    };
+
+    const nextMobile = () => {
+        setMobileIndex((prev) => (prev + 1) % CARDS.length);
+    };
+
+    const prevMobile = () => {
+        setMobileIndex((prev) => (prev - 1 + CARDS.length) % CARDS.length);
+    };
+
+    // Auto-slide effect for desktop (pauses on hover)
+    useEffect(() => {
+        if (isHovered) return;
+        const timer = setInterval(() => {
+            setDesktopIndex((prev) => (prev >= maxDesktopIndex ? 0 : prev + 1));
+        }, 4000);
+        return () => clearInterval(timer);
+    }, [isHovered, maxDesktopIndex]);
+
+    // Auto-slide effect for mobile
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setMobileIndex((prev) => (prev + 1) % CARDS.length);
+        }, 4500);
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <section
-            className="py-24 overflow-hidden relative"
-            style={{ background: "linear-gradient(180deg, #06000d 0%, #0a0114 100%)" }}
+            id="features-overview"
+            className="py-20 md:py-28 overflow-hidden relative bg-[#06000d]"
         >
-            {/* Ambient glow */}
+            {/* Ambient Glows */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] rounded-full"
-                    style={{ background: "radial-gradient(ellipse, rgba(255,45,120,0.08) 0%, transparent 70%)", filter: "blur(80px)" }} />
+                <div
+                    className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] rounded-full"
+                    style={{ background: "radial-gradient(ellipse, rgba(255,45,120,0.18) 0%, transparent 70%)", filter: "blur(110px)" }}
+                />
+                <div
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "32px 32px" }}
+                />
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-16">
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-4xl md:text-5xl font-semibold text-white mb-4"
-                    >
-                        One Platform, <span style={{ color: "#FF2D78" }}>Total Control</span>
-                    </motion.h2>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="text-lg max-w-2xl mx-auto"
-                        style={{ color: "rgba(255,255,255,0.55)" }}
-                    >
-                        Everything you need to automate your social presence and turn followers into loyal customers.
-                    </motion.p>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {mainFeatures.map((feature, index) => (
-                        <motion.article
-                            key={index}
-                            initial={{ opacity: 0, y: 30 }}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-14 gap-6">
+                    <div className="max-w-2xl">
+                        <motion.div
+                            initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ y: -10, scale: 1.01 }}
-                            className="group relative h-[400px] w-full rounded-[28px] text-left [perspective:1200px]"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-pink-500/40 bg-pink-500/15 backdrop-blur-md mb-4 shadow-[0_0_20px_rgba(255,45,120,0.2)]"
                         >
-                            <div
-                                className="relative h-full w-full rounded-[28px] transition-transform duration-700 [transform:rotateY(0deg)] group-hover:[transform:rotateY(180deg)]"
-                                style={{ transformStyle: "preserve-3d" }}
-                            >
-                                {/* FRONT */}
+                            <Sparkles className="w-4 h-4 text-[#FF2D78]" />
+                            <span className="text-xs font-black tracking-[0.2em] uppercase text-pink-200">
+                                Real Working SaaS Modules
+                            </span>
+                        </motion.div>
+
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.05 }}
+                            className="text-4xl sm:text-5xl md:text-6xl font-[1000] text-white tracking-tight leading-[1.1] mb-4"
+                        >
+                            One Platform,{" "}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] via-[#FF80AB] to-[#E1306C]">
+                                Total Control
+                            </span>
+                        </motion.h2>
+
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="text-base sm:text-lg font-semibold text-white/90 leading-relaxed"
+                            style={{ color: "#F8FAFC" }}
+                        >
+                            Explore all 5 live MegaDM modules in full portrait view. Auto-slides smoothly, with interactive hover details on desktop and swipe on mobile.
+                        </motion.p>
+                    </div>
+
+                    {/* Desktop Slider Arrows */}
+                    <div className="hidden md:flex items-center gap-3 shrink-0">
+                        <button
+                            onClick={prevDesktop}
+                            aria-label="Previous Slide"
+                            className="p-3.5 rounded-full bg-white/10 hover:bg-[#FF2D78] text-white border border-white/20 transition-all duration-300 shadow-xl active:scale-95"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={nextDesktop}
+                            aria-label="Next Slide"
+                            className="p-3.5 rounded-full bg-white/10 hover:bg-[#FF2D78] text-white border border-white/20 transition-all duration-300 shadow-xl active:scale-95"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* ── DESKTOP VIEW: Auto-sliding 3-Card Multi-Card Slider ── */}
+                <div
+                    className="hidden md:block overflow-hidden"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <motion.div
+                        className="flex gap-6 lg:gap-8"
+                        animate={{ x: `-${desktopIndex * (100 / 3 + 2.5)}%` }}
+                        transition={{ type: "spring", stiffness: 220, damping: 28 }}
+                    >
+                        {CARDS.map((card) => {
+                            const IconComponent = card.icon;
+
+                            return (
                                 <div
-                                    className="absolute inset-0 overflow-hidden rounded-[28px] border border-white/10 shadow-sm transition-all duration-300 group-hover:shadow-xl"
-                                    style={{ backfaceVisibility: "hidden", background: "#0d0617" }}
+                                    key={card.id}
+                                    className="w-[calc(33.333%-16px)] shrink-0 group relative aspect-[3/4] rounded-[32px] overflow-hidden border border-white/20 bg-[#090312] shadow-2xl transition-all duration-500 hover:border-pink-500/80 hover:shadow-[0_20px_60px_rgba(255,45,120,0.35)] hover:-translate-y-1.5"
                                 >
-                                    <Image
-                                        src={feature.image}
-                                        alt={feature.title}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-60"
-                                        sizes="(max-width: 768px) 100vw, 25vw"
-                                    />
+                                    {/* Full Portrait Image Base */}
+                                    <div className="relative w-full h-full overflow-hidden bg-[#06000d]">
+                                        <Image
+                                            src={card.image}
+                                            alt={`${card.title} Full Portrait Showcase`}
+                                            fill
+                                            className="object-contain sm:object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                                            sizes="(max-width: 1200px) 50vw, 33vw"
+                                        />
+                                        {/* Bottom shade to guarantee text contrast */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20 pointer-events-none transition-opacity duration-300 group-hover:opacity-0" />
+                                    </div>
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                                    <div className="absolute inset-0"
-                                        style={{ background: `radial-gradient(circle at 85% 12%, ${feature.color}55, transparent 42%)` }} />
+                                    {/* Floating Top Header Badges */}
+                                    <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+                                        {/* <div
+                                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border backdrop-blur-md shadow-lg"
+                                            style={{
+                                                backgroundColor: `${card.color}45`,
+                                                borderColor: `${card.color}80`,
+                                                color: "#FFFFFF",
+                                            }}
+                                        >
+                                            <IconComponent className="w-3.5 h-3.5" />
+                                            <span>{card.pill}</span>
+                                        </div> */}
+                                        {/* <div className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/30 text-white text-xs font-black shadow-lg">
+                                            {card.stat.value}
+                                        </div> */}
+                                    </div>
 
-                                    <div className="absolute left-0 right-0 top-0 p-4">
-                                        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-                                            <feature.icon className="h-4 w-4" />
-                                            Feature
+                                    {/* Resting Bottom Bar */}
+                                    <div className="absolute bottom-0 left-0 right-0 z-20 p-5 bg-gradient-to-t from-black via-black/90 to-transparent transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
+                                        <h3 className="text-xl font-[1000] text-white tracking-tight leading-tight drop-shadow-md">
+                                            {card.title}
+                                        </h3>
+                                        <div className="flex items-center justify-between mt-1.5">
+                                            <p className="text-xs text-pink-300 font-bold truncate pr-2 drop-shadow-sm">
+                                                {card.tagline}
+                                            </p>
+                                            <span className="text-[11px] font-black text-white shrink-0 flex items-center gap-1 bg-white/20 px-2.5 py-0.5 rounded-full border border-white/30">
+                                                <span>Hover</span>
+                                                <ArrowRight className="w-3 h-3 text-[#FF2D78]" />
+                                            </span>
                                         </div>
                                     </div>
 
-                                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                                        <h3 className="text-2xl font-semibold text-white drop-shadow-md">{feature.title}</h3>
-                                        <p className="mt-1 text-xs" style={{ color: `${feature.color}cc` }}>Hover to view details</p>
+                                    {/* ── ON-HOVER REVEAL OVERLAY ── */}
+                                    <div className="absolute inset-0 z-30 flex flex-col justify-end p-6 bg-gradient-to-t from-[#090214] via-[#090214]/95 to-black/60 backdrop-blur-md opacity-0 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 ease-out">
+                                        {/* Top Header Inside Overlay */}
+
+
+                                        <h4 className="text-2xl font-[1000] text-white tracking-tight mb-1">
+                                            {card.title}
+                                        </h4>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-pink-300 mb-2.5">
+                                            {card.tagline}
+                                        </p>
+                                        <p className="text-xs sm:text-sm text-white leading-relaxed mb-3.5 line-clamp-3 font-medium">
+                                            {card.description}
+                                        </p>
+
+                                        {/* Highlights */}
+                                        <div className="space-y-1.5 mb-4">
+                                            {card.highlights.map((h) => (
+                                                <div key={h} className="flex items-center gap-2 text-xs text-white font-semibold">
+                                                    <CheckCircle2 className="w-3.5 h-3.5 text-[#FF2D78] shrink-0" />
+                                                    <span className="truncate">{h}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Action Link */}
+                                        <div className="pt-3 border-t border-white/20 flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5 text-[11px] text-white/80 font-bold">
+                                                <ShieldCheck className="w-3.5 h-3.5 text-[#FF2D78]" />
+                                                <span>Official Meta API</span>
+                                            </div>
+                                            <Link
+                                                href="/auth/sign-up"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#FF2D78] to-[#E1306C] text-white font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(255,45,120,0.6)] hover:brightness-110 transition-all"
+                                            >
+                                                <span>Try Free</span>
+                                                <ArrowRight className="w-3 h-3" />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </motion.div>
+
+                    {/* Desktop Pagination Dots */}
+                    <div className="flex items-center justify-center gap-2 mt-8">
+                        {[0, 1, 2].map((idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setDesktopIndex(idx)}
+                                aria-label={`Go to slide ${idx + 1}`}
+                                className={`h-2.5 rounded-full transition-all duration-300 ${idx === desktopIndex
+                                    ? "w-8 bg-[#FF2D78] shadow-[0_0_12px_rgba(255,45,120,0.8)]"
+                                    : "w-2.5 bg-white/20 hover:bg-white/40"
+                                    }`}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* ── MOBILE VIEW: Auto-sliding Pure Touch Slider ── */}
+                <div className="block md:hidden">
+                    <div className="relative">
+                        {/* Current Mobile Slide Card */}
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={CARDS[mobileIndex].id}
+                                initial={{ opacity: 0, x: 25 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -25 }}
+                                transition={{ duration: 0.35 }}
+                                className="rounded-[28px] border border-white/25 bg-white/[0.05] backdrop-blur-xl overflow-hidden shadow-2xl p-4 sm:p-5"
+                            >
+                                {/* Top Badges */}
+                                <div className="flex items-center justify-between gap-2 mb-3">
+                                    <div
+                                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border"
+                                        style={{
+                                            backgroundColor: `${CARDS[mobileIndex].color}30`,
+                                            borderColor: `${CARDS[mobileIndex].color}70`,
+                                            color: "#FFFFFF",
+                                        }}
+                                    >
+                                        {React.createElement(CARDS[mobileIndex].icon, { className: "w-3.5 h-3.5" })}
+                                        <span>{CARDS[mobileIndex].pill}</span>
+                                    </div>
+                                    <div className="px-3 py-1 rounded-full bg-black/60 border border-white/30 text-white text-xs font-black">
+                                        {CARDS[mobileIndex].stat.value}
                                     </div>
                                 </div>
 
-                                {/* BACK */}
-                                <div
-                                    className="absolute inset-0 flex flex-col rounded-[28px] border p-5 shadow-xl"
-                                    style={{
-                                        backfaceVisibility: "hidden",
-                                        transform: "rotateY(180deg)",
-                                        background: `linear-gradient(135deg, ${feature.color}18 0%, rgba(13,6,23,0.98) 100%)`,
-                                        borderColor: `${feature.color}33`
-                                    }}
-                                >
-                                    <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                                        style={{ background: `${feature.color}20`, color: feature.color }}>
-                                        <feature.icon className="h-4 w-4" />
-                                        {feature.title}
+                                {/* Full Portrait Image */}
+                                <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden border border-white/20 bg-[#090312] mb-4">
+                                    <Image
+                                        src={CARDS[mobileIndex].image}
+                                        alt={`${CARDS[mobileIndex].title} Mobile View`}
+                                        fill
+                                        className="object-contain"
+                                        sizes="100vw"
+                                        priority
+                                    />
+                                </div>
+
+                                {/* Content Directly Visible Below Image */}
+                                <div className="space-y-3">
+                                    <div>
+                                        <h3 className="text-2xl font-[1000] text-white tracking-tight">
+                                            {CARDS[mobileIndex].title}
+                                        </h3>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-pink-300 mt-1">
+                                            {CARDS[mobileIndex].tagline}
+                                        </p>
                                     </div>
 
-                                    <p className="mt-4 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
-                                        {feature.description}
+                                    <p className="text-sm text-white leading-relaxed font-normal" style={{ color: "#F8FAFC" }}>
+                                        {CARDS[mobileIndex].description}
                                     </p>
 
-                                    <div className="mt-5 rounded-2xl border px-4 py-3"
-                                        style={{ borderColor: `${feature.color}25`, background: "rgba(255,255,255,0.04)" }}>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em]"
-                                            style={{ color: feature.color }}>Outcome</p>
-                                        <p className="mt-1 text-sm text-white/80">Faster replies, better engagement, and more qualified leads.</p>
+                                    {/* Feature Highlights */}
+                                    <div className="space-y-2 pt-1">
+                                        {CARDS[mobileIndex].highlights.map((h) => (
+                                            <div key={h} className="flex items-start gap-2 text-xs text-white font-semibold">
+                                                <CheckCircle2 className="w-3.5 h-3.5 text-[#FF2D78] shrink-0 mt-0.5" />
+                                                <span>{h}</span>
+                                            </div>
+                                        ))}
                                     </div>
 
-                                    <a
+                                    {/* Action Button */}
+                                    <Link
                                         href="/auth/sign-up"
-                                        className="mt-auto inline-flex w-fit items-center rounded-full px-4 py-2 text-xs font-semibold text-white transition"
-                                        style={{ background: feature.color }}
+                                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FF2D78] to-[#E1306C] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg mt-3 hover:brightness-110 transition-all"
                                     >
-                                        Get Started
-                                    </a>
+                                        <span>Try {CARDS[mobileIndex].title}</span>
+                                        <ArrowRight className="w-3.5 h-3.5" />
+                                    </Link>
                                 </div>
+                            </motion.div>
+                        </AnimatePresence>
+
+                        {/* Mobile Navigation Controls & Dots */}
+                        <div className="flex items-center justify-between mt-5 px-2">
+                            <button
+                                onClick={prevMobile}
+                                aria-label="Previous Slide"
+                                className="p-3 rounded-full bg-white/10 hover:bg-[#FF2D78] text-white border border-white/20 transition-colors shadow-lg active:scale-95"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+
+                            {/* Mobile Dots */}
+                            <div className="flex items-center gap-1.5">
+                                {CARDS.map((_, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setMobileIndex(idx)}
+                                        aria-label={`Go to slide ${idx + 1}`}
+                                        className={`h-2 rounded-full transition-all duration-300 ${idx === mobileIndex
+                                            ? "w-6 bg-[#FF2D78] shadow-[0_0_10px_rgba(255,45,120,0.8)]"
+                                            : "w-2 bg-white/20"
+                                            }`}
+                                    />
+                                ))}
                             </div>
-                        </motion.article>
-                    ))}
+
+                            <button
+                                onClick={nextMobile}
+                                aria-label="Next Slide"
+                                className="p-3 rounded-full bg-white/10 hover:bg-[#FF2D78] text-white border border-white/20 transition-colors shadow-lg active:scale-95"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
