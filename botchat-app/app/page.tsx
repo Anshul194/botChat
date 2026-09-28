@@ -25,7 +25,7 @@ const Features = dynamic(() => import("./landing/components/Features"), { loadin
 const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"), { loading: () => <SectionLoader /> });
 // const TrendyStacks = dynamic(() => import("./landing/components/TrendyStacks"), { loading: () => <SectionLoader /> });
 const CreatorProof = dynamic(() => import("./landing/components/CreatorProof"), { loading: () => <SectionLoader /> });
-const Testimonials = dynamic(() => import("./landing/components/Testimonials"), { loading: () => <SectionLoader /> });
+const WhiteLabel = dynamic(() => import("./landing/components/WhiteLabel"), { loading: () => <SectionLoader /> });
 const Pricing = dynamic(() => import("./landing/components/Pricing"), { loading: () => <SectionLoader /> });
 const FAQ = dynamic(() => import("./landing/components/FAQ"), { loading: () => <SectionLoader /> });
 const Footer = dynamic(() => import("./landing/components/Footer"), { loading: () => <SectionLoader /> });
@@ -88,7 +88,7 @@ export default function Home() {
 
           {/* Social proof */}
           <CreatorProof />
-          <Testimonials />
+          <WhiteLabel />
 
           {/* Blog section moved to /blog page — not on landing */}
 
