@@ -20,6 +20,7 @@ const SmoothScrollingUI = dynamic(() => import("./landing/components/SmoothScrol
 const FeaturesOverview = dynamic(() => import("./landing/components/FeaturesOverview"), { loading: () => <SectionLoader /> });
 const BioLinkShowcase = dynamic(() => import("./landing/components/BioLinkShowcase"), { loading: () => <SectionLoader /> });
 const DMAutomationShowcase = dynamic(() => import("./landing/components/DMAutomationShowcase"), { loading: () => <SectionLoader /> });
+const BroadcastingShowcase = dynamic(() => import("./landing/components/BroadcastingShowcase"), { loading: () => <SectionLoader /> });
 const MotiveSection = dynamic(() => import("./landing/components/MotiveSection"), { loading: () => <SectionLoader /> });
 const Features = dynamic(() => import("./landing/components/Features"), { loading: () => <SectionLoader /> });
 const ScrollWritingSection = dynamic(() => import("./landing/components/ScrollWritingSection"), { loading: () => <SectionLoader /> });
@@ -70,6 +71,7 @@ export default function Home() {
           {/* Legacy showcase sections — rich storytelling */}
           <BioLinkShowcase />
           <DMAutomationShowcase />
+          <BroadcastingShowcase />
           <MotiveSection />
           <ScrollWritingSection />
 

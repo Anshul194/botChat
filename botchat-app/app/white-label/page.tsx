@@ -41,7 +41,7 @@ export default function WhiteLabelPage() {
         <Navbar />
 
         {/* ── HERO SECTION ── */}
-        <section className="relative pt-40 pb-32 mt-20 overflow-hidden flex flex-col items-center min-h-[80vh]">
+        <section className="relative pt-[200px] lg:pt-[240px] pb-32 overflow-hidden flex flex-col items-center">
           {/* Ambient Background Glows */}
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-pink-500/10 blur-[120px] rounded-[100%] pointer-events-none" />
           <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
