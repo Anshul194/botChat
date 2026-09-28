@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { getPublicPlans, getPublicDefinitions, type PublicPlan, type FeatureDefinition } from "@/lib/publicApi";
 
-// Key features shown on cards — sourced from registry labels
 const HIGHLIGHT_KEYS = [
     "smart_inbox", "bot_reply", "social_posting_access",
     "bio_links", "broadcast", "api_developer",
@@ -50,7 +49,7 @@ export default function Pricing() {
             .finally(() => setLoading(false));
     }, []);
 
-    const ANNUAL_DISCOUNT = 0.8; // 20% off
+    const ANNUAL_DISCOUNT = 0.8;
     const top3 = plans.slice(0, 3);
 
     return (
@@ -82,7 +81,8 @@ export default function Pricing() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.05 }}
-                        className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight"
+                        className="text-4xl md:text-5xl font-black mb-4 tracking-tight"
+                        style={{ color: "#ffffff" }}
                     >
                         Simple plans.{" "}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#E1306C]">
@@ -94,27 +94,54 @@ export default function Pricing() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-lg max-w-xl mx-auto font-medium mb-8"
-                        style={{ color: "rgba(255,255,255,0.65)" }}
+                        className="text-lg max-w-xl mx-auto font-medium mb-10"
+                        style={{ color: "rgba(255,255,255,0.70)" }}
                     >
-                        Start free. Scale when you need to.
+                        Start free. Scale when you need to. No credit card required.
                     </motion.p>
 
-                    {/* Billing toggle */}
-                    <div className="flex items-center justify-center gap-4">
-                        <span className={`text-sm font-bold transition-colors ${!isAnnual ? "text-white" : "text-white/40"}`}>Monthly</span>
+                    {/* Billing toggle — always legible on dark bg */}
+                    <div className="inline-flex items-center gap-4 px-5 py-3 rounded-2xl"
+                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}>
+                        <span
+                            className="text-sm font-bold transition-all duration-200 select-none"
+                            style={{ color: !isAnnual ? "#ffffff" : "rgba(255,255,255,0.4)" }}
+                        >
+                            Monthly
+                        </span>
                         <button
                             onClick={() => setIsAnnual(v => !v)}
-                            className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${isAnnual ? "bg-[#FF2D78]" : "bg-white/20"}`}
+                            aria-label="Toggle billing period"
+                            className="relative w-14 h-7 rounded-full transition-all duration-300 flex-shrink-0"
+                            style={{
+                                background: isAnnual ? "#FF2D78" : "rgba(255,255,255,0.15)",
+                                border: "1px solid rgba(255,255,255,0.2)",
+                                boxShadow: isAnnual ? "0 0 16px rgba(255,45,120,0.5)" : "none",
+                            }}
                         >
                             <motion.div
-                                animate={{ x: isAnnual ? 28 : 2 }}
+                                animate={{ x: isAnnual ? 29 : 3 }}
                                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                className="absolute top-1 w-5 h-5 rounded-full bg-white shadow"
+                                className="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md"
                             />
                         </button>
-                        <span className={`text-sm font-bold transition-colors ${isAnnual ? "text-white" : "text-white/40"}`}>
-                            Annual <span className="text-green-400 text-xs font-black ml-1">Save 20%</span>
+                        <span className="flex items-center gap-2 select-none">
+                            <span
+                                className="text-sm font-bold transition-all duration-200"
+                                style={{ color: isAnnual ? "#ffffff" : "rgba(255,255,255,0.4)" }}
+                            >
+                                Annual
+                            </span>
+                            <span
+                                className="px-2 py-0.5 rounded-full text-xs font-black transition-all duration-300"
+                                style={{
+                                    background: isAnnual ? "rgba(74,222,128,0.18)" : "rgba(255,255,255,0.06)",
+                                    color: isAnnual ? "#4ade80" : "rgba(255,255,255,0.35)",
+                                    border: isAnnual ? "1px solid rgba(74,222,128,0.35)" : "1px solid rgba(255,255,255,0.1)",
+                                }}
+                            >
+                                Save 20%
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -125,7 +152,7 @@ export default function Pricing() {
                         {[...Array(3)].map((_, i) => <PlanSkeletonCard key={i} />)}
                     </div>
                 ) : top3.length === 0 ? (
-                    <div className="text-center py-16 font-semibold" style={{ color: "rgba(255,255,255,0.4)" }}>Plans coming soon.</div>
+                    <div className="text-center py-16 font-semibold" style={{ color: "rgba(255,255,255,0.5)" }}>Plans coming soon.</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
                         {top3.map((plan, i) => {
@@ -161,9 +188,9 @@ export default function Pricing() {
                                     )}
 
                                     <div className="mb-6">
-                                        <h3 className="text-2xl font-black mb-1 text-white">{plan.name}</h3>
+                                        <h3 className="text-2xl font-black mb-1" style={{ color: "#ffffff" }}>{plan.name}</h3>
                                         {plan.description && (
-                                            <p className="text-[15px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>
+                                            <p className="text-[15px] font-medium" style={{ color: "rgba(255,255,255,0.60)" }}>
                                                 {plan.description}
                                             </p>
                                         )}
@@ -175,20 +202,21 @@ export default function Pricing() {
                                                 exit={{ opacity: 0, y: 10 }}
                                                 className="flex items-end gap-1.5 mt-5"
                                             >
-                                                <span className="text-5xl font-black tracking-tight text-white">₹{displayPrice}</span>
-                                                <span className="text-sm font-bold mb-2" style={{ color: "rgba(255,255,255,0.45)" }}>
+                                                <span className="text-5xl font-black tracking-tight" style={{ color: "#ffffff" }}>
+                                                    Rs.{displayPrice}
+                                                </span>
+                                                <span className="text-sm font-bold mb-2" style={{ color: "rgba(255,255,255,0.50)" }}>
                                                     / {plan.duration_type}
                                                 </span>
                                             </motion.div>
                                         </AnimatePresence>
                                         {isAnnual && rawPrice > 0 && (
                                             <p className="text-xs text-green-400 font-bold mt-1">
-                                                Save ₹{Math.round(rawPrice * 0.2)} / {plan.duration_type}
+                                                Save Rs.{Math.round(rawPrice * 0.2)} / {plan.duration_type}
                                             </p>
                                         )}
                                     </div>
 
-                                    {/* Feature bullets from registry */}
                                     <ul className="space-y-3 mb-8 flex-1">
                                         {HIGHLIGHT_KEYS.map(key => {
                                             const val = getVal(plan.features?.[key]);
@@ -197,16 +225,17 @@ export default function Pricing() {
                                             if (!def) return null;
                                             return (
                                                 <li key={key} className={`flex items-center gap-3 text-sm ${!enabled && "opacity-40"}`}>
-                                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0`}
+                                                    <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                                                         style={{
                                                             background: enabled
                                                                 ? isPopular ? "rgba(255,45,120,0.3)" : "rgba(16,185,129,0.2)"
                                                                 : "rgba(255,255,255,0.08)",
-                                                            color: enabled ? (isPopular ? "#FF2D78" : "#10b981") : "rgba(255,255,255,0.3)"
+                                                            color: enabled ? (isPopular ? "#FF2D78" : "#10b981") : "rgba(255,255,255,0.3)",
                                                         }}>
                                                         <Check className="w-2.5 h-2.5" strokeWidth={3} />
                                                     </div>
-                                                    <span className="font-semibold" style={{ color: enabled ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.4)" }}>
+                                                    <span className="font-semibold"
+                                                        style={{ color: enabled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.35)" }}>
                                                         {def.label}
                                                     </span>
                                                 </li>
@@ -216,14 +245,10 @@ export default function Pricing() {
 
                                     <Link
                                         href="/auth/sign-up"
-                                        className={`block w-full py-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] ${
-                                            isPopular
-                                                ? "text-white"
-                                                : "text-white"
-                                        }`}
+                                        className="block w-full py-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] text-white"
                                         style={isPopular
                                             ? { background: "linear-gradient(135deg, #FF2D78, #E1306C)", boxShadow: "0 8px 24px rgba(255,45,120,0.4)" }
-                                            : { background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }
+                                            : { background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }
                                         }
                                     >
                                         Start Free Trial
@@ -244,9 +269,9 @@ export default function Pricing() {
                     <Link
                         href="/pricing"
                         className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest transition-colors hover:text-white"
-                        style={{ color: "rgba(255,255,255,0.45)" }}
+                        style={{ color: "rgba(255,255,255,0.50)" }}
                     >
-                        View full pricing & feature comparison <ArrowRight className="w-4 h-4" />
+                        View full pricing &amp; feature comparison <ArrowRight className="w-4 h-4" />
                     </Link>
                 </motion.div>
             </div>

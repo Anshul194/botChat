@@ -58,9 +58,7 @@ const LinkedInIcon = ({ size = 20 }: { size?: number }) => (
 const PLATFORMS = [
   { id: "instagram", label: "Instagram", Icon: InstagramIcon, color: "#EE2A7B", connected: true },
   { id: "facebook", label: "Facebook", Icon: FacebookIcon, color: "#1877F2", connected: true },
-  { id: "messenger", label: "Messenger", Icon: MessengerIcon, color: "#006AFF", connected: false },
-  { id: "whatsapp", label: "WhatsApp", Icon: WhatsAppIcon, color: "#25D366", connected: true },
-  { id: "linkedin", label: "LinkedIn", Icon: LinkedInIcon, color: "#0A66C2", connected: false },
+  { id: "messenger", label: "Messenger", Icon: MessengerIcon, color: "#006AFF", connected: true },
 ];
 
 const MESSAGES = [
@@ -68,8 +66,8 @@ const MESSAGES = [
   { id: "m2", type: "me", avatar: "fb", text: "Sent to your inbox! Check DMs ⚡", orbitAngle: 138, orbitR: 148, entryFrom: "right" },
   { id: "m3", type: "them", avatar: "ig", text: "This tool is a scam 😡 (HIDDEN)", orbitAngle: 258, orbitR: 153, entryFrom: "left" },
   { id: "m4", type: "them", avatar: "ms", text: "Interested in the board program", orbitAngle: 298, orbitR: 144, entryFrom: "bottom" },
-  { id: "m5", type: "me", avatar: "wa", text: "Hi! Bot replied instantly 🤖", orbitAngle: 72, orbitR: 148, entryFrom: "right" },
-  { id: "m6", type: "them", avatar: "li", text: "Got the DM, signed up! 🔗", orbitAngle: 18, orbitR: 151, entryFrom: "top" },
+  { id: "m5", type: "me", avatar: "ig", text: "Hi! Bot replied instantly 🤖", orbitAngle: 72, orbitR: 148, entryFrom: "right" },
+  { id: "m6", type: "them", avatar: "ms", text: "Got the DM, signed up! 🔗", orbitAngle: 18, orbitR: 151, entryFrom: "top" },
   { id: "m7", type: "them", avatar: "fb", text: "3× more leads this week 🚀", orbitAngle: 328, orbitR: 146, entryFrom: "left" },
 ];
 
@@ -107,10 +105,10 @@ const STAGES = [
 const STAGE_THRESHOLDS = [0, 0.18, 0.5, 0.78];
 
 const PLATFORM_ICONS: Record<string, React.FC<{ size?: number }>> = {
-  ig: InstagramIcon, fb: FacebookIcon, ms: MessengerIcon, wa: WhatsAppIcon, li: LinkedInIcon,
+  ig: InstagramIcon, fb: FacebookIcon, ms: MessengerIcon,
 };
 const PLATFORM_COLORS: Record<string, string> = {
-  ig: "#EE2A7B", fb: "#1877F2", ms: "#006AFF", wa: "#25D366", li: "#0A66C2",
+  ig: "#EE2A7B", fb: "#1877F2", ms: "#006AFF",
 };
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────

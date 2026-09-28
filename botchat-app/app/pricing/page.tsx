@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Sparkles, ChevronDown, HelpCircle, ArrowRight,
-    Check, Shield, Zap, MessageSquare, Users
+    Check, Zap, MessageSquare
 } from "lucide-react";
 import PageMeta from "@/components/PageMeta";
 import Navbar from "../landing/components/Navbar";
@@ -115,7 +115,7 @@ export default function PricingPage() {
                 setDefs(defsData.features ?? {});
                 setGroups(defsData.groups ?? {});
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setIsLoading(false));
     }, []);
 
@@ -136,21 +136,21 @@ export default function PricingPage() {
                 <Navbar forceLight={true} />
 
                 {/* ── Hero ─────────────────────────────────────────── */}
-                <section className="relative pt-44 pb-24 overflow-hidden bg-[#06000d]">
+                <section className="relative pt-44 pb-20 overflow-hidden bg-[#06000d]">
                     <div className="absolute inset-0 z-0 pointer-events-none">
-                        <div className="absolute top-[-20%] left-[-10%] w-[900px] h-[900px] rounded-full bg-[#FF2D78]/15 blur-[140px] animate-pulse" />
-                        <div className="absolute bottom-[-10%] right-[-5%] w-[700px] h-[700px] rounded-full bg-violet-600/10 blur-[140px]" />
+                        <div className="absolute top-[-20%] left-[-10%] w-[900px] h-[900px] rounded-full bg-[#FF2D78]/20 blur-[140px] animate-pulse" />
+                        <div className="absolute bottom-[-10%] right-[-5%] w-[700px] h-[700px] rounded-full bg-violet-600/15 blur-[140px]" />
                         <div
-                            className="absolute inset-0 opacity-10"
-                            style={{ backgroundImage: "radial-gradient(circle, #444 1px, transparent 1px)", backgroundSize: "40px 40px" }}
+                            className="absolute inset-0 opacity-15"
+                            style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)", backgroundSize: "36px 36px" }}
                         />
                     </div>
 
                     <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                            <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-white/20 bg-white/10 backdrop-blur-md">
                                 <Sparkles className="w-4 h-4 text-[#FF2D78]" />
-                                <span className="text-xs font-black tracking-[0.2em] uppercase text-pink-200/80">
+                                <span className="text-xs font-black tracking-[0.2em] uppercase text-pink-200">
                                     Simple, Transparent Pricing
                                 </span>
                             </div>
@@ -163,36 +163,51 @@ export default function PricingPage() {
                                 </span>
                             </h1>
 
-                            <p className="text-base sm:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed px-2">
-                                Start free. Scale when you're ready. Every plan includes a full-featured trial — no credit card required.
+                            <p
+                                className="text-base sm:text-xl max-w-2xl mx-auto mb-10 font-medium leading-relaxed px-2 text-white/80"
+                                style={{ color: "#E2E8F0" }}
+                            >
+                                Start free. Scale when you&apos;re ready. Every plan includes a full-featured trial
+                                &mdash; no credit card required.
                             </p>
 
-                            {/* Platform strip */}
-                            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-16 opacity-25 hover:opacity-60 transition-opacity duration-500 mb-14">
-                                {["INSTAGRAM", "FACEBOOK", "WHATSAPP", "TELEGRAM"].map(name => (
-                                    <span key={name} className="text-white font-black tracking-[0.35em] text-sm">{name}</span>
+                            {/* Platform strip - Only verified supported platforms */}
+                            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-14 mb-12">
+                                {["INSTAGRAM", "FACEBOOK"].map(name => (
+                                    <span
+                                        key={name}
+                                        className="text-white/60 hover:text-white font-black tracking-[0.35em] text-xs sm:text-sm transition-colors duration-300"
+                                    >
+                                        {name}
+                                    </span>
                                 ))}
                             </div>
 
-                            {/* Billing toggle */}
-                            <div className="flex items-center justify-center gap-4 sm:gap-6">
-                                <span className={`text-sm font-black uppercase tracking-widest transition-colors ${!isAnnual ? "text-white" : "text-white/60"}`}>
-                                    Monthly
-                                </span>
+                            {/* Billing toggle - High contrast and crystal clear */}
+                            <div className="inline-flex items-center p-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl">
                                 <button
-                                    onClick={() => setIsAnnual(v => !v)}
-                                    className="relative w-16 h-8 rounded-full bg-white/10 border border-white/10 p-1 cursor-pointer"
+                                    type="button"
+                                    onClick={() => setIsAnnual(false)}
+                                    className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${!isAnnual
+                                        ? "bg-[#FF2D78] text-white shadow-[0_0_20px_rgba(255,45,120,0.5)]"
+                                        : "text-white/70 hover:text-white"
+                                        }`}
                                 >
-                                    <motion.div
-                                        animate={{ x: isAnnual ? 32 : 0 }}
-                                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                        className="w-6 h-6 rounded-full bg-[#FF2D78] shadow-[0_0_12px_rgba(255,45,120,0.5)]"
-                                    />
+                                    Monthly
                                 </button>
-                                <span className={`text-sm font-black uppercase tracking-widest transition-colors ${isAnnual ? "text-white" : "text-white/60"}`}>
-                                    Annual{" "}
-                                    <span className="text-green-400 font-black text-xs ml-1">Save 20%</span>
-                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsAnnual(true)}
+                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${isAnnual
+                                        ? "bg-[#FF2D78] text-white shadow-[0_0_20px_rgba(255,45,120,0.5)]"
+                                        : "text-white/70 hover:text-white"
+                                        }`}
+                                >
+                                    <span>Annual</span>
+                                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-500/30">
+                                        Save 20%
+                                    </span>
+                                </button>
                             </div>
                         </motion.div>
                     </div>
@@ -236,7 +251,7 @@ export default function PricingPage() {
                                 { icon: Check, label: "No Hidden Fees" },
                                 { icon: MessageSquare, label: "Priority Support" },
                             ].map(({ icon: Icon, label }) => (
-                                <div key={label} className="flex items-center gap-2 text-sm font-bold text-gray-400">
+                                <div key={label} className="flex items-center gap-2 text-sm font-bold text-gray-500">
                                     <Icon className="w-4 h-4 text-[#FF2D78]" />
                                     {label}
                                 </div>
@@ -332,12 +347,12 @@ export default function PricingPage() {
                                 </div>
                             </div>
                             <div className="flex gap-3 shrink-0">
-                                <button className="px-6 py-3 rounded-full bg-white border border-gray-200 text-black font-black text-sm uppercase tracking-widest hover:bg-gray-50 transition-all">
+                                <Link href="/contact" className="px-6 py-3 rounded-full bg-white border border-gray-200 text-black font-black text-sm uppercase tracking-widest hover:bg-gray-50 transition-all">
                                     Support
-                                </button>
-                                <button className="px-6 py-3 rounded-full bg-black text-white font-black text-sm uppercase tracking-widest hover:bg-gray-800 transition-all">
+                                </Link>
+                                <Link href="/contact" className="px-6 py-3 rounded-full bg-black text-white font-black text-sm uppercase tracking-widest hover:bg-gray-800 transition-all">
                                     Contact Us
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>
