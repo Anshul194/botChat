@@ -36,6 +36,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
     { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
+    { name: "White Label", href: "/white-label" },
     { name: "Blog", href: "/blog" },
     { name: "About", href: "/home/about" },
     { name: "Contact", href: "/home/contact" },
