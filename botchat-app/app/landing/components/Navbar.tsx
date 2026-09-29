@@ -38,8 +38,8 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
     { name: "Pricing", href: "/pricing" },
     { name: "White Label", href: "/white-label" },
     { name: "Blog", href: "/blog" },
-    { name: "About", href: "/home/about" },
-    { name: "Contact", href: "/home/contact" },
+    { name: "About", href: "/about" },
+    // { name: "Contact", href: "/contact" },
   ];
 
   return (
