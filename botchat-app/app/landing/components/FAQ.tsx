@@ -65,7 +65,7 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                     >
                         <div
                             className="font-medium leading-relaxed pb-5 pr-10 text-base prose prose-invert max-w-none"
-                            style={{ color: "rgba(255,255,255,0.6)" }}
+                            style={{ color: "rgba(255,255,255,0.78)" }}
                             dangerouslySetInnerHTML={{ __html: a }}
                         />
                     </motion.div>
@@ -112,7 +112,7 @@ export default function FAQ() {
                         initial={{ opacity: 0, y: 12 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/8 text-[#FF2D78] uppercase tracking-wider mb-5"
+                        className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/15 text-[#FF2D78] border border-[#FF2D78]/30 uppercase tracking-wider mb-5"
                     >
                         FAQ
                     </motion.div>
@@ -134,7 +134,7 @@ export default function FAQ() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
                         className="text-lg max-w-xl mx-auto font-medium"
-                        style={{ color: "rgba(255,255,255,0.55)" }}
+                        style={{ color: "rgba(255,255,255,0.72)" }}
                     >
                         Everything you need to know before getting started.
                     </motion.p>

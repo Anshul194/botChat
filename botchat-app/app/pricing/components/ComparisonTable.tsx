@@ -167,7 +167,7 @@ export default function ComparisonTable({ plans, defs, groups }: ComparisonTable
                                                         {groupMeta.label?.replace(/[^\w\s]/g, "").trim() || groupKey}
                                                     </span>
                                                     {groupMeta.description && (
-                                                        <span className="text-xs text-gray-400 font-medium ml-2">
+                                                        <span className="text-xs text-gray-500 font-medium ml-2">
                                                             — {groupMeta.description}
                                                         </span>
                                                     )}
@@ -198,7 +198,7 @@ export default function ComparisonTable({ plans, defs, groups }: ComparisonTable
                                                     {def.tooltip && <FeatureTooltip text={def.tooltip} />}
                                                 </span>
                                                 {def.description && (
-                                                    <p className="text-xs text-gray-400 mt-0.5 font-medium leading-snug max-w-xs">
+                                                    <p className="text-xs text-gray-500 mt-0.5 font-medium leading-snug max-w-xs">
                                                         {def.description}
                                                     </p>
                                                 )}

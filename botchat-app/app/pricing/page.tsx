@@ -72,7 +72,7 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
                         transition={{ duration: 0.22 }}
                         className="overflow-hidden"
                     >
-                        <p className="text-gray-500 font-medium leading-relaxed pb-5 pr-8">{a}</p>
+                        <p className="text-gray-700 font-medium leading-relaxed pb-5 pr-8">{a}</p>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -176,7 +176,7 @@ export default function PricingPage() {
                                 {["INSTAGRAM", "FACEBOOK"].map(name => (
                                     <span
                                         key={name}
-                                        className="text-white/60 hover:text-white font-black tracking-[0.35em] text-xs sm:text-sm transition-colors duration-300"
+                                        className="text-white/85 hover:text-white font-black tracking-[0.35em] text-xs sm:text-sm transition-colors duration-300"
                                     >
                                         {name}
                                     </span>
@@ -190,7 +190,7 @@ export default function PricingPage() {
                                     onClick={() => setIsAnnual(false)}
                                     className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${!isAnnual
                                         ? "bg-[#FF2D78] text-white shadow-[0_0_20px_rgba(255,45,120,0.5)]"
-                                        : "text-white/70 hover:text-white"
+                                        : "text-white/85 hover:text-white"
                                         }`}
                                 >
                                     Monthly
@@ -200,7 +200,7 @@ export default function PricingPage() {
                                     onClick={() => setIsAnnual(true)}
                                     className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${isAnnual
                                         ? "bg-[#FF2D78] text-white shadow-[0_0_20px_rgba(255,45,120,0.5)]"
-                                        : "text-white/70 hover:text-white"
+                                        : "text-white/85 hover:text-white"
                                         }`}
                                 >
                                     <span>Annual</span>
@@ -251,7 +251,7 @@ export default function PricingPage() {
                                 { icon: Check, label: "No Hidden Fees" },
                                 { icon: MessageSquare, label: "Priority Support" },
                             ].map(({ icon: Icon, label }) => (
-                                <div key={label} className="flex items-center gap-2 text-sm font-bold text-gray-500">
+                                <div key={label} className="flex items-center gap-2 text-sm font-bold text-gray-600">
                                     <Icon className="w-4 h-4 text-[#FF2D78]" />
                                     {label}
                                 </div>
@@ -288,7 +288,7 @@ export default function PricingPage() {
                         >
                             <div className="max-w-7xl mx-auto px-6">
                                 <div className="text-center mb-12">
-                                    <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/8 text-[#FF2D78] uppercase tracking-wider mb-4">
+                                    <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/15 text-[#FF2D78] border border-[#FF2D78]/25 uppercase tracking-wider mb-4">
                                         Full Comparison
                                     </div>
                                     <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-3">
@@ -317,7 +317,7 @@ export default function PricingPage() {
                 <section className="py-24 bg-white">
                     <div className="max-w-4xl mx-auto px-6">
                         <div className="text-center mb-14">
-                            <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/8 text-[#FF2D78] uppercase tracking-wider mb-5">
+                            <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF2D78]/15 text-[#FF2D78] border border-[#FF2D78]/25 uppercase tracking-wider mb-5">
                                 FAQs
                             </div>
                             <h2 className="text-4xl font-black text-gray-900 tracking-tight mb-4">

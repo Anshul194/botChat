@@ -98,9 +98,9 @@ export default function BroadcastingShowcase() {
                             transition={{ delay: 0.1 }}
                             className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.05] mb-6"
                         >
-                            Try out the <br />
+                            Instagram &amp; Facebook <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] via-[#FF80AB] to-[#E1306C]">
-                                Broadcaster.
+                                Broadcasting.
                             </span>
                         </motion.h2>
 
@@ -109,9 +109,9 @@ export default function BroadcastingShowcase() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="text-white/70 text-lg md:text-xl leading-relaxed mb-8 max-w-xl"
+                            className="text-white text-lg md:text-xl leading-relaxed mb-8 max-w-xl font-medium"
                         >
-                            Watch how a custom broadcast message is created and instantly delivered to Facebook and Instagram users in real-time.
+                            Send targeted broadcasts to eligible Instagram and Facebook contacts directly from MegaDM. Re-engage recent conversations, share updates, offers and follow-ups from one workspace.
                         </motion.p>
 
                         <motion.div
@@ -119,20 +119,20 @@ export default function BroadcastingShowcase() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.3 }}
-                            className="space-y-4 mb-10"
+                            className="space-y-4 mb-8"
                         >
                             {[
-                                { title: "Smart Audience Segmentation", desc: "Filter contacts by tags, variables, or recent engagement." },
-                                { title: "Rich Media Messages", desc: "Send carousels, buttons, images, and quick replies." },
-                                { title: "Live Analytics", desc: "Track delivery, open rates, and direct click-throughs in real-time." }
+                                { title: "Targeted Audience Segments", desc: "Filter contacts by custom tags, attributes, or recent conversation history." },
+                                { title: "Rich Media & Interactive CTAs", desc: "Send rich interactive cards, images, and action buttons." },
+                                { title: "Real-Time Delivery & Clicks", desc: "Monitor delivery rates, open rates, and direct responses inside your dashboard." }
                             ].map((feature, idx) => (
                                 <div key={idx} className="flex items-start gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 mt-1 border border-white/10">
+                                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-1 border border-white/15">
                                         <CheckCircle2 size={16} className="text-[#FF2D78]" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-white mb-1">{feature.title}</h4>
-                                        <p className="text-sm text-white/50">{feature.desc}</p>
+                                        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>{feature.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -144,13 +144,14 @@ export default function BroadcastingShowcase() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.4 }}
-                            className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex gap-3 max-w-xl"
+                            className="p-4 rounded-2xl flex gap-3 max-w-xl"
+                            style={{ background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.3)' }}
                         >
-                            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: '#fbbf24' }} />
                             <div>
-                                <p className="text-sm text-amber-500/90 font-bold mb-1">Meta Policy Note</p>
-                                <p className="text-xs text-amber-500/70 leading-relaxed">
-                                    Broadcasting availability is subject to Meta's 24-hour messaging window and platform rules. You can only broadcast to contacts who have interacted with your page within the last 24 hours.
+                                <p className="text-sm font-bold mb-1" style={{ color: '#fcd34d' }}>Meta 24-Hour Messaging Policy</p>
+                                <p className="text-xs leading-relaxed font-medium" style={{ color: 'rgba(253,230,138,0.92)' }}>
+                                    Broadcasting availability is subject to Meta&apos;s 24-hour messaging window and platform rules. You can broadcast to contacts who have interacted with your account within the last 24 hours.
                                 </p>
                             </div>
                         </motion.div>

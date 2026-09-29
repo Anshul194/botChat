@@ -129,7 +129,7 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                     </motion.div>
                 </AnimatePresence>
                 {isAnnual && rawPrice > 0 && (
-                    <p className="text-xs text-green-400 font-bold mb-4">
+                    <p className="text-xs text-green-600 font-bold mb-4">
                         Save ₹{Math.round(rawPrice * 0.2)} per {plan.duration_type}
                     </p>
                 )}
@@ -201,7 +201,7 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                                 <span
                                     style={{
                                         color: isPopular
-                                            ? enabled ? "#ffffff" : "rgba(255, 255, 255, 0.45)"
+                                            ? enabled ? "#ffffff" : "rgba(255, 255, 255, 0.55)"
                                             : enabled ? "#1f2937" : "#9ca3af",
                                         textDecoration: !enabled ? "line-through" : "none",
                                     }}

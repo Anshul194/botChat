@@ -42,11 +42,11 @@ const SOCIALS = [
     { icon: <Linkedin size={18} />, href: "#", name: "LinkedIn" },
 ];
 
-const STATS = [
-    { value: "99.9%", label: "Uptime" },
-    { value: "250%", label: "Avg Growth" },
-    { value: "24/7", label: "Support" },
-    { value: "0", label: "Violations" },
+const PRODUCT_PILLARS = [
+    { title: "Meta Graph API", sub: "Official & Compliant" },
+    { title: "Instagram & Facebook", sub: "Native Multi-Channel" },
+    { title: "Visual Flow Builder", sub: "Drag & Drop Funnels" },
+    { title: "Smart Unified Inbox", sub: "24/7 Lead Capture" },
 ];
 
 export default function Footer() {
@@ -82,13 +82,13 @@ export default function Footer() {
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-                {/* ── PLATFORM STATS BAR ── */}
+                {/* ── PLATFORM PILLARS BAR ── */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-20 p-6 rounded-3xl border"
                     style={{ borderColor: "rgba(255,45,120,0.15)", background: "rgba(255,45,120,0.05)" }}>
-                    {STATS.map((s) => (
-                        <div key={s.label} className="text-center">
-                            <div className="text-2xl font-black" style={{ color: "#FF2D78" }}>{s.value}</div>
-                            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{s.label}</div>
+                    {PRODUCT_PILLARS.map((p) => (
+                        <div key={p.title} className="text-center">
+                            <div className="text-base sm:text-lg font-black text-white">{p.title}</div>
+                            <div className="text-xs font-semibold mt-1 text-slate-300">{p.sub}</div>
                         </div>
                     ))}
                 </div>
@@ -164,7 +164,7 @@ export default function Footer() {
                                         <li key={link.label}>
                                             <Link href={link.href}
                                                 className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
-                                                style={{ color: "rgba(255,255,255,0.55)" }}
+                                                style={{ color: "rgba(255,255,255,0.75)" }}
                                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
                                                 onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
                                                 <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
@@ -177,13 +177,13 @@ export default function Footer() {
 
                             {/* Platform Links */}
                             <div className="space-y-6">
-                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>Platform</h4>
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.65)" }}>Platform</h4>
                                 <ul className="space-y-4">
                                     {PLATFORM_LINKS.map((link) => (
                                         <li key={link.label}>
                                             <Link href={link.href}
                                                 className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
-                                                style={{ color: "rgba(255,255,255,0.55)" }}
+                                                style={{ color: "rgba(255,255,255,0.75)" }}
                                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
                                                 onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
                                                 <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
@@ -196,13 +196,13 @@ export default function Footer() {
 
                             {/* Legal */}
                             <div className="space-y-6">
-                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>Legal</h4>
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.65)" }}>Legal</h4>
                                 <ul className="space-y-4">
                                     {LEGAL_LINKS.map((link) => (
                                         <li key={link.label}>
                                             <Link href={link.href}
                                                 className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
-                                                style={{ color: "rgba(255,255,255,0.55)" }}
+                                                style={{ color: "rgba(255,255,255,0.75)" }}
                                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
                                                 onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
                                                 <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
