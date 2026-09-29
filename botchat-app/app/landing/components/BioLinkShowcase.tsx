@@ -135,7 +135,7 @@ export default function BioLinkShowcase() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl z-20" />
                 <div className="relative w-full h-full rounded-[2.2rem] overflow-hidden bg-white">
                   <Image
-                    src="/bio-link-mockup.png"
+                    src="/bio-link-mockup.webp"
                     alt="Bio Link Mockup"
                     fill
                     className="object-cover"

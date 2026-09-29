@@ -32,7 +32,7 @@ const CARDS: FeatureCardData[] = [
         tagline: "Turn Post & Reel Comments into Instant Sales",
         description: "Instantly reply to comments on Instagram & Facebook posts and trigger personalized private DMs with resource links, discount codes, or booking URLs.",
         icon: MessageSquare,
-        image: "/images/megadm_comment_manager_showcase.png",
+        image: "/images/megadm_comment_manager_showcase.webp",
         color: "#FF2D78",
         stat: { label: "Engagement", value: "+340%" },
         highlights: [
@@ -49,7 +49,7 @@ const CARDS: FeatureCardData[] = [
         tagline: "AI-Powered Lead Routing & Intent Scoring",
         description: "Manage all customer conversations across Instagram & Facebook in one place. AI automatically classifies intent, scores sentiment, and captures verified contact details.",
         icon: Inbox,
-        image: "/images/megadm_smart_inbox_showcase.png",
+        image: "/images/megadm_smart_inbox_showcase.webp",
         color: "#C13584",
         stat: { label: "Response Time", value: "< 5s" },
         highlights: [
@@ -66,7 +66,7 @@ const CARDS: FeatureCardData[] = [
         tagline: "High-Converting Mini-Sites for Profiles",
         description: "Design mobile-first bio link storefronts. Feature creator products, embed YouTube & Reels videos, collect subscribers, and track live conversion analytics.",
         icon: Link2,
-        image: "/images/megadm_biolink_showcase.png",
+        image: "/images/megadm_biolink_showcase.webp",
         color: "#E1306C",
         stat: { label: "Conversion", value: "24.8%" },
         highlights: [
@@ -83,7 +83,7 @@ const CARDS: FeatureCardData[] = [
         tagline: "Meta-Compliant Direct Message Reach",
         description: "Send broadcast updates, promotions, and flash product drop alerts directly to your subscribers within Meta's official 24-hour messaging guidelines.",
         icon: Send,
-        image: "/images/megadm_broadcasting_showcase.png",
+        image: "/images/megadm_broadcasting_showcase.webp",
         color: "#006AFF",
         stat: { label: "Open Rate", value: "92.4%" },
         highlights: [
@@ -100,7 +100,7 @@ const CARDS: FeatureCardData[] = [
         tagline: "Visual Drag & Drop Workflows",
         description: "Build interactive conversation funnels without writing code. Guide leads through product recommendations, FAQs, qualification questions, and instant bookings.",
         icon: Bot,
-        image: "/images/megadm_flow_builder_showcase.png",
+        image: "/images/megadm_flow_builder_showcase.webp",
         color: "#833AB4",
         stat: { label: "Funnel Pass", value: "88%" },
         highlights: [

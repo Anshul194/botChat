@@ -90,7 +90,7 @@ export default function MotiveSection() {
           {/* Decorative frame shadow & border */}
           <div className="relative rounded-3xl overflow-hidden border border-pink-100/80 bg-white shadow-2xl shadow-pink-500/10">
             <Image
-              src="/y.png"
+              src="/y.webp"
               alt="MegaDM All-in-One Platform for Instagram and Facebook Growth Features"
               width={1600}
               height={2400}

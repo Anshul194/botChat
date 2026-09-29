@@ -114,7 +114,7 @@ export default function DMAutomationShowcase() {
                 {/* --- REELS SCREEN --- */}
                 {screen === "reels" && (
                   <div className="absolute inset-0 w-full h-full bg-black z-10 overflow-hidden">
-                    <Image src="/images/reels-bg.png" alt="Reels Background" fill className="object-cover scale-[1.03]" sizes="320px" priority={false} />
+                    <Image src="/images/reels-bg.webp" alt="Reels Background" fill className="object-cover scale-[1.03]" sizes="320px" priority={false} />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent via-[40%] to-black/80" />
 
                     <div className="absolute top-14 left-5 right-5 flex justify-between text-white z-20">
@@ -137,7 +137,7 @@ export default function DMAutomationShowcase() {
                       <div className="flex flex-col items-center gap-1"><Send className="w-[26px] h-[26px] text-white drop-shadow-md" strokeWidth={2.5} /><span className="text-[10px] font-bold text-white drop-shadow-md">4,200</span></div>
                       <Bookmark className="w-[26px] h-[26px] text-white mb-2 drop-shadow-md" strokeWidth={2.5} />
                       <div className="w-9 h-9 rounded-lg overflow-hidden border-2 border-white bg-zinc-800 shadow-md">
-                        <Image src="/images/reels-bg.png" className="w-full h-full object-cover opacity-60" alt="Audio Thumbnail" width={36} height={36} />
+                        <Image src="/images/reels-bg.webp" className="w-full h-full object-cover opacity-60" alt="Audio Thumbnail" width={36} height={36} />
                       </div>
                     </div>
 

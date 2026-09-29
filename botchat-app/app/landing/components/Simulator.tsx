@@ -76,7 +76,7 @@ export default function Simulator() {
       reply3: "Thanks! Here is the exact location coordinate:",
       rewardLabel: "Open Google Maps 🗺️",
       rewardLink: "g.co/swiss-cabin-location",
-      bgImage: "/images/reels-bg.png",
+      bgImage: "/images/reels-bg.webp",
       stats: { conversion: "18.4%", replies: "12,450", followers: "+3,210" }
     },
     {
