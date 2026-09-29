@@ -1,558 +1,594 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-    Zap, Sparkles, MessageSquare, Radio, Shield,
-    BarChart3, Workflow, Mail, Users, MessageCircle,
-    Layers, Cpu, MousePointer2, ExternalLink, ArrowRight,
-    Monitor, Smartphone, Globe, Cloud, Lock, Heart
+    MessageSquare, Zap, BarChart3, Link2, Users,
+    Radio, Bot, FileText, Image as ImageIcon, ArrowRight,
+    CheckCircle2, Shield, MessageCircle, Layers, Mail,
+    Cpu, MousePointer2, Sparkles, ChevronRight, Play, Check
 } from "lucide-react";
 import PageMeta from "@/components/PageMeta";
 import Navbar from "../landing/components/Navbar";
 import Footer from "../landing/components/Footer";
 
-const featureCategories = [
+// Real features matching MegaDM product and y.webp
+const CORE_FEATURES = [
     {
-        title: "Meta Automation",
-        description: "Scale your presence across Instagram and Facebook with the world's most advanced AI-driven automation ecosystem.",
-        features: [
-            {
-                icon: MessageSquare,
-                name: "Post & Reel Auto Reply",
-                desc: "Universal automation for Instagram and Facebook posts.",
-                longDesc: "Never miss a comment. Whether it's an Instagram Reel or a Facebook Post, our bot replies to every comment and sends an instant DM to nurture the lead.",
-                points: ["Cross-platform sync", "Keyword-triggered DMs", "Comment sentiment analysis", "Automatic lead capture"],
-                color: "#FF2060"
-            },
-            {
-                icon: Radio,
-                name: "Messenger & DM Bots",
-                desc: "Powerful 24/7 chat bots for your private messages.",
-                longDesc: "Deploy intelligent bots that handle everything from basic FAQs to complex sales funnels inside Instagram DMs and Facebook Messenger.",
-                points: ["Rich media support", "Multi-step flow support", "Human handoff system", "Messenger API compliant"],
-                color: "#E1306C"
-            },
-            {
-                icon: Shield,
-                name: "Follow-Gated Exclusive",
-                desc: "Reward fans who follow your Meta profiles.",
-                longDesc: "Lock your best deals behind a 'Follow' check. The bot automatically verifies if the user follows you on IG or FB before granting access.",
-                points: ["Instant follow verification", "Story mention triggers", "Group invite automation", "Loyalty badge system"],
-                color: "#C13584"
-            },
-            {
-                icon: MessageCircle,
-                name: "AI Comment Filtering",
-                desc: "Keep your community safe with intelligent moderation.",
-                longDesc: "Automatically hide or delete spam, negative vibes, or competitor links. Use AI to keep your comment section clean and professional.",
-                points: ["Profanity filtering", "competitor link blocking", "Spam account detection", "Manual review queue"],
-                color: "#833AB4"
-            }
-        ]
+        icon: MessageSquare,
+        title: "Smart Unified Inbox",
+        tag: "Core Platform",
+        color: "#FF2D78",
+        description: "Manage every Instagram and Facebook conversation from one unified, blazing-fast inbox. Features AI Reply suggestions, lead tagging, and one-click team assignment.",
+        bullets: [
+            "All · Unread · Starred · Archived filtered tabs",
+            "Unified Facebook & Instagram inbox stream",
+            "One-click AI smart response suggestions",
+            "Live team member conversation assignment"
+        ],
     },
     {
-        title: "AI & Workflows",
-        description: "Intelligent systems that handle the heavy lifting, learned from your unique brand voice.",
-        features: [
-            {
-                icon: Cpu,
-                name: "AI Training",
-                desc: "Train your own AI model to handle customer queries with your voice.",
-                longDesc: "Upload your brand documents, FAQs, and past conversations to train a custom AI that speaks exactly like you while handling 90% of support.",
-                points: ["Custom knowledge base", "Brand voice alignment", "Multi-language support", "Human handoff logic"],
-                color: "#FF2D78"
-            },
-            {
-                icon: Workflow,
-                name: "Flow Builder",
-                desc: "Build complex chat flows with our drag-and-drop editor.",
-                longDesc: "Create sophisticated multi-step automation funnel. Guide users from the first comment to the final checkout using logical branching and delays.",
-                points: ["Visual drag-and-drop interface", "Logical branching (If/Else)", "API & CRM integrations", "Wait & Delay nodes"],
-                color: "#5851DB"
-            },
-            {
-                icon: Zap,
-                name: "Instant Responses",
-                desc: "Zero-latency replies ensuring your audience never has to wait.",
-                longDesc: "Response time is the #1 factor in conversion. Our edge-cloud infrastructure ensures that your replies are delivered in milliseconds.",
-                points: ["Global edge infrastructure", "24/7 autonomous operation", "Zero-delay processing", "High-concurrency support"],
-                color: "#405DE6"
-            },
-            {
-                icon: Mail,
-                name: "Email Collector",
-                desc: "Capture emails directly within the chat and sync to your CRM.",
-                longDesc: "DMs are the best place to collect leads. Our system seamlessly captures and verifies email addresses inside the chat window for your list.",
-                points: ["In-chat lead forms", "Real-time email verification", "Automatic export to Mailchimp/Klaviyo", "GDPR & CCPA compliant"],
-                color: "#285AEB"
-            }
-        ]
+        icon: Bot,
+        title: "Visual Flow Builder",
+        tag: "No-Code Automation",
+        color: "#7C3AED",
+        description: "Design conversational journeys with an intuitive drag-and-drop canvas. Chain triggers, messages, condition branches, and delay timers with zero coding.",
+        bullets: [
+            "Drag-and-drop visual node workflow builder",
+            "Trigger on DMs, Post Comments, and Story Mentions",
+            "Smart conditional logic (If / Else branching)",
+            "Configurable delay nodes and user input collection"
+        ],
     },
     {
-        title: "Bio Links & Utilities",
-        description: "Everything you need to turn your profile traffic into measurable revenue.",
-        features: [
-            {
-                icon: Layers,
-                name: "Premium Bio Links",
-                desc: "Beautiful, high-converting landing pages for your bio.",
-                longDesc: "Create stunning, customizable link-in-bio pages that load instantly and drive users to your most important products and content.",
-                points: ["Custom domain support", "Premium layout templates", "Embedded video & media", "Pixel & tracking support"],
-                color: "#FF2D78"
-            },
-            {
-                icon: MousePointer2,
-                name: "Shortened Links",
-                desc: "Track every click with professional link shortening.",
-                longDesc: "Replace long, ugly URLs with branded short links. Track every click, geographic origin, and device type for complete campaign visibility.",
-                points: ["Branded domains", "Geographic tracking", "Device & browser analytics", "Dynamic redirection"],
-                color: "#E1306C"
-            },
-            {
-                icon: Smartphone,
-                name: "VCard Links",
-                desc: "Digital business cards that save directly to contacts.",
-                longDesc: "Modern networking. Share a link that allows users to save your contact information, photo, and social links directly to their phone's contact list.",
-                points: ["Instant 'Add to Contacts'", "Custom profile photos", "Social profile linking", "Contact download tracking"],
-                color: "#C13584"
-            },
-            {
-                icon: Users,
-                name: "Smart CRM",
-                desc: "Manage and segment your leads directly within the platform.",
-                longDesc: "Don't just collect leads—manage them. Our built-in CRM allows you to tag, segment, and track the journey of every user who interacts with your automation.",
-                points: ["Lead segmentation", "Interaction history", "Custom lead tagging", "Exportable CRM data"],
-                color: "#405DE6"
-            },
-            {
-                icon: BarChart3,
-                name: "Deep Analytics",
-                desc: "Granular data on every interaction, click, and conversion.",
-                longDesc: "Stop guessing what works. Get a bird's-eye view of your entire automation ecosystem with real-time ROI tracking and engagement metrics.",
-                points: ["Conversion funnel tracking", "Automated ROI calculation", "Periodic performance reports", "Exportable data sheets"],
-                color: "#833AB4"
-            }
-        ]
-    }
-];
-
-const highlights = [
-    {
-        title: "Global Reach",
-        subtitle: "Scale without limits",
-        desc: "Our platform handles millions of interactions daily across the globe.",
-        icon: Globe
+        icon: Cpu,
+        title: "24/7 AI Agent",
+        tag: "Artificial Intelligence",
+        color: "#0EA5E9",
+        description: "Deploy an intelligent assistant trained on your business knowledge. It answers product questions, shares pricing, guides shoppers, and closes leads around the clock.",
+        bullets: [
+            "Trained directly on your business catalog & FAQs",
+            "Instant answers for Product Details, Pricing & Support",
+            "Automatic graceful handoff to human agents",
+            "Speaks naturally in your brand's unique tone of voice"
+        ],
     },
     {
-        title: "Cloud Powered",
-        subtitle: "Reliable & Fast",
-        desc: "Infrastructure built on world-class cloud providers for 99.9% uptime.",
-        icon: Cloud
+        icon: FileText,
+        title: "Ready-Made Templates",
+        tag: "Instant Setup",
+        color: "#10B981",
+        description: "Launch proven growth funnels in seconds. Choose from curated templates for welcome greetings, lead magnets, order tracking, and sales inquiries.",
+        bullets: [
+            "Welcome greeting & FAQ instant responders",
+            "Product inquiry, pricing details & discount reveals",
+            "Order updates, customer support & ticket flows",
+            "View catalog automation with instant CTA links"
+        ],
     },
     {
-        title: "Secure & Private",
-        subtitle: "Your data is safe",
-        desc: "Enterprise-grade encryption and privacy controls for your peace of mind.",
-        icon: Lock
-    }
+        icon: ImageIcon,
+        title: "Rich Message Types",
+        tag: "Interactive Messaging",
+        color: "#F59E0B",
+        description: "Engage your followers with high-converting rich media inside DMs: product carousels, downloadable PDFs, clickable CTA buttons, videos, and audio clips.",
+        bullets: [
+            "High-resolution photos, videos, and voice notes",
+            "Downloadable PDF guides, price lists, and invoices",
+            "Interactive quick-reply buttons and website CTAs",
+            "Multi-card swipeable product carousels"
+        ],
+    },
+    {
+        icon: Users,
+        title: "Audience Management & CRM",
+        tag: "Lead Intelligence",
+        color: "#EC4899",
+        description: "Turn every conversation into an organized contact record. Capture names, emails, phone numbers, custom tags, and notes to build an owned customer database.",
+        bullets: [
+            "Auto-capture First Name, Email, and Phone number",
+            "Segment audiences by purchase intent and behavior tags",
+            "Filterable contact directory with custom metadata",
+            "One-click CSV export and seamless webhook sync"
+        ],
+    },
+    {
+        icon: Radio,
+        title: "Broadcast Messaging",
+        tag: "Targeted Outreach",
+        color: "#E1306C",
+        description: "Send announcements, product drops, and exclusive discounts to your active followers within Meta's official 24-hour messaging window.",
+        bullets: [
+            "Send to laser-focused audience segments",
+            "Include rich media, coupon codes, and action buttons",
+            "Real-time delivery, open, and response rate tracking",
+            "100% compliant with Meta messaging policies"
+        ],
+    },
+    {
+        icon: BarChart3,
+        title: "Analytics & Growth Reports",
+        tag: "Actionable Insights",
+        color: "#6366F1",
+        description: "Monitor Total Flows, Total Messages Sent, and Engagement Rates in real-time. Understand follower behavior and continuously optimize your sales funnel.",
+        bullets: [
+            "Live overview: Total Flows, Messages, and Conversion Rate",
+            "Daily & weekly message volume trend graphs",
+            "Automation node completion & drop-off analytics",
+            "Downloadable executive performance summaries"
+        ],
+    },
+    {
+        icon: Layers,
+        title: "Customizable Bio Links",
+        tag: "Conversion Hub",
+        color: "#FF2D78",
+        description: "Build high-converting link-in-bio pages matching your brand aesthetics. Showcase your top videos, podcasts, digital store, and lead forms in one link.",
+        bullets: [
+            "Multiple sleek, responsive theme layouts",
+            "Custom brand colors, typography, and avatar styles",
+            "Integrated social icons and featured media players",
+            "Direct in-bio lead capture connected to your inbox"
+        ],
+    },
+    {
+        icon: Link2,
+        title: "Multi-Page Management",
+        tag: "Scale & Agency",
+        color: "#1877F2",
+        description: "Connect unlimited Instagram accounts and Facebook Pages to a single dashboard. Switch between brands or manage client accounts without logging out.",
+        bullets: [
+            "Connect unlimited Facebook Pages & Instagram handles",
+            "Dedicated automation rules and inboxes per account",
+            "Unified team collaboration with role permissions",
+            "Ideal for agencies, multi-brand creators, and e-commerce"
+        ],
+    },
+    {
+        icon: Mail,
+        title: "Lead Generation & Email Capture",
+        tag: "List Growth",
+        color: "#059669",
+        description: "Automatically collect validated emails and phone numbers straight from Instagram & Facebook chats without taking users away to clunky external forms.",
+        bullets: [
+            "In-chat email validation and phone format checks",
+            "Automatic CRM contact creation and tag assignment",
+            "Instant notification to team when high-value leads arrive",
+            "Direct integration with email marketing providers"
+        ],
+    },
+    {
+        icon: Shield,
+        title: "Official Meta API & Security",
+        tag: "Enterprise Safety",
+        color: "#7C3AED",
+        description: "MegaDM is built strictly on Meta's Official Messenger & Instagram Graph APIs. No browser extensions, no unofficial scrapers, and zero account ban risk.",
+        bullets: [
+            "100% compliant with official Meta Platform Terms",
+            "99.9% uptime SLA with enterprise-grade stability",
+            "End-to-end encrypted token storage and data protection",
+            "Strict GDPR, CCPA, and Meta data privacy adherence"
+        ],
+    },
 ];
 
 export default function FeaturesPage() {
+    const [activeFeature, setActiveFeature] = useState(0);
+    const feature = CORE_FEATURES[activeFeature];
+
     return (
         <>
             <PageMeta
-                title="Features — MegaDM | Meta Automation Platform"
-                description="Explore MegaDM's powerful features: AI-powered DM automation, Facebook & Instagram auto-reply, flow builder, bio links, and deep analytics."
+                title="Features — MegaDM | Instagram & Facebook Automation Platform"
+                description="Explore every MegaDM feature: AI-powered DM automation, Visual Flow Builder, Smart Inbox, Broadcasting, Bio Links, Analytics and more. Built on Meta's Official API."
             />
-            <main className="min-h-screen bg-white">
-            <Navbar forceLight={true} />
+            <main className="min-h-screen" style={{ background: '#06000d', color: '#ffffff' }}>
+                <Navbar />
 
-            {/* Hero Section */}
-            <section className="relative pt-44 pb-24 overflow-hidden bg-[#06000d]">
-                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] rounded-full bg-[#FF2D78]/20 blur-[120px] animate-pulse" />
-                    <div className="absolute bottom-[-20%] right-[-10%] w-[900px] h-[900px] rounded-full bg-[#E1306C]/10 blur-[140px]" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-blue-500/5 blur-[100px]" />
-                    <div className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: "radial-gradient(circle, rgba(255,45,120,.3) 1px, transparent 1px)",
-                            backgroundSize: "40px 40px"
-                        }}
-                    />
-                </div>
-
-                <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-                            <Sparkles className="w-4 h-4 text-[#FF2D78]" />
-                            <span className="text-xs font-bold tracking-[0.2em] uppercase text-pink-200/80">
-                                The Future of Social Growth
-                            </span>
-                        </div>
-
-                        <h1 className="text-4xl sm:text-5xl md:text-8xl font-black text-white mb-6 md:mb-10 tracking-tight leading-[1.1] md:leading-[0.95]">
-                            Meta <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] via-[#FF80AB] to-[#E1306C] animate-shimmer" style={{ backgroundSize: '200% auto' }}>
-                                Mastered
-                            </span>
-                        </h1>
-
-                        <p className="text-base sm:text-xl text-pink-100/60 max-w-2xl mx-auto leading-relaxed font-medium px-2">
-                            Automate Instagram & Facebook like a pro. Engagement, sales, and bio-links all in one high-performance platform.
-                        </p>
-
-                        <div className="mt-8 md:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">
-                            <Link href="/auth/sign-up" className="group relative w-full sm:w-auto px-6 md:px-10 py-4 md:py-5 rounded-2xl bg-[#FF2D78] text-white font-bold text-base md:text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_20px_50px_rgba(255,45,120,0.3)]">
-                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                                <span className="relative z-10 flex items-center gap-2">
-                                    Get Started Now
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            </Link>
-                            <Link href="/pricing" className="w-full sm:w-auto px-6 md:px-10 py-4 md:py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-base md:text-lg backdrop-blur-md hover:bg-white/10 transition-all text-center">
-                                View Plans
-                            </Link>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Interactive Bot Mockup Section */}
-            <section className="py-24 bg-white relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-center gap-20">
-                        <div className="lg:w-1/2 space-y-10">
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                            >
-                                <span className="text-[#FF2D78] font-black tracking-widest uppercase mb-4 block">Interactive Live Demo</span>
-                                <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-6">
-                                    Facebook & Instagram <br />
-                                    <span className="text-[#FF2D78]">Replied in Seconds.</span>
-                                </h2>
-                                <p className="text-xl text-gray-500 leading-relaxed font-medium">
-                                    Our intelligent Meta-Bot handles complex inquiries on both Instagram and Facebook Messenger simultaneously.
-                                </p>
-                            </motion.div>
-
-                            <div className="space-y-6">
-                                {[
-                                    { t: "AI Intent Recognition", d: "Doesn't just matching keywords. It understands context, tone, and intent." },
-                                    { t: "Visual Flow Designer", d: "Build your dream automation funnel with our drag-and-drop canvas." },
-                                    { t: "Cross-Platform Unified Inbox", d: "Manage all your Meta messages in one blazing fast dashboard." }
-                                ].map((item, i) => (
-                                    <motion.div
-                                        key={i}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: i * 0.1 }}
-                                        className="flex items-start gap-5 p-6 rounded-[32px] bg-gray-50/50 border border-gray-100 hover:bg-white hover:shadow-xl transition-all duration-300"
-                                    >
-                                        <div className="w-12 h-12 rounded-2xl bg-white shadow-md text-[#FF2D78] flex items-center justify-center flex-shrink-0">
-                                            <Sparkles className="w-6 h-6" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-lg font-bold text-gray-900">{item.t}</h4>
-                                            <p className="text-gray-500 font-medium text-sm leading-relaxed">{item.d}</p>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="lg:w-1/2 relative flex justify-center">
-                            <div className="w-full max-w-[380px] aspect-[9/19] rounded-[60px] border-[12px] border-gray-950 bg-white shadow-[0_50px_100px_rgba(0,0,0,0.1)] relative overflow-hidden">
-                                {/* iPhone Notch */}
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-gray-950 rounded-b-3xl z-30" />
-
-                                {/* App UI */}
-                                <div className="pt-12 px-6 pb-4 border-b border-gray-50 flex items-center gap-3 bg-white/80 backdrop-blur-md sticky top-0 z-20">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF2D78] to-[#E1306C]" />
-                                    <div>
-                                        <div className="text-xs font-black">Meta Master Bot</div>
-                                        <div className="text-[10px] text-green-500 font-bold">Online & Active</div>
-                                    </div>
-                                </div>
-
-                                <div className="p-6 space-y-4 h-[440px] overflow-hidden flex flex-col justify-end bg-gray-50/30">
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 1 }}
-                                        className="self-start bg-white shadow-sm border border-gray-100 p-4 rounded-2xl rounded-tl-sm text-xs font-bold max-w-[85%] text-gray-800"
-                                    >
-                                        Hello! I noticed you commented on our latest post about Bio-Links. 🔗
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 2 }}
-                                        className="self-start bg-white shadow-sm border border-gray-100 p-4 rounded-2xl rounded-tl-sm text-xs font-bold max-w-[85%] text-gray-800"
-                                    >
-                                        Would you like me to send you the early-access setup guide?
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 3 }}
-                                        className="self-end bg-[#FF2D78] text-white p-4 rounded-2xl rounded-tr-sm text-xs font-black shadow-lg shadow-[#FF2D78]/20"
-                                    >
-                                        Yes, absolutely! 🚀
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 4 }}
-                                        className="self-start bg-white shadow-sm border border-gray-100 p-4 rounded-2xl rounded-tl-sm text-xs font-bold max-w-[85%] text-gray-800"
-                                    >
-                                        Great! Here is your personal link:
-                                        <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-dashed border-[#FF2D78]/30">
-                                            <div className="text-[10px] font-black text-[#FF2D78] uppercase mb-1">Your Bio-Link</div>
-                                            <div className="text-[10px] text-gray-400 truncate font-mono">megadm.chat/u/yourname</div>
-                                        </div>
-                                    </motion.div>
-                                </div>
-
-                                <div className="absolute bottom-0 inset-x-0 h-20 bg-white border-t border-gray-50 px-6 flex items-center gap-3">
-                                    <div className="flex-1 h-10 rounded-full bg-gray-100 px-4 flex items-center text-[10px] text-gray-400 font-bold">Write a message...</div>
-                                    <div className="w-10 h-10 rounded-full bg-[#FF2D78]/10 flex items-center justify-center text-[#FF2D78]">
-                                        <Zap className="w-5 h-5 fill-current" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Floating Elements */}
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 4, repeat: Infinity }}
-                                className="absolute -left-12 bottom-20 p-5 rounded-3xl bg-white shadow-2xl border border-gray-100 z-30 hidden md:block"
-                            >
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase text-gray-400">Live Metric</span>
-                                </div>
-                                <div className="text-xl font-black text-gray-900">+42% CR</div>
-                                <div className="text-[10px] font-bold text-gray-500">Auto-Reply Lift</div>
-                            </motion.div>
-                        </div>
+                {/* HERO SECTION */}
+                <section className="relative pt-44 sm:pt-52 pb-16 overflow-hidden">
+                    {/* Background glow effects */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-[-10%] left-[-5%] w-[650px] h-[650px] rounded-full blur-[140px]" style={{ background: 'rgba(255,45,120,0.18)' }} />
+                        <div className="absolute top-[15%] right-[-5%] w-[550px] h-[550px] rounded-full blur-[130px]" style={{ background: 'rgba(124,58,237,0.14)' }} />
+                        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '40px 40px', opacity: 0.08 }} />
                     </div>
-                </div>
 
-                {/* Secondary mockup area for Bio-Links */}
-                <div className="mt-32 max-w-7xl mx-auto px-6">
-                    <div className="bg-gray-50 rounded-[64px] p-12 md:p-20 flex flex-col md:flex-row items-center gap-16 border border-gray-100">
-                        <div className="md:w-1/2 order-2 md:order-1">
-                            <div className="relative group">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#FF2D78] to-[#E1306C] rounded-3xl blur-3xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                                <div className="relative bg-white p-4 rounded-3xl border border-gray-100 shadow-xl">
-                                    <div className="w-full aspect-video bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100 overflow-hidden font-black text-[#FF2D78]">
-                                        <MessageSquare className="w-12 h-12 mb-2 animate-bounce" />
-                                        <span className="text-xs ml-2">PREMIUM TEMPLATES</span>
-                                    </div>
-                                </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                        <motion.div initial={{ opacity: 1, y: 0 }} className="flex flex-col items-center text-center">
+                            {/* Top Badge */}
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6" style={{ background: 'rgba(255,45,120,0.14)', border: '1px solid rgba(255,45,120,0.35)' }}>
+                                <Sparkles className="w-3.5 h-3.5" style={{ color: '#FF2D78' }} />
+                                <span className="text-xs font-black tracking-[0.25em] uppercase" style={{ color: '#FF80AB' }}>
+                                    All-in-One Platform Features
+                                </span>
                             </div>
-                        </div>
-                        <div className="md:w-1/2 order-1 md:order-2">
-                            <span className="text-pink-500 font-black tracking-widest uppercase mb-4 block">Visual Bio-Links</span>
-                            <h3 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">One Link. <br />Infinite Possibilities.</h3>
-                            <p className="text-lg text-gray-600 font-medium leading-relaxed">
-                                Our bio-link system isn't just a list of buttons. It's a high-performance landing page builder that integrates directly with your bot's lead capture data.
+
+                            {/* Headline */}
+                            <h1 style={{ fontSize: 'clamp(38px, 6.5vw, 80px)', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1.08, marginBottom: '22px' }}>
+                                One Platform.<br />
+                                <span style={{ background: 'linear-gradient(to right, #FF2D78, #FF80AB, #E1306C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                                    Infinite Growth.
+                                </span>
+                            </h1>
+
+                            {/* Subtitle */}
+                            <p style={{ fontSize: '19px', color: 'rgba(255,255,255,0.92)', maxWidth: '680px', lineHeight: 1.65, fontWeight: 500, marginBottom: '32px' }}>
+                                Automate conversations, manage multiple pages, broadcast messages, create stunning bio link pages, and grow your audience — all in one powerful workspace.
+                            </p>
+
+                            {/* CTA Buttons */}
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+                                <Link
+                                    href="/auth/sign-up"
+                                    className="group inline-flex items-center justify-center gap-2.5 px-8 rounded-full font-bold text-base text-white transition-all hover:scale-105 whitespace-nowrap"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #FF2D78, #E1306C)',
+                                        boxShadow: '0 12px 35px rgba(255,45,120,0.4)',
+                                        height: '52px',
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    <span>Start Free Trial</span>
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                                <Link
+                                    href="/pricing"
+                                    className="inline-flex items-center justify-center gap-2.5 px-8 rounded-full font-bold text-base transition-all hover:scale-105 whitespace-nowrap"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.08)',
+                                        border: '1.5px solid rgba(255,255,255,0.22)',
+                                        color: '#ffffff',
+                                        height: '52px',
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    <Play className="w-4 h-4" style={{ color: '#FF2D78' }} />
+                                    <span>View Pricing</span>
+                                </Link>
+                            </div>
+
+                            {/* Trust badge: Official API Only */}
+                            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold mb-12" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.16)', color: '#ffffff' }}>
+                                <Shield className="w-4 h-4 shrink-0" style={{ color: '#10B981' }} />
+                                <span>Built on Meta&apos;s Official API</span>
+                            </div>
+                        </motion.div>
+
+                        {/* PRODUCT IMAGE: y.webp — Desktop big & crisp, Mobile scaled nicely */}
+                        <motion.div
+                            initial={{ opacity: 1, y: 0 }}
+                            className="relative mx-auto w-full max-w-6xl mt-4"
+                        >
+                            {/* Ambient Glow */}
+                            <div
+                                className="absolute -inset-2 rounded-3xl blur-[60px] pointer-events-none opacity-40"
+                                style={{ background: 'radial-gradient(ellipse at center, rgba(255,45,120,0.35), rgba(124,58,237,0.15), transparent 70%)' }}
+                            />
+
+                            {/* Clean Image Frame: Fully visible without any bottom blackout gradient */}
+                            <div
+                                className="relative rounded-2xl md:rounded-3xl overflow-hidden"
+                                style={{
+                                    border: '1.5px solid rgba(255,255,255,0.18)',
+                                    boxShadow: '0 30px 90px rgba(0,0,0,0.8), 0 0 40px rgba(255,45,120,0.15)',
+                                    background: '#0e0319'
+                                }}
+                            >
+                                <Image
+                                    src="/y.webp"
+                                    alt="MegaDM All-in-One Platform for Instagram and Facebook Growth"
+                                    width={1400}
+                                    height={933}
+                                    className="w-full h-auto block"
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 95vw, 1200px"
+                                />
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
+
+                {/* INTERACTIVE FEATURE SHOWCASE */}
+                <section className="py-20 relative z-10">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                        <div className="text-center mb-14">
+                            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4" style={{ background: 'rgba(255,45,120,0.12)', border: '1px solid rgba(255,45,120,0.3)' }}>
+                                <Zap className="w-3.5 h-3.5" style={{ color: '#FF2D78' }} />
+                                <span className="text-xs font-black tracking-[0.25em] uppercase" style={{ color: '#FF80AB' }}>Interactive Breakdown</span>
+                            </div>
+                            <h2 style={{ fontSize: 'clamp(30px, 4vw, 50px)', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em', marginBottom: '14px' }}>
+                                Explore Every Power Feature
+                            </h2>
+                            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.90)', maxWidth: '620px', margin: '0 auto', fontWeight: 500 }}>
+                                Click on any feature below to see how it drives real conversations and revenue on Instagram & Facebook.
                             </p>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Feature Categories */}
-            {featureCategories.map((category, catIdx) => (
-                <section key={catIdx} id={category.title.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')} className={`py-24 ${catIdx % 2 === 1 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                    <div className="max-w-7xl mx-auto px-6">
-                        <div className="mb-20 text-center md:text-left">
-                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">{category.title}</h2>
-                            <p className="text-xl text-gray-500 max-w-3xl leading-relaxed font-medium">{category.description}</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            {category.features.map((feature, fIdx) => (
-                                <motion.div
-                                    key={fIdx}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: fIdx * 0.1 }}
-                                    className="group relative p-10 rounded-[40px] bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden"
-                                >
-                                    <div
-                                        className="absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-0 group-hover:opacity-5 transition-opacity duration-700 pointer-events-none"
-                                        style={{ backgroundColor: feature.color }}
-                                    />
-
-                                    <div className="relative z-10">
-                                        <div className="flex flex-col md:flex-row md:items-center gap-6 mb-8">
+                        <div className="flex flex-col lg:flex-row gap-8 items-start">
+                            {/* Feature Navigation List */}
+                            <div className="w-full lg:w-[42%] space-y-2.5">
+                                {CORE_FEATURES.map((f, i) => {
+                                    const Icon = f.icon;
+                                    const isActive = i === activeFeature;
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={() => setActiveFeature(i)}
+                                            className="w-full text-left flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 cursor-pointer"
+                                            style={isActive
+                                                ? { background: 'rgba(255,45,120,0.15)', border: '1.5px solid #FF2D78', boxShadow: '0 8px 24px rgba(255,45,120,0.2)' }
+                                                : { background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.12)' }
+                                            }
+                                        >
                                             <div
-                                                className="w-16 h-16 rounded-3xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-gray-200 group-hover:scale-110 transition-transform duration-500"
-                                                style={{ backgroundColor: `${feature.color}15` }}
+                                                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform"
+                                                style={{ background: isActive ? f.color : 'rgba(255,255,255,0.1)' }}
                                             >
-                                                <feature.icon className="w-8 h-8" style={{ color: feature.color }} strokeWidth={2.5} />
+                                                <Icon className="w-5 h-5 text-white" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-bold text-sm truncate" style={{ color: '#ffffff' }}>
+                                                    {f.title}
+                                                </div>
+                                                <div className="text-xs font-semibold mt-0.5" style={{ color: isActive ? '#FF80AB' : 'rgba(255,255,255,0.75)' }}>
+                                                    {f.tag}
+                                                </div>
+                                            </div>
+                                            <ChevronRight
+                                                className="w-4 h-4 shrink-0 transition-transform"
+                                                style={{ color: isActive ? '#FF2D78' : 'rgba(255,255,255,0.4)', transform: isActive ? 'translateX(3px)' : 'none' }}
+                                            />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Active Feature Detail Card */}
+                            <div className="w-full lg:w-[58%] lg:sticky lg:top-28">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeFeature}
+                                        initial={{ opacity: 0, y: 12 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -12 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="rounded-3xl p-6 sm:p-9"
+                                        style={{
+                                            background: 'linear-gradient(135deg, rgba(255,45,120,0.12), rgba(255,255,255,0.06))',
+                                            border: `1.5px solid ${feature.color}50`,
+                                            boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: feature.color }}>
+                                                <feature.icon className="w-7 h-7 text-white" />
                                             </div>
                                             <div>
-                                                <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-1">{feature.name}</h3>
-                                                <p className="text-[#FF2D78] font-bold text-sm tracking-widest uppercase">{feature.desc}</p>
+                                                <span
+                                                    className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full"
+                                                    style={{ background: 'rgba(255,255,255,0.12)', color: '#ffffff', border: `1px solid ${feature.color}60` }}
+                                                >
+                                                    {feature.tag}
+                                                </span>
+                                                <h3 style={{ fontSize: '26px', fontWeight: 900, color: '#ffffff', marginTop: '6px' }}>
+                                                    {feature.title}
+                                                </h3>
                                             </div>
                                         </div>
 
-                                        <p className="text-gray-600 text-lg leading-relaxed mb-8 font-medium">
-                                            {feature.longDesc}
+                                        <p style={{ fontSize: '17px', color: 'rgba(255,255,255,0.92)', lineHeight: 1.7, fontWeight: 500, marginBottom: '28px' }}>
+                                            {feature.description}
                                         </p>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {feature.points?.map((point, pIdx) => (
-                                                <div key={pIdx} className="flex items-center gap-3">
-                                                    <div className="w-5 h-5 rounded-full flex items-center justify-center bg-green-50 text-green-500 flex-shrink-0">
-                                                        <Heart className="w-3 h-3 fill-current" />
-                                                    </div>
-                                                    <span className="text-gray-700 text-sm font-semibold">{point}</span>
+                                        <div className="space-y-3.5 mb-8">
+                                            {feature.bullets.map((b, i) => (
+                                                <div key={i} className="flex items-start gap-3">
+                                                    <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: feature.color }} />
+                                                    <span style={{ fontSize: '15px', fontWeight: 600, color: '#ffffff' }}>{b}</span>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        <div className="mt-10 pt-8 border-t border-gray-50 flex items-center justify-between">
-                                            <Link href="/auth/sign-up" className="flex items-center gap-2 text-gray-900 font-black hover:text-[#FF2D78] transition-colors group/link">
-                                                Activate Feature
-                                                <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                                        <div className="pt-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
+                                            <Link
+                                                href="/auth/sign-up"
+                                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-black text-sm uppercase tracking-widest text-white transition-all hover:scale-105"
+                                                style={{ background: feature.color, boxShadow: `0 8px 24px ${feature.color}50` }}
+                                            >
+                                                Try {feature.title} <ArrowRight className="w-4 h-4" />
                                             </Link>
-                                            <div className="px-4 py-1.5 rounded-full bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                                                Meta Powered
-                                            </div>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
                 </section>
-            ))}
 
-            {/* Showcase Section */}
-            <section className="py-32 bg-gray-950 text-white overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#FF2D78]/20 to-transparent pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-blue-500/10 to-transparent pointer-events-none" />
-
-                <div className="max-w-7xl mx-auto px-6 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-center gap-20">
-                        <div className="lg:w-1/2">
-                            <motion.div
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                            >
-                                <span className="text-[#FF2D78] font-black tracking-widest uppercase mb-4 block">Enterprise Ready</span>
-                                <h2 className="text-5xl md:text-7xl font-black mb-10 leading-[0.95] tracking-tight">
-                                    Built for the <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2D78] to-[#E1306C]">Modern Creator</span>
+                {/* PLATFORM ARCHITECTURE SECTION */}
+                <section className="py-24 relative overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+                            {/* Left Text */}
+                            <div className="lg:w-1/2">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6" style={{ background: 'rgba(255,45,120,0.12)', border: '1px solid rgba(255,45,120,0.25)' }}>
+                                    <MessageCircle className="w-3.5 h-3.5" style={{ color: '#FF2D78' }} />
+                                    <span className="text-xs font-black tracking-[0.25em] uppercase" style={{ color: '#FF80AB' }}>Official Meta Partner Architecture</span>
+                                </div>
+                                <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em', lineHeight: 1.12, marginBottom: '20px' }}>
+                                    Instagram & Facebook.<br />
+                                    <span style={{ background: 'linear-gradient(to right, #FF2D78, #FF80AB)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                                        Automated the Right Way.
+                                    </span>
                                 </h2>
-                                <div className="space-y-8">
+                                <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.92)', fontWeight: 500, lineHeight: 1.7, marginBottom: '32px' }}>
+                                    MegaDM connects directly to Meta&apos;s Official Graph & Messenger APIs. We never ask for your account password, we don&apos;t use browser automation, and your channels remain 100% safe from shadowbans or restrictions.
+                                </p>
+
+                                <div className="space-y-3.5">
                                     {[
-                                        { t: "Intelligent AI Engine", d: "Learns from your past interactions to craft the perfect response every time." },
-                                        { t: "Infinite Scalability", d: "Whether you get 10 comments or 10 million, our infrastructure never blinks." },
-                                        { t: "Seamless Integration", d: "Connect your entire Meta ecosystem in less than 60 seconds with one-click OAuth." },
-                                        { t: "Strategic Insights", d: "Beyond numbers—get real strategic advice on how to improve your engagement." }
+                                        { icon: MessageSquare, title: "Instagram DMs, Comments & Story Mentions", desc: "Instantly reply to incoming DMs, post comments, and user story tags." },
+                                        { icon: Radio, title: "Facebook Messenger & Page Automations", desc: "Manage Page conversations, auto-reply to comments, and drive sales." },
+                                        { icon: Shield, title: "100% Meta TOS Compliant", desc: "Zero scraping or unauthorized bots. Enterprise SLA with 99.9% uptime." },
+                                        { icon: MousePointer2, title: "Comment-to-DM Growth Engine", desc: "Automatically send links and coupons whenever someone comments on your posts or reels." },
                                     ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-6 group">
-                                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#FF2D78]/20 group-hover:border-[#FF2D78]/30 transition-all duration-300">
-                                                <Sparkles className="w-5 h-5 text-[#FF2D78]" />
+                                        <div
+                                            key={i}
+                                            className="flex items-start gap-4 p-4 rounded-2xl"
+                                            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
+                                        >
+                                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: 'rgba(255,45,120,0.18)' }}>
+                                                <item.icon className="w-5 h-5" style={{ color: '#FF2D78' }} />
                                             </div>
                                             <div>
-                                                <h4 className="text-xl font-bold text-white mb-2">{item.t}</h4>
-                                                <p className="text-gray-400 leading-relaxed font-medium">{item.d}</p>
+                                                <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', marginBottom: '2px' }}>{item.title}</div>
+                                                <div style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.82)' }}>{item.desc}</div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-
-                                <div className="mt-16 flex items-center gap-8">
-                                    <Link href="/auth/sign-up" className="inline-flex items-center gap-3 px-10 py-5 bg-[#FF2D78] hover:bg-[#e7266a] text-white font-bold rounded-full transition-all group scale-110 shadow-2xl shadow-[#FF2D78]/20">
-                                        Start Your Journey
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </Link>
-                                </div>
-                            </motion.div>
-                        </div>
-
-                        <div className="lg:w-1/2 relative">
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.8 }}
-                                className="relative z-10 rounded-[60px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(255,45,120,0.15)] bg-gray-900/40 backdrop-blur-3xl p-6"
-                            >
-                                <div className="aspect-[4/3] bg-black/40 rounded-[40px] flex items-center justify-center border border-white/5 relative overflow-hidden group">
-                                    <Sparkles className="w-24 h-24 text-[#FF2D78] animate-pulse relative z-10" />
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#FF2D78]/5 to-transparent" />
-                                </div>
-                            </motion.div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Highlights Section */}
-            <section className="py-24 bg-white">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        {highlights.map((item, i) => (
-                            <div key={i} className="text-center group">
-                                <div className="w-20 h-20 mx-auto mb-8 rounded-[24px] bg-gray-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-[#FF2D78]/5 to-transparent rounded-[24px]" />
-                                    <item.icon className="w-10 h-10 text-gray-800" />
-                                </div>
-                                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-[#FF2D78] mb-2">{item.subtitle}</h4>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                                <p className="text-gray-500 leading-relaxed max-w-[280px] mx-auto font-medium">
-                                    {item.desc}
-                                </p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
-            {/* CTA Section */}
-            <section className="py-24 relative overflow-hidden">
-                <div className="max-w-5xl mx-auto px-6">
-                    <div className="relative rounded-[48px] bg-gradient-to-br from-[#FF2D78] to-[#E1306C] p-12 md:p-20 text-center overflow-hidden shadow-2xl">
-                        <div className="relative z-10">
-                            <h2 className="text-4xl md:text-5xl font-black text-white mb-8">
-                                Ready to scale <br className="hidden md:block" />
-                                your Meta presence?
+                            {/* Right Visual: Clean framed highlight */}
+                            <div className="lg:w-1/2 w-full">
+                                <div
+                                    className="relative rounded-2xl overflow-hidden"
+                                    style={{
+                                        border: '1.5px solid rgba(255,255,255,0.15)',
+                                        boxShadow: '0 25px 70px rgba(0,0,0,0.7)',
+                                        background: '#0d0216'
+                                    }}
+                                >
+                                    <Image
+                                        src="/y.webp"
+                                        alt="MegaDM Feature Suite Overview"
+                                        width={900}
+                                        height={600}
+                                        className="w-full h-auto block"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 12-FEATURE COMPLETE GRID */}
+                <section className="py-24">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                        <div className="text-center mb-16">
+                            <h2 style={{ fontSize: 'clamp(32px, 4vw, 50px)', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em', marginBottom: '14px' }}>
+                                All 12 MegaDM Core Features
                             </h2>
-                            <p className="text-white/80 text-xl mb-12 max-w-2xl mx-auto font-medium leading-relaxed">
-                                Join the elite 1% of creators who use intelligent automation to dominate their niche.
+                            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.90)', maxWidth: '540px', margin: '0 auto', fontWeight: 500 }}>
+                                Built to scale creators, agencies, e-commerce stores, and service businesses.
                             </p>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                                <Link href="/auth/sign-up" className="w-full sm:w-auto px-12 py-6 bg-white text-[#FF2D78] font-black rounded-full transition-all hover:scale-105 shadow-xl">
-                                    Get Started Free
-                                </Link>
-                                <Link href="/pricing" className="w-full sm:w-auto px-12 py-6 bg-black/20 text-white font-black rounded-full backdrop-blur-md border border-white/20 hover:bg-black/30">
-                                    View Pricing
-                                </Link>
-                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {CORE_FEATURES.map((f, i) => {
+                                const Icon = f.icon;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="p-6 rounded-3xl transition-all duration-300"
+                                        style={{
+                                            background: 'rgba(255,255,255,0.06)',
+                                            border: '1px solid rgba(255,255,255,0.12)'
+                                        }}
+                                        onMouseEnter={e => {
+                                            const el = e.currentTarget as HTMLDivElement;
+                                            el.style.background = 'rgba(255,45,120,0.12)';
+                                            el.style.borderColor = 'rgba(255,45,120,0.4)';
+                                            el.style.transform = 'translateY(-3px)';
+                                        }}
+                                        onMouseLeave={e => {
+                                            const el = e.currentTarget as HTMLDivElement;
+                                            el.style.background = 'rgba(255,255,255,0.06)';
+                                            el.style.borderColor = 'rgba(255,255,255,0.12)';
+                                            el.style.transform = 'translateY(0)';
+                                        }}
+                                    >
+                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: `${f.color}25` }}>
+                                            <Icon className="w-6 h-6" style={{ color: f.color }} />
+                                        </div>
+                                        <div className="text-xs font-black uppercase tracking-widest mb-1.5" style={{ color: '#FF80AB' }}>
+                                            {f.tag}
+                                        </div>
+                                        <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#ffffff', marginBottom: '8px' }}>
+                                            {f.title}
+                                        </h3>
+                                        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+                                            {f.description}
+                                        </p>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <Footer />
-        </main>
+                {/* BOTTOM CTA SECTION */}
+                <section className="py-28 relative overflow-hidden" style={{ background: '#03000a', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full blur-[140px]" style={{ background: 'rgba(255,45,120,0.2)' }} />
+                    </div>
+
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8" style={{ background: 'rgba(255,45,120,0.14)', border: '1px solid rgba(255,45,120,0.35)' }}>
+                            <Sparkles className="w-3.5 h-3.5" style={{ color: '#FF2D78' }} />
+                            <span className="text-xs font-black tracking-[0.25em] uppercase" style={{ color: '#FF80AB' }}>Start Growing Today</span>
+                        </div>
+
+                        <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '22px' }}>
+                            Ready to Automate<br />Your Instagram & Facebook?
+                        </h2>
+
+                        <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.92)', fontWeight: 500, marginBottom: '40px' }}>
+                            Join thousands of creators, brands, and agencies already scaling with MegaDM.<br />
+                            Set up your first automation in under 3 minutes.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <Link
+                                href="/auth/sign-up"
+                                className="group inline-flex items-center justify-center gap-2.5 px-9 rounded-full font-bold text-base text-white transition-all hover:scale-105 whitespace-nowrap"
+                                style={{
+                                    background: 'linear-gradient(135deg, #FF2D78, #E1306C)',
+                                    boxShadow: '0 20px 50px rgba(255,45,120,0.45)',
+                                    height: '54px',
+                                    lineHeight: 1,
+                                }}
+                            >
+                                <span>Start Free Trial</span>
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                            <Link
+                                href="/pricing"
+                                className="inline-flex items-center justify-center gap-2.5 px-9 rounded-full font-bold text-base transition-all hover:scale-105 whitespace-nowrap"
+                                style={{
+                                    background: 'rgba(255,255,255,0.10)',
+                                    border: '1.5px solid rgba(255,255,255,0.25)',
+                                    color: '#ffffff',
+                                    height: '54px',
+                                    lineHeight: 1,
+                                }}
+                            >
+                                View Pricing
+                            </Link>
+                        </div>
+
+                        {/* Clear Trust Notice */}
+                        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', marginTop: '28px', fontWeight: 600 }}>
+                            Built on Meta&apos;s Official API
+                        </p>
+                    </div>
+                </section>
+
+                <Footer />
+            </main>
         </>
     );
 }
