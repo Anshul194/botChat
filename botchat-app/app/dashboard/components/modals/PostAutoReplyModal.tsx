@@ -181,7 +181,7 @@ export function PostAutoReplyModal({
         try {
             const base = platform === "facebook"
                 ? `/facebook/post-auto-reply`
-                : `/instagram/comment-manager/post-auto-reply`;
+                : `/instagram/post-auto-reply`;
 
             const params: any = {};
             if (platform === "facebook") {
@@ -290,7 +290,7 @@ export function PostAutoReplyModal({
 
         setIsSaving(true);
         const isFB = platform === "facebook";
-        const endpoint = isFB ? `/facebook/post-auto-reply` : `/instagram/comment-manager/post-auto-reply`;
+        const endpoint = isFB ? `/facebook/post-auto-reply` : `/instagram/post-auto-reply`;
 
         try {
             const payload: any = {
@@ -364,7 +364,7 @@ export function PostAutoReplyModal({
             const newStatus = status === "active" ? "paused" : "active";
             const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-reply/status`
-                : `/instagram/comment-manager/post-auto-reply/${postId}/status?platform=instagram`;
+                : `/instagram/post-auto-reply/${postId}/status?platform=instagram`;
 
             const payload: any = {
                 post_id: postId,
@@ -395,7 +395,7 @@ export function PostAutoReplyModal({
         try {
             const endpoint = platform === "facebook"
                 ? `/facebook/post-auto-reply/${postId}`
-                : `/instagram/comment-manager/post-auto-reply/${postId}?platform=instagram`;
+                : `/instagram/post-auto-reply/${postId}?platform=instagram`;
 
             const params: any = {};
             if (platform === "facebook") {
@@ -457,7 +457,7 @@ export function PostAutoReplyModal({
                             {existingCampaignId && view !== "choice" && (
                                 <>
                                     <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
-                                        {status === "active" ? "Pause" : "Resume"}
+                                        {status === "active" ? "Disable" : "Enable"}
                                     </button>
                                     <button onClick={handleDelete} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
                                         {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}

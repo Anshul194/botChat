@@ -331,7 +331,7 @@ export default function InstagramCommentManagerPage() {
  try {
  let res;
  if (type === "reply") {
- res = await api.patch(`/instagram/comment-manager/post-auto-reply/${post.id}/status?platform=instagram`, {
+ res = await api.patch(`/instagram/post-auto-reply/${post.id}/status?platform=instagram`, {
  post_id: post.id,
  instagram_id: selectedAccount.instagram_id,
  status: action
@@ -369,7 +369,7 @@ export default function InstagramCommentManagerPage() {
  setIsDeleting(true);
  try {
  if (type === "reply") {
- await api.delete(`/instagram/comment-manager/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+ await api.delete(`/instagram/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
  } else {
  await api.delete(`/instagram/post-auto-comment/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
  }
@@ -405,7 +405,7 @@ export default function InstagramCommentManagerPage() {
  if (!selectedAccount) return;
  setIsPausingAllOthers(true);
  try {
- await api.put(`/instagram/comment-manager/post-auto-reply/pause-all?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+ await api.put(`/instagram/post-auto-reply/pause-all?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
  toast.success("All other active campaigns have been paused.");
  setShowPauseAllOthersModal(false);
  fetchPosts();
@@ -504,8 +504,8 @@ export default function InstagramCommentManagerPage() {
 
  <div className="p-1 rounded-2xl bg-neutral-50/50 dark:bg-slate-950/20 border border-[var(--border)] dark:border-[var(--border)] shadow-inner overflow-hidden">
  {[
- { id: 'comment', label: 'Auto Comment', desc: `Enabled : ${pageStats.auto_comment_count} . Comment : 0 . Not replied yet`, icon: MessageSquare, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
- { id: 'reply', label: 'Auto Comment Reply', desc: `Enabled : ${pageStats.auto_reply_count} . Response : 0 . Not replied yet`, icon: Zap, color: 'text-emerald-500', bg: 'bg-emerald-50/50' },
+ { id: 'comment', label: 'Auto Comment', desc: `Enabled : ${pageStats?.auto_comment_count > 0 ? 'Yes' : 'No'} . Comment : 0 . Not replied yet`, icon: MessageSquare, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
+ { id: 'reply', label: 'Auto Comment Reply', desc: `Enabled : ${pageStats?.auto_reply_count > 0 ? 'Yes' : 'No'} . Response : 0 . Not replied yet`, icon: Zap, color: 'text-emerald-500', bg: 'bg-emerald-50/50' },
  { id: 'full', label: 'Full Account Comment Reply', desc: pageStats.has_full_page_reply ? 'Manage Full Account Reply Enabled' : 'Manage Full Account Reply Not Enabled', icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50/50', hideOnMobile: true },
  { id: 'mention', label: 'Mention Reply', desc: 'Manage Mention Reply Not Enabled', icon: User, color: 'text-orange-500', bg: 'bg-orange-50/50', hideOnMobile: true },
  // { id: 'tagged', label: 'Tagged Media', desc: 'Get the media objects in which Business has been tagged.', icon: Tag, color: 'text-rose-500', bg: 'bg-rose-50/50' }
