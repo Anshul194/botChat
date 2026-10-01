@@ -276,7 +276,8 @@ export function PostAutoReplyModal({
                 ? `/facebook/bot-replies?facebook_page_id=${pageId}`
                 : `/instagram/bot-replies?page_id=${pageId}&platform=instagram`;
             const res = await api.get(endpoint);
-            setBotReplies(Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []));
+            const fetched = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+            setBotReplies(fetched.filter((r: any) => r?.status?.toLowerCase() !== 'draft'));
         } catch (error) {
             console.error("Fetch Bot Replies Error:", error);
         } finally {
