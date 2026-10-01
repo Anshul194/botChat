@@ -140,7 +140,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                   <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
                     {displayMedia.length > 0 ? (
                       <>
-                          <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover transition-all" alt="Preview" />
+                          <img src={displayMedia[currentMediaIndex]} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-all" alt="Preview" />
                           {displayMedia.length > 1 && (
                               <>
                                   <button onClick={prevMedia} className="absolute left-2 top-1/2 -translate-y-1/2 p-1 bg-black/20 backdrop-blur-md rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
@@ -247,7 +247,7 @@ export function PostPreview({ content, media, type, carouselItems, sliderImages,
                   <div className="aspect-square bg-[var(--card)] border-y border-[var(--border)] flex items-center justify-center relative group">
                      {displayMedia.length > 0 ? (
                           <>
-                              <img src={displayMedia[currentMediaIndex]} className="w-full h-full object-cover" alt="Preview" />
+                              <img src={displayMedia[currentMediaIndex]} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt="Preview" />
                                {displayMedia.length > 1 && (
                                   <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-md border-none text-[10px] font-medium">
                                       {currentMediaIndex + 1}/{displayMedia.length}

@@ -581,7 +581,7 @@ export default function InstagramCommentManagerPage() {
  <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/50 border border-[var(--border)] rounded-2xl transition-all hover:border-primary/30 shadow-sm flex flex-col relative">
  <div className="flex gap-3 sm:gap-4 p-3 sm:p-4">
  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 border border-[var(--border)]">
- <img src={post.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+ <img src={post.thumbnail} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
  </div>
  <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
  <div className="space-y-1.5">

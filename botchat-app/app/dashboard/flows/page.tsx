@@ -837,14 +837,25 @@ function FollowerGateFields({ step, update, allSteps, onSaveStep, onAddStep }) {
         <div style={{ flex: 1 }}>
           <Label>Verification Method</Label>
           <Select
-            value={c.verification_method || "manual"}
+            value={c.verification_method || "api"}
             onChange={e => set({ verification_method: e.target.value })}
             options={[
-              { value: "manual", label: "Manual (Simulated Pause)" },
-              { value: "api", label: "Official API (If available)" },
-              { value: "custom", label: "Custom Script" },
+              { value: "api", label: "Official API" },
             ]}
           />
+        </div>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <Label>Success Message Delay (Seconds)</Label>
+        <Input
+          type="number"
+          value={c.message_delay || 0}
+          onChange={e => set({ message_delay: parseInt(e.target.value) || 0 })}
+          placeholder="e.g. 3"
+        />
+        <div style={{ fontSize: 10, color: "var(--muted-foreground)", marginTop: 4, fontWeight: 500 }}>
+          Optional time to wait before continuing to the next step after successful verification.
         </div>
       </div>
 

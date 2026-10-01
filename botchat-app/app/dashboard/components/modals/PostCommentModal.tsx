@@ -203,7 +203,7 @@ export function PostCommentModal({
                             <div key={c.id} className="flex gap-3 sm:gap-5 group items-start">
                                 <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full sm:rounded-[20px] overflow-hidden border-2 border-white dark:border-neutral-800 shadow-md flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                                     {c.user_picture ? (
-                                        <img src={c.user_picture} className="w-full h-full object-cover" />
+                                        <img src={c.user_picture} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full bg-[var(--muted)]/50 dark:bg-neutral-800 flex items-center justify-center">
                                             <User className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-300" />

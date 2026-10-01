@@ -484,7 +484,7 @@ export default function CommentManager() {
         >
           <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", isEnabled ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" : "bg-rose-500")} />
           <div className={cn("w-4 h-4 rounded-[4px] overflow-hidden border border-white/20 shrink-0", selectedPage?.id === p.id ? "opacity-100" : "opacity-60")}>
-            <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} className="w-full h-full object-cover" />
+            <img src={p.image || p.picture || `https://ui-avatars.com/api/?name=${p.page_name}&background=fbcfe8&color=db2777`} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
           </div>
           <span>{p.page_name}</span>
           {!isEnabled && (
@@ -697,7 +697,7 @@ export default function CommentManager() {
  <div
  className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 dark:bg-[var(--muted)] block group/thumb relative"
  >
- <img src={post.thumbnail} className="w-full h-full object-cover" />
+ <img src={post.thumbnail} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
  </div>
  <div className="flex-1 min-w-0 flex flex-col justify-between">
  <div className="space-y-1">
