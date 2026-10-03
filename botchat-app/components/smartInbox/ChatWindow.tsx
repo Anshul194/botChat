@@ -76,6 +76,7 @@ export default function ChatWindow({ onProfileClick }: { onProfileClick?: () => 
                             <img
                                 src={selectedConversation.customer_avatar}
                                 alt={selectedConversation.customer_name ?? 'User'}
+                                referrerPolicy="no-referrer"
                                 className="w-9 h-9 rounded-full object-cover ring-2 ring-background shadow-sm"
                             />
                         ) : (

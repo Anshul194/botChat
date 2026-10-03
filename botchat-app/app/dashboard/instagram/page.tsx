@@ -457,6 +457,7 @@ export default function InstagramPage() {
                                                                 <img
                                                                     src={acc.profile_picture_url}
                                                                     alt={acc.username}
+                                                                    referrerPolicy="no-referrer"
                                                                     className="h-full w-full object-cover"
                                                                 />
                                                             ) : (

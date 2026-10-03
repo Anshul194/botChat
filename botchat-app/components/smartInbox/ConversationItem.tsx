@@ -62,6 +62,7 @@ export default function ConversationItem({ conversation }: ConversationItemProps
                         src={conversation.customer_avatar}
                         alt={conversation.customer_name ?? 'User'}
                         onError={() => setImgError(true)}
+                        referrerPolicy="no-referrer"
                         className="w-10 h-10 rounded-full object-cover"
                     />
                 ) : (

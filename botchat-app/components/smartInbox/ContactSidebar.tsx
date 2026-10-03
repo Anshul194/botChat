@@ -42,6 +42,7 @@ export default function ContactSidebar({ onClose }: ContactSidebarProps) {
                             src={selectedConversation.customer_avatar}
                             alt={selectedConversation.customer_name ?? 'User'}
                             onError={() => setImgError(true)}
+                            referrerPolicy="no-referrer"
                             className="w-16 h-16 rounded-full object-cover shadow-sm"
                         />
                     ) : (
