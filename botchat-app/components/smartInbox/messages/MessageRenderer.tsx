@@ -104,7 +104,7 @@ export default function MessageRenderer({ message, onImageClick }: MessageRender
             return <FileMessage url={getMediaUrl()} caption={getCaption()} />;
 
         case "share":
-            return <ShareMessage url={getMediaUrl()} caption={getCaption()} />;
+            return <ShareMessage url={getMediaUrl()} caption={getCaption()} mediaData={message.media_json} />;
 
         case "sticker":
         case "story":
