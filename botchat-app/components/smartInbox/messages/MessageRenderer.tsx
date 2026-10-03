@@ -6,6 +6,7 @@ import ImageMessage from "./ImageMessage";
 import VideoMessage from "./VideoMessage";
 import AudioMessage from "./AudioMessage";
 import FileMessage from "./FileMessage";
+import ShareMessage from "./ShareMessage";
 import ButtonMessage from "./ButtonMessage";
 import QuickReplyMessage from "./QuickReplyMessage";
 import CarouselMessage from "./CarouselMessage";
@@ -101,6 +102,9 @@ export default function MessageRenderer({ message, onImageClick }: MessageRender
 
         case "file":
             return <FileMessage url={getMediaUrl()} caption={getCaption()} />;
+
+        case "share":
+            return <ShareMessage url={getMediaUrl()} caption={getCaption()} />;
 
         case "sticker":
         case "story":
