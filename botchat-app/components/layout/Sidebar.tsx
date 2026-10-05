@@ -58,6 +58,7 @@ import {
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
+import { useTheme } from "@/components/ThemeProvider";
 import { usePlanFeature } from "@/hooks/usePlanFeature";
 import {
     Dialog, DialogContent, DialogDescription,
@@ -204,6 +205,7 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
     const { user } = useAppSelector(s => s.auth);
     const { settings } = useTenantSettings();
     const { canAccess } = usePlanFeature();
+    const { theme } = useTheme();
 
     const [showLogout, setShowLogout] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -377,8 +379,8 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                             className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
                             style={{ background: "var(--primary)" }}
                         >
-                            {settings.logo ? (
-                                <img src={settings.logo} alt={settings.appName} className="w-5 h-5 object-contain" />
+                            {(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo)) ? (
+                                <img src={(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo))!} alt={settings.appName} className="w-5 h-5 object-contain" />
                             ) : (
                                 <MessagesSquare className="w-4 h-4 text-white" aria-hidden="true" />
                             )}

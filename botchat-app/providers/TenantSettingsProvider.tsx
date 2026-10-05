@@ -15,6 +15,7 @@ export interface TenantSettings {
   language: string
   appName: string
   logo: string | null
+  darkLogo: string | null
   favicon: string | null
   dateConfig: TenantDateConfig
   currencyConfig: TenantCurrencyConfig
@@ -34,8 +35,9 @@ const DEFAULT_SETTINGS: TenantSettings = {
   currency: 'USD',
   currencySymbol: '$',
   language: 'en',
-  appName: 'BotChat',
+  appName: 'MegaDM',
   logo: null,
+  darkLogo: null,
   favicon: null,
   dateConfig: { timezone: 'UTC', dateFormat: 'MMM DD, YYYY', timeFormat: 'hh:mm A' },
   currencyConfig: { currency: 'USD', currencySymbol: '$' },
@@ -61,7 +63,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
   const currency = general.currency || 'USD'
   const currencySymbol = general.currencySymbol || '$'
   const language = general.defaultLanguage || 'en'
-  const appName = general.appName || 'BotChat'
+  const appName = general?.appName || 'MegaDM'
 
   const logoResolve = (path: string | null | undefined): string | null => {
     if (!path) return null
@@ -79,6 +81,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
     language,
     appName,
     logo: logoResolve(general.logo),
+    darkLogo: logoResolve(general.darkLogo),
     favicon: logoResolve(general.favicon),
     dateConfig: { timezone, dateFormat, timeFormat },
     currencyConfig: { currency, currencySymbol },

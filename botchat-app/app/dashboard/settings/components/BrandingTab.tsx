@@ -125,7 +125,7 @@ export default function BrandingTab() {
   const handleSaveGeneral = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     try {
-      const { logo, favicon, ...settingsData } = generalForm;
+      const settingsData = { ...generalForm };
       await dispatch(updateGeneralSettings(settingsData)).unwrap();
       const brandPayload: any = { app_name: generalForm.appName || 'My Application' };
       if (logoFile) brandPayload.app_logo = logoFile;

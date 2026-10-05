@@ -107,7 +107,7 @@ function Navbar({ open, setOpen, tenantData }: { open: boolean; setOpen: (v: boo
   }, []);
 
   const companyName = tenantData.branding?.company_name || 'MegaDM';
-  const logo = tenantData.branding?.logo;
+  const logo = tenantData.branding?.dark_logo || tenantData.branding?.logo;
 
   return (
     <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-3.5 sm:px-6 pt-3 sm:pt-5 pointer-events-none">
@@ -292,6 +292,7 @@ export interface TenantData {
   domain: { hostname: string };
   branding: {
     logo?: string;
+    dark_logo?: string;
     favicon?: string;
     primary_color?: string;
     company_name?: string;
@@ -674,8 +675,8 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
             <div className="col-span-2 sm:col-span-2 lg:col-span-1">
               <div className="flex items-center gap-2.5 mb-3 sm:mb-4">
-                {tenantData.branding?.logo ? (
-                  <img src={tenantData.branding.logo} alt="Logo" className="h-7 rounded object-contain max-w-[120px]" />
+                {(tenantData.branding?.dark_logo || tenantData.branding?.logo) ? (
+                  <img src={(tenantData.branding?.dark_logo || tenantData.branding?.logo)!} alt="Logo" className="h-7 rounded object-contain max-w-[120px]" />
                 ) : (
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
                     <Send className="w-3.5 h-3.5 text-white" />
@@ -712,7 +713,7 @@ export default function TenantLandingClient({ tenantData }: { tenantData: Tenant
           </div>
           <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <p className="text-xs" style={{ color: "rgba(255,255,255,0.30)" }}>
-              © 2025 MegaDM. All rights reserved.
+              © 2025 {tenantData.branding?.company_name || 'MegaDM'}. All rights reserved.
             </p>
             <div className="flex items-center gap-1.5">
               <Instagram className="w-3.5 h-3.5" style={{ color: "#FF2D78" }} />

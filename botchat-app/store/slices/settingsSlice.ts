@@ -22,6 +22,7 @@ export interface GeneralSettings {
     dateFormat?: string;
     timeFormat?: string;
     logo?: string;
+    darkLogo?: string;
     favicon?: string;
     gtag?: string;
     databasePermission?: boolean;
@@ -169,6 +170,7 @@ function normalizeGeneralSettings(data: any): GeneralSettings {
         timeFormat: data.time_format ?? data.timeFormat ?? 'hh:mm A',
         appName: data.app_name ?? data.appName ?? '',
         logo: data.app_logo ?? data.logo ?? '',
+        darkLogo: data.app_dark_logo ?? data.darkLogo ?? '',
         favicon: data.favicon_logo ?? data.favicon ?? '',
         gtag: data.gtag ?? '',
     };

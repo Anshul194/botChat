@@ -10,6 +10,7 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch } from "@/store/hooks";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import { registerUser } from "@/store/slices/authSlice";
 import { useSocialLogin } from "@/hooks/useSocialLogin";
 import { useSocialLoginSettings } from "@/hooks/useSocialLoginSettings";
@@ -20,6 +21,7 @@ export default function SignUpPage() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { theme } = useTheme();
+    const { settings } = useTenantSettings();
     const isLight = theme === "light";
     const { handleSocialLogin, socialLoading } = useSocialLogin();
     const { facebookEnabled, googleEnabled, isLoading: socialSettingsLoading } = useSocialLoginSettings();
@@ -129,10 +131,14 @@ export default function SignUpPage() {
                     }} />
                 <div className="relative z-10 flex flex-col h-full p-12">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
-                            <MessageSquare className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center overflow-hidden">
+                            {(settings.darkLogo || settings.logo) ? (
+                                <img src={(settings.darkLogo || settings.logo)!} alt={settings.appName} className="w-full h-full object-contain" />
+                            ) : (
+                                <MessageSquare className="w-5 h-5 text-white" />
+                            )}
                         </div>
-                        <span className="text-white font-bold text-xl tracking-tight">BotChat</span>
+                        <span className="text-white font-bold text-xl tracking-tight">{settings.appName}</span>
                     </div>
                     <div className="flex-1 flex flex-col justify-center mt-12">
                         <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-white/90 text-xs font-semibold w-fit mb-6">
@@ -141,7 +147,7 @@ export default function SignUpPage() {
                         <h1 className="text-4xl xl:text-[46px] font-extrabold text-white leading-tight mb-5">
                             Join 50,000+<br />
                             <span className="text-white/80">businesses growing</span><br />
-                            with BotChat
+                            with {settings.appName}
                         </h1>
                         <div className="space-y-3 mb-10">
                             {features.map((f) => (
@@ -179,14 +185,18 @@ export default function SignUpPage() {
                 {/* Topbar */}
                 <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-4 gap-2">
                     <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                            style={{ background: "linear-gradient(135deg, #ec4899, #a855f7)" }}>
-                            <MessageSquare className="w-4 h-4 text-white" />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                            style={{ background: (settings.logo || settings.darkLogo) ? "transparent" : "linear-gradient(135deg, #ec4899, #a855f7)" }}>
+                            {(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo)) ? (
+                                <img src={(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo))!} alt={settings.appName} className="w-full h-full object-contain" />
+                            ) : (
+                                <MessageSquare className="w-4 h-4 text-white" />
+                            )}
                         </div>
                         <span className="font-bold text-sm" style={{
                             background: "linear-gradient(135deg, #1e5fd4, #6366f1)",
                             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
-                        }}>BotChat</span>
+                        }}>{settings.appName}</span>
                     </div>
                     <div className="hidden lg:block" />
                     <div className="flex items-center gap-2 flex-shrink-0">
