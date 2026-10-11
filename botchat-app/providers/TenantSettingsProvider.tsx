@@ -16,6 +16,7 @@ export interface TenantSettings {
   language: string
   appName: string
   logo: string | null
+  darkLogo: string | null
   favicon: string | null
   dateConfig: TenantDateConfig
   currencyConfig: TenantCurrencyConfig
@@ -36,7 +37,9 @@ const DEFAULT_SETTINGS: TenantSettings = {
   currencySymbol: '$',
   language: 'en',
   appName: 'MegaDM',
+  appName: 'MegaDM',
   logo: null,
+  darkLogo: null,
   favicon: null,
   dateConfig: { timezone: 'UTC', dateFormat: 'MMM DD, YYYY', timeFormat: 'hh:mm A' },
   currencyConfig: { currency: 'USD', currencySymbol: '$' },
@@ -59,7 +62,7 @@ export function resolveAssetUrl(path: string | null | undefined): string | null 
   let apiBase = ''
   try {
     apiBase = resolveApiBaseUrl()
-  } catch (e) {}
+  } catch (e) { }
 
   if (!apiBase && typeof window !== 'undefined') {
     apiBase = window.location.origin
@@ -84,8 +87,8 @@ export function resolveAssetUrl(path: string | null | undefined): string | null 
 const TenantSettingsContext = createContext<TenantSettingsContextValue>({
   settings: DEFAULT_SETTINGS,
   isLoading: true,
-  refresh: () => {},
-  updateSettings: async () => {},
+  refresh: () => { },
+  updateSettings: async () => { },
 })
 
 export function useTenantSettings(): TenantSettingsContextValue {
@@ -106,7 +109,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
             favicon: resolveAssetUrl(parsed.favicon),
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     return DEFAULT_SETTINGS
   }
@@ -133,6 +136,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
     language,
     appName,
     logo: resolvedLogo,
+    darkLogo: logoResolve(general.darkLogo),
     favicon: resolvedFavicon,
     dateConfig: { timezone, dateFormat, timeFormat },
     currencyConfig: { currency, currencySymbol },
@@ -145,7 +149,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
         logo: result.logo,
         favicon: result.favicon,
       }))
-    } catch (e) {}
+    } catch (e) { }
   }
 
   return result
@@ -168,7 +172,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
             favicon: resolveAssetUrl(parsed.favicon),
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     return DEFAULT_SETTINGS
   })
@@ -216,7 +220,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
             favicon: resolveAssetUrl(parsed.favicon) ?? prev.favicon,
           }))
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     window.addEventListener('tenant-settings:updated', handleBrandingChange)
     window.addEventListener('storage', handleBrandingChange)

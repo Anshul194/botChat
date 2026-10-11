@@ -345,7 +345,7 @@ export function PostAutoCommentModal({
                             {existingCampaignId && view !== "choice" && (
                                 <>
                                     <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", form.status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
-                                        {form.status === "active" ? "Pause" : "Resume"}
+                                        {form.status === "active" ? "Disable" : "Enable"}
                                     </button>
                                     <button onClick={handleDelete} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
                                         {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}

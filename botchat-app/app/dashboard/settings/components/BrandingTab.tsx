@@ -126,7 +126,7 @@ export default function BrandingTab() {
   const handleSaveGeneral = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     try {
-      const { logo, favicon, ...settingsData } = generalForm;
+      const settingsData = { ...generalForm };
       const dataToSave: any = { ...settingsData };
       if (generalForm.logo && !logoFile) {
         dataToSave.logo = generalForm.logo;
@@ -155,7 +155,7 @@ export default function BrandingTab() {
             favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
           }));
           window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
-        } catch (e) {}
+        } catch (e) { }
       }
 
       showModal("success", "Saved", "Settings saved successfully!");
@@ -196,7 +196,7 @@ export default function BrandingTab() {
             favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
           }));
           window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
-        } catch (e) {}
+        } catch (e) { }
       }
 
       showModal("success", "Saved", "Brand assets saved successfully!");

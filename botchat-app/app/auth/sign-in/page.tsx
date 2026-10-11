@@ -11,6 +11,7 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 import {
     loginUser, fetchMe, verifyTwoFactorLogin, recoveryCodeLogin, clearTwoFactorChallenge
 } from "@/store/slices/authSlice";
@@ -29,6 +30,7 @@ export default function SignInPage() {
     const router = useRouter();
     const { theme } = useTheme();
     const dispatch = useAppDispatch();
+    const { settings } = useTenantSettings();
     const { showModal } = useModal();
     const { user } = useAppSelector((state) => state.auth);
     const isLight = theme === "light";
@@ -170,10 +172,14 @@ export default function SignInPage() {
                 <div className="relative z-10 flex flex-col h-full p-12">
                     {/* Logo */}
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center shadow-lg">
-                            <MessageSquare className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center shadow-lg overflow-hidden">
+                            {(settings.darkLogo || settings.logo) ? (
+                                <img src={(settings.darkLogo || settings.logo)!} alt={settings.appName} className="w-full h-full object-contain" />
+                            ) : (
+                                <MessageSquare className="w-5 h-5 text-white" />
+                            )}
                         </div>
-                        <span className="text-white font-bold text-xl tracking-tight">BotChat</span>
+                        <span className="text-white font-bold text-xl tracking-tight">{settings.appName}</span>
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center mt-16">
@@ -225,14 +231,18 @@ export default function SignInPage() {
                 <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-4 gap-2">
                     {/* Mobile logo */}
                     <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                            style={{ background: "linear-gradient(135deg, #ec4899, #a855f7)" }}>
-                            <MessageSquare className="w-4 h-4 text-white" />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                            style={{ background: (settings.logo || settings.darkLogo) ? "transparent" : "linear-gradient(135deg, #ec4899, #a855f7)" }}>
+                            {(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo)) ? (
+                                <img src={(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo))!} alt={settings.appName} className="w-full h-full object-contain" />
+                            ) : (
+                                <MessageSquare className="w-4 h-4 text-white" />
+                            )}
                         </div>
                         <span className="font-bold text-sm" style={{
                             background: "linear-gradient(135deg, #1e5fd4, #6366f1)",
                             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
-                        }}>BotChat</span>
+                        }}>{settings.appName}</span>
                     </div>
                     <div className="hidden lg:block" />
                     <div className="flex items-center gap-2 flex-shrink-0">

@@ -241,6 +241,17 @@ export default function PostStudioPage() {
       }
     }
 
+    if (postType === 'facebook-story' || postType === 'instagram-story') {
+      if (!composerData.media || composerData.media.length === 0) {
+        showModal("error", "Validation Error", "Story campaigns require exactly one image or video.");
+        return;
+      }
+      if (composerData.media.length > 1) {
+        showModal("error", "Validation Error", "Story campaigns only support a single image or video.");
+        return;
+      }
+    }
+
     setIsPublishing(true);
 
     try {
@@ -277,6 +288,36 @@ export default function PostStudioPage() {
         }
 
         await dispatch(createCtaCampaign(ctaPayload)).unwrap();
+      } else if (postType === 'facebook-story' || postType === 'instagram-story') {
+        // Story campaigns use the multimedia endpoint with post_type='story'
+        // and a forced media_type determined by the campaign type selection
+        const storyMediaType = postType === 'facebook-story' ? 'facebook' : 'instagram';
+        const storyPayload: any = {
+          campaign_name: composerData.campaignName,
+          media_type: storyMediaType,
+          publisher_type: storyMediaType === 'facebook' ? 'page' : 'account',
+          post_type: 'story',
+          message: composerData.caption || '',
+          schedule_type: composerData.isScheduling ? 'later' : 'now',
+          selected_pages: finalSelectedPages,
+        };
+
+        // Story requires image OR video
+        if (composerData.media && composerData.media.length > 0) {
+          const firstMedia = composerData.media[0];
+          // Detect if it's a video by extension
+          if (/\.(mp4|mov|avi|webm)$/i.test(firstMedia)) {
+            storyPayload.video_url = firstMedia;
+          } else {
+            storyPayload.image_urls = [firstMedia];
+          }
+        }
+
+        if (storyPayload.schedule_type === 'later') {
+          storyPayload.schedule_time = `${composerData.scheduleDate} ${composerData.scheduleTime}:00`;
+        }
+
+        await dispatch(createCampaign(storyPayload)).unwrap();
       } else {
         const payload: any = {
           campaign_name: composerData.campaignName,
@@ -316,14 +357,20 @@ export default function PostStudioPage() {
   };
 
   const uniqueAccounts = Array.from(new Map(accounts.map(a => [a.accountId, a])).values())
-    .filter(a => postType !== 'cta' || a.type === 'facebook');
+    .filter(a => {
+      if (postType === 'cta' || postType === 'facebook-story') return a.type === 'facebook';
+      if (postType === 'instagram-story') return a.type === 'instagram';
+      return true;
+    });
 
   const filteredAccounts = accounts.filter(a => {
     const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.accountName.toLowerCase().includes(search.toLowerCase());
     const matchesPlatform = platform === 'all' || a.type === platform;
     const matchesAccountFilter = selectedParentAccounts.length === 0 || selectedParentAccounts.includes(a.accountId);
 
-    const isAllowedForType = postType !== 'cta' || a.type === 'facebook';
+    let isAllowedForType = true;
+    if (postType === 'cta' || postType === 'facebook-story') isAllowedForType = a.type === 'facebook';
+    if (postType === 'instagram-story') isAllowedForType = a.type === 'instagram';
 
     return matchesSearch && matchesPlatform && matchesAccountFilter && isAllowedForType;
   });
@@ -338,18 +385,21 @@ export default function PostStudioPage() {
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 sm:mb-12 relative z-10">
-          <Badge variant="secondary" className="mb-4 px-4 py-1">Choose Campaign Type</Badge>
-          <h1 data-tour="page-heading" className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-[var(--foreground)] to-[var(--muted-foreground)]">
+          <span className="inline-block mb-4 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/30">
+            Choose Campaign Type
+          </span>
+          <h1 data-tour="page-heading" className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-[var(--foreground)]">
             What are we creating today?
           </h1>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl w-full relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6 max-w-7xl w-full relative z-10">
           <SelectionCard
             title="Multimedia Post"
             description="Post text, link, image, or video on Facebook & Instagram automatically."
             icon={<Send className="w-8 h-8" />}
             color="indigo"
+            platforms="both"
             onClick={() => handleSelectType('multimedia')}
           />
           <SelectionCard
@@ -357,6 +407,7 @@ export default function PostStudioPage() {
             description="Create posts with professional call-to-action buttons on Facebook."
             icon={<MousePointer2 className="w-8 h-8" />}
             color="fuchsia"
+            platforms="facebook"
             onClick={() => handleSelectType('cta')}
           />
           <SelectionCard
@@ -364,7 +415,24 @@ export default function PostStudioPage() {
             description="Publish multi-image carousel or high-quality video posts seamlessly."
             icon={<Layers className="w-8 h-8" />}
             color="cyan"
+            platforms="both"
             onClick={() => handleSelectType('carousel')}
+          />
+          <SelectionCard
+            title="Facebook Story"
+            description="Publish a photo or video Story to your Facebook page (image or video required)."
+            icon={<Smartphone className="w-8 h-8" />}
+            color="rose"
+            platforms="facebook"
+            onClick={() => handleSelectType('facebook-story')}
+          />
+          <SelectionCard
+            title="Instagram Story"
+            description="Publish a photo or video Story to your Instagram business account."
+            icon={<Rss className="w-8 h-8" />}
+            color="violet"
+            platforms="instagram"
+            onClick={() => handleSelectType('instagram-story')}
           />
         </div>
       </div>
@@ -794,11 +862,21 @@ export default function PostStudioPage() {
   );
 }
 
-function SelectionCard({ title, description, icon, color, onClick }: any) {
+function SelectionCard({ title, description, icon, color, onClick, platforms = 'both' }: any) {
   const colorMap: any = {
-    indigo: "from-primary/10 to-transparent border-primary/20 hover:border-primary/50 text-primary",
-    fuchsia: "from-accent/10 to-transparent border-accent/20 hover:border-accent/50 text-accent",
-    cyan: "from-cyan-500/10 to-transparent border-cyan-500/20 hover:border-cyan-500/50 text-cyan-500"
+    indigo:  "from-primary/10 to-transparent border-primary/20 hover:border-primary/50",
+    fuchsia: "from-accent/10 to-transparent border-accent/20 hover:border-accent/50",
+    cyan:    "from-cyan-500/10 to-transparent border-cyan-500/20 hover:border-cyan-500/50",
+    rose:    "from-rose-500/10 to-transparent border-rose-500/20 hover:border-rose-500/50",
+    violet:  "from-violet-500/10 to-transparent border-violet-500/20 hover:border-violet-500/50",
+  };
+
+  const iconColorMap: any = {
+    indigo:  "text-primary",
+    fuchsia: "text-accent",
+    cyan:    "text-cyan-500",
+    rose:    "text-rose-500",
+    violet:  "text-violet-500",
   };
 
   return (
@@ -811,10 +889,10 @@ function SelectionCard({ title, description, icon, color, onClick }: any) {
       )}
     >
       <div className="absolute top-0 right-0 p-4 opacity-5 transform group-hover:scale-150 transition-transform duration-500">
-        {icon}
+        <span className={iconColorMap[color]}>{icon}</span>
       </div>
 
-      <div className="w-16 h-16 rounded-2xl bg-[var(--background)] flex items-center justify-center shadow-2xl border border-[var(--border)]">
+      <div className={cn("w-16 h-16 rounded-2xl bg-[var(--background)] flex items-center justify-center shadow-2xl border border-[var(--border)]", iconColorMap[color])}>
         {icon}
       </div>
 
@@ -828,10 +906,14 @@ function SelectionCard({ title, description, icon, color, onClick }: any) {
       </div>
 
       <div className="mt-auto pt-4 flex items-center justify-between border-t border-[var(--border)]">
-        <span className="text-xs font-bold uppercase tracking-widest opacity-50 group-hover:opacity-100 transition-opacity text-[var(--muted-foreground)]">Select Platform</span>
+        <span className="text-xs font-bold uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity text-[var(--foreground)]">Select Platform</span>
         <div className="flex gap-2">
-          <Facebook className="w-4 h-4 text-[var(--muted-foreground)]" />
-          <Instagram className="w-4 h-4 text-[var(--muted-foreground)]" />
+          {(platforms === 'both' || platforms === 'facebook') && (
+            <Facebook className={cn("w-4 h-4", iconColorMap[color])} />
+          )}
+          {(platforms === 'both' || platforms === 'instagram') && (
+            <Instagram className={cn("w-4 h-4", iconColorMap[color])} />
+          )}
         </div>
       </div>
     </motion.div>
