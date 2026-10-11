@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 import api from '../../lib/api';
 import { mapSettingsToApi } from '../../lib/utils';
+import { resolveApiBaseUrl, resolveXHost } from '../../lib/config';
 
 // --- Types ---
 export interface GeneralSettings {
@@ -195,6 +197,29 @@ function mapFbApiToState(data: any): any {
 
 // --- Thunks ---
 
+
+/**
+ * Fetches only the public branding fields (appName, logo, favicon) without
+ * requiring authentication. Uses a plain axios instance to bypass the auth
+ * interceptor's 401 → redirect logic, so it is safe to call on the landing page.
+ */
+export const fetchPublicBranding = createAsyncThunk(
+    'settings/fetchPublicBranding',
+    async (_: any, { rejectWithValue }) => {
+        try {
+            const baseUrl = resolveApiBaseUrl();
+            const xHost = resolveXHost();
+            const res = await axios.get(`${baseUrl}/settings`, {
+                headers: { 'x-host': xHost },
+                timeout: 10000,
+            });
+            return res.data?.data || res.data;
+        } catch (error: any) {
+            // Silently fail – branding is best-effort for public pages
+            return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
 
 // General Settings
 export const fetchGeneralSettings = createAsyncThunk(
@@ -476,6 +501,14 @@ const settingsSlice = createSlice({
                 state.error = action.payload as string;
             });
 
+        // Public branding (unauthenticated, best-effort)
+        builder.addCase(fetchPublicBranding.fulfilled, (state, action) => {
+            // Only populate if not already loaded by an authenticated fetch
+            if (!state.general && action.payload) {
+                state.general = normalizeGeneralSettings(action.payload);
+            }
+        });
+
         builder.addCase(updateGeneralSettings.fulfilled, (state, action) => {
             state.general = normalizeGeneralSettings(action.payload);
             state.domainSettings = action.payload?.domain_settings || state.domainSettings;
@@ -565,7 +598,16 @@ const settingsSlice = createSlice({
             .addCase(requestDomainChange.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
-            })
+            });
+
+        builder.addCase(updateAppSettings.fulfilled, (state, action) => {
+            if (action.payload) {
+                state.general = {
+                    ...(state.general || {}),
+                    ...normalizeGeneralSettings(action.payload)
+                };
+            }
+        });
 
     }
 });

@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Menu, X, User as UserIcon, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { shallowEqual } from "react-redux";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
+
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 
 interface NavbarProps {
   forceLight?: boolean;
@@ -18,9 +20,11 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+  const { settings } = useTenantSettings();
   const { isAuthenticated, user } = useAppSelector((state) => ({ isAuthenticated: state.auth.isAuthenticated, user: state.auth.user }), shallowEqual);
   const dispatch = useAppDispatch();
   const router = useRouter();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,17 +56,13 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
           : "bg-[#06000d]/40 backdrop-blur-lg border-white/10 shadow-2xl"
           }`}
       >
-        {/* LOGO */}
-        <Link href="/" className="flex items-center gap-2.5 cursor-pointer group">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-[#FF2D78] to-[#E1306C] group-hover:rotate-12 transition-transform duration-300">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <span
-            className={`font-extrabold text-lg tracking-tight transition-colors ${useLight ? "text-gray-900" : "text-white"
-              }`}
-          >
-            MegaDM
-          </span>
+        {/* LOGO — crisp and visible on both light and dark backgrounds */}
+        <Link href="/" className="flex items-center cursor-pointer group">
+          <img
+            src={settings.logo || (useLight ? "/logo/logo-light.svg" : "/logo/logo-dark.svg")}
+            alt={settings.appName || "MegaDM"}
+            className="h-12 w-auto object-contain group-hover:scale-105 transition-all duration-300"
+          />
         </Link>
 
         {/* DESKTOP LINKS */}

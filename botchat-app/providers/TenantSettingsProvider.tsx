@@ -2,9 +2,10 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { fetchGeneralSettings, updateGeneralSettings } from '@/store/slices/settingsSlice'
+import { fetchGeneralSettings, updateGeneralSettings, fetchPublicBranding } from '@/store/slices/settingsSlice'
 import { setTenantDateConfig, type TenantDateConfig } from '@/lib/date'
 import { setTenantCurrencyConfig, type TenantCurrencyConfig } from '@/lib/currency'
+import { resolveApiBaseUrl } from '@/lib/config'
 
 export interface TenantSettings {
   timezone: string
@@ -34,11 +35,50 @@ const DEFAULT_SETTINGS: TenantSettings = {
   currency: 'USD',
   currencySymbol: '$',
   language: 'en',
-  appName: 'BotChat',
+  appName: 'MegaDM',
   logo: null,
   favicon: null,
   dateConfig: { timezone: 'UTC', dateFormat: 'MMM DD, YYYY', timeFormat: 'hh:mm A' },
   currencyConfig: { currency: 'USD', currencySymbol: '$' },
+}
+
+export function resolveAssetUrl(path: string | null | undefined): string | null {
+  if (!path || typeof path !== 'string') return null
+  const trimmed = path.trim()
+  if (!trimmed) return null
+
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('data:') ||
+    trimmed.startsWith('blob:')
+  ) {
+    return trimmed
+  }
+
+  let apiBase = ''
+  try {
+    apiBase = resolveApiBaseUrl()
+  } catch (e) {}
+
+  if (!apiBase && typeof window !== 'undefined') {
+    apiBase = window.location.origin
+  }
+
+  const baseHost = apiBase ? apiBase.replace(/\/api\/v1\/?$/, '') : ''
+
+  if (trimmed.startsWith('/')) {
+    if (trimmed.startsWith('/uploads/') || trimmed.startsWith('/storage/')) {
+      return baseHost ? `${baseHost}${trimmed}` : trimmed
+    }
+    return trimmed
+  }
+
+  if (trimmed.startsWith('uploads/') || trimmed.startsWith('storage/')) {
+    return baseHost ? `${baseHost}/${trimmed}` : `/${trimmed}`
+  }
+
+  return baseHost ? `${baseHost}/uploads/${trimmed}` : `/uploads/${trimmed}`
 }
 
 const TenantSettingsContext = createContext<TenantSettingsContextValue>({
@@ -53,7 +93,23 @@ export function useTenantSettings(): TenantSettingsContextValue {
 }
 
 function extractSettings(general: Record<string, any> | null): TenantSettings {
-  if (!general) return DEFAULT_SETTINGS
+  if (!general) {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('botchat_tenant_branding')
+        if (cached) {
+          const parsed = JSON.parse(cached)
+          return {
+            ...DEFAULT_SETTINGS,
+            appName: parsed.appName || DEFAULT_SETTINGS.appName,
+            logo: resolveAssetUrl(parsed.logo),
+            favicon: resolveAssetUrl(parsed.favicon),
+          }
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_SETTINGS
+  }
 
   const timezone = general.timezone || general.defaultTimezone || 'UTC'
   const dateFormat = general.dateFormat || 'MMM DD, YYYY'
@@ -61,16 +117,14 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
   const currency = general.currency || 'USD'
   const currencySymbol = general.currencySymbol || '$'
   const language = general.defaultLanguage || 'en'
-  const appName = general.appName || 'BotChat'
+  const appName = general.appName || general.app_name || general.brandName || general.brand_name || general.siteName || general.platformName || 'MegaDM'
+  const rawLogo = general.logo ?? general.app_logo ?? general.appLogo ?? general.site_logo ?? null
+  const rawFavicon = general.favicon ?? general.favicon_logo ?? general.faviconLogo ?? null
 
-  const logoResolve = (path: string | null | undefined): string | null => {
-    if (!path) return null
-    if (path.startsWith('http')) return path
-    if (path.startsWith('/')) return path
-    return path
-  }
+  const resolvedLogo = resolveAssetUrl(rawLogo)
+  const resolvedFavicon = resolveAssetUrl(rawFavicon)
 
-  return {
+  const result: TenantSettings = {
     timezone,
     dateFormat,
     timeFormat,
@@ -78,18 +132,46 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
     currencySymbol,
     language,
     appName,
-    logo: logoResolve(general.logo),
-    favicon: logoResolve(general.favicon),
+    logo: resolvedLogo,
+    favicon: resolvedFavicon,
     dateConfig: { timezone, dateFormat, timeFormat },
     currencyConfig: { currency, currencySymbol },
   }
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('botchat_tenant_branding', JSON.stringify({
+        appName: result.appName,
+        logo: result.logo,
+        favicon: result.favicon,
+      }))
+    } catch (e) {}
+  }
+
+  return result
 }
 
 export function TenantSettingsProvider({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch()
   const { general, isLoadingGeneral } = useAppSelector((state) => state.settings)
   const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth)
-  const [settings, setSettings] = useState<TenantSettings>(DEFAULT_SETTINGS)
+  const [settings, setSettings] = useState<TenantSettings>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('botchat_tenant_branding')
+        if (cached) {
+          const parsed = JSON.parse(cached)
+          return {
+            ...DEFAULT_SETTINGS,
+            appName: parsed.appName || DEFAULT_SETTINGS.appName,
+            logo: resolveAssetUrl(parsed.logo),
+            favicon: resolveAssetUrl(parsed.favicon),
+          }
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_SETTINGS
+  })
   const [loaded, setLoaded] = useState(false)
 
   const applySettings = useCallback((general: Record<string, any> | null) => {
@@ -100,6 +182,15 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
     setLoaded(true)
   }, [])
 
+  // Always fetch branding on mount so the landing page logo shows for unauthenticated visitors.
+  // fetchPublicBranding uses a plain axios call (no auth interceptor) to avoid 401→redirect.
+  useEffect(() => {
+    if (!general) {
+      dispatch(fetchPublicBranding({}))
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When user is authenticated, fetch full settings (overwrites public branding)
   useEffect(() => {
     if (isAuthenticated && !general) {
       dispatch(fetchGeneralSettings({}))
@@ -107,10 +198,33 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
   }, [isAuthenticated, general, dispatch])
 
   useEffect(() => {
-    if (general && !loaded) {
+    if (general) {
       applySettings(general)
     }
-  }, [general, loaded, applySettings])
+  }, [general, applySettings])
+
+  useEffect(() => {
+    const handleBrandingChange = () => {
+      try {
+        const cached = localStorage.getItem('botchat_tenant_branding')
+        if (cached) {
+          const parsed = JSON.parse(cached)
+          setSettings((prev) => ({
+            ...prev,
+            appName: parsed.appName || prev.appName,
+            logo: resolveAssetUrl(parsed.logo) ?? prev.logo,
+            favicon: resolveAssetUrl(parsed.favicon) ?? prev.favicon,
+          }))
+        }
+      } catch (e) {}
+    }
+    window.addEventListener('tenant-settings:updated', handleBrandingChange)
+    window.addEventListener('storage', handleBrandingChange)
+    return () => {
+      window.removeEventListener('tenant-settings:updated', handleBrandingChange)
+      window.removeEventListener('storage', handleBrandingChange)
+    }
+  }, [])
 
   const refresh = useCallback(() => {
     dispatch(fetchGeneralSettings({}))

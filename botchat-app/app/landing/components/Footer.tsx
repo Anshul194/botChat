@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Sparkles, Instagram, Twitter, Linkedin, Facebook, ArrowRight, ShieldCheck, ExternalLink } from "lucide-react";
+import { Instagram, Twitter, Linkedin, Facebook, ShieldCheck, ExternalLink } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
 
 /* ─── Static fallback data ─────────────────────────────────────── */
 const PLATFORM_NAME = "MegaDM";
@@ -52,9 +53,9 @@ const PRODUCT_PILLARS = [
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
-    // Try to pull platform name from settings if available
+    const { settings } = useTenantSettings();
     const general = useSelector((state: RootState) => state.settings?.general);
-    const platformName: string = (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME;
+    const platformName: string = settings.appName || (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME;
     const platformTagline: string = (general as any)?.tagline || PLATFORM_TAGLINE;
     const supportEmail: string = (general as any)?.supportEmail || (general as any)?.email || "";
     const socialLinks = {
@@ -98,14 +99,12 @@ export default function Footer() {
 
                     {/* Brand column */}
                     <div className="lg:col-span-4 space-y-8">
-                        <div className="flex items-center gap-3">
-                            <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                                style={{ background: "linear-gradient(135deg, #e8175d, #FF2D78)", boxShadow: "0 8px 25px -5px rgba(232,23,93,0.4)" }}>
-                                <Sparkles className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold tracking-tighter">
-                                {platformName}<span style={{ color: "#FF2D78" }}>.</span>
-                            </span>
+                        <div className="flex items-center">
+                            <img
+                                src={settings.logo || "/logo/logo-dark.svg"}
+                                alt={platformName}
+                                className="h-14 w-auto object-contain"
+                            />
                         </div>
 
                         <p className="text-lg font-medium leading-relaxed max-w-sm" style={{ color: "rgba(255,255,255,0.6)" }}>

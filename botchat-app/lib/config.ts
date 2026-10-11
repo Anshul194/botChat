@@ -48,13 +48,15 @@ export function isCentralAdminApp(): boolean {
 export function getTenantDomain(): string {
 
     if (typeof window === 'undefined') {
-        // SSR — resolve from env or default (We cannot read window.location on server, need headers if doing true SSR but typically this is for client)
-        return DEV_DOMAIN || 'botchat.divyangtechlabs.com';
+        // SSR — resolve from env or default
+        if (DEV_DOMAIN && DEV_DOMAIN !== 'localhost') {
+            return DEV_DOMAIN;
+        }
+        return 'api.megadm.chat';
     }
 
-    // Only use DEV_DOMAIN if we are running in development, or if DEV_DOMAIN was explicitly provided and we are overriding.
-    // However, for single-build production, we MUST use window.location.hostname.
-    if (process.env.NODE_ENV !== 'production' && DEV_DOMAIN) {
+    // Only use DEV_DOMAIN if we are running in development and it's an actual tenant domain (not localhost)
+    if (process.env.NODE_ENV !== 'production' && DEV_DOMAIN && DEV_DOMAIN !== 'localhost') {
         return DEV_DOMAIN;
     }
 

@@ -14,6 +14,7 @@ import {
 } from "../../../../store/slices/authSlice";
 import { useModal } from "@/components/providers/ModalProvider";
 import { TimezoneSelect } from "@/components/ui/TimezoneSelect";
+import { resolveAssetUrl } from "@/providers/TenantSettingsProvider";
 import {
   Save, Globe, Palette, UploadCloud, Link2, Sparkles, AlertCircle, Copy,
 } from "lucide-react";
@@ -115,8 +116,8 @@ export default function BrandingTab() {
         ...general,
         theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
       });
-      if (general.logo) setLogoPreview(general.logo.startsWith('http') ? general.logo : `${process.env.NEXT_PUBLIC_BASE_URL?.replace('/api/v1', '')}/uploads/${general.logo}`);
-      if (general.favicon) setFaviconPreview(general.favicon.startsWith('http') ? general.favicon : `${process.env.NEXT_PUBLIC_BASE_URL?.replace('/api/v1', '')}/uploads/${general.favicon}`);
+      if (general.logo) setLogoPreview(resolveAssetUrl(general.logo));
+      if (general.favicon) setFaviconPreview(resolveAssetUrl(general.favicon));
     }
   }, [general]);
 
@@ -126,14 +127,37 @@ export default function BrandingTab() {
     if (e) e.preventDefault();
     try {
       const { logo, favicon, ...settingsData } = generalForm;
-      await dispatch(updateGeneralSettings(settingsData)).unwrap();
-      const brandPayload: any = { app_name: generalForm.appName || 'My Application' };
+      const dataToSave: any = { ...settingsData };
+      if (generalForm.logo && !logoFile) {
+        dataToSave.logo = generalForm.logo;
+      }
+      if (generalForm.favicon && !faviconFile) {
+        dataToSave.favicon = generalForm.favicon;
+      }
+      await dispatch(updateGeneralSettings(dataToSave)).unwrap();
+
+      const brandPayload: any = { app_name: generalForm.appName || 'MegaDM' };
       if (logoFile) brandPayload.app_logo = logoFile;
       if (faviconFile) brandPayload.favicon_logo = faviconFile;
       if (logoFile || faviconFile) {
         await dispatch(updateAppSettings(brandPayload)).unwrap();
       }
-      dispatch(fetchGeneralSettings({}));
+      await dispatch(fetchGeneralSettings({})).unwrap();
+
+      if (typeof window !== 'undefined') {
+        try {
+          const currentCached = localStorage.getItem('botchat_tenant_branding');
+          const parsed = currentCached ? JSON.parse(currentCached) : {};
+          localStorage.setItem('botchat_tenant_branding', JSON.stringify({
+            ...parsed,
+            appName: generalForm.appName || parsed.appName || 'MegaDM',
+            logo: logoPreview || resolveAssetUrl(generalForm.logo) || parsed.logo,
+            favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
+          }));
+          window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
+        } catch (e) {}
+      }
+
       showModal("success", "Saved", "Settings saved successfully!");
     } catch (err: any) {
       const msg = typeof err === 'string' ? err : err?.message || "Failed to update settings";
@@ -144,11 +168,37 @@ export default function BrandingTab() {
   const handleSaveBrandAssets = async () => {
     setIsSavingBrandAssets(true);
     try {
-      const payload: any = { app_name: generalForm.appName || 'My Application' };
+      const payload: any = { app_name: generalForm.appName || 'MegaDM' };
       if (logoFile) payload.app_logo = logoFile;
       if (faviconFile) payload.favicon_logo = faviconFile;
-      await dispatch(updateAppSettings(payload)).unwrap();
-      dispatch(fetchGeneralSettings({}));
+      if (logoFile || faviconFile) {
+        await dispatch(updateAppSettings(payload)).unwrap();
+      }
+      if (generalForm.logo || generalForm.favicon || generalForm.appName) {
+        const toSave: any = {};
+        if (generalForm.logo && !logoFile) toSave.logo = generalForm.logo;
+        if (generalForm.favicon && !faviconFile) toSave.favicon = generalForm.favicon;
+        if (generalForm.appName) toSave.appName = generalForm.appName;
+        if (Object.keys(toSave).length > 0) {
+          await dispatch(updateGeneralSettings(toSave)).unwrap();
+        }
+      }
+      await dispatch(fetchGeneralSettings({})).unwrap();
+
+      if (typeof window !== 'undefined') {
+        try {
+          const currentCached = localStorage.getItem('botchat_tenant_branding');
+          const parsed = currentCached ? JSON.parse(currentCached) : {};
+          localStorage.setItem('botchat_tenant_branding', JSON.stringify({
+            ...parsed,
+            appName: generalForm.appName || parsed.appName || 'MegaDM',
+            logo: logoPreview || resolveAssetUrl(generalForm.logo) || parsed.logo,
+            favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
+          }));
+          window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
+        } catch (e) {}
+      }
+
       showModal("success", "Saved", "Brand assets saved successfully!");
     } catch (err: any) {
       const msg = typeof err === 'string' ? err : err?.message || "Failed to save brand assets";
