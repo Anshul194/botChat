@@ -61,6 +61,7 @@ export default function FacebookPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isConnecting, setIsConnecting] = useState(false);
     const { showModal } = useModal();
+    const [isActionLoading, setIsActionLoading] = useState(false);
     const [confirmModal, setConfirmModal] = useState<{
         show: boolean;
         type: "enable" | "disable" | "disconnect" | "disconnect-account" | "clean";
@@ -178,9 +179,9 @@ export default function FacebookPage() {
     }, [isConnecting, showModal, fetchConnectedPages]);
 
     const handleAction = async () => {
-        if (!confirmModal) return;
+        if (!confirmModal || isActionLoading) return;
         const { type, pageId } = confirmModal;
-        setConfirmModal(null);
+        setIsActionLoading(true);
 
         try {
             let endpoint = "";
@@ -198,10 +199,15 @@ export default function FacebookPage() {
             const response = await api.post(endpoint);
             if (response.data.is_success || response.data.success) {
                 showModal("success", "Success", response.data.message || "Action completed successfully");
-                fetchConnectedPages();
+                setConfirmModal(null);
+                await fetchConnectedPages();
+            } else {
+                showModal("error", "Error", response.data.message || "Action failed");
             }
         } catch (err: any) {
             showModal("error", "Error", err.response?.data?.message || "Action failed");
+        } finally {
+            setIsActionLoading(false);
         }
     };
 
@@ -437,13 +443,14 @@ export default function FacebookPage() {
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
+                                                        disabled={isActionLoading}
                                                         onClick={() =>
                                                             setConfirmModal({
                                                                 show: true,
                                                                 type: page.is_enabled ? "disable" : "enable",
                                                                 pageId: page.id,
                                                                 pageName: page.page_name,
-                                                            })
+                                                             })
                                                         }
                                                         className={cn(
                                                             "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-sm font-medium transition-colors",
@@ -452,7 +459,8 @@ export default function FacebookPage() {
                                                                 : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
                                                         )}
                                                     >
-                                                        {page.is_enabled ? "Disable Page" : "Enable Page"}
+                                                        {page.is_enabled ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
+                                                        {page.is_enabled ? "Disable Bot" : "Enable Bot"}
                                                     </Button>
                                                     <Button variant="ghost" size="icon-sm" asChild title="View on Facebook" className="rounded-xl bg-gray-50 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-blue-900/20 transition-colors">
                                                         <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /></a>
@@ -467,6 +475,7 @@ export default function FacebookPage() {
                                                 {/* Mobile action bar: divider-separated icon row */}
                                                 <div className="sm:hidden -mx-4 -mb-4 mt-3 border-t dark:border-neutral-800 flex items-center">
                                                     <button
+                                                        disabled={isActionLoading}
                                                         onClick={() => setConfirmModal({ show: true, type: page.is_enabled ? "disable" : "enable", pageId: page.id, pageName: page.page_name })}
                                                         className={cn(
                                                             "flex-1 py-2.5 flex items-center justify-center gap-1.5 text-[12px] font-semibold transition-colors border-r dark:border-neutral-800",
@@ -474,7 +483,7 @@ export default function FacebookPage() {
                                                         )}
                                                     >
                                                         {page.is_enabled ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
-                                                        {page.is_enabled ? "Pause Bot" : "Enable Bot"}
+                                                        {page.is_enabled ? "Disable Bot" : "Enable Bot"}
                                                     </button>
                                                     <a href={`https://facebook.com/${page.page_id}`} target="_blank" rel="noopener noreferrer" className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors border-r dark:border-neutral-800">
                                                         <ExternalLink className="w-4 h-4" />
@@ -515,7 +524,7 @@ export default function FacebookPage() {
             <AnimatePresence>
                 {confirmModal?.show && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
-                        <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
+                        <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => !isActionLoading && setConfirmModal(null)} />
 
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
@@ -524,29 +533,32 @@ export default function FacebookPage() {
                             className="relative w-full max-w-md rounded-none sm:rounded-2xl bg-[var(--card)] border border-[var(--border)] p-4 sm:p-6 shadow-xl z-10"
                         >
                             <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2 truncate">
-                                Confirm {confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
+                                Confirm {confirmModal.type === 'enable' ? 'Enable Bot' : confirmModal.type === 'disable' ? 'Disable Bot' : confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
                             </h3>
 
                             <p className="text-[var(--muted-foreground)] mb-6 text-sm leading-relaxed">
-                                Are you sure you want to {confirmModal.type.replace("-", " ")} <strong className="font-medium text-[var(--foreground)]">{confirmModal.pageName}</strong>? This action will modify your automation state for this entity.
+                                Are you sure you want to {confirmModal.type === 'enable' ? 'enable bot automation for' : confirmModal.type === 'disable' ? 'disable bot automation for' : confirmModal.type.replace("-", " ")} <strong className="font-medium text-[var(--foreground)]">{confirmModal.pageName}</strong>? {confirmModal.type === 'disable' ? 'When disabled, all automated replies, comment automations, and bot flows will be immediately stopped.' : 'This will resume automated responses for incoming interactions.'}
                             </p>
 
                             <div className="flex gap-3 justify-end">
                                 <button
+                                    disabled={isActionLoading}
                                     onClick={() => setConfirmModal(null)}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors shrink-0"
+                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors shrink-0 disabled:opacity-50"
                                 >
                                     Cancel
                                 </button>
                                 <button
+                                    disabled={isActionLoading}
                                     onClick={handleAction}
-                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90 shrink-0"
+                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90 shrink-0 inline-flex items-center gap-2 disabled:opacity-50"
                                     style={{
                                         background: confirmModal.type.includes("disconnect")
                                             ? "rgb(225 29 72)" // rose-600
                                             : "var(--primary)"
                                     }}
                                 >
+                                    {isActionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                                     Confirm
                                 </button>
                             </div>

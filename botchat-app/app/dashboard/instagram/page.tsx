@@ -63,6 +63,7 @@ export default function InstagramPage() {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [selectedAccountForSettings, setSelectedAccountForSettings] = useState<{ id: number | string; name: string } | null>(null);
     const { showModal, showConfirm } = useModal();
+    const [isActionLoading, setIsActionLoading] = useState(false);
     const [confirmModal, setConfirmModal] = useState<{
         show: boolean;
         type: "enable" | "disable" | "disconnect" | "disconnect-account" | "clean";
@@ -171,6 +172,9 @@ export default function InstagramPage() {
     }, [isConnecting, showModal, fetchConnectedAccounts]);
 
     const handleAction = async (type: string, accountId: string | number) => {
+        if (isActionLoading) return;
+        setIsActionLoading(true);
+
         try {
             let response;
             if (type === "enable") {
@@ -187,17 +191,21 @@ export default function InstagramPage() {
 
             if (response?.data?.is_success || response?.data?.success) {
                 showModal("success", "Success", response.data.message || "Action completed successfully");
-                fetchConnectedAccounts();
+                setConfirmModal(null);
+                await fetchConnectedAccounts();
+            } else {
+                showModal("error", "Error", response?.data?.message || "Action failed");
             }
         } catch (err: any) {
             showModal("error", "Error", err.response?.data?.message || "Action failed");
+        } finally {
+            setIsActionLoading(false);
         }
     };
 
     const handleConfirmAction = async () => {
-        if (!confirmModal) return;
+        if (!confirmModal || isActionLoading) return;
         const { type, pageId } = confirmModal;
-        setConfirmModal(null);
         await handleAction(type, pageId);
     };
 
@@ -491,6 +499,7 @@ export default function InstagramPage() {
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
+                                                        disabled={isActionLoading}
                                                         onClick={() =>
                                                             setConfirmModal({
                                                                 show: true,
@@ -506,7 +515,8 @@ export default function InstagramPage() {
                                                                 : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-500 dark:hover:bg-emerald-500/20"
                                                         )}
                                                     >
-                                                        {isActive ? "Disable Page" : "Enable Page"}
+                                                        {isActive ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
+                                                        {isActive ? "Disable Bot" : "Enable Bot"}
                                                     </Button>
                                                     <Button variant="ghost" size="icon-sm" asChild title="View on Instagram" className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors">
                                                         <a href={`https://instagram.com/${acc.username}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" /></a>
@@ -521,6 +531,7 @@ export default function InstagramPage() {
                                                 {/* Mobile action bar: divider-separated icon row */}
                                                 <div className="sm:hidden -mx-4 -mb-4 mt-3 border-t dark:border-neutral-800 flex items-center">
                                                     <button
+                                                        disabled={isActionLoading}
                                                         onClick={() => setConfirmModal({ show: true, type: isActive ? "disable" : "enable", pageId: acc.id, pageName: acc.username })}
                                                         className={cn(
                                                             "flex-1 py-2.5 flex items-center justify-center gap-1.5 text-[12px] font-semibold transition-colors border-r dark:border-neutral-800",
@@ -528,7 +539,7 @@ export default function InstagramPage() {
                                                         )}
                                                     >
                                                         {isActive ? <Pause className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
-                                                        {isActive ? "Pause Bot" : "Enable Bot"}
+                                                        {isActive ? "Disable Bot" : "Enable Bot"}
                                                     </button>
                                                     <a href={`https://instagram.com/${acc.username}`} target="_blank" rel="noopener noreferrer" className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-primary transition-colors border-r dark:border-neutral-800">
                                                         <ExternalLink className="w-4 h-4" />
@@ -568,7 +579,7 @@ export default function InstagramPage() {
             <AnimatePresence>
                 {confirmModal?.show && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
-                        <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
+                        <div className="absolute inset-0 bg-[var(--background)]/70 backdrop-blur-sm" onClick={() => !isActionLoading && setConfirmModal(null)} />
 
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
@@ -577,29 +588,32 @@ export default function InstagramPage() {
                             className="relative w-full max-w-md rounded-none sm:rounded-2xl bg-[var(--card)] border border-[var(--border)] p-4 sm:p-6 shadow-xl z-10"
                         >
                             <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2 truncate">
-                                Confirm {confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
+                                Confirm {confirmModal.type === 'enable' ? 'Enable Bot' : confirmModal.type === 'disable' ? 'Disable Bot' : confirmModal.type.charAt(0).toUpperCase() + confirmModal.type.slice(1).replace("-", " ")}
                             </h3>
 
                             <p className="text-[var(--muted-foreground)] mb-6 text-sm leading-relaxed">
-                                Are you sure you want to {confirmModal.type.replace("-", " ")} <strong className="font-medium text-[var(--foreground)]">{confirmModal.pageName}</strong>? This action will modify your automation state for this entity.
+                                Are you sure you want to {confirmModal.type === 'enable' ? 'enable bot automation for' : confirmModal.type === 'disable' ? 'disable bot automation for' : confirmModal.type.replace("-", " ")} <strong className="font-medium text-[var(--foreground)]">{confirmModal.pageName}</strong>? {confirmModal.type === 'disable' ? 'When disabled, all automated replies, comment automations, and bot flows will be immediately stopped.' : 'This will resume automated responses for incoming interactions.'}
                             </p>
 
                             <div className="flex gap-3 justify-end">
                                 <button
+                                    disabled={isActionLoading}
                                     onClick={() => setConfirmModal(null)}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors shrink-0"
+                                    className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)] transition-colors shrink-0 disabled:opacity-50"
                                 >
                                     Cancel
                                 </button>
                                 <button
+                                    disabled={isActionLoading}
                                     onClick={handleConfirmAction}
-                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90 shrink-0"
+                                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all active:scale-95 hover:opacity-90 shrink-0 inline-flex items-center gap-2 disabled:opacity-50"
                                     style={{
                                         background: confirmModal.type.includes("disconnect")
                                             ? "rgb(225 29 72)"
                                             : "var(--primary)"
                                     }}
                                 >
+                                    {isActionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                                     Confirm
                                 </button>
                             </div>
