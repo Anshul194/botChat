@@ -17,6 +17,7 @@ import IceBreakersPanel from "./IceBreakersPanel";
 import { AiAgentSettingsPanel } from "../../instagram/AiAgentSettingsPanel";
 import { ChannelDisabledWarningModal } from "@/components/channels/ChannelDisabledWarningModal";
 import { CollectedLeadsPanel } from "@/components/leads/CollectedLeadsPanel";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 
 interface BotReply {
@@ -26,6 +27,7 @@ interface BotReply {
     trigger_type: string;
     trigger_value: string;
     status: 'draft' | 'published';
+    is_active?: boolean;
     created_at: string;
     updated_at: string;
     page_name?: string;
@@ -91,6 +93,7 @@ export default function FacebookBotRepliesPage() {
 
     const [isCreatePageDropdownOpen, setIsCreatePageDropdownOpen] = useState(false);
     const [createPageSearchQuery, setCreatePageSearchQuery] = useState("");
+    const [safeDeleteTarget, setSafeDeleteTarget] = useState<BotReply | null>(null);
 
     const selectedPageObj = useMemo(() => pages.find(p => p.page_id === selectedPageId) || null, [pages, selectedPageId]);
 
@@ -192,22 +195,9 @@ export default function FacebookBotRepliesPage() {
 
     const handleDelete = async (id: number) => {
         const reply = replies.find(r => r.id === id);
-        showConfirm({
-            title: "Delete Reply?",
-            message: `Are you sure you want to delete "${reply?.name || 'this reply'}"? This action cannot be undone.`,
-            confirmText: "Delete",
-            type: "danger",
-            onConfirm: async () => {
-                try {
-                    await api.delete(`/facebook/bot-replies/${id}`);
-                    showModal("success", "Deleted", "Bot reply deleted successfully");
-                    setReplies(prev => prev.filter(r => r.id !== id));
-                } catch (error: any) {
-                    const errorMsg = error.response?.data?.message || "Failed to delete bot reply";
-                    showModal("error", "Error", errorMsg);
-                }
-            }
-        });
+        if (reply) {
+            setSafeDeleteTarget(reply);
+        }
     };
 
     const handleToggleStatus = async (reply: BotReply) => {
@@ -1247,6 +1237,38 @@ export default function FacebookBotRepliesPage() {
                 onOpenChange={setWarningModalOpen}
                 channel={disabledClickedChannel}
                 platform="facebook"
+            />
+
+            <SafeDeleteModal
+                isOpen={!!safeDeleteTarget}
+                onClose={() => setSafeDeleteTarget(null)}
+                itemName={safeDeleteTarget?.name || "Bot Reply"}
+                itemType="Bot Reply"
+                isActive={Boolean(safeDeleteTarget && safeDeleteTarget.status === 'published' && (safeDeleteTarget.is_active ?? true))}
+                onPause={async () => {
+                    if (!safeDeleteTarget) return;
+                    await api.patch(`/facebook/bot-replies/${safeDeleteTarget.id}/draft`);
+                    setReplies(prev => prev.map(r => r.id === safeDeleteTarget.id ? { ...r, status: 'draft', is_active: false } : r));
+                    setSafeDeleteTarget(prev => prev ? { ...prev, status: 'draft', is_active: false } : null);
+                    fetchReplies();
+                }}
+                onDelete={async () => {
+                    if (!safeDeleteTarget) return;
+                    await api.delete(`/facebook/bot-replies/${safeDeleteTarget.id}`);
+                    setReplies(prev => prev.filter(r => r.id !== safeDeleteTarget.id));
+                    showModal("success", "Deleted", "Bot reply deleted successfully");
+                    fetchReplies();
+                }}
+                onRefresh={async () => {
+                    if (!safeDeleteTarget) return false;
+                    try {
+                        const res = await api.get(`/facebook/bot-replies/${safeDeleteTarget.id}`);
+                        const fresh = res.data?.data || res.data;
+                        return Boolean(fresh && fresh.status === 'published' && (fresh.is_active ?? true));
+                    } catch {
+                        return false;
+                    }
+                }}
             />
         </div>
     );

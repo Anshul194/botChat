@@ -376,11 +376,11 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                     >
                         <motion.div
                             whileHover={{ rotate: 12, scale: 1.1 }}
-                            className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
-                            style={{ background: "var(--primary)" }}
+                            className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0 overflow-hidden"
+                            style={{ background: (theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo)) ? "transparent" : "var(--primary)" }}
                         >
                             {(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo)) ? (
-                                <img src={(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo))!} alt={settings.appName} className="w-5 h-5 object-contain" />
+                                <img src={(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo))!} alt={settings.appName} className="w-full h-full object-contain" />
                             ) : (
                                 <MessagesSquare className="w-4 h-4 text-white" aria-hidden="true" />
                             )}

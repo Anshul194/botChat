@@ -17,6 +17,7 @@ import IceBreakersPanel from "../../facebook/bot-replies/IceBreakersPanel";
 import { AiAgentSettingsPanel } from "../AiAgentSettingsPanel";
 import { ChannelDisabledWarningModal } from "@/components/channels/ChannelDisabledWarningModal";
 import { CollectedLeadsPanel } from "@/components/leads/CollectedLeadsPanel";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 
 interface BotReply {
@@ -26,6 +27,7 @@ interface BotReply {
     trigger_type: string;
     trigger_value: string;
     status: 'draft' | 'published';
+    is_active?: boolean;
     created_at: string;
     updated_at: string;
     page_name?: string;
@@ -35,6 +37,8 @@ interface InstagramPageData {
     id: number;
     instagram_id: string;
     username: string;
+    is_active?: boolean;
+    is_enabled?: boolean;
     page?: {
         page_name: string;
         page_id: string;
@@ -90,6 +94,7 @@ export default function InstagramBotRepliesPage() {
 
     const [isCreateAccountDropdownOpen, setIsCreateAccountDropdownOpen] = useState(false);
     const [createAccountSearchQuery, setCreateAccountSearchQuery] = useState("");
+    const [safeDeleteTarget, setSafeDeleteTarget] = useState<BotReply | null>(null);
 
     const selectedAccountObj = useMemo(() => pages.find(p => p.instagram_id === selectedAccountId) || null, [pages, selectedAccountId]);
 
@@ -192,22 +197,9 @@ export default function InstagramBotRepliesPage() {
 
     const handleDelete = async (id: number) => {
         const reply = replies.find(r => r.id === id);
-        showConfirm({
-            title: "Delete Reply?",
-            message: `Are you sure you want to delete "${reply?.name || 'this reply'}"? This action cannot be undone.`,
-            confirmText: "Delete",
-            type: "danger",
-            onConfirm: async () => {
-                try {
-                    await api.delete(`/instagram/bot-replies/${id}`);
-                    showModal("success", "Deleted", "Bot reply deleted successfully");
-                    setReplies(prev => prev.filter(r => r.id !== id));
-                } catch (error: any) {
-                    const errorMsg = error.response?.data?.message || "Failed to delete bot reply";
-                    showModal("error", "Error", errorMsg);
-                }
-            }
-        });
+        if (reply) {
+            setSafeDeleteTarget(reply);
+        }
     };
 
     const handleToggleStatus = async (reply: BotReply) => {
@@ -1242,6 +1234,38 @@ export default function InstagramBotRepliesPage() {
                 onOpenChange={setWarningModalOpen}
                 channel={disabledClickedChannel}
                 platform="instagram"
+            />
+
+            <SafeDeleteModal
+                isOpen={!!safeDeleteTarget}
+                onClose={() => setSafeDeleteTarget(null)}
+                itemName={safeDeleteTarget?.name || "Bot Reply"}
+                itemType="Instagram Bot Reply"
+                isActive={Boolean(safeDeleteTarget && safeDeleteTarget.status === 'published' && (safeDeleteTarget.is_active ?? true))}
+                onPause={async () => {
+                    if (!safeDeleteTarget) return;
+                    await api.patch(`/instagram/bot-replies/${safeDeleteTarget.id}/draft`);
+                    setReplies(prev => prev.map(r => r.id === safeDeleteTarget.id ? { ...r, status: 'draft', is_active: false } : r));
+                    setSafeDeleteTarget(prev => prev ? { ...prev, status: 'draft', is_active: false } : null);
+                    fetchReplies();
+                }}
+                onDelete={async () => {
+                    if (!safeDeleteTarget) return;
+                    await api.delete(`/instagram/bot-replies/${safeDeleteTarget.id}`);
+                    setReplies(prev => prev.filter(r => r.id !== safeDeleteTarget.id));
+                    showModal("success", "Deleted", "Instagram bot reply deleted successfully");
+                    fetchReplies();
+                }}
+                onRefresh={async () => {
+                    if (!safeDeleteTarget) return false;
+                    try {
+                        const res = await api.get(`/instagram/bot-replies/${safeDeleteTarget.id}`);
+                        const fresh = res.data?.data || res.data;
+                        return Boolean(fresh && fresh.status === 'published' && (fresh.is_active ?? true));
+                    } catch {
+                        return false;
+                    }
+                }}
             />
         </div>
     );

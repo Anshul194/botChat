@@ -663,7 +663,10 @@ export default function ReplyTemplatesPage() {
       toast.success("Safe successfully!");
       setTemplates(templates.filter(t => t.id !== id));
       setDeleteId(null);
-    } catch { toast.error("Delete failed"); }
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Delete failed";
+      toast.error(msg);
+    }
   };
 
   const handleEdit = async (t: ReplyTemplate) => {

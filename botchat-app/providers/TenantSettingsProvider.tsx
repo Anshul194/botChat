@@ -37,7 +37,6 @@ const DEFAULT_SETTINGS: TenantSettings = {
   currencySymbol: '$',
   language: 'en',
   appName: 'MegaDM',
-  appName: 'MegaDM',
   logo: null,
   darkLogo: null,
   favicon: null,
@@ -106,6 +105,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
             ...DEFAULT_SETTINGS,
             appName: parsed.appName || DEFAULT_SETTINGS.appName,
             logo: resolveAssetUrl(parsed.logo),
+            darkLogo: resolveAssetUrl(parsed.darkLogo),
             favicon: resolveAssetUrl(parsed.favicon),
           }
         }
@@ -121,10 +121,12 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
   const currencySymbol = general.currencySymbol || '$'
   const language = general.defaultLanguage || 'en'
   const appName = general.appName || general.app_name || general.brandName || general.brand_name || general.siteName || general.platformName || 'MegaDM'
-  const rawLogo = general.logo ?? general.app_logo ?? general.appLogo ?? general.site_logo ?? null
-  const rawFavicon = general.favicon ?? general.favicon_logo ?? general.faviconLogo ?? null
+  const rawLogo = general.logo ?? general.app_logo ?? general.appLogo ?? general.site_logo ?? general.light_logo ?? general.lightLogo ?? null
+  const rawDarkLogo = general.darkLogo ?? general.app_dark_logo ?? general.dark_logo ?? general.darkLogoUrl ?? general.dark_logo_url ?? null
+  const rawFavicon = general.favicon ?? general.favicon_logo ?? general.faviconLogo ?? general.site_favicon ?? null
 
   const resolvedLogo = resolveAssetUrl(rawLogo)
+  const resolvedDarkLogo = resolveAssetUrl(rawDarkLogo)
   const resolvedFavicon = resolveAssetUrl(rawFavicon)
 
   const result: TenantSettings = {
@@ -136,7 +138,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
     language,
     appName,
     logo: resolvedLogo,
-    darkLogo: logoResolve(general.darkLogo),
+    darkLogo: resolvedDarkLogo,
     favicon: resolvedFavicon,
     dateConfig: { timezone, dateFormat, timeFormat },
     currencyConfig: { currency, currencySymbol },
@@ -147,6 +149,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
       localStorage.setItem('botchat_tenant_branding', JSON.stringify({
         appName: result.appName,
         logo: result.logo,
+        darkLogo: result.darkLogo,
         favicon: result.favicon,
       }))
     } catch (e) { }
@@ -169,6 +172,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
             ...DEFAULT_SETTINGS,
             appName: parsed.appName || DEFAULT_SETTINGS.appName,
             logo: resolveAssetUrl(parsed.logo),
+            darkLogo: resolveAssetUrl(parsed.darkLogo),
             favicon: resolveAssetUrl(parsed.favicon),
           }
         }
@@ -217,6 +221,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
             ...prev,
             appName: parsed.appName || prev.appName,
             logo: resolveAssetUrl(parsed.logo) ?? prev.logo,
+            darkLogo: resolveAssetUrl(parsed.darkLogo) ?? prev.darkLogo,
             favicon: resolveAssetUrl(parsed.favicon) ?? prev.favicon,
           }))
         }

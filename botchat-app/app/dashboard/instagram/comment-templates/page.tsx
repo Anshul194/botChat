@@ -332,7 +332,10 @@ export default function InstagramCommentTemplatesPage() {
       toast.success("Asset Purged");
       setTemplates(p => p.filter(t => t.id !== id));
       setConfirmDeleteId(null);
-    } catch { toast.error("Purge failed"); }
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Purge failed";
+      toast.error(msg);
+    }
     finally { setDeletingId(null); }
   };
 

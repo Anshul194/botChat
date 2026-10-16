@@ -13,6 +13,7 @@ import api from "@/lib/api";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Template {
@@ -71,6 +72,7 @@ export function PostAutoCommentModal({
     const [isSaving, setIsSaving] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isFetchingConfig, setIsFetchingConfig] = useState(false);
+    const [isSafeDeleteOpen, setIsSafeDeleteOpen] = useState(false);
 
     // Form Data
     const [existingCampaignId, setExistingCampaignId] = useState<number | null>(null);
@@ -347,7 +349,7 @@ export function PostAutoCommentModal({
                                     <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", form.status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
                                         {form.status === "active" ? "Disable" : "Enable"}
                                     </button>
-                                    <button onClick={handleDelete} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
+                                    <button onClick={() => setIsSafeDeleteOpen(true)} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
                                         {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                                     </button>
                                 </>
@@ -524,6 +526,54 @@ export function PostAutoCommentModal({
                     )}
                 </motion.div>
             </div>
+
+            <SafeDeleteModal
+                isOpen={isSafeDeleteOpen}
+                onClose={() => setIsSafeDeleteOpen(false)}
+                itemName={form.campaign_name || "Auto Comment Campaign"}
+                itemType="Auto Comment Campaign"
+                isActive={form.status === "active"}
+                onPause={async () => {
+                    const endpoint = platform === "facebook"
+                        ? `/facebook/post-auto-comment/${postId}/status`
+                        : `/instagram/post-auto-comment/${postId}/status`;
+                    const payload: any = { status: "paused" };
+                    if (platform === "instagram") payload.platform = "instagram";
+                    await api.patch(endpoint, payload);
+                    setForm(f => ({ ...f, status: "paused" }));
+                    onSaved();
+                }}
+                onDelete={async () => {
+                    const endpoint = platform === "facebook"
+                        ? `/facebook/post-auto-comment/${postId}`
+                        : `/instagram/post-auto-comment/${postId}`;
+                    const params = platform === "facebook"
+                        ? { facebook_page_id: pageId }
+                        : { instagram_id: pageId, platform: "instagram" };
+                    await api.delete(endpoint, { params });
+                    toast.success("Campaign deleted");
+                    onSaved();
+                    onClose();
+                }}
+                onRefresh={async () => {
+                    try {
+                        const endpoint = platform === "facebook"
+                            ? `/facebook/post-auto-comment/${postId}`
+                            : `/instagram/post-auto-comment/${postId}`;
+                        const params = platform === "facebook"
+                            ? { facebook_page_id: pageId }
+                            : { instagram_id: pageId, platform: "instagram" };
+                        const res = await api.get(endpoint, { params });
+                        const respData = res.data?.data;
+                        const campaignData = respData?.campaign || respData;
+                        const currentStatus = campaignData?.status || "paused";
+                        setForm(f => ({ ...f, status: currentStatus }));
+                        return currentStatus === "active";
+                    } catch {
+                        return false;
+                    }
+                }}
+            />
         </AnimatePresence>
     );
 }

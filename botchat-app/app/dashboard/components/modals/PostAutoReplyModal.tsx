@@ -16,6 +16,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { TextareaWithEmoji } from "@/components/ui/EmojiPicker";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ReplyTemplate {
@@ -136,6 +137,7 @@ export function PostAutoReplyModal({
 
     const [filterRules, setFilterRules] = useState<FilterRule[]>([]);
     const [status, setStatus] = useState<"active" | "paused">("active");
+    const [isSafeDeleteOpen, setIsSafeDeleteOpen] = useState(false);
     const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
     const addRecent = (e: string) => setRecentEmojis(p => [e, ...p.filter(x => x !== e)].slice(0, 32));
 
@@ -364,7 +366,7 @@ export function PostAutoReplyModal({
         try {
             const newStatus = status === "active" ? "paused" : "active";
             const endpoint = platform === "facebook"
-                ? `/facebook/post-auto-reply/status`
+                ? `/facebook/post-auto-reply/${postId}/status`
                 : `/instagram/post-auto-reply/${postId}/status?platform=instagram`;
 
             const payload: any = {
@@ -460,7 +462,7 @@ export function PostAutoReplyModal({
                                     <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
                                         {status === "active" ? "Disable" : "Enable"}
                                     </button>
-                                    <button onClick={handleDelete} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
+                                    <button onClick={() => setIsSafeDeleteOpen(true)} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
                                         {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                                     </button>
                                 </>
@@ -812,6 +814,55 @@ export function PostAutoReplyModal({
                     </div>
                 </motion.div>
             </div>
+
+            <SafeDeleteModal
+                isOpen={isSafeDeleteOpen}
+                onClose={() => setIsSafeDeleteOpen(false)}
+                itemName={form.name || "Post Auto Reply"}
+                itemType="Post Auto Reply"
+                isActive={status === "active"}
+                onPause={async () => {
+                    const endpoint = platform === "facebook"
+                        ? `/facebook/post-auto-reply/${postId}/status`
+                        : `/instagram/post-auto-reply/${postId}/status?platform=instagram`;
+                    const payload: any = { post_id: postId, status: "paused" };
+                    if (platform === "facebook") {
+                        payload.page_id = pageId;
+                    } else {
+                        payload.platform = "instagram";
+                    }
+                    await api.patch(endpoint, payload);
+                    setStatus("paused");
+                    onSaved();
+                }}
+                onDelete={async () => {
+                    const endpoint = platform === "facebook"
+                        ? `/facebook/post-auto-reply/${postId}`
+                        : `/instagram/post-auto-reply/${postId}?platform=instagram`;
+                    const params: any = {};
+                    if (platform === "facebook") {
+                        params.page_id = pageId;
+                    }
+                    await api.delete(endpoint, { params });
+                    toast.success("Post automation removed");
+                    onSaved();
+                    onClose();
+                }}
+                onRefresh={async () => {
+                    try {
+                        const endpoint = platform === "facebook"
+                            ? `/facebook/post-auto-reply/${postId}?page_id=${pageId}`
+                            : `/instagram/post-auto-reply/${postId}?platform=instagram`;
+                        const res = await api.get(endpoint);
+                        const data = res.data?.data || res.data;
+                        const currentStatus = data?.status || "paused";
+                        setStatus(currentStatus);
+                        return currentStatus === "active";
+                    } catch {
+                        return false;
+                    }
+                }}
+            />
         </AnimatePresence>
     );
 }

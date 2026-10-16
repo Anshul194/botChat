@@ -401,7 +401,10 @@ export default function CommentTemplatesPage() {
       toast.success("Template deleted");
       setTemplates(p => p.filter(t => t.id !== id));
       setConfirmDeleteId(null);
-    } catch { toast.error("Delete failed"); }
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Delete failed";
+      toast.error(msg);
+    }
     finally { setDeletingId(null); }
   };
 

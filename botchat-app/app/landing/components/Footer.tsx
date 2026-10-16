@@ -101,7 +101,7 @@ export default function Footer() {
                     <div className="lg:col-span-4 space-y-8">
                         <div className="flex items-center">
                             <img
-                                src={settings.logo || "/logo/logo-dark.svg"}
+                                src={(settings.darkLogo || settings.logo) || "/logo/logo-dark.svg"}
                                 alt={platformName}
                                 className="h-14 w-auto object-contain"
                             />

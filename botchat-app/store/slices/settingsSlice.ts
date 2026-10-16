@@ -211,10 +211,18 @@ export const fetchPublicBranding = createAsyncThunk(
         try {
             const baseUrl = resolveApiBaseUrl();
             const xHost = resolveXHost();
-            const res = await axios.get(`${baseUrl}/settings`, {
-                headers: { 'x-host': xHost },
-                timeout: 10000,
-            });
+            let res;
+            try {
+                res = await axios.get(`${baseUrl}/branding`, {
+                    headers: { 'x-host': xHost },
+                    timeout: 8000,
+                });
+            } catch {
+                res = await axios.get(`${baseUrl}/settings`, {
+                    headers: { 'x-host': xHost },
+                    timeout: 8000,
+                });
+            }
             return res.data?.data || res.data;
         } catch (error: any) {
             // Silently fail – branding is best-effort for public pages

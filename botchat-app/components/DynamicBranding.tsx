@@ -18,7 +18,7 @@ export default function DynamicBranding() {
       link.href = settings.favicon
     }
 
-    if (settings.appName && settings.appName !== 'MegaDM') {
+    if (settings.appName) {
       document.title = settings.appName
       const ogTitle = document.querySelector('meta[property="og:title"]')
       if (ogTitle) ogTitle.setAttribute('content', settings.appName)
@@ -32,13 +32,13 @@ export default function DynamicBranding() {
           const json = JSON.parse(script.innerHTML)
           if (json['@type'] === 'Organization' || json['@type'] === 'SoftwareApplication') {
             json.name = settings.appName
-            if (settings.logo) json.logo = settings.logo
+            if (settings.logo || settings.darkLogo) json.logo = settings.logo || settings.darkLogo
             script.innerHTML = JSON.stringify(json)
           }
         } catch (e) {}
       })
     }
-  }, [settings.favicon, settings.appName, settings.logo])
+  }, [settings.favicon, settings.appName, settings.logo, settings.darkLogo])
 
   return null
 }
