@@ -28,6 +28,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
+import { SafeDisconnectModal, DisconnectTarget } from "@/components/channels/SafeDisconnectModal";
 
 import { useSearchParams } from "next/navigation";
 
@@ -68,6 +69,7 @@ export default function FacebookPage() {
         pageId: string | number;
         pageName: string;
     } | null>(null);
+    const [safeDisconnectTarget, setSafeDisconnectTarget] = useState<DisconnectTarget | null>(null);
 
     const fetchConnectedPages = async () => {
         setIsLoading(true);
@@ -356,12 +358,8 @@ export default function FacebookPage() {
                                         {/* Desktop: inline Disconnect button */}
                                         <Button
                                             variant="ghost"
-                                            onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
-                                            className={cn(
-                                                "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
-                                                account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
-                                            )}
-                                            disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
+                                            onClick={() => setSafeDisconnectTarget({ id: account.id, name: account.name, type: "account", platform: "facebook" })}
+                                            className="hidden sm:flex h-10 px-4 rounded-xl text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                             Disconnect Account
@@ -370,25 +368,14 @@ export default function FacebookPage() {
                                     {/* Mobile: full-width disconnect at bottom */}
                                     <div className="sm:hidden border-t dark:border-neutral-800">
                                         <button
-                                            onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: account.id, pageName: account.name })}
-                                            disabled={account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true)}
-                                            className={cn(
-                                                "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
-                                                account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && "opacity-50 grayscale pointer-events-none"
-                                            )}
+                                            onClick={() => setSafeDisconnectTarget({ id: account.id, name: account.name, type: "account", platform: "facebook" })}
+                                            className="w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />
                                             Disconnect Account
                                         </button>
                                     </div>
                                 </div>
-
-                                {account.pages.some(p => p.is_enabled === "1" || p.is_enabled === 1 || p.is_enabled === true) && (
-                                    <div className="mx-2 sm:mx-4 px-3.5 sm:px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 flex items-start gap-2.5 sm:gap-3 text-amber-800 dark:text-amber-400 text-[12px] sm:text-sm">
-                                        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                                        <p>You must disable all pages before you can disconnect this Facebook account.</p>
-                                    </div>
-                                )}
 
                                 {/* Page cards grid */}
                                 <div className="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 pl-3 sm:pl-8 border-l-2 ml-2 sm:ml-4 dark:border-neutral-800 pb-4">
@@ -468,7 +455,7 @@ export default function FacebookPage() {
                                                     <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "clean", pageId: page.id, pageName: page.page_name })} title="Clean Data" className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors">
                                                         <Eraser className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: page.id, pageName: page.page_name })} title="Disconnect Page" className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors">
+                                                    <Button variant="ghost" size="icon-sm" onClick={() => setSafeDisconnectTarget({ id: page.id, name: page.page_name, type: "page", platform: "facebook" })} title="Disconnect Page" className="rounded-xl bg-gray-50 text-gray-500 hover:text-destructive hover:bg-destructive/10 dark:bg-gray-800 dark:hover:bg-destructive/20 transition-colors">
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -491,7 +478,7 @@ export default function FacebookPage() {
                                                     <button onClick={() => setConfirmModal({ show: true, type: "clean", pageId: page.id, pageName: page.page_name })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-primary transition-colors border-r dark:border-neutral-800">
                                                         <Eraser className="w-4 h-4" />
                                                     </button>
-                                                    <button onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: page.id, pageName: page.page_name })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-rose-600 transition-colors">
+                                                    <button onClick={() => setSafeDisconnectTarget({ id: page.id, name: page.page_name, type: "page", platform: "facebook" })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-rose-600 transition-colors">
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
@@ -566,6 +553,14 @@ export default function FacebookPage() {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* BUG-003: Safe Disconnect Modal with Stop-All-Campaigns Flow */}
+            <SafeDisconnectModal
+                open={Boolean(safeDisconnectTarget)}
+                onOpenChange={(open) => !open && setSafeDisconnectTarget(null)}
+                target={safeDisconnectTarget}
+                onSuccess={fetchConnectedPages}
+            />
         </div>
     );
 }

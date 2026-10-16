@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { AiAgentSettingsPanel } from "./AiAgentSettingsPanel";
+import { SafeDisconnectModal, DisconnectTarget } from "@/components/channels/SafeDisconnectModal";
 
 interface InstagramAccount {
     id: number;
@@ -63,6 +64,7 @@ export default function InstagramPage() {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [selectedAccountForSettings, setSelectedAccountForSettings] = useState<{ id: number | string; name: string } | null>(null);
     const { showModal, showConfirm } = useModal();
+    const [safeDisconnectTarget, setSafeDisconnectTarget] = useState<DisconnectTarget | null>(null);
     const [isActionLoading, setIsActionLoading] = useState(false);
     const [confirmModal, setConfirmModal] = useState<{
         show: boolean;
@@ -407,12 +409,8 @@ export default function InstagramPage() {
                                         {group.id !== 'unknown' && (
                                             <Button
                                                 variant="ghost"
-                                                onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: group.id, pageName: group.name })}
-                                                className={cn(
-                                                    "hidden sm:flex h-10 px-4 rounded-xl text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50",
-                                                    group.instagrams.some((p: any) => p.is_active) && "opacity-50 cursor-not-allowed pointer-events-none grayscale"
-                                                )}
-                                                disabled={group.instagrams.some((p: any) => p.is_active)}
+                                                onClick={() => setSafeDisconnectTarget({ id: group.id, name: group.name, type: "facebook-account-ig", platform: "instagram" })}
+                                                className="hidden sm:flex h-10 px-4 rounded-xl text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all font-medium items-center gap-2 border border-rose-100 dark:border-rose-900/50"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                                 Disconnect Account
@@ -423,12 +421,8 @@ export default function InstagramPage() {
                                     {group.id !== 'unknown' && (
                                         <div className="sm:hidden border-t dark:border-neutral-800">
                                             <button
-                                                onClick={() => setConfirmModal({ show: true, type: "disconnect-account", pageId: group.id, pageName: group.name })}
-                                                disabled={group.instagrams.some((p: any) => p.is_active)}
-                                                className={cn(
-                                                    "w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors",
-                                                    group.instagrams.some((p: any) => p.is_active) && "opacity-50 grayscale pointer-events-none"
-                                                )}
+                                                onClick={() => setSafeDisconnectTarget({ id: group.id, name: group.name, type: "facebook-account-ig", platform: "instagram" })}
+                                                className="w-full py-3 flex items-center justify-center gap-2 text-[13px] font-semibold text-rose-600 dark:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
                                                 Disconnect Account
@@ -436,13 +430,6 @@ export default function InstagramPage() {
                                         </div>
                                     )}
                                 </div>
-
-                                {group.instagrams.some((p: any) => p.is_active) && group.id !== 'unknown' && (
-                                    <div className="mx-2 sm:mx-4 px-3.5 sm:px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 flex items-start gap-2.5 sm:gap-3 text-amber-800 dark:text-amber-400 text-[12px] sm:text-sm">
-                                        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                                        <p>You must disable all automations before you can disconnect this Facebook account.</p>
-                                    </div>
-                                )}
 
                                 {/* Profile cards grid */}
                                 <div className="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 pl-3 sm:pl-8 border-l-2 ml-2 sm:ml-4 dark:border-neutral-800 pb-4">
@@ -524,7 +511,7 @@ export default function InstagramPage() {
                                                     <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "clean", pageId: acc.id, pageName: acc.username })} title="Clean Data" className="rounded-xl bg-gray-50 text-gray-500 hover:text-primary hover:bg-primary/10 dark:bg-gray-800 dark:hover:bg-primary/20 transition-colors">
                                                         <Eraser className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon-sm" onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: acc.id, pageName: acc.username })} title="Disconnect Account" className="rounded-xl bg-gray-50 dark:bg-neutral-800/50 text-gray-500 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
+                                                    <Button variant="ghost" size="icon-sm" onClick={() => setSafeDisconnectTarget({ id: acc.id, name: acc.username, type: "account", platform: "instagram" })} title="Disconnect Account" className="rounded-xl bg-gray-50 dark:bg-neutral-800/50 text-gray-500 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -547,7 +534,7 @@ export default function InstagramPage() {
                                                     <button onClick={() => setConfirmModal({ show: true, type: "clean", pageId: acc.id, pageName: acc.username })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-primary transition-colors border-r dark:border-neutral-800">
                                                         <Eraser className="w-4 h-4" />
                                                     </button>
-                                                    <button onClick={() => setConfirmModal({ show: true, type: "disconnect", pageId: acc.id, pageName: acc.username })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-rose-600 transition-colors">
+                                                    <button onClick={() => setSafeDisconnectTarget({ id: acc.id, name: acc.username, type: "account", platform: "instagram" })} className="w-11 py-2.5 flex items-center justify-center text-gray-400 hover:text-rose-600 transition-colors">
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
@@ -621,6 +608,14 @@ export default function InstagramPage() {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* BUG-003: Safe Disconnect Modal with Stop-All-Campaigns Flow */}
+            <SafeDisconnectModal
+                open={Boolean(safeDisconnectTarget)}
+                onOpenChange={(open) => !open && setSafeDisconnectTarget(null)}
+                target={safeDisconnectTarget}
+                onSuccess={fetchConnectedAccounts}
+            />
         </div>
     );
 }
