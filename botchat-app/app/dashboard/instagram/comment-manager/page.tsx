@@ -30,14 +30,15 @@ import { toast } from "sonner";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface InstagramAccount {
- id: number;
- instagram_id: string;
- username: string;
- profile_picture?: string;
- page?: {
- page_name: string;
- page_id: string;
- }
+  id: number;
+  instagram_id: string;
+  username: string;
+  is_active?: boolean | number | string;
+  profile_picture?: string;
+  page?: {
+    page_name: string;
+    page_id: string;
+  }
 }
 
 interface InstagramPost {
@@ -158,6 +159,7 @@ export default function InstagramCommentManagerPage() {
  const [resolvedPostId, setResolvedPostId] = useState("");
  const [isCheckingId, setIsCheckingId] = useState(false);
  const [checkData, setCheckData] = useState<any>(null);
+ const [syncError, setSyncError] = useState<string | null>(null);
 
  // Success Follow-up Modal
  const [showPauseAllOthersModal, setShowPauseAllOthersModal] = useState(false);
@@ -207,6 +209,11 @@ export default function InstagramCommentManagerPage() {
       if (reelIdx !== -1 && parts[reelIdx + 1]) {
         return parts[reelIdx + 1];
       }
+
+      const reelsIdx = parts.indexOf("reels");
+      if (reelsIdx !== -1 && parts[reelsIdx + 1]) {
+        return parts[reelsIdx + 1];
+      }
       
       const tvIdx = parts.indexOf("tv");
       if (tvIdx !== -1 && parts[tvIdx + 1]) {
@@ -214,7 +221,7 @@ export default function InstagramCommentManagerPage() {
       }
 
       const last = parts[parts.length - 1];
-      if (last && !["p", "reel", "tv"].includes(last.toLowerCase())) {
+      if (last && !["p", "reel", "reels", "tv"].includes(last.toLowerCase())) {
         return last;
       }
     } catch (e) {
@@ -223,36 +230,66 @@ export default function InstagramCommentManagerPage() {
     return urlStr.trim();
   };
 
- const handleCheckPostId = async () => {
-  const rawInput = manualPostId.trim();
-  if (!rawInput) {
-   toast.error("Please enter a Post ID or Instagram Link");
-   return;
-  }
-  const resolved = extractInstagramPostId(rawInput);
-  setResolvedPostId(resolved);
+  const handleCheckPostId = async () => {
+    setSyncError(null);
+    const rawInput = manualPostId.trim();
+    if (!rawInput) {
+      const msg = "Please enter an Instagram post link, reel URL, or Media ID";
+      setSyncError(msg);
+      toast.error(msg);
+      return;
+    }
 
-  setIsCheckingId(true);
-  try {
-   const response = await api.post("/instagram/check-post-campaign", {
-    post_id: resolved,
-    instagram_id: selectedAccount?.instagram_id
-   });
+    if (!selectedAccount?.instagram_id) {
+      const msg = "Please select a connected Instagram account first.";
+      setSyncError(msg);
+      toast.error(msg);
+      return;
+    }
 
-   if (response.data.success || response.data.is_success) {
-    toast.success("Post ID checked successfully!");
-    setCheckData(response.data.data);
-    fetchPosts(); // Refresh background grid
-   } else {
-    toast.error(response.data.message || "Failed to sync Post ID");
-   }
-  } catch (err: any) {
-   console.error("Check Post ID Error:", err);
-   toast.error(err.response?.data?.message || "Error validating Post ID");
-  } finally {
-   setIsCheckingId(false);
-  }
- };
+    const resolved = extractInstagramPostId(rawInput);
+    setResolvedPostId(resolved || rawInput);
+
+    setIsCheckingId(true);
+    try {
+      const response = await api.post("/instagram/check-post-campaign", {
+        post_id: rawInput,
+        instagram_id: selectedAccount.instagram_id
+      });
+
+      if (response.data.success || response.data.is_success) {
+        toast.success("Post synchronized successfully!");
+        setCheckData(response.data.data);
+        if (response.data.data?.resolved_post_id) {
+          setResolvedPostId(response.data.data.resolved_post_id);
+        }
+        fetchPosts(); // Refresh background grid
+      } else {
+        const errorMsg = response.data.message || "Failed to synchronize Instagram post.";
+        setSyncError(errorMsg);
+        toast.error(errorMsg);
+      }
+    } catch (err: any) {
+      console.error("Check Post ID Error:", err);
+      const status = err.response?.status;
+      let errMsg = err.response?.data?.message;
+
+      if (status === 404) {
+        errMsg = errMsg || "Could not find or sync this Instagram post. Please verify that the post belongs to this connected Instagram professional account.";
+      } else if (status === 401) {
+        errMsg = errMsg || "Instagram session expired or unauthorized. Please reconnect your account.";
+      } else if (status === 422) {
+        errMsg = errMsg || "Please provide a valid Instagram post URL or Media ID.";
+      } else if (!errMsg || status >= 500) {
+        errMsg = "Unable to connect to Instagram sync service. Please try again later.";
+      }
+
+      setSyncError(errMsg);
+      toast.error(errMsg);
+    } finally {
+      setIsCheckingId(false);
+    }
+  };
 
  // ── Data Fetching ────────────────────────────────────────────────────────
  const fetchAccounts = useCallback(async () => {
@@ -323,98 +360,107 @@ export default function InstagramCommentManagerPage() {
  } catch (error) { } finally { setIsTemplatesLoading(false); }
  }, []);
 
- const handleToggleStatus = async () => {
- const { post, action, type } = statusConfirm;
- if (!post || !selectedAccount) return;
+  const handleToggleStatus = async () => {
+    const { post, action, type } = statusConfirm;
+    if (!post || !selectedAccount) return;
 
- setIsUpdatingStatus(true);
- try {
- let res;
- if (type === "reply") {
- res = await api.patch(`/instagram/post-auto-reply/${post.id}/status?platform=instagram`, {
- post_id: post.id,
- instagram_id: selectedAccount.instagram_id,
- status: action
- });
- } else {
- // Postman request uses PATCH and status in body
- res = await api.patch(`/instagram/post-auto-comment/${post.id}/status?platform=instagram`, {
- status: action,
- instagram_id: selectedAccount.instagram_id,
- platform: "instagram"
- });
- }
+    setIsUpdatingStatus(true);
+    try {
+      let res;
+      if (type === "reply") {
+        res = await api.patch(`/instagram/post-auto-reply/${post.id}/status?platform=instagram`, {
+          post_id: post.id,
+          instagram_id: selectedAccount.instagram_id,
+          status: action
+        });
+      } else {
+        res = await api.patch(`/instagram/post-auto-comment/${post.id}/status?platform=instagram`, {
+          post_id: post.id,
+          status: action,
+          instagram_id: selectedAccount.instagram_id,
+          platform: "instagram"
+        });
+      }
 
- if (res.data.success || res.data.is_success) {
- toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
- setStatusConfirm({ ...statusConfirm, isOpen: false });
- fetchPosts();
+      if (res.data.success || res.data.is_success) {
+        toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign ${action === 'active' ? 'resumed' : 'paused'} successfully!`);
+        setStatusConfirm({ ...statusConfirm, isOpen: false });
+        await fetchPosts();
 
- // On SUCCESS of activation, ask to pause others (requested feature)
- if (action === "active") {
- setShowPauseAllOthersModal(true);
- }
- }
- } catch (error) {
- toast.error("Failed to update status");
- } finally {
- setIsUpdatingStatus(false);
- }
- };
+        // On SUCCESS of activation, ask to pause others (requested feature)
+        if (action === "active") {
+          setShowPauseAllOthersModal(true);
+        }
+      } else {
+        toast.error(res.data?.message || "Failed to update status");
+      }
+    } catch (error: any) {
+      console.error("Toggle status error:", error);
+      toast.error(error.response?.data?.message || "Failed to update status");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
- const handleDeleteStatus = async () => {
- const { post, type } = deleteConfirm;
- if (!post || !selectedAccount) return;
+  const handleDeleteStatus = async () => {
+    const { post, type } = deleteConfirm;
+    if (!post || !selectedAccount) return;
 
- setIsDeleting(true);
- try {
- if (type === "reply") {
- await api.delete(`/instagram/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
- } else {
- await api.delete(`/instagram/post-auto-comment/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
- }
- toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign deleted!`);
- setDeleteConfirm({ ...deleteConfirm, isOpen: false });
- fetchPosts();
- } catch (error) {
- toast.error("Failed to delete campaign");
- } finally {
- setIsDeleting(false);
- }
- };
+    setIsDeleting(true);
+    try {
+      if (type === "reply") {
+        await api.delete(`/instagram/post-auto-reply/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+      } else {
+        await api.delete(`/instagram/post-auto-comment/${post.id}?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
+      }
+      toast.success(`${type === 'reply' ? 'Reply' : 'Comment'} campaign deleted!`);
+      setDeleteConfirm({ ...deleteConfirm, isOpen: false });
+      await fetchPosts();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete campaign");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
- const handleToggleComments = async (post: InstagramPost, enabled: boolean) => {
- if (!selectedAccount) return;
- try {
- // Using facebook_page_id as instagram_id value as requested
- const res = await api.post("/instagram/comment-manager/toggle-comments?platform=instagram", {
- post_id: post.id,
- instagram_id: selectedAccount.instagram_id,
- comment_enabled: enabled
- });
- if (res.data.success || res.data.is_success) {
- toast.success(`Comments ${enabled ? 'enabled' : 'disabled'}!`);
- fetchPosts();
- }
- } catch (error) {
- toast.error("Failed to toggle comments");
- }
- };
+  const handleToggleComments = async (post: InstagramPost, enabled: boolean) => {
+    if (!selectedAccount) return;
+    try {
+      const res = await api.post("/instagram/comment-manager/toggle-comments?platform=instagram", {
+        post_id: post.id,
+        instagram_id: selectedAccount.instagram_id,
+        comment_enabled: enabled
+      });
+      if (res.data.success || res.data.is_success) {
+        toast.success(`Comments on Instagram post ${enabled ? 'enabled' : 'disabled'}!`);
+        await fetchPosts();
+      } else {
+        toast.error(res.data?.message || "Failed to toggle comments");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to toggle comments");
+    }
+  };
 
- const handlePauseAllOthers = async () => {
- if (!selectedAccount) return;
- setIsPausingAllOthers(true);
- try {
- await api.put(`/instagram/post-auto-reply/pause-all?platform=instagram&instagram_id=${selectedAccount.instagram_id}`);
- toast.success("All other active campaigns have been paused.");
- setShowPauseAllOthersModal(false);
- fetchPosts();
- } catch (error) {
- toast.error("Failed to pause other campaigns.");
- } finally {
- setIsPausingAllOthers(false);
- }
- };
+  const handlePauseAllOthers = async () => {
+    if (!selectedAccount) return;
+    setIsPausingAllOthers(true);
+    try {
+      const activePostId = statusConfirm.post?.id;
+      const res = await api.put(`/instagram/post-auto-reply/pause-all?platform=instagram&instagram_id=${selectedAccount.instagram_id}${activePostId ? `&except_post_id=${activePostId}` : ''}`);
+      if (res.data.success || res.data.is_success) {
+        toast.success("All other active campaigns have been paused.");
+        setShowPauseAllOthersModal(false);
+        await fetchPosts();
+      } else {
+        toast.error(res.data?.message || "Failed to pause other campaigns.");
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to pause other campaigns.");
+    } finally {
+      setIsPausingAllOthers(false);
+    }
+  };
 
  const viewReplyReport = (post: InstagramPost) => {
  setSelectedPostForReport(post);
@@ -621,7 +667,7 @@ export default function InstagramCommentManagerPage() {
  </span>
  )}
 
- <div className="relative hidden sm:flex post-dropdown-container">
+ <div className="relative flex post-dropdown-container">
  <button
  onClick={() => setActiveDropdown(activeDropdown === post.id ? null : post.id)}
  className="p-1.5 rounded-lg text-[var(--muted-foreground)]/70 dark:text-[var(--muted-foreground)] hover:text-primary transition-all border border-transparent hover:border-pink-100 group/btn"
@@ -823,13 +869,47 @@ export default function InstagramCommentManagerPage() {
  <span className="text-[9px] font-bold tracking-wide leading-none mt-0.5">Comments</span>
  </button>
  <button
- onClick={() => { handleToggleComments(post, !post.is_comment_disabled); }}
+ onClick={() => {
+ if (post.status?.reply) {
+ setStatusConfirm({
+ isOpen: true,
+ post: post,
+ action: post.status.reply === "paused" ? "active" : "paused",
+ type: "reply",
+ });
+ } else if (post.status?.comment) {
+ setStatusConfirm({
+ isOpen: true,
+ post: post,
+ action: post.status.comment === "paused" ? "active" : "paused",
+ type: "comment",
+ });
+ } else {
+ setActiveDropdown(activeDropdown === post.id ? null : post.id);
+ }
+ }}
  className="flex-1 py-2.5 flex flex-col items-center justify-center gap-0.5 transition-colors active:bg-[var(--muted)]/40"
- style={{ color: post.is_comment_disabled ? "rgb(16 185 129)" : "rgb(245 158 11)" }}
+ style={{
+ color: post.status?.reply === "active" || post.status?.comment === "active"
+ ? "rgb(217 119 6)"
+ : post.status?.reply === "paused" || post.status?.comment === "paused"
+ ? "rgb(16 185 129)"
+ : "var(--muted-foreground)",
+ }}
  >
- {post.is_comment_disabled ? <Zap className="w-[15px] h-[15px]" /> : <Pause className="w-[15px] h-[15px]" />}
+ {post.status?.reply === "active" || post.status?.comment === "active" ? (
+ <Pause className="w-[15px] h-[15px]" />
+ ) : post.status?.reply === "paused" || post.status?.comment === "paused" ? (
+ <Play className="w-[15px] h-[15px]" />
+ ) : (
+ <Settings2 className="w-[15px] h-[15px]" />
+ )}
  <span className="text-[9px] font-bold tracking-wide leading-none mt-0.5">
- {post.is_comment_disabled ? "Enable" : "Disable"}
+ {post.status?.reply === "active" || post.status?.comment === "active"
+ ? "Pause"
+ : post.status?.reply === "paused" || post.status?.comment === "paused"
+ ? "Resume"
+ : "Options"}
  </span>
  </button>
  </div>
@@ -1013,6 +1093,24 @@ export default function InstagramCommentManagerPage() {
  </div>
  </div>
  <div className="flex items-center gap-3">
+ {selectedAccount && (
+ <div className={cn(
+ "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-bold tracking-wider",
+ (selectedAccount.is_active === false || selectedAccount.is_active === 0 || selectedAccount.is_active === '0')
+ ? "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
+ : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+ )}>
+ <span className={cn(
+ "w-1.5 h-1.5 rounded-full",
+ (selectedAccount.is_active === false || selectedAccount.is_active === 0 || selectedAccount.is_active === '0')
+ ? "bg-amber-500"
+ : "bg-emerald-500 animate-pulse"
+ )} />
+ {(selectedAccount.is_active === false || selectedAccount.is_active === 0 || selectedAccount.is_active === '0')
+ ? "Account Bot Paused"
+ : "Account Bot Active"}
+ </div>
+ )}
  <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-[var(--muted)]/55 rounded-full border border-[var(--border)]">
  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
  <span className="text-[10px] font-bold text-[var(--muted-foreground)] tracking-wider">Live Sync</span>
@@ -1043,6 +1141,24 @@ export default function InstagramCommentManagerPage() {
  </button>
  ))}
  </div>
+
+ {selectedAccount && (selectedAccount.is_active === false || selectedAccount.is_active === 0 || selectedAccount.is_active === '0') && (
+ <div className="mx-4 sm:mx-0 my-3 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between gap-3 text-amber-900 dark:text-amber-200">
+ <div className="flex items-center gap-2.5 min-w-0">
+ <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+ <p className="text-xs font-medium">
+ Bot automation for <span className="font-bold">@{selectedAccount.username}</span> is paused at the account level. Campaign triggers are temporarily held until re-enabled on the{" "}
+ <button
+ onClick={() => router.push('/dashboard/instagram')}
+ className="underline font-bold hover:text-amber-700 dark:hover:text-amber-100"
+ >
+ Instagram Integration
+ </button>{" "}
+ page.
+ </p>
+ </div>
+ </div>
+ )}
 
 
  <AnimatePresence mode="wait">
@@ -1235,7 +1351,7 @@ export default function InstagramCommentManagerPage() {
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
- onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => { setCheckData(null); setSyncError(null); }, 200); }}
  className="absolute inset-0 bg-black/60 backdrop-blur-xs"
  />
  <motion.div
@@ -1249,25 +1365,66 @@ export default function InstagramCommentManagerPage() {
  <div className="sm:hidden flex justify-center pt-3 pb-1">
  <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
  </div>
- <div className="p-6 space-y-6">
+ <div className="p-6 space-y-5">
  <div className="flex items-center justify-between">
+ <div>
  <h3 className="text-lg font-bold text-[var(--foreground)] tracking-tight">Post ID Reconciliation</h3>
- <button onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }} className="text-[var(--muted-foreground)] hover:text-rose-500">
+ <p className="text-xs text-[var(--muted-foreground)]">Sync Instagram post or reel with comment automations</p>
+ </div>
+ <button onClick={() => { setIsIdModalOpen(false); setTimeout(() => { setCheckData(null); setSyncError(null); }, 200); }} className="text-[var(--muted-foreground)] hover:text-rose-500">
  <X className="w-5 h-5" />
  </button>
  </div>
 
- <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
- <div className="flex gap-3">
- <AlertCircle className="w-5 h-5 flex-shrink-0" />
+ {syncError && (
+ <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400">
+ <div className="flex gap-2.5 items-start">
+ <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
  <p className="text-[12px] font-medium leading-relaxed">
- If you have edited your Instagram post or reel after creation, ID lookup may fail due to Instagram API limitations.
+ {syncError}
  </p>
  </div>
  </div>
+ )}
+
+ {!checkData && (
+ <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-300">
+ <div className="flex gap-2.5 items-start">
+ <AlertCircle className="w-4 h-4 flex-shrink-0 text-sky-600 dark:text-sky-400 mt-0.5" />
+ <p className="text-[12px] font-medium leading-relaxed">
+ Paste an Instagram post link, reel URL (e.g. <span className="font-semibold underline">instagram.com/reel/...</span>), or numeric Media ID. MegaDM will verify account ownership and synchronize the post.
+ </p>
+ </div>
+ </div>
+ )}
 
  {checkData ? (
  <div className="space-y-4">
+ {/* Synchronized Post Card Preview */}
+ {checkData.post && (
+ <div className="p-3 rounded-xl border border-[var(--border)] bg-[var(--muted)]/40 flex items-center gap-3">
+ {checkData.post.media_url ? (
+ <img
+ src={checkData.post.media_url}
+ alt="Instagram Media"
+ className="w-12 h-12 rounded-lg object-cover border border-[var(--border)] shrink-0"
+ />
+ ) : (
+ <div className="w-12 h-12 rounded-lg bg-[var(--muted)] flex items-center justify-center shrink-0 text-[var(--muted-foreground)]">
+ <Instagram className="w-5 h-5" />
+ </div>
+ )}
+ <div className="min-w-0 flex-1">
+ <p className="text-xs font-semibold text-[var(--foreground)] truncate">
+ {checkData.post.message || checkData.post.caption || "Instagram Media"}
+ </p>
+ <p className="text-[11px] text-[var(--muted-foreground)] font-mono truncate">
+ ID: {checkData.resolved_post_id || checkData.post.post_id || checkData.post.id}
+ </p>
+ </div>
+ </div>
+ )}
+
  {/* Auto Reply Box */}
  <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/20 flex items-center justify-between">
  <div className="flex items-center gap-3">
@@ -1283,14 +1440,26 @@ export default function InstagramCommentManagerPage() {
  </div>
  {checkData.reply_exists ? (
  <button
- onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: resolvedPostId } as any); setShowPostAutoReplyModal(true); }}
+ onClick={() => {
+ const targetId = checkData?.resolved_post_id || resolvedPostId;
+ setIsIdModalOpen(false);
+ setTimeout(() => { setCheckData(null); setSyncError(null); }, 200);
+ setSelectedPostForReply({ id: targetId } as any);
+ setShowPostAutoReplyModal(true);
+ }}
  className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-colors border border-[var(--border)]"
  >
  Edit Reply
  </button>
  ) : (
  <button
- onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); setSelectedPostForReply({ id: resolvedPostId } as any); setShowPostAutoReplyModal(true); }}
+ onClick={() => {
+ const targetId = checkData?.resolved_post_id || resolvedPostId;
+ setIsIdModalOpen(false);
+ setTimeout(() => { setCheckData(null); setSyncError(null); }, 200);
+ setSelectedPostForReply({ id: targetId } as any);
+ setShowPostAutoReplyModal(true);
+ }}
  className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
  >
  Enable Auto Reply
@@ -1314,9 +1483,10 @@ export default function InstagramCommentManagerPage() {
  {checkData.comment_exists ? (
  <button
  onClick={() => {
+ const targetId = checkData?.resolved_post_id || resolvedPostId;
  setIsIdModalOpen(false);
- setTimeout(() => setCheckData(null), 200);
- setSelectedPostForAuto({ id: resolvedPostId } as any);
+ setTimeout(() => { setCheckData(null); setSyncError(null); }, 200);
+ setSelectedPostForAuto({ id: targetId } as any);
  setShowAutoCommentModal(true);
  }}
  className="px-4 py-2 bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] rounded-xl text-xs font-bold transition-all border border-[var(--border)]"
@@ -1326,9 +1496,10 @@ export default function InstagramCommentManagerPage() {
  ) : (
  <button
  onClick={() => {
+ const targetId = checkData?.resolved_post_id || resolvedPostId;
  setIsIdModalOpen(false);
- setTimeout(() => setCheckData(null), 200);
- setSelectedPostForAuto({ id: resolvedPostId } as any);
+ setTimeout(() => { setCheckData(null); setSyncError(null); }, 200);
+ setSelectedPostForAuto({ id: targetId } as any);
  setShowAutoCommentModal(true);
  }}
  className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] rounded-xl text-xs font-bold shadow-lg shadow-[var(--primary)]/20 hover:scale-105 transition-all"
@@ -1340,7 +1511,7 @@ export default function InstagramCommentManagerPage() {
 
  <div className="pt-2">
  <button
- onClick={() => setCheckData(null)}
+ onClick={() => { setCheckData(null); setSyncError(null); }}
  className="w-full py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)]/80 text-[var(--foreground)] border border-[var(--border)] font-bold text-[13px] transition-all"
  >
  Check Another Post ID
@@ -1354,14 +1525,17 @@ export default function InstagramCommentManagerPage() {
  <input
  type="text"
  value={manualPostId}
- onChange={(e) => setManualPostId(e.target.value)}
- placeholder="Example: C7uM3x1y8z9 or paste Instagram post link..."
+ onChange={(e) => {
+ setManualPostId(e.target.value);
+ if (syncError) setSyncError(null);
+ }}
+ placeholder="Example: https://www.instagram.com/reel/DeLx4... or Media ID"
  className="w-full px-4 py-3 rounded-xl bg-[var(--muted)]/50 border border-[var(--border)] text-sm text-[var(--foreground)] outline-none focus:ring-1 focus:ring-[var(--primary)]/30 transition-all"
  />
  </div>
  <div className="flex gap-3 pt-2">
  <button
- onClick={() => { setIsIdModalOpen(false); setTimeout(() => setCheckData(null), 200); }}
+ onClick={() => { setIsIdModalOpen(false); setTimeout(() => { setCheckData(null); setSyncError(null); }, 200); }}
  className="flex-1 py-3 rounded-xl bg-[var(--muted)] hover:bg-[var(--muted)] border border-[var(--border)] text-[var(--foreground)] font-bold text-[13px] transition-all"
  >
  Cancel
