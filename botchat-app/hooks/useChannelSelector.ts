@@ -44,7 +44,7 @@ export function useChannelSelector({
                 const parsed: ChannelItem[] = (Array.isArray(data) ? data : []).map((item: any) => ({
                     ...item,
                     platform: "instagram",
-                    is_enabled: Boolean(item.is_active ?? item.is_enabled ?? true),
+                    is_enabled: item.bot_status ? item.bot_status === "enabled" : Boolean(item.is_active ?? item.is_enabled ?? false),
                 }));
                 setChannels(parsed);
             }

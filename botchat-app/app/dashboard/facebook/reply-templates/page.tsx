@@ -220,11 +220,23 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
   const fetchPages = async () => {
     setIsLoadingPages(true);
     try {
-      const response = await api.get("/social/facebook-connect");
+      const response = await api.get(`/social/facebook-connect?_t=${Date.now()}`);
       if (response.data.success || response.data.is_success) {
         const fetchedAccounts = response.data.data.facebook_accounts || [];
         const fetchedPages = fetchedAccounts.flatMap((acc: any) => acc.pages || []);
-        setPages(fetchedPages);
+        setPages(fetchedPages.map((p: any) => {
+          const isBotEnabled = (p.is_enabled === true || p.is_enabled === 1 || p.bot_status === 'enabled') && p.status !== 'inactive';
+          const connectionStatus = p.connection_status || (p.status === 'disconnected' ? 'disconnected' : 'connected');
+          return {
+            id: String(p.page_id),
+            page_id: String(p.page_id),
+            page_name: p.page_name,
+            is_active: isBotEnabled,
+            is_enabled: isBotEnabled,
+            bot_status: isBotEnabled ? 'enabled' : 'paused',
+            connection_status: connectionStatus,
+          };
+        }));
       }
     } catch { toast.error("Failed to load pages"); }
     finally { setIsLoadingPages(false); }
@@ -343,21 +355,91 @@ export function TemplateFormModal({ mode, initial, onClose, onSaved }: {
                 placeholder="Write your auto reply campaign name here"
               />
             </Field>
-            <Field label="Please select a page for auto-reply" required>
+            <div className="space-y-1.5 flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-[var(--muted-foreground)]">
+                  Please select a page for auto-reply <span className="text-rose-400">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => fetchPages()}
+                  disabled={isLoadingPages}
+                  className="text-[11px] font-semibold text-[var(--primary)] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className={cn("w-3 h-3", isLoadingPages && "animate-spin")} />
+                  Refresh
+                </button>
+              </div>
               <div className="relative">
                 <select
                   value={form.page_id}
-                  onChange={e => setForm({ ...form, page_id: e.target.value })}
+                  onChange={e => {
+                    const val = e.target.value;
+                    const p = pages.find(item => String(item.id) === String(val) || String(item.page_id) === String(val));
+                    if (p) {
+                      const isConnected = p.connection_status !== 'disconnected' && p.connection_status !== 'expired';
+                      const isBotEnabled = Boolean(p.is_active ?? p.is_enabled ?? false) && isConnected;
+                      if (!isConnected) {
+                        toast.error("The selected Facebook page is disconnected.");
+                      } else if (!isBotEnabled) {
+                        toast.warning(`Note: Bot automation is currently paused for "${p.page_name}". Automated replies will remain held until enabled.`);
+                      }
+                    }
+                    setForm({ ...form, page_id: val });
+                  }}
                   className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] focus:border-[var(--primary)] outline-none transition-all font-semibold text-[14px] text-[var(--foreground)] appearance-none cursor-pointer"
                 >
                   <option value="" className="bg-[var(--card)]">{isLoadingPages ? "Syncing Pages..." : "Select a page"}</option>
-                  {pages.map(p => (
-                    <option key={p.id} value={p.page_id} className="bg-[var(--card)]">{p.page_name}</option>
-                  ))}
+                  {pages.map(p => {
+                    const isConnected = p.connection_status !== 'disconnected' && p.connection_status !== 'expired';
+                    const isBotEnabled = Boolean(p.is_active ?? p.is_enabled ?? false) && isConnected;
+
+                    let statusBadge = "";
+                    if (!isConnected) {
+                      statusBadge = p.connection_status === 'expired' ? " (🔴 Connection Expired)" : " (⚪ Disconnected)";
+                    } else if (isBotEnabled) {
+                      statusBadge = " (🟢 Bot Enabled)";
+                    } else {
+                      statusBadge = " (🟠 Bot Paused)";
+                    }
+
+                    return (
+                      <option key={p.id} value={p.page_id} className="bg-[var(--card)]">
+                        {p.page_name}{statusBadge}
+                      </option>
+                    );
+                  })}
                 </select>
                 <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]" />
               </div>
-            </Field>
+
+              {form.page_id && (() => {
+                const selectedP = pages.find(item => String(item.id) === String(form.page_id) || String(item.page_id) === String(form.page_id));
+                if (!selectedP) return null;
+                const isConnected = selectedP.connection_status !== 'disconnected' && selectedP.connection_status !== 'expired';
+                const isBotEnabled = Boolean(selectedP.is_active ?? selectedP.is_enabled ?? false) && isConnected;
+
+                if (!isConnected) {
+                  return (
+                    <div className="mt-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+                      <ShieldAlert className="w-4 h-4 shrink-0" />
+                      <span>This page is disconnected or has expired credentials. Please reconnect on the Integrations page.</span>
+                    </div>
+                  );
+                }
+
+                if (!isBotEnabled) {
+                  return (
+                    <div className="mt-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs flex items-center gap-2">
+                      <Info className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                      <span>Bot automation is currently <strong>Paused</strong> for this page. You can save changes, but automated replies will remain held until the bot is enabled on the Integrations page.</span>
+                    </div>
+                  );
+                }
+
+                return null;
+              })()}
+            </div>
           </div>
 
           {/* SECTION 2: OFFENSIVE */}

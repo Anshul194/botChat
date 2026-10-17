@@ -281,17 +281,43 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
     setIsLoadingPages(true);
     try {
       if (platform === "facebook") {
-        const response = await api.get("/social/facebook-connect");
+        const response = await api.get(`/social/facebook-connect?_t=${Date.now()}`);
         if (response.data.success || response.data.is_success) {
           const fetchedAccounts = response.data.data.facebook_accounts || [];
           const fetchedPages = fetchedAccounts.flatMap((acc: any) => acc.pages || []);
-          setPages(fetchedPages.map((p: any) => ({ id: p.page_id, name: p.page_name })));
+          setPages(fetchedPages.map((p: any) => {
+            const isBotEnabled = (p.is_enabled === true || p.is_enabled === 1 || p.bot_status === 'enabled') && p.status !== 'inactive';
+            const connectionStatus = p.connection_status || (p.status === 'disconnected' ? 'disconnected' : 'connected');
+            return {
+              id: String(p.page_id),
+              page_id: String(p.page_id),
+              name: p.page_name,
+              is_active: isBotEnabled,
+              is_enabled: isBotEnabled,
+              bot_status: isBotEnabled ? 'enabled' : 'paused',
+              connection_status: connectionStatus,
+              picture: p.picture,
+            };
+          }));
         }
       } else {
-        const response = await api.get("/social/instagram-connect?platform=instagram");
+        const response = await api.get(`/social/instagram-connect?platform=instagram&_t=${Date.now()}`);
         if (response.data.success || response.data.is_success) {
           const fetchedAccounts = response.data.data.instagram_accounts || [];
-          setPages(fetchedAccounts.map((acc: any) => ({ id: acc.instagram_id, name: acc.username })));
+          setPages(fetchedAccounts.map((acc: any) => {
+            const isBotEnabled = acc.is_active === true || acc.is_active === 1 || acc.bot_status === 'enabled';
+            const connectionStatus = acc.connection_status || acc.sync_status || 'connected';
+            return {
+              id: String(acc.instagram_id),
+              page_id: String(acc.instagram_id),
+              name: acc.username ? `@${acc.username}` : (acc.name || "Instagram Account"),
+              is_active: isBotEnabled,
+              is_enabled: isBotEnabled,
+              bot_status: isBotEnabled ? 'enabled' : 'paused',
+              connection_status: connectionStatus,
+              profile_picture: acc.profile_picture,
+            };
+          }));
         }
       }
     } catch { toast.error("Failed to load accounts"); }
@@ -421,7 +447,21 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                     placeholder="Write your auto reply campaign name here"
                   />
                 </Field>
-                <Field label={platform === 'instagram' ? "Please select an account" : "Please select a page"} required>
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-[var(--muted-foreground)]">
+                      {platform === 'instagram' ? "Please select an account" : "Please select a page"} <span className="text-rose-400">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => fetchPages()}
+                      disabled={isLoadingPages}
+                      className="text-[11px] font-semibold text-[var(--primary)] hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <RefreshCw className={cn("w-3 h-3", isLoadingPages && "animate-spin")} />
+                      Refresh
+                    </button>
+                  </div>
                   <div className="relative">
                     <select
                       value={form.page_id}
@@ -429,10 +469,12 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                         const val = e.target.value;
                         const p = pages.find(item => String(item.id) === String(val) || String(item.page_id) === String(val));
                         if (p) {
-                          const isEnabled = Boolean(p.is_enabled ?? p.is_active ?? true);
-                          if (!isEnabled) {
-                            toast.error(`The selected ${platform === 'instagram' ? 'Instagram Account' : 'Facebook Page'} "${p.name}" is disabled. Please enable it in Integrations first.`);
-                            return;
+                          const isConnected = p.connection_status !== 'disconnected' && p.connection_status !== 'expired';
+                          const isBotEnabled = Boolean(p.is_active ?? p.is_enabled ?? false) && isConnected;
+                          if (!isConnected) {
+                            toast.error(`The selected ${platform === 'instagram' ? 'account' : 'page'} is disconnected.`);
+                          } else if (!isBotEnabled) {
+                            toast.warning(`Note: Bot automation is currently paused for "${p.name}". Automated replies will remain held until enabled.`);
                           }
                         }
                         setForm({ ...form, page_id: val });
@@ -441,17 +483,55 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
                     >
                       <option value="">{isLoadingPages ? "Syncing..." : "Select..."}</option>
                       {pages.map(p => {
-                        const isEnabled = Boolean(p.is_enabled ?? p.is_active ?? true);
+                        const isConnected = p.connection_status !== 'disconnected' && p.connection_status !== 'expired';
+                        const isBotEnabled = Boolean(p.is_active ?? p.is_enabled ?? false) && isConnected;
+
+                        let statusBadge = "";
+                        if (!isConnected) {
+                          statusBadge = p.connection_status === 'expired' ? " (🔴 Connection Expired)" : " (⚪ Disconnected)";
+                        } else if (isBotEnabled) {
+                          statusBadge = " (🟢 Bot Enabled)";
+                        } else {
+                          statusBadge = " (🟠 Bot Paused)";
+                        }
+
                         return (
-                          <option key={p.id} value={p.id} disabled={!isEnabled}>
-                            {p.name} {!isEnabled ? " (🔴 Disabled)" : " (🟢 Active)"}
+                          <option key={p.id} value={p.id}>
+                            {p.name}{statusBadge}
                           </option>
                         );
                       })}
                     </select>
                     <ChevronLeft className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 -rotate-90 pointer-events-none text-[var(--muted-foreground)]/70" />
                   </div>
-                </Field>
+
+                  {form.page_id && (() => {
+                    const selectedP = pages.find(item => String(item.id) === String(form.page_id) || String(item.page_id) === String(form.page_id));
+                    if (!selectedP) return null;
+                    const isConnected = selectedP.connection_status !== 'disconnected' && selectedP.connection_status !== 'expired';
+                    const isBotEnabled = Boolean(selectedP.is_active ?? selectedP.is_enabled ?? false) && isConnected;
+
+                    if (!isConnected) {
+                      return (
+                        <div className="mt-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+                          <ShieldAlert className="w-4 h-4 shrink-0" />
+                          <span>This account is disconnected or has expired credentials. Please reconnect on the Integrations page.</span>
+                        </div>
+                      );
+                    }
+
+                    if (!isBotEnabled) {
+                      return (
+                        <div className="mt-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs flex items-center gap-2">
+                          <Info className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                          <span>Bot automation is currently <strong>Paused</strong> for this account. You can save changes, but automated replies will remain held until the bot is enabled on the Integrations page.</span>
+                        </div>
+                      );
+                    }
+
+                    return null;
+                  })()}
+                </div>
               </div>
 
               {/* SECTION 2: OFFENSIVE */}
