@@ -342,12 +342,23 @@ export function PostAutoCommentModal({
                             <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--foreground)] uppercase tracking-tight truncate">
                                 {existingCampaignId ? "Manage Auto Comment" : "Enable Auto Comment"}
                             </h2>
+                            {existingCampaignId && view !== "choice" && (
+                                <span className={cn(
+                                    "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0",
+                                    form.status === "active"
+                                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                )}>
+                                    <span className={cn("w-1.5 h-1.5 rounded-full", form.status === "active" ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+                                    {form.status === "active" ? "Active" : "Paused"}
+                                </span>
+                            )}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                             {existingCampaignId && view !== "choice" && (
                                 <>
-                                    <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", form.status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")}>
-                                        {form.status === "active" ? "Disable" : "Enable"}
+                                    <button onClick={handleStatusToggle} className={cn("px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer", form.status === "active" ? "bg-amber-50 text-amber-600 border border-amber-100 hover:bg-amber-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100")}>
+                                        {form.status === "active" ? "Pause" : "Resume"}
                                     </button>
                                     <button onClick={() => setIsSafeDeleteOpen(true)} disabled={isDeleting} className="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all">
                                         {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}

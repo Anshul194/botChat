@@ -7,18 +7,21 @@ import {
   ChevronLeft, Hash, Loader2, Check, RefreshCw,
   Clock, Settings, Eye, EyeOff, MessageCircle,
   LayoutGrid, Image as ImageIcon, Video, Filter, Info, Send, ShieldAlert,
-  Instagram
+  Instagram, Pause, Play
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { TextareaWithEmoji } from "@/components/ui/EmojiPicker";
+import { ReplyTemplateModal } from "../../components/modals/ReplyTemplateModal";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface ReplyTemplate {
   id: number;
   name: string;
+  is_active?: boolean | number | string;
   reply_type: string;
   message: string;
   image?: string;
@@ -617,7 +620,7 @@ export default function InstagramReplyTemplatesPage() {
   const [formModal, setFormModal] = useState<{ open: boolean; mode: "create" | "edit"; template: ReplyTemplate | null }>({
     open: false, mode: "create", template: null
   });
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ReplyTemplate | null>(null);
 
   const fetchItems = async () => {
     setIsLoading(true);
@@ -630,15 +633,21 @@ export default function InstagramReplyTemplatesPage() {
 
   useEffect(() => { fetchItems(); }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleToggleStatus = async (t: ReplyTemplate) => {
     try {
-      await api.delete(`/instagram/auto-reply-template/${id}`);
-      toast.success("Purged successfully!");
-      setTemplates(templates.filter(t => t.id !== id));
-      setDeleteId(null);
-    } catch (error: any) {
-      const msg = error.response?.data?.message || "Delete failed";
-      toast.error(msg);
+      const isCurrentlyActive = (t.is_active !== false && t.is_active !== 0 && t.is_active !== "0");
+      const nextActive = !isCurrentlyActive;
+      const res = await api.patch(`/instagram/auto-reply-template/${t.id}/status`, {
+        is_active: nextActive,
+        status: nextActive ? "active" : "paused",
+      });
+      const returnedActive = res.data?.data?.is_active !== undefined
+        ? Boolean(res.data.data.is_active === true || res.data.data.is_active === 1 || res.data.data.is_active === "1")
+        : (res.data?.data?.status ? res.data.data.status === "active" : nextActive);
+      setTemplates(prev => prev.map(item => item.id === t.id ? { ...item, is_active: returnedActive } : item));
+      toast.success(`Template ${returnedActive ? "resumed" : "paused"} successfully`);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to update status");
     }
   };
 
@@ -693,8 +702,8 @@ export default function InstagramReplyTemplatesPage() {
         </div>
 
         <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] shadow-sm overflow-hidden">
-          <div className="grid grid-cols-[2fr_1fr_1.5fr_120px] gap-8 px-10 py-6 bg-[var(--muted)]/20 border-b border-[var(--border)]">
-            {["Asset Identity", "Logic Mapping", "Lifecycle Sync", "Terminal"].map(h => (
+          <div className="grid grid-cols-[2fr_1fr_1.5fr_140px] gap-8 px-10 py-6 bg-[var(--muted)]/20 border-b border-[var(--border)]">
+            {["Asset Identity", "Logic Mapping", "Status", "Actions"].map(h => (
               <span key={h} className="text-[10px] font-black text-[var(--muted-foreground)] uppercase tracking-widest">{h}</span>
             ))}
           </div>
@@ -716,74 +725,97 @@ export default function InstagramReplyTemplatesPage() {
             </div>
           ) : (
             <div className="divide-y divide-[var(--border)]/55">
-              {filtered.map(t => (
-                <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_120px] gap-8 px-10 py-8 items-center hover:bg-[var(--muted)]/10 transition-all group border-b border-transparent last:border-0">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
-                      <LayoutGrid className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <span className="text-[15px] font-black text-[var(--foreground)] uppercase tracking-tight truncate block max-w-[280px]">{t.name}</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Instagram size={12} className="text-[var(--primary)]" />
-                        <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">ID: {t.id}</span>
+              {filtered.map(t => {
+                const isActive = (t.is_active !== false && t.is_active !== 0 && t.is_active !== "0");
+                return (
+                  <div key={t.id} className="grid grid-cols-[2fr_1fr_1.5fr_140px] gap-8 px-10 py-8 items-center hover:bg-[var(--muted)]/10 transition-all group border-b border-transparent last:border-0">
+                    <div className="flex items-center gap-5">
+                      <div className="w-12 h-12 rounded-2xl bg-[var(--muted)] flex items-center justify-center text-[var(--muted-foreground)] group-hover:bg-[var(--primary)] group-hover:text-[var(--primary-foreground)] transition-all shadow-xs">
+                        <LayoutGrid className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-[15px] font-black text-[var(--foreground)] uppercase tracking-tight truncate block max-w-[280px]">{t.name}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Instagram size={12} className="text-[var(--primary)]" />
+                          <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">ID: {t.id}</span>
+                        </div>
                       </div>
                     </div>
+                    <div>
+                      <span className={cn("px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest", t.reply_type === "filter" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]")}>
+                        {t.reply_type || 'Generic'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className={cn(
+                        "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 w-fit",
+                        isActive
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                          : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                      )}>
+                        <span className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+                        {isActive ? "Active" : "Paused"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleToggleStatus(t)}
+                        title={isActive ? "Pause template" : "Resume template"}
+                        className={cn(
+                          "p-3 rounded-2xl transition-all active:scale-90 cursor-pointer",
+                          isActive
+                            ? "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20"
+                            : "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
+                        )}
+                      >
+                        {isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </button>
+                      <button onClick={() => handleEdit(t)} title="Edit template" className="p-3 rounded-2xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all active:scale-90 cursor-pointer">
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => setDeleteTarget(t)} title="Delete template" className="p-3 rounded-2xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90 cursor-pointer">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <span className={cn("px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest", t.reply_type === "filter" ? "bg-[var(--primary)] text-[var(--primary-foreground)]" : "bg-[var(--muted)] text-[var(--muted-foreground)]")}>
-                      {t.reply_type || 'Generic'}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[12px] font-black text-[var(--muted-foreground)] uppercase tracking-widest flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5" />
-                      Live Sync
-                    </span>
-                    <span className="text-[11px] font-bold text-[var(--muted-foreground)]/60 uppercase pl-5">March 29, 2026</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button onClick={() => handleEdit(t)} className="p-3 rounded-2xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all active:scale-90 cursor-pointer">
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => setDeleteId(t.id)} className="p-3 rounded-2xl bg-[var(--muted)]/50 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 transition-all active:scale-90 cursor-pointer">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
-      <AnimatePresence>
-        {formModal.open && (
-          <TemplateFormModal
-            mode={formModal.mode}
-            initial={formModal.template}
-            onClose={() => setFormModal({ open: false, mode: "create", template: null })}
-            onSaved={() => { setFormModal({ open: false, mode: "create", template: null }); fetchItems(); }}
-          />
-        )}
-      </AnimatePresence>
+      <ReplyTemplateModal
+        isOpen={formModal.open}
+        editingTemplate={formModal.mode === "edit" ? formModal.template : null}
+        onClose={() => setFormModal({ open: false, mode: "create", template: null })}
+        onSaved={() => { setFormModal({ open: false, mode: "create", template: null }); fetchItems(); }}
+        platform="instagram"
+      />
 
-      <AnimatePresence>
-        {deleteId && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[var(--background)]/80 backdrop-blur-sm z-[100]" onClick={() => setDeleteId(null)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[var(--card)] dark:bg-[var(--background)] rounded-none sm:rounded-2xl p-10 max-w-sm w-full text-center shadow-2xl relative z-[101] border border-[var(--border)] dark:border-[var(--border)]">
-              <Trash2 className="w-12 h-12 text-rose-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-black text-[var(--foreground)] dark:text-white uppercase tracking-tight truncate">Scrub Asset?</h3>
-              <p className="text-sm text-[var(--muted-foreground)]/70 mt-4 leading-relaxed font-bold uppercase tracking-wide">Permanently purge this item from the Instagram automation hub?</p>
-              <div className="flex gap-4 mt-10">
-                <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl bg-transparent border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]/50 font-black text-[12px] uppercase transition-all">Abort</button>
-                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-3 rounded-xl bg-rose-600 text-white font-black text-[12px] uppercase shadow-xl shadow-rose-600/20 active:scale-95 transition-all hover:bg-rose-700">Confirm</button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {deleteTarget && (
+        <SafeDeleteModal
+          isOpen={!!deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          itemName={deleteTarget.name || "Auto Reply Template"}
+          itemType="Auto Reply Template"
+          isActive={deleteTarget.is_active !== false && deleteTarget.is_active !== 0 && deleteTarget.is_active !== "0"}
+          onPause={async () => {
+            await api.patch(`/instagram/auto-reply-template/${deleteTarget.id}/status`, {
+              is_active: false,
+              status: "paused",
+            });
+            setTemplates(prev => prev.map(item => item.id === deleteTarget.id ? { ...item, is_active: false } : item));
+            setDeleteTarget(prev => prev ? { ...prev, is_active: false } : null);
+          }}
+          onDelete={async () => {
+            await api.delete(`/instagram/auto-reply-template/${deleteTarget.id}`);
+            toast.success("Template deleted successfully");
+            setTemplates(prev => prev.filter(item => item.id !== deleteTarget.id));
+            setDeleteTarget(null);
+          }}
+        />
+      )}
     </div>
   );
 }

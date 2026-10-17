@@ -6,17 +6,20 @@ import {
   Plus, Search, Trash2, Edit3, X, Sparkles,
   ChevronLeft, Hash, Loader2, Check, RefreshCw,
   Clock, Smile, Settings, Eye, EyeOff, MessageCircle,
-  LayoutGrid, Image as ImageIcon, Video, Filter, Info, Send, ShieldAlert
+  LayoutGrid, Image as ImageIcon, Video, Filter, Info, Send, ShieldAlert,
+  Pause, Play
 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { TextareaWithEmoji } from "@/components/ui/EmojiPicker";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 export interface ReplyTemplate {
   id: number;
   name: string;
+  is_active?: boolean | number | string;
   reply_type: string;
   message: string;
   image?: string;
@@ -182,6 +185,9 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
   ]);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isActive, setIsActive] = useState<boolean>(true);
+  const [isTogglingStatus, setIsTogglingStatus] = useState<boolean>(false);
+  const [isSafeDeleteOpen, setIsSafeDeleteOpen] = useState(false);
   const [dropdownTemplates, setDropdownTemplates] = useState<any[]>([]);
   const [pages, setPages] = useState<any[]>([]);
   const [isLoadingDropdown, setIsLoadingDropdown] = useState(false);
@@ -192,6 +198,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
   useEffect(() => {
     if (isOpen) {
       if (editingTemplate) {
+        setIsActive(editingTemplate?.is_active !== false && editingTemplate?.is_active !== 0 && editingTemplate?.is_active !== "0");
         setForm({
           id: editingTemplate?.id ?? 0,
           name: editingTemplate?.name ?? "",
@@ -257,6 +264,7 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
           fallback_template_id: ""
         });
         setFilterRules([{ id: Math.random().toString(), name: "Rule 1", match_type: "contains", keywords: "", message: "", image: "", video: "", template_id: "" }]);
+        setIsActive(true);
       }
       fetchPages();
     }
@@ -418,6 +426,29 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
     } finally { setIsSaving(false); }
   };
 
+  const handleToggleStatus = async () => {
+    if (!form.id || form.id === 0 || isTogglingStatus) return;
+    setIsTogglingStatus(true);
+    try {
+      const endpoint = platform === "facebook" ? `/facebook/auto-reply-template/${form.id}/status` : `/instagram/auto-reply-template/${form.id}/status`;
+      const nextActive = !isActive;
+      const res = await api.patch(endpoint, {
+        is_active: nextActive,
+        status: nextActive ? "active" : "paused",
+      });
+      const returnedActive = res.data?.data?.is_active !== undefined
+        ? Boolean(Number(res.data.data.is_active))
+        : (res.data?.data?.status ? res.data.data.status === "active" : nextActive);
+      setIsActive(Boolean(returnedActive));
+      toast.success(`Template ${returnedActive ? "resumed" : "paused"} successfully`);
+      onSaved();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to update template status");
+    } finally {
+      setIsTogglingStatus(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -431,10 +462,37 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
           >
             {/* Header */}
             <div className="flex items-center justify-between gap-2 px-4 sm:px-8 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--card)] sticky top-0 z-20">
-              <h2 className="text-[12px] sm:text-[13px] font-semibold text-[var(--foreground)] truncate">{editingTemplate ? 'Edit' : 'Create'} Auto Reply Template ({platform === 'instagram' ? 'Instagram' : 'Facebook'})</h2>
-              <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors shrink-0">
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-3 min-w-0">
+                <h2 className="text-[12px] sm:text-[13px] font-semibold text-[var(--foreground)] truncate">
+                  {editingTemplate ? 'Edit' : 'Create'} Auto Reply Template ({platform === 'instagram' ? 'Instagram' : 'Facebook'})
+                </h2>
+                {editingTemplate && form.id > 0 && (
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0",
+                    isActive
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                  )}>
+                    <span className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+                    {isActive ? "Active" : "Paused"}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {editingTemplate && form.id > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSafeDeleteOpen(true)}
+                    className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all cursor-pointer"
+                    title="Delete Template"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors shrink-0 ml-1">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--card)]">
@@ -796,16 +854,54 @@ export function ReplyTemplateModal({ isOpen, onClose, onSaved, editingTemplate, 
             </div>
 
             <div className="flex gap-4 p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0">
-              <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] font-bold text-[13px] hover:bg-[var(--muted)] transition-all bg-[var(--card)] flex items-center justify-center gap-2 active:scale-95">
+              <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] font-bold text-[13px] hover:bg-[var(--muted)] transition-all bg-[var(--card)] flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
                 <ChevronLeft className="w-4 h-4" />
                 <span>Back</span>
               </button>
-              <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
+              {editingTemplate && form.id > 0 && (
+                <button
+                  type="button"
+                  onClick={handleToggleStatus}
+                  disabled={isTogglingStatus || isSaving}
+                  className={cn(
+                    "flex-1 py-3 rounded-xl font-bold text-[13px] transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 cursor-pointer",
+                    isActive
+                      ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                      : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+                  )}
+                >
+                  {isTogglingStatus ? <Loader2 className="w-4 h-4 animate-spin" /> : (isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />)}
+                  <span>{isActive ? "Pause" : "Resume"}</span>
+                </button>
+              )}
+              <button onClick={handleSave} disabled={isSaving || isTogglingStatus} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 cursor-pointer">
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
                 <span className="truncate">{editingTemplate ? 'UPDATE' : 'SAVE'} CHANGES</span>
               </button>
             </div>
           </motion.div>
+
+          <SafeDeleteModal
+            isOpen={isSafeDeleteOpen}
+            onClose={() => setIsSafeDeleteOpen(false)}
+            itemName={form.name || "Auto Reply Template"}
+            itemType="Auto Reply Template"
+            isActive={isActive}
+            onPause={async () => {
+              const endpoint = platform === "facebook" ? `/facebook/auto-reply-template/${form.id}/status` : `/instagram/auto-reply-template/${form.id}/status`;
+              await api.patch(endpoint, { is_active: false, status: "paused" });
+              setIsActive(false);
+              onSaved();
+            }}
+            onDelete={async () => {
+              const endpoint = platform === "facebook" ? `/facebook/auto-reply-template/${form.id}` : `/instagram/auto-reply-template/${form.id}`;
+              await api.delete(endpoint);
+              toast.success("Template deleted successfully");
+              onSaved();
+              setIsSafeDeleteOpen(false);
+              onClose();
+            }}
+          />
         </div>
       )}
     </AnimatePresence>

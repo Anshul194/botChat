@@ -7,7 +7,7 @@ import {
     Trash2, Plus, Edit3, RefreshCw,
     MessageCircle, EyeOff, Check, Loader2,
     Settings, Send, Wand2, Calendar, LayoutGrid,
-    Search, Filter, Globe, AtSign
+    Search, Filter, Globe, AtSign, Pause, Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
@@ -15,6 +15,7 @@ import { useModal } from "@/components/providers/ModalProvider";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { TextareaWithEmoji } from "@/components/ui/EmojiPicker";
+import { SafeDeleteModal } from "@/components/ui/SafeDeleteModal";
 
 interface FilterRule {
     id: string;
@@ -90,6 +91,9 @@ export function MentionReplyModal({
     const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
     const [existingConfigId, setExistingConfigId] = useState<number | null>(null);
     const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
+    const [isActive, setIsActive] = useState<boolean>(true);
+    const [isTogglingStatus, setIsTogglingStatus] = useState<boolean>(false);
+    const [isSafeDeleteOpen, setIsSafeDeleteOpen] = useState(false);
     const addRecent = (e: string) => setRecentEmojis(p => [e, ...p.filter(x => x !== e)].slice(0, 32));
 
     // Form State
@@ -126,6 +130,7 @@ export function MentionReplyModal({
             
             if (template) {
                 setExistingConfigId(template.id);
+                setIsActive(template.is_active !== false && template.is_active !== 0 && template.is_active !== "0");
                 setName(template.name || "");
                 setReplyType(template.reply_type || "generic");
                 setMultipleReply(template.multiple_reply_enabled === "1" || template.multiple_reply_enabled === 1 || template.multiple_reply_enabled === true);
@@ -156,6 +161,7 @@ export function MentionReplyModal({
                 }
             } else {
                 resetForm();
+                setIsActive(true);
             }
         } catch (error) {
             console.error("Fetch Mention Config Error:", error);
@@ -251,6 +257,29 @@ export function MentionReplyModal({
         }
     };
 
+    const handleToggleStatus = async () => {
+        if (!existingConfigId || isTogglingStatus) return;
+        setIsTogglingStatus(true);
+        try {
+            const nextActive = !isActive;
+            const res = await api.patch(`/instagram/comment-manager/mention-reply/${existingConfigId}/status`, {
+                instagram_id: instagramId,
+                is_active: nextActive,
+                status: nextActive ? "active" : "paused",
+            });
+            const returnedActive = res.data?.data?.is_active !== undefined
+                ? Boolean(Number(res.data.data.is_active))
+                : (res.data?.data?.status ? res.data.data.status === "active" : nextActive);
+            setIsActive(Boolean(returnedActive));
+            toast.success(`Mention reply ${returnedActive ? "resumed" : "paused"} successfully`);
+            onSaved();
+        } catch (err: any) {
+            toast.error(err?.response?.data?.message || "Failed to update status");
+        } finally {
+            setIsTogglingStatus(false);
+        }
+    };
+
     const addRule = () => {
         setRules([...rules, {
             id: Math.random().toString(),
@@ -291,10 +320,33 @@ export function MentionReplyModal({
                             <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--foreground)] truncate">
                                 {existingConfigId ? 'Edit' : 'Create'} Mention Reply Strategy (Instagram)
                             </h2>
+                            {existingConfigId && (
+                                <span className={cn(
+                                    "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0",
+                                    isActive
+                                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                )}>
+                                    <span className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+                                    {isActive ? "Active" : "Paused"}
+                                </span>
+                            )}
                         </div>
-                        <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors shrink-0">
-                            <X size={22} />
-                        </button>
+                        <div className="flex items-center gap-2 shrink-0">
+                            {existingConfigId && (
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSafeDeleteOpen(true)}
+                                    className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all cursor-pointer"
+                                    title="Delete Strategy"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            )}
+                            <button onClick={onClose} className="text-[var(--muted-foreground)]/50 hover:text-rose-500 transition-colors shrink-0 ml-1">
+                                <X size={22} />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 sm:space-y-8 bg-[var(--card)] custom-scrollbar">
@@ -583,13 +635,55 @@ export function MentionReplyModal({
                     </div>
 
                     <div className="flex gap-3 sm:gap-4 p-4 sm:p-8 bg-[var(--card)] border-t border-[var(--border)] flex-shrink-0 relative z-20">
-                        <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[12px] sm:text-[13px] hover:bg-[var(--muted)]/50 transition-all">Cancel</button>
-                        <button onClick={handleSave} disabled={isSaving} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50">
+                        <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[12px] sm:text-[13px] hover:bg-[var(--muted)]/50 transition-all cursor-pointer">Cancel</button>
+                        {existingConfigId && (
+                            <button
+                                type="button"
+                                onClick={handleToggleStatus}
+                                disabled={isTogglingStatus || isSaving}
+                                className={cn(
+                                    "flex-1 py-3 rounded-xl font-bold text-[12px] sm:text-[13px] transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 cursor-pointer",
+                                    isActive
+                                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                                        : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+                                )}
+                            >
+                                {isTogglingStatus ? <Loader2 className="w-4 h-4 animate-spin" /> : (isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />)}
+                                <span>{isActive ? "Pause" : "Resume"}</span>
+                            </button>
+                        )}
+                        <button onClick={handleSave} disabled={isSaving || isTogglingStatus} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[13px] sm:text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 transition-all disabled:opacity-50 cursor-pointer">
                             {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Check size={20} />}
                             <span className="truncate">{existingConfigId ? 'UPDATE CHANGES' : 'ACTIVATE STRATEGY'}</span>
                         </button>
                     </div>
                 </motion.div>
+
+                <SafeDeleteModal
+                    isOpen={isSafeDeleteOpen}
+                    onClose={() => setIsSafeDeleteOpen(false)}
+                    itemName={name || "Mention Reply Strategy"}
+                    itemType="Mention Reply Strategy"
+                    isActive={isActive}
+                    onPause={async () => {
+                        await api.patch(`/instagram/comment-manager/mention-reply/${existingConfigId}/status`, {
+                            instagram_id: instagramId,
+                            is_active: false,
+                            status: "paused",
+                        });
+                        setIsActive(false);
+                        onSaved();
+                    }}
+                    onDelete={async () => {
+                        await api.delete(`/instagram/comment-manager/mention-reply/${existingConfigId}`, {
+                            params: { instagram_id: instagramId },
+                        });
+                        toast.success("Mention reply strategy deleted successfully");
+                        onSaved();
+                        setIsSafeDeleteOpen(false);
+                        onClose();
+                    }}
+                />
             </div>
         </AnimatePresence>
     );
