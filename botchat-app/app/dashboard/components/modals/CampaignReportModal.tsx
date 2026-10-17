@@ -31,6 +31,7 @@ export function CampaignReportModal({
     const [data, setData] = useState<any[]>([]);
     const [stats, setStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
     const [expandedItem, setExpandedItem] = useState<number | null>(null);
 
     useEffect(() => {
@@ -41,6 +42,7 @@ export function CampaignReportModal({
 
     const fetchReport = async () => {
         setIsLoading(true);
+        setHasError(false);
         setData([]);
         setStats(null);
         try {
@@ -64,6 +66,7 @@ export function CampaignReportModal({
             setData(items);
         } catch (error) {
             console.error("Fetch Campaign Report Error:", error);
+            setHasError(true);
             showModal("error", "Error", "Failed to load report analytics");
         } finally {
             setIsLoading(false);
@@ -296,6 +299,33 @@ export function CampaignReportModal({
                                 </AnimatePresence>
                             </div>
                         ))
+                    ) : hasError ? (
+                        <div className="h-full flex flex-col items-center justify-center py-20 text-center space-y-6">
+                            <div className="w-24 h-24 rounded-full bg-red-500/10 flex items-center justify-center shadow-inner">
+                                <AlertCircle className="w-10 h-10 text-red-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black text-[var(--foreground)] uppercase tracking-[0.2em] leading-none">Analytics Unavailable</h3>
+                                <p className="text-[11px] font-bold text-[var(--foreground)]/50 uppercase tracking-tight mt-4 max-w-[280px] mx-auto">
+                                    Unable to retrieve performance data. Please check your connection and click refresh.
+                                </p>
+                                <button onClick={fetchReport} className="mt-4 px-4 py-2 rounded-xl bg-primary text-white text-[12px] font-bold shadow hover:opacity-90 active:scale-95 transition-all">
+                                    Retry
+                                </button>
+                            </div>
+                        </div>
+                    ) : stats && (stats.total > 0 || stats.sent > 0 || stats.failed > 0) ? (
+                        <div className="h-full flex flex-col items-center justify-center py-20 text-center space-y-6">
+                            <div className="w-24 h-24 rounded-full bg-primary/5 flex items-center justify-center shadow-inner">
+                                <BarChart3 className="w-10 h-10 text-primary/40" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black text-[var(--foreground)] uppercase tracking-[0.2em] leading-none">Global Logs Active</h3>
+                                <p className="text-[11px] font-bold text-[var(--foreground)]/50 uppercase tracking-tight mt-4 max-w-[280px] mx-auto">
+                                    {stats.total} total automation hits recorded. Create or map individual post campaigns to view granular rule performance.
+                                </p>
+                            </div>
+                        </div>
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center py-20 text-center space-y-6">
                             <div className="w-24 h-24 rounded-full bg-primary/5 flex items-center justify-center shadow-inner">

@@ -1240,7 +1240,7 @@ export default function InstagramCommentManagerPage() {
  onClose={() => setShowCampaignReportModal(false)}
  reportType={campaignReportType}
  platform="instagram"
- pageId={selectedAccount?.page?.page_id || selectedAccount?.instagram_id || ""}
+ pageId={selectedAccount?.instagram_id || selectedAccount?.page?.page_id || ""}
  />
 
  <CommentReportModal
@@ -1248,7 +1248,7 @@ export default function InstagramCommentManagerPage() {
  onClose={() => setShowCommentReportModal(false)}
  platform="instagram"
  postId={selectedPostForReport?.id || ""}
- pageId={selectedAccount?.page?.page_id || selectedAccount?.instagram_id || ""}
+ pageId={selectedAccount?.instagram_id || selectedAccount?.page?.page_id || ""}
  />
 
  <PostReplyReportModal
