@@ -341,12 +341,16 @@ export default function InstagramCommentManagerPage() {
  setPosts(mappedPosts);
  if (stats) setPageStats(stats);
  }
- } catch (error) {
+ } catch (error: any) {
  console.error("Fetch Posts Error:", error);
+ const errorMsg = error.response?.data?.error || "Failed to fetch posts from Instagram";
+ if (error.response?.data?.error_code === 'token_expired' || error.response?.status === 401) {
+ showModal("error", "Instagram Session Expired", errorMsg);
+ }
  } finally {
  setIsPostsLoading(false);
  }
- }, [selectedAccount]);
+ }, [selectedAccount, showModal]);
 
  const fetchTemplates = useCallback(async () => {
  setIsTemplatesLoading(true);
