@@ -202,6 +202,13 @@ export default function FacebookBotRepliesPage() {
 
     const handleToggleStatus = async (reply: BotReply) => {
         const newStatus = reply.status === 'published' ? 'draft' : 'publish';
+        if (newStatus === 'publish') {
+            const page = pages.find(p => p.page_id === reply.facebook_page_id);
+            if (page && !page.is_enabled) {
+                showModal("error", "Publish Blocked", "Cannot publish bot reply: Connected Facebook Page is disabled. Please enable the page first.");
+                return;
+            }
+        }
         try {
             await api.patch(`/facebook/bot-replies/${reply.id}/${newStatus}`);
             showModal("success", "Success", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
@@ -225,10 +232,14 @@ export default function FacebookBotRepliesPage() {
 
     const handleActionToggle = async (action: ActionData) => {
         if (!action.automation_id) return;
+        const newStatus = action.status === 'published' ? 'draft' : 'publish';
+        if (newStatus === 'publish' && selectedPageObj && !selectedPageObj.is_enabled) {
+            showModal("error", "Publish Blocked", "Cannot publish action shortcut: Connected Facebook Page is disabled. Please enable the page first.");
+            return;
+        }
         try {
-            const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/facebook/bot-replies/${action.automation_id}/${newStatus}`);
-            showModal("success", "Success", `Action status updated`);
+            showModal("success", "Success", `Action status updated to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             if (selectedPageId !== "all") fetchActions();
         } catch (error: any) {
             const errorMsg = error.response?.data?.message || "Failed to toggle action";
@@ -513,10 +524,24 @@ export default function FacebookBotRepliesPage() {
                                                                 <div className="flex items-center justify-between gap-2">
                                                                     <h4 className="text-[14px] font-bold truncate" style={{ color: "var(--foreground)" }}>{reply.name}</h4>
                                                                     {reply.status === 'published' ? (
-                                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0"
-                                                                            style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
-                                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
-                                                                        </span>
+                                                                        (() => {
+                                                                            const page = pages.find(p => p.page_id === reply.facebook_page_id);
+                                                                            const isBlocked = page && !page.is_enabled;
+                                                                            if (isBlocked) {
+                                                                                return (
+                                                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0"
+                                                                                        style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444" }}>
+                                                                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500" />Blocked
+                                                                                    </span>
+                                                                                );
+                                                                            }
+                                                                            return (
+                                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0"
+                                                                                    style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
+                                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                                                </span>
+                                                                            );
+                                                                        })()
                                                                     ) : (
                                                                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0"
                                                                             style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
@@ -596,10 +621,24 @@ export default function FacebookBotRepliesPage() {
                                                     </div>
                                                     <div className="flex items-center col-span-2">
                                                         {reply.status === 'published' ? (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
-                                                                style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
-                                                            </span>
+                                                            (() => {
+                                                                const page = pages.find(p => p.page_id === reply.facebook_page_id);
+                                                                const isBlocked = page && !page.is_enabled;
+                                                                if (isBlocked) {
+                                                                    return (
+                                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                                                                            style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444" }}>
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />Blocked
+                                                                        </span>
+                                                                    );
+                                                                }
+                                                                return (
+                                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                                                                        style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
+                                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                                    </span>
+                                                                );
+                                                            })()
                                                         ) : (
                                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
                                                                 style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
@@ -735,8 +774,8 @@ export default function FacebookBotRepliesPage() {
                                                                                 "p-2 rounded-lg border transition-all active:scale-90",
                                                                                 action.status === 'published' ? "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800" : "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800"
                                                                             )}
-                                                                            title={action.status === 'published' ? "Pause Action" : "Resume Action"}
-                                                                            aria-label={action.status === 'published' ? `Pause ${def.label} action` : `Resume ${def.label} action`}
+                                                                            title={action.status === 'published' ? "Unpublish to Draft" : "Publish Action"}
+                                                                            aria-label={action.status === 'published' ? `Unpublish ${def.label} action` : `Publish ${def.label} action`}
                                                                         >
                                                                             {action.status === 'published' ? <Pause size={14} /> : <Play size={14} />}
                                                                         </button>
@@ -755,10 +794,24 @@ export default function FacebookBotRepliesPage() {
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
                                                             {action.automation_id && (
-                                                                <div className={cn(
-                                                                    "w-2 h-2 rounded-full",
-                                                                    action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
-                                                                )} />
+                                                                action.status === 'published' ? (
+                                                                    selectedPageObj && !selectedPageObj.is_enabled ? (
+                                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                                                            Blocked
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                            Live
+                                                                        </span>
+                                                                    )
+                                                                ) : (
+                                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
+                                                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                                        Draft
+                                                                    </span>
+                                                                )
                                                             )}
                                                         </div>
                                                         <p className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold leading-relaxed mt-1">{def.desc}</p>

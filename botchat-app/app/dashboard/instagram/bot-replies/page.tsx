@@ -204,6 +204,14 @@ export default function InstagramBotRepliesPage() {
 
     const handleToggleStatus = async (reply: BotReply) => {
         const newStatus = reply.status === 'published' ? 'draft' : 'publish';
+        if (newStatus === 'publish') {
+            const acc = pages.find(p => p.instagram_id === (reply as any).instagram_id || p.instagram_id === (reply as any).instagram_account_id);
+            const isEnabled = acc ? Boolean(acc.is_active ?? acc.is_enabled ?? true) : true;
+            if (!isEnabled) {
+                showModal("error", "Publish Blocked", "Cannot publish bot reply: Connected Instagram account is disabled. Please enable the account first.");
+                return;
+            }
+        }
         try {
             await api.patch(`/instagram/bot-replies/${reply.id}/${newStatus}`);
             showModal("success", "Success", `Bot reply set to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
@@ -227,10 +235,17 @@ export default function InstagramBotRepliesPage() {
 
     const handleActionToggle = async (action: ActionData) => {
         if (!action.automation_id) return;
+        const newStatus = action.status === 'published' ? 'draft' : 'publish';
+        if (newStatus === 'publish' && selectedAccountObj) {
+            const isEnabled = Boolean(selectedAccountObj.is_active ?? selectedAccountObj.is_enabled ?? true);
+            if (!isEnabled) {
+                showModal("error", "Publish Blocked", "Cannot publish action shortcut: Connected Instagram account is disabled. Please enable the account first.");
+                return;
+            }
+        }
         try {
-            const newStatus = action.status === 'published' ? 'draft' : 'publish';
             await api.patch(`/instagram/bot-replies/${action.automation_id}/${newStatus}`);
-            showModal("success", "Success", `Action status updated`);
+            showModal("success", "Success", `Action status updated to ${newStatus === 'publish' ? 'Live' : 'Draft'}`);
             if (selectedAccountId !== "all") fetchActions();
         } catch (error: any) {
             const errorMsg = error.response?.data?.message || "Failed to toggle action";
@@ -516,9 +531,22 @@ export default function InstagramBotRepliesPage() {
                                                                 )}
                                                             </div>
                                                             {reply.status === 'published' ? (
-                                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
-                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
-                                                                </span>
+                                                                (() => {
+                                                                    const acc = pages.find(p => p.instagram_id === reply.instagram_id);
+                                                                    const isBlocked = acc && !Boolean(acc.is_active ?? acc.is_enabled ?? true);
+                                                                    if (isBlocked) {
+                                                                        return (
+                                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 border border-red-100 flex-shrink-0">
+                                                                                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />Blocked
+                                                                            </span>
+                                                                        );
+                                                                    }
+                                                                    return (
+                                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 flex-shrink-0">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                                        </span>
+                                                                    );
+                                                                })()
                                                             ) : (
                                                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 flex-shrink-0">
                                                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Draft
@@ -596,9 +624,22 @@ export default function InstagramBotRepliesPage() {
                                                     {/* Status */}
                                                     <div className="flex items-center col-span-2">
                                                         {reply.status === 'published' ? (
-                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
-                                                            </span>
+                                                            (() => {
+                                                                const acc = pages.find(p => p.instagram_id === reply.instagram_id);
+                                                                const isBlocked = acc && !Boolean(acc.is_active ?? acc.is_enabled ?? true);
+                                                                if (isBlocked) {
+                                                                    return (
+                                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300 border border-red-200 dark:border-red-500/30">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />Blocked
+                                                                        </span>
+                                                                    );
+                                                                }
+                                                                return (
+                                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />Live
+                                                                    </span>
+                                                                );
+                                                            })()
                                                         ) : (
                                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
                                                                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />Draft
@@ -712,7 +753,7 @@ export default function InstagramBotRepliesPage() {
                                                                                 "p-2 rounded-lg border transition-all active:scale-90",
                                                                                 action.status === 'published' ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
                                                                             )}
-                                                                            title={action.status === 'published' ? "Pause Action" : "Resume Action"}
+                                                                            title={action.status === 'published' ? "Unpublish to Draft" : "Publish Action"}
                                                                         >
                                                                             {action.status === 'published' ? <Pause size={14} /> : <Play size={14} />}
                                                                         </button>
@@ -730,10 +771,24 @@ export default function InstagramBotRepliesPage() {
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider">{def.label}</h3>
                                                             {action.automation_id && (
-                                                                <div className={cn(
-                                                                    "w-2 h-2 rounded-full",
-                                                                    action.status === 'published' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse" : "bg-neutral-300"
-                                                                )} />
+                                                                action.status === 'published' ? (
+                                                                    selectedAccountObj && !Boolean(selectedAccountObj.is_active ?? selectedAccountObj.is_enabled ?? true) ? (
+                                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                                                            Blocked
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
+                                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                            Live
+                                                                        </span>
+                                                                    )
+                                                                ) : (
+                                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50">
+                                                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                                        Draft
+                                                                    </span>
+                                                                )
                                                             )}
                                                         </div>
                                                         <p className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold leading-relaxed mt-1">{def.desc}</p>

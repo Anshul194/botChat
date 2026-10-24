@@ -3651,9 +3651,14 @@ function FlowBuilder() {
       }
 
       setTimeout(() => setSaved(false), 2200);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save Error:", error);
-      toast.error("Failed to save flow");
+      const serverMsg = error?.response?.data?.message;
+      if (serverMsg) {
+        showModal("error", "Action Blocked", serverMsg);
+      } else {
+        toast.error("Failed to save flow");
+      }
     } finally {
       setIsSaving(false);
     }
