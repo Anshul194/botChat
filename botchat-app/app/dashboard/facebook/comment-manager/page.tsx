@@ -1561,6 +1561,8 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  const [isSaving, setIsSaving] = useState(false);
  const [isLoadingData, setIsLoadingData] = useState(true);
  const [campaignId, setCampaignId] = useState<number | null>(null);
+ const [isActive, setIsActive] = useState<boolean>(true);
+ const [isTogglingStatus, setIsTogglingStatus] = useState<boolean>(false);
 
  const [form, setForm] = useState({
  name: "",
@@ -1616,6 +1618,8 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  const rulesArr = data?.rules || c?.rules || c?.filters || [];
 
  setCampaignId(c.id);
+ const activeVal = c.is_active !== undefined ? (c.is_active === 1 || c.is_active === "1" || c.is_active === true) : true;
+ setIsActive(activeVal);
  setForm({
  name: c.name || "",
  reply_type: c.reply_type === "filter" ? "filter" : "generic",
@@ -1705,6 +1709,25 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  } finally { setIsSaving(false); }
  };
 
+ const handleToggleStatus = async () => {
+   if (!campaignId) return;
+   setIsTogglingStatus(true);
+   try {
+     const res = await api.post(`/facebook/full-page-reply/${campaignId}/status`, {
+       status: !isActive
+     });
+     const newStatus = res.data?.status ?? res.data?.data?.is_active ?? !isActive;
+     const normalized = newStatus === 1 || newStatus === "1" || newStatus === true;
+     setIsActive(normalized);
+     toast.success(normalized ? "Full Account Reply activated" : "Full Account Reply paused");
+     onSaved();
+   } catch (err: any) {
+     toast.error(err?.response?.data?.message || "Failed to toggle status");
+   } finally {
+     setIsTogglingStatus(false);
+   }
+ };
+
  const handleAddRule = () => {
  setFilterRules([
  ...filterRules,
@@ -1730,6 +1753,16 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  <div>
  <h2 className="text-[13px] font-bold text-[var(--foreground)]">
  {campaignId ? "Edit Full Page Campaign" : "Create Full Page Campaign"}
+   {campaignId && (
+     <span className={cn(
+       "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+       isActive
+         ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+         : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+     )}>
+       {isActive ? "Active" : "Paused"}
+     </span>
+   )}
  </h2>
  <p className="text-[10px] font-bold text-[var(--primary)] leading-none mt-1">Page: {page.page_name}</p>
  </div>
@@ -1749,6 +1782,53 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  ) : (
  <AnimatePresence mode="wait">
  <motion.div key="custom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+
+ {/* Full Account Reply Master Setting */}
+ <div className="bg-[var(--card)] p-5 rounded-2xl border border-[var(--border)] shadow-xs space-y-3">
+   <div className="flex items-center justify-between flex-wrap gap-3">
+     <div className="flex items-center gap-2.5">
+       <Globe className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
+       <div>
+         <div className="flex items-center gap-2">
+           <h3 className="text-sm font-bold text-[var(--foreground)]">Full Account Reply</h3>
+           <span className={cn(
+             "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+             isActive
+               ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+               : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+           )}>
+             {isActive ? "Active" : "Paused"}
+           </span>
+         </div>
+         <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+           Apply this account-level reply strategy to eligible posts unless a post has its own override.
+         </p>
+       </div>
+     </div>
+     {campaignId && (
+       <button
+         type="button"
+         onClick={handleToggleStatus}
+         disabled={isTogglingStatus}
+         className={cn(
+           "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1.5",
+           isActive
+             ? "border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+             : "border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10"
+         )}
+       >
+         {isTogglingStatus ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : isActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+         {isActive ? "Pause Strategy" : "Resume Strategy"}
+       </button>
+     )}
+   </div>
+   <div className="p-3 bg-[var(--muted)]/30 rounded-xl border border-[var(--border)] text-xs text-[var(--muted-foreground)] flex items-start gap-2">
+     <Info className="w-4 h-4 text-[var(--primary)] flex-shrink-0 mt-0.5" />
+     <span>
+       <strong>Post Overrides Available:</strong> Individual posts can override this global strategy in their Auto Reply settings (choose <em>Inherit Account Setting</em>, <em>Custom Reply Only</em>, or <em>Allow Both</em>).
+     </span>
+   </div>
+ </div>
 
  <div className="bg-[var(--card)] p-6 rounded-2xl border border-[var(--border)] shadow-xs">
  <FPC_Field label="Auto Reply Campaign Name" required>
@@ -2004,6 +2084,31 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] font-bold text-[13px] hover:bg-[var(--muted)]/50 transition-all bg-[var(--card)]">
  Cancel
  </button>
+ {campaignId && (
+   <button
+     type="button"
+     onClick={handleToggleStatus}
+     disabled={isTogglingStatus || isSaving}
+     className={cn(
+       "px-5 py-3 rounded-xl font-bold text-[13px] border transition-all flex items-center justify-center gap-2",
+       isActive
+         ? "border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+         : "border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10"
+     )}
+   >
+     {isTogglingStatus ? (
+       <Loader2 className="w-4 h-4 animate-spin" />
+     ) : isActive ? (
+       <>
+         <Pause className="w-4 h-4" /> Pause
+       </>
+     ) : (
+       <>
+         <Play className="w-4 h-4" /> Resume
+       </>
+     )}
+   </button>
+ )}
  <button onClick={handleSave} disabled={isSaving || isLoadingData} className="flex-[2] py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold text-[14px] shadow-xl shadow-[var(--primary)]/10 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50">
  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
  <span>{campaignId ? "UPDATE CAMPAIGN" : "SAVE CHANGES"}</span>

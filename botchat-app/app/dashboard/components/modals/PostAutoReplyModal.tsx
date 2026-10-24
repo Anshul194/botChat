@@ -94,6 +94,115 @@ function CapsuleSwitch({ active }: { active: boolean }) {
     );
 }
 
+function FullAccountReplyOverrideSelector({
+    value,
+    onChange
+}: {
+    value: "inherit" | "custom_only" | "both";
+    onChange: (val: "inherit" | "custom_only" | "both") => void;
+}) {
+    const options: {
+        id: "inherit" | "custom_only" | "both";
+        title: string;
+        badge?: string;
+        description: string;
+        icon: any;
+    }[] = [
+        {
+            id: "inherit",
+            title: "Option A — Inherit Account Setting",
+            badge: "Recommended Default",
+            description: "Follows current account setting. If Full Account Reply is enabled globally, it may apply; if disabled, only this post's custom reply executes.",
+            icon: Globe,
+        },
+        {
+            id: "custom_only",
+            title: "Option B — Custom Reply Only",
+            badge: "Custom Reply Only",
+            description: "Full Account Reply is explicitly excluded for this post. Never falls back to Full Account Reply even if custom strategy is not active.",
+            icon: ShieldAlert,
+        },
+        {
+            id: "both",
+            title: "Option C — Allow Both",
+            badge: "Allow Both",
+            description: "Both Full Account Reply and this post's custom Auto Reply strategy operate together when independently eligible.",
+            icon: Layers,
+        },
+    ];
+
+    return (
+        <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs space-y-3.5">
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-[var(--primary)]" />
+                    <h3 className="text-sm font-semibold text-[var(--foreground)]">Full Account Reply for This Post</h3>
+                </div>
+                {value === "custom_only" && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                        Custom Reply Only
+                    </span>
+                )}
+                {value === "both" && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                        Allow Both
+                    </span>
+                )}
+            </div>
+            <p className="text-xs text-[var(--muted-foreground)]">
+                Choose how this post interacts with the global account-level Full Account Reply strategy.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                {options.map(opt => {
+                    const isSelected = value === opt.id;
+                    const OptIcon = opt.icon;
+                    return (
+                        <div
+                            key={opt.id}
+                            onClick={() => onChange(opt.id)}
+                            className={cn(
+                                "p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between text-left relative",
+                                isSelected
+                                    ? "border-[var(--primary)] bg-[var(--primary)]/5 shadow-xs"
+                                    : "border-[var(--border)] hover:border-[var(--muted-foreground)]/30 hover:bg-[var(--muted)]/20"
+                            )}
+                        >
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between gap-1">
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                        <OptIcon className={cn("w-3.5 h-3.5 shrink-0", isSelected ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]")} />
+                                        <span className="text-[12.5px] font-bold text-[var(--foreground)] truncate">{opt.title}</span>
+                                    </div>
+                                    <div className={cn(
+                                        "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all",
+                                        isSelected ? "border-[var(--primary)] bg-[var(--primary)]" : "border-[var(--muted-foreground)]/40"
+                                    )}>
+                                        {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
+                                    </div>
+                                </div>
+                                {opt.badge && (
+                                    <span className={cn(
+                                        "inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide",
+                                        opt.id === "inherit" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
+                                        opt.id === "custom_only" ? "bg-rose-500/10 text-rose-500" :
+                                        "bg-blue-500/10 text-blue-500"
+                                    )}>
+                                        {opt.badge}
+                                    </span>
+                                )}
+                                <p className="text-[11px] leading-relaxed text-[var(--muted-foreground)] pt-0.5">
+                                    {opt.description}
+                                </p>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
 // ── Main Modal ────────────────────────────────────────────────────────────────
 export function PostAutoReplyModal({
     isOpen,
@@ -127,6 +236,7 @@ export function PostAutoReplyModal({
         private_template_id: "" as string | number | null,
         save_as_template: false,
         use_template: false,
+        full_account_reply_override: "inherit" as "inherit" | "custom_only" | "both",
         offensive: {
             hide_comment: false,
             delete_comment: false,
@@ -168,6 +278,7 @@ export function PostAutoReplyModal({
             private_template_id: null,
             save_as_template: false,
             use_template: false,
+            full_account_reply_override: "inherit",
             offensive: {
                 hide_comment: false,
                 delete_comment: false,
@@ -211,6 +322,8 @@ export function PostAutoReplyModal({
 
                 const configData = data.template || data;
 
+                const overrideValue = data.full_account_reply_override || configData.full_account_reply_override || "inherit";
+
                 setForm(f => ({
                     ...f,
                     name: configData.name || configData.campaign_name || "",
@@ -225,6 +338,7 @@ export function PostAutoReplyModal({
                     private_template_id: configData.private_template_id || null,
                     save_as_template: false,
                     use_template: isUseTemplate,
+                    full_account_reply_override: (overrideValue === "custom_only" || overrideValue === "both") ? overrideValue : "inherit",
                     offensive: {
                         hide_comment: configData.offensive?.hide_comment === "1" || !!configData.offensive?.hide_comment,
                         delete_comment: configData.offensive?.delete_comment === "1" || !!configData.offensive?.delete_comment,
@@ -304,6 +418,7 @@ export function PostAutoReplyModal({
                 message: form.message,
                 image: form.image || null,
                 video: form.video || null,
+                full_account_reply_override: form.full_account_reply_override || "inherit",
                 save_as_template: form.save_as_template,
             };
 
@@ -562,6 +677,12 @@ export function PostAutoReplyModal({
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* SECTION: FULL ACCOUNT REPLY OVERRIDE FOR THIS POST (TEMPLATE MODE) */}
+                                    <FullAccountReplyOverrideSelector
+                                        value={form.full_account_reply_override}
+                                        onChange={(val) => setForm(f => ({ ...f, full_account_reply_override: val }))}
+                                    />
                                 </motion.div>
                             ) : (
                                 <motion.div key="custom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
@@ -575,6 +696,12 @@ export function PostAutoReplyModal({
                                             />
                                         </Field>
                                     </div>
+
+                                    {/* SECTION: FULL ACCOUNT REPLY OVERRIDE FOR THIS POST (CUSTOM MODE) */}
+                                    <FullAccountReplyOverrideSelector
+                                        value={form.full_account_reply_override}
+                                        onChange={(val) => setForm(f => ({ ...f, full_account_reply_override: val }))}
+                                    />
 
                                     {/* SECTION: OFFENSIVE SETTINGS */}
                                     <div className="bg-[var(--card)] p-4 sm:p-7 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs space-y-4 sm:space-y-6">

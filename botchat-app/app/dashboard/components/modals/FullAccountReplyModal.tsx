@@ -359,6 +359,58 @@ export function FullAccountReplyModal({
                         ) : (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                                 
+                                {/* SECTION: FULL ACCOUNT REPLY MASTER CONTROL & POST OVERRIDES */}
+                                <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs space-y-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <Globe className="w-4 h-4 text-[var(--primary)]" />
+                                                <h3 className="text-sm font-semibold text-[var(--foreground)]">Full Account Reply</h3>
+                                                <span className={cn(
+                                                    "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                                                    isActive
+                                                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                                )}>
+                                                    <span className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+                                                    {isActive ? "Active" : "Paused"}
+                                                </span>
+                                            </div>
+                                            <p className="text-[12.5px] text-[var(--muted-foreground)]">
+                                                Apply this account-level reply strategy to eligible posts unless a post has its own override.
+                                            </p>
+                                        </div>
+                                        {existingConfigId ? (
+                                            <button
+                                                type="button"
+                                                onClick={handleToggleStatus}
+                                                disabled={isTogglingStatus || isSaving}
+                                                className={cn(
+                                                    "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer border self-start sm:self-center",
+                                                    isActive
+                                                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/50 hover:bg-amber-100"
+                                                        : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100"
+                                                )}
+                                            >
+                                                {isTogglingStatus ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (isActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />)}
+                                                {isActive ? "Pause Full Account Reply" : "Resume Full Account Reply"}
+                                            </button>
+                                        ) : (
+                                            <span className="text-xs text-[var(--muted-foreground)] bg-[var(--muted)]/50 px-2.5 py-1 rounded-md border border-[var(--border)] shrink-0 self-start sm:self-center">
+                                                Activates upon strategy creation
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Post Override Discovery Notice */}
+                                    <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[var(--muted)]/40 border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+                                        <Info className="w-4 h-4 text-[var(--primary)] shrink-0 mt-0.5" />
+                                        <p className="leading-relaxed">
+                                            <span className="font-semibold text-[var(--foreground)]">Post-Level Overrides Available:</span> Individual posts can override Full Account Reply behavior in their own Auto Reply settings with choices for <span className="font-medium text-[var(--foreground)]">Inherit Account Setting</span>, <span className="font-medium text-[var(--foreground)]">Custom Reply Only</span>, or <span className="font-medium text-[var(--foreground)]">Allow Both</span>.
+                                        </p>
+                                    </div>
+                                </div>
+
                                 {/* SECTION: BASICS */}
                                 <div className="bg-[var(--card)] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-[var(--border)] shadow-xs">
                                     <Field label="Auto Reply Campaign Name" required>
