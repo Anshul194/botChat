@@ -327,16 +327,25 @@ export default function InstagramCommentManagerPage() {
  const stats = responseData.data?.stats || responseData.stats;
 
  // Map to unified structure for UI
- const mappedPosts = rawPosts.map((p: any) => ({
+ const mappedPosts = rawPosts.map((p: any) => {
+ const thumb = p.thumbnail_url
+ || p.thumbnail
+ || (p.media_type !== "VIDEO" && p.media_url && !p.media_url.includes(".mp4") ? p.media_url : null)
+ || p.thumbnail_url
+ || p.media_url
+ || "";
+
+ return {
  ...p,
  id: p.id || p.instagram_id,
- thumbnail: p.media_url || p.thumbnail,
+ thumbnail: thumb,
  text: p.caption || p.message_short || p.text || (p.media_type === "IMAGE" ? "Photo" : "Post"),
  status: {
  reply: p.auto_reply_enabled || p.has_post_auto_reply ? (p.post_auto_reply_status === "paused" ? "paused" : "active") : null,
  comment: p.auto_comment_enabled || p.has_post_auto_comment ? (p.post_auto_comment_status === "paused" ? "paused" : "active") : null
  }
- }));
+ };
+ });
 
  setPosts(mappedPosts);
  if (stats) setPageStats(stats);
@@ -630,8 +639,26 @@ export default function InstagramCommentManagerPage() {
  posts.map((post, idx) => (
  <div key={post.id || `post-${idx}`} className="group bg-[var(--muted)]/50 border border-[var(--border)] rounded-2xl transition-all hover:border-primary/30 shadow-sm flex flex-col relative">
  <div className="flex gap-3 sm:gap-4 p-3 sm:p-4">
- <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 border border-[var(--border)]">
- <img src={post.thumbnail} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+ <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-[var(--muted)]/80 border border-[var(--border)] relative flex items-center justify-center">
+ {post.thumbnail ? (
+ <img
+ src={post.thumbnail}
+ alt="Post thumbnail"
+ referrerPolicy="no-referrer"
+ className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+ onError={(e) => {
+ (e.target as HTMLElement).style.display = 'none';
+ const parent = (e.target as HTMLElement).parentElement;
+ if (parent) {
+ const fallback = parent.querySelector('.thumb-fallback');
+ if (fallback) fallback.classList.remove('hidden');
+ }
+ }}
+ />
+ ) : null}
+ <div className={cn("thumb-fallback flex items-center justify-center text-[var(--muted-foreground)]", post.thumbnail ? "hidden" : "")}>
+ {post.media_type === "VIDEO" ? <Play className="w-5 h-5 opacity-60 fill-current" /> : <ImageIcon className="w-5 h-5 opacity-60" />}
+ </div>
  </div>
  <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
  <div className="space-y-1.5">
