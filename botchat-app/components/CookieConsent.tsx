@@ -3,14 +3,18 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Cookie, Database, Settings } from "lucide-react";
+import { Shield, Cookie, Database, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
 
+  // Automatic first-visit trigger
   useEffect(() => {
+    if (pathname === "/home/cookie_policy" || pathname === "/home/browser_caching") {
+      return;
+    }
     const consent = localStorage.getItem("cookieConsentStatus");
     if (!consent) {
       const timer = setTimeout(() => {
@@ -18,13 +22,23 @@ export default function CookieConsent() {
       }, 1000);
       return () => clearTimeout(timer);
     }
+  }, [pathname]);
+
+  // Support reopening the consent preferences dialog via custom window event
+  useEffect(() => {
+    const handleOpen = () => {
+      setIsVisible(true);
+    };
+    window.addEventListener("openCookieConsent", handleOpen);
+    return () => {
+      window.removeEventListener("openCookieConsent", handleOpen);
+    };
   }, []);
 
-  // Prevent scrolling when the consent modal is open
+  // Prevent background scrolling while the consent modal is open
   useEffect(() => {
     if (isVisible) {
       document.body.style.overflow = "hidden";
-      // Prevent touch scroll on mobile
       document.body.style.touchAction = "none";
     } else {
       document.body.style.overflow = "";
@@ -46,9 +60,9 @@ export default function CookieConsent() {
     setIsVisible(false);
   };
 
-  if (pathname === "/home/cookie_policy" || pathname === "/home/browser_caching") {
-    return null;
-  }
+  const handleClose = () => {
+    setIsVisible(false);
+  };
 
   return (
     <AnimatePresence>
@@ -61,7 +75,7 @@ export default function CookieConsent() {
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
             className="absolute inset-0 bg-zinc-900/40 dark:bg-black/80 transition-all duration-500"
             style={{ touchAction: "none" }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleClose}
           />
 
           {/* Bottom Sheet / Centered Modal Card */}
@@ -72,6 +86,15 @@ export default function CookieConsent() {
             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
             className="relative w-full sm:max-w-[420px] p-5 sm:p-8 rounded-t-[28px] sm:rounded-b-[32px] sm:rounded-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] dark:shadow-[0_-10px_40px_rgba(255,45,120,0.1)] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xl border-t sm:border border-white/20 dark:border-white/10 overflow-hidden max-h-[85vh] overflow-y-auto pb-8 sm:pb-8"
           >
+            {/* Close button */}
+            <button
+              onClick={handleClose}
+              aria-label="Close cookie preferences"
+              className="absolute top-4 right-4 p-2 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
             {/* Mobile drag indicator (visual only) */}
             <div className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-800 rounded-full mx-auto mb-4 sm:hidden" />
 
@@ -87,10 +110,10 @@ export default function CookieConsent() {
               </div>
               <div>
                 <h3 className="font-black text-xl sm:text-2xl tracking-tight text-zinc-900 dark:text-white mb-1 sm:mb-2">
-                  Privacy & Cookies
+                  Privacy &amp; Cookies
                 </h3>
                 <p className="text-[11px] sm:text-sm text-zinc-500 dark:text-zinc-400 font-medium sm:px-4 leading-relaxed">
-                  We use essential tracking to keep MegaDM secure and caching to ensure peak speeds.
+                  We use essential storage to keep MegaDM secure and caching to ensure peak speeds.
                 </p>
               </div>
             </div>
@@ -117,10 +140,10 @@ export default function CookieConsent() {
                 </div>
                 <div>
                   <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5">
-                    Browser Caching
+                    Browser Caching &amp; Storage
                   </h4>
                   <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Speeds up dashboard response time and reduces static latency.
+                    Speeds up dashboard response time and stores local UI preferences.
                   </p>
                 </div>
               </div>
@@ -128,7 +151,7 @@ export default function CookieConsent() {
 
             {/* Description Links */}
             <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 text-center mb-5 sm:mb-6 leading-relaxed relative z-10 px-1 sm:px-2">
-              By selecting "Accept All", you agree to our storage policies. Read the{" "}
+              By selecting &quot;Accept All&quot;, you agree to our storage policies. Read the{" "}
               <Link
                 href="/home/cookie_policy"
                 target="_blank"

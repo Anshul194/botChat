@@ -96,7 +96,7 @@ export default function BlogDetailPage({ params }: BlogDetailProps) {
     <main className="min-h-screen bg-white">
       <Navbar forceLight={true} />
 
-      <article className="pt-28 pb-24">
+      <article className="pt-36 sm:pt-40 md:pt-28 pb-24">
         {/* Header */}
         <div className="max-w-4xl mx-auto px-6 text-center">
           <Link

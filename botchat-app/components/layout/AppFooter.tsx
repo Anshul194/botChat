@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 
 export default function AppFooter() {
   return (
@@ -12,6 +11,14 @@ export default function AppFooter() {
         <Link href="/home/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
         <Link href="/home/terms_use" className="hover:text-white transition-colors">Terms of Use</Link>
         <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event("openCookieConsent"))}
+          className="hover:text-white transition-colors cursor-pointer uppercase text-[10px] font-bold tracking-widest"
+          aria-label="Open cookie preferences dialog"
+        >
+          Cookie Settings
+        </button>
       </div>
     </footer>
   );

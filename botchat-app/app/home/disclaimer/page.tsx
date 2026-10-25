@@ -13,7 +13,7 @@ export default function DisclaimerPage() {
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-foreground">
           <span className="text-[#ec4899]">Disclaimer</span>
         </h1>
-        <p className="text-muted-foreground font-medium">Last Updated: July 29, 2026</p>
+        <p className="text-muted-foreground font-medium">Last Updated: October 25, 2026</p>
       </div>
 
       <div className="space-y-12 leading-relaxed text-foreground">
@@ -64,6 +64,9 @@ export default function DisclaimerPage() {
             <li><strong>Platform Downtime:</strong> MegaDM is not liable for any downtime or data loss resulting from Meta platform outages or restrictions.</li>
             <li><strong>Account Restrictions:</strong> If Meta restricts or disables a connected account, MegaDM cannot guarantee continued access or data recovery.</li>
           </ul>
+          <p className="mt-4 text-sm text-muted-foreground italic">
+            Disclaimer of Trademark Affiliation: MegaDM is an independent platform and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Meta Platforms, Inc., Facebook, Instagram, or any of their subsidiaries or affiliates.
+          </p>
         </section>
 
         <section>

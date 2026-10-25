@@ -35,6 +35,29 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Body scroll lock when mobile drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isMobileMenuOpen]);
+
+  // Close mobile drawer on Escape key press
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileMenuOpen]);
+
   const useLight = forceLight || isScrolled;
 
   const navLinks = [
@@ -48,11 +71,11 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   ];
 
   return (
-    <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-6 pt-6 pointer-events-none">
+    <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-3.5 sm:px-6 pt-3.5 sm:pt-6 pointer-events-none">
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`pointer-events-auto flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-full transition-all duration-500 border ${useLight
+        className={`pointer-events-auto flex items-center justify-between w-full max-w-5xl px-4 sm:px-6 py-2 sm:py-3 rounded-full transition-all duration-500 border ${useLight
           ? "bg-white/70 backdrop-blur-xl border-gray-200/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
           : "bg-[#06000d]/40 backdrop-blur-lg border-white/10 shadow-2xl"
           }`}
@@ -61,7 +84,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
         <Link href="/" className="flex items-center cursor-pointer group">
           <BrandLogo
             variant={useLight ? "light" : "dark"}
-            className="h-12 w-auto object-contain group-hover:scale-105 transition-all duration-300"
+            className="h-9 sm:h-12 w-auto object-contain group-hover:scale-105 transition-all duration-300"
           />
         </Link>
 
@@ -152,7 +175,10 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
         {/* MOBILE TOGGLE */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className={`md:hidden p-2 rounded-full transition-colors ${useLight ? "hover:bg-gray-100 text-gray-900" : "hover:bg-white/10 text-white"
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-navigation-drawer"
+          aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          className={`md:hidden p-2 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] ${useLight ? "hover:bg-gray-100 text-gray-900" : "hover:bg-white/10 text-white"
             }`}
         >
           {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -162,74 +188,93 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
       {/* MOBILE MENU */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="absolute top-24 inset-x-6 z-40 p-6 rounded-3xl border shadow-2xl pointer-events-auto md:hidden bg-[#110818] border-white/10"
-          >
-            <div className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-lg font-bold text-white hover:text-[#FF2D78] transition-colors py-1"
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <div className="h-px bg-white/10 my-2" />
-              <div className="flex flex-col gap-3">
-                {!isAuthenticated ? (
-                  <>
-                    <Link
-                      href="/auth/sign-in"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-center py-3 rounded-2xl font-bold text-white bg-white/10 hover:bg-white/15 transition-colors"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/auth/sign-up"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="text-center py-4 rounded-2xl font-black text-white bg-gradient-to-r from-[#FF2D78] to-[#E1306C] hover:opacity-90 transition-opacity"
-                    >
-                      Start Free Trial
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF2D78] to-[#E1306C] flex items-center justify-center text-white font-bold overflow-hidden">
-                          {(user?.name?.charAt(0) || user?.email?.charAt(0) || "U").toUpperCase()}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm pointer-events-auto md:hidden"
+              aria-hidden="true"
+            />
+
+            {/* Drawer */}
+            <motion.div
+              id="mobile-navigation-drawer"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile Navigation"
+              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              className="absolute top-20 sm:top-24 inset-x-4 sm:inset-x-6 z-40 p-5 sm:p-6 rounded-3xl border shadow-2xl pointer-events-auto md:hidden bg-[#110818] border-white/10 max-h-[calc(100vh-6rem)] sm:max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain"
+            >
+              <div className="flex flex-col gap-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-lg font-bold text-white hover:text-[#FF2D78] transition-colors py-1"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+                <div className="h-px bg-white/10 my-2" />
+                <div className="flex flex-col gap-3">
+                  {!isAuthenticated ? (
+                    <>
+                      <Link
+                        href="/auth/sign-in"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-center py-3 rounded-2xl font-bold text-white bg-white/10 hover:bg-white/15 transition-colors"
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/auth/sign-up"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-center py-4 rounded-2xl font-black text-white bg-gradient-to-r from-[#FF2D78] to-[#E1306C] hover:opacity-90 transition-opacity"
+                      >
+                        Start Free Trial
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF2D78] to-[#E1306C] flex items-center justify-center text-white font-bold overflow-hidden">
+                            {(user?.name?.charAt(0) || user?.email?.charAt(0) || "U").toUpperCase()}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-white">{user?.name}</span>
+                            <span className="text-xs text-white/50">Go to Dashboard</span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-white">{user?.name}</span>
-                          <span className="text-xs text-white/50">Go to Dashboard</span>
-                        </div>
-                      </div>
-                      <LayoutDashboard className="w-5 h-5 text-white/40" />
-                    </Link>
-                    <button
-                      onClick={() => {
-                        dispatch(logoutUser());
-                        router.push('/');
-                      }}
-                      className="text-center py-3 rounded-2xl font-bold text-red-400 bg-red-500/10 border border-red-500/20"
-                    >
-                      Sign Out
-                    </button>
-                  </>
-                )}
+                        <LayoutDashboard className="w-5 h-5 text-white/40" />
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          dispatch(logoutUser());
+                          router.push('/');
+                        }}
+                        className="text-center py-3 rounded-2xl font-bold text-red-400 bg-red-500/10 border border-red-500/20"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

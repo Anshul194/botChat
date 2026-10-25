@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 
 // Dynamically import Simulator with ssr: false to prevent hydration mismatches
 const Simulator = dynamic(() => import("../landing/components/Simulator"), {
@@ -107,12 +109,12 @@ function Navbar({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => voi
           boxShadow: scrolled ? "0 10px 30px rgba(0,0,0,0.5)" : "none",
         }}
       >
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}>
-            <Send className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-black text-base text-white tracking-tight">MegaDM</span>
-        </div>
+        <Link href="/" className="flex items-center cursor-pointer group">
+          <BrandLogo
+            variant="dark"
+            className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-all duration-300"
+          />
+        </Link>
 
         <div className="hidden md:flex items-center gap-8">
           {NAV_ITEMS.map((item) => (
@@ -140,46 +142,58 @@ function Navbar({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => voi
           </a>
         </div>
 
-        <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-xl hover:bg-white/10 text-white/80 transition-colors" aria-label="Toggle menu">
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden p-2 rounded-xl hover:bg-white/10 text-white/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+        >
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </nav>
 
       {open && (
-        <div
-          className="absolute top-16 sm:top-20 inset-x-3.5 sm:inset-x-6 z-40 p-5 rounded-2xl border shadow-2xl pointer-events-auto md:hidden animate-in fade-in slide-in-from-top-2 duration-200"
-          style={{ background: "rgba(10,1,20,0.98)", borderColor: "rgba(255,255,255,0.10)", backdropFilter: "blur(20px)" }}
-        >
-          <div className="flex flex-col gap-3.5">
-            {NAV_ITEMS.map((item) => (
+        <>
+          <div
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm pointer-events-auto md:hidden"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute top-16 sm:top-20 inset-x-3.5 sm:inset-x-6 z-40 p-5 rounded-2xl border shadow-2xl pointer-events-auto md:hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-5.5rem)] sm:max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain"
+            style={{ background: "rgba(10,1,20,0.98)", borderColor: "rgba(255,255,255,0.10)", backdropFilter: "blur(20px)" }}
+          >
+            <div className="flex flex-col gap-3.5">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="text-sm font-semibold hover:text-white transition-colors py-1"
+                  style={{ color: "rgba(255,255,255,0.75)" }}
+                >
+                  {item.label}
+                </a>
+              ))}
+              <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.10)" }} />
               <a
-                key={item.href}
-                href={item.href}
+                href="/auth/sign-in"
                 onClick={() => setOpen(false)}
-                className="text-sm font-semibold hover:text-white transition-colors py-1"
-                style={{ color: "rgba(255,255,255,0.75)" }}
+                className="text-center py-2.5 rounded-xl font-semibold text-white/80 hover:text-white border border-white/10 text-sm transition-colors"
               >
-                {item.label}
+                Sign In
               </a>
-            ))}
-            <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.10)" }} />
-            <a
-              href="/auth/sign-in"
-              onClick={() => setOpen(false)}
-              className="text-center py-2.5 rounded-xl font-semibold text-white/80 hover:text-white border border-white/10 text-sm transition-colors"
-            >
-              Sign In
-            </a>
-            <a
-              href="/auth/sign-up"
-              onClick={() => setOpen(false)}
-              className="text-center py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 active:scale-95 shadow-md"
-              style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}
-            >
-              Get Started →
-            </a>
+              <a
+                href="/auth/sign-up"
+                onClick={() => setOpen(false)}
+                className="text-center py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 active:scale-95 shadow-md"
+                style={{ background: "linear-gradient(135deg, #FF2D78, #E1306C)" }}
+              >
+                Get Started →
+              </a>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

@@ -211,6 +211,20 @@ export default function Footer() {
                                             </Link>
                                         </li>
                                     ))}
+                                    <li>
+                                        <button
+                                            type="button"
+                                            onClick={() => window.dispatchEvent(new Event("openCookieConsent"))}
+                                            className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300 cursor-pointer text-left"
+                                            style={{ color: "rgba(255,255,255,0.75)" }}
+                                            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#fff")}
+                                            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)")}
+                                            aria-label="Open cookie preferences dialog"
+                                        >
+                                            <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300" style={{ color: "#FF2D78" }}>—</span>
+                                            Cookie Settings
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
 
