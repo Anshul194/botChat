@@ -81,45 +81,65 @@ export default function PrivacyPolicy() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-foreground mb-4">7. Data Retention</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">7. Data Retention &amp; Categories</h2>
           <p>
-            We retain your account data as long as your subscription is active. Interaction data (messages/comments) is retained for the period necessary to provide the service or as required by your specific configuration.
+            We adhere to strict data retention boundaries based on account lifecycle, tenant isolation, and legal requirements:
           </p>
+          <ul className="list-disc pl-6 mt-4 space-y-3">
+            <li>
+              <strong>Active Workspace Data:</strong> Chatbot configurations, auto-reply rules, broadcast campaign settings, and contact lists are retained within your tenant-isolated database for the duration of your active subscription.
+            </li>
+            <li>
+              <strong>Meta API Tokens &amp; Credentials:</strong> Meta OAuth access tokens and page access credentials are kept strictly during active connection and are permanently deleted immediately when an account or page is disconnected.
+            </li>
+            <li>
+              <strong>Interaction &amp; Message History:</strong> Smart Inbox chats, comments, and conversation histories are retained during your active subscription to maintain continuity, or until manually pruned by workspace administrators.
+            </li>
+            <li>
+              <strong>Financial &amp; Statutory Records:</strong> Subscription invoices, transaction references, and payment audit logs are retained by MEGASTACK AI LLP as required by applicable Indian commercial and tax laws (including the Companies Act and GST regulations) for statutory retention periods (up to 8 years).
+            </li>
+            <li>
+              <strong>Operational Logs &amp; Backups:</strong> System security logs and encrypted disaster-recovery backups are retained on rolling operational retention cycles and automatically purged in accordance with standard backup rotation policies.
+            </li>
+          </ul>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">8. User Rights</h2>
           <p>
-            You have the right to access, correct, or delete your personal data. You can also request a copy of the data we hold. Specifically, you have the right to revoke our access to your social media accounts at any time.
+            You have the right to access, rectify, or request the deletion of your personal data. You may disconnect social integrations at any time via your dashboard or request full workspace decommissioning by contacting our support team.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">9. Data Security</h2>
           <p>
-            We employ industry-standard encryption and security protocols to safeguard your data. This includes SSL/TLS encryption for all data in transit and robust access controls for our production environments.
+            We employ industry-standard encryption and security protocols to safeguard your data. This includes SSL/TLS encryption for all data in transit, AES encryption for stored access tokens, tenant-level database isolation, and role-based access controls for our production environments.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-4">10. Third-Party Services</h2>
           <p>
-            Our service relies on Meta Platforms (Facebook/Instagram). Your use of these platforms is subject to Meta's own privacy policies and terms of service. We encourage you to review them.
+            Our service integrates with Meta Platforms (Facebook and Instagram). Your use of these platforms is governed by Meta's own terms of service and privacy policies. We encourage you to review them.
           </p>
         </section>
 
         <section className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px]">
-          <h2 className="text-2xl font-bold text-foreground mb-6">11. Data Deletion Instructions (Meta Compliance)</h2>
-          <p>To comply with Meta's data deletion requirements, we provide three ways to remove your data:</p>
+          <h2 className="text-2xl font-bold text-foreground mb-6">11. Data Deletion Instructions &amp; Integration Management</h2>
+          <p>MegaDM provides verified mechanisms to remove your data and manage external integrations:</p>
           <ol className="list-decimal pl-6 mt-6 space-y-6">
             <li>
-              <strong>In-App Deletion:</strong> Navigate to your Account Settings -&gt; Data Management -&gt; "Delete All My Data." This action is permanent.
+              <strong>Disconnecting Social Integrations (Immediate In-App):</strong> You can disconnect your Facebook Pages or Instagram Accounts at any time from your dashboard under <em>Social Accounts / Integrations</em>. Disconnecting immediately executes an automated safety shutdown: active campaign automations and background jobs are halted, webhook subscriptions are unsubscribed, and stored Meta OAuth access tokens are permanently purged from the database.
             </li>
             <li>
-              <strong>Revoke Meta Access:</strong> Go to your Facebook Profile -&gt; Settings &amp; Privacy -&gt; Settings -&gt; Business Integrations. Select "MegaDM" and click "Remove." We will automatically purge tokens and associated metadata within 48 hours of detecting revocation.
+              <strong>Revoking Access via Meta:</strong> You can revoke MegaDM's authorization directly in your Facebook profile under <em>Settings &amp; Privacy &rarr; Settings &rarr; Apps and Websites &rarr; MegaDM &rarr; Remove</em>. Once revoked, Meta immediately invalidates all granted tokens, preventing our platform from making any further API calls or processing automated responses on your behalf.
             </li>
             <li>
-              <strong>Manual Request:</strong> Email <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a> with the subject "Data Deletion Request." Include your account email or Meta Page ID. We will confirm deletion within 30 days.
+              <strong>Account Closure &amp; Complete Workspace Data Wipe:</strong> Primary workspace accounts involve multi-tenant database isolation, team member seats, and subscription records. To prevent accidental business interruption, complete account deletion is processed through our verified administrative workflow. To request full account termination and tenant database de-provisioning, email <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">support@megadm.chat</a> with the subject "Data Deletion Request" from your registered account email.
+            </li>
+            <li>
+              <strong>Request Verification &amp; Processing Timelines:</strong> Upon receipt, our team verifies workspace ownership and confirms the decommissioning request. Active automations and access credentials are deactivated immediately upon verification. Tenant database removal and file cleanup are completed within thirty (30) days, except for statutory financial and tax records retained as legally mandated.
             </li>
           </ol>
         </section>

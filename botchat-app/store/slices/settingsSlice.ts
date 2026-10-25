@@ -41,6 +41,10 @@ export interface FacebookPlatformSettings {
     privacyPolicyUrl?: string;
     termsOfServiceUrl?: string;
     webhookVerifyToken?: string;
+    webhookCallbackUrl?: string;
+    oauthRedirectUri?: string;
+    loginCallbackUrl?: string;
+    dataDeletionCallbackUrl?: string;
 }
 
 export interface AISettings {

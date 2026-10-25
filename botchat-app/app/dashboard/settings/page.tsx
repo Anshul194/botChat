@@ -664,12 +664,15 @@ export default function SettingsPage() {
                             <IntegrationHeader title="Data & Privacy Settings" desc="Manage what data stays locally, export history, or request a complete wipe." Icon={Database} color="#14b8a6" />
                             <Section title="Danger Zone" desc="Irreversible actions — proceed with caution">
                                 <div className="p-4 rounded-xl" style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)" }}>
-                                    <p className="text-sm font-medium mb-1" style={{ color: "#ef4444" }}>Delete Account</p>
-                                    <p className="text-xs mb-3" style={{ color: "var(--muted-foreground)" }}>Permanently delete your account and all associated data. This cannot be undone.</p>
-                                    <button className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-80 transition-all"
+                                    <p className="text-sm font-medium mb-1" style={{ color: "#ef4444" }}>Workspace &amp; Account Decommissioning</p>
+                                    <p className="text-xs mb-3" style={{ color: "var(--muted-foreground)" }}>
+                                        To permanently delete your workspace, purge tenant databases, and remove all associated personal data, submit a verified request to our administrative team. To disconnect connected Meta/social channels immediately, visit Social Accounts.
+                                    </p>
+                                    <a href="mailto:support@megadm.chat?subject=Data%20Deletion%20Request"
+                                        className="inline-block px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-80 transition-all text-center"
                                         style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}>
-                                        Delete My Account
-                                    </button>
+                                        Request Account Deletion (support@megadm.chat)
+                                    </a>
                                 </div>
                             </Section>
                         </div>
@@ -987,12 +990,12 @@ export default function SettingsPage() {
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Data Deletion Callback URL</label>
                                         <div className="relative">
-                                            <input readOnly value={`${fbForm.siteUrl}/webhook/data-deletion`}
+                                            <input readOnly value={facebookPlatform?.dataDeletionCallbackUrl || (fbForm.siteUrl ? `${fbForm.siteUrl}/webhook/data-deletion-callback` : '')}
                                                 className="w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-mono outline-none truncate"
                                                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }} />
-                                            <button type="button" onClick={() => handleCopyUrl(`${fbForm.siteUrl}/webhook/data-deletion`)}
+                                            <button type="button" onClick={() => handleCopyUrl(facebookPlatform?.dataDeletionCallbackUrl || `${fbForm.siteUrl}/webhook/data-deletion-callback`)}
                                                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-all hover:opacity-70"
-                                                style={{ color: copiedUrl === `${fbForm.siteUrl}/webhook/data-deletion` ? "#22c55e" : "var(--muted-foreground)" }}>
+                                                style={{ color: copiedUrl === (facebookPlatform?.dataDeletionCallbackUrl || `${fbForm.siteUrl}/webhook/data-deletion-callback`) ? "#22c55e" : "var(--muted-foreground)" }}>
                                                 <Copy className="w-4 h-4" />
                                             </button>
                                         </div>
