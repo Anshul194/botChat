@@ -1570,6 +1570,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  multiple_reply_enabled: false,
  comment_reply_enabled: true,
  hide_after_reply: false,
+ future_posts_reply_enabled: true,
  message: "",
  image: "",
  video: "",
@@ -1626,6 +1627,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  multiple_reply_enabled: c.multiple_reply_enabled === "1" || c.multiple_reply_enabled === 1 || c.multiple_reply_enabled === true,
  comment_reply_enabled: c.comment_reply_enabled === "1" || c.comment_reply_enabled === 1 || c.comment_reply_enabled === true || (c.comment_reply_enabled !== "0" && c.comment_reply_enabled !== 0 && c.comment_reply_enabled !== false),
  hide_after_reply: c.hide_after_reply === "1" || c.hide_after_reply === 1 || c.hide_after_reply === true,
+ future_posts_reply_enabled: c.future_posts_reply_enabled === undefined ? true : (c.future_posts_reply_enabled === "1" || c.future_posts_reply_enabled === 1 || c.future_posts_reply_enabled === true),
  message: c.message || "",
  image: c.image || "",
  video: c.video || "",
@@ -1672,6 +1674,7 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  fd.append("multiple_reply_enabled", form.multiple_reply_enabled ? "1" : "0");
  fd.append("comment_reply_enabled", form.comment_reply_enabled ? "1" : "0");
  fd.append("hide_after_reply", form.hide_after_reply ? "1" : "0");
+ fd.append("future_posts_reply_enabled", form.future_posts_reply_enabled ? "1" : "0");
 
  fd.append("message", form.message || "");
  fd.append("image", form.image || "");
@@ -1904,6 +1907,13 @@ export function FullPageCampaignModal({ page, hasCampaign, onClose, onSaved }: {
  <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to hide comments after comment reply?</span>
  </div>
  <FPC_Toggle label="" active={form.hide_after_reply} onClick={() => setForm({ ...form, hide_after_reply: !form.hide_after_reply })} />
+ </div>
+ <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
+   <div className="flex items-center gap-3">
+     <Sparkles className="w-4 h-4 text-[var(--muted-foreground)]" />
+     <span className="text-[13px] font-medium text-[var(--foreground)]">Do you want to enable comment reply for future posts?</span>
+   </div>
+   <FPC_Toggle label="" active={form.future_posts_reply_enabled} onClick={() => setForm({ ...form, future_posts_reply_enabled: !form.future_posts_reply_enabled })} />
  </div>
  </div>
 

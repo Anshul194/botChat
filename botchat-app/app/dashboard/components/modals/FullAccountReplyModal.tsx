@@ -97,6 +97,7 @@ export function FullAccountReplyModal({
     const [multipleReply, setMultipleReply] = useState(false);
     const [commentReplyEnabled, setCommentReplyEnabled] = useState(true);
     const [hideAfterReply, setHideAfterReply] = useState(false);
+    const [futurePostsReply, setFuturePostsReply] = useState<boolean>(true);
     const [fallbackMessage, setFallbackMessage] = useState("");
     const [privateTemplateId, setPrivateTemplateId] = useState<string | null>(null);
 
@@ -136,6 +137,7 @@ export function FullAccountReplyModal({
                 setMultipleReply(template.multiple_reply_enabled === "1" || template.multiple_reply_enabled === 1 || template.multiple_reply_enabled === true);
                 setCommentReplyEnabled(template.comment_reply_enabled === "1" || template.comment_reply_enabled === 1 || template.comment_reply_enabled === true);
                 setHideAfterReply(template.hide_after_reply === "1" || template.hide_after_reply === 1 || template.hide_after_reply === true);
+                setFuturePostsReply(template.future_posts_reply_enabled === undefined ? true : (template.future_posts_reply_enabled === "1" || template.future_posts_reply_enabled === 1 || template.future_posts_reply_enabled === true));
                 setFallbackMessage(template.message || "");
                 setPrivateTemplateId(template.private_template_id ? String(template.private_template_id) : null);
 
@@ -222,6 +224,7 @@ export function FullAccountReplyModal({
                 multiple_reply_enabled: multipleReply,
                 comment_reply_enabled: commentReplyEnabled,
                 hide_after_reply: hideAfterReply,
+                future_posts_reply_enabled: futurePostsReply,
                 message: fallbackMessage,
                 private_template_id: privateTemplateId,
                 offensive: {
@@ -491,6 +494,13 @@ export function FullAccountReplyModal({
                                             <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Do you want to hide comments after comment reply?</span>
                                         </div>
                                         <CustomToggle active={hideAfterReply} onClick={() => setHideAfterReply(!hideAfterReply)} />
+                                    </div>
+                                    <div className="flex items-center justify-between py-1 px-1 border-t border-[var(--border)]">
+                                        <div className="flex items-center gap-3">
+                                            <Sparkles className="w-4 h-4 text-[var(--muted-foreground)]/70" />
+                                            <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Do you want to enable comment reply for future posts?</span>
+                                        </div>
+                                        <CustomToggle active={futurePostsReply} onClick={() => setFuturePostsReply(!futurePostsReply)} />
                                     </div>
                                 </div>
 
