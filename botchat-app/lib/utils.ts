@@ -19,6 +19,7 @@ const settingsFieldMap: Record<string, string> = {
   dateFormat: 'date_format',
   timeFormat: 'time_format',
   logo: 'app_logo',
+  darkLogo: 'app_dark_logo',
   favicon: 'favicon_logo',
   gtag: 'gtag',
   databasePermission: 'database_permission',

@@ -134,38 +134,52 @@ export default function BrandingTab() {
   const handleSaveGeneral = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     try {
+      let freshLogo = generalForm.logo;
+      let freshDarkLogo = generalForm.darkLogo;
+      let freshFavicon = generalForm.favicon;
+
+      if (logoFile || darkLogoFile || faviconFile) {
+        const brandPayload: any = { app_name: generalForm.appName || 'MegaDM' };
+        if (logoFile) brandPayload.app_logo = logoFile;
+        if (darkLogoFile) brandPayload.app_dark_logo = darkLogoFile;
+        if (faviconFile) brandPayload.favicon_logo = faviconFile;
+        const uploadRes = await dispatch(updateAppSettings(brandPayload)).unwrap();
+        if (uploadRes) {
+          if (uploadRes.app_logo) freshLogo = uploadRes.app_logo;
+          if (uploadRes.app_dark_logo) freshDarkLogo = uploadRes.app_dark_logo;
+          if (uploadRes.favicon_logo) freshFavicon = uploadRes.favicon_logo;
+        }
+      }
+
       const settingsData = { ...generalForm };
       const dataToSave: any = { ...settingsData };
-      if (generalForm.logo && !logoFile) {
-        dataToSave.logo = generalForm.logo;
-      }
-      if (generalForm.darkLogo && !darkLogoFile) {
-        dataToSave.darkLogo = generalForm.darkLogo;
-      }
-      if (generalForm.favicon && !faviconFile) {
-        dataToSave.favicon = generalForm.favicon;
-      }
+      if (!logoFile && generalForm.logo) dataToSave.logo = generalForm.logo;
+      if (!darkLogoFile && generalForm.darkLogo) dataToSave.darkLogo = generalForm.darkLogo;
+      if (!faviconFile && generalForm.favicon) dataToSave.favicon = generalForm.favicon;
       await dispatch(updateGeneralSettings(dataToSave)).unwrap();
 
-      const brandPayload: any = { app_name: generalForm.appName || 'MegaDM' };
-      if (logoFile) brandPayload.app_logo = logoFile;
-      if (darkLogoFile) brandPayload.app_dark_logo = darkLogoFile;
-      if (faviconFile) brandPayload.favicon_logo = faviconFile;
-      if (logoFile || darkLogoFile || faviconFile) {
-        await dispatch(updateAppSettings(brandPayload)).unwrap();
-      }
-      await dispatch(fetchGeneralSettings({})).unwrap();
+      const refreshed = await dispatch(fetchGeneralSettings({})).unwrap();
+      await dispatch(fetchPublicBranding({}));
+
+      setLogoFile(null);
+      setDarkLogoFile(null);
+      setFaviconFile(null);
+
+      const finalLogo = freshLogo || refreshed.app_logo || refreshed.logo;
+      const finalDarkLogo = freshDarkLogo || refreshed.app_dark_logo || refreshed.darkLogo;
+      const finalFavicon = freshFavicon || refreshed.favicon_logo || refreshed.favicon;
+
+      if (finalLogo) setLogoPreview(resolveAssetUrl(finalLogo));
+      if (finalDarkLogo) setDarkLogoPreview(resolveAssetUrl(finalDarkLogo));
+      if (finalFavicon) setFaviconPreview(resolveAssetUrl(finalFavicon));
 
       if (typeof window !== 'undefined') {
         try {
-          const currentCached = localStorage.getItem('botchat_tenant_branding');
-          const parsed = currentCached ? JSON.parse(currentCached) : {};
           localStorage.setItem('botchat_tenant_branding', JSON.stringify({
-            ...parsed,
-            appName: generalForm.appName || parsed.appName || 'MegaDM',
-            logo: logoPreview || resolveAssetUrl(generalForm.logo) || parsed.logo,
-            darkLogo: darkLogoPreview || resolveAssetUrl(generalForm.darkLogo) || parsed.darkLogo,
-            favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
+            appName: generalForm.appName || 'MegaDM',
+            logo: resolveAssetUrl(finalLogo),
+            darkLogo: resolveAssetUrl(finalDarkLogo),
+            favicon: resolveAssetUrl(finalFavicon),
           }));
           window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
         } catch (e) { }
@@ -181,35 +195,55 @@ export default function BrandingTab() {
   const handleSaveBrandAssets = async () => {
     setIsSavingBrandAssets(true);
     try {
-      const payload: any = { app_name: generalForm.appName || 'MegaDM' };
-      if (logoFile) payload.app_logo = logoFile;
-      if (darkLogoFile) payload.app_dark_logo = darkLogoFile;
-      if (faviconFile) payload.favicon_logo = faviconFile;
+      let freshLogo = generalForm.logo;
+      let freshDarkLogo = generalForm.darkLogo;
+      let freshFavicon = generalForm.favicon;
+
       if (logoFile || darkLogoFile || faviconFile) {
-        await dispatch(updateAppSettings(payload)).unwrap();
-      }
-      if (generalForm.logo || generalForm.darkLogo || generalForm.favicon || generalForm.appName) {
-        const toSave: any = {};
-        if (generalForm.logo && !logoFile) toSave.logo = generalForm.logo;
-        if (generalForm.darkLogo && !darkLogoFile) toSave.darkLogo = generalForm.darkLogo;
-        if (generalForm.favicon && !faviconFile) toSave.favicon = generalForm.favicon;
-        if (generalForm.appName) toSave.appName = generalForm.appName;
-        if (Object.keys(toSave).length > 0) {
-          await dispatch(updateGeneralSettings(toSave)).unwrap();
+        const payload: any = { app_name: generalForm.appName || 'MegaDM' };
+        if (logoFile) payload.app_logo = logoFile;
+        if (darkLogoFile) payload.app_dark_logo = darkLogoFile;
+        if (faviconFile) payload.favicon_logo = faviconFile;
+        const uploadRes = await dispatch(updateAppSettings(payload)).unwrap();
+        if (uploadRes) {
+          if (uploadRes.app_logo) freshLogo = uploadRes.app_logo;
+          if (uploadRes.app_dark_logo) freshDarkLogo = uploadRes.app_dark_logo;
+          if (uploadRes.favicon_logo) freshFavicon = uploadRes.favicon_logo;
         }
       }
-      await dispatch(fetchGeneralSettings({})).unwrap();
+
+      const toSave: any = {};
+      if (generalForm.appName) toSave.appName = generalForm.appName;
+      if (!logoFile && generalForm.logo) toSave.logo = generalForm.logo;
+      if (!darkLogoFile && generalForm.darkLogo) toSave.darkLogo = generalForm.darkLogo;
+      if (!faviconFile && generalForm.favicon) toSave.favicon = generalForm.favicon;
+
+      if (Object.keys(toSave).length > 0) {
+        await dispatch(updateGeneralSettings(toSave)).unwrap();
+      }
+
+      const refreshed = await dispatch(fetchGeneralSettings({})).unwrap();
+      await dispatch(fetchPublicBranding({}));
+
+      setLogoFile(null);
+      setDarkLogoFile(null);
+      setFaviconFile(null);
+
+      const finalLogo = freshLogo || refreshed.app_logo || refreshed.logo;
+      const finalDarkLogo = freshDarkLogo || refreshed.app_dark_logo || refreshed.darkLogo;
+      const finalFavicon = freshFavicon || refreshed.favicon_logo || refreshed.favicon;
+
+      if (finalLogo) setLogoPreview(resolveAssetUrl(finalLogo));
+      if (finalDarkLogo) setDarkLogoPreview(resolveAssetUrl(finalDarkLogo));
+      if (finalFavicon) setFaviconPreview(resolveAssetUrl(finalFavicon));
 
       if (typeof window !== 'undefined') {
         try {
-          const currentCached = localStorage.getItem('botchat_tenant_branding');
-          const parsed = currentCached ? JSON.parse(currentCached) : {};
           localStorage.setItem('botchat_tenant_branding', JSON.stringify({
-            ...parsed,
-            appName: generalForm.appName || parsed.appName || 'MegaDM',
-            logo: logoPreview || resolveAssetUrl(generalForm.logo) || parsed.logo,
-            darkLogo: darkLogoPreview || resolveAssetUrl(generalForm.darkLogo) || parsed.darkLogo,
-            favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
+            appName: generalForm.appName || 'MegaDM',
+            logo: resolveAssetUrl(finalLogo),
+            darkLogo: resolveAssetUrl(finalDarkLogo),
+            favicon: resolveAssetUrl(finalFavicon),
           }));
           window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
         } catch (e) { }
