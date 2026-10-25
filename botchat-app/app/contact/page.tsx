@@ -175,6 +175,12 @@ export default function ContactPage() {
                             {/* Right Column: Interactive Form */}
                             <div className="lg:col-span-7">
                                 <div className="p-8 sm:p-10 rounded-3xl" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+                                    {/* Status announcement for screen readers */}
+                                    <div aria-live="polite" className="sr-only">
+                                        {status === "sending" && "Sending your message..."}
+                                        {status === "success" && "Message sent successfully. A team member will reply shortly."}
+                                    </div>
+
                                     {status === "success" ? (
                                         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="py-16 text-center">
                                             <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(16,185,129,0.2)', border: '2px solid #10B981' }}>
@@ -187,11 +193,12 @@ export default function ContactPage() {
                                                 Thank you for reaching out. A MegaDM team member has received your message and will reply to your email shortly.
                                             </p>
                                             <button
+                                                type="button"
                                                 onClick={() => {
                                                     setStatus("idle");
                                                     setFormState({ name: "", email: "", handle: "", topic: "General Inquiry", message: "" });
                                                 }}
-                                                className="px-8 py-3.5 rounded-full font-bold text-sm text-white"
+                                                className="px-8 py-3.5 rounded-full font-bold text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2 focus-visible:ring-offset-[#06000d]"
                                                 style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
                                             >
                                                 Send Another Message
@@ -208,39 +215,41 @@ export default function ContactPage() {
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                                                    <label htmlFor="contact-name" className="block text-xs font-bold uppercase tracking-wider mb-2 cursor-pointer" style={{ color: 'rgba(255,255,255,0.85)' }}>
                                                         Your Name *
                                                     </label>
                                                     <input
+                                                        id="contact-name"
                                                         type="text"
                                                         required
                                                         placeholder="Sarah Jenkins"
                                                         value={formState.name}
                                                         onChange={e => setFormState({ ...formState, name: e.target.value })}
-                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all outline-none"
+                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#FF2D78] focus:border-[#FF2D78]"
                                                         style={{
-                                                            background: 'rgba(255,255,255,0.06)',
-                                                            border: '1px solid rgba(255,255,255,0.15)',
-                                                            color: '#ffffff',
+                                                             background: 'rgba(255,255,255,0.06)',
+                                                             border: '1px solid rgba(255,255,255,0.15)',
+                                                             color: '#ffffff',
                                                         }}
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                                                    <label htmlFor="contact-email" className="block text-xs font-bold uppercase tracking-wider mb-2 cursor-pointer" style={{ color: 'rgba(255,255,255,0.85)' }}>
                                                         Work Email *
                                                     </label>
                                                     <input
+                                                        id="contact-email"
                                                         type="email"
                                                         required
                                                         placeholder="sarah@company.com"
                                                         value={formState.email}
                                                         onChange={e => setFormState({ ...formState, email: e.target.value })}
-                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all outline-none"
+                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#FF2D78] focus:border-[#FF2D78]"
                                                         style={{
-                                                            background: 'rgba(255,255,255,0.06)',
-                                                            border: '1px solid rgba(255,255,255,0.15)',
-                                                            color: '#ffffff',
+                                                             background: 'rgba(255,255,255,0.06)',
+                                                             border: '1px solid rgba(255,255,255,0.15)',
+                                                             color: '#ffffff',
                                                         }}
                                                     />
                                                 </div>
@@ -248,35 +257,37 @@ export default function ContactPage() {
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                                                    <label htmlFor="contact-handle" className="block text-xs font-bold uppercase tracking-wider mb-2 cursor-pointer" style={{ color: 'rgba(255,255,255,0.85)' }}>
                                                         Instagram Handle / Brand
                                                     </label>
                                                     <input
+                                                        id="contact-handle"
                                                         type="text"
                                                         placeholder="@yourbrand"
                                                         value={formState.handle}
                                                         onChange={e => setFormState({ ...formState, handle: e.target.value })}
-                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all outline-none"
+                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#FF2D78] focus:border-[#FF2D78]"
                                                         style={{
-                                                            background: 'rgba(255,255,255,0.06)',
-                                                            border: '1px solid rgba(255,255,255,0.15)',
-                                                            color: '#ffffff',
+                                                             background: 'rgba(255,255,255,0.06)',
+                                                             border: '1px solid rgba(255,255,255,0.15)',
+                                                             color: '#ffffff',
                                                         }}
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                                                    <label htmlFor="contact-topic" className="block text-xs font-bold uppercase tracking-wider mb-2 cursor-pointer" style={{ color: 'rgba(255,255,255,0.85)' }}>
                                                         Inquiry Topic *
                                                     </label>
                                                     <select
+                                                        id="contact-topic"
                                                         value={formState.topic}
                                                         onChange={e => setFormState({ ...formState, topic: e.target.value })}
-                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all outline-none"
+                                                        className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#FF2D78] focus:border-[#FF2D78]"
                                                         style={{
-                                                            background: '#120520',
-                                                            border: '1px solid rgba(255,255,255,0.15)',
-                                                            color: '#ffffff',
+                                                             background: '#120520',
+                                                             border: '1px solid rgba(255,255,255,0.15)',
+                                                             color: '#ffffff',
                                                         }}
                                                     >
                                                         <option value="General Inquiry">General Inquiry</option>
@@ -289,20 +300,21 @@ export default function ContactPage() {
                                             </div>
 
                                             <div>
-                                                <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                                                <label htmlFor="contact-message" className="block text-xs font-bold uppercase tracking-wider mb-2 cursor-pointer" style={{ color: 'rgba(255,255,255,0.85)' }}>
                                                     Message *
                                                 </label>
                                                 <textarea
+                                                    id="contact-message"
                                                     required
                                                     rows={4}
                                                     placeholder="How can we help your Instagram or Facebook growth?"
                                                     value={formState.message}
                                                     onChange={e => setFormState({ ...formState, message: e.target.value })}
-                                                    className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all outline-none resize-none"
+                                                    className="w-full px-4 py-3.5 rounded-xl text-sm font-medium transition-all resize-none focus:outline-none focus:ring-2 focus:ring-[#FF2D78] focus:border-[#FF2D78]"
                                                     style={{
-                                                        background: 'rgba(255,255,255,0.06)',
-                                                        border: '1px solid rgba(255,255,255,0.15)',
-                                                        color: '#ffffff',
+                                                         background: 'rgba(255,255,255,0.06)',
+                                                         border: '1px solid rgba(255,255,255,0.15)',
+                                                         color: '#ffffff',
                                                     }}
                                                 />
                                             </div>
@@ -310,7 +322,7 @@ export default function ContactPage() {
                                             <button
                                                 type="submit"
                                                 disabled={status === "sending"}
-                                                className="w-full inline-flex items-center justify-center gap-2.5 px-8 rounded-full font-bold text-base text-white transition-all hover:scale-[1.02] cursor-pointer"
+                                                className="w-full inline-flex items-center justify-center gap-2.5 px-8 rounded-full font-bold text-base text-white transition-all hover:scale-[1.02] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2 focus-visible:ring-offset-[#06000d]"
                                                 style={{
                                                     background: 'linear-gradient(135deg, #FF2D78, #E1306C)',
                                                     boxShadow: '0 12px 35px rgba(255,45,120,0.4)',

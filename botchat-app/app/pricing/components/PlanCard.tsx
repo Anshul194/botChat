@@ -17,9 +17,9 @@ const FEATURE_KEYS = [
     "api_developer", "analytics",
 ];
 
-function getVal(v: any): string {
+function getVal(v: unknown): string {
     if (v === null || v === undefined) return "0";
-    if (typeof v === "object") return String(v.value ?? "0");
+    if (typeof v === "object" && "value" in v) return String((v as { value: unknown }).value ?? "0");
     return String(v);
 }
 
@@ -40,9 +40,8 @@ interface PlanCardProps {
 
 const CARD_ICONS = [Zap, Sparkles, Crown, Shield];
 const CARD_COLORS = ["#6366F1", "#FF2D78", "#F59E0B", "#0EA5E9"];
-
 export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount = 0.8 }: PlanCardProps) {
-    const isPopular = Boolean(plan.is_highlighted && plan.is_highlighted !== "0" && (plan.is_highlighted as any) !== 0);
+    const isPopular = Boolean(plan.is_highlighted);
     const rawPrice = Number(plan.price);
     const displayPrice = isAnnual ? Math.round(rawPrice * annualDiscount) : rawPrice;
     const IconEl = CARD_ICONS[index % CARD_ICONS.length];
@@ -217,11 +216,12 @@ export default function PlanCard({ plan, defs, isAnnual, index, annualDiscount =
                 {/* CTA */}
                 <Link
                     href="/auth/sign-up"
+                    aria-label={`Start Free Trial with ${plan.name} plan`}
                     style={{
                         backgroundColor: isPopular ? "#ffffff" : "#000000",
                         color: isPopular ? "#000000" : "#ffffff",
                     }}
-                    className="block w-full py-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:opacity-95"
+                    className="block w-full py-4 rounded-2xl text-center font-black text-sm uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2"
                 >
                     Start Free Trial
                 </Link>

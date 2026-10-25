@@ -44,6 +44,8 @@ const FAQS = [
 
 function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
     const [open, setOpen] = useState(false);
+    const panelId = `pricing-faq-panel-${index}`;
+    const buttonId = `pricing-faq-btn-${index}`;
     return (
         <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -53,8 +55,12 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
             className="border-b border-gray-100 last:border-0"
         >
             <button
+                type="button"
+                id={buttonId}
                 onClick={() => setOpen(v => !v)}
-                className="flex items-center justify-between w-full py-5 text-left gap-4 group"
+                aria-expanded={open}
+                aria-controls={panelId}
+                className="flex items-center justify-between w-full py-5 text-left gap-4 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
             >
                 <span className="text-base font-bold text-gray-900 group-hover:text-[#FF2D78] transition-colors">
                     {q}
@@ -66,6 +72,9 @@ function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
             <AnimatePresence>
                 {open && (
                     <motion.div
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={buttonId}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -184,11 +193,16 @@ export default function PricingPage() {
                             </div>
 
                             {/* Billing toggle - High contrast and crystal clear */}
-                            <div className="inline-flex items-center p-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl">
+                            <div
+                                role="group"
+                                aria-label="Billing frequency"
+                                className="inline-flex items-center p-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl"
+                            >
                                 <button
                                     type="button"
                                     onClick={() => setIsAnnual(false)}
-                                    className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${!isAnnual
+                                    aria-pressed={!isAnnual}
+                                    className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] ${!isAnnual
                                         ? "bg-[#FF2D78] text-white shadow-[0_0_20px_rgba(255,45,120,0.5)]"
                                         : "text-white/85 hover:text-white"
                                         }`}
@@ -198,7 +212,8 @@ export default function PricingPage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsAnnual(true)}
-                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 ${isAnnual
+                                    aria-pressed={isAnnual}
+                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] ${isAnnual
                                         ? "bg-[#FF2D78] text-white shadow-[0_0_20px_rgba(255,45,120,0.5)]"
                                         : "text-white/85 hover:text-white"
                                         }`}

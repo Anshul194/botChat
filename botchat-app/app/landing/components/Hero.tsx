@@ -19,8 +19,19 @@ const Aurora = React.memo(function Aurora() {
 
   const glowLeft = useTransform(springX, (x) => `${x - 220}px`);
   const glowTop = useTransform(springY, (y) => `${y - 220}px`);
+  const prefersReducedMotion = React.useSyncExternalStore(
+    (callback) => {
+      if (typeof window === "undefined") return () => {};
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mq.addEventListener("change", callback);
+      return () => mq.removeEventListener("change", callback);
+    },
+    () => (typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false),
+    () => false
+  );
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const el = auroraRef.current;
     if (!el) return;
     const move = (e: MouseEvent) => {
@@ -29,7 +40,7 @@ const Aurora = React.memo(function Aurora() {
     };
     el.addEventListener("mousemove", move);
     return () => el.removeEventListener("mousemove", move);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, prefersReducedMotion]);
 
   return (
     <>
@@ -57,15 +68,17 @@ const Aurora = React.memo(function Aurora() {
         <div className="blob3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-20 mix-blend-screen will-change-transform"
           style={{ background: "radial-gradient(circle, #ff80ab 0%, transparent 70%)" }} />
 
-        {/* Mouse follower glow */}
-        <motion.div
-          className="absolute w-[440px] h-[440px] rounded-full opacity-55 mix-blend-screen hidden lg:block"
-          style={{
-            left: glowLeft,
-            top: glowTop,
-            background: "radial-gradient(circle, rgba(255,100,160,.8) 0%, transparent 70%)",
-          }}
-        />
+        {/* Mouse follower glow - disabled if user prefers reduced motion */}
+        {!prefersReducedMotion && (
+          <motion.div
+            className="absolute w-[440px] h-[440px] rounded-full opacity-55 mix-blend-screen hidden lg:block"
+            style={{
+              left: glowLeft,
+              top: glowTop,
+              background: "radial-gradient(circle, rgba(255,100,160,.8) 0%, transparent 70%)",
+            }}
+          />
+        )}
       </div>
     </>
   );
@@ -118,8 +131,14 @@ export default function Hero() {
   const [scope, animate] = useAnimate();
 
   useEffect(() => {
-    animate(".hero-text-elem", { opacity: 1, y: 0 }, { duration: 1.1, delay: stagger(0.14), ease: [0.16, 0.77, 0.31, 0.99] });
-    animate(".hero-right", { opacity: 1, x: 0 }, { duration: 1.4, ease: "easeOut", delay: 0.5 });
+    const isReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isReduced) {
+      animate(".hero-text-elem", { opacity: 1, y: 0 }, { duration: 0 });
+      animate(".hero-right", { opacity: 1, x: 0 }, { duration: 0 });
+    } else {
+      animate(".hero-text-elem", { opacity: 1, y: 0 }, { duration: 1.1, delay: stagger(0.14), ease: [0.16, 0.77, 0.31, 0.99] });
+      animate(".hero-right", { opacity: 1, x: 0 }, { duration: 1.4, ease: "easeOut", delay: 0.5 });
+    }
   }, [animate]);
 
   return (
@@ -168,14 +187,15 @@ export default function Hero() {
           {/* CTAs */}
           <div className="hero-text-elem flex flex-col sm:flex-row gap-4">
             <Link href="/auth/sign-up"
-              className="cta-primary group flex items-center justify-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold text-white transition-all duration-300"
+              className="cta-primary group flex items-center justify-center gap-2.5 px-10 py-4 rounded-2xl text-base font-bold text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2"
               style={{ fontFamily: "'Syne', sans-serif", letterSpacing: ".02em" }}>
               Start Free Trial
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
 
             <button
-              className="group flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all duration-200 hover:-translate-y-1"
+              type="button"
+              className="group flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all duration-200 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 background: "rgba(255,255,255,.03)",

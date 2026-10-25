@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Shield, Cookie, Database, X } from "lucide-react";
@@ -9,6 +9,8 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerElementRef = useRef<HTMLElement | null>(null);
 
   // Automatic first-visit trigger
   useEffect(() => {
@@ -27,6 +29,10 @@ export default function CookieConsent() {
   // Support reopening the consent preferences dialog via custom window event
   useEffect(() => {
     const handleOpen = () => {
+      // Store trigger element if one had focus
+      if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+        triggerElementRef.current = document.activeElement;
+      }
       setIsVisible(true);
     };
     window.addEventListener("openCookieConsent", handleOpen);
@@ -50,19 +56,90 @@ export default function CookieConsent() {
     };
   }, [isVisible]);
 
-  const handleAccept = () => {
+  const restoreFocus = React.useCallback(() => {
+    if (triggerElementRef.current && document.contains(triggerElementRef.current)) {
+      triggerElementRef.current.focus();
+    }
+    triggerElementRef.current = null;
+  }, []);
+
+  const handleClose = React.useCallback(() => {
+    setIsVisible(false);
+    restoreFocus();
+  }, [restoreFocus]);
+
+  const handleAccept = React.useCallback(() => {
     localStorage.setItem("cookieConsentStatus", "accepted");
     setIsVisible(false);
-  };
+    restoreFocus();
+  }, [restoreFocus]);
 
-  const handleReject = () => {
+  const handleReject = React.useCallback(() => {
     localStorage.setItem("cookieConsentStatus", "rejected");
     setIsVisible(false);
-  };
+    restoreFocus();
+  }, [restoreFocus]);
 
-  const handleClose = () => {
-    setIsVisible(false);
-  };
+  // Programmatic initial focus, focus trap, and Escape key listener
+  useEffect(() => {
+    if (!isVisible) return;
+
+    // Shift initial focus to dialog or its first focusable element
+    const focusTimer = setTimeout(() => {
+      if (dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          focusable[0].focus();
+        } else {
+          dialogRef.current.focus();
+        }
+      }
+    }, 50);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleClose();
+        return;
+      }
+
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusableElements = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter(el => el.offsetParent !== null); // visible only
+
+        if (focusableElements.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const firstEl = focusableElements[0];
+        const lastEl = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl || !dialogRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl || !dialogRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            firstEl.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      clearTimeout(focusTimer);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isVisible, handleClose]);
 
   return (
     <AnimatePresence>
@@ -76,18 +153,26 @@ export default function CookieConsent() {
             className="absolute inset-0 bg-zinc-900/40 dark:bg-black/80 transition-all duration-500"
             style={{ touchAction: "none" }}
             onClick={handleClose}
+            aria-hidden="true"
           />
 
           {/* Bottom Sheet / Centered Modal Card */}
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cookie-consent-title"
+            aria-describedby="cookie-consent-description"
+            tabIndex={-1}
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            className="relative w-full sm:max-w-[420px] p-5 sm:p-8 rounded-t-[28px] sm:rounded-b-[32px] sm:rounded-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] dark:shadow-[0_-10px_40px_rgba(255,45,120,0.1)] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xl border-t sm:border border-white/20 dark:border-white/10 overflow-hidden max-h-[85vh] overflow-y-auto pb-8 sm:pb-8"
+            className="relative w-full sm:max-w-[420px] p-5 sm:p-8 rounded-t-[28px] sm:rounded-b-[32px] sm:rounded-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] dark:shadow-[0_-10px_40px_rgba(255,45,120,0.1)] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-xl border-t sm:border border-white/20 dark:border-white/10 overflow-hidden max-h-[85vh] overflow-y-auto pb-8 sm:pb-8 outline-none"
           >
             {/* Close button */}
             <button
+              type="button"
               onClick={handleClose}
               aria-label="Close cookie preferences"
               className="absolute top-4 right-4 p-2 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
@@ -109,10 +194,10 @@ export default function CookieConsent() {
                 <span className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0)_100%)] animate-[shine_2s_infinite]" />
               </div>
               <div>
-                <h3 className="font-black text-xl sm:text-2xl tracking-tight text-zinc-900 dark:text-white mb-1 sm:mb-2">
+                <h3 id="cookie-consent-title" className="font-black text-xl sm:text-2xl tracking-tight text-zinc-900 dark:text-white mb-1 sm:mb-2">
                   Privacy &amp; Cookies
                 </h3>
-                <p className="text-[11px] sm:text-sm text-zinc-500 dark:text-zinc-400 font-medium sm:px-4 leading-relaxed">
+                <p id="cookie-consent-description" className="text-[11px] sm:text-sm text-zinc-500 dark:text-zinc-400 font-medium sm:px-4 leading-relaxed">
                   We use essential storage to keep MegaDM secure and caching to ensure peak speeds.
                 </p>
               </div>
@@ -156,18 +241,18 @@ export default function CookieConsent() {
                 href="/home/cookie_policy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#FF2D78] hover:text-[#E1306C] transition-colors"
+                className="font-bold text-[#FF2D78] hover:text-[#E1306C] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded"
               >
-                Cookie Policy
+                Cookie Policy<span className="sr-only"> (opens in a new tab)</span>
               </Link>{" "}
               and{" "}
               <Link
                 href="/home/browser_caching"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#FF2D78] hover:text-[#E1306C] transition-colors"
+                className="font-bold text-[#FF2D78] hover:text-[#E1306C] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded"
               >
-                Caching Details
+                Caching Details<span className="sr-only"> (opens in a new tab)</span>
               </Link>
               .
             </p>
@@ -175,8 +260,9 @@ export default function CookieConsent() {
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row sm:flex-col gap-2 sm:gap-3 relative z-10">
               <button
+                type="button"
                 onClick={handleAccept}
-                className="w-full py-3.5 sm:py-4 rounded-xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all duration-300 text-white cursor-pointer hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(255,45,120,0.4)] active:scale-95"
+                className="w-full py-3.5 sm:py-4 rounded-xl text-xs sm:text-sm font-black uppercase tracking-widest transition-all duration-300 text-white cursor-pointer hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(255,45,120,0.4)] active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2"
                 style={{
                   background: "linear-gradient(135deg, #FF2D78, #E1306C)",
                 }}
@@ -184,8 +270,9 @@ export default function CookieConsent() {
                 Accept All
               </button>
               <button
+                type="button"
                 onClick={handleReject}
-                className="w-full py-3.5 sm:py-4 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-widest transition-all duration-300 text-center border cursor-pointer active:scale-95 hover:-translate-y-0.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-white/[0.07] dark:hover:bg-white/[0.12] text-zinc-700 dark:text-zinc-100 border-zinc-200 dark:border-white/10"
+                className="w-full py-3.5 sm:py-4 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-widest transition-all duration-300 text-center border cursor-pointer active:scale-95 hover:-translate-y-0.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-white/[0.07] dark:hover:bg-white/[0.12] text-zinc-700 dark:text-zinc-100 border-zinc-200 dark:border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2"
               >
                 Reject Non-Essential
               </button>

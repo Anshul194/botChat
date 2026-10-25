@@ -10,6 +10,7 @@ export default function AppFooter() {
         <Link href="/home/privacy_policy" className="hover:text-white transition-colors">Privacy Policy</Link>
         <Link href="/home/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
         <Link href="/home/terms_use" className="hover:text-white transition-colors">Terms of Use</Link>
+        <Link href="/home/accessibility" className="hover:text-white transition-colors">Accessibility</Link>
         <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
         <button
           type="button"

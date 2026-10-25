@@ -98,6 +98,18 @@ function Navbar({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => voi
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile drawer on Escape key press
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, setOpen]);
+
   return (
     <div className="fixed top-0 inset-x-0 z-50 flex justify-center px-3.5 sm:px-6 pt-3 sm:pt-5 pointer-events-none">
       <nav
@@ -143,10 +155,12 @@ function Navbar({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => voi
         </div>
 
         <button
+          type="button"
           onClick={() => setOpen(!open)}
           className="md:hidden p-2 rounded-xl hover:bg-white/10 text-white/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
+          aria-controls="reseller-mobile-nav"
         >
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -160,6 +174,10 @@ function Navbar({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => voi
             aria-hidden="true"
           />
           <div
+            id="reseller-mobile-nav"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile Navigation"
             className="absolute top-16 sm:top-20 inset-x-3.5 sm:inset-x-6 z-40 p-5 rounded-2xl border shadow-2xl pointer-events-auto md:hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-5.5rem)] sm:max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain"
             style={{ background: "rgba(10,1,20,0.98)", borderColor: "rgba(255,255,255,0.10)", backdropFilter: "blur(20px)" }}
           >
@@ -219,11 +237,11 @@ function SectionBadge({ children, isDark }: { children: React.ReactNode; isDark?
 export default function ResellerLanding() {
   const [open, setOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isMounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   if (!isMounted) {
     return <div className="min-h-screen" style={{ background: "#06000d" }} />;

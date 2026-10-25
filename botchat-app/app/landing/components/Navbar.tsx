@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { shallowEqual } from "react-redux";
@@ -20,6 +20,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const { settings } = useTenantSettings();
   const { isAuthenticated, user } = useAppSelector((state) => ({ isAuthenticated: state.auth.isAuthenticated, user: state.auth.user }), shallowEqual);
@@ -58,6 +59,27 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMobileMenuOpen]);
 
+  // Close profile menu on Escape or outside click
+  useEffect(() => {
+    if (!isProfileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsProfileOpen(false);
+      }
+    };
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProfileOpen]);
+
   const useLight = forceLight || isScrolled;
 
   const navLinks = [
@@ -94,7 +116,7 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
             <Link
               key={link.name}
               href={link.href}
-              className={`text-sm font-bold transition-all hover:scale-105 active:scale-95 ${useLight ? "text-gray-600 hover:text-[#FF2D78]" : "text-white/85 hover:text-white"
+              className={`text-sm font-bold transition-all hover:scale-105 active:scale-95 px-2 py-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] ${useLight ? "text-gray-600 hover:text-[#FF2D78]" : "text-white/85 hover:text-white"
                 }`}
             >
               {link.name}
@@ -108,14 +130,14 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
             <>
               <Link
                 href="/auth/sign-in"
-                className={`text-sm font-bold transition-colors ${useLight ? "text-gray-700 hover:text-[#FF2D78]" : "text-white/80 hover:text-white"
+                className={`text-sm font-bold transition-colors px-2 py-1 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] ${useLight ? "text-gray-700 hover:text-[#FF2D78]" : "text-white/80 hover:text-white"
                   }`}
               >
                 Sign In
               </Link>
               <Link
                 href="/auth/sign-up"
-                className="group relative px-6 py-2.5 rounded-full overflow-hidden transition-all active:scale-95"
+                className="group relative px-6 py-2.5 rounded-full overflow-hidden transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] focus-visible:ring-offset-2"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-[#FF2D78] to-[#E1306C]" />
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
@@ -123,10 +145,14 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
               </Link>
             </>
           ) : (
-            <div className="relative">
+            <div ref={profileMenuRef} className="relative">
               <button
+                type="button"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className={`flex items-center p-1 rounded-full border transition-all ${useLight
+                aria-expanded={isProfileOpen}
+                aria-haspopup="menu"
+                aria-label="User account menu"
+                className={`flex items-center p-1 rounded-full border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78] ${useLight
                   ? "bg-gray-50 border-gray-200 text-gray-900"
                   : "bg-white/10 border-white/10 text-white"
                   }`}

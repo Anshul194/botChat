@@ -29,6 +29,8 @@ const Cpu = ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" 
 const Sparkle = ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>;
 const Check = ({ className }: { className?: string }) => <I d="M20 6 9 17l-5-5" className={className}/>;
 const Unlock = ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
+const Play = ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+const Pause = ({ className }: { className?: string }) => <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
 
 interface IndustryData {
   id: string;
@@ -187,6 +189,12 @@ export default function Simulator() {
   ];
 
   const [activeInd, setActiveInd] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
   const [state, setState] = useState({
     liked: false,
     commentsOpen: false,
@@ -209,6 +217,17 @@ export default function Simulator() {
     timersRef.current = [];
   };
 
+  const togglePause = () => {
+    setIsPaused(prev => {
+      const next = !prev;
+      if (next) {
+        clearAllTimers();
+        set({ cursor: { x: 150, y: 560, visible: false, tapping: false } });
+      }
+      return next;
+    });
+  };
+
   const addTimer = (fn: () => void, ms: number) => {
     const id = setTimeout(fn, ms);
     timersRef.current.push(id);
@@ -218,18 +237,20 @@ export default function Simulator() {
     clearAllTimers();
 
     // Reset state
-    set({
-      liked: false,
-      commentsOpen: false,
-      typedText: "",
-      commentPosted: false,
-      notifVisible: false,
-      screen: "reels",
-      dmPhase: 0,
-      followed: false,
-      cursor: { x: 150, y: 560, visible: false, tapping: false },
-      activeStep: 0,
-    });
+    addTimer(() => {
+      set({
+        liked: false,
+        commentsOpen: false,
+        typedText: "",
+        commentPosted: false,
+        notifVisible: false,
+        screen: "reels",
+        dmPhase: 0,
+        followed: false,
+        cursor: { x: 150, y: 560, visible: false, tapping: false },
+        activeStep: 0,
+      });
+    }, 0);
 
     // 1. Move to comment button
     addTimer(() => set({ cursor: { x: 250, y: 440, visible: true, tapping: false } }), 2000);
@@ -309,12 +330,30 @@ export default function Simulator() {
   };
 
   useEffect(() => {
-    runSimulation();
+    if (!isPaused) {
+      runSimulation();
+    }
     return () => clearAllTimers();
-  }, [activeInd]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeInd, isPaused]);
 
   const handleIndustryChange = (index: number) => {
     setActiveInd(index);
+    if (isPaused) {
+      clearAllTimers();
+      set({
+        liked: false,
+        commentsOpen: false,
+        typedText: "",
+        commentPosted: false,
+        notifVisible: false,
+        screen: "reels",
+        dmPhase: 0,
+        followed: false,
+        cursor: { x: 150, y: 560, visible: false, tapping: false },
+        activeStep: 0,
+      });
+    }
   };
 
   const handleManualFollow = () => {
@@ -347,7 +386,18 @@ export default function Simulator() {
           <span className="text-[12px] font-black tracking-widest text-[#FF2D78]/90 uppercase">
             ⚡ Select Niche
           </span>
-          <span className="text-[11px] text-pink-400 font-extrabold animate-pulse">👉 Click to test</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={togglePause}
+              aria-label={isPaused ? "Play animation" : "Pause animation"}
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white/90 bg-white/10 hover:bg-white/20 border border-white/10 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
+            >
+              {isPaused ? <Play className="w-2.5 h-2.5 fill-current text-[#FF2D78]" /> : <Pause className="w-2.5 h-2.5 fill-current text-[#FF2D78]" />}
+              <span>{isPaused ? "Play" : "Pause"}</span>
+            </button>
+            <span className="text-[11px] text-pink-400 font-extrabold animate-pulse">👉 Click to test</span>
+          </div>
         </div>
         
         {/* Switcher bar: Horizontal scroll wrapper with fading mask */}

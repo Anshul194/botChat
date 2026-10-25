@@ -52,19 +52,31 @@ const PRODUCT_PILLARS = [
     { title: "Smart Unified Inbox", sub: "24/7 Lead Capture" },
 ];
 
+interface GeneralSettings {
+    siteName?: string;
+    platformName?: string;
+    tagline?: string;
+    supportEmail?: string;
+    email?: string;
+    instagramUrl?: string;
+    twitterUrl?: string;
+    facebookUrl?: string;
+    linkedinUrl?: string;
+}
+
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     const { settings } = useTenantSettings();
-    const general = useSelector((state: RootState) => state.settings?.general);
-    const platformName: string = sanitizeAppName(settings.appName || (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME);
-    const platformTagline: string = (general as any)?.tagline || PLATFORM_TAGLINE;
-    const supportEmail: string = (general as any)?.supportEmail || (general as any)?.email || "support@megadm.chat";
+    const general = useSelector((state: RootState) => state.settings?.general as GeneralSettings | undefined);
+    const platformName: string = sanitizeAppName(settings.appName || general?.siteName || general?.platformName || PLATFORM_NAME);
+    const platformTagline: string = general?.tagline || PLATFORM_TAGLINE;
+    const supportEmail: string = general?.supportEmail || general?.email || "support@megadm.chat";
     const socialLinks = {
-        instagram: (general as any)?.instagramUrl || "#",
-        twitter: (general as any)?.twitterUrl || "#",
-        facebook: (general as any)?.facebookUrl || "#",
-        linkedin: (general as any)?.linkedinUrl || "#",
+        instagram: general?.instagramUrl || "#",
+        twitter: general?.twitterUrl || "#",
+        facebook: general?.facebookUrl || "#",
+        linkedin: general?.linkedinUrl || "#",
     };
 
     const dynamicSocials = [
@@ -73,6 +85,7 @@ export default function Footer() {
         { icon: <Facebook size={18} />, href: socialLinks.facebook, name: "Facebook" },
         { icon: <Linkedin size={18} />, href: socialLinks.linkedin, name: "LinkedIn" },
     ];
+    const validSocials = dynamicSocials.filter(s => s.href && s.href !== "#");
 
     return (
         <footer className="relative text-white pt-24 pb-32 overflow-hidden antialiased" style={{ background: "#06000d" }}>
@@ -113,39 +126,41 @@ export default function Footer() {
                             {platformTagline}
                         </p>
 
-                        {/* Social icons */}
-                        <div className="flex items-center gap-3">
-                            {dynamicSocials.map((social) => (
-                                <Link
-                                    key={social.name}
-                                    href={social.href}
-                                    aria-label={`Visit us on ${social.name}`}
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border group"
-                                    style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}
-                                    onMouseEnter={(e) => {
-                                        (e.currentTarget as HTMLAnchorElement).style.background = "#FF2D78";
-                                        (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
-                                        (e.currentTarget as HTMLAnchorElement).style.borderColor = "#FF2D78";
-                                        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.1)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)";
-                                        (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.5)";
-                                        (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)";
-                                        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
-                                    }}
-                                >
-                                    {social.icon}
-                                </Link>
-                            ))}
-                        </div>
+                        {/* Social icons - only rendered if configured with valid links */}
+                        {validSocials.length > 0 && (
+                            <div className="flex items-center gap-3">
+                                {validSocials.map((social) => (
+                                    <Link
+                                        key={social.name}
+                                        href={social.href}
+                                        aria-label={`Visit us on ${social.name}`}
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 border group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D78]"
+                                        style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}
+                                        onMouseEnter={(e) => {
+                                            (e.currentTarget as HTMLAnchorElement).style.background = "#FF2D78";
+                                            (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
+                                            (e.currentTarget as HTMLAnchorElement).style.borderColor = "#FF2D78";
+                                            (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.1)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)";
+                                            (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.5)";
+                                            (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)";
+                                            (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
+                                        }}
+                                    >
+                                        {social.icon}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
 
                         {/* Contact email if available */}
                         {supportEmail && (
-                            <a href={`mailto:${supportEmail}`} className="flex items-center gap-2 text-sm font-medium transition-colors"
-                                style={{ color: "rgba(255,255,255,0.45)" }}
+                            <a href={`mailto:${supportEmail}`} className="flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded"
+                                style={{ color: "rgba(255,255,255,0.65)" }}
                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#FF2D78")}
-                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.45)")}>
+                                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.65)")}>
                                 <ExternalLink size={14} />
                                 {supportEmail}
                             </a>
@@ -156,15 +171,14 @@ export default function Footer() {
                     <div className="lg:col-span-8">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-10">
 
-
                             {/* Solutions */}
                             <div className="space-y-6">
-                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "#FF2D78" }}>Solutions</h4>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "#FF2D78" }}>Solutions</h3>
                                 <ul className="space-y-4">
                                     {SOLUTIONS.map((link) => (
                                         <li key={link.label}>
                                             <Link href={link.href}
-                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
+                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded px-1"
                                                 style={{ color: "rgba(255,255,255,0.75)" }}
                                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
                                                 onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
@@ -178,12 +192,12 @@ export default function Footer() {
 
                             {/* Platform Links */}
                             <div className="space-y-6">
-                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.65)" }}>Platform</h4>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.65)" }}>Platform</h3>
                                 <ul className="space-y-4">
                                     {PLATFORM_LINKS.map((link) => (
                                         <li key={link.label}>
                                             <Link href={link.href}
-                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
+                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded px-1"
                                                 style={{ color: "rgba(255,255,255,0.75)" }}
                                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
                                                 onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
@@ -197,12 +211,12 @@ export default function Footer() {
 
                             {/* Legal */}
                             <div className="space-y-6">
-                                <h4 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.65)" }}>Legal</h4>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.65)" }}>Legal</h3>
                                 <ul className="space-y-4">
                                     {LEGAL_LINKS.map((link) => (
                                         <li key={link.label}>
                                             <Link href={link.href}
-                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300"
+                                                className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded px-1"
                                                 style={{ color: "rgba(255,255,255,0.75)" }}
                                                 onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
                                                 onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}>
@@ -215,7 +229,7 @@ export default function Footer() {
                                         <button
                                             type="button"
                                             onClick={() => window.dispatchEvent(new Event("openCookieConsent"))}
-                                            className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300 cursor-pointer text-left"
+                                            className="text-[15px] font-medium flex items-center gap-2 group transition-all duration-300 cursor-pointer text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D78] rounded px-1"
                                             style={{ color: "rgba(255,255,255,0.75)" }}
                                             onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#fff")}
                                             onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)")}
@@ -238,17 +252,17 @@ export default function Footer() {
 
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="flex flex-col gap-1 text-center md:text-left">
-                            <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+                            <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.70)" }}>
                                 &copy; {currentYear} {platformName}. Operated by MEGASTACK AI LLP. All rights reserved.
                             </p>
-                            <p className="text-[10px] font-medium" style={{ color: "rgba(255,255,255,0.25)" }}>
+                            <p className="text-[10px] font-medium" style={{ color: "rgba(255,255,255,0.60)" }}>
                                 MegaDM is a product operated by MEGASTACK AI LLP &bull; Bhopal, Madhya Pradesh, India
                             </p>
                         </div>
                         <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border cursor-default group transition-colors duration-300"
-                            style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}
+                            style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.65)" }}
                             onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.color = "#fff")}
-                            onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,0.45)")}>
+                            onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.color = "rgba(255,255,255,0.65)")}>
                             <ShieldCheck size={14} style={{ color: "#FF2D78" }} />
                             <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Built on Meta&apos;s Official API</span>
                         </div>
