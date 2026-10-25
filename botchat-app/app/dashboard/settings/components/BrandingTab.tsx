@@ -159,7 +159,13 @@ export default function BrandingTab() {
       await dispatch(updateGeneralSettings(dataToSave)).unwrap();
 
       const refreshed = await dispatch(fetchGeneralSettings({})).unwrap();
-      await dispatch(fetchPublicBranding({}));
+      try {
+        if (typeof fetchPublicBranding === 'function') {
+          await dispatch(fetchPublicBranding({}));
+        }
+      } catch (e) {
+        console.warn("fetchPublicBranding non-fatal error:", e);
+      }
 
       setLogoFile(null);
       setDarkLogoFile(null);
@@ -223,7 +229,13 @@ export default function BrandingTab() {
       }
 
       const refreshed = await dispatch(fetchGeneralSettings({})).unwrap();
-      await dispatch(fetchPublicBranding({}));
+      try {
+        if (typeof fetchPublicBranding === 'function') {
+          await dispatch(fetchPublicBranding({}));
+        }
+      } catch (e) {
+        console.warn("fetchPublicBranding non-fatal error:", e);
+      }
 
       setLogoFile(null);
       setDarkLogoFile(null);
