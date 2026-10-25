@@ -8,11 +8,15 @@ import PageMeta from "@/components/PageMeta";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAppDispatch } from "@/store/hooks";
 import { verifyEmail } from "@/store/slices/authSlice";
+import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import BrandLogo from "@/components/BrandLogo";
 
 function VerifyContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const { settings } = useTenantSettings();
+    const appName = settings.appName || "MegaDM";
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [message, setMessage] = useState("Verifying your email address...");
     const token = searchParams.get("token");
@@ -28,7 +32,7 @@ function VerifyContent() {
             try {
                 await dispatch(verifyEmail(token)).unwrap();
                 setStatus("success");
-                setMessage("Your email has been successfully verified! You can now access all features of BotChat.");
+                setMessage(`Your email has been successfully verified! You can now access all features of ${appName}.`);
                 
                 // Auto redirect after 3 seconds
                 setTimeout(() => {
@@ -41,27 +45,23 @@ function VerifyContent() {
         };
 
         handleVerify();
-    }, [token, dispatch, router]);
+    }, [token, dispatch, router, appName]);
 
     return (
         <>
             <PageMeta
-                title="Verify Email — BotChat"
-                description="Verify your email address to activate your BotChat account."
+                title={`Verify Email — ${appName}`}
+                description={`Verify your email address to activate your ${appName} account.`}
                 noindex
             />
             <div className="min-h-screen flex flex-col" style={{ background: "var(--background)" }}>
             {/* Topbar */}
             <div className="flex items-center justify-between px-6 py-5">
                 <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg"
-                        style={{ background: "linear-gradient(135deg, #ec4899, #a855f7)" }}>
-                        <MessageSquare className="w-5 h-5 text-white" />
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden">
+                        <BrandLogo className="w-full h-full object-contain" />
                     </div>
-                    <span className="font-bold text-lg tracking-tight" style={{
-                        background: "linear-gradient(135deg, #ec4899, #a855f7)",
-                        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
-                    }}>BotChat</span>
+                    <span className="font-bold text-lg tracking-tight" style={{ color: "var(--foreground)" }}>{appName}</span>
                 </div>
                 <ThemeToggle />
             </div>
@@ -152,7 +152,7 @@ function VerifyContent() {
             </div>
 
                     <div className="py-8 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
-                &copy; 2026 BotChat. All rights reserved.
+                &copy; {new Date().getFullYear()} {appName}. All rights reserved.
             </div>
         </div>
         </>

@@ -3999,7 +3999,7 @@ function FlowBuilder() {
                     ? <FacebookIcon size={15} color="#fff" fill="#fff" />
                     : <InstagramIcon size={15} color="#fff" />}
                 </div>
-                <span style={{ fontSize: 12, color: DS.ink3, fontWeight: 600 }}>BotChat</span>
+                <span style={{ fontSize: 12, color: DS.ink3, fontWeight: 600 }}>MegaDM</span>
                 <ChevronRight size={13} color={DS.ink3} />
                 <span style={{ fontSize: 12, fontWeight: 700, color: DS.ink2 }}>Flow Builder</span>
                 <ChevronRight size={13} color={DS.ink3} />

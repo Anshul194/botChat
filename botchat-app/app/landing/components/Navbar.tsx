@@ -10,6 +10,7 @@ import { logoutUser } from "@/store/slices/authSlice";
 import { useRouter } from "next/navigation";
 
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import BrandLogo from "@/components/BrandLogo";
 
 interface NavbarProps {
   forceLight?: boolean;
@@ -58,9 +59,8 @@ export default function Navbar({ forceLight = false }: NavbarProps) {
       >
         {/* LOGO — crisp and visible on both light and dark backgrounds */}
         <Link href="/" className="flex items-center cursor-pointer group">
-          <img
-            src={(useLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo)) || (useLight ? "/logo/logo-light.svg" : "/logo/logo-dark.svg")}
-            alt={settings.appName || "MegaDM"}
+          <BrandLogo
+            variant={useLight ? "light" : "dark"}
             className="h-12 w-auto object-contain group-hover:scale-105 transition-all duration-300"
           />
         </Link>

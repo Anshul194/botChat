@@ -90,7 +90,7 @@ export default function CookieConsent() {
                   Privacy & Cookies
                 </h3>
                 <p className="text-[11px] sm:text-sm text-zinc-500 dark:text-zinc-400 font-medium sm:px-4 leading-relaxed">
-                  We use essential tracking to keep BotChat secure and caching to ensure peak speeds.
+                  We use essential tracking to keep MegaDM secure and caching to ensure peak speeds.
                 </p>
               </div>
             </div>

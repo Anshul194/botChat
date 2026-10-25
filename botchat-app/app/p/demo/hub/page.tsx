@@ -53,8 +53,8 @@ export default function DemoHub() {
     return (
         <>
             <PageMeta
-                title="Bio Link Layout Showcase — BotChat"
-                description="Explore BotChat's bio-link layout templates: Standard, Portfolio, UGC Creator, Olivia, and Universal."
+                title="Bio Link Layout Showcase — MegaDM"
+                description="Explore MegaDM's bio-link layout templates: Standard, Portfolio, UGC Creator, Olivia, and Universal."
                 noindex
             />
             <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] font-sans">
@@ -104,7 +104,7 @@ export default function DemoHub() {
 
                 <div className="mt-20 pt-10 border-t border-slate-100 dark:border-white/5 text-center">
                     <p className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-widest">
-                        Built with BotChat Bio Studio &copy; 2024
+                        Built with MegaDM Bio Studio &copy; 2024
                     </p>
                 </div>
             </div>

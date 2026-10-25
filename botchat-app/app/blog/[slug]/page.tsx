@@ -151,7 +151,7 @@ export default function BlogDetailPage({ params }: BlogDetailProps) {
                   </div>
                 )}
                 <div className="text-left">
-                  <p className="text-gray-900 font-bold">{post.author_name || "BotChat Team"}</p>
+                  <p className="text-gray-900 font-bold">{post.author_name || "MegaDM Team"}</p>
                   <div className="flex items-center gap-3 text-sm text-gray-400">
                     {post.published_at && (
                       <>
@@ -227,7 +227,7 @@ export default function BlogDetailPage({ params }: BlogDetailProps) {
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF2D78] rounded-full blur-[100px] opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
               <h3 className="text-3xl font-black text-white mb-4 relative z-10">Ready to grow faster?</h3>
               <p className="text-gray-400 mb-8 max-w-lg mx-auto relative z-10">
-                Join 11,000+ creators automating their DMs and skyrocketing their sales with botChat.
+                Join 11,000+ creators automating their DMs and skyrocketing their sales with MegaDM.
               </p>
               <Link
                 href="/auth/sign-up"

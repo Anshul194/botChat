@@ -83,6 +83,24 @@ export function resolveAssetUrl(path: string | null | undefined): string | null 
   return baseHost ? `${baseHost}/uploads/${trimmed}` : `/uploads/${trimmed}`
 }
 
+const GENERIC_NAMES = new Set([
+  'my application',
+  'myapplication',
+  'my app',
+  'myapp',
+  'laravel',
+  'full multi tenancy laravel admin saas',
+  'chatpion',
+  'botsocial ai',
+])
+
+export function sanitizeAppName(name: string | null | undefined): string {
+  if (!name || typeof name !== 'string') return 'MegaDM'
+  const trimmed = name.trim()
+  if (!trimmed || GENERIC_NAMES.has(trimmed.toLowerCase())) return 'MegaDM'
+  return trimmed
+}
+
 const TenantSettingsContext = createContext<TenantSettingsContextValue>({
   settings: DEFAULT_SETTINGS,
   isLoading: true,
@@ -103,7 +121,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
           const parsed = JSON.parse(cached)
           return {
             ...DEFAULT_SETTINGS,
-            appName: parsed.appName || DEFAULT_SETTINGS.appName,
+            appName: sanitizeAppName(parsed.appName),
             logo: resolveAssetUrl(parsed.logo),
             darkLogo: resolveAssetUrl(parsed.darkLogo),
             favicon: resolveAssetUrl(parsed.favicon),
@@ -120,7 +138,8 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
   const currency = general.currency || 'USD'
   const currencySymbol = general.currencySymbol || '$'
   const language = general.defaultLanguage || 'en'
-  const appName = general.appName || general.app_name || general.brandName || general.brand_name || general.siteName || general.platformName || 'MegaDM'
+  const rawAppName = general.appName || general.app_name || general.brandName || general.brand_name || general.siteName || general.platformName || 'MegaDM'
+  const appName = sanitizeAppName(rawAppName)
   const rawLogo = general.logo ?? general.app_logo ?? general.appLogo ?? general.site_logo ?? general.light_logo ?? general.lightLogo ?? null
   const rawDarkLogo = general.darkLogo ?? general.app_dark_logo ?? general.dark_logo ?? general.darkLogoUrl ?? general.dark_logo_url ?? null
   const rawFavicon = general.favicon ?? general.favicon_logo ?? general.faviconLogo ?? general.site_favicon ?? null
@@ -170,7 +189,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
           const parsed = JSON.parse(cached)
           return {
             ...DEFAULT_SETTINGS,
-            appName: parsed.appName || DEFAULT_SETTINGS.appName,
+            appName: sanitizeAppName(parsed.appName),
             logo: resolveAssetUrl(parsed.logo),
             darkLogo: resolveAssetUrl(parsed.darkLogo),
             favicon: resolveAssetUrl(parsed.favicon),
@@ -219,7 +238,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
           const parsed = JSON.parse(cached)
           setSettings((prev) => ({
             ...prev,
-            appName: parsed.appName || prev.appName,
+            appName: sanitizeAppName(parsed.appName) || prev.appName,
             logo: resolveAssetUrl(parsed.logo) ?? prev.logo,
             darkLogo: resolveAssetUrl(parsed.darkLogo) ?? prev.darkLogo,
             favicon: resolveAssetUrl(parsed.favicon) ?? prev.favicon,

@@ -12,6 +12,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import BrandLogo from "@/components/BrandLogo";
 import {
     loginUser, fetchMe, verifyTwoFactorLogin, recoveryCodeLogin, clearTwoFactorChallenge
 } from "@/store/slices/authSlice";
@@ -173,11 +174,7 @@ export default function SignInPage() {
                     {/* Logo */}
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center shadow-lg overflow-hidden">
-                            {(settings.darkLogo || settings.logo) ? (
-                                <img src={(settings.darkLogo || settings.logo)!} alt={settings.appName} className="w-full h-full object-contain" />
-                            ) : (
-                                <MessageSquare className="w-5 h-5 text-white" />
-                            )}
+                            <BrandLogo variant="dark" alt={settings.appName || 'MegaDM'} className="w-full h-full object-contain" />
                         </div>
                         <span className="text-white font-bold text-xl tracking-tight">{settings.appName}</span>
                     </div>
@@ -212,7 +209,7 @@ export default function SignInPage() {
                     {/* Testimonial */}
                     <div className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-5">
                         <p className="text-white/85 text-sm leading-relaxed mb-3">
-                            &quot;BotChat cut our response time by 80%. The AI flows are incredibly intuitive — our team was up and running in minutes.&quot;
+                            &quot;MegaDM cut our response time by 80%. The AI flows are incredibly intuitive — our team was up and running in minutes.&quot;
                         </p>
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-xs">S</div>
@@ -232,12 +229,8 @@ export default function SignInPage() {
                     {/* Mobile logo */}
                     <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
-                            style={{ background: (settings.logo || settings.darkLogo) ? "transparent" : "linear-gradient(135deg, #ec4899, #a855f7)" }}>
-                            {(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo)) ? (
-                                <img src={(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo))!} alt={settings.appName} className="w-full h-full object-contain" />
-                            ) : (
-                                <MessageSquare className="w-4 h-4 text-white" />
-                            )}
+                            style={{ background: "transparent" }}>
+                            <BrandLogo variant={isLight ? "light" : "dark"} alt={settings.appName || 'MegaDM'} className="w-full h-full object-contain" />
                         </div>
                         <span className="font-bold text-sm" style={{
                             background: "linear-gradient(135deg, #1e5fd4, #6366f1)",

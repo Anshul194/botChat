@@ -44,8 +44,8 @@ function InstagramCallback() {
     return (
         <>
             <PageMeta
-                title="Connecting Instagram — BotChat"
-                description="Connecting your Instagram account to BotChat."
+                title="Connecting Instagram — MegaDM"
+                description="Connecting your Instagram account to MegaDM."
                 noindex
             />
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#06030f] text-white p-6 overflow-hidden">

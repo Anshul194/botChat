@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-const BASE_URL = "https://botchat.divyangtechlabs.com"
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://megadm.chat"
 
 const staticRoutes: { url: string; priority?: number; changeFreq?: string }[] = [
   { url: "/", priority: 1.0, changeFreq: "weekly" },
@@ -9,7 +9,10 @@ const staticRoutes: { url: string; priority?: number; changeFreq?: string }[] = 
   { url: "/blog", priority: 0.8, changeFreq: "weekly" },
   { url: "/home/terms_use", priority: 0.3, changeFreq: "yearly" },
   { url: "/home/privacy_policy", priority: 0.3, changeFreq: "yearly" },
+  { url: "/home/cookie_policy", priority: 0.3, changeFreq: "yearly" },
+  { url: "/home/disclaimer", priority: 0.3, changeFreq: "yearly" },
   { url: "/home/accessibility", priority: 0.3, changeFreq: "yearly" },
+  { url: "/home/browser_caching", priority: 0.3, changeFreq: "yearly" },
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

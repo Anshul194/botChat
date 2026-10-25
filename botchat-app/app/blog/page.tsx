@@ -60,8 +60,8 @@ export default function BlogPage() {
     return (
         <>
             <PageMeta
-                title="Blog — BotChat | Instagram & Facebook Automation Tips"
-                description="Read the latest tips, guides, and strategies for Instagram and Facebook automation. Learn how to scale your social media growth with BotChat."
+                title="Blog | MegaDM — Instagram & Facebook Automation Tips"
+                description="Read the latest tips, guides, and strategies for Instagram and Facebook automation. Learn how to scale your social media growth with MegaDM."
             />
             <main className="min-h-screen bg-white">
             <Navbar forceLight={true} />

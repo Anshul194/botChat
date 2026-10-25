@@ -94,8 +94,8 @@ export default function InvoicesPage() {
                             <p className="text-xs sm:text-sm font-medium mt-0.5 sm:mt-1" style={{ color: "var(--muted-foreground)" }}>#{selectedInvoice.payment_id || `INV-${selectedInvoice.id}`}</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-base sm:text-lg font-black" style={{ color: "var(--foreground)" }}>BotChat</p>
-                            <p className="text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>botchat.app</p>
+                            <p className="text-base sm:text-lg font-black" style={{ color: "var(--foreground)" }}>MegaDM</p>
+                            <p className="text-[10px] sm:text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>megadm.chat</p>
                         </div>
                     </div>
 

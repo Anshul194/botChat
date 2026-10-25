@@ -123,8 +123,8 @@ export default function UGCDemoPage() {
     return (
         <>
             <PageMeta
-                title="UGC Creator Portfolio Demo — BotChat Bio Link"
-                description="Preview a beautiful UGC creator portfolio bio-link page powered by BotChat."
+                title="UGC Creator Portfolio Demo — MegaDM Bio Link"
+                description="Preview a beautiful UGC creator portfolio bio-link page powered by MegaDM."
                 noindex
             />
             <h1 className="sr-only">Sarah Jenkins | UGC Creator Portfolio</h1>

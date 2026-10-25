@@ -1830,7 +1830,7 @@ function BioLinkBuilderContent() {
                                                             {growthTab === "branding" && (<div className="space-y-6">
                                                                 <ToggleField
                                                                     label="Display Branding"
-                                                                    desc="Show the 'Powered by BotChat' badge on your public page."
+                                                                    desc="Show the 'Powered by MegaDM' badge on your public page."
                                                                     icon={Sparkles}
                                                                     checked={advancedSettings.displayBranding}
                                                                     onChange={(v) => setAdvancedSettings({ ...advancedSettings, displayBranding: v })}
@@ -2034,7 +2034,7 @@ function BioLinkBuilderContent() {
                                                                     />
                                                                     <ToggleField
                                                                         label="Directory Listing"
-                                                                        desc="Make your profile discoverable in BotChat's public directory."
+                                                                        desc="Make your profile discoverable in MegaDM's public directory."
                                                                         icon={Orbit}
                                                                         checked={advancedSettings.enableDirectoryDisplaying}
                                                                         onChange={(v) => setAdvancedSettings({ ...advancedSettings, enableDirectoryDisplaying: v })}

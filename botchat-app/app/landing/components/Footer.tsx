@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { Instagram, Twitter, Linkedin, Facebook, ShieldCheck, ExternalLink } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import { useTenantSettings, sanitizeAppName } from "@/providers/TenantSettingsProvider";
+import BrandLogo from "@/components/BrandLogo";
 
 /* ─── Static fallback data ─────────────────────────────────────── */
 const PLATFORM_NAME = "MegaDM";
@@ -55,7 +56,7 @@ export default function Footer() {
 
     const { settings } = useTenantSettings();
     const general = useSelector((state: RootState) => state.settings?.general);
-    const platformName: string = settings.appName || (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME;
+    const platformName: string = sanitizeAppName(settings.appName || (general as any)?.siteName || (general as any)?.platformName || PLATFORM_NAME);
     const platformTagline: string = (general as any)?.tagline || PLATFORM_TAGLINE;
     const supportEmail: string = (general as any)?.supportEmail || (general as any)?.email || "";
     const socialLinks = {
@@ -100,8 +101,8 @@ export default function Footer() {
                     {/* Brand column */}
                     <div className="lg:col-span-4 space-y-8">
                         <div className="flex items-center">
-                            <img
-                                src={(settings.darkLogo || settings.logo) || "/logo/logo-dark.svg"}
+                            <BrandLogo
+                                variant="dark"
                                 alt={platformName}
                                 className="h-14 w-auto object-contain"
                             />

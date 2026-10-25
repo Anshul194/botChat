@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAppDispatch } from "@/store/hooks";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import BrandLogo from "@/components/BrandLogo";
 import { registerUser } from "@/store/slices/authSlice";
 import { useSocialLogin } from "@/hooks/useSocialLogin";
 import { useSocialLoginSettings } from "@/hooks/useSocialLoginSettings";
@@ -132,11 +133,7 @@ export default function SignUpPage() {
                 <div className="relative z-10 flex flex-col h-full p-12">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center overflow-hidden">
-                            {(settings.darkLogo || settings.logo) ? (
-                                <img src={(settings.darkLogo || settings.logo)!} alt={settings.appName} className="w-full h-full object-contain" />
-                            ) : (
-                                <MessageSquare className="w-5 h-5 text-white" />
-                            )}
+                            <BrandLogo variant="dark" alt={settings.appName || 'MegaDM'} className="w-full h-full object-contain" />
                         </div>
                         <span className="text-white font-bold text-xl tracking-tight">{settings.appName}</span>
                     </div>
@@ -186,12 +183,8 @@ export default function SignUpPage() {
                 <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-4 gap-2">
                     <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
-                            style={{ background: (settings.logo || settings.darkLogo) ? "transparent" : "linear-gradient(135deg, #ec4899, #a855f7)" }}>
-                            {(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo)) ? (
-                                <img src={(isLight ? (settings.logo || settings.darkLogo) : (settings.darkLogo || settings.logo))!} alt={settings.appName} className="w-full h-full object-contain" />
-                            ) : (
-                                <MessageSquare className="w-4 h-4 text-white" />
-                            )}
+                            style={{ background: "transparent" }}>
+                            <BrandLogo variant={isLight ? "light" : "dark"} alt={settings.appName || 'MegaDM'} className="w-full h-full object-contain" />
                         </div>
                         <span className="font-bold text-sm" style={{
                             background: "linear-gradient(135deg, #1e5fd4, #6366f1)",
@@ -462,10 +455,10 @@ export default function SignUpPage() {
                                             onChange={(e) => setField("agree", e.target.checked)}
                                             className="mt-0.5 w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0" />
                                         <span className="text-sm" style={{ color: isLight ? "#64748b" : "#94a3b8" }}>
-                                            I agree to BotChat&apos;s{" "}
-                                            <Link href="#" className="font-semibold" style={{ color: "var(--primary)" }}>Terms of Service</Link>
+                                            I agree to {settings.appName || 'MegaDM'}&apos;s{" "}
+                                            <Link href="/home/terms_use" target="_blank" className="font-semibold" style={{ color: "var(--primary)" }}>Terms of Service</Link>
                                             {" "}and{" "}
-                                            <Link href="#" className="font-semibold" style={{ color: "var(--primary)" }}>Privacy Policy</Link>
+                                            <Link href="/home/privacy_policy" target="_blank" className="font-semibold" style={{ color: "var(--primary)" }}>Privacy Policy</Link>
                                         </span>
                                     </label>
                                     {errors.agree && <p className="mt-1.5 text-xs flex items-center gap-1" style={{ color: "#ef4444" }}><AlertCircle className="w-3 h-3" />{errors.agree}</p>}

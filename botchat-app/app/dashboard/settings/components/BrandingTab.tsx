@@ -94,6 +94,7 @@ export default function BrandingTab() {
     dateFormat: "MMM DD, YYYY",
     timeFormat: "hh:mm A",
     logo: "",
+    darkLogo: "",
     favicon: "",
     gtag: "",
     databasePermission: false,
@@ -103,10 +104,13 @@ export default function BrandingTab() {
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [darkLogoFile, setDarkLogoFile] = useState<File | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [darkLogoPreview, setDarkLogoPreview] = useState<string | null>(null);
   const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const darkLogoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -114,10 +118,14 @@ export default function BrandingTab() {
       setGeneralForm({
         ...generalForm,
         ...general,
+        logo: general.logo || general.app_logo || "",
+        darkLogo: general.darkLogo || general.app_dark_logo || "",
+        favicon: general.favicon || general.favicon_logo || "",
         theme: general.theme || { primaryColor: "#1d6ef5", sidebarTransparent: true, darkLayout: false },
       });
-      if (general.logo) setLogoPreview(resolveAssetUrl(general.logo));
-      if (general.favicon) setFaviconPreview(resolveAssetUrl(general.favicon));
+      if (general.logo || general.app_logo) setLogoPreview(resolveAssetUrl(general.logo || general.app_logo));
+      if (general.darkLogo || general.app_dark_logo) setDarkLogoPreview(resolveAssetUrl(general.darkLogo || general.app_dark_logo));
+      if (general.favicon || general.favicon_logo) setFaviconPreview(resolveAssetUrl(general.favicon || general.favicon_logo));
     }
   }, [general]);
 
@@ -131,6 +139,9 @@ export default function BrandingTab() {
       if (generalForm.logo && !logoFile) {
         dataToSave.logo = generalForm.logo;
       }
+      if (generalForm.darkLogo && !darkLogoFile) {
+        dataToSave.darkLogo = generalForm.darkLogo;
+      }
       if (generalForm.favicon && !faviconFile) {
         dataToSave.favicon = generalForm.favicon;
       }
@@ -138,8 +149,9 @@ export default function BrandingTab() {
 
       const brandPayload: any = { app_name: generalForm.appName || 'MegaDM' };
       if (logoFile) brandPayload.app_logo = logoFile;
+      if (darkLogoFile) brandPayload.app_dark_logo = darkLogoFile;
       if (faviconFile) brandPayload.favicon_logo = faviconFile;
-      if (logoFile || faviconFile) {
+      if (logoFile || darkLogoFile || faviconFile) {
         await dispatch(updateAppSettings(brandPayload)).unwrap();
       }
       await dispatch(fetchGeneralSettings({})).unwrap();
@@ -152,6 +164,7 @@ export default function BrandingTab() {
             ...parsed,
             appName: generalForm.appName || parsed.appName || 'MegaDM',
             logo: logoPreview || resolveAssetUrl(generalForm.logo) || parsed.logo,
+            darkLogo: darkLogoPreview || resolveAssetUrl(generalForm.darkLogo) || parsed.darkLogo,
             favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
           }));
           window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
@@ -170,13 +183,15 @@ export default function BrandingTab() {
     try {
       const payload: any = { app_name: generalForm.appName || 'MegaDM' };
       if (logoFile) payload.app_logo = logoFile;
+      if (darkLogoFile) payload.app_dark_logo = darkLogoFile;
       if (faviconFile) payload.favicon_logo = faviconFile;
-      if (logoFile || faviconFile) {
+      if (logoFile || darkLogoFile || faviconFile) {
         await dispatch(updateAppSettings(payload)).unwrap();
       }
-      if (generalForm.logo || generalForm.favicon || generalForm.appName) {
+      if (generalForm.logo || generalForm.darkLogo || generalForm.favicon || generalForm.appName) {
         const toSave: any = {};
         if (generalForm.logo && !logoFile) toSave.logo = generalForm.logo;
+        if (generalForm.darkLogo && !darkLogoFile) toSave.darkLogo = generalForm.darkLogo;
         if (generalForm.favicon && !faviconFile) toSave.favicon = generalForm.favicon;
         if (generalForm.appName) toSave.appName = generalForm.appName;
         if (Object.keys(toSave).length > 0) {
@@ -193,6 +208,7 @@ export default function BrandingTab() {
             ...parsed,
             appName: generalForm.appName || parsed.appName || 'MegaDM',
             logo: logoPreview || resolveAssetUrl(generalForm.logo) || parsed.logo,
+            darkLogo: darkLogoPreview || resolveAssetUrl(generalForm.darkLogo) || parsed.darkLogo,
             favicon: faviconPreview || resolveAssetUrl(generalForm.favicon) || parsed.favicon,
           }));
           window.dispatchEvent(new CustomEvent('tenant-settings:updated'));
@@ -218,7 +234,7 @@ export default function BrandingTab() {
               <InputField label="Site Name" value={generalForm.brandName} onChange={(e: any) => setGeneralForm({ ...generalForm, brandName: e.target.value })} placeholder="e.g. Acme Automation" />
             )}
             {(isTenant || isReseller) && (
-              <InputField label="Custom Domain" value={generalForm.whiteLabelDomain} onChange={(e: any) => setGeneralForm({ ...generalForm, whiteLabelDomain: e.target.value })} placeholder="app.botchat.com" />
+              <InputField label="Custom Domain" value={generalForm.whiteLabelDomain} onChange={(e: any) => setGeneralForm({ ...generalForm, whiteLabelDomain: e.target.value })} placeholder="app.megadm.chat" />
             )}
             <InputField label="Support Email (Footer)" value={generalForm.company_email} onChange={(e: any) => setGeneralForm({ ...generalForm, company_email: e.target.value })} placeholder="support@yourdomain.com" />
             <InputField label="Support Phone (Footer)" value={generalForm.company_telephone} onChange={(e: any) => setGeneralForm({ ...generalForm, company_telephone: e.target.value })} placeholder="+1 234 567 8900" />
@@ -269,43 +285,49 @@ export default function BrandingTab() {
         </div>
       </form>
 
-      <Section title="Brand Assets" desc="Customize your workspace branding with logos and favicons">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <Section title="Brand Assets" desc="Customize your workspace branding with light-background and dark-background logos and favicons">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* 1. Light Logo (For Light Backgrounds) */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
-                <Palette className="w-4 h-4 text-purple-500" /> Main Logo
-              </label>
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md" style={{ background: "rgba(168,85,247,0.1)", color: "#a855f7" }}>SVG/PNG</span>
+              <div>
+                <label className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+                  <Palette className="w-4 h-4 text-pink-500" /> Light Logo
+                </label>
+                <p className="text-[11px] text-muted-foreground mt-0.5">For light surfaces &amp; light headers</p>
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md" style={{ background: "rgba(236,72,153,0.1)", color: "#ec4899" }}>SVG/PNG</span>
             </div>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <Link2 className="w-4 h-4 text-muted-foreground" />
               </div>
-              <input type="text" placeholder="Paste logo URL here..."
+              <input type="text" placeholder="Paste light logo URL..."
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all duration-300"
                 style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
                 value={generalForm.logo || ""}
                 onChange={(e) => setGeneralForm({ ...generalForm, logo: e.target.value })}
               />
             </div>
-            <div className="border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-all duration-500 hover:scale-[1.01] group cursor-pointer relative overflow-hidden"
-              style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}
+            <div className="border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-500 hover:scale-[1.01] group cursor-pointer relative overflow-hidden bg-white/5 min-h-[160px]"
+              style={{ borderColor: "var(--glass-border)" }}
               onClick={() => logoInputRef.current?.click()}
             >
               {generalForm.logo ? (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 text-white font-bold text-xs uppercase cursor-pointer">
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 text-white font-bold text-xs uppercase cursor-pointer">
                   Click to Replace
                 </div>
               ) : null}
               {logoPreview ? (
-                <img src={logoPreview} alt="Logo Preview" className="max-h-24 w-auto object-contain mb-2" />
+                <div className="p-3 bg-white/90 rounded-xl mb-2 flex items-center justify-center max-w-full">
+                  <img src={logoPreview} alt="Light Logo Preview" className="max-h-16 w-auto object-contain" />
+                </div>
               ) : (
-                <div className="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm" style={{ background: "rgba(168,85,247,0.15)" }}>
-                  <UploadCloud className="w-6 h-6 text-purple-500" />
+                <div className="w-12 h-12 rounded-2xl mb-3 flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm" style={{ background: "rgba(236,72,153,0.15)" }}>
+                  <UploadCloud className="w-5 h-5 text-pink-500" />
                 </div>
               )}
-              <input type="file" ref={logoInputRef} className="hidden" accept="image/*"
+              <input type="file" ref={logoInputRef} className="hidden" accept="image/png,image/jpeg,image/svg+xml,image/webp"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
@@ -313,21 +335,82 @@ export default function BrandingTab() {
                     const reader = new FileReader();
                     reader.onloadend = () => setLogoPreview(reader.result as string);
                     reader.readAsDataURL(file);
-                    showModal("success", "Logo", "Logo selected!");
+                    showModal("success", "Light Logo", "Light logo selected!");
                   }
                 }}
               />
-              <p className="text-sm font-bold mb-1" style={{ color: "var(--foreground)" }}>{logoPreview ? "Change Logo" : "Upload Logo"}</p>
-              <p className="text-xs text-muted-foreground">{logoPreview ? "Click to replace" : "Or drag & drop file here"}</p>
+              <p className="text-xs font-bold mb-0.5" style={{ color: "var(--foreground)" }}>{logoPreview ? "Change Light Logo" : "Upload Light Logo"}</p>
+              <p className="text-[11px] text-muted-foreground">{logoPreview ? "Click to replace" : "Or drag & drop file here"}</p>
             </div>
           </div>
 
+          {/* 2. Dark Logo (For Dark Backgrounds) */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
-                <Sparkles className="w-4 h-4 text-[var(--primary)]" /> Favicon
-              </label>
-              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md" style={{ background: "rgba(236,72,153,0.1)", color: "#ec4899" }}>ICO/PNG</span>
+              <div>
+                <label className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+                  <Palette className="w-4 h-4 text-purple-500" /> Dark Logo
+                </label>
+                <p className="text-[11px] text-muted-foreground mt-0.5">For dark surfaces, sidebar &amp; footer</p>
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md" style={{ background: "rgba(168,85,247,0.1)", color: "#a855f7" }}>SVG/PNG</span>
+            </div>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Link2 className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <input type="text" placeholder="Paste dark logo URL..."
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition-all duration-300"
+                style={{ background: "var(--glass-bg)", border: "1px solid var(--glass-border)", color: "var(--foreground)" }}
+                value={generalForm.darkLogo || ""}
+                onChange={(e) => setGeneralForm({ ...generalForm, darkLogo: e.target.value })}
+              />
+            </div>
+            <div className="border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-500 hover:scale-[1.01] group cursor-pointer relative overflow-hidden bg-black/40 min-h-[160px]"
+              style={{ borderColor: "var(--glass-border)" }}
+              onClick={() => darkLogoInputRef.current?.click()}
+            >
+              {generalForm.darkLogo ? (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 text-white font-bold text-xs uppercase cursor-pointer">
+                  Click to Replace
+                </div>
+              ) : null}
+              {darkLogoPreview ? (
+                <div className="p-3 bg-neutral-900/90 rounded-xl mb-2 flex items-center justify-center max-w-full border border-white/10">
+                  <img src={darkLogoPreview} alt="Dark Logo Preview" className="max-h-16 w-auto object-contain" />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-2xl mb-3 flex items-center justify-center transition-all duration-500 group-hover:rotate-6 shadow-sm" style={{ background: "rgba(168,85,247,0.15)" }}>
+                  <UploadCloud className="w-5 h-5 text-purple-500" />
+                </div>
+              )}
+              <input type="file" ref={darkLogoInputRef} className="hidden" accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setDarkLogoFile(file);
+                    const reader = new FileReader();
+                    reader.onloadend = () => setDarkLogoPreview(reader.result as string);
+                    reader.readAsDataURL(file);
+                    showModal("success", "Dark Logo", "Dark logo selected!");
+                  }
+                }}
+              />
+              <p className="text-xs font-bold mb-0.5" style={{ color: "var(--foreground)" }}>{darkLogoPreview ? "Change Dark Logo" : "Upload Dark Logo"}</p>
+              <p className="text-[11px] text-muted-foreground">{darkLogoPreview ? "Click to replace" : "Or drag & drop file here"}</p>
+            </div>
+          </div>
+
+          {/* 3. Favicon */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--foreground)" }}>
+                  <Sparkles className="w-4 h-4 text-emerald-500" /> Favicon
+                </label>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Browser tab icon &amp; shortcuts</p>
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md" style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>ICO/PNG/SVG</span>
             </div>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -340,23 +423,25 @@ export default function BrandingTab() {
                 onChange={(e) => setGeneralForm({ ...generalForm, favicon: e.target.value })}
               />
             </div>
-            <div className="border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-all duration-500 hover:scale-[1.01] group cursor-pointer relative overflow-hidden"
+            <div className="border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-500 hover:scale-[1.01] group cursor-pointer relative overflow-hidden min-h-[160px]"
               style={{ borderColor: "var(--glass-border)", background: "var(--glass-bg)" }}
               onClick={() => faviconInputRef.current?.click()}
             >
               {generalForm.favicon ? (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 text-white font-bold text-xs uppercase cursor-pointer">
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 text-white font-bold text-xs uppercase cursor-pointer">
                   Replace
                 </div>
               ) : null}
               {faviconPreview ? (
-                <img src={faviconPreview} alt="Favicon Preview" className="w-12 h-12 object-contain mb-2 shadow-lg" />
+                <div className="p-2 rounded-xl mb-2 flex items-center justify-center bg-white/10">
+                  <img src={faviconPreview} alt="Favicon Preview" className="w-10 h-10 object-contain shadow-lg" />
+                </div>
               ) : (
-                <div className="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center transition-all duration-500 group-hover:-rotate-6 shadow-sm" style={{ background: "rgba(236,72,153,0.15)" }}>
-                  <UploadCloud className="w-6 h-6 text-[var(--primary)]" />
+                <div className="w-12 h-12 rounded-2xl mb-3 flex items-center justify-center transition-all duration-500 group-hover:-rotate-6 shadow-sm" style={{ background: "rgba(16,185,129,0.15)" }}>
+                  <UploadCloud className="w-5 h-5 text-emerald-500" />
                 </div>
               )}
-              <input type="file" ref={faviconInputRef} className="hidden" accept="image/x-icon,image/png"
+              <input type="file" ref={faviconInputRef} className="hidden" accept="image/x-icon,image/png,image/svg+xml"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
@@ -368,8 +453,8 @@ export default function BrandingTab() {
                   }
                 }}
               />
-              <p className="text-sm font-bold mb-1" style={{ color: "var(--foreground)" }}>{faviconPreview ? "Change Favicon" : "Upload Favicon"}</p>
-              <p className="text-xs text-muted-foreground">{faviconPreview ? "Click to replace" : "Or drag & drop file here"}</p>
+              <p className="text-xs font-bold mb-0.5" style={{ color: "var(--foreground)" }}>{faviconPreview ? "Change Favicon" : "Upload Favicon"}</p>
+              <p className="text-[11px] text-muted-foreground">{faviconPreview ? "Click to replace" : "Or drag & drop file here"}</p>
             </div>
           </div>
         </div>
@@ -421,13 +506,13 @@ export default function BrandingTab() {
                       <td className="px-5 py-4 font-mono text-xs font-semibold">CNAME</td>
                       <td className="px-5 py-4 text-foreground font-semibold">app</td>
                       <td className="px-5 py-4 font-mono text-xs flex items-center gap-2" style={{ color: "var(--muted-foreground)" }}>
-                        cname.botchat.com
+                        cname.megadm.chat
                         <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:text-foreground" />
                       </td>
                     </tr>
                     <tr className="group hover:bg-muted/10 transition-colors">
                       <td className="px-5 py-4 font-mono text-xs font-semibold">TXT</td>
-                      <td className="px-5 py-4 text-foreground font-semibold">_botchat-verify.app</td>
+                      <td className="px-5 py-4 text-foreground font-semibold">_megadm-verify.app</td>
                       <td className="px-5 py-4 font-mono text-xs flex items-center gap-2" style={{ color: "var(--muted-foreground)" }}>
                         vc_verify_q3f8d9sk2lxyz
                         <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:text-foreground" />

@@ -91,7 +91,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
     const currentMeta = SECTION_META.find((s) => s.key === openSection);
 
     const vcardSlug = currentVcard?.url || draft.url || "";
-    const shortUrl = `botchat.io/${vcardSlug}`;
+    const shortUrl = `megadm.chat/v/${vcardSlug}`;
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -236,7 +236,7 @@ export default function VcardEditorClient({ slug: id }: Props) {
                         <label className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)] mb-2 block">Your Digital Vcard URL</label>
                         <div className="flex items-center gap-2 sm:gap-3 bg-[var(--muted)]/50 dark:bg-[var(--muted)]/80 p-1 pl-3 sm:pl-4 rounded-xl border border-[var(--border)] dark:border-[var(--border)]">
                             <Globe size={14} className="text-[var(--muted-foreground)]/70 shrink-0" />
-                            <span className="text-xs sm:text-sm font-bold text-[var(--muted-foreground)]/70 shrink-0">botchat.io/</span>
+                            <span className="text-xs sm:text-sm font-bold text-[var(--muted-foreground)]/70 shrink-0">megadm.chat/v/</span>
                             <input value={vcardSlug} onChange={(e) => setDraft({...draft, url: e.target.value})} className="bg-transparent text-xs sm:text-sm font-bold text-[var(--foreground)] dark:text-white flex-1 outline-none min-w-0" />
                             <button
                                 onClick={() => {

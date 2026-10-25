@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser } from "@/store/slices/authSlice";
 import { useTenantSettings } from "@/providers/TenantSettingsProvider";
+import BrandLogo from "@/components/BrandLogo";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
     ChevronDown,
@@ -377,13 +378,13 @@ export default function Sidebar({ collapsed, onToggle, onClose }: SidebarProps) 
                         <motion.div
                             whileHover={{ rotate: 12, scale: 1.1 }}
                             className="w-8 h-8 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0 overflow-hidden"
-                            style={{ background: (theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo)) ? "transparent" : "var(--primary)" }}
+                            style={{ background: "transparent" }}
                         >
-                            {(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo)) ? (
-                                <img src={(theme === 'dark' ? (settings.darkLogo || settings.logo) : (settings.logo || settings.darkLogo))!} alt={settings.appName} className="w-full h-full object-contain" />
-                            ) : (
-                                <MessagesSquare className="w-4 h-4 text-white" aria-hidden="true" />
-                            )}
+                            <BrandLogo
+                                variant={theme === 'dark' ? 'dark' : 'light'}
+                                className="w-full h-full object-contain"
+                                alt={settings.appName || 'MegaDM'}
+                            />
                         </motion.div>
                         <AnimatePresence mode="wait">
                             {!collapsed && (

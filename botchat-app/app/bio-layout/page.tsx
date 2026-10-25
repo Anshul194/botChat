@@ -13,8 +13,8 @@ export default function BioLayout() {
   return (
     <>
       <PageMeta
-        title="Bio Layout Demo — BotChat"
-        description="Preview beautiful bio-link page layouts powered by BotChat. Portfolio, link-in-bio, and creative showcase templates."
+        title="Bio Layout Demo — MegaDM"
+        description="Preview beautiful bio-link page layouts powered by MegaDM. Portfolio, link-in-bio, and creative showcase templates."
         noindex
       />
       <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans">

@@ -2,8 +2,8 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy — BotChat",
-  description: "Read the BotChat Cookie Policy. Learn about what cookies we use, how they support your session, and how to manage your consent preferences.",
+  title: "Cookie Policy — MegaDM",
+  description: "Read the MegaDM Cookie Policy. Learn about what cookies we use, how they support your session, and how to manage your consent preferences.",
 };
 
 export default function CookiePolicy() {
@@ -19,7 +19,7 @@ export default function CookiePolicy() {
       <div className="space-y-12 leading-relaxed text-lg">
         <section className="bg-white/5 dark:bg-zinc-900/50 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800/50 shadow-sm">
           <p className="text-zinc-700 dark:text-zinc-300">
-            This Cookie Policy explains how <strong className="text-zinc-900 dark:text-white font-bold">BotChat</strong> uses cookies and similar tracking technologies when you interact with our website and dashboard. We aim to be fully transparent about our data collection practices.
+            This Cookie Policy explains how <strong className="text-zinc-900 dark:text-white font-bold">MegaDM</strong> uses cookies and similar tracking technologies when you interact with our website and dashboard. We aim to be fully transparent about our data collection practices.
           </p>
         </section>
 
@@ -41,7 +41,7 @@ export default function CookiePolicy() {
           <div className="space-y-8 pl-12">
             <div className="bg-zinc-50 dark:bg-zinc-900/30 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800">
               <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">A. Essential Cookies (Always Active)</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 text-base">These cookies are critical for the security and basic functionality of BotChat. They allow you to log in, access secure areas of the dashboard, prevent cross-site request forgery, and keep your session authenticated.</p>
+              <p className="text-zinc-600 dark:text-zinc-400 text-base">These cookies are critical for the security and basic functionality of MegaDM. They allow you to log in, access secure areas of the dashboard, prevent cross-site request forgery, and keep your session authenticated.</p>
             </div>
             <div className="bg-zinc-50 dark:bg-zinc-900/30 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800">
               <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">B. Preference & Functional Cookies</h3>

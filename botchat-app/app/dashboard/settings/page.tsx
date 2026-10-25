@@ -836,7 +836,7 @@ export default function SettingsPage() {
                                         )}
                                         <div className="md:col-span-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                <InputField label="Sender 'From' Address" value={emailForm.mail_from_address} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_address: e.target.value })} placeholder="no-reply@botchat.com" />
+                                                <InputField label="Sender 'From' Address" value={emailForm.mail_from_address} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_address: e.target.value })} placeholder="no-reply@megadm.chat" />
                                                 <InputField label="Sender Name" value={emailForm.mail_from_name} onChange={(e: any) => setEmailForm({ ...emailForm, mail_from_name: e.target.value })} placeholder="App Name" />
                                             </div>
                                         </div>
@@ -947,7 +947,7 @@ export default function SettingsPage() {
 
                                 {/* Row 5: Site URL + Valid OAuth Redirect URI */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <InputField label="Site URL" value={fbForm.siteUrl} onChange={(e: any) => setFbForm({ ...fbForm, siteUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com" />
+                                    <InputField label="Site URL" value={fbForm.siteUrl} onChange={(e: any) => setFbForm({ ...fbForm, siteUrl: e.target.value })} placeholder="https://megadm.chat" />
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Valid OAuth Redirect URI (Connect)</label>
                                         <div className="relative">
@@ -965,7 +965,7 @@ export default function SettingsPage() {
 
                                 {/* Row 6: Privacy Policy URL + Login Callback URL */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <InputField label="Privacy Policy URL" value={fbForm.privacyPolicyUrl} onChange={(e: any) => setFbForm({ ...fbForm, privacyPolicyUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com/policy/privacy" />
+                                    <InputField label="Privacy Policy URL" value={fbForm.privacyPolicyUrl} onChange={(e: any) => setFbForm({ ...fbForm, privacyPolicyUrl: e.target.value })} placeholder="https://megadm.chat/home/privacy_policy" />
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Login Callback URL (Social)</label>
                                         <div className="relative">
@@ -983,7 +983,7 @@ export default function SettingsPage() {
 
                                 {/* Row 7: Terms of Service URL + Data Deletion Callback URL */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <InputField label="Terms of Service URL" value={fbForm.termsOfServiceUrl} onChange={(e: any) => setFbForm({ ...fbForm, termsOfServiceUrl: e.target.value })} placeholder="https://botchat.divyangtechlabs.com/terms" />
+                                    <InputField label="Terms of Service URL" value={fbForm.termsOfServiceUrl} onChange={(e: any) => setFbForm({ ...fbForm, termsOfServiceUrl: e.target.value })} placeholder="https://megadm.chat/home/terms_use" />
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-medium block" style={{ color: "var(--foreground)" }}>Data Deletion Callback URL</label>
                                         <div className="relative">
@@ -1216,7 +1216,7 @@ export default function SettingsPage() {
                                             <InputField label="AWS Access Key ID" autoComplete="off" value={storageForm.s3_key} onChange={(e: any) => setStorageForm({ ...storageForm, s3_key: e.target.value })} placeholder="AKIAIOSFODNN7EXAMPLE" />
                                             <InputField label="AWS Secret Access Key" type="password" autoComplete="new-password" value={storageForm.s3_secret} onChange={(e: any) => setStorageForm({ ...storageForm, s3_secret: e.target.value })} placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" />
                                             <InputField label="AWS Region" autoComplete="off" value={storageForm.s3_region} onChange={(e: any) => setStorageForm({ ...storageForm, s3_region: e.target.value })} placeholder="us-east-1" />
-                                            <InputField label="S3 Bucket Name" autoComplete="off" value={storageForm.s3_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, s3_bucket: e.target.value })} placeholder="botchat-uploads-prod" />
+                                            <InputField label="S3 Bucket Name" autoComplete="off" value={storageForm.s3_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, s3_bucket: e.target.value })} placeholder="megadm-uploads-prod" />
                                             <InputField label="Custom CDN URL (Optional)" autoComplete="off" value={storageForm.s3_url} onChange={(e: any) => setStorageForm({ ...storageForm, s3_url: e.target.value })} placeholder="https://cdn.example.com" />
                                             <InputField label="Custom Endpoint (Optional)" autoComplete="off" value={storageForm.s3_endpoint} onChange={(e: any) => setStorageForm({ ...storageForm, s3_endpoint: e.target.value })} placeholder="https://s3.us-east-1.amazonaws.com" />
                                         </div>
@@ -1226,7 +1226,7 @@ export default function SettingsPage() {
                                     {storageForm.storage_driver === 'r2' && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-[var(--border-color)] pt-5">
                                             <InputField label="Cloudflare Account ID" autoComplete="off" value={storageForm.r2_account_id} onChange={(e: any) => setStorageForm({ ...storageForm, r2_account_id: e.target.value })} placeholder="9b8a7c6d5e4f3a2b1c0d" />
-                                            <InputField label="Bucket Name" autoComplete="off" value={storageForm.r2_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, r2_bucket: e.target.value })} placeholder="botchat-r2-bucket" />
+                                            <InputField label="Bucket Name" autoComplete="off" value={storageForm.r2_bucket} onChange={(e: any) => setStorageForm({ ...storageForm, r2_bucket: e.target.value })} placeholder="megadm-r2-bucket" />
                                             <InputField label="R2 Access Key ID" autoComplete="off" value={storageForm.r2_key} onChange={(e: any) => setStorageForm({ ...storageForm, r2_key: e.target.value })} placeholder="Access Key ID" />
                                             <InputField label="R2 Secret Access Key" type="password" autoComplete="new-password" value={storageForm.r2_secret} onChange={(e: any) => setStorageForm({ ...storageForm, r2_secret: e.target.value })} placeholder="Secret Access Key" />
                                             <div className="md:col-span-2">

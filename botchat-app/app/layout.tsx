@@ -52,18 +52,43 @@ const montserrat = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://megadm.chat"),
   title: {
-    default: "MegaDM",
-    template: "%s — MegaDM",
+    default: "MegaDM — Instagram & Facebook Automation Platform",
+    template: "%s | MegaDM",
   },
   description:
     "Automate Instagram DMs and Facebook Messenger with AI-powered workflows. Built on Meta's Official API.",
+  keywords: ["Instagram Automation", "Facebook Automation", "DM Funnels", "Comment Automation", "MegaDM"],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/brand/apple-touch-icon.png",
+  },
+  manifest: "/brand/manifest.webmanifest",
+  openGraph: {
+    type: "website",
+    siteName: "MegaDM",
+    title: "MegaDM — Turn Social Engagement Into Customers",
+    description: "Automate Instagram DMs and Facebook Messenger with official Meta API automation.",
+    url: "https://megadm.chat",
+    images: [{ url: "/brand/social/og-image.png", width: 1200, height: 630, alt: "MegaDM Logo" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MegaDM — Social Media Automation",
+    description: "Automate Instagram & Facebook with smart triggers.",
+    images: ["/brand/social/og-image.png"],
+  },
 };
 
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#fc217f",
 };
 
 export default function RootLayout({
@@ -76,8 +101,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="icon" href="/logo/logo.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+        <link rel="manifest" href="/brand/manifest.webmanifest" />
 
         {/* JSON-LD Structured Data */}
         <script
@@ -85,10 +112,12 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": "SoftwareApplication",
               name: "MegaDM",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
               url: "https://megadm.chat",
-              logo: "https://megadm.chat/logo.png",
+              logo: "https://megadm.chat/logo/logo-dark.svg",
               description:
                 "AI-powered Instagram DM and Facebook automation platform. Convert comments into customers automatically.",
               sameAs: [
@@ -100,10 +129,6 @@ export default function RootLayout({
                 "@type": "ContactPoint",
                 contactType: "customer support",
                 email: "support@megadm.chat",
-              },
-              address: {
-                "@type": "PostalAddress",
-                addressCountry: "IN",
               },
             }),
           }}

@@ -48,8 +48,8 @@ export default function PremiumDemoPage() {
     return (
         <>
             <PageMeta
-                title="Premium Bio Link Templates — BotChat Showcase"
-                description="Preview BotChat's premium bio-link templates: Insta Pro, Trendy, Minimal, and Sunday Brunch layouts."
+                title="Premium Bio Link Templates — MegaDM Showcase"
+                description="Preview MegaDM's premium bio-link templates: Insta Pro, Trendy, Minimal, and Sunday Brunch layouts."
                 noindex
             />
             <div className="min-h-screen bg-slate-50 flex flex-col">

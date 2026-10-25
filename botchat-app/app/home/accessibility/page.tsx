@@ -2,8 +2,8 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Accessibility Statement — BotChat",
-  description: "BotChat is committed to ensuring digital accessibility for all users. Read our accessibility statement including German Sign Language (DGS) and easy-to-read language options.",
+  title: "Accessibility Statement — MegaDM",
+  description: "MegaDM is committed to ensuring digital accessibility for all users. Read our accessibility statement including German Sign Language (DGS) and easy-to-read language options.",
 };
 
 export default function AccessibilityPage() {
@@ -20,7 +20,7 @@ export default function AccessibilityPage() {
         <section id="commitment">
           <h2 className="text-2xl font-bold text-foreground mb-4">1. Commitment to Accessibility</h2>
           <p>
-            BotChat is committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply the relevant accessibility standards. Our goal is to make our platform perceivable, operable, understandable, and robust for all users.
+            MegaDM is committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply the relevant accessibility standards. Our goal is to make our platform perceivable, operable, understandable, and robust for all users.
           </p>
           <p className="mt-4">
             We strive to conform to the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA, which define requirements for making web content more accessible to people with a wide range of disabilities.
@@ -29,7 +29,7 @@ export default function AccessibilityPage() {
 
         <section id="measures">
           <h2 className="text-2xl font-bold text-foreground mb-4">2. Measures to Support Accessibility</h2>
-          <p>BotChat takes the following measures to ensure accessibility:</p>
+          <p>MegaDM takes the following measures to ensure accessibility:</p>
           <ul className="list-disc pl-6 mt-4 space-y-3">
             <li>Include accessibility as a requirement for all new components and features.</li>
             <li>Assign clear accessibility targets and responsibilities.</li>
@@ -44,20 +44,20 @@ export default function AccessibilityPage() {
             The Web Content Accessibility Guidelines (WCAG) define requirements for designers and developers to improve accessibility for people with disabilities. It defines three levels of conformance: Level A, Level AA, and Level AAA.
           </p>
           <p className="mt-4">
-            BotChat is <strong>partially conformant</strong> with WCAG 2.2 Level AA. Partially conformant means that some parts of the content do not fully conform to the accessibility standard, and we are actively working to address these areas.
+            MegaDM is <strong>partially conformant</strong> with WCAG 2.2 Level AA. Partially conformant means that some parts of the content do not fully conform to the accessibility standard, and we are actively working to address these areas.
           </p>
         </section>
 
         <section id="feedback">
           <h2 className="text-2xl font-bold text-foreground mb-4">4. Feedback & Reporting Barriers</h2>
           <p>
-            We welcome your feedback on the accessibility of BotChat. Please let us know if you encounter accessibility barriers:
+            We welcome your feedback on the accessibility of MegaDM. Please let us know if you encounter accessibility barriers:
           </p>
           <ul className="list-disc pl-6 mt-4 space-y-3">
             <li>
               <strong>Email:</strong>{" "}
-              <a href="mailto:accessibility@botchat.ai" className="text-[#ec4899] hover:underline font-bold">
-                accessibility@botchat.ai
+              <a href="mailto:support@megadm.chat" className="text-[#ec4899] hover:underline font-bold">
+                support@megadm.chat
               </a>
             </li>
             <li>
@@ -97,10 +97,10 @@ export default function AccessibilityPage() {
           <div className="bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 p-8 rounded-[32px] mt-6">
             <h3 className="text-xl font-bold text-foreground mb-4">Easy-to-Read Summary</h3>
             <ul className="space-y-3">
-              <li>&bull; BotChat wants everyone to be able to use our website.</li>
+              <li>&bull; MegaDM wants everyone to be able to use our website.</li>
               <li>&bull; We work hard to make our website easy to use for all people.</li>
               <li>&bull; If you have trouble using our website, please tell us.</li>
-              <li>&bull; You can email us at accessibility@botchat.ai.</li>
+              <li>&bull; You can email us at support@megadm.chat.</li>
               <li>&bull; We will answer within 5 days.</li>
             </ul>
             <p className="mt-6 text-muted-foreground text-sm">
@@ -113,7 +113,7 @@ export default function AccessibilityPage() {
         <section id="technical">
           <h2 className="text-2xl font-bold text-foreground mb-4">7. Technical Specifications</h2>
           <p>
-            Accessibility of BotChat relies on the following technologies to work with the particular combination of web browser and any assistive technologies or plugins installed on your computer:
+            Accessibility of MegaDM relies on the following technologies to work with the particular combination of web browser and any assistive technologies or plugins installed on your computer:
           </p>
           <ul className="list-disc pl-6 mt-4 space-y-3">
             <li><strong>HTML / ARIA</strong> — We use WAI-ARIA landmarks, roles, and attributes to enhance semantic structure.</li>
@@ -152,7 +152,7 @@ export default function AccessibilityPage() {
           <h2 className="text-2xl font-bold text-foreground mb-4">10. Contact Information</h2>
           <p>For all accessibility-related inquiries:</p>
           <p className="mt-4">
-            Email: <a href="mailto:accessibility@botchat.ai" className="text-[#ec4899] hover:underline font-bold">accessibility@botchat.ai</a>
+            Email: <a href="mailto:accessibility@megadm.chat" className="text-[#ec4899] hover:underline font-bold">accessibility@megadm.chat</a>
           </p>
           <p className="mt-2">
             Phone: +49 30 12345678

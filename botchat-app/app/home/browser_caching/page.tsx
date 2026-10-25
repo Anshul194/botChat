@@ -2,8 +2,8 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Browser Caching Policy — BotChat",
-  description: "Learn how BotChat optimizes performance through CDN and browser caching, and how to manage data synchronization and stale cache.",
+  title: "Browser Caching Policy — MegaDM",
+  description: "Learn how MegaDM optimizes performance through CDN and browser caching, and how to manage data synchronization and stale cache.",
 };
 
 export default function BrowserCaching() {
@@ -19,7 +19,7 @@ export default function BrowserCaching() {
       <div className="space-y-12 leading-relaxed text-lg">
         <section className="bg-white/5 dark:bg-zinc-900/50 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800/50 shadow-sm">
           <p className="text-zinc-700 dark:text-zinc-300">
-            At <strong className="text-zinc-900 dark:text-white font-bold">BotChat</strong>, we utilize advanced caching strategies to ensure our social media automation platform is lightning-fast, highly responsive, and efficient in its resource consumption. Caching helps us reduce API latency and minimize load times.
+            At <strong className="text-zinc-900 dark:text-white font-bold">MegaDM</strong>, we utilize advanced caching strategies to ensure our social media automation platform is lightning-fast, highly responsive, and efficient in its resource consumption. Caching helps us reduce API latency and minimize load times.
           </p>
         </section>
 
@@ -29,7 +29,7 @@ export default function BrowserCaching() {
             <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">What is Browser Caching?</h2>
           </div>
           <p className="text-zinc-600 dark:text-zinc-400 pl-12">
-            Browser caching is a mechanism where your web browser stores copies of static files (such as HTML pages, stylesheets, scripts, images, and API responses) locally on your device. When you revisit BotChat, your browser loads these files from your local storage instead of fetching them again over the network, dramatically speeding up page load times.
+            Browser caching is a mechanism where your web browser stores copies of static files (such as HTML pages, stylesheets, scripts, images, and API responses) locally on your device. When you revisit MegaDM, your browser loads these files from your local storage instead of fetching them again over the network, dramatically speeding up page load times.
           </p>
         </section>
 

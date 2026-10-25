@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/dashboard/", "/auth/", "/social/"],
       },
     ],
-    sitemap: "https://botchat.divyangtechlabs.com/sitemap.xml",
+    sitemap: `${process.env.NEXT_PUBLIC_APP_URL || "https://megadm.chat"}/sitemap.xml`,
   }
 }
