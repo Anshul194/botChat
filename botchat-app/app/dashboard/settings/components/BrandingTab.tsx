@@ -181,7 +181,7 @@ export default function BrandingTab() {
 
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem('botchat_tenant_branding', JSON.stringify({
+          localStorage.setItem('megadm_tenant_branding', JSON.stringify({
             appName: generalForm.appName || 'MegaDM',
             logo: resolveAssetUrl(finalLogo),
             darkLogo: resolveAssetUrl(finalDarkLogo),
@@ -251,7 +251,7 @@ export default function BrandingTab() {
 
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem('botchat_tenant_branding', JSON.stringify({
+          localStorage.setItem('megadm_tenant_branding', JSON.stringify({
             appName: generalForm.appName || 'MegaDM',
             logo: resolveAssetUrl(finalLogo),
             darkLogo: resolveAssetUrl(finalDarkLogo),

@@ -1,4 +1,4 @@
-export const APPEARANCE_STORAGE_KEY = "botchat.appearance";
+export const APPEARANCE_STORAGE_KEY = "megadm.appearance";
 
 export type AppearanceSettings = {
     primary: string;
@@ -25,7 +25,7 @@ export type AppearanceSettings = {
 
 /* ------------------------------------------------------------------ */
 /*  DEFAULT THEME — vivid pink / plum, dark mode, glass nav            */
-/*  Matches the botChat screenshot (pink pill logo, gradient CTA)      */
+/*  Matches the MegaDM brand (pink pill logo, gradient CTA)            */
 /* ------------------------------------------------------------------ */
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
     primary: "#EC1560",
@@ -475,7 +475,7 @@ export function previewAppearance(settings: AppearanceSettings): void {
     applyAppearanceVariables(settings);
 
     // Dispatch the full settings object to listeners (like ThemeProvider)
-    const event = new CustomEvent("botchat-appearance-updated", { detail: settings });
+    const event = new CustomEvent("megadm-appearance-updated", { detail: settings });
     window.dispatchEvent(event);
 }
 

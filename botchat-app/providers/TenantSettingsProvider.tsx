@@ -116,7 +116,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
   if (!general) {
     if (typeof window !== 'undefined') {
       try {
-        const cached = localStorage.getItem('botchat_tenant_branding')
+        const cached = localStorage.getItem('megadm_tenant_branding')
         if (cached) {
           const parsed = JSON.parse(cached)
           return {
@@ -165,7 +165,7 @@ function extractSettings(general: Record<string, any> | null): TenantSettings {
 
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem('botchat_tenant_branding', JSON.stringify({
+      localStorage.setItem('megadm_tenant_branding', JSON.stringify({
         appName: result.appName,
         logo: result.logo,
         darkLogo: result.darkLogo,
@@ -184,7 +184,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<TenantSettings>(() => {
     if (typeof window !== 'undefined') {
       try {
-        const cached = localStorage.getItem('botchat_tenant_branding')
+        const cached = localStorage.getItem('megadm_tenant_branding')
         if (cached) {
           const parsed = JSON.parse(cached)
           return {
@@ -233,7 +233,7 @@ export function TenantSettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleBrandingChange = () => {
       try {
-        const cached = localStorage.getItem('botchat_tenant_branding')
+        const cached = localStorage.getItem('megadm_tenant_branding')
         if (cached) {
           const parsed = JSON.parse(cached)
           setSettings((prev) => ({

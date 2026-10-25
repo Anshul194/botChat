@@ -54,7 +54,7 @@ export function useRazorpay() {
                 const options = {
                     key,
                     order_id: orderId,
-                    name: "BotChat",
+                    name: "MegaDM",
                     description: "Subscription Payment",
                     handler: async function (response: {
                         razorpay_payment_id: string;

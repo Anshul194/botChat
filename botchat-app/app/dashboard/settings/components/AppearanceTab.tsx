@@ -109,8 +109,8 @@ export default function AppearanceTab({ showModal }: { showModal: (type: string,
                 setAppearancePreview(prev => JSON.stringify(prev) === JSON.stringify(incoming) ? prev : incoming);
             }
         };
-        window.addEventListener("botchat-appearance-updated", handleExternalUpdate);
-        return () => window.removeEventListener("botchat-appearance-updated", handleExternalUpdate);
+        window.addEventListener("megadm-appearance-updated", handleExternalUpdate);
+        return () => window.removeEventListener("megadm-appearance-updated", handleExternalUpdate);
     }, []);
 
     const applyCreatorPreset = (preset: typeof creatorPresets[number]) => {

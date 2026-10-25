@@ -24,23 +24,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const [activeAppearance, setActiveAppearance] = useState<any>(null);
 
     useEffect(() => {
-        // Init theme from appearance if it exists, else botchat-theme
+        // Init theme from appearance if it exists, else megadm-theme
         let initialTheme: Theme = "dark";
-        const rawApp = localStorage.getItem("botchat.appearance");
+        const rawApp = localStorage.getItem("megadm.appearance");
         if (rawApp) {
             try {
                 const parsed = JSON.parse(rawApp);
                 initialTheme = parsed.darkMode ? "dark" : "light";
             } catch(e) {}
         } else {
-            const stored = localStorage.getItem("botchat-theme") as Theme | null;
+            const stored = localStorage.getItem("megadm-theme") as Theme | null;
             if (stored) initialTheme = stored;
         }
 
         setTheme(initialTheme);
         document.documentElement.classList.remove("dark", "light");
         document.documentElement.classList.add(initialTheme);
-        localStorage.setItem("botchat-theme", initialTheme);
+        localStorage.setItem("megadm-theme", initialTheme);
         
         // Initial application of all variables
         import("@/lib/appearance").then(({ previewAppearance, loadSavedAppearance }) => {
@@ -61,7 +61,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                     setTheme(incomingTheme);
                     document.documentElement.classList.remove("dark", "light");
                     document.documentElement.classList.add(incomingTheme);
-                    localStorage.setItem("botchat-theme", incomingTheme);
+                    localStorage.setItem("megadm-theme", incomingTheme);
                     import("@/lib/appearance").then(({ applyAppearanceVariables }) => {
                         applyAppearanceVariables(settings);
                     });
@@ -70,7 +70,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                     setTheme(incomingTheme);
                     document.documentElement.classList.remove("dark", "light");
                     document.documentElement.classList.add(incomingTheme);
-                    localStorage.setItem("botchat-theme", incomingTheme);
+                    localStorage.setItem("megadm-theme", incomingTheme);
                     
                     // Re-apply variables based on the new theme state
                     setActiveAppearance((prev: any) => {
@@ -85,8 +85,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             }
         };
 
-        window.addEventListener("botchat-appearance-updated", syncTheme);
-        return () => window.removeEventListener("botchat-appearance-updated", syncTheme);
+        window.addEventListener("megadm-appearance-updated", syncTheme);
+        return () => window.removeEventListener("megadm-appearance-updated", syncTheme);
     }, []);
 
     function toggleTheme() {
@@ -94,17 +94,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setTheme(next);
         document.documentElement.classList.remove("dark", "light");
         document.documentElement.classList.add(next);
-        localStorage.setItem("botchat-theme", next);
+        localStorage.setItem("megadm-theme", next);
         
         // Update the current active appearance by merging the new mode
         if (activeAppearance) {
             const updated = { ...activeAppearance, darkMode: next === "dark" };
             setActiveAppearance(updated);
-            localStorage.setItem("botchat.appearance", JSON.stringify(updated));
+            localStorage.setItem("megadm.appearance", JSON.stringify(updated));
             import("@/lib/appearance").then(({ applyAppearanceVariables, previewAppearance }) => {
                 applyAppearanceVariables(updated);
                 // Also dispatch for any other listeners (like Settings page)
-                const event = new CustomEvent("botchat-appearance-updated", { detail: updated });
+                const event = new CustomEvent("megadm-appearance-updated", { detail: updated });
                 window.dispatchEvent(event);
             });
         }

@@ -187,7 +187,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var t = localStorage.getItem('botchat-theme') || 'dark';
+                  var t = localStorage.getItem('megadm-theme') || 'dark';
                   document.documentElement.classList.add(t);
                 } catch(e) {
                   document.documentElement.classList.add('dark');

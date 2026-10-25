@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const TOUR_COMPLETE_KEY = "botchat_tour_completed";
-const TOUR_STEP_KEY = "botchat_tour_step";
+const TOUR_COMPLETE_KEY = "megadm_tour_completed";
+const TOUR_STEP_KEY = "megadm_tour_step";
 
 export function useTour() {
     const [isOpen, setIsOpen] = useState(false);

@@ -108,19 +108,19 @@ export default function CookiePolicy() {
                   </thead>
                   <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                     <tr>
-                      <td className="py-2.5 pr-4 font-mono text-xs text-[#FF2D78]">botchat-theme</td>
+                      <td className="py-2.5 pr-4 font-mono text-xs text-[#FF2D78]">megadm-theme</td>
                       <td className="py-2.5 pr-4">localStorage</td>
                       <td className="py-2.5 pr-4">Remembers chosen UI theme (&quot;dark&quot; or &quot;light&quot;).</td>
                       <td className="py-2.5">Persistent until changed or cleared.</td>
                     </tr>
                     <tr>
-                      <td className="py-2.5 pr-4 font-mono text-xs text-[#FF2D78]">botchat.appearance</td>
+                      <td className="py-2.5 pr-4 font-mono text-xs text-[#FF2D78]">megadm.appearance</td>
                       <td className="py-2.5 pr-4">localStorage</td>
                       <td className="py-2.5 pr-4">Custom workspace appearance preferences.</td>
                       <td className="py-2.5">Persistent until changed or cleared.</td>
                     </tr>
                     <tr>
-                      <td className="py-2.5 pr-4 font-mono text-xs text-[#FF2D78]">tour_completed / tour_step</td>
+                      <td className="py-2.5 pr-4 font-mono text-xs text-[#FF2D78]">megadm_tour_completed / megadm_tour_step</td>
                       <td className="py-2.5 pr-4">localStorage</td>
                       <td className="py-2.5 pr-4">Tracks completion of product walkthrough guides.</td>
                       <td className="py-2.5">Persistent until reset or cleared.</td>
