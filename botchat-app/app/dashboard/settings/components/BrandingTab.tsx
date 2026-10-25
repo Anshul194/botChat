@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { AppDispatch, RootState } from "../../../../store/store";
 import {
-  updateGeneralSettings, fetchGeneralSettings, updateAppSettings,
+  updateGeneralSettings, fetchGeneralSettings, updateAppSettings, fetchPublicBranding,
 } from "../../../../store/slices/settingsSlice";
 import {
   selectIsSuperAdmin as isSuperAdminSelector,
